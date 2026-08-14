@@ -18,11 +18,26 @@ The published site is a small, cohesive multi-page site emitted by the pipeline 
 | Technology | `technology/` | Architecture, subsystems, the 82-byte packet, build platform |
 | Science | `science/` | NOAA CRW thermal-stress methodology (DHW), caveats, references |
 | Analytics | `analytics/` | **The live dashboard** — regenerated from the telemetry report |
+| Fleet | `fleet/` | **Network overview** — one tile per buoy, drilling down to a per-buoy dashboard |
 | About | `about/` | Team, advisors, institution, roadmap |
 
 The **static pages are authored** (they change only when the source changes); the **Analytics
-page is data-driven** — its cards and charts regenerate from a `TelemetryReport` on every
-publish, so the data flow survives the redesign.
+and Fleet pages are data-driven** — their cards and charts regenerate from a `TelemetryReport`
+on every publish, so the data flow survives the redesign.
+
+### The Fleet page
+
+The Analytics page shows one telemetry stream; the **Fleet** page
+([`analytics/telemetry/fleet_web.py`](../../analytics/telemetry/fleet_web.py)) is the network
+view. Records are grouped by `buoy_id` and each buoy is analysed **in isolation** — its own
+daily means, its own Degree Heating Weeks against its own site climatology — never blended,
+since merging streams would corrupt both. The overview shows a rollup strip and a
+severity-sorted grid of buoy tiles (current alert, a temperature sparkline, key stats); each
+tile links to that buoy's full dashboard at `fleet/<buoy_id>/`, and a `fleet_summary.json`
+rollup is emitted alongside. Per-buoy dashboards keep the same strict no-cross-origin contract
+as Analytics. With a single buoy the page simply shows one tile, so it scales from one buoy to
+a whole network without changing shape. The per-buoy science is the multi-buoy backend from
+[`analytics/telemetry/fleet.py`](../../analytics/telemetry/fleet.py).
 
 ## Why static, not a live server
 

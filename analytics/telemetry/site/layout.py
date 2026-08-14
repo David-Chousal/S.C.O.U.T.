@@ -20,10 +20,11 @@ _NAV = (
     ("technology/", "Technology", True),
     ("science/", "Science", True),
     ("analytics/", "Analytics", False),
+    ("fleet/", "Fleet", True),
     ("about/", "About", True),
 )
 _ACTIVE_SLUG = {"home": "", "technology": "technology/", "science": "science/",
-                "analytics": "analytics/", "about": "about/"}
+                "analytics": "analytics/", "fleet": "fleet/", "about": "about/"}
 
 
 def _href(base: str, slug: str) -> str:

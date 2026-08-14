@@ -8,9 +8,11 @@ Layout emitted into ``out_dir``::
     about/index.html           Team & story
     analytics/index.html       Live dashboard  (telemetry.web.write_site)
     analytics/telemetry_daily.csv, telemetry_summary.json
+    fleet/index.html           Fleet overview  (telemetry.fleet_web, when records are supplied)
+    fleet/<buoy_id>/index.html per-buoy dashboards + fleet_summary.json
     assets/…                   copied static assets (fonts, images) + credits.html
 
-Every page is self-contained; the Analytics page additionally satisfies the strict
+Every page is self-contained; the Analytics and per-buoy pages additionally satisfy the strict
 no-external-reference contract in ``telemetry/tests/test_web.py``.
 """
 
@@ -86,8 +88,18 @@ def build_site(
     *,
     banner: str | None = None,
     generated_at: datetime | None = None,
+    records=None,
+    mmm_by_buoy: dict[str, float] | None = None,
+    default_mmm: float | None = None,
 ) -> Path:
-    """Build the whole site into ``out_dir`` and return the site root path."""
+    """Build the whole site into ``out_dir`` and return the site root path.
+
+    ``report`` is the primary (single-stream) analysis that drives Home and the Analytics page.
+    When ``records`` are supplied, the **Fleet** page is additionally built: the records are
+    grouped by ``buoy_id`` and analysed per buoy (each with its own MMM from ``mmm_by_buoy``,
+    falling back to ``default_mmm``) — never blended, since that would corrupt daily means and
+    DHW. With a single buoy the Fleet page simply shows one tile.
+    """
     from .. import web  # lazy: web imports this package's layout
 
     out = Path(out_dir)
@@ -124,6 +136,16 @@ def build_site(
     # Analytics — the data-driven page + raw data, held to the strict self-contained contract.
     web.write_site(report, out / "analytics", banner=banner, generated_at=generated_at,
                    base="../", fonts_present=fonts_present)
+
+    # Fleet — the network view: one overview page + a full dashboard per buoy. Built whenever
+    # the raw records are available (so buoys can be analysed in isolation, not blended).
+    if records is not None:
+        from .. import fleet as fleet_mod
+        from .. import fleet_web
+
+        fleet = fleet_mod.analyze_fleet(records, mmm_by_buoy=mmm_by_buoy, default_mmm=default_mmm)
+        fleet_web.write_fleet_site(fleet, out / "fleet", banner=banner,
+                                   generated_at=generated_at, base="../", fonts_present=fonts_present)
 
     # Image-credits page (required by the Ocean Image Bank licence when photos are placed).
     _write(assets_out / "credits.html", layout.document(

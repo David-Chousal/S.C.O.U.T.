@@ -189,5 +189,7 @@ def run(
     if web_dir is not None:
         from .site import build_site  # local import; stdlib only
 
-        build_site(report, web_dir, banner=web_banner)
+        # Pass the raw records so the site also builds the Fleet page (per-buoy, never blended).
+        # The single ``mmm`` becomes the fleet default until a per-buoy MMM map is wired through.
+        build_site(report, web_dir, banner=web_banner, records=records, default_mmm=mmm)
     return report

@@ -482,5 +482,26 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .data-links{color:var(--muted);font-size:var(--text-small);margin-top:1.8rem}
 .data-links a{font-weight:500}
 
+/* Fleet overview — the network view (telemetry.fleet_web) */
+.fleet-strip{margin-bottom:clamp(1.6rem,1rem + 2vw,2.6rem)}
+.fleet-grid{display:grid;gap:clamp(1rem,0.6rem + 1vw,1.6rem);
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.buoy-tile{display:flex;flex-direction:column;gap:1.1rem;color:inherit}
+.buoy-tile:hover{opacity:1}
+.buoy-head{display:flex;align-items:center;justify-content:space-between;gap:0.8rem}
+.buoy-head h3{font-size:1.15rem;font-weight:560;letter-spacing:-0.01em;color:var(--ink)}
+.alert-badge{font-size:var(--text-micro);font-weight:560;letter-spacing:0.05em;
+  text-transform:uppercase;white-space:nowrap;padding:0.3rem 0.72rem;border-radius:var(--radius-pill);
+  box-shadow:var(--ring);background:color-mix(in srgb,currentColor 12%,var(--surface))}
+.spark{width:100%;height:56px;display:block}
+.spark-empty{height:56px;border-radius:var(--radius);background:var(--surface-2)}
+.tile-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem 1rem;margin:0}
+.tile-stats div{display:flex;flex-direction:column;gap:0.15rem}
+.tile-stats dt{color:var(--faint);font-size:var(--text-micro);letter-spacing:0.06em;
+  text-transform:uppercase}
+.tile-stats dd{margin:0;color:var(--ink);font-weight:560;font-size:0.98rem}
+.tile-more{margin-top:auto;color:var(--accent);font-size:var(--text-small);font-weight:500}
+.buoy-tile:hover .tile-more{color:var(--accent)}
+
 @media print{.site-header,.site-footer{display:none}}
 """
