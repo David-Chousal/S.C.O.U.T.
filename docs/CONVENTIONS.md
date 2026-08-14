@@ -2,9 +2,6 @@
 
 The reference for "where does this go?" and "what do I call it?"
 
-You do not need to read this front to back. Ask your Claude — it has this file loaded and will
-answer in context. This exists so those answers are consistent no matter who asks or when.
-
 **Companion files:** [CLAUDE.md](../CLAUDE.md) is how we operate across tools.
 [README.md](../README.md) is what the project is. This file is how we name and place things.
 
