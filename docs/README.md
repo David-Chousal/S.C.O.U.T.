@@ -36,6 +36,7 @@ Technical design and component specification.
 | [Engineering Design Document (v0.2)](engineering/engineering-design-document.md) | **The authoritative technical baseline.** 22 sections: requirements, mechanical/electrical/firmware architecture, component selection, sensor and audio subsystems, communications, storage, operating timeline, energy budget, battery and solar sizing, assumptions, constraints, verification plan, full BOM |
 | [Sensor Selection](engineering/sensor-selection.md) | Candidate sensors tiered V1 / V1.5 / future, with cost, interface, power draw, and vendor links |
 | [Sensor String Architecture](engineering/sensor-string-architecture.md) | Vertical multi-depth sensor string layout and placement rationale |
+| [On-Board CSV Data Schema](engineering/data-schema.md) | The microSD log format — columns, units, timestamps; the firmware ↔ shore-station/analytics contract |
 
 ## Research
 
