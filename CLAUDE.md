@@ -325,11 +325,12 @@ known and documented; do not "fix" it without an issue.
    treat its power budget (§15–17) as production-target analysis, not the Feather build.
 4. **Cite sources in docs.** Anything asserting a scientific fact gets a DOI or link.
 5. **Report failures plainly.** If tests fail, show the output. If a step was skipped, say so.
-6. **Everything reaches `main` through a PR.** Branch → commit → push the branch → open a PR
-   with a conventional title (`<type>(<scope>): <summary>`) and the four-section description
-   (DATE · What Changed and Why · Open questions · Open tasks). Never push to `main` directly —
-   it is blocked, and you will get stuck before the PR step. See
-   [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
+6. **Everything reaches `main` through an auto-merged PR.** Branch → commit → push the branch →
+   open a PR with a conventional title (`<type>(<scope>): <summary>`) and the four-section
+   description (DATE · What Changed and Why · Open questions · Open tasks) → enable auto-merge
+   (`gh pr merge --auto --merge`) so it lands as soon as it's mergeable. Don't leave compliant
+   PRs open, and never push to `main` directly — it is blocked, and you will get stuck before
+   the PR step. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
 
 ---
 
