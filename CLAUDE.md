@@ -55,6 +55,17 @@ script wins; it is the authoritative, versioned check. Also verify PR title form
 [Standing rule 7](#standing-rules) (Knowledge Hub touch) before opening a PR — `pr-checks.yml`
 gates on all three independently of the conventions script.
 
+**Branch + PR, no exceptions, confirmed 2026-08-14.** Before your first `git add` in a
+session, check `git branch --show-current`. If it says `main`, stop and create a branch first
+— do not commit. This applies to every change regardless of size: a one-line typo fix goes
+through a branch and a PR exactly like a multi-file feature. `git push` must never target
+`main` directly, full stop; if a command you're about to run would do that, it is wrong,
+not the exception. Open the PR yourself (title + the four-section body above) and leave it
+for review — merging still requires an explicit human ask, per Standing Rule 6. `gh` is not
+installed; open the PR via the compare URL in a browser
+(`https://github.com/David-Chousal/S.C.O.U.T./compare/main...<branch>?quick_pull=1`) rather
+than skipping the step because the CLI isn't there.
+
 ---
 
 ## The project
