@@ -5,10 +5,12 @@ real-time. The shore Raspberry Pi runs the pipeline on a schedule, calls :func:`
 and pushes the result; GitHub Pages serves it. See docs/engineering/live-dashboard.md.
 
 The page is rendered through the shared site design system (:mod:`telemetry.site`) so it reads
-as one surface with the rest of the site, yet it remains **fully self-contained**: inline CSS,
-inline SVG charts, and no external scripts, fonts, stylesheets, or network requests — so it
-renders offline, passes a strict CSP, and needs no JavaScript. Chart colours are CSS design
-tokens, so every series is correct in both light and dark themes. Standard library only.
+as one surface with the rest of the site. Its data content is entirely inline (inline CSS and
+inline SVG charts) and it references **no external or cross-origin host** (no CDN, no
+third-party). Like the rest of the site it now also loads the shared self-hosted ambient
+animations (the footer seaweed and the roaming fish), which are same-origin JavaScript, so the
+page is no longer script-free; this is verified by ``tests/test_web.py``. Chart colours are CSS
+design tokens. Standard library only (on the Python side).
 """
 
 from __future__ import annotations

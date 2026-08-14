@@ -70,6 +70,7 @@ def _footer_seaweed(base: str) -> str:
         '<div class="footer-seaweed" aria-hidden="true">'
         f'<span class="weed weed-a" data-lottie="{src}"></span>'
         f'<span class="weed weed-b" data-lottie="{src}"></span>'
+        f'<span class="weed weed-c" data-lottie="{src}"></span>'
         "</div>"
     )
 
@@ -96,7 +97,7 @@ def footer(base: str, *, external: bool = True) -> str:
             "</ul></div>"
         )
     )
-    seaweed = _footer_seaweed(base) if external else ""
+    seaweed = _footer_seaweed(base)  # on every page, including Analytics
     return (
         f'<footer class="site-footer">{seaweed}<div class="wrap footer-grid">'
         '<div class="footer-brand">'
@@ -140,15 +141,15 @@ def document(
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"
-        "</head>\n<body>\n"
+        f'</head>\n<body data-lottie-base="{base}assets/lottie/">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
         f"{header(base, active)}\n"
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
         f"{footer(base, external=external)}\n"
-        # Self-hosted Lottie runtime for the ambient animations. External pages only; the
-        # Analytics page stays script-free and self-contained.
-        f"{_lottie_scripts(base) if external else ''}"
+        # Self-hosted Lottie runtime for the ambient animations, on every page (including
+        # Analytics). Same-origin only; the page still makes no cross-origin request.
+        f"{_lottie_scripts(base)}"
         "</body>\n</html>\n"
     )

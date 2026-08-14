@@ -31,11 +31,22 @@ _FIXED = datetime(2027, 3, 11, 12, 0, tzinfo=timezone.utc)
 
 
 class WebDashboardTest(unittest.TestCase):
-    def test_is_self_contained_no_external_requests(self):
+    def test_no_external_or_cross_origin_references(self):
+        """The page loads the shared self-hosted ambient animations, so it now carries
+        same-origin scripts, but it references no external/CDN host: no absolute URLs, and every
+        ``src`` is a same-origin relative path. It still needs no third party and no network
+        beyond its own origin."""
+        import re
+
         html = render_html(analyze(_records(), mmm=28.0), generated_at=_FIXED)
         self.assertTrue(html.lstrip().startswith("<!doctype html>"))
-        for needle in ("http://", "https://", "src=", "<script"):
-            self.assertNotIn(needle, html, f"page must not reference {needle!r}")
+        for needle in ("http://", "https://", "//unpkg", "lottie.host", "cdn."):
+            self.assertNotIn(needle, html, f"page must not reference external host {needle!r}")
+        for src in re.findall(r'src="([^"]*)"', html):
+            self.assertFalse(
+                src.startswith("http") or src.startswith("//"),
+                f"every src must be same-origin/relative, got {src!r}",
+            )
 
     def test_shows_thermal_status_when_mmm_given(self):
         html = render_html(analyze(_records(days=14), mmm=28.0), generated_at=_FIXED)
