@@ -372,7 +372,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .member:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
 .member-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem}
-.member .avatar{width:60px;height:60px;border-radius:50%;margin:0}
+.member .avatar{width:60px;height:60px;border-radius:50%;margin:0;object-fit:cover;display:block}
 .member-linkedin{color:var(--faint);display:inline-flex;margin-top:0.2rem;
   transition:color var(--dur) var(--ease)}
 .member-linkedin:hover{color:var(--accent);opacity:1}

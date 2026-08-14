@@ -11,6 +11,8 @@ attribution burden — used wherever a real Ocean Image Bank photograph is not (
 
 from __future__ import annotations
 
+import html
+
 
 def logo_mark(cls: str = "mark") -> str:
     """Concentric sonar rings — the SCOUT mark. Uses ``currentColor`` + the accent token."""
@@ -193,6 +195,15 @@ def avatar(initials: str, uid: int, hue: int) -> str:
         f'<text x="32" y="41" text-anchor="middle" font-family="var(--font)" '
         f'font-size="22" fill="oklch(97% 0.01 200)" font-weight="500">{initials}</text>'
         "</svg>"
+    )
+
+
+def avatar_photo(src: str, name: str) -> str:
+    """A real portrait avatar — same 60px circular footprint as the monogram, used when a
+    team member has supplied a photo. Same-origin image; the CSS crops it to the circle."""
+    return (
+        f'<img class="avatar" src="{src}" alt="{html.escape(name)}" '
+        'width="60" height="60" loading="lazy" decoding="async">'
     )
 
 

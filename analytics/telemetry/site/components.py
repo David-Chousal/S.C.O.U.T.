@@ -86,11 +86,12 @@ def spec(pairs: list[tuple[str, str]]) -> str:
 
 
 def member(name: str, role: str, disc: str, bio: str, initials: str, uid: int, hue: int,
-           linkedin: str) -> str:
+           linkedin: str, photo: str | None = None) -> str:
+    avatar = assets.avatar_photo(photo, name) if photo else assets.avatar(initials, uid, hue)
     return (
         '<article class="member reveal">'
         '<div class="member-top">'
-        f"{assets.avatar(initials, uid, hue)}"
+        f"{avatar}"
         f'<a class="member-linkedin" href="{linkedin}" aria-label="{html.escape(name)} on LinkedIn">'
         f'{assets.social_icon("linkedin")}</a>'
         "</div>"

@@ -13,19 +13,21 @@ DESCRIPTION = (
     "Navid Shaghaghi."
 )
 
+# (name, role, disc, initials, hue, _h2, bio, linkedin, photo). ``photo`` is a basename under
+# assets/img/ (or None → circular monogram fallback).
 _TEAM = [
     ("Isabella Rodriguez", "Hardware lead", "ECEN", "IR", 210, 200,
      "Leads the electrical design: the PCB, the power system, and the sensor and radio front "
      "end, all of which have to run for a year in salt water on solar power.",
-     "https://www.linkedin.com/in/isabellarodriguez17/"),
+     "https://www.linkedin.com/in/isabellarodriguez17/", None),
     ("John Ryan Myrdal", "Field &amp; mechanical lead", "GENG", "JM", 32, 30,
      "Leads the physical build: hull, enclosure, mooring, and deployment. This is the part of "
      "the system exposed directly to the ocean.",
-     "https://www.linkedin.com/in/john-ryan-myrdal-33a292298/"),
+     "https://www.linkedin.com/in/john-ryan-myrdal-33a292298/", None),
     ("David Chousal Cantu", "Software lead", "CSEN", "DC", 165, 165,
      "Leads the software: firmware on the buoy, the shore-station receiver, and the telemetry "
      "pipeline that produces the metrics on this site.",
-     "https://www.linkedin.com/in/david-chousal-749010297"),
+     "https://www.linkedin.com/in/david-chousal-749010297", "team/david.jpg"),
 ]
 
 _PHASES = [
@@ -59,10 +61,12 @@ def _story() -> str:
     )
 
 
-def _team() -> str:
+def _team(base: str) -> str:
     cards = "".join(
-        c.member(name, role, disc, bio, initials, uid, hue, linkedin)
-        for uid, (name, role, disc, initials, hue, _h2, bio, linkedin) in enumerate(_TEAM, start=1)
+        c.member(name, role, disc, bio, initials, uid, hue, linkedin,
+                 photo=f"{base}assets/img/{photo}" if photo else None)
+        for uid, (name, role, disc, initials, hue, _h2, bio, linkedin, photo)
+        in enumerate(_TEAM, start=1)
     )
     return c.section(
         c.head_block("The team", "The team",
@@ -120,7 +124,7 @@ def body(ctx: SiteContext) -> str:
                       "students in electrical, mechanical, and software engineering, with a field "
                       "deployment as the goal.")
         + _story()
-        + _team()
+        + _team(ctx.base)
         + _institution()
         + _roadmap()
         + c.cta("Open source", "The project is open source under the MIT License",
