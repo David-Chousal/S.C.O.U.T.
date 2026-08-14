@@ -53,11 +53,13 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 |---|---|
 | Stakeholder research | ✅ Complete — 3 NOAA researchers interviewed |
 | System architecture | ✅ Complete — [Engineering Design Document v0.2](docs/engineering/engineering-design-document.md) |
-| Mechanical design | 🟡 In progress — enclosure and hull concepts developed |
-| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); wiring/PCB pending |
-| Firmware | 🟡 Phase 1 scaffold — state machine + drivers in place; packet codec (byte-identical to shore) and scheduler verified; hardware bring-up next ([`firmware/`](firmware/README.md)) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
-| Shore station | 🔴 Not started — Raspberry Pi + LoRa, documented in [Shore Station](docs/engineering/shore-station.md) |
+| Environmental telemetry pipeline | ✅ Working — QC, NOAA CRW Degree Heating Weeks + bleaching alerts, trends, and turbidity anomalies ([`analytics/telemetry/`](analytics/telemetry/)) |
+| Firmware | 🟡 Phase 1 in progress — state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, and battery-tiered adaptive transmission; hardware bring-up next ([`firmware/`](firmware/README.md)) |
+| Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
+| Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
+| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); charging path ([ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) and wiring/PCB pending |
+| Mechanical design | 🟡 In progress — enclosure and hull concepts; flotation + turbidity-housing CAD drawings in [`mechanical/cad/`](mechanical/cad/) |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +
@@ -84,17 +86,20 @@ as the future production-PCB target. This unblocks firmware and wiring. See
 ```
 S.C.O.U.T./
 ├── docs/           All project documentation (Notion-compatible Markdown)
+│   ├── hub/            Knowledge Hub — facts, decisions, status, research library
 │   ├── overview/       Project vision, MVP definition, status updates
-│   ├── engineering/    Design document, sensor selection, architecture
+│   ├── engineering/    Design document, sensor selection, architecture, shore station
 │   ├── research/       Stakeholder interviews, decision matrix
-│   ├── analysis/       Bioacoustic methodology and citations
+│   ├── analysis/       Bioacoustic + telemetry methodology and citations
 │   ├── planning/       Timeline, meeting notes, administrative
 │   └── decisions/      Architecture Decision Records
-├── analytics/      Coral bioacoustic analysis pipeline (Python) — implemented
-├── firmware/       Buoy embedded software (SAMD21/PlatformIO) — Phase 1 scaffold
+├── analytics/      Acoustic + environmental-telemetry pipelines (Python) — implemented
+├── shore/          Shore-station receiver, store, and packet codec (Python) — simulated path working
+├── firmware/       Buoy embedded software (SAMD21/PlatformIO) — Phase 1 in progress
 ├── hardware/       Schematics, PCB, wiring diagrams — not yet started
-├── mechanical/     CAD, hull design, mooring specs — not yet started
-├── assets/         Diagrams and presentations
+├── mechanical/     CAD, hull design, mooring specs — flotation + sensor-housing drawings started
+├── assets/         Brand, diagrams, and presentations
+├── scripts/        Repo-level helper scripts (e.g. cross-language packet-contract guard)
 └── data/           Raw audio archive (excluded from git — see Data below)
 ```
 
@@ -105,20 +110,33 @@ it is blocked on.
 
 ## Quick start
 
-The analytics pipeline is the only runnable component today.
+Several components run today with no hardware: the two analytics pipelines and the shore-station
+data path.
+
+**Acoustic pipeline** — five bioacoustic indices → PCA health score → dashboard figure, on the
+committed sample session:
 
 ```bash
 cd analytics
 pip install -r requirements.txt
-
-# Analyze the committed sample session
 python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 \
                        --output data/processed/results.csv
 ```
 
-This computes five bioacoustic indices per recording, derives a PCA-based health score, and
-writes a dashboard figure. See [`analytics/README.md`](analytics/README.md) for longitudinal
-trend analysis and site comparison.
+**Shore data path + environmental telemetry** — simulate a buoy, push the packets through the shore
+receiver into daily CSVs, then analyze them (QC, NOAA CRW Degree Heating Weeks, trends, turbidity):
+
+```bash
+cd shore
+pip install -r requirements.txt
+python scripts/run_loopback.py --count 48 --out ./data     # sensor sim → encode → receive → store
+
+cd ../analytics
+python run_telemetry.py --source ../shore/data --mmm 27.6 --dashboard
+```
+
+See [`analytics/README.md`](analytics/README.md) and [`shore/README.md`](shore/README.md) for the
+full options, and the [live telemetry dashboard](docs/engineering/live-dashboard.md) for the deployed view.
 
 ---
 
@@ -186,6 +204,24 @@ Notable design choices, documented in full in
   trend detection — scores are explicitly not comparable across sessions.
 - **Median aggregation** and an **abiotic contamination filter** to stay robust against
   wind- and rain-contaminated recordings at 1.5 m depth.
+
+---
+
+## The environmental telemetry pipeline
+
+Alongside the acoustic work, [`analytics/telemetry/`](analytics/telemetry/) turns the buoy's daily
+CSV records into reef-relevant indicators. It quality-controls the series (QARTOD-style range, spike,
+flat-line, and gap flags), computes **NOAA Coral Reef Watch thermal-stress metrics** — HotSpot,
+Degree Heating Weeks, and the 4/8/12 °C-week bleaching alert levels — detects multi-month temperature
+and turbidity trends with modified Mann-Kendall, and flags turbidity anomalies. Run it with
+`run_telemetry.py`; the method is written up in
+[Environmental Telemetry Methodology](docs/analysis/telemetry-methodology.md), and the external
+research behind it (DHW, turbidity, LoRa-over-saltwater) lives in the
+[Knowledge Hub research library](docs/hub/research/sources.md).
+
+The [`shore/`](shore/README.md) package closes the loop: a packet codec (byte-identical to the
+firmware), a simulated LoRa link with configurable loss and corruption, a receiver, and a daily CSV
+store — so the whole buoy → shore → analysis path runs today without hardware.
 
 ---
 
