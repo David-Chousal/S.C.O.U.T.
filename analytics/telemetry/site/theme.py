@@ -131,10 +131,10 @@ body{
 @media (prefers-reduced-motion:no-preference){
   .nav-links .nav-mark{view-transition-name:nav-underline}
   ::view-transition-group(site-header){animation-duration:0s}
-  ::view-transition-group(nav-underline){animation-duration:300ms;
+  ::view-transition-group(nav-underline){animation-duration:400ms;
     animation-timing-function:var(--ease)}
-  ::view-transition-old(root){animation:page-out 200ms var(--ease) both}
-  ::view-transition-new(root){animation:page-in 280ms var(--ease) both}
+  ::view-transition-old(root){animation:page-out 280ms var(--ease) both}
+  ::view-transition-new(root){animation:page-in 400ms var(--ease) both}
   @keyframes page-out{to{opacity:0;transform:translateX(-4%)}}
   @keyframes page-in{from{opacity:0;transform:translateX(4%)}}
 }
