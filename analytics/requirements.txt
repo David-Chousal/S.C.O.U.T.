@@ -1,0 +1,17 @@
+# SCOUT analytics pipeline dependencies
+# Pinned to the versions the pipeline was developed and validated against.
+
+# Core numerics
+numpy==2.0.2
+pandas==2.3.3
+scipy==1.13.1
+
+# Bioacoustic index computation (ACI, BI, NDSI, H, ADI)
+scikit-maad==1.5.2
+
+# Modified Mann-Kendall trend tests (Hamed-Rao autocorrelation correction)
+pymannkendall==1.4.3
+
+# Visualization
+matplotlib==3.9.4
+seaborn==0.13.2
