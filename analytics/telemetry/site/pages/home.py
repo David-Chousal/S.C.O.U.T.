@@ -81,7 +81,7 @@ def _senses() -> str:
     cards = "".join(f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>'
                     for g, k, t, b in signals)
     platform = (
-        '<article class="col-6 card card-accent">'
+        '<article class="col-6 card">'
         '<div class="bento" style="align-items:center;gap:1.2rem">'
         '<div class="col-4"><p class="kicker">A platform</p>'
         '<h3>One buoy, several possible signals</h3>'
@@ -122,25 +122,6 @@ def _habitat(ctx: SiteContext) -> str:
     )
 
 
-def _how() -> str:
-    steps = c.steps([
-        ("Sense", "The buoy wakes on a timer, samples temperature and turbidity, records "
-                  "battery voltage, and returns to sleep."),
-        ("Store", "Every reading is written to onboard storage. Raw data is not transmitted, so "
-                  "the full archive stays on the buoy."),
-        ("Transmit", "Once a day the buoy sends an 82-byte summary to shore over LoRa radio. It "
-                     "uses no cellular or internet connection."),
-        ("Publish", "The shore Raspberry Pi validates each packet, runs the analysis pipeline, "
-                    "and regenerates this dashboard."),
-    ])
-    return c.section(
-        c.head_block("How it works", "The data path")
-        + f'<div style="margin-top:2.8rem">{steps}</div>',
-        cls="section-sm",
-        sid="how",
-    )
-
-
 def _live_band(ctx: SiteContext) -> str:
     live = ctx.live
     note = ("Sample data, simulated until the buoy is deployed."
@@ -174,6 +155,6 @@ def body(ctx: SiteContext) -> str:
         + '<div class="wrap"><div class="divider"></div></div>'
         + _senses()
         + _habitat(ctx)
-        + _how()
+        + c.data_path()
         + _live_band(ctx)
     )

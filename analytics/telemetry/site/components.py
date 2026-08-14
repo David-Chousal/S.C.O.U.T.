@@ -115,3 +115,27 @@ def data_table(caption: str, headers: list[str], rows: list[list[str]], *, num_c
         f"<caption>{html.escape(caption)}</caption>"
         f"<thead><tr>{head}</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>"
     )
+
+
+def data_path() -> str:
+    """The buoy → shore → dashboard data path. Shared verbatim by Home and Technology so the two
+    can never drift. Values track docs/hub/facts.md (Communications & data · Sensing)."""
+    body = steps([
+        ("Sense", "The buoy wakes about every 30 minutes, reads water temperature and battery "
+                  "voltage, samples turbidity less often, and returns to sleep."),
+        ("Store", "Each wake appends one row to an on-board CSV log, timestamped in UTC. Raw data "
+                  "never leaves the buoy: the full archive, audio included, stays in on-board "
+                  "storage and is retrieved by hand."),
+        ("Transmit", "Once a day the buoy sends a single 82-byte summary to shore over a 915 MHz "
+                     "LoRa link, roughly 2 km line of sight. No cellular service or internet is "
+                     "used at the buoy."),
+        ("Publish", "The shore Raspberry Pi validates each packet, runs quality control and NOAA "
+                    "Coral Reef Watch thermal-stress metrics, and regenerates this dashboard, "
+                    "using only the Python standard library."),
+    ])
+    return section(
+        head_block("How it works", "The data path")
+        + f'<div style="margin-top:2.8rem">{body}</div>',
+        cls="section-sm",
+        sid="how",
+    )

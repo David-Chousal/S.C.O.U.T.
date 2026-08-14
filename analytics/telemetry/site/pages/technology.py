@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import assets, components as c, drawings
+from .. import components as c, drawings
 from ..context import SiteContext
 
 TITLE = "Technology · S.C.O.U.T."
@@ -37,17 +37,9 @@ _REFS_DOCS = [
 
 
 def _architecture() -> str:
-    return c.section(
-        c.head_block("Architecture", "The data path",
-                     "The buoy senses and sleeps. Once a day it sends a small packet to shore. "
-                     "The shore station processes those packets and republishes the dashboard. "
-                     "No server runs continuously.")
-        + '<figure class="figure-card reveal" style="margin-top:2.4rem">'
-        + assets.datapath_svg()
-        + "<figcaption>The buoy transmits to a shore Raspberry Pi over LoRa, which processes the "
-        "data and publishes this dashboard. Each stage is built around a once-per-day, 82-byte "
-        "summary.</figcaption></figure>"
-    )
+    # The data-path section is shared verbatim with the Home page via components.data_path(),
+    # so the two never drift.
+    return c.data_path()
 
 
 def _cycle() -> str:
