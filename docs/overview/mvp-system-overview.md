@@ -213,7 +213,9 @@ If low power:
 
 **Current assumptions:**
 
-- Max range: **~100 yards**
+- Design range: **~2 km line of sight** (RFM95 upper figure with a tuned antenna, per the
+  Adafruit RFM9x range FAQ; expect less over saltwater with a low buoy antenna — to be
+  measured in the Phase 4 range test)
 
 - Direct line of sight to shore
 

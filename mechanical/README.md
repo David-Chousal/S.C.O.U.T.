@@ -40,9 +40,8 @@ mechanical/
 
 ## Open items
 
-- **Deployment depth is unresolved.** The MVP overview specifies 5–8 m maximum; the sensor
-  string diagram annotates node depths to ~30 m. These must be reconciled against the actual
-  Hawaii site.
+- **Deployment depth is 5–8 m** (resolved 2026-08-14), per the MVP overview. The ~30 m label
+  on the sensor-string diagram image is outdated and should be re-exported.
 - Biofouling mitigation strategy is undecided — candidates include copper mesh, mechanical
   wipers, and reef-safe antifouling coatings. Stakeholder interviews flagged this as a major
   risk to sensor accuracy.

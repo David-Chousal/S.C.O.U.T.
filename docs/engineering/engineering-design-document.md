@@ -2903,7 +2903,7 @@ Changes to any of the following require storage re-evaluation:
 
 Current LoRa configuration is optimized for:
 
-- Approximately 100-yard operating range
+- Up to ~2 km line-of-sight range (RFM95 upper figure with a tuned antenna; real over-saltwater range with a low buoy antenna will be lower and is pending the Phase 4 measurement)
 
 - Low energy consumption
 

@@ -85,9 +85,10 @@ SURFACE
 
 ## Open items
 
-- **Depth range is unresolved.** The diagram annotates node depths down to ~30 m, while
-  [MVP System Overview](../overview/mvp-system-overview.md) specifies a 5–8 m maximum
-  deployment depth. These need reconciling against the chosen Hawaii site.
+- **Deployment depth is 5–8 m** (resolved 2026-08-14). The `~30 m` annotation on the diagram
+  image is outdated — the deployment target is the 5–8 m maximum from the
+  [MVP System Overview](../overview/mvp-system-overview.md). The diagram PNG should be
+  re-exported to drop the ~30 m label.
 - **Hydrophone part number differs across documents.** The diagram cites the Aquarian
   H2a-XLR; the [Engineering Design Document](engineering-design-document.md) BOM specifies
   the Aquarian H2dM.
