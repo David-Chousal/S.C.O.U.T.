@@ -55,7 +55,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); wiring/PCB pending |
 | Firmware | 🟢 Unblocked — platform decided, ready to start Phase 1 ([`firmware/`](firmware/README.md)) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
-| Shore station | 🔴 Not started |
+| Shore station | 🔴 Not started — Raspberry Pi + LoRa, documented in [Shore Station](docs/engineering/shore-station.md) |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +

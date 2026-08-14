@@ -37,6 +37,7 @@ Technical design and component specification.
 | [Sensor Selection](engineering/sensor-selection.md) | Candidate sensors tiered V1 / V1.5 / future, with cost, interface, power draw, and vendor links |
 | [Sensor String Architecture](engineering/sensor-string-architecture.md) | Vertical multi-depth sensor string layout and placement rationale |
 | [On-Board CSV Data Schema](engineering/data-schema.md) | The microSD log format — columns, units, timestamps; the firmware ↔ shore-station/analytics contract |
+| [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 
 ## Research
 
