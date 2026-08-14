@@ -19,9 +19,22 @@ undefined without a climatology). See docs/analysis/telemetry-methodology.md.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
-from telemetry import run
+from telemetry import load_dir, run, run_fleet, summarize_fleet
+
+
+def _run_fleet(args) -> None:
+    mmm_by_buoy = json.loads(args.mmm_config.read_text()) if args.mmm_config else {}
+    fleet = run_fleet(args.source, mmm_by_buoy=mmm_by_buoy, default_mmm=args.mmm, out_dir=args.out)
+    summary = summarize_fleet(fleet)
+    print(f"fleet: {summary['n_buoys']} buoys")
+    for buoy_id, s in summary["buoys"].items():
+        alert = s["peak_alert"] or "—"
+        print(f"  {buoy_id}: {s['n_records']} rec, {s['completeness_pct']}% complete, "
+              f"temp {s['temp_trend']}, peak alert {alert}, {s['turbidity_events']} turb events")
+    print(f"outputs written : {args.out.resolve()}  (per-buoy dirs + fleet_summary.json)")
 
 
 def main() -> None:
@@ -32,10 +45,22 @@ def main() -> None:
     parser.add_argument("--dashboard", action="store_true", help="also render the PNG dashboard (needs matplotlib)")
     parser.add_argument("--web", type=Path, default=None, help="render the static GitHub Pages dashboard into this dir")
     parser.add_argument("--banner", default=None, help="notice shown atop the web dashboard (e.g. a sample-data label)")
+    parser.add_argument("--fleet", action="store_true", help="treat the source as many buoys; analyse each buoy_id separately")
+    parser.add_argument("--mmm-config", type=Path, default=None, help="fleet mode: JSON map buoy_id -> MMM (°C)")
     args = parser.parse_args()
+
+    if args.fleet:
+        _run_fleet(args)
+        return
 
     report = run(args.source, mmm=args.mmm, out_dir=args.out, dashboard=args.dashboard,
                  web_dir=args.web, web_banner=args.banner)
+
+    # A single-buoy run over a multi-buoy source silently blends buoys — warn loudly.
+    buoy_ids = {r.buoy_id for r in load_dir(args.source)} if args.source.is_dir() else {}
+    if len(buoy_ids) > 1:
+        print(f"WARNING: {len(buoy_ids)} buoys in the source but --fleet not set — "
+              "results blend buoys together. Re-run with --fleet.")
 
     qc = report.qc
     print(f"records         : {qc.n_records}  ({qc.completeness_pct}% complete)")
