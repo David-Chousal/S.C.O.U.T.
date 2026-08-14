@@ -37,7 +37,7 @@ Four tools. Each has exactly one job. Do not duplicate an artifact across two of
 | **GitHub** | Code, CAD, schematics, and the versioned source of truth for all documentation | ✅ via `git` + SSH |
 | **Linear** | Every unit of work: tasks, bugs, decisions to make, roadmap | ✅ via MCP |
 | **Notion** | Human-readable mirror of docs; where non-code teammates read and comment | ✅ via MCP |
-| **Granola** | Raw meeting capture — recordings, transcripts, live notes | ❌ **no connector** |
+| **Granola** | Raw meeting capture — recordings, transcripts, live notes | ✅ via MCP |
 
 **Links**
 
