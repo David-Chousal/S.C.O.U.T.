@@ -21,6 +21,8 @@ static const uint8_t SAMPLE_INTERVAL_MIN = 30;          // for the PCF8523 count
 static const uint32_t TRANSMIT_PERIOD_S = 86400;        // one LoRa packet per day (EDD §10)
 static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
+static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a cycle hangs
+                                                        // (SAMD21 max; a healthy cycle is a few s)
 
 /* ── Power thresholds ─────────────────────────────────────────────────────── */
 // Skip LoRa TX below this pack voltage. Provisional — depends on the final battery/charging
