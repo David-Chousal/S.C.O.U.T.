@@ -80,6 +80,12 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     init; a hang resets the buoy so it recovers on its own. Disabled during standby (its
     timeout is far shorter than the 30-min interval) and re-armed on wake. A watchdog reset is
     detected at boot (`PM->RCAUSE`) and logged.
+  - **Adaptive transmission (graceful degradation)** — a power mode derived from battery
+    voltage (`scout_power_mode`): **NORMAL** (all sensing, transmit each interval) →
+    **CONSERVE** (audio off, transmit ×`TRANSMIT_CONSERVE_FACTOR` less often) → **CRITICAL**
+    (temperature + logging only; no turbidity, audio, or TX). Core temperature always logs.
+    The `POWER_CONSERVE` flag marks throttled rows so shore can see it. Pure logic in
+    `scout_scheduler`, unit-tested; thresholds in `config.h` (provisional, ADR-0002).
   - **Retained state across resets** — `record_seq` and `last_tx_epoch` live in a no-init RAM
     section (magic-guarded) that the C startup doesn't clear, so a watchdog/system reset keeps
     the counter monotonic and doesn't re-send the daily packet. RAM-based: a full power loss

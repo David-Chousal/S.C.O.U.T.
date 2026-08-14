@@ -74,7 +74,8 @@ recurring `WATCHDOG_RESET` means a cycle is hanging. Matches `SOH_BITS` in the p
 
 ### `flags` vocabulary (v1)
 
-`SD_RETRY` · `TEMP_TIMEOUT` · `TURBIDITY_RANGE` · `BATT_LOW_SKIP_TX` · `RTC_LOST` — extend as
+`SD_RETRY` · `TEMP_TIMEOUT` · `TURBIDITY_RANGE` · `BATT_LOW_SKIP_TX` · `RTC_LOST` ·
+`POWER_CONSERVE` (battery-saving mode: audio off, transmit throttled) — extend as
 needed; keep them SCREAMING_SNAKE_CASE and documented here.
 
 ## Example
