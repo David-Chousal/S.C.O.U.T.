@@ -10,6 +10,7 @@
  * Scaffold status: sensor/SD/LoRa/RTC paths are wired to their drivers; the audio subsystem
  * and true SAMD21 standby sleep are marked TODO for Phase 1–2 bring-up (see notes inline).
  */
+#include <Adafruit_SleepyDog.h>
 #include <Arduino.h>
 #include <ArduinoLowPower.h>
 
@@ -40,6 +41,7 @@ static LoraLink g_lora;
 static bool g_rtc_ok = false;
 static bool g_sd_ok = false;
 static bool g_lora_ok = false;
+static bool g_watchdog_reset = false;  // set if the last reset was the watchdog firing
 
 // ── flag-name formatting (matches the data-schema flags vocabulary) ──────────
 static void append_flag(char *buf, size_t cap, bool &first, const char *name) {
@@ -65,6 +67,9 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
 static void on_rtc_wake() {}
 
 static void enter_deep_sleep() {
+    // The watchdog must be OFF during the 30-min standby, or it would reset us mid-sleep — its
+    // max timeout (~16 s) is far shorter than the sample interval. It's re-armed at loop start.
+    Watchdog.disable();
     g_lora.sleep();
     Serial.flush();
     // SAMD21 standby (~microamps) until the PCF8523 countdown-timer INT pulls PIN_RTC_INT low.
@@ -77,6 +82,15 @@ static void enter_deep_sleep() {
 
 void setup() {
     Serial.begin(115200);
+
+    // Did the watchdog just reset us? (SAMD21 Power Manager reset-cause register.) Useful for
+    // State-of-Health — a recurring watchdog reset means a cycle is hanging.
+    g_watchdog_reset = PM->RCAUSE.bit.WDT;
+
+    // Guard initialization too — a hung driver init shouldn't brick the buoy. loop() re-arms
+    // it each cycle and disables it before the long standby sleep.
+    Watchdog.enable(WDT_TIMEOUT_MS);
+
     pinMode(PIN_SENSOR_GATE, OUTPUT);
     digitalWrite(PIN_SENSOR_GATE, LOW);
 
@@ -98,10 +112,23 @@ void setup() {
     }
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
+
+    Serial.print("boot: watchdog_reset=");
+    Serial.print(g_watchdog_reset ? "yes" : "no");
+    Serial.print(" rtc=");
+    Serial.print(g_rtc_ok ? "ok" : "FAIL");
+    Serial.print(" sd=");
+    Serial.print(g_sd_ok ? "ok" : "FAIL");
+    Serial.print(" lora=");
+    Serial.println(g_lora_ok ? "ok" : "FAIL");
     (void)startup_flags;  // folded into the first record below
 }
 
 void loop() {
+    // Re-arm the watchdog for this cycle (it was disabled for the standby sleep). If any step
+    // below hangs past WDT_TIMEOUT_MS, the buoy resets and recovers on its own.
+    Watchdog.enable(WDT_TIMEOUT_MS);
+
     uint16_t flags = 0;
     uint32_t now = g_rtc_ok ? g_rtc.nowEpoch() : 0;
     if (!g_rtc_ok) {
@@ -169,6 +196,9 @@ void loop() {
             g_sd.appendLine(date_ymd, CSV_HEADER, line);  // one retry
         }
     }
+
+    // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s).
+    Watchdog.reset();
 
     // 7. Transmit the summarized packet once per day, if the battery allows.
     if (!battery_ok) {
