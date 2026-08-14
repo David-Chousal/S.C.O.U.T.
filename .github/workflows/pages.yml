@@ -52,7 +52,7 @@ jobs:
             --mmm 27.6 \
             --out data/processed \
             --web ../site \
-            --banner "SAMPLE DATA — simulated telemetry for demonstration; not a live deployment."
+            --banner "Sample data: simulated telemetry for demonstration, not a live deployment."
 
       - uses: actions/upload-pages-artifact@v3
         with:
