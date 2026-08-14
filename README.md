@@ -233,5 +233,5 @@ rather than silently reconciled, since resolving each requires a team decision.
 
 ## License
 
-No license has been selected yet. Until one is added, default copyright applies and the code
-is not licensed for reuse. Worth resolving before any public release.
+Released under the [MIT License](LICENSE). Copyright (c) 2026 David Chousal Cantu,
+Isabella Rodriguez, John Ryan Myrdal.
