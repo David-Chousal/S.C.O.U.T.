@@ -51,6 +51,9 @@ firmware/
 
 ## Notes
 
+- The on-board CSV log format is specified in
+  [docs/engineering/data-schema.md](../docs/engineering/data-schema.md) — the contract between
+  this firmware (writer) and the shore station / `analytics/` pipeline (readers).
 - The packet format is the contract between this directory and the shore station. Define it
   once, in a header shared with (or mirrored by) the receiver.
 - Keep the packet encoder free of hardware dependencies so it can be unit tested off-target.
