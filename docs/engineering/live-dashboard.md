@@ -35,10 +35,11 @@ data changes. That makes a **static site** the right tool:
 - **Pages are self-contained and same-origin.** Inline design-system CSS and inline SVG
   graphics, with self-hosted fonts and images, and no CDNs or third-party requests. The
   **Analytics** page is script-free and held to a no-external-reference contract enforced by
-  [`test_web.py`](../../analytics/telemetry/tests/test_web.py); Technology, Science and About are
-  script-free too. The **Home** page is the one exception: it loads a self-hosted Lottie runtime
-  and animation (same-origin JavaScript) for the hero fish, so it is not script-free, though it
-  still makes no external request. The site is a single light (warm sand) theme.
+  [`test_web.py`](../../analytics/telemetry/tests/test_web.py). The other pages (Home,
+  Technology, Science, About) load a self-hosted Lottie runtime for the ambient animations
+  (Home: the hero fish and footer seaweed; the rest: footer seaweed), so they run same-origin
+  JavaScript, but they still make no external request. The site is a single light (warm sand)
+  theme.
 
 A live backend (Flask/FastAPI on the Pi, or a cloud host) would only be worth it for
 sub-daily, interactive, or multi-user-write use cases — out of scope for a daily packet.

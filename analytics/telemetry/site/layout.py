@@ -57,6 +57,23 @@ def header(base: str, active: str) -> str:
     )
 
 
+def _lottie_scripts(base: str) -> str:
+    return (
+        f'<script defer src="{base}assets/lottie/lottie.min.js"></script>'
+        f'<script defer src="{base}assets/lottie/init.js"></script>'
+    )
+
+
+def _footer_seaweed(base: str) -> str:
+    src = f"{base}assets/lottie/seaweed.json"
+    return (
+        '<div class="footer-seaweed" aria-hidden="true">'
+        f'<span class="weed weed-a" data-lottie="{src}"></span>'
+        f'<span class="weed weed-b" data-lottie="{src}"></span>'
+        "</div>"
+    )
+
+
 def footer(base: str, *, external: bool = True) -> str:
     explore = "".join(
         f'<li><a href="{_href(base, slug)}">{label}</a></li>'
@@ -79,8 +96,9 @@ def footer(base: str, *, external: bool = True) -> str:
             "</ul></div>"
         )
     )
+    seaweed = _footer_seaweed(base) if external else ""
     return (
-        '<footer class="site-footer"><div class="wrap footer-grid">'
+        f'<footer class="site-footer">{seaweed}<div class="wrap footer-grid">'
         '<div class="footer-brand">'
         f"{_brand(base)}"
         "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, solar-powered nearshore "
@@ -129,5 +147,8 @@ def document(
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
         f"{footer(base, external=external)}\n"
+        # Self-hosted Lottie runtime for the ambient animations. External pages only; the
+        # Analytics page stays script-free and self-contained.
+        f"{_lottie_scripts(base) if external else ''}"
         "</body>\n</html>\n"
     )

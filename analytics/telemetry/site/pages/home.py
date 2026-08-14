@@ -22,7 +22,8 @@ def _hero(ctx: SiteContext) -> str:
     hero_media, hero_credit = imagery.hero(ctx.base, ctx.img_dir)
     return (
         '<section class="hero">'
-        '<div class="hero-fish" id="hero-fish" aria-hidden="true"></div>'
+        f'<div class="hero-fish" id="hero-fish" aria-hidden="true" '
+        f'data-lottie="{ctx.base}assets/lottie/fish.json"></div>'
         '<div class="wrap">'
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
@@ -120,6 +121,7 @@ def _habitat(ctx: SiteContext) -> str:
         + "</div>",
         cls="section-sm",
         sid="habitat",
+        wrap="wrap wrap-wide",
     )
 
 
@@ -177,8 +179,4 @@ def body(ctx: SiteContext) -> str:
         + _habitat(ctx)
         + _how()
         + _live_band(ctx)
-        # Self-hosted Lottie runtime + init for the hero fish (Home only). Deferred so it does
-        # not block the hero's first paint. Other pages stay script-free.
-        + '<script defer src="assets/lottie/lottie.min.js"></script>'
-        + '<script defer src="assets/lottie/init.js"></script>'
     )

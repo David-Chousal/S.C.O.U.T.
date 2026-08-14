@@ -1,15 +1,18 @@
-/* Home hero ambient fish. Self-hosted; runs only on the Home page. Respects reduced-motion,
-   and no-ops if the runtime or container is missing (so the page degrades to no animation). */
+/* Ambient Lottie animations (hero fish, footer seaweed). Self-hosted; loaded on every page
+   except the self-contained Analytics page. Each container carries a data-lottie path. Respects
+   reduced-motion, and no-ops if the runtime is unavailable so the page degrades to no animation. */
 (function () {
-  var el = document.getElementById('hero-fish');
-  if (!el || typeof lottie === 'undefined') return;
+  if (typeof lottie === 'undefined') return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  lottie.loadAnimation({
-    container: el,
-    renderer: 'svg',
-    loop: true,
-    autoplay: true,
-    path: 'assets/lottie/fish.json',
-    rendererSettings: { progressiveLoad: true }
-  });
+  var nodes = document.querySelectorAll('[data-lottie]');
+  for (var i = 0; i < nodes.length; i++) {
+    lottie.loadAnimation({
+      container: nodes[i],
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: nodes[i].getAttribute('data-lottie'),
+      rendererSettings: { progressiveLoad: true }
+    });
+  }
 })();
