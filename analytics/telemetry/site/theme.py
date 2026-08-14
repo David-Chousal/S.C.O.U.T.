@@ -185,15 +185,16 @@ main figure{margin:0}
 .site-header{position:sticky;top:0;z-index:50;
   background:color-mix(in srgb,var(--bg) 82%,transparent);
   backdrop-filter:saturate(1.3) blur(16px);-webkit-backdrop-filter:saturate(1.3) blur(16px)}
-.nav{display:flex;align-items:center;gap:1.4rem;min-height:80px}
-.brand{display:inline-flex;align-items:center;gap:0.7rem;color:var(--ink);margin-inline-end:auto}
+/* Three-column header: brand left, nav menu centred, social icons right. */
+.nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:80px}
+.brand{display:inline-flex;align-items:center;gap:0.7rem;color:var(--ink);justify-self:start}
 .brand:hover{opacity:1}
 .brand .mark{width:30px;height:30px;flex:none}
 .brand-txt{display:flex;flex-direction:column;line-height:1.1}
 .brand-txt b{font-weight:700;letter-spacing:0.02em;font-size:1rem}
 .brand-txt span{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
   margin-top:2px}
-.nav-links{display:flex;align-items:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
+.nav-links{display:flex;align-items:center;justify-self:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
   list-style:none;margin:0;padding:0}
 .nav-links a{color:var(--muted);font-size:var(--text-micro);font-weight:500;
   letter-spacing:var(--track);text-transform:uppercase;padding:0.4rem 0;position:relative}
@@ -201,14 +202,14 @@ main figure{margin:0}
 .nav-links a[aria-current=page]{color:var(--ink)}
 .nav-links .nav-mark{position:absolute;left:0;right:0;bottom:-4px;height:1.5px;border-radius:2px;
   background:var(--accent)}
-.nav-social{display:flex;align-items:center;gap:1.1rem}
+.nav-social{display:flex;align-items:center;justify-self:end;gap:1.1rem}
 .nav-social a{color:var(--muted);display:inline-flex;transition:color var(--dur) var(--ease)}
 .nav-social a:hover{color:var(--accent);opacity:1}
 .nav-social svg{width:18px;height:18px}
 /* Mobile nav toggle — hidden on desktop, where the links show inline. */
 .nav-toggle,.nav-burger{display:none}
 @media(max-width:720px){
-  .nav{gap:0.8rem;min-height:64px}
+  .nav{display:flex;justify-content:space-between;gap:0.8rem;min-height:64px}
   /* Hamburger button (a <label> driving the hidden checkbox). */
   .nav-burger{display:inline-flex;position:relative;width:30px;height:30px;cursor:pointer;z-index:2}
   .nav-burger span{position:absolute;left:5px;right:5px;top:50%;height:2px;margin-top:-1px;
@@ -235,6 +236,35 @@ main figure{margin:0}
   .nav-links .nav-mark{display:none}
   .nav-social{display:none}
 }
+
+/* ── Doc layout: a sticky left section sidebar for the long content pages ─────── */
+.doc{max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+/* The per-section .wrap is neutralised inside .doc so the grid (not a second centred column)
+   controls width; the .doc container supplies the gutter. */
+.doc-body .wrap{max-width:none;margin-inline:0;padding-inline:0}
+.doc-body [id]{scroll-margin-top:96px}
+.doc-nav{display:none}
+@media(min-width:1000px){
+  .doc{display:grid;grid-template-columns:186px minmax(0,1fr);gap:clamp(2rem,1rem + 3vw,5rem);
+    align-items:start}
+  .doc-body{min-width:0}
+  .doc-nav{display:block;position:sticky;top:96px;align-self:start;
+    max-height:calc(100vh - 120px);overflow-y:auto}
+}
+.doc-nav-title{font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:var(--track);
+  text-transform:uppercase;color:var(--faint);margin:0 0 1rem}
+.doc-nav-list{list-style:none;margin:0;padding:0;position:relative}
+.doc-nav-list::before{content:"";position:absolute;left:3px;top:0.9rem;bottom:0.9rem;width:1px;
+  background:var(--line)}
+.doc-nav-link{display:flex;align-items:center;gap:0.8rem;padding:0.42rem 0;
+  font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:0.02em;
+  color:var(--faint);transition:color var(--dur) var(--ease)}
+.doc-nav-link:hover{color:var(--muted);opacity:1}
+.doc-nav-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--bg);
+  box-shadow:0 0 0 1px var(--line-2);position:relative;z-index:1;
+  transition:background 0.2s var(--ease),box-shadow 0.2s var(--ease)}
+.doc-nav-link.is-active{color:var(--ink)}
+.doc-nav-link.is-active .doc-nav-dot{background:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;

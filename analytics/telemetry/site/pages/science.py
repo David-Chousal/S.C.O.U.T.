@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import assets, components as c
+from .. import assets, components as c, docnav
 from ..context import SiteContext
 
 TITLE = "Science · S.C.O.U.T."
@@ -12,6 +12,17 @@ DESCRIPTION = (
     "reef bioacoustics (ACI, BI, NDSI, H, ADI and an Acoustic Quality Score), and Mann-Kendall "
     "trends, with their limitations."
 )
+
+# (section id, sidebar label) — ids must match the `sid=` on each section below.
+_NAV = [
+    ("tracks", "What it tracks"),
+    ("thermal", "Thermal stress"),
+    ("alerts", "Alert levels"),
+    ("soundscape", "Soundscapes"),
+    ("pipeline", "Pipeline"),
+    ("caveats", "Limitations"),
+    ("references", "References"),
+]
 
 _REPO = "https://github.com/David-Chousal/S.C.O.U.T."
 _DOC_ACOUSTIC = f"{_REPO}/blob/main/docs/analysis/coral-bioacoustic-methodology.md"
@@ -103,6 +114,7 @@ def _tracks() -> str:
             "Each signal, its sensor, and the metrics the pipeline produces.",
             ["Signal", "Sensor", "What S.C.O.U.T. derives"], _TRACK_ROWS)
         + "</div>",
+        sid="tracks",
     )
 
 
@@ -131,6 +143,7 @@ def _thermal() -> str:
         "time.</figcaption></figure>"
         "</div>",
         cls="section-sm",
+        sid="thermal",
     )
 
 
@@ -145,6 +158,7 @@ def _alerts() -> str:
             ["Level", "Condition", "Meaning"], _ALERT_ROWS)
         + "</div>",
         cls="section-sm",
+        sid="alerts",
     )
 
 
@@ -182,6 +196,7 @@ def _soundscape() -> str:
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Full bioacoustic methodology</a></p>'
         "</div></div>",
         cls="section-sm",
+        sid="soundscape",
     )
 
 
@@ -209,6 +224,7 @@ def _pipeline() -> str:
                      "executes and is unit-tested on a bare Raspberry Pi.")
         + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
         cls="section-sm",
+        sid="pipeline",
     )
 
 
@@ -235,6 +251,7 @@ def _caveats() -> str:
         "against a single reference reef. S.C.O.U.T. has not yet recorded its own audio.</p>"
         "</div></div>",
         cls="section-sm",
+        sid="caveats",
     )
 
 
@@ -260,11 +277,12 @@ def _refs() -> str:
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Coral bioacoustic methodology</a></p>'
         "</div></div>",
         cls="section-sm",
+        sid="references",
     )
 
 
 def body(ctx: SiteContext) -> str:
-    return (
+    content = (
         c.page_header("Science",
                       "The science",
                       "S.C.O.U.T.'s readings only mean something in the context of established reef "
@@ -281,3 +299,4 @@ def body(ctx: SiteContext) -> str:
                 '<a class="btn btn-primary" href="../analytics/">Open the dashboard</a>'
                 '<a class="btn" href="../technology/">How the data gets there</a>')
     )
+    return docnav.page(title="Science", items=_NAV, content=content, base=ctx.base)

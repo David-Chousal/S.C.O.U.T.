@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, drawings
+from .. import components as c, docnav, drawings
 from ..context import SiteContext
 
 TITLE = "Technology · S.C.O.U.T."
@@ -11,6 +11,18 @@ DESCRIPTION = (
     "unattended for a year, an 82-byte daily LoRa packet to a Raspberry Pi shore station, and a "
     "self-contained telemetry pipeline that publishes the dashboard."
 )
+
+# (section id, sidebar label) — ids must match the `sid=` on each section below.
+_NAV = [
+    ("how", "Data path"),
+    ("cycle", "Operating cycle"),
+    ("subsystems", "Subsystems"),
+    ("platform", "Platform"),
+    ("packet", "Daily packet"),
+    ("link", "Shore link"),
+    ("mechanical", "Mechanical"),
+    ("references", "References"),
+]
 
 _REPO = "https://github.com/David-Chousal/S.C.O.U.T."
 _DOC = f"{_REPO}/blob/main/docs"
@@ -38,7 +50,7 @@ _REFS_DOCS = [
 
 def _architecture() -> str:
     # The data-path section is shared verbatim with the Home page via components.data_path(),
-    # so the two never drift.
+    # so the two never drift. Its section id is "how" (see the sidebar item below).
     return c.data_path()
 
 
@@ -73,6 +85,7 @@ def _cycle() -> str:
         ])
         + "</div></div>",
         cls="section-sm",
+        sid="cycle",
     )
 
 
@@ -104,6 +117,7 @@ def _subsystems() -> str:
         c.head_block("Subsystems", "The subsystems")
         + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
         cls="section-sm",
+        sid="subsystems",
     )
 
 
@@ -134,6 +148,7 @@ def _platform() -> str:
         ])
         + "</div></div>",
         cls="section-sm",
+        sid="platform",
     )
 
 
@@ -160,6 +175,7 @@ def _packet() -> str:
             ("Schema", "Versioned; byte-identical buoy ↔ shore codec"),
         ])
         + "</div></div>",
+        sid="packet",
     )
 
 
@@ -194,6 +210,7 @@ def _link() -> str:
         ])
         + "</div></div></div>",
         cls="section-sm",
+        sid="link",
     )
 
 
@@ -218,6 +235,7 @@ def _mechanical(ctx: SiteContext) -> str:
             sub="John Ryan Myrdal's CAD for the flotation collar and the turbidity-sensor "
                 "housing, printed in PETG. Each drawing links to its full sheet."),
         cls="section-sm",
+        sid="mechanical",
     )
 
 
@@ -241,11 +259,12 @@ def _refs() -> str:
         f'<ul style="line-height:1.8">{docs}</ul></div>'
         "</div>",
         cls="section-sm",
+        sid="references",
     )
 
 
 def body(ctx: SiteContext) -> str:
-    return (
+    content = (
         c.page_header("Technology",
                       "How the buoy works",
                       "S.C.O.U.T. runs for a long time because it spends most of its time asleep. One "
@@ -263,3 +282,4 @@ def body(ctx: SiteContext) -> str:
                 '<a class="btn btn-primary" href="../science/">Read the science</a>'
                 '<a class="btn" href="../analytics/">See live data</a>')
     )
+    return docnav.page(title="Technology", items=_NAV, content=content, base=ctx.base)
