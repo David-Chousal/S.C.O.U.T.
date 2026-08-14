@@ -46,3 +46,18 @@
   setTimeout(spawnFish, 4000);
   setInterval(spawnFish, INTERVAL);
 })();
+
+/* Same-page link guard. Clicking a nav item (or the logo) for the page you are already on
+   should stay put — not reload or run the cross-document page transition. In-page #anchor
+   links (e.g. the section sidebar) and links to other pages are left to behave normally. */
+(function () {
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    var url;
+    try { url = new URL(a.getAttribute('href'), location.href); } catch (err) { return; }
+    if (url.origin === location.origin && url.pathname === location.pathname && !url.hash) {
+      e.preventDefault();
+    }
+  });
+})();
