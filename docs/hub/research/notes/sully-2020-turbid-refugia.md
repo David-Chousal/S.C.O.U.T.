@@ -1,6 +1,6 @@
 # Sully & van Woesik 2020 — Turbid reefs moderate coral bleaching
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`sully-2020`](../sources.md#turbidity-sedimentation--water-quality) · DOI [10.1111/gcb.14948](https://doi.org/10.1111/gcb.14948) · 🔒 copyrighted (Wiley)
 
 **What it says.** A Bayesian analysis of 3,694 global sites finds that **moderate turbidity buffers

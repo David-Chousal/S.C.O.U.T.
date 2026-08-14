@@ -1,6 +1,6 @@
 # Liu et al. 2014 — NOAA Coral Reef Watch 5 km Degree Heating Weeks
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`liu-2014`](../sources.md#thermal-stress--coral-bleaching-dhw) · DOI [10.3390/rs61111579](https://doi.org/10.3390/rs61111579) · 🔓 open access (MDPI)
 
 **What it says.** Defines NOAA Coral Reef Watch's operational satellite thermal-stress chain at 5 km
