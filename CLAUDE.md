@@ -166,6 +166,10 @@ Discipline label (**always exactly one**, so each lead can filter to their own w
 | `geng` | Hull, enclosure, mooring, deployment | John Ryan Myrdal |
 | `cross-discipline` | Spans two or more, or is a team-level decision | Needs coordination |
 
+Workflow label: **`On Deck`** — queued and ready to pick up next, nothing blocking it. Use it
+to mark the short list of what comes next without moving issues out of `Backlog`. Remove it
+when the issue moves to `In Progress`.
+
 ### Priority
 
 `Urgent` only for something blocking another person right now. `High` for the current phase.
