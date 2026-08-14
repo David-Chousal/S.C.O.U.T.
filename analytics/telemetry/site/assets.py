@@ -277,8 +277,7 @@ def datapath_svg() -> str:
     node = (
         lambda x, label, sub: (
             f'<g transform="translate({x} 40)">'
-            f'<rect x="-52" y="-30" width="104" height="60" rx="12" fill="var(--surface)" '
-            f'stroke="var(--line-2)"/>'
+            f'<rect x="-52" y="-30" width="104" height="60" rx="12" fill="var(--surface-2)"/>'
             f'<text x="0" y="-4" text-anchor="middle" font-family="var(--font)" font-size="13" '
             f'fill="var(--ink)">{label}</text>'
             f'<text x="0" y="14" text-anchor="middle" font-family="var(--font-sans)" font-size="9" '

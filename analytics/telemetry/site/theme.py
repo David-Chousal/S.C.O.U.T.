@@ -75,9 +75,11 @@ _CSS = """
   --accent-soft:#dfeae6;
   --coral:#c76b52;
   --on-accent:#fbf9f5;
-  --ring:0 0 0 1px rgba(42,37,32,0.06);
-  --shadow-1:0 0 0 1px rgba(42,37,32,0.05), 0 14px 40px -24px rgba(42,37,32,0.28);
-  --shadow-2:0 0 0 1px rgba(42,37,32,0.05), 0 30px 70px -34px rgba(42,37,32,0.40);
+  --ring:0 0 0 1px rgba(42,37,32,0.06);   /* kept only for the buoy render-slot */
+  /* No hairline ring on cards: differentiation comes from the lighter surface + a soft,
+     eased-back drop shadow. */
+  --shadow-1:0 12px 32px -22px rgba(42,37,32,0.18);
+  --shadow-2:0 22px 52px -30px rgba(42,37,32,0.26);
 
   /* Chart + alert semantics (light) */
   --c-temp:#c26647;
@@ -307,7 +309,7 @@ main figure{margin:0}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}
 
 /* accent (soft, warm) card for CTAs & the live band */
-.card-accent{background:var(--accent-soft);box-shadow:var(--ring)}
+.card-accent{background:var(--accent-soft);box-shadow:var(--shadow-1)}
 .card-ink{background:var(--ink);color:var(--bg);box-shadow:none}
 .card-ink h2,.card-ink h3{color:var(--bg)}
 .card-ink p{color:color-mix(in srgb,var(--bg) 78%,transparent)}
@@ -393,7 +395,7 @@ main figure{margin:0}
 @media(max-width:560px){.spec-row{grid-template-columns:1fr;gap:0.2rem}}
 
 /* ── Data table ───────────────────────────────────────────────────────────── */
-.table-scroll{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--ring);
+.table-scroll{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow-1);
   background:var(--surface);-webkit-overflow-scrolling:touch}
 table.data{border-collapse:collapse;width:100%;min-width:520px;font-size:0.94rem}
 table.data caption{text-align:left;padding:1rem 1.2rem 0;color:var(--muted);
@@ -438,7 +440,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* ── Chips ────────────────────────────────────────────────────────────────── */
 .chip{display:inline-flex;align-items:center;gap:0.45rem;font-size:var(--text-micro);
   font-weight:500;letter-spacing:0.02em;padding:0.3rem 0.8rem;border-radius:var(--radius-pill);
-  color:var(--muted);box-shadow:var(--ring)}
+  color:var(--muted);background:color-mix(in srgb,currentColor 12%,var(--surface))}
 .chip::before{content:"";width:0.5rem;height:0.5rem;border-radius:50%;background:currentColor}
 .chip.ok{color:var(--a-nostress)}.chip.info{color:var(--accent)}
 
@@ -483,7 +485,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 
 /* ── Sample-data banner (Analytics) ───────────────────────────────────────── */
 .banner{max-width:1140px;margin:1.6rem auto 0;padding:0.9rem 1.3rem;border-radius:var(--radius);
-  background:var(--surface);box-shadow:var(--ring);color:var(--muted);font-size:var(--text-small)}
+  background:var(--surface);box-shadow:var(--shadow-1);color:var(--muted);font-size:var(--text-small)}
 .banner b{color:var(--coral)}
 
 /* ── Page header (inner pages) ────────────────────────────────────────────── */
@@ -507,7 +509,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
   gap:clamp(0.8rem,0.4rem + 0.8vw,1.2rem);margin:0 0 2.4rem}
 .stat{background:var(--surface);border-radius:var(--radius);padding:1.1rem 1.25rem;
-  box-shadow:var(--ring)}
+  box-shadow:var(--shadow-1)}
 .stat .stat-label{color:var(--faint);font-size:var(--text-micro);letter-spacing:0.08em;
   text-transform:uppercase;font-weight:500}
 .stat .stat-value{font-size:1.55rem;font-weight:560;margin:0.4rem 0 0;line-height:1.1;
@@ -552,7 +554,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .buoy-head h3{font-size:1.15rem;font-weight:560;letter-spacing:-0.01em;color:var(--ink)}
 .alert-badge{font-size:var(--text-micro);font-weight:560;letter-spacing:0.05em;
   text-transform:uppercase;white-space:nowrap;padding:0.3rem 0.72rem;border-radius:var(--radius-pill);
-  box-shadow:var(--ring);background:color-mix(in srgb,currentColor 12%,var(--surface))}
+  background:color-mix(in srgb,currentColor 12%,var(--surface))}
 .spark{width:100%;height:56px;display:block}
 .spark-empty{height:56px;border-radius:var(--radius);background:var(--surface-2)}
 .tile-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem 1rem;margin:0}
