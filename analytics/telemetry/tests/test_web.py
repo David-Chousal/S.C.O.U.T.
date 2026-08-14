@@ -7,6 +7,7 @@ from pathlib import Path
 
 from telemetry import analyze
 from telemetry.model import TelemetryRecord
+from telemetry.site import theme
 from telemetry.web import render_html, write_site
 
 _T0 = datetime(2027, 3, 1, tzinfo=timezone.utc)
@@ -94,6 +95,41 @@ class WebDashboardTest(unittest.TestCase):
             body = index.read_text()
             self.assertIn('href="telemetry_daily.csv"', body)
             self.assertIn("<svg", body)  # charts rendered inline
+
+    def test_layout_margin_invariants(self):
+        """Guard the layout-margin rules whose absence caused visible bugs (folded into this one
+        check so CI stays a single test): content figures (the pill cards, hero) are ``<figure>``
+        elements carrying the UA default ``margin:1em 40px`` — it must be reset, and the reset
+        must stay scoped to ``main`` so it never touches the header/footer; the pill cards must
+        keep ``width:100%`` so each fills its grid track (otherwise they mis-align); and the
+        nearshore pill-row gap is pinned to the value we set."""
+        import re
+
+        css = re.sub(r"\s+", " ", theme.styles())          # keep single spaces: `main figure`
+        tight = css.replace(" ", "")
+
+        # 1. content-figure UA margin is reset, scoped to main.
+        self.assertRegex(
+            css, r"main figure\s*\{\s*margin:\s*0\s*\}",
+            "content figures need `main figure{margin:0}` (else they inherit margin:1em 40px "
+            "and mis-align)")
+        # 2. …and never as a global `figure{...margin...}` that would reach header/footer.
+        for selector, decls in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            if "margin" in decls:
+                self.assertNotIn(
+                    "figure", {s.strip() for s in selector.split(",")},
+                    "the figure margin reset must stay scoped to `main figure`, never a global "
+                    "`figure{}` rule")
+        # 3. pill cards fill their grid track (keeps them centred).
+        pill = re.search(r"\.pill\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(pill, ".pill rule not found in the design-system CSS")
+        self.assertIn(
+            "width:100%", pill.group(1).replace(" ", ""),
+            ".pill must keep width:100% so it fills its grid track and stays centred")
+        # 4. the nearshore pill gap stays as set this session.
+        self.assertRegex(
+            tight, r"\.pill-row\{[^{}]*gap:9px",
+            ".pill-row gap must stay 9px")
 
 
 if __name__ == "__main__":
