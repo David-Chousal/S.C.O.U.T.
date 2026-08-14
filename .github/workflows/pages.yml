@@ -1,0 +1,69 @@
+name: Telemetry dashboard (GitHub Pages)
+
+# Regenerates the static telemetry dashboard and deploys it to GitHub Pages.
+#
+# Data source today: the shore LoRa simulator (no hardware, no committed data) → clearly
+# labeled SAMPLE DATA. When the real shore station is running, point the "Generate" step at
+# the received CSVs (or have the Pi run analytics/run_telemetry.py --web and push instead).
+#
+# One-time setup: repo Settings → Pages → Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "analytics/**"
+      - "shore/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 * * * *"  # hourly refresh (sample data until the buoy is live)
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel an in-progress deploy; let queued runs settle.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate sample telemetry (shore simulator → CSVs)
+        working-directory: shore
+        run: |
+          # 30 days at the 30-min cadence, entirely stdlib — no pip install needed.
+          python scripts/run_loopback.py --count 1440 --out data
+
+      - name: Build the dashboard (QC → DHW → trends → static site)
+        working-directory: analytics
+        run: |
+          python run_telemetry.py \
+            --source ../shore/data \
+            --mmm 27.6 \
+            --out data/processed \
+            --web ../site \
+            --banner "SAMPLE DATA — simulated telemetry for demonstration; not a live deployment."
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

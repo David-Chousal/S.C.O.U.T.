@@ -126,8 +126,13 @@ def render_html(
     *,
     title: str = "S.C.O.U.T. — Live Telemetry",
     generated_at: datetime | None = None,
+    banner: str | None = None,
 ) -> str:
-    """Render the full self-contained dashboard HTML document."""
+    """Render the full self-contained dashboard HTML document.
+
+    ``banner`` renders a prominent notice above the header — use it to label sample/simulated
+    or stale data so a public page can't be mistaken for a live deployment.
+    """
     generated_at = generated_at or datetime.now(timezone.utc)
     daily = report.daily
     days = [d.day for d in daily]
@@ -186,8 +191,10 @@ def render_html(
         f'<section class="panel"><h2>{html.escape(t)}</h2>{svg}</section>' for t, svg in panels
     )
 
+    banner_html = f'<div class="banner">{html.escape(banner)}</div>' if banner else ""
     return _PAGE_TEMPLATE.format(
         title=html.escape(title),
+        banner=banner_html,
         generated=generated_at.strftime("%Y-%m-%d %H:%M UTC"),
         span=html.escape(span),
         cards="".join(cards),
@@ -202,6 +209,7 @@ def write_site(
     *,
     title: str = "S.C.O.U.T. — Live Telemetry",
     generated_at: datetime | None = None,
+    banner: str | None = None,
 ) -> Path:
     """Write ``index.html`` plus the raw daily CSV and summary JSON (for download links)."""
     out_dir = Path(out_dir)
@@ -209,7 +217,7 @@ def write_site(
     write_daily_csv(report, out_dir / "telemetry_daily.csv")
     write_summary_json(report, out_dir / "telemetry_summary.json")
     index = out_dir / "index.html"
-    index.write_text(render_html(report, title=title, generated_at=generated_at))
+    index.write_text(render_html(report, title=title, generated_at=generated_at, banner=banner))
     return index
 
 
@@ -242,9 +250,15 @@ _PAGE_TEMPLATE = """<!doctype html>
   .chart .ax {{ fill:var(--muted); font-size:9px; }}
   footer {{ max-width:900px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:.8rem; }}
   a {{ color:#2980b9; }}
+  .banner {{ max-width:900px; margin:16px auto 0; padding:10px 14px; border-radius:8px;
+    background:#fff4e5; color:#7a4b00; border:1px solid #f0c987; font-size:.85rem; font-weight:600; }}
+  @media (prefers-color-scheme: dark) {{
+    .banner {{ background:#3a2a10; color:#f3c98b; border-color:#6b4e1e; }}
+  }}
 </style>
 </head>
 <body>
+{banner}
 <header>
   <h1>{title}</h1>
   <div class="meta">Generated {generated} · data span {span} · {mmm}</div>

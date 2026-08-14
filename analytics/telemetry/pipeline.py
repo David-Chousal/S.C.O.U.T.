@@ -167,6 +167,7 @@ def run(
     out_dir: str | Path = "data/processed",
     dashboard: bool = False,
     web_dir: str | Path | None = None,
+    web_banner: str | None = None,
 ) -> TelemetryReport:
     """Load from a file or directory, analyze, and write outputs.
 
@@ -187,5 +188,5 @@ def run(
     if web_dir is not None:
         from .web import write_site  # local import; stdlib only
 
-        write_site(report, web_dir)
+        write_site(report, web_dir, banner=web_banner)
     return report

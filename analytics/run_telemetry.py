@@ -31,9 +31,11 @@ def main() -> None:
     parser.add_argument("--out", type=Path, default=Path("data/processed"), help="output directory")
     parser.add_argument("--dashboard", action="store_true", help="also render the PNG dashboard (needs matplotlib)")
     parser.add_argument("--web", type=Path, default=None, help="render the static GitHub Pages dashboard into this dir")
+    parser.add_argument("--banner", default=None, help="notice shown atop the web dashboard (e.g. a sample-data label)")
     args = parser.parse_args()
 
-    report = run(args.source, mmm=args.mmm, out_dir=args.out, dashboard=args.dashboard, web_dir=args.web)
+    report = run(args.source, mmm=args.mmm, out_dir=args.out, dashboard=args.dashboard,
+                 web_dir=args.web, web_banner=args.banner)
 
     qc = report.qc
     print(f"records         : {qc.n_records}  ({qc.completeness_pct}% complete)")
