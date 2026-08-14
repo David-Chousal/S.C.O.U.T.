@@ -153,6 +153,9 @@ code{font-family:var(--font-mono);font-size:0.9em;background:var(--surface-2);
   padding:0.1em 0.4em;border-radius:6px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 img{max-width:100%;height:auto;display:block}
+/* Reset the browser default figure margin (margin:1em 40px), scoped to page content only —
+   never the header or footer, so their layout is untouched. */
+main figure{margin:0}
 ::selection{background:var(--accent);color:var(--on-accent)}
 .skip{position:absolute;left:-999px;top:0;z-index:100;padding:0.6rem 1rem;background:var(--ink);
   color:var(--bg);border-radius:0 0 10px 0;font-weight:500}
@@ -199,8 +202,36 @@ img{max-width:100%;height:auto;display:block}
 .nav-social a{color:var(--muted);display:inline-flex;transition:color var(--dur) var(--ease)}
 .nav-social a:hover{color:var(--accent);opacity:1}
 .nav-social svg{width:18px;height:18px}
-@media(max-width:720px){.nav-links .opt{display:none}}
-@media(max-width:520px){.nav-social{display:none}}
+/* Mobile nav toggle — hidden on desktop, where the links show inline. */
+.nav-toggle,.nav-burger{display:none}
+@media(max-width:720px){
+  .nav{gap:0.8rem;min-height:64px}
+  /* Hamburger button (a <label> driving the hidden checkbox). */
+  .nav-burger{display:inline-flex;position:relative;width:30px;height:30px;cursor:pointer;z-index:2}
+  .nav-burger span{position:absolute;left:5px;right:5px;top:50%;height:2px;margin-top:-1px;
+    background:var(--ink);border-radius:2px;transition:background 0.15s var(--ease)}
+  .nav-burger span::before,.nav-burger span::after{content:"";position:absolute;left:0;right:0;
+    height:2px;background:var(--ink);border-radius:2px;
+    transition:transform var(--dur) var(--ease),top var(--dur) var(--ease)}
+  .nav-burger span::before{top:-7px}
+  .nav-burger span::after{top:7px}
+  .nav-toggle:checked ~ .nav-burger span{background:transparent}
+  .nav-toggle:checked ~ .nav-burger span::before{top:0;transform:rotate(45deg)}
+  .nav-toggle:checked ~ .nav-burger span::after{top:0;transform:rotate(-45deg)}
+  /* Slide-down panel with every link (opt items included), anchored to the sticky header. */
+  .nav-links{position:absolute;left:0;right:0;top:100%;z-index:1;flex-direction:column;
+    align-items:stretch;gap:0;padding:0.3rem 0 0.6rem;background:var(--bg);
+    border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);
+    max-height:0;overflow:hidden;visibility:hidden;
+    transition:max-height var(--dur) var(--ease),visibility var(--dur) var(--ease)}
+  .nav-toggle:checked ~ .nav-links{max-height:82vh;visibility:visible}
+  .nav-links li{width:100%}
+  .nav-links .opt{display:block}
+  .nav-links a{display:block;text-align:center;padding:0.9rem 1rem;font-size:0.8rem}
+  .nav-links a[aria-current=page]{background:var(--surface-2)}
+  .nav-links .nav-mark{display:none}
+  .nav-social{display:none}
+}
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
@@ -294,7 +325,7 @@ img{max-width:100%;height:auto;display:block}
    and below. Explicit 4-up (not auto-fit, which spawned a phantom 5th column) with a tight gap. */
 .pill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
 @media(max-width:720px){.pill-row{grid-template-columns:repeat(2,1fr)}}
-.pill{position:relative;width:100%;margin:0;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
+.pill{position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
   aspect-ratio:6/8;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .pill.wide{aspect-ratio:1/1}
@@ -433,6 +464,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.6rem;
   margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--line);
   color:var(--faint);font-size:var(--text-small)}
+@media(max-width:560px){.footer-base{flex-direction:column;align-items:flex-start;gap:0.35rem}}
 
 /* ── Sample-data banner (Analytics) ───────────────────────────────────────── */
 .banner{max-width:1140px;margin:1.6rem auto 0;padding:0.9rem 1.3rem;border-radius:var(--radius);

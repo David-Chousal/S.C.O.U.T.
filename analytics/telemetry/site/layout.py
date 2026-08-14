@@ -71,9 +71,15 @@ def header(base: str, active: str, social: bool = True) -> str:
     # loads, so it is safe even on the strict Analytics/per-buoy pages: those still fetch nothing
     # cross-origin on load. Shown everywhere.
     social_html = _nav_social(base) if social else ""
+    # Script-free mobile menu: a visually-hidden checkbox toggles the nav panel via the label
+    # (the CSS `:checked ~` sibling trick). No JavaScript, so it works on the strict Analytics
+    # and per-buoy pages too; a full-page navigation naturally resets it closed.
     return (
         '<header class="site-header"><nav class="wrap nav" aria-label="Primary">'
         f"{_brand(base)}"
+        '<input type="checkbox" id="nav-toggle" class="nav-toggle">'
+        '<label for="nav-toggle" class="nav-burger" aria-label="Toggle navigation menu">'
+        "<span></span></label>"
         f'<ul class="nav-links">{"".join(links)}</ul>'
         f"{social_html}"
         "</nav></header>"
