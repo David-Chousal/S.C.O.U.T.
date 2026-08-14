@@ -46,13 +46,6 @@ Four tools. Each has exactly one job. Do not duplicate an artifact across two of
 - Notion — root page **S.C.O.U.T.** 🛰️ https://app.notion.com/p/3bc74433b5738130a4bff44f8396ec78
 - Granola — https://notes.granola.ai
 
-### Granola has no Claude connector
-
-There is no Granola MCP server. Claude **cannot** read Granola notes, and must never claim
-to have read them. Granola content reaches the rest of the stack only when a human pastes it
-in or Granola's own Notion export pushes it. If a meeting outcome matters, it must be
-restated in Notion or Linear — otherwise it does not exist to the team or to Claude.
-
 ---
 
 ## Session start protocol
