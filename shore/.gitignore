@@ -1,0 +1,4 @@
+# Generated telemetry CSVs from demo/loopback runs
+data/
+__pycache__/
+*.pyc

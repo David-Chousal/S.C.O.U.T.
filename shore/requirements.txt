@@ -1,0 +1,10 @@
+# Shore-station runtime.
+#
+# The simulated data path (codec, simulator, mock link, store, receiver) and the tests use
+# ONLY the Python standard library — no install needed to run them.
+#
+# Real hardware on the Raspberry Pi adds the LoRa radio driver; uncomment when wiring it up:
+# adafruit-circuitpython-rfm9x
+#
+# Optional dev tooling:
+# pytest        # tests also run under `python -m unittest`
