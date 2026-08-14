@@ -37,9 +37,11 @@ def _href(base: str, slug: str) -> str:
 def _brand(base: str) -> str:
     return (
         f'<a class="brand" href="{_href(base, "")}" aria-label="S.C.O.U.T. home">'
-        f'<img class="mark" src="{base}assets/img/brand/scout-mark.png" alt="" '
-        'width="30" height="30" decoding="async">'
-        '<span class="brand-txt"><b>S.C.O.U.T.</b>'
+        + assets.picture(
+            f'<img class="mark" src="{base}assets/img/brand/scout-mark.png" alt="" '
+            'width="30" height="30" decoding="async">'
+        )
+        + '<span class="brand-txt"><b>S.C.O.U.T.</b>'
         "<span>Oceanic Utilities Transmitter</span></span></a>"
     )
 

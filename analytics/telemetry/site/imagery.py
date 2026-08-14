@@ -74,8 +74,9 @@ def pill(key: str, base: str, *, uid: int, img_dir: Path | None = None, wide: bo
     """Render one pill card — a real photo when placed + credited, else the authored scene."""
     reef = _BY_KEY[key]
     wide_cls = " wide" if wide else ""
+    from . import assets  # local import avoids a cycle at module load
     if _photo_available(reef, img_dir):
-        media = (
+        media = assets.picture(
             f'<img src="{base}assets/img/{html.escape(reef.photo.file)}" '
             f'alt="{html.escape(reef.alt)}" loading="lazy" decoding="async" '
             'width="600" height="800">'
@@ -85,7 +86,6 @@ def pill(key: str, base: str, *, uid: int, img_dir: Path | None = None, wide: bo
             f'<a href="{reef.photo.source_url}">{html.escape(reef.photo.source)}</a></p>'
         )
     else:
-        from . import assets  # local import avoids a cycle at module load
         media = assets.reef_atmosphere(reef.variant, uid)
         credit = ""
     return (
@@ -101,8 +101,9 @@ def _hero_available(img_dir: Path | None) -> bool:
 
 def hero(base: str, img_dir: Path | None = None) -> tuple[str, str]:
     """Return ``(media_html, credit_html)`` for the Home hero — real photo or authored scene."""
+    from . import assets  # local import avoids a cycle at module load
     if _hero_available(img_dir):
-        media = (
+        media = assets.picture(
             f'<img src="{base}assets/img/{html.escape(HERO.file)}" alt="{html.escape(HERO_ALT)}" '
             'loading="eager" fetchpriority="high" decoding="async" width="1440" height="720">'
         )
@@ -111,7 +112,6 @@ def hero(base: str, img_dir: Path | None = None) -> tuple[str, str]:
             f'<a href="{HERO.source_url}">{html.escape(HERO.source)}</a></p>'
         )
         return media, credit
-    from . import assets
     return assets.reef_atmosphere("sunlit", 10), ""
 
 

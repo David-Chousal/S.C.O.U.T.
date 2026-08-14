@@ -12,6 +12,7 @@ attribution burden — used wherever a real Ocean Image Bank photograph is not (
 from __future__ import annotations
 
 import html
+import re
 
 
 def logo_mark(cls: str = "mark") -> str:
@@ -198,10 +199,23 @@ def avatar(initials: str, uid: int, hue: int) -> str:
     )
 
 
+def picture(img_html: str) -> str:
+    """Wrap an ``<img ….(jpg|jpeg|png)>`` in a ``<picture>`` that prefers a same-origin WebP
+    sibling (identical path, ``.webp`` extension) and falls back to the original raster for
+    browsers without WebP. Both sources stay same-origin, so the strict Analytics contract holds.
+    If the ``src`` is not a raster we can pair, the ``<img>`` is returned unchanged."""
+    m = re.search(r'src="([^"]+)\.(?:jpg|jpeg|png)"', img_html)
+    if not m:
+        return img_html
+    webp = m.group(1) + ".webp"
+    return f'<picture><source srcset="{webp}" type="image/webp">{img_html}</picture>'
+
+
 def avatar_photo(src: str, name: str) -> str:
     """A real portrait avatar — same 60px circular footprint as the monogram, used when a
-    team member has supplied a photo. Same-origin image; the CSS crops it to the circle."""
-    return (
+    team member has supplied a photo. Same-origin image (WebP with a raster fallback); the CSS
+    crops it to the circle."""
+    return picture(
         f'<img class="avatar" src="{src}" alt="{html.escape(name)}" '
         'width="60" height="60" loading="lazy" decoding="async">'
     )
