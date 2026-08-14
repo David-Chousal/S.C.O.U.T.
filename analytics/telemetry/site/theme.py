@@ -521,7 +521,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 @media (max-width:640px){.critter-sub,.critter-jelly{display:none}}
 @media (prefers-reduced-motion:reduce){.footer-critters{display:none}}
 /* A single ambient critter fixed in a page's side margin — only where real margin exists. */
-.side-critter{position:fixed;top:calc(50% + 25px);transform:translateY(-50%);z-index:2;pointer-events:none;
+.side-critter{position:fixed;top:calc(50% + 80px);transform:translateY(-50%);z-index:2;pointer-events:none;
   width:clamp(110px,9vw,168px);opacity:0.72}
 .side-critter svg{width:100%;height:100%;display:block}
 .side-right{right:clamp(0.5rem,1.6vw,2rem)}
