@@ -40,7 +40,7 @@ mechanical/
 
 ## Open items
 
-- **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
+- **Deployment depth is 2–7 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
   Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The ~30 m label on the
   sensor-string diagram image is outdated and should be re-exported.
 - Biofouling mitigation strategy is undecided — candidates include copper mesh, mechanical

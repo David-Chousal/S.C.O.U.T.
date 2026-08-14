@@ -85,7 +85,7 @@ SURFACE
 
 ## Open items
 
-- **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
+- **Deployment depth is 2–7 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
   Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The `~30 m` annotation on
   the diagram image is outdated. The diagram PNG should be re-exported to drop the ~30 m label.
 - **Hydrophone part number differs across documents.** The diagram cites the Aquarian

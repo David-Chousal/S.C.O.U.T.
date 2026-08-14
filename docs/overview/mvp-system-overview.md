@@ -229,7 +229,7 @@ If low power:
 
 - Fixed mooring
 
-- **2–8 meter max depth**
+- **2–7 meter max depth**
 
 - Buoy remains at surface
 
