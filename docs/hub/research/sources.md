@@ -1,6 +1,6 @@
 # Source Registry
 
-> **Summary** — The canonical bibliography for SCOUT: every external work cited anywhere in the
+> **Summary** — The canonical bibliography for S.C.O.U.T.: every external work cited anywhere in the
 > project, listed once, with DOI, access status, where the PDF lives, and what we took from it.
 > This page is the answer to *"have we already researched X?"* and *"what backs this claim?"*
 >
@@ -56,13 +56,13 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `liu-2014` | Liu et al. (2014). "Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch." *Remote Sensing* 6(11):11579–11606. [doi](https://doi.org/10.3390/rs61111579) | 🔓 | library/liu-2014.pdf | Defines HotSpot / **DHW** and the 4/8/12 °C-week bleaching bands — the algorithm telemetry `bleaching.py` implements — [notes](notes/liu-2014-dhw.md) |
 | `skirving-2020` | Skirving et al. (2020). "CoralTemp and the Coral Reef Watch coral bleaching heat stress product suite v3.1." *Remote Sensing* 12(23):3856. [doi](https://doi.org/10.3390/rs12233856) | 🔓 | library/skirving-2020.pdf | Defines the **MMM** climatology (`--mmm` in `run_telemetry.py`) DHW is measured against — [notes](notes/skirving-2020-coraltemp-mmm.md) |
 | `kayanne-2017` | Kayanne (2017). "Validation of degree heating weeks as a coral bleaching index." *Coral Reefs* 36:63–70. [doi](https://doi.org/10.1007/s00338-016-1524-y) | 🔒 | — | **Empirical validation:** DHW > 8 °C-weeks matches observed bleaching → justifies the alert bands — [notes](notes/kayanne-2017-dhw-validation.md) |
-| `hobday-2016` | Hobday et al. (2016). "A hierarchical approach to defining marine heatwaves." *Progress in Oceanography* 141:227–238. [doi](https://doi.org/10.1016/j.pocean.2015.12.014) | 🔒 | — | Standard **marine-heatwave** definition/vocabulary for interpreting SCOUT temperature events |
+| `hobday-2016` | Hobday et al. (2016). "A hierarchical approach to defining marine heatwaves." *Progress in Oceanography* 141:227–238. [doi](https://doi.org/10.1016/j.pocean.2015.12.014) | 🔒 | — | Standard **marine-heatwave** definition/vocabulary for interpreting S.C.O.U.T. temperature events |
 
 ## In-situ temperature reference data
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `noaa-ncrmp-str` | NOAA NCRMP Subsurface Temperature Recorder (STR) network, U.S. Pacific reefs (Sea-Bird loggers, ~5/15/25 m, 2005–2024). NOAA NCEI. [doi](https://doi.org/10.7289/v5ks6pv2) | 🔓 | — | **Ground-truth comparator** for SCOUT in-situ temperature + DHW (Hawaii subset overlaps deployment); sets the accuracy bar for the DS18B20 — [notes](notes/noaa-ncrmp-str-2018-dataset.md) |
+| `noaa-ncrmp-str` | NOAA NCRMP Subsurface Temperature Recorder (STR) network, U.S. Pacific reefs (Sea-Bird loggers, ~5/15/25 m, 2005–2024). NOAA NCEI. [doi](https://doi.org/10.7289/v5ks6pv2) | 🔓 | — | **Ground-truth comparator** for S.C.O.U.T. in-situ temperature + DHW (Hawaii subset overlaps deployment); sets the accuracy bar for the DS18B20 — [notes](notes/noaa-ncrmp-str-2018-dataset.md) |
 | `margaritis-2025` | Margaritis et al. (2025). "Intercomparison of satellite and in-situ sea-surface temperature on Caribbean reefs." *PLOS Climate* 4:e0000480. [doi](https://doi.org/10.1371/journal.pclm.0000480) | 🔓 | library/margaritis-2025.pdf | CoralTemp overstates nearshore warming (~0.20 °C/decade) → **strongest external warrant** for in-situ ground truth — [notes](notes/margaritis-2025-sst-intercomparison.md) |
 
 ## Turbidity, sedimentation & water quality
@@ -93,7 +93,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `shaghaghi-2020` | Shaghaghi et al. (2020). ÂB / EACP — energy-aware comm protocol (sleep-wake synchronization). ❓ venue/DOI to confirm | ❓ | — | **The comms protocol SCOUT is adapting.** By advisor Navid Shaghaghi — obtain directly. Assigned reading in [Team Timeline](../planning/team-timeline.md) — [notes](notes/shaghaghi-2020-eacp.md) |
+| `shaghaghi-2020` | Shaghaghi et al. (2020). ÂB / EACP — energy-aware comm protocol (sleep-wake synchronization). ❓ venue/DOI to confirm | ❓ | — | **The comms protocol S.C.O.U.T. is adapting.** By advisor Navid Shaghaghi — obtain directly. Assigned reading in [Team Timeline](../planning/team-timeline.md) — [notes](notes/shaghaghi-2020-eacp.md) |
 
 ## LoRa / LPWAN over seawater
 

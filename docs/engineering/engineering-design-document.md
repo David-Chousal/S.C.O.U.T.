@@ -1,4 +1,4 @@
-# SCOUT Engineering Design Document (v0.2)
+# S.C.O.U.T. Engineering Design Document (v0.2)
 
 > **Summary** — The authoritative technical baseline: system requirements, mechanical/electrical/firmware architecture, component selection, power and energy budget, verification plan, and full BOM.
 >
@@ -22,9 +22,9 @@
 
 ### Project Overview
 
-SCOUT (Santa Clara Oceanic Utilities Transmitter) is a low-cost, long-duration environmental monitoring buoy intended for deployment on shallow coral reefs. The system is designed to autonomously collect environmental data while minimizing power consumption, maintenance requirements, hardware complexity, and overall cost.
+S.C.O.U.T. (Santa Clara Oceanic Utilities Transmitter) is a low-cost, long-duration environmental monitoring buoy intended for deployment on shallow coral reefs. The system is designed to autonomously collect environmental data while minimizing power consumption, maintenance requirements, hardware complexity, and overall cost.
 
-SCOUT operates as a self-contained sensing platform powered by a rechargeable LiFePO₄ battery and solar energy harvesting system. The buoy periodically measures environmental conditions, records underwater acoustic data, stores all information locally, and transmits summarized daily data to a nearby shore station using LoRa radio communication.
+S.C.O.U.T. operates as a self-contained sensing platform powered by a rechargeable LiFePO₄ battery and solar energy harvesting system. The buoy periodically measures environmental conditions, records underwater acoustic data, stores all information locally, and transmits summarized daily data to a nearby shore station using LoRa radio communication.
 
 The system is intended to remain deployed for extended periods with minimal human interaction while maintaining reliable operation in a marine environment.
 
@@ -44,7 +44,7 @@ The system is intended to remain deployed for extended periods with minimal huma
 
 ### Functional Overview
 
-SCOUT performs four primary tasks:
+S.C.O.U.T. performs four primary tasks:
 
 1.  Measure water temperature.
 
@@ -92,7 +92,7 @@ All raw data is stored locally while summarized environmental data is transmitte
 
 ### Functional Requirements
 
-The SCOUT buoy shall:
+The S.C.O.U.T. buoy shall:
 
 - Measure water temperature using one sensor (per [ADR-0003](../decisions/0003-single-point-sensing.md); 2 additional units held as field spares).
 
@@ -202,7 +202,7 @@ The SCOUT buoy shall:
 
 ### System Description
 
-SCOUT is organized into six major subsystems:
+S.C.O.U.T. is organized into six major subsystems:
 
 1.  Mechanical Structure
 
@@ -1858,7 +1858,7 @@ requires a storage capacity review.
 
 ### Purpose
 
-The firmware coordinates every subsystem within SCOUT while minimizing energy consumption and maintaining autonomous operation.
+The firmware coordinates every subsystem within S.C.O.U.T. while minimizing energy consumption and maintaining autonomous operation.
 
 The firmware is event-driven and spends the majority of its lifetime in Deep Sleep.
 
@@ -2089,11 +2089,11 @@ Potential future improvements include:
 
 ### Purpose
 
-The operating timeline defines the sequence of events performed by SCOUT during a typical 24-hour operating cycle. The objective is to maximize time spent in low-power states while ensuring all required measurements are collected and transmitted.
+The operating timeline defines the sequence of events performed by S.C.O.U.T. during a typical 24-hour operating cycle. The objective is to maximize time spent in low-power states while ensuring all required measurements are collected and transmitted.
 
 ### Daily Operating Philosophy
 
-SCOUT remains in Deep Sleep for the majority of each day.
+S.C.O.U.T. remains in Deep Sleep for the majority of each day.
 
 The system wakes only to:
 
@@ -2389,7 +2389,7 @@ The sampling schedule balances three competing objectives:
 
 ### Purpose
 
-The daily energy budget estimates the average energy consumed by SCOUT over a 24-hour period. This budget serves as the basis for battery sizing and solar panel sizing.
+The daily energy budget estimates the average energy consumed by S.C.O.U.T. over a 24-hour period. This budget serves as the basis for battery sizing and solar panel sizing.
 
 This version represents **Power Budget v1.0 (Preliminary)**. Electrical characteristics are derived from manufacturer documentation where available. Operating durations are based on the current firmware architecture and documented engineering assumptions.
 
@@ -2591,13 +2591,13 @@ Potential improvements include:
 
 - Intelligent energy budgeting based on available solar input.
 
-These enhancements are not required for SCOUT v1.0 but can significantly increase deployment duration in future revisions.
+These enhancements are not required for S.C.O.U.T. v1.0 but can significantly increase deployment duration in future revisions.
 
 ## 17. Solar Sizing
 
 ### Purpose
 
-The solar subsystem replenishes the energy consumed by SCOUT each day while maintaining sufficient battery charge for continuous autonomous operation.
+The solar subsystem replenishes the energy consumed by S.C.O.U.T. each day while maintaining sufficient battery charge for continuous autonomous operation.
 
 The solar system shall be capable of supporting normal operation under typical environmental conditions while providing adequate margin for seasonal variation, cloud cover, component aging, and conversion losses.
 
@@ -2693,7 +2693,7 @@ The measured data will be used to produce **Solar Sizing v2.0**.
 
 ### Purpose
 
-This section documents all engineering assumptions used throughout the SCOUT design process.
+This section documents all engineering assumptions used throughout the S.C.O.U.T. design process.
 
 Manufacturer specifications and engineering assumptions are intentionally separated to maintain traceability and simplify future design revisions.
 
@@ -2811,7 +2811,7 @@ Maintaining this list ensures that future revisions remain traceable, repeatable
 
 ### Purpose
 
-This section documents the engineering constraints that influenced the SCOUT design. These constraints establish the boundaries within which the system must operate and identify conditions that require future design review if modified.
+This section documents the engineering constraints that influenced the S.C.O.U.T. design. These constraints establish the boundaries within which the system must operate and identify conditions that require future design review if modified.
 
 ### Mechanical Constraints
 
@@ -2969,7 +2969,7 @@ Prototype testing shall supersede analytical estimates where discrepancies exist
 
 ### Purpose
 
-This section identifies potential enhancements that were intentionally excluded from SCOUT v1.0 to maintain simplicity, reduce development risk, and accelerate prototype completion.
+This section identifies potential enhancements that were intentionally excluded from S.C.O.U.T. v1.0 to maintain simplicity, reduce development risk, and accelerate prototype completion.
 
 ### Firmware Enhancements
 
@@ -3103,7 +3103,7 @@ Potential future storage enhancements include:
 
 ### Research Opportunities
 
-SCOUT provides a foundation for future work in:
+S.C.O.U.T. provides a foundation for future work in:
 
 - Coral reef soundscape analysis
 
@@ -3141,7 +3141,7 @@ New features should only be incorporated if they provide measurable value withou
 
 ### Purpose
 
-The objective of the verification and testing phase is to validate that the SCOUT system performs as designed and that all engineering assumptions made during development are either confirmed or revised based on measured data.
+The objective of the verification and testing phase is to validate that the S.C.O.U.T. system performs as designed and that all engineering assumptions made during development are either confirmed or revised based on measured data.
 
 Testing shall progress from individual components to fully integrated field deployments.
 
@@ -3311,7 +3311,7 @@ Environmental Tests:
 
 ### Phase 7 — Integrated System Testing
 
-Operate SCOUT continuously under representative conditions.
+Operate S.C.O.U.T. continuously under representative conditions.
 
 Verify:
 
@@ -3349,7 +3349,7 @@ The system shall be considered validated when it:
 
 ### Purpose
 
-This Bill of Materials identifies the primary hardware required to construct one SCOUT prototype.
+This Bill of Materials identifies the primary hardware required to construct one S.C.O.U.T. prototype.
 
 ### Electronics
 
@@ -3440,8 +3440,8 @@ Whenever practical:
 
 ### Document Conclusion
 
-This document defines the baseline architecture for the SCOUT autonomous reef monitoring buoy. It captures the current mechanical, electrical, firmware, sensing, storage, communications, and power-system design decisions, along with the assumptions and constraints used to reach them.
+This document defines the baseline architecture for the S.C.O.U.T. autonomous reef monitoring buoy. It captures the current mechanical, electrical, firmware, sensing, storage, communications, and power-system design decisions, along with the assumptions and constraints used to reach them.
 
 The next major milestone is prototype implementation and validation. Measured performance data will be used to refine the preliminary analytical models, replace estimated power values with experimental results, and finalize battery and solar sizing for long-duration deployment.
 
-SCOUT v1.0 is intended to serve as a modular, low-power, and extensible platform capable of supporting future research in autonomous coral reef monitoring while providing a clear engineering foundation for future revisions.
+S.C.O.U.T. v1.0 is intended to serve as a modular, low-power, and extensible platform capable of supporting future research in autonomous coral reef monitoring while providing a clear engineering foundation for future revisions.

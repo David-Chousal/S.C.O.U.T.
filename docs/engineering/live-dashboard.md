@@ -1,6 +1,6 @@
 # Live Dashboard (GitHub Pages)
 
-> **Summary** — How SCOUT's telemetry becomes a public, always-current web dashboard with **no
+> **Summary** — How S.C.O.U.T.'s telemetry becomes a public, always-current web dashboard with **no
 > server**: the shore Raspberry Pi regenerates a self-contained static page on a schedule and
 > pushes it; GitHub Pages serves it. Implementation:
 > [`analytics/telemetry/web.py`](../../analytics/telemetry/web.py).
