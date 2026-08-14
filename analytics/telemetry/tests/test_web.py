@@ -48,6 +48,16 @@ class WebDashboardTest(unittest.TestCase):
         self.assertIn("no MMM set", html)
         self.assertNotIn("<h2>Degree Heating Weeks", html)  # DHW panel skipped (footer mention is fine)
 
+    def test_banner_is_rendered_when_provided(self):
+        html = render_html(analyze(_records(days=5), mmm=28.0), generated_at=_FIXED,
+                           banner="SAMPLE DATA — simulated")
+        self.assertIn('class="banner"', html)
+        self.assertIn("SAMPLE DATA — simulated", html)
+
+    def test_no_banner_by_default(self):
+        html = render_html(analyze(_records(days=5), mmm=28.0), generated_at=_FIXED)
+        self.assertNotIn('class="banner"', html)
+
     def test_write_site_emits_index_and_raw_data(self):
         report = analyze(_records(days=7), mmm=28.0)
         with tempfile.TemporaryDirectory() as tmp:
