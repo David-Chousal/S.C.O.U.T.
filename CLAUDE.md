@@ -26,6 +26,37 @@ already has it. What you need to know is in [Working with your Claude](#working-
 
 ---
 
+## 🚫 Absolute blocker — never commit or push anything that violates CONVENTIONS.md
+
+**This overrides speed, convenience, and "the user didn't ask me to check this."** It applies
+to every commit, on every branch, in every session — not just ones someone asked you to review.
+
+Before any `git add` / `git commit` / `git push`, and before opening or updating a PR:
+
+1. **Run the real check, don't eyeball it:**
+   ```bash
+   python3 .github/scripts/check_conventions.py --base origin/main
+   ```
+   This is the same script CI runs in `pr-checks.yml`. It catches bad filenames, forbidden
+   file types, missing/duplicate H1s, HTML tables, and orphaned source-registry entries. If it
+   exits non-zero, the FATAL lines tell you exactly what's wrong and where.
+2. **If something violates convention, fix it — then say so.** Rename the file, move it,
+   reformat the table, strip the offending content, correct the commit message. Never fix
+   silently: state plainly what you changed and why, e.g. *"Renamed `Sensor Test.md` →
+   `sensor-test.md` before committing — CONVENTIONS.md requires kebab-case."*
+3. **If you can't safely fix it** — placement depends on a call only a teammate can make, the
+   naming is genuinely ambiguous, the content itself needs human judgment — **do not commit or
+   push it.** Stop, explain precisely what's wrong, and ask. Do not push it "to clean up later."
+
+This is a second line of defense, not a duplicate of CI — the goal is to never hand a teammate
+a red PR check in the first place. If `check_conventions.py` and your own read disagree, the
+script wins; it is the authoritative, versioned check. Also verify PR title format
+(`<type>(<scope>): <summary>`), the four-section PR body, and
+[Standing rule 7](#standing-rules) (Knowledge Hub touch) before opening a PR — `pr-checks.yml`
+gates on all three independently of the conventions script.
+
+---
+
 ## The project
 
 **S.C.O.U.T.** (Santa Clara Oceanic Utilities Transmitter) — a low-cost, solar-powered,
@@ -102,6 +133,25 @@ Before ending a work session, verify and report:
 
 State plainly what you did and did not do. A skipped step reported is fine; a skipped step
 hidden is not.
+
+## Every message ends with a stack-sync nudge
+
+Not just at session end — **every response** you send during a session, closes with a
+one-line reminder to keep the stack in sync. Keep it to one line. Do not turn it into a
+checklist or re-explain the four tools every time.
+
+**If your response already did the syncing** (filed the Linear issue, updated the Notion
+page, committed the doc), say what you updated instead of prompting for it:
+
+> _Updated: SCO-14 created, `docs/hub/facts.md` revised. Notion mirror still pending — say
+> the word and I'll push it._
+
+**If it didn't**, use a light version of:
+
+> _Anything here that should land in Linear, Notion, or Granola? Keep the stack synced._
+
+Skip the line only for purely conversational exchanges that touched no file, tool, or fact —
+answering "what does NDSI stand for?" doesn't need one. Everything else gets the nudge.
 
 ---
 
