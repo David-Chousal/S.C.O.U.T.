@@ -3,7 +3,8 @@
 Direction: *warm zen · beachy · oceanic minimalism* — a pale-sand canvas, warm ink, enormous
 whitespace, one clean geometric sans (DM Sans, self-hosted), and micro-labels set in uppercase
 with wide tracking. Chrome stays quiet and warm-neutral; colour comes from the reef imagery and
-the data. Cards are softly rounded with a hairline ring and a whisper-soft shadow.
+the data. Cards are softly rounded and lifted by a soft, eased-back shadow — no outline
+(only the buoy render-slot keeps a hairline ring).
 
 Everything is emitted as a string into each page. There are **no external requests**: the fonts
 are self-hosted (same-origin, with a graceful system fallback), colours are warm tokens, and
