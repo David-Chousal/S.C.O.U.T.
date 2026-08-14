@@ -166,8 +166,13 @@ def run(
     mmm: float | None = None,
     out_dir: str | Path = "data/processed",
     dashboard: bool = False,
+    web_dir: str | Path | None = None,
 ) -> TelemetryReport:
-    """Load from a file or directory, analyze, and write outputs."""
+    """Load from a file or directory, analyze, and write outputs.
+
+    ``web_dir`` additionally renders the self-contained static dashboard (index.html + raw
+    data) for GitHub Pages — see :mod:`telemetry.web`.
+    """
     source = Path(source)
     records = load_dir(source) if source.is_dir() else load_csv(source)
     report = analyze(records, mmm=mmm)
@@ -179,4 +184,8 @@ def run(
         from .dashboard import plot_dashboard  # local import keeps matplotlib optional
 
         plot_dashboard(report, out_dir / "telemetry_dashboard.png")
+    if web_dir is not None:
+        from .web import write_site  # local import; stdlib only
+
+        write_site(report, web_dir)
     return report
