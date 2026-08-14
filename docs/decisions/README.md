@@ -18,7 +18,8 @@ multiple subsystems.
 
 | ID | Decision | Status |
 |---|---|---|
-| [0001](0001-mcu-and-radio-selection.md) | Microcontroller and LoRa radio selection | 🟡 Open |
+| [0001](0001-mcu-and-radio-selection.md) | Microcontroller and LoRa radio selection | 🟢 Accepted |
+| [0002](0002-lifepo4-charging-path.md) | LiFePO₄ charging path on the Feather M0 | 🟡 Open |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 

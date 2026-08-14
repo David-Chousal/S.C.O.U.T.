@@ -1,9 +1,10 @@
 # ADR-0001 — Microcontroller and LoRa Radio Selection
 
-- **Status:** 🟡 Open — decision not yet made
+- **Status:** 🟢 Accepted — dual-platform (see Decision)
 - **Date raised:** 2026-08-13
+- **Date decided:** 2026-08-14
 - **Owners:** ECE lead (hardware), CS lead (firmware)
-- **Blocks:** PCB layout, firmware toolchain, power budget verification, audio buffer design
+- **Formerly blocked:** PCB layout, firmware toolchain, power budget verification, audio buffer design
 
 ---
 
@@ -69,26 +70,45 @@ discovering it during Phase 3 integration.
 
 ## Decision
 
-**Not yet made.** To be resolved by the ECE and CS leads.
+**Accepted 2026-08-14 — dual-platform**, adopting the resolution proposed above.
 
-## Consequences of deferring
+- **Adafruit Feather M0 + RFM95 LoRa (Adafruit 3178) is the confirmed build platform** for
+  all subsystem bring-up, firmware development, protocol work, and field testing (Phases 1–6).
+  This is the hardware the team has purchased — see
+  [`hardware/README.md`](../../hardware/README.md). Local logging and timekeeping are provided
+  by the **Adalogger FeatherWing (Adafruit 2922)**: microSD plus a PCF8523 RTC.
+- **ESP32-C3 + SX1262 remains the documented production target** — the custom PCB the
+  [Engineering Design Document](../engineering/engineering-design-document.md) is designed
+  around, retained for a future revision where RAM headroom, radio efficiency, and per-unit
+  cost matter. It is **not** being built for the graded capstone deliverable.
 
-- PCB layout cannot begin.
-- The firmware toolchain (Arduino/SAMD21 vs ESP-IDF/RISC-V) cannot be fixed, so firmware
-  written now may need porting.
-- The power budget in EDD §15–17 assumes ESP32-C3 and SX1262 current figures; if the Feather
-  is chosen, battery and solar sizing must be recomputed.
-- Audio subsystem design depends heavily on available RAM.
+Firmware is therefore written against the **Arduino SAMD21 core** (ARM Cortex-M0+) using the
+**RadioHead `RH_RF95`** driver. Whether the custom ESP32-C3 board is ever built is a separate,
+later decision and should be recorded as its own ADR when the team reaches it.
 
-## Open questions
+## Consequences
 
-1. Is a custom PCB definitely in scope, or could an off-the-shelf board ship in the final build?
-2. Does on-device acoustic index computation remain a requirement? If yes, the RAM gap
-   strongly favors Option A. If indices are computed shore-side from stored audio, it matters much less.
-3. What is the actual required LoRa range? Assumptions in the documents vary widely — the MVP
-   doc says ~100 yards, meeting notes cite 15–20 km, and the Feather M0 datasheet claims ~2 km
-   line-of-sight. This needs a single agreed figure, measured over saltwater.
-4. If the Feather is selected, how is LiFePO₄ charging handled?
+- **Firmware unblocked.** Toolchain is fixed (Arduino SAMD21); development can start now.
+- **The EDD's power/audio analysis describes the future production board, not the Feather.**
+  EDD §15–17 (energy budget, battery and solar sizing) assumes ESP32-C3 and SX1262 current
+  figures. Those numbers stand as the production-target analysis; a Feather-specific power
+  budget will be produced empirically during Phase 1–4 bench and field testing rather than
+  re-derived on paper now.
+- **Audio is analyzed shore-side.** See open question 2 below.
+
+## Resolved open questions
+
+1. **Custom PCB in scope?** Not for the graded build. The Feather stack ships; the custom
+   ESP32-C3 board is a documented future target, not a Phase 0–6 deliverable.
+2. **On-device acoustic index computation?** No. The SAMD21's **32 KB SRAM** cannot hold a
+   5-minute recording, so the buoy only records and stores audio to microSD; all acoustic
+   indices are computed **shore-side** by the [`analytics/`](../../analytics) pipeline, which
+   already works this way.
+3. **Required LoRa range?** Still open — needs one measured figure over saltwater (Phase 4
+   range test). Design assumes conservative line-of-sight to a nearshore shore station.
+4. **LiFePO₄ charging?** The Feather's onboard charger targets 3.7 V LiPo, not the specified
+   LiFePO₄ chemistry. Split into its own record — see
+   [ADR-0002 — LiFePO₄ charging path](0002-lifepo4-charging-path.md). Owner: ECE lead.
 
 ## References
 

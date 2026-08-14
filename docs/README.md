@@ -96,7 +96,7 @@ Contradictions found during the August 2026 documentation audit that are **not y
 
 | Issue | Detail |
 |---|---|
-| **MCU and radio conflict** | Documents specify both ESP32-C3 + SX1262 and Feather M0 + RFM95. Tracked in [ADR-0001](decisions/0001-mcu-and-radio-selection.md) |
+| ✅ ~~MCU and radio conflict~~ | **Resolved** by [ADR-0001](decisions/0001-mcu-and-radio-selection.md) (2026-08-14): Feather M0 + RFM95 build platform, ESP32-C3 + SX1262 future production target |
 | **Deployment depth** | MVP overview says 5–8 m max; sensor string diagram annotates ~30 m |
 | **LoRa range** | Stated variously as ~100 yards, ~2 km, and 15–20 km across documents |
 | **Hydrophone part** | Diagram cites Aquarian H2a-XLR; EDD BOM specifies H2dM |

@@ -28,9 +28,10 @@ already has it. What you need to know is in [Working with your Claude](#working-
 
 ## The project
 
-**S.C.O.U.T.** (Santa Clara Oceanic Utilities Transmitter) — a low-cost, solar-powered marine
-buoy for long-term coral reef and nearshore water quality monitoring. Santa Clara University
-Senior Design Capstone, 2026–2027.
+**S.C.O.U.T.** (Santa Clara Oceanic Utilities Transmitter) — a low-cost, solar-powered,
+modular **nearshore environmental monitoring platform**: one buoy carrying many sensing
+signals (temperature, turbidity, dissolved oxygen, and more), with coral-reef health as its
+first application. Santa Clara University Senior Design Capstone, 2026–2027.
 
 | Member | Discipline | Owns |
 |---|---|---|
@@ -317,9 +318,11 @@ known and documented; do not "fix" it without an issue.
 2. **Raw audio never goes over LoRa.** This is settled design, not an open question
    ([EDD §10](docs/engineering/engineering-design-document.md)). Bandwidth makes it
    infeasible; the buoy stores audio locally and transmits an 82-byte daily packet.
-3. **The MCU/radio choice is open** and blocks firmware, PCB layout, and the power budget.
-   See [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md). Do not write firmware
-   against a specific toolchain until it is resolved.
+3. **The MCU/radio choice is settled** ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md),
+   accepted 2026-08-14): **Feather M0 + RFM95** is the confirmed build platform (Arduino
+   SAMD21 core, RadioHead `RH_RF95`); ESP32-C3 + SX1262 is the documented future production
+   PCB. Write firmware against the SAMD21 core. The EDD still describes the ESP32-C3 target —
+   treat its power budget (§15–17) as production-target analysis, not the Feather build.
 4. **Cite sources in docs.** Anything asserting a scientific fact gets a DOI or link.
 5. **Report failures plainly.** If tests fail, show the output. If a step was skipped, say so.
 
