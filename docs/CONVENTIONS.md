@@ -291,6 +291,11 @@ already shows the *what*.
   `None` if there are none.
 - **Open tasks** — follow-up work this PR does *not* cover (a new ADR to resolve, a
   measurement to take, a downstream doc to update). Write `None` if there are none.
+- **Knowledge Hub** — which [Hub](hub/README.md) surfaces this PR updated (decision log, facts,
+  status/journal, sources, open questions), or `Hub: no relevant surface` if genuinely none
+  apply. **This section is mandatory and required on every PR** — see
+  [CLAUDE.md → Standing rule 7](../CLAUDE.md#standing-rules). A PR that changed a fact or a
+  decision without a matching Hub update should be sent back.
 
 Copy this template:
 
@@ -306,6 +311,10 @@ YYYY-MM-DD
 
 ## Open tasks
 - …
+
+## Knowledge Hub
+- Updated: decision-log.md · facts.md · status.md + journal · research/sources.md
+  (list only what this PR touched, or write "Hub: no relevant surface")
 ```
 
 **Open for review; merge only after approval — never auto-merge.** A PR is opened to be

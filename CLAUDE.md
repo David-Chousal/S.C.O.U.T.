@@ -96,6 +96,9 @@ Before ending a work session, verify and report:
 - [ ] Linear issues moved to their true status; new work captured as issues
 - [ ] Any decision made this session written down as an ADR or a Linear comment — never left
       only in the chat transcript
+- [ ] [Knowledge Hub](docs/hub/README.md) updated wherever relevant — decision log, facts,
+      status/journal, sources (see [Standing rule 7](#standing-rules)). Every PR opened this
+      session already carried its Hub updates
 
 State plainly what you did and did not do. A skipped step reported is fine; a skipped step
 hidden is not.
@@ -113,6 +116,7 @@ Route every artifact to exactly one home. When in doubt, this table wins.
 | CAD, hull drawings, mooring specs | `mechanical/` | — |
 | Engineering & research documents | `docs/**.md` | Notion page |
 | Architecture decisions | `docs/decisions/` | Notion → Decisions |
+| Decisions (ledger), facts, status, sources | `docs/hub/` — the [Knowledge Hub](docs/hub/README.md) | Notion → Hub |
 | Diagrams, presentations | `assets/` | Linked from Notion |
 | Tasks, bugs, roadmap, milestones | **Linear** | — |
 | Meeting recordings & transcripts | **Granola** | Decisions extracted → Linear/Notion |
@@ -331,6 +335,24 @@ known and documented; do not "fix" it without an issue.
    leave it open for review**. Merge only after a human review or when a human explicitly asks
    you to merge — never on your own initiative, and never auto-merge. Never push to `main`
    directly — it is blocked. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
+7. **Every PR updates the Knowledge Hub — no exception, wherever relevant.** The
+   [Knowledge Hub](docs/hub/README.md) is the always-current surface for what SCOUT has decided,
+   learned, and where it stands. **Before opening any PR**, check each Hub surface and update the
+   ones this PR touches — this is not optional and not a follow-up task:
+   - Decided anything? → row in [`decision-log.md`](docs/hub/decision-log.md) (+ an ADR if significant).
+   - Changed a canonical value (depth, cost, platform, packet size, part…)? → update
+     [`facts.md`](docs/hub/facts.md) **first**, then the docs that cite it.
+   - Moved a subsystem's state? → update [`status.md`](docs/hub/status.md) and append a
+     [`journal/`](docs/hub/journal/) snapshot.
+   - Used or found an external source? → add it to
+     [`research/sources.md`](docs/hub/research/sources.md) (PDF to the right library).
+   - Answered or raised a research question? → update
+     [`research/open-questions.md`](docs/hub/research/open-questions.md).
+
+   The PR's **Open tasks** section must state which Hub surfaces were updated, or explicitly
+   "Hub: no relevant surface" if genuinely none apply. The default assumption is that at least
+   one applies — a PR that touches nothing in the Hub is the exception, not the rule. A reviewer
+   should reject a PR that changed a fact or a decision without updating the Hub.
 
 ---
 
