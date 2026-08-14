@@ -253,8 +253,9 @@ main figure{margin:0}
     display:grid;grid-template-columns:168px minmax(0,1fr);gap:clamp(1.75rem,1rem + 2.5vw,4rem);
     align-items:start}
   .doc-body{min-width:0}
-  .doc-nav{display:block;position:sticky;top:84px;align-self:start;
-    max-height:calc(100vh - 108px);overflow-y:auto}
+  /* No overflow clip here: overflow-y:auto would force overflow-x to clip and shave the dots'
+     left edge, since they sit at the container's far-left. The section lists are short. */
+  .doc-nav{display:block;position:sticky;top:84px;align-self:start}
 }
 .doc-nav-title{font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--faint);margin:0 0 1rem}
