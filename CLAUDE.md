@@ -116,8 +116,8 @@ and say so.
 
 ## Linear conventions
 
-Workspace `S.C.O.U.T.` · one team, `S.C.O.U.T.` · statuses: `Backlog` `Todo` `In Progress`
-`Done` `Canceled` `Duplicate`.
+Workspace `S.C.O.U.T.` · one team, `S.C.O.U.T.`, issue key **`SCO`** (issues read `SCO-12`) ·
+statuses: `Backlog` `Todo` `In Progress` `Done` `Canceled` `Duplicate`.
 
 ### When to create an issue
 
@@ -155,9 +155,16 @@ Not `Temperature sensor` (not an outcome). Not `Fix the thing` (not specific).
 
 ### Labels
 
-Existing: `Feature` `Bug` `Improvement`. Always add **exactly one discipline label** so each
-lead can filter to their own work — create these if they do not exist yet: `ece` `csen`
-`geng` `cross-discipline`.
+Type label (pick one): `Feature` `Bug` `Improvement`.
+
+Discipline label (**always exactly one**, so each lead can filter to their own work):
+
+| Label | Scope | Owner |
+|---|---|---|
+| `ece` | PCB, power system, sensors, radio | Isabella Rodriguez |
+| `csen` | Firmware, analytics pipeline, shore station | David Chousal Cantu |
+| `geng` | Hull, enclosure, mooring, deployment | John Ryan Myrdal |
+| `cross-discipline` | Spans two or more, or is a team-level decision | Needs coordination |
 
 ### Priority
 
@@ -166,8 +173,24 @@ lead can filter to their own work — create these if they do not exist yet: `ec
 
 ### Projects
 
-Map Linear projects to the phases in [docs/planning/team-timeline.md](docs/planning/team-timeline.md)
-— Phase 0 through Phase 6. Every issue belongs to a phase project. Create these if absent.
+Seven phase projects mirror [docs/planning/team-timeline.md](docs/planning/team-timeline.md).
+**Every issue belongs to exactly one.** Each project description carries that phase's
+per-discipline work and exit criteria.
+
+| Project | Window |
+|---|---|
+| Phase 0 — Kickoff | through May 2026 |
+| Phase 1 — Subsystem Bring-Up | June 2026 |
+| Phase 2 — System Integration | July 2026 |
+| Phase 3 — Enclosure & Waterproofing | Aug 15 – Sep 30 2026 |
+| Phase 4 — Field Prototype Deployment | Oct – Nov 2026 |
+| Phase 5 — Hawaii Deployment Prep | Dec 2026 |
+| Phase 6 — Hawaii Live Deployment | Jan – Mar 2027 |
+
+All seven were created in `Backlog` state. The team sets real states — do not assume a phase
+is complete because its window has passed. As of August 2026 the calendar says Phase 3, but
+firmware has not started, so Phase 1–2 deliverables are still open. Flag that gap rather than
+papering over it.
 
 ### Status discipline
 
