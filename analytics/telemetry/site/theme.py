@@ -508,6 +508,24 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .roaming-fish svg{width:100%;height:100%;display:block;transform:scaleX(var(--flip,1))}
 @keyframes roam{0%{opacity:0}12%{opacity:0.9}80%{opacity:0.9}100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.roaming-fish{display:none}}
+/* Ambient footer critters — one submarine, crab, and starfish, spread around the footer and
+   sitting behind the text (z-index 0, below the footer-grid). */
+.footer-critters{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.footer-critters .critter{position:absolute}
+.footer-critters .critter svg{width:100%;height:100%;display:block}
+.critter-sub{top:9%;right:6%;width:clamp(72px,7vw,108px);aspect-ratio:512/512;opacity:0.5}
+.critter-crab{bottom:8px;left:11%;width:clamp(46px,5vw,70px);aspect-ratio:1/1;opacity:0.62}
+.critter-star{bottom:20px;right:17%;width:clamp(38px,4vw,56px);aspect-ratio:63/66;opacity:0.58}
+@media (max-width:640px){.critter-sub{display:none}}
+@media (prefers-reduced-motion:reduce){.footer-critters{display:none}}
+/* A single ambient critter fixed in a page's side margin — only where real margin exists. */
+.side-critter{position:fixed;top:50%;transform:translateY(-50%);z-index:2;pointer-events:none;
+  width:clamp(110px,9vw,168px);opacity:0.72}
+.side-critter svg{width:100%;height:100%;display:block}
+.side-right{right:clamp(0.5rem,1.6vw,2rem)}
+.side-left{left:clamp(0.5rem,1.6vw,2rem)}
+@media (max-width:1439px){.side-critter{display:none}}
+@media (prefers-reduced-motion:reduce){.side-critter{display:none}}
 .footer-grid{position:relative;z-index:1;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.4rem}
 @media(max-width:640px){.footer-grid{grid-template-columns:1fr 1fr}}
 .footer-brand{grid-column:1/-1;max-width:38ch}

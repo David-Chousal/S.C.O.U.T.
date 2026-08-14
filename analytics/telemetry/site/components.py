@@ -11,6 +11,17 @@ import html
 from . import assets
 
 
+def side_critter(base: str, name: str, side: str, aspect: str) -> str:
+    """A single ambient Lottie animation fixed in a page's side margin (shown only on wide
+    screens where real margin exists). ``side`` is 'left' or 'right'; ``aspect`` is the
+    animation's ``w/h`` (e.g. ``'1666/1607'``). Same-origin JSON, driven by the shared init.js."""
+    return (
+        f'<div class="side-critter side-{side}" aria-hidden="true" '
+        f'style="aspect-ratio:{aspect}" '
+        f'data-lottie="{base}assets/lottie/{name}.json"></div>'
+    )
+
+
 def section(inner: str, *, cls: str = "", sid: str | None = None, wrap: str = "wrap") -> str:
     idattr = f' id="{sid}"' if sid else ""
     classes = ("section " + cls).strip()

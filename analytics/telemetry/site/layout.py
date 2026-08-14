@@ -135,8 +135,16 @@ def footer(base: str, *, external: bool = True) -> str:
         )
     )
     seaweed = _footer_seaweed(base)  # on every page, including Analytics
+    # Ambient critters drifting around the footer — one each, spread for good spacing.
+    critters = (
+        '<div class="footer-critters" aria-hidden="true">'
+        f'<span class="critter critter-sub" data-lottie="{base}assets/lottie/submarine.json"></span>'
+        f'<span class="critter critter-crab" data-lottie="{base}assets/lottie/crab.json"></span>'
+        f'<span class="critter critter-star" data-lottie="{base}assets/lottie/starfish.json"></span>'
+        "</div>"
+    )
     return (
-        f'<footer class="site-footer">{seaweed}<div class="wrap footer-grid">'
+        f'<footer class="site-footer">{seaweed}{critters}<div class="wrap footer-grid">'
         '<div class="footer-brand">'
         "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, solar-powered nearshore "
         "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p>"

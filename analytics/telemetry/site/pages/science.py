@@ -299,4 +299,5 @@ def body(ctx: SiteContext) -> str:
                 '<a class="btn btn-primary" href="../analytics/">Open the dashboard</a>'
                 '<a class="btn" href="../technology/">How the data gets there</a>')
     )
-    return docnav.page(title="Science", items=_NAV, content=content, base=ctx.base)
+    return (c.side_critter(ctx.base, "turtle", "right", "1666/1607")
+            + docnav.page(title="Science", items=_NAV, content=content, base=ctx.base))

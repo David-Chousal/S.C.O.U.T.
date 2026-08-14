@@ -24,7 +24,7 @@ from pathlib import Path
 
 from . import bleaching
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
-from .site import layout
+from .site import components, layout
 
 # Bleaching alert → CSS class (colour lives in the design tokens, theme-aware).
 _ALERT_CLASS = {
@@ -254,7 +254,8 @@ def render_html(
     )
 
     body = (
-        f"{dash_head}"
+        components.side_critter(base, "jellyfish", "left", "1080/1080")
+        + f"{dash_head}"
         '<section class="section"><div class="wrap">'
         f'<div class="cards">{cards}</div>'
         f'<div class="panels">{"".join(panels)}</div>'
