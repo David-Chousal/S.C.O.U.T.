@@ -165,7 +165,13 @@ If low power:
 
 ### Hardware Direction
 
-**ESP32-based system (current recommendation)**
+> **Update (2026-08-14):** the platform is now decided in
+> [ADR-0001](../decisions/0001-mcu-and-radio-selection.md). The confirmed build platform is
+> the **Adafruit Feather M0 + RFM95 LoRa (Adafruit 3178)** with an **Adalogger FeatherWing
+> (Adafruit 2922)**. The ESP32-based direction below is retained as the *future
+> production-PCB* target (ESP32-C3 + SX1262), not the platform being built for the capstone.
+
+**ESP32-based system (original recommendation — now the production target)**
 
 **Why:**
 

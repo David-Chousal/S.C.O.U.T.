@@ -6,6 +6,16 @@
 >
 > **Note** — the source file was named `JR Energy Budget.docx`, but its contents are the complete engineering design document. Renamed here to reflect actual content.
 
+> ⚠️ **Platform note (2026-08-14).** This document describes the **ESP32-C3 + SX1262 custom
+> PCB**, which — per [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) — is now the
+> project's **future production target**, not the platform being built for the capstone. The
+> **confirmed build platform is the Adafruit Feather M0 + RFM95** (see
+> [`hardware/README.md`](../../hardware/README.md) and [`firmware/README.md`](../../firmware/README.md)).
+> Consequently the ESP32-C3/SX1262 references throughout, and the power/energy analysis in
+> §15–17, apply to the production target; a Feather-specific power budget will be produced
+> empirically during Phase 1–4 testing. Sections have **not** been rewritten so this remains
+> the reference design for the eventual PCB.
+
 ---
 
 ## 1. Executive Summary

@@ -1,7 +1,9 @@
 # S.C.O.U.T.
 
-**Santa Clara Oceanic Utilities Transmitter** — a low-cost, solar-powered marine buoy for
-long-term coral reef and nearshore water quality monitoring.
+**Santa Clara Oceanic Utilities Transmitter** — a low-cost, solar-powered, modular
+**nearshore environmental monitoring platform**: one buoy carrying many sensing signals
+(temperature, turbidity, dissolved oxygen, and more), with coral-reef health as its first
+application.
 
 Santa Clara University · Senior Design Capstone · 2026–2027
 
@@ -15,12 +17,20 @@ thousands of dollars, and researchers interviewed for this project described sit
 is physically retrieved only every few years.
 
 SCOUT is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
-reefs and left alone. It samples water temperature, turbidity, and reef soundscapes,
-stores everything locally, and transmits a summarized daily packet to a shore station over
-LoRa radio — no cellular service or internet required at the buoy.
+reefs and left alone. It samples a stack of environmental signals — water temperature and
+turbidity today, with dissolved oxygen, light, chlorophyll, and reef soundscapes on the
+sensor roadmap — stores everything locally, and transmits a summarized daily packet to a
+shore station over LoRa radio, with no cellular service or internet required at the buoy.
+
+It is deliberately built as a **platform, not a single-purpose instrument**: the sensing
+payload is modular so the same buoy, power system, and shore link can be re-tasked across
+reef monitoring, water-quality tracking, and satellite ground-truthing. Coral reef health is
+the first mission, not the boundary. See the
+[MVP System Overview](docs/overview/mvp-system-overview.md) and
+[Sensor Selection](docs/engineering/sensor-selection.md) for the signal roadmap.
 
 **Design priorities:** affordable · durable · low power · modular · minimal maintenance ·
-scalable to many buoys across many sites.
+scalable to many signals, many buoys, and many sites.
 
 **Target:** autonomous operation for 1+ year deployments at a total system cost well below
 the $5,000 figure researchers identified as the practical ceiling.
@@ -42,15 +52,16 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Stakeholder research | ✅ Complete — 3 NOAA researchers interviewed |
 | System architecture | ✅ Complete — [Engineering Design Document v0.2](docs/engineering/engineering-design-document.md) |
 | Mechanical design | 🟡 In progress — enclosure and hull concepts developed |
-| Electrical design | 🟡 In progress — components selected, **MCU/radio contested** |
-| Firmware | 🔴 Not started — blocked on [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md) |
+| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); wiring/PCB pending |
+| Firmware | 🟢 Unblocked — platform decided, ready to start Phase 1 ([`firmware/`](firmware/README.md)) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
 | Shore station | 🔴 Not started |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
-**Most urgent open decision:** the microcontroller and LoRa radio are specified inconsistently
-across documents, and this blocks PCB layout, firmware toolchain selection, and power budget
-verification. See [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md).
+**Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +
+RFM95 (Adafruit 3178)** as the confirmed build platform, with the ESP32-C3 + SX1262 retained
+as the future production-PCB target. This unblocks firmware and wiring. See
+[ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md).
 
 ---
 
@@ -218,7 +229,7 @@ rather than silently reconciled, since resolving each requires a team decision.
 
 | Issue | Detail |
 |---|---|
-| **MCU and radio** | ESP32-C3 + SX1262 (design doc) vs Feather M0 + RFM95 (timeline, recent discussion) — [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md) |
+| ~~**MCU and radio**~~ ✅ Resolved | Settled by [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md): Feather M0 + RFM95 is the build platform; ESP32-C3 + SX1262 is the future production target |
 | **Deployment depth** | 5–8 m (MVP overview) vs ~30 m annotated (sensor string diagram) |
 | **LoRa range** | ~100 yards vs ~2 km vs 15–20 km across documents — needs one measured figure over saltwater |
 | **Hydrophone part** | Aquarian H2a-XLR (diagram) vs H2dM (BOM) |

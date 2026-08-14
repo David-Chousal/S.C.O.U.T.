@@ -25,7 +25,7 @@ SURFACE
              │
 ┌────────────▼──────────────┐
 │ Sealed Electronics Bay    │
-│ ESP32 / SD / LoRa / RTC   │
+│ Feather M0 / SD / LoRa/RTC│
 │ Battery / Audio Logger    │
 └────────────┬──────────────┘
              │

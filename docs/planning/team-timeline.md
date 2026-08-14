@@ -32,18 +32,18 @@ every member completes before the next phase begins.
 
 ### ECE — Hardware Lead
 
-- Place Phase 1 BOM order on Adafruit (~$225)
-- Install Arduino IDE + ESP32 board package
-- Install all firmware libraries (DallasTemp, RTClib, RadioHead, LoRa, ArduinoJson)
-- Confirm a test blink sketch uploads to ESP32 without errors
+- Place Phase 1 BOM order on Adafruit (~$225) — Feather M0 3178, Adalogger 2922, DS18B20 3846, SEN0189
+- Install Arduino IDE + Arduino SAMD + Adafruit SAMD board packages (for the Feather M0)
+- Install all firmware libraries (DallasTemp, RTClib, RadioHead, ArduinoJson)
+- Confirm a test blink sketch uploads to the Feather M0 without errors
 - Share GPIO pin assignment table with CS lead
 - Buy breadboard, jumper wires, multimeter if not already owned
 - RESEARCH HOMEWORK  ALL: Read the ÂB / EACP paper (Shaghaghi et al., 2020) — this is the comm protocol we are adapting. Focus on the sleep-wake synchronization concept. Come to check-in able to explain it in one paragraph.
 
 ### CS — Software Lead
 
-- Buy a bare ESP32 dev board (~$10-15 on Amazon) for independent firmware dev
-- Install Arduino IDE or PlatformIO (VS Code)
+- Buy a second Feather M0 (Adafruit 3178, ~$35) for independent firmware dev on the real platform
+- Install Arduino IDE or PlatformIO (VS Code) + Arduino/Adafruit SAMD board support
 - Install same library list ECE shares; confirm compile
 - Read LoRa packet format spec from ECE lead
 - Decide on CSV data schema: columns, units, timestamp format
@@ -73,10 +73,10 @@ every member completes before the next phase begins.
 ### ECE — Hardware Lead
 
 - Week 1: Wire DS18B20 temp sensor → confirm °C readings in Serial Monitor
-- Week 1: Wire DS3231 RTC → confirm time read and alarm interrupt fires
+- Week 1: Wire/enable the PCF8523 RTC (on the Adalogger) → confirm time read and alarm interrupt fires
 - Week 2: Wire MicroSD card → confirm CSV file creates, appends, closes cleanly
 - Week 2: Wire turbidity sensor (SEN0189) → confirm ADC value changes with water clarity
-- Week 3: Wire RFM95W LoRa → run RadioHead ping-pong between 2 boards
+- Week 3: Bring up the onboard RFM95 LoRa → run RadioHead ping-pong between 2 Feather M0s
 - Week 3: Measure and record sleep current with multimeter (target <5 mA avg)
 - Week 4: Document all wiring with labeled breadboard photo + schematic sketch
 - Week 4: Push all wiring diagrams to GitHub /hardware folder
@@ -85,7 +85,7 @@ every member completes before the next phase begins.
 ### CS — Software Lead
 
 - Week 1: Write and test DS18B20 read function (returns float tempC)
-- Week 1: Write and test DS3231 RTC time-read and alarm-set functions
+- Week 1: Write and test PCF8523 RTC time-read and alarm-set functions
 - Week 2: Write SD card logger — opens file, appends CSV row, closes
 - Week 2: Write turbidity ADC read function with voltage divider math
 - Week 3: Write LoRa TX function — formats JSON packet and transmits
@@ -132,7 +132,7 @@ every member completes before the next phase begins.
 
 - Implement full duty-cycle state machine: Sleep → Wake → Sense → Log → TX → Sleep
 - Implement battery voltage check — skip TX if below threshold (e.g. 11.8V)
-- Implement RTC alarm to wake ESP32 every 30 minutes
+- Implement RTC alarm (PCF8523 on the Adalogger) to wake the Feather M0 every 30 minutes
 - Implement sensor power gate: GPIO 26 HIGH before sleep, LOW after wake
 - Test full loop end-to-end with ECE's integrated breadboard over video call
 - Implement data recovery logic: if SD write fails, retry once then flag error in log
@@ -215,7 +215,7 @@ every member completes before the next phase begins.
 - Measure real solar charging current on sunny and overcast days
 - Iterate antenna height/placement based on range test results
 - Solder final semi-permanent prototype PCB (optional: KiCad → JLCPCB at $5/5pcs)
-- Prepare spare components kit: extra sensors, ESP32, RFM95W, SD cards
+- Prepare spare components kit: extra sensors, Feather M0, SD cards
 - Test sensor readings in real water — compare DS18B20 to known thermometer
 - Document all issues discovered in field; update GitHub issues tracker
 - RESEARCH HOMEWORK  ALL: Research coral reef monitoring networks that already exist (NOAA CoRIS, CRAMP, Allen Coral Atlas). How does their data collection compare to ours? What metrics do they track that we should consider adding? Each member picks one network and presents a 5-minute summary at the November check-in.
@@ -260,7 +260,7 @@ every member completes before the next phase begins.
 - Verify all connections are soldered or crimped (no breadboard in final unit)
 - Apply conformal coating to PCB for humidity and salt spray protection
 - Fully charge LiFePO₄ battery before shipping
-- Pack spare parts kit: 2x DS18B20, 1x ESP32, 1x RFM95W, 2x SD cards, fuses, wire
+- Pack spare parts kit: 2x DS18B20, 1x Feather M0, 2x SD cards, fuses, wire
 - Write field service guide: how to replace sensors without opening main enclosure
 - Write hardware troubleshooting guide: symptom → likely cause → fix
 - Ship or carry hardware to Hawaii by early January
@@ -269,7 +269,7 @@ every member completes before the next phase begins.
 ### CS — Software Lead
 
 - Final firmware v1.2: all bugs from field test resolved, WDT confirmed working
-- Write firmware flashing guide (step-by-step for non-ECE person to reflash ESP32)
+- Write firmware flashing guide (step-by-step for non-ECE person to reflash the Feather M0)
 - Ensure firmware logs startup errors to SD so remote debugging is possible
 - Set up Raspberry Pi shore station at Hawaii location remotely with GE lead
 - Write data retrieval SOP: how to extract SD card data and upload to shared Google Drive
@@ -316,7 +316,7 @@ every member completes before the next phase begins.
 - Monitor live data stream from shore station daily
 - Run data quality checks: flag missing packets, timestamp gaps, sensor anomalies
 - Produce weekly data summary plots — share in team group chat
-- Implement any critical firmware fixes remotely (reflash ESP32 via GE lead on-site)
+- Implement any critical firmware fixes remotely (reflash the Feather M0 via GE lead on-site)
 - Begin writing software design section of final project report
 - Start designing cloud upload pipeline for multi-buoy v2.0 (future scope)
 - Archive all collected data to GitHub /data folder with metadata

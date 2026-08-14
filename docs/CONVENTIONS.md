@@ -259,6 +259,35 @@ docs/reconcile-deployment-depth
 
 Branch for anything non-trivial. Small doc fixes can go straight to `main`.
 
+### Pull requests
+
+**Every PR gets a description with these four sections, in this order.** Explain the *why* —
+the diff already shows the *what*.
+
+- **DATE** — the date the PR was opened (`YYYY-MM-DD`).
+- **What Changed and Why** — a summary of the decisions made and the changes that follow from
+  them.
+- **Open questions** — anything still undecided that a reviewer should weigh in on. Write
+  `None` if there are none.
+- **Open tasks** — follow-up work this PR does *not* cover (a new ADR to resolve, a
+  measurement to take, a downstream doc to update). Write `None` if there are none.
+
+Copy this template:
+
+```markdown
+## DATE
+YYYY-MM-DD
+
+## What Changed and Why
+- …
+
+## Open questions
+- …
+
+## Open tasks
+- …
+```
+
 ### Two repo gotchas
 
 **`git push origin main` is blocked.** A local hook reads it as a force push. Use plain
