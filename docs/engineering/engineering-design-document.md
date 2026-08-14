@@ -1120,9 +1120,15 @@ This approach provides significantly greater deployment duration than a continuo
 
 ## 8. Sensor Architecture
 
+> ⚠️ **Superseded in part by [ADR-0003](../decisions/0003-single-point-sensing.md) (2026-08-14).**
+> The build deploys **one DS18B20 and one SEN0189** at a single sensing location — not the
+> 3× multi-depth string described below. Extra temp/turbidity units are field spares. The
+> quantity and layout below are corrected; the step-by-step operation text still reads "all
+> three" and is superseded — read it as "the sensor". Multi-depth is a future concept.
+
 ### Purpose
 
-The sensor subsystem acquires environmental data from multiple depths while minimizing power consumption and wiring complexity.
+The sensor subsystem acquires environmental data at a single point beneath the buoy while minimizing power consumption and wiring complexity.
 
 Three sensing modalities are included:
 
@@ -1140,7 +1146,7 @@ Three sensing modalities are included:
 
 Quantity:
 
-- 3
+- 1 deployed (2 additional units held as field spares — see ADR-0003)
 
 Communication:
 
@@ -1184,7 +1190,7 @@ Operation:
 
 Quantity:
 
-- 3
+- 1 deployed (2 additional units held as field spares — see ADR-0003)
 
 Interface:
 
@@ -1290,23 +1296,15 @@ Operation:
 
 ### Sensor Layout
 
-The sensor string consists of:
+The deployed sensor set is (per ADR-0003):
 
-- Temperature Sensor 1
+- Temperature Sensor (DS18B20 ×1)
 
-- Turbidity Sensor 1
+- Turbidity Sensor (SEN0189 ×1)
 
-- Temperature Sensor 2
+- Aquarian Hydrophone ×1
 
-- Turbidity Sensor 2
-
-- Temperature Sensor 3
-
-- Turbidity Sensor 3
-
-- Aquarian H2dM Hydrophone
-
-Sensors are vertically distributed beneath the buoy to collect measurements at multiple depths.
+Sensors are sited together at a single point beneath the buoy. Additional DS18B20 and SEN0189 units are kept as field spares, not deployed. A future revision may distribute sensors vertically for multi-depth measurement — see [Sensor String Architecture](sensor-string-architecture.md).
 
 ### Sensor Synchronization
 
@@ -3372,9 +3370,9 @@ This Bill of Materials identifies the primary hardware required to construct one
 
 | **Qty** | **Component** | **Manufacturer** | **Part Number** | **Purpose** |
 |----|----|----|----|----|
-| 3 | Temperature Sensor | Analog Devices / Maxim | DS18B20 | Water temperature |
-| 3 | Turbidity Sensor | DFRobot | SEN0189 | Water turbidity |
-| 1 | Hydrophone | Aquarian Audio | H2dM | Underwater acoustics |
+| 1 (+2 spare) | Temperature Sensor | Analog Devices / Maxim | DS18B20 | Water temperature — 1 deployed, 2 spares (ADR-0003) |
+| 1 (+2 spare) | Turbidity Sensor | DFRobot | SEN0189 | Water turbidity — 1 deployed, 2 spares (ADR-0003) |
+| 1 | Hydrophone | Aquarian Audio | H2dM | Underwater acoustics — part number pending ECE decision |
 
 ### Power System
 

@@ -59,9 +59,10 @@ Each daily CSV starts with the header row below.
 
 - `internal_temp_c`, `internal_humidity_pct` — enclosure State-of-Health. **Not in the v1 BOM**
   (needs an added SoH sensor; the SAMD21 and PCF8523 provide neither reliably). Add when fitted.
-- `temp_c_01`, `temp_c_02`, … — multi-depth temperature if the vertical sensor string
-  ([sensor-string-architecture](sensor-string-architecture.md)) is populated. v1 logs the
-  single confirmed DS18B20 in `temp_c`.
+- `temp_c_01`, `temp_c_02`, … — multi-depth temperature **only if** the vertical sensor string
+  ([sensor-string-architecture](sensor-string-architecture.md)) is ever populated. Per
+  [ADR-0003](../decisions/0003-single-point-sensing.md) the build is single-point, so v1 logs
+  the one deployed DS18B20 in `temp_c` and these columns do not exist.
 - `turbidity_ntu` becomes populated once a calibration exists.
 
 ### `flags` vocabulary (v1)
@@ -94,7 +95,7 @@ Raw audio is **never** transmitted — it stays in `/AUDIO/` on the card.
 - **ADC full-scale.** SAMD21 ADC is 12-bit (0–4095) but SEN0189 outputs up to ~4.5 V — the
   divider/front end (see [hardware/README](../../hardware/README.md)) sets how `turbidity_v` is
   computed. Lock this once the analog input is designed.
-- **Depth string count.** One DS18B20 (confirmed BOM) or the multi-depth string (concept)?
-  Determines whether `temp_c_NN` columns exist.
+- ~~**Depth string count.**~~ ✅ Resolved by [ADR-0003](../decisions/0003-single-point-sensing.md):
+  single-point sensing, so no `temp_c_NN` columns.
 - **SoH sensor.** Is an enclosure temp/humidity sensor being added? If not, drop those
   optional columns from the plan.

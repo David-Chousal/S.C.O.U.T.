@@ -128,8 +128,8 @@ trend analysis and site comparison.
    │  Solar panel ──► MPPT charger ──► LiFePO₄ battery          │
    │                                        │                   │
    │                                        ▼                   │
-   │  Temperature (DS18B20 ×3) ──┐    Microcontroller           │
-   │  Turbidity  (SEN0189 ×3) ───┼──►  duty-cycle state machine │
+   │  Temperature (DS18B20 ×1) ──┐    Microcontroller           │
+   │  Turbidity  (SEN0189 ×1) ───┼──►  duty-cycle state machine │
    │  Hydrophone (Aquarian) ─────┘     sleep / sense / log / TX │
    │                                        │                   │
    │                          Onboard flash ┤                   │
@@ -146,9 +146,11 @@ trend analysis and site comparison.
                         └─────────────────────────────────────┘
 ```
 
-**Sensing.** Sensors are distributed down a vertical string at multiple depths, enabling
-measurement of thermal and turbidity stratification while the electronics bay stays sealed
-above the waterline. See [Sensor String Architecture](docs/engineering/sensor-string-architecture.md).
+**Sensing.** One sensor of each modality is sited at a single point beneath the buoy, with the
+electronics bay sealed above the waterline; spare temperature and turbidity units are kept for
+field replacement ([ADR-0003](docs/decisions/0003-single-point-sensing.md)). A vertical
+multi-depth string — measuring thermal and turbidity stratification — is a documented future
+concept, not the current build. See [Sensor String Architecture](docs/engineering/sensor-string-architecture.md).
 
 **Power.** The system sleeps most of the time, waking on an RTC alarm to sample, log, and
 periodically transmit. Under sustained cloud cover it degrades gracefully: transmission
@@ -232,7 +234,9 @@ rather than silently reconciled, since resolving each requires a team decision.
 | ~~**MCU and radio**~~ ✅ Resolved | Settled by [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md): Feather M0 + RFM95 is the build platform; ESP32-C3 + SX1262 is the future production target |
 | **Deployment depth** | 5–8 m (MVP overview) vs ~30 m annotated (sensor string diagram) |
 | **LoRa range** | ~100 yards vs ~2 km vs 15–20 km across documents — needs one measured figure over saltwater |
-| **Hydrophone part** | Aquarian H2a-XLR (diagram) vs H2dM (BOM) |
+| ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
+| **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — see [ADR-0003](docs/decisions/0003-single-point-sensing.md) related gaps |
+| **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — decide V1.5 vs future |
 | **Academic year** | 2025–2027 vs 2026–2027 |
 | **Project name** | "Oceanic **Utilities** Transmitter" is used across design documents; "Utility" appears occasionally. This README uses "Utilities" |
 
