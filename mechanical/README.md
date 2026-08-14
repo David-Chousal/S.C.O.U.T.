@@ -43,8 +43,9 @@ mechanical/
 
 ## Open items
 
-- **Deployment depth is 5–8 m** (resolved 2026-08-14), per the MVP overview. The ~30 m label
-  on the sensor-string diagram image is outdated and should be re-exported.
+- **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
+  Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The ~30 m label on the
+  sensor-string diagram image is outdated and should be re-exported.
 - Biofouling mitigation strategy is undecided — candidates include copper mesh, mechanical
   wipers, and reef-safe antifouling coatings. Stakeholder interviews flagged this as a major
   risk to sensor accuracy.
