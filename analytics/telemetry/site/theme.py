@@ -516,10 +516,12 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .critter-sub{top:9%;right:6%;width:clamp(72px,7vw,108px);aspect-ratio:512/512;opacity:0.5}
 .critter-crab{bottom:8px;left:11%;width:clamp(46px,5vw,70px);aspect-ratio:1/1;opacity:0.62}
 .critter-star{bottom:20px;right:17%;width:clamp(38px,4vw,56px);aspect-ratio:63/66;opacity:0.58}
-@media (max-width:640px){.critter-sub{display:none}}
+.critter-jelly{top:clamp(3rem,9%,6rem);left:clamp(1rem,3.5vw,4rem);
+  width:clamp(88px,9vw,128px);aspect-ratio:1080/1080;opacity:0.92}
+@media (max-width:640px){.critter-sub,.critter-jelly{display:none}}
 @media (prefers-reduced-motion:reduce){.footer-critters{display:none}}
 /* A single ambient critter fixed in a page's side margin — only where real margin exists. */
-.side-critter{position:fixed;top:50%;transform:translateY(-50%);z-index:2;pointer-events:none;
+.side-critter{position:fixed;top:calc(50% + 25px);transform:translateY(-50%);z-index:2;pointer-events:none;
   width:clamp(110px,9vw,168px);opacity:0.72}
 .side-critter svg{width:100%;height:100%;display:block}
 .side-right{right:clamp(0.5rem,1.6vw,2rem)}

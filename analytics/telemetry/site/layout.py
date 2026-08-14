@@ -138,6 +138,7 @@ def footer(base: str, *, external: bool = True) -> str:
     # Ambient critters drifting around the footer — one each, spread for good spacing.
     critters = (
         '<div class="footer-critters" aria-hidden="true">'
+        f'<span class="critter critter-jelly" data-lottie="{base}assets/lottie/jellyfish.json"></span>'
         f'<span class="critter critter-sub" data-lottie="{base}assets/lottie/submarine.json"></span>'
         f'<span class="critter critter-crab" data-lottie="{base}assets/lottie/crab.json"></span>'
         f'<span class="critter critter-star" data-lottie="{base}assets/lottie/starfish.json"></span>'
