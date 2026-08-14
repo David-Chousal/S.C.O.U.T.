@@ -386,14 +386,14 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 .site-footer{position:relative;isolation:isolate;overflow:hidden;
   border-top:1px solid var(--line);margin-top:var(--section);
-  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(4rem,3rem + 2vw,5.25rem)}
-/* The seaweed sits a little above the page's bottom edge with a modest band of sand beneath,
-   and its base fades into the sand so the page never ends on a hard cut-off frond. */
-.footer-seaweed{position:absolute;left:0;right:0;bottom:clamp(3rem,4vw,4rem);height:210px;
+  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(1.5rem,1rem + 1vw,2.25rem)}
+/* Footer sits flush at the very bottom: the copyright is near the edge and the seaweed reaches
+   the edge too, its base fading into it so it never looks sliced. No sand band beneath. */
+.footer-seaweed{position:absolute;left:0;right:0;bottom:0;height:200px;
   z-index:0;max-width:1200px;margin-inline:auto;pointer-events:none}
 .footer-seaweed .weed{position:absolute;bottom:0;aspect-ratio:144/402;
-  -webkit-mask-image:linear-gradient(to top,transparent 0,#000 16%);
-  mask-image:linear-gradient(to top,transparent 0,#000 16%)}
+  -webkit-mask-image:linear-gradient(to top,transparent 0,#000 20%);
+  mask-image:linear-gradient(to top,transparent 0,#000 20%)}
 .footer-seaweed .weed svg{width:100%;height:100%;display:block}
 .weed-a{left:clamp(1rem,2vw,3.5rem);height:172px;opacity:0.5}
 .weed-b{right:clamp(1rem,2vw,3.5rem);height:146px;opacity:0.44}
