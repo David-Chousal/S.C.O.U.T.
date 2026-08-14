@@ -104,8 +104,10 @@ later decision and should be recorded as its own ADR when the team reaches it.
    5-minute recording, so the buoy only records and stores audio to microSD; all acoustic
    indices are computed **shore-side** by the [`analytics/`](../../analytics) pipeline, which
    already works this way.
-3. **Required LoRa range?** Still open — needs one measured figure over saltwater (Phase 4
-   range test). Design assumes conservative line-of-sight to a nearshore shore station.
+3. **Required LoRa range?** Design figure is **~2 km line of sight** (RFM95 upper bound with a
+   tuned antenna, per the [Adafruit RFM9x range FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)).
+   The earlier ~100 yd and 15–20 km figures were reconciled to this. Real over-saltwater range
+   with a low buoy antenna will be lower and must still be **measured in the Phase 4 range test**.
 4. **LiFePO₄ charging?** The Feather's onboard charger targets 3.7 V LiPo, not the specified
    LiFePO₄ chemistry. Split into its own record — see
    [ADR-0002 — LiFePO₄ charging path](0002-lifepo4-charging-path.md). Owner: ECE lead.

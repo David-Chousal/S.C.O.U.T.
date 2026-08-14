@@ -226,19 +226,20 @@ Markdown and can be imported directly.
 
 ## Known inconsistencies
 
-Surfaced during the August 2026 documentation audit and **not yet resolved**. Recorded here
-rather than silently reconciled, since resolving each requires a team decision.
+Surfaced during the August 2026 documentation audit. Resolved items are struck through with
+their resolution; the remaining open ones are marked ⏳ with an owner. Recorded here rather
+than silently reconciled, since resolving each required a team decision.
 
 | Issue | Detail |
 |---|---|
 | ~~**MCU and radio**~~ ✅ Resolved | Settled by [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md): Feather M0 + RFM95 is the build platform; ESP32-C3 + SX1262 is the future production target |
-| **Deployment depth** | 5–8 m (MVP overview) vs ~30 m annotated (sensor string diagram) |
-| **LoRa range** | ~100 yards vs ~2 km vs 15–20 km across documents — needs one measured figure over saltwater |
+| ~~**Deployment depth**~~ ✅ Resolved | **5–8 m** max (MVP overview). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
+| ~~**LoRa range**~~ ✅ Resolved | Standardized to **~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd and 15–20 km figures corrected. Real over-saltwater range still to be measured in Phase 4 |
 | ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
 | **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — see [ADR-0003](docs/decisions/0003-single-point-sensing.md) related gaps |
 | **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — decide V1.5 vs future |
-| **Academic year** | 2025–2027 vs 2026–2027 |
-| **Project name** | "Oceanic **Utilities** Transmitter" is used across design documents; "Utility" appears occasionally. This README uses "Utilities" |
+| ~~**Academic year**~~ ✅ Resolved | **2026–2027**. No stray 2025–2027 remains in the docs |
+| ~~**Project name**~~ ✅ Resolved | **"Oceanic Utilities Transmitter"** (plural) — used consistently across all docs; no "Utility" (singular) instances remain |
 
 ---
 

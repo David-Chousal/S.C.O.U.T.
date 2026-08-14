@@ -58,7 +58,7 @@
 
 ### Communications & Navigation
 
-- **LoRa** technology provides reliable, low-power, and long-range (15–20+ km) ship-to-shore communication over seawater, bypassing the need for cellular or satellite coverage.
+- **LoRa** technology provides reliable, low-power ship-to-shore communication over seawater, bypassing the need for cellular or satellite coverage. *(Correction, 2026-08-14: the "15–20+ km" figure noted here was optimistic. The RFM95 does ~2 km line-of-sight with a tuned antenna per the Adafruit range FAQ; real over-saltwater range is expected to be lower and will be measured in Phase 4.)*
 
 ### Marine Safety & Legal Requirements
 
