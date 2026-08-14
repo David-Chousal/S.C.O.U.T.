@@ -5,18 +5,18 @@
 > and file each one with the right title, labels, owner, priority, and project. It mirrors the
 > [Open Research Questions](research/open-questions.md), the open rows in [`facts.md`](facts.md)
 > and [`decision-log.md`](decision-log.md#pending-decisions-not-yet-made), the blockers in
-> [`status.md`](status.md), and the follow-on work implied by the 17 merged PRs.
+> [`status.md`](status.md), and the follow-on work implied by the merged PRs.
 >
 > Part of the [Knowledge Hub](README.md). **As of 2026-08-14.**
 >
 > ⚠️ **Why this exists:** the authoring session's Linear MCP points at the Ekho corporate
-> workspace, **not** SCOUT's `scout1`, so it could not create these directly. Nothing here is in
+> workspace, **not** S.C.O.U.T.'s `scout1`, so it could not create these directly. Nothing here is in
 > Linear yet. When a row is filed, replace its **Linear** cell with the `SCO-##` link and, once
 > all are filed, this doc can be retired (or kept as the creation record).
 
 ---
 
-## How to file these (SCOUT Linear conventions)
+## How to file these (S.C.O.U.T. Linear conventions)
 
 From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](../CONVENTIONS.md):
 
@@ -120,7 +120,7 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 ### B7 · `csen: calibrate SEN0189 turbidity to NTU`
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 1
 - **Context** — Gates **A4** (CSV units) and quantitative use of the `sully-2020` Kd490 temp×turbidity interaction. Method available (`droujko-2022`): formazin ladder + ISO 7027 IR nephelometry — port the *method + caveat*, not coefficients (particle-directionality is site-dependent).
-- **Acceptance** — [ ] Calibration curve for SCOUT's SEN0189; [ ] NTU→Kd490 note; [ ] feeds A4.
+- **Acceptance** — [ ] Calibration curve for S.C.O.U.T.'s SEN0189; [ ] NTU→Kd490 note; [ ] feeds A4.
 - **Blocked by** — nothing · **Source** — open-questions, `droujko-2022`, `sully-2020`
 
 ### B8 · `csen: design a drift reference for a single buoy`
@@ -137,7 +137,7 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 
 ### B10 · `research: identify the nearest NOAA STR series to the Hawaii site`
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Low` · **Project** Phase 5
-- **Context** — Supplies the in-situ temperature / DHW ground-truth comparator for validating SCOUT's record.
+- **Context** — Supplies the in-situ temperature / DHW ground-truth comparator for validating S.C.O.U.T.'s record.
 - **Acceptance** — [ ] Nearest STR station + DOI/landing page identified and recorded.
 - **Blocked by** — site selection · **Source** — open-questions, `noaa-ncrmp-str`
 
@@ -183,7 +183,7 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 
 | PR | Date | Area | Summary |
 |---|---|---|---|
-| #1 | 2026-08-14 | docs | Resolve ADR-0001 (Feather M0 platform), reframe SCOUT as a platform, open ADR-0002 |
+| #1 | 2026-08-14 | docs | Resolve ADR-0001 (Feather M0 platform), reframe S.C.O.U.T. as a platform, open ADR-0002 |
 | #2 | 2026-08-14 | process | Require all changes to reach main via a PR |
 | #3 | 2026-08-14 | process | Make auto-merge the PR convention (later reversed) |
 | #4 | 2026-08-14 | process | Require PR review before merge (no auto-merge) |
@@ -213,10 +213,12 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 | #30 | 2026-08-14 | ci | Make the pr-body check reject empty sections |
 | #31 | 2026-08-14 | mechanical | Scaffold CAD subsystem folders |
 | #32 | 2026-08-14 | mechanical | Import flotation and turbidity-housing CAD drawings |
-| #33 | 2026-08-14 | assets | Add SCOUT logo files |
+| #33 | 2026-08-14 | assets | Add S.C.O.U.T. logo files |
 | #34 | 2026-08-14 | ci | Re-run PR checks on edit; hint on bold headings |
+| #35 | 2026-08-14 | docs | Standardize the S.C.O.U.T. wordmark across documentation |
+| #36 | 2026-08-14 | ci | Accept common heading variants in the pr-body check |
 
-> **Count note:** **32 merged** as of this writing; PRs **#19** (this doc) and **#27** (telemetry
+> **Count note:** **34 merged** as of this writing; PRs **#19** (this doc) and **#27** (telemetry
 > site redesign) are still open. The repo is under active concurrent work, so re-run
 > `gh pr list --state merged` before filing and append anything newer.
 >
