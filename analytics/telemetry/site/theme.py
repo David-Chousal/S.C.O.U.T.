@@ -7,9 +7,10 @@ the data. Cards are softly rounded with a hairline ring and a whisper-soft shado
 
 Everything is emitted as a string into each page. There are **no external requests**: the fonts
 are self-hosted (same-origin, with a graceful system fallback), colours are warm tokens, and
-every graphic is inline SVG. The site is deliberately **light-only** — one sandy, beige canvas
-regardless of the OS colour-scheme. Motion is a single gentle load-fade — never
-scroll-dependent — so content is always visible.
+every graphic is inline SVG. The site is deliberately **light-only** (one sandy, beige canvas
+regardless of the OS colour-scheme). Navigation between pages uses the CSS cross-document View
+Transitions API for a left-to-right slide-and-fade, with no JavaScript; browsers without it
+navigate normally. Motion is never scroll-dependent, so content is always visible.
 """
 
 from __future__ import annotations
@@ -120,9 +121,15 @@ body{
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
   font-feature-settings:"ss01";
 }
+/* Seamless page-to-page transitions: a left-to-right slide with a fade, between separate
+   documents on same-origin navigation. Pure CSS and script-free. Browsers without
+   cross-document view transitions simply navigate normally. */
+@view-transition{navigation:auto}
 @media (prefers-reduced-motion:no-preference){
-  body{animation:fade 0.9s var(--ease) both}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
+  ::view-transition-old(root){animation:page-out 260ms var(--ease) both}
+  ::view-transition-new(root){animation:page-in 400ms var(--ease) both}
+  @keyframes page-out{to{opacity:0;transform:translateX(-7%)}}
+  @keyframes page-in{from{opacity:0;transform:translateX(7%)}}
 }
 h1,h2,h3,h4{font-family:var(--font);font-weight:520;line-height:1.1;
   letter-spacing:-0.02em;color:var(--ink);margin:0}
