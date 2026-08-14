@@ -121,7 +121,6 @@ def _habitat(ctx: SiteContext) -> str:
         + "</div>",
         cls="section-sm",
         sid="habitat",
-        wrap="wrap wrap-wide",
     )
 
 

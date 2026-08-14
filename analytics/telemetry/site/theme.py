@@ -289,10 +289,12 @@ img{max-width:100%;height:auto;display:block}
 .card-ink .stat .stat-value{color:var(--bg)}
 
 /* ── Pill image cards ─────────────────────────────────────────────────────── */
-.pill-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:clamp(0.55rem,0.3rem + 0.6vw,0.85rem)}
+/* Four pills across, within the standard content width so the section lines up with the ones
+   above and below. They grow taller (not wider) to feel larger. */
+.pill-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:clamp(0.6rem,0.3rem + 0.7vw,0.95rem)}
 .pill{position:relative;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
-  aspect-ratio:3/4;background:var(--surface-2);box-shadow:var(--shadow-1);
+  aspect-ratio:5/8;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .pill.wide{aspect-ratio:1/1}
 .pill:hover{transform:translateY(-5px);box-shadow:var(--shadow-2)}
@@ -384,12 +386,12 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 .site-footer{position:relative;isolation:isolate;overflow:hidden;
   border-top:1px solid var(--line);margin-top:var(--section);
-  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(5rem,3.5rem + 4vw,8rem)}
-/* The seaweed is rooted well below the footer's bottom edge (clipped), so only the fronds show
-   and the page never ends on an abrupt cut. */
-.footer-seaweed{position:absolute;left:0;right:0;bottom:0;height:260px;z-index:0;
-  max-width:1200px;margin-inline:auto;pointer-events:none}
-.footer-seaweed .weed{position:absolute;bottom:clamp(1.5rem,3vw,3rem);aspect-ratio:144/402}
+  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(6.5rem,4.5rem + 6vw,11rem)}
+/* The seaweed sits a good distance above the page's bottom edge, so there is always a band of
+   sand beneath it and the page never ends on a cut-off frond. */
+.footer-seaweed{position:absolute;left:0;right:0;bottom:clamp(3.5rem,5vw,5.5rem);height:230px;
+  z-index:0;max-width:1200px;margin-inline:auto;pointer-events:none}
+.footer-seaweed .weed{position:absolute;bottom:0;aspect-ratio:144/402}
 .footer-seaweed .weed svg{width:100%;height:100%;display:block}
 .weed-a{left:clamp(1rem,2vw,3.5rem);height:172px;opacity:0.5}
 .weed-b{right:clamp(1rem,2vw,3.5rem);height:146px;opacity:0.44}
