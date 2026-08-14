@@ -186,17 +186,17 @@ main figure{margin:0}
   background:color-mix(in srgb,var(--bg) 82%,transparent);
   backdrop-filter:saturate(1.3) blur(16px);-webkit-backdrop-filter:saturate(1.3) blur(16px)}
 /* Three-column header: brand left, nav menu centred, social icons right. */
-.nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:80px}
+.nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:68px}
 .brand{display:inline-flex;align-items:center;gap:0.7rem;color:var(--ink);justify-self:start}
 .brand:hover{opacity:1}
-.brand .mark{width:30px;height:30px;flex:none}
+.brand .mark{width:26px;height:26px;flex:none}
 .brand-txt{display:flex;flex-direction:column;line-height:1.1}
-.brand-txt b{font-weight:700;letter-spacing:0.02em;font-size:1rem}
-.brand-txt span{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
+.brand-txt b{font-weight:700;letter-spacing:0.02em;font-size:0.85rem}
+.brand-txt span{font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
   margin-top:2px}
 .nav-links{display:flex;align-items:center;justify-self:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
   list-style:none;margin:0;padding:0}
-.nav-links a{color:var(--muted);font-size:var(--text-micro);font-weight:500;
+.nav-links a{color:var(--muted);font-size:0.64rem;font-weight:500;
   letter-spacing:var(--track);text-transform:uppercase;padding:0.4rem 0;position:relative}
 .nav-links a:hover{color:var(--ink);opacity:1}
 .nav-links a[aria-current=page]{color:var(--ink)}
@@ -205,11 +205,11 @@ main figure{margin:0}
 .nav-social{display:flex;align-items:center;justify-self:end;gap:1.1rem}
 .nav-social a{color:var(--muted);display:inline-flex;transition:color var(--dur) var(--ease)}
 .nav-social a:hover{color:var(--accent);opacity:1}
-.nav-social svg{width:18px;height:18px}
+.nav-social svg{width:15px;height:15px}
 /* Mobile nav toggle — hidden on desktop, where the links show inline. */
 .nav-toggle,.nav-burger{display:none}
 @media(max-width:720px){
-  .nav{display:flex;justify-content:space-between;gap:0.8rem;min-height:64px}
+  .nav{display:flex;justify-content:space-between;gap:0.8rem;min-height:56px}
   /* Hamburger button (a <label> driving the hidden checkbox). */
   .nav-burger{display:inline-flex;position:relative;width:30px;height:30px;cursor:pointer;z-index:2}
   .nav-burger span{position:absolute;left:5px;right:5px;top:50%;height:2px;margin-top:-1px;
@@ -238,18 +238,23 @@ main figure{margin:0}
 }
 
 /* ── Doc layout: a sticky left section sidebar for the long content pages ─────── */
-.doc{max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+/* Below the two-column breakpoint the doc is a normal centred page. */
+.doc{max-width:1140px;margin-inline:auto;padding-inline:var(--gutter)}
 /* The per-section .wrap is neutralised inside .doc so the grid (not a second centred column)
    controls width; the .doc container supplies the gutter. */
 .doc-body .wrap{max-width:none;margin-inline:0;padding-inline:0}
-.doc-body [id]{scroll-margin-top:96px}
+.doc-body [id]{scroll-margin-top:84px}
 .doc-nav{display:none}
 @media(min-width:1000px){
-  .doc{display:grid;grid-template-columns:186px minmax(0,1fr);gap:clamp(2rem,1rem + 3vw,5rem);
+  /* The sidebar is a deliberate exception to the centred content margin: the whole doc is
+     left-aligned so the menu lives in the far-left margin, with content flowing to its right. */
+  .doc{max-width:1340px;margin-inline:0 auto;
+    padding-inline:clamp(1.1rem,1.6vw,2.4rem) var(--gutter);
+    display:grid;grid-template-columns:168px minmax(0,1fr);gap:clamp(1.75rem,1rem + 2.5vw,4rem);
     align-items:start}
   .doc-body{min-width:0}
-  .doc-nav{display:block;position:sticky;top:96px;align-self:start;
-    max-height:calc(100vh - 120px);overflow-y:auto}
+  .doc-nav{display:block;position:sticky;top:84px;align-self:start;
+    max-height:calc(100vh - 108px);overflow-y:auto}
 }
 .doc-nav-title{font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--faint);margin:0 0 1rem}
