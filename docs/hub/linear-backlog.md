@@ -200,10 +200,20 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 | #16 | 2026-08-14 | csen | Firmware Phase-1 SAMD21 scaffold (codec, scheduler, drivers, state machine) |
 | #17 | 2026-08-14 | csen | Real SAMD21 standby sleep (ArduinoLowPower + PCF8523 INT wake) |
 | #18 | 2026-08-14 | csen | Firmware watchdog timer for autonomous hang recovery |
+| #20 | 2026-08-14 | csen | Retain `record_seq`/`last_tx` across resets (no-init RAM) |
+| #21 | 2026-08-14 | docs | Add all 16 open-access source PDFs to the public library |
 
-> **Count note:** **18 merged** as of this writing. The repo is under active concurrent work — re-run
-> `gh pr list --state merged` before filing and append any newer PRs. (PRs #16–#18 are the firmware
-> Phase-1 line: scaffold → standby sleep → watchdog; their on-hardware validation is tracked by **C2**.)
+> **Count note:** **20 merged** as of this writing (PR #19 is this doc, still open).
+> **In flight — watch when it lands:** PR #22 adds a **State-of-Health (SoH) field to the packet +
+> CSV**, which will change the packet layout — update [`facts.md`](facts.md) packet-size row and the
+> [Data Schema](../engineering/data-schema.md) when it merges.
+> The repo is under active concurrent work — re-run `gh pr list --state merged` before filing and
+> append any newer PRs.
+>
+> Firmware Phase-1 line = PRs **#16–#18, #20** (scaffold → standby sleep → watchdog → retained
+> state); on-hardware validation of all of it is tracked by **C2**. PR **#21** already resolved the
+> "open-access PDFs → `library/`" follow-up, so the 🔓 rows in [`sources.md`](research/sources.md) now
+> have their `Local` PDFs.
 
 ## Settled decisions — do **not** create tickets for these
 
