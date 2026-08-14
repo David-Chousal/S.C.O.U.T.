@@ -352,5 +352,3 @@ answer from it — but it's there.
 **What it will ask you at the start of every session:** whether anything changed outside the
 repo — meetings, Notion edits, decisions made in person. Answer honestly. That question is the
 mechanism that keeps four tools from drifting apart, and it only works if you use it.
-
-**What it cannot do:** read Granola. Paste those notes in.
