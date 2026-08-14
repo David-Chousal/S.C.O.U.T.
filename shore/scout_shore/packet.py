@@ -22,7 +22,8 @@ Layout (little-endian), 27-byte body + 2-byte CRC = **29 bytes** (well under the
 | turbidity_adc | uint16 | raw ADC counts |
 | battery_mv | uint16 | millivolts |
 | uptime_s | uint32 | seconds since boot |
-| flags | uint16 | bitfield, see FLAG_BITS |
+| flags | uint16 | per-cycle event bitfield, see FLAG_BITS |
+| soh | uint8 | device State-of-Health bitfield, see SOH_BITS |
 | audio_present | uint8 | 1 if a recording was taken this cycle |
 | fw_major/minor/patch | uint8 ×3 | firmware version |
 | crc | uint16 | CRC-16/CCITT-FALSE over the body |
@@ -36,7 +37,7 @@ from datetime import datetime, timezone
 
 PACKET_VERSION = 1
 
-_BODY_FORMAT = "<BHIIhHHIHBBBB"  # 27 bytes
+_BODY_FORMAT = "<BHIIhHHIHBBBBB"  # 28 bytes (soh byte inserted after flags)
 _BODY_SIZE = struct.calcsize(_BODY_FORMAT)
 _CRC_FORMAT = "<H"
 PACKET_SIZE = _BODY_SIZE + struct.calcsize(_CRC_FORMAT)
@@ -50,6 +51,15 @@ FLAG_BITS = {
     "TURBIDITY_RANGE": 2,
     "BATT_LOW_SKIP_TX": 3,
     "RTC_LOST": 4,
+}
+
+# Device State-of-Health bits (set at boot/init; persistent, distinct from the per-cycle
+# `flags`). See docs/engineering/data-schema.md soh vocabulary.
+SOH_BITS = {
+    "WATCHDOG_RESET": 0,   # last boot followed a watchdog reset
+    "RTC_UNSET": 1,        # RTC lost power / not set at boot
+    "SD_INIT_FAIL": 2,     # microSD failed to initialize
+    "LORA_INIT_FAIL": 3,   # LoRa radio failed to initialize
 }
 
 
@@ -72,6 +82,7 @@ class Reading:
     battery_v: float
     uptime_s: int
     flags: frozenset[str] = field(default_factory=frozenset)
+    soh: frozenset[str] = field(default_factory=frozenset)
     audio_present: bool = False
     fw_version: str = "v0.1.0"
     schema_version: int = PACKET_VERSION
@@ -82,6 +93,9 @@ class Reading:
         unknown = set(self.flags) - set(FLAG_BITS)
         if unknown:
             raise ValueError(f"unknown flag(s): {sorted(unknown)}")
+        unknown_soh = set(self.soh) - set(SOH_BITS)
+        if unknown_soh:
+            raise ValueError(f"unknown soh bit(s): {sorted(unknown_soh)}")
 
 
 def crc16_ccitt(data: bytes) -> int:
@@ -103,6 +117,17 @@ def _flags_to_bits(flags: frozenset[str]) -> int:
 
 def _bits_to_flags(bits: int) -> frozenset[str]:
     return frozenset(name for name, pos in FLAG_BITS.items() if bits & (1 << pos))
+
+
+def _soh_to_bits(soh: frozenset[str]) -> int:
+    bits = 0
+    for name in soh:
+        bits |= 1 << SOH_BITS[name]
+    return bits
+
+
+def _bits_to_soh(bits: int) -> frozenset[str]:
+    return frozenset(name for name, pos in SOH_BITS.items() if bits & (1 << pos))
 
 
 def _parse_fw(version: str) -> tuple[int, int, int]:
@@ -127,6 +152,7 @@ def encode(reading: Reading) -> bytes:
         round(reading.battery_v * 1000),
         reading.uptime_s,
         _flags_to_bits(reading.flags),
+        _soh_to_bits(reading.soh),
         1 if reading.audio_present else 0,
         fw_major,
         fw_minor,
@@ -156,6 +182,7 @@ def decode(payload: bytes) -> Reading:
         battery_mv,
         uptime_s,
         flag_bits,
+        soh_bits,
         audio_present,
         fw_major,
         fw_minor,
@@ -176,6 +203,7 @@ def decode(payload: bytes) -> Reading:
         battery_v=battery_mv / 1000,
         uptime_s=uptime_s,
         flags=_bits_to_flags(flag_bits),
+        soh=_bits_to_soh(soh_bits),
         audio_present=bool(audio_present),
         fw_version=f"v{fw_major}.{fw_minor}.{fw_patch}",
         schema_version=schema_version,

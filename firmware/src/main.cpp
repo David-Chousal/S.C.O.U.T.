@@ -27,7 +27,7 @@
 
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
-    "turbidity_ntu,battery_v,uptime_s,audio_file,flags,fw_version";
+    "turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version";
 
 // Sequence counter and last-transmit time, kept in a NO-INIT RAM section that the C startup
 // does not clear. They therefore survive a watchdog/system reset (the MCU stays powered), so
@@ -53,6 +53,7 @@ static bool g_rtc_ok = false;
 static bool g_sd_ok = false;
 static bool g_lora_ok = false;
 static bool g_watchdog_reset = false;  // set if the last reset was the watchdog firing
+static uint8_t g_soh = 0;              // device State-of-Health bitfield, computed at boot
 
 // ── flag-name formatting (matches the data-schema flags vocabulary) ──────────
 static void append_flag(char *buf, size_t cap, bool &first, const char *name) {
@@ -71,6 +72,15 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
     if (flags & SCOUT_FLAG_TURBIDITY_RANGE) append_flag(buf, cap, first, "TURBIDITY_RANGE");
     if (flags & SCOUT_FLAG_BATT_LOW_SKIP_TX) append_flag(buf, cap, first, "BATT_LOW_SKIP_TX");
     if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
+}
+
+static void format_soh(uint8_t soh, char *buf, size_t cap) {
+    buf[0] = '\0';
+    bool first = true;
+    if (soh & SCOUT_SOH_WATCHDOG_RESET) append_flag(buf, cap, first, "WATCHDOG_RESET");
+    if (soh & SCOUT_SOH_RTC_UNSET) append_flag(buf, cap, first, "RTC_UNSET");
+    if (soh & SCOUT_SOH_SD_INIT_FAIL) append_flag(buf, cap, first, "SD_INIT_FAIL");
+    if (soh & SCOUT_SOH_LORA_INIT_FAIL) append_flag(buf, cap, first, "LORA_INIT_FAIL");
 }
 
 // Wake ISR — the work happens back in loop() after deepSleep() returns; this just needs to
@@ -133,6 +143,13 @@ void setup() {
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
 
+    // Device State-of-Health snapshot (boot cause + subsystem init), sent in every packet/row.
+    g_soh = 0;
+    if (g_watchdog_reset) g_soh |= SCOUT_SOH_WATCHDOG_RESET;
+    if (!g_rtc_ok || g_rtc.lostPower()) g_soh |= SCOUT_SOH_RTC_UNSET;
+    if (!g_sd_ok) g_soh |= SCOUT_SOH_SD_INIT_FAIL;
+    if (!g_lora_ok) g_soh |= SCOUT_SOH_LORA_INIT_FAIL;
+
     Serial.print("boot: watchdog_reset=");
     Serial.print(g_watchdog_reset ? "yes" : "no");
     Serial.print(" rtc=");
@@ -177,8 +194,11 @@ void loop() {
     //    and not on the confirmed Feather build; record the intent only.
     bool audio_present = scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC));
 
-    // 5. Battery gate.
+    // 5. Battery gate. Set the flag now (before logging) so the CSV row captures it.
     bool battery_ok = scout_battery_ok(battery_mv, BATTERY_SKIP_TX_MV);
+    if (!battery_ok) {
+        flags |= SCOUT_FLAG_BATT_LOW_SKIP_TX;
+    }
 
     g_state.record_seq++;
 
@@ -197,13 +217,18 @@ void loop() {
                  (unsigned)((now % 86400) / 3600), (unsigned)((now % 3600) / 60), 0u);
     }
 
-    char line[192];
+    char flag_str[80];
+    format_flags(flags, flag_str, sizeof(flag_str));
+    char soh_str[80];
+    format_soh(g_soh, soh_str, sizeof(soh_str));
+
+    char line[224];
     snprintf(line, sizeof(line),
-             "%u,SCOUT-%02u,%s,%lu,%.2f,%u,%.3f,,%.2f,%lu,%s,,v%d.%d.%d",
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%u,%.3f,,%.2f,%lu,%s,%s,%s,v%d.%d.%d",
              SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
              temp_c, turbidity_adc, turbidity_v, battery_mv / 1000.0f,
-             (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, FW_MAJOR, FW_MINOR,
-             FW_PATCH);
+             (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, flag_str, soh_str,
+             FW_MAJOR, FW_MINOR, FW_PATCH);
 
     if (g_sd_ok) {
         char date_ymd[9];
@@ -222,10 +247,10 @@ void loop() {
     // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s).
     Watchdog.reset();
 
-    // 7. Transmit the summarized packet once per day, if the battery allows.
-    if (!battery_ok) {
-        flags |= SCOUT_FLAG_BATT_LOW_SKIP_TX;
-    } else if (g_lora_ok && scout_is_transmit_cycle(now, g_state.last_tx_epoch, TRANSMIT_PERIOD_S)) {
+    // 7. Transmit the summarized packet once per day, if the battery allows. (The battery-low
+    //    flag was set in step 5.)
+    if (battery_ok && g_lora_ok &&
+        scout_is_transmit_cycle(now, g_state.last_tx_epoch, TRANSMIT_PERIOD_S)) {
         ScoutReading r;
         r.schema_version = SCOUT_PACKET_VERSION;
         r.buoy_id = BUOY_ID;
@@ -236,6 +261,7 @@ void loop() {
         r.battery_mv = battery_mv;
         r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
         r.flags = flags;
+        r.soh = g_soh;
         r.audio_present = audio_present ? 1 : 0;
         r.fw_major = FW_MAJOR;
         r.fw_minor = FW_MINOR;
@@ -248,12 +274,12 @@ void loop() {
         }
     }
 
-    char flag_str[80];
-    format_flags(flags, flag_str, sizeof(flag_str));
     Serial.print("seq=");
     Serial.print(g_state.record_seq);
     Serial.print(" flags=");
-    Serial.println(flag_str[0] ? flag_str : "-");
+    Serial.print(flag_str[0] ? flag_str : "-");
+    Serial.print(" soh=");
+    Serial.println(soh_str[0] ? soh_str : "-");
 
     // 8. Back to sleep until the next scheduled wake.
     enter_deep_sleep();

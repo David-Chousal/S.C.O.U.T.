@@ -36,6 +36,7 @@ size_t scout_packet_encode(const ScoutReading *r, uint8_t *out) {
     put_u16(&p, r->battery_mv);
     put_u32(&p, r->uptime_s);
     put_u16(&p, r->flags);
+    put_u8(&p, r->soh);
     put_u8(&p, r->audio_present);
     put_u8(&p, r->fw_major);
     put_u8(&p, r->fw_minor);

@@ -27,6 +27,7 @@ COLUMNS: tuple[str, ...] = (
     "uptime_s",
     "audio_file",
     "flags",
+    "soh",
     "fw_version",
 )
 
@@ -74,6 +75,7 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "uptime_s": str(reading.uptime_s),
         "audio_file": audio_filename(reading) if reading.audio_present else "",
         "flags": "|".join(sorted(reading.flags)),
+        "soh": "|".join(sorted(reading.soh)),
         "fw_version": reading.fw_version,
     }
 
