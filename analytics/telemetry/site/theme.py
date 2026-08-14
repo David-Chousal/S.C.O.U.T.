@@ -356,7 +356,7 @@ main figure{margin:0}
 .drawings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
 @media(max-width:600px){.drawings-grid{grid-template-columns:1fr}}
 /* .drawing is a <figure>; its UA margin is handled by the scoped `main figure{margin:0}` reset. */
-.drawing{background:#fff;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
+.drawing{background:#fff;border-radius:var(--radius);overflow:hidden;
   box-shadow:var(--shadow-1);transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .drawing:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
 .drawing img{width:100%;height:auto;display:block}
