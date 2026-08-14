@@ -317,6 +317,12 @@ YYYY-MM-DD
   (list only what this PR touched, or write "Hub: no relevant surface")
 ```
 
+**Fill in every section — a heading with no content under it is not enough.** Put the *why*
+inside **What Changed and Why**, not in a paragraph above the sections. The `pr-body` check
+rejects a section left as a bare `-` or the template's comment hint; write `None` for an empty
+**Open questions** / **Open tasks**, and `Hub: no relevant surface` for **Knowledge Hub** when
+none apply.
+
 **Open for review; merge only after approval — never auto-merge.** A PR is opened to be
 reviewed, not merged on creation. Leave it open until a teammate has looked at it, then merge
 manually: the **Merge pull request** button, or `gh pr merge <n> --merge --delete-branch`.

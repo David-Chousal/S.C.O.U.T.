@@ -52,6 +52,34 @@ def heading_positions(body: str) -> dict[str, int]:
     return found
 
 
+COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+LIST_MARKER_RE = re.compile(r"^\s*(?:[-*+]|\d+\.)\s*")
+
+
+def section_bodies(body: str, found: dict[str, int]) -> dict[str, str]:
+    """Return each present section's text (keyed by lowercase name), from just after its
+    heading to the next section heading (or end of body)."""
+    lines = body.splitlines()
+    ordered = sorted((idx, key) for key, idx in found.items())
+    out: dict[str, str] = {}
+    for i, (idx, key) in enumerate(ordered):
+        end = ordered[i + 1][0] if i + 1 < len(ordered) else len(lines)
+        out[key] = "\n".join(lines[idx + 1 : end])
+    return out
+
+
+def is_placeholder(section_text: str) -> bool:
+    """A section counts as unfilled if, after stripping HTML comments and bare list
+    markers, no real text remains — so a lone ``-`` or only the template's comment hint
+    fails, while ``- None`` or ``Hub: no relevant surface`` passes."""
+    text = COMMENT_RE.sub("", section_text)
+    for line in text.splitlines():
+        stripped = LIST_MARKER_RE.sub("", line).strip()
+        if stripped:
+            return False
+    return True
+
+
 def check(body: str) -> list[str]:
     errors: list[str] = []
     if not body or not body.strip():
@@ -70,6 +98,17 @@ def check(body: str) -> list[str]:
                 "Sections are out of order. Required order: "
                 + " → ".join(f"## {n}" for n in REQUIRED)
             )
+
+    bodies = section_bodies(body, found)
+    empty = [n for n in present if is_placeholder(bodies.get(n.lower(), ""))]
+    if empty:
+        errors.append(
+            "Section(s) present but not filled in (a lone '-' or the template comment does "
+            "not count — write the actual content): "
+            + ", ".join(f"## {e}" for e in empty)
+            + '.\n  For "Open questions"/"Open tasks" write "None" if there genuinely are none; '
+            'for "Knowledge Hub" write "Hub: no relevant surface" if none apply.'
+        )
     return errors
 
 
