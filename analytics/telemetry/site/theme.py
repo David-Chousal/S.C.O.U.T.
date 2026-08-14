@@ -298,7 +298,7 @@ img{max-width:100%;height:auto;display:block}
 @media(max-width:720px){.pill-row{grid-template-columns:repeat(2,1fr);
   gap:clamp(0.3rem,0.2rem + 0.6vw,0.6rem)}}
 .pill{position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
-  aspect-ratio:4/7;background:var(--surface-2);box-shadow:var(--shadow-1);
+  aspect-ratio:6/8;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .pill.wide{aspect-ratio:1/1}
 .pill:hover{transform:translateY(-5px);box-shadow:var(--shadow-2)}
