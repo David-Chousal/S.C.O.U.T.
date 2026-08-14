@@ -121,20 +121,22 @@ body{
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
   font-feature-settings:"ss01";
 }
-/* Seamless page-to-page transitions: the main content slides left-to-right with a fade while
-   the header and notice ribbon stay fixed. Pure CSS, script-free, same-origin only. Naming the
-   header and ribbon pulls them out of the animated root snapshot, so they hold still across the
-   navigation. Browsers without cross-document view transitions navigate normally. */
+/* Page-to-page transitions: the main content slides left-to-right with a fade while the header
+   holds fixed, and the active-nav underline slides from the old item to the new one. Pure CSS,
+   script-free, same-origin only. Naming the header pulls it out of the animated root snapshot so
+   it stays put; naming the underline lets it morph between pages. The timing is kept short so
+   rapid navigation stays responsive. Browsers without it navigate normally. */
 @view-transition{navigation:auto}
 .site-header{view-transition-name:site-header}
-.ribbon{view-transition-name:site-ribbon}
 @media (prefers-reduced-motion:no-preference){
-  ::view-transition-group(site-header),
-  ::view-transition-group(site-ribbon){animation-duration:0s}
-  ::view-transition-old(root){animation:page-out 480ms var(--ease) both}
-  ::view-transition-new(root){animation:page-in 680ms var(--ease) both}
-  @keyframes page-out{to{opacity:0;transform:translateX(-5%)}}
-  @keyframes page-in{from{opacity:0;transform:translateX(5%)}}
+  .nav-links .nav-mark{view-transition-name:nav-underline}
+  ::view-transition-group(site-header){animation-duration:0s}
+  ::view-transition-group(nav-underline){animation-duration:300ms;
+    animation-timing-function:var(--ease)}
+  ::view-transition-old(root){animation:page-out 200ms var(--ease) both}
+  ::view-transition-new(root){animation:page-in 280ms var(--ease) both}
+  @keyframes page-out{to{opacity:0;transform:translateX(-4%)}}
+  @keyframes page-in{from{opacity:0;transform:translateX(4%)}}
 }
 h1,h2,h3,h4{font-family:var(--font);font-weight:520;line-height:1.1;
   letter-spacing:-0.02em;color:var(--ink);margin:0}
@@ -190,8 +192,8 @@ img{max-width:100%;height:auto;display:block}
   letter-spacing:var(--track);text-transform:uppercase;padding:0.4rem 0;position:relative}
 .nav-links a:hover{color:var(--ink);opacity:1}
 .nav-links a[aria-current=page]{color:var(--ink)}
-.nav-links a[aria-current=page]::after{content:"";position:absolute;left:0;right:0;bottom:-4px;
-  height:1.5px;background:var(--accent)}
+.nav-links .nav-mark{position:absolute;left:0;right:0;bottom:-4px;height:1.5px;border-radius:2px;
+  background:var(--accent)}
 .nav-social{display:flex;align-items:center;gap:1rem}
 .nav-social a{color:var(--muted);display:inline-flex}
 .nav-social a:hover{color:var(--ink);opacity:1}
@@ -389,10 +391,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--line);
   color:var(--faint);font-size:var(--text-small)}
 
-/* ── Sample-data ribbon + banner ──────────────────────────────────────────── */
-.ribbon{text-align:center;padding:0.55rem 1rem;font-size:var(--text-small);color:var(--muted);
-  background:var(--bg-2);border-bottom:1px solid var(--line)}
-.ribbon b{color:var(--coral);font-weight:600}
+/* ── Sample-data banner (Analytics) ───────────────────────────────────────── */
 .banner{max-width:1140px;margin:1.6rem auto 0;padding:0.9rem 1.3rem;border-radius:var(--radius);
   background:var(--surface);box-shadow:var(--ring);color:var(--muted);font-size:var(--text-small)}
 .banner b{color:var(--coral)}

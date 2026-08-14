@@ -99,14 +99,9 @@ def build_site(
     generated = generated_at.strftime("%Y-%m-%d %H:%M UTC")
     fonts_present = (assets_out / "fonts" / "dmsans-latin.woff2").exists()
     img_dir = assets_out / "img"
-    # Site-wide notice ribbon. Emphasise the label before the first colon, if present.
+    # No site-wide ribbon: the sample-data notice appears on the Home live band and the
+    # Analytics banner instead.
     ribbon = None
-    if banner:
-        if ":" in banner:
-            label, rest = banner.split(":", 1)
-            ribbon = f"<b>{label.strip()}:</b>{rest}"
-        else:
-            ribbon = banner
     live = _live_stats(report, banner)
 
     def page(base: str, active: str, mod, body_html: str) -> str:

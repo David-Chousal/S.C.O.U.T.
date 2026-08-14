@@ -42,9 +42,13 @@ def header(base: str, active: str) -> str:
     active_slug = _ACTIVE_SLUG.get(active, "")
     links = []
     for slug, label, optional in _NAV:
-        cur = ' aria-current="page"' if slug == active_slug else ""
+        active = slug == active_slug
+        cur = ' aria-current="page"' if active else ""
         cls = ' class="opt"' if optional else ""
-        links.append(f'<li{cls}><a href="{_href(base, slug)}"{cur}>{label}</a></li>')
+        # A real element (not ::after) so it can carry a view-transition-name and slide
+        # between pages during the cross-document transition.
+        mark = '<span class="nav-mark"></span>' if active else ""
+        links.append(f'<li{cls}><a href="{_href(base, slug)}"{cur}>{label}{mark}</a></li>')
     return (
         '<header class="site-header"><nav class="wrap nav" aria-label="Primary">'
         f"{_brand(base)}"
