@@ -1,6 +1,6 @@
 # Skirving et al. 2020 — CoralTemp and the CRW heat-stress suite v3.1 (the MMM)
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`skirving-2020`](../sources.md#thermal-stress--coral-bleaching-dhw) · DOI [10.3390/rs12233856](https://doi.org/10.3390/rs12233856) · 🔓 open access (MDPI)
 
 **What it says.** Documents the current (Version 3.1) operational CRW product suite built on the

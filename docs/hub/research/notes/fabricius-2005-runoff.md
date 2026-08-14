@@ -1,6 +1,6 @@
 # Fabricius 2005 — Terrestrial runoff, turbidity, and coral reef ecology
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`fabricius-2005`](../sources.md#turbidity-sedimentation--water-quality) · DOI [10.1016/j.marpolbul.2004.11.028](https://doi.org/10.1016/j.marpolbul.2004.11.028) · 🔒 copyrighted (Elsevier)
 
 **What it says.** The canonical review of how land-based runoff harms corals, organized around four water-

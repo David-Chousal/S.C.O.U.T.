@@ -1,6 +1,6 @@
 # Gutiérrez-Gómez et al. 2021 — Near-surface LoRa P2P links over water
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`gutierrez-gomez-2021`](../sources.md#lora--lpwan-over-seawater) · DOI [10.3390/s21206872](https://doi.org/10.3390/s21206872) · 🔓 open access (MDPI Sensors)
 
 **What it says.** A propagation study of LoRa P2P links with antennas placed **close to the water surface**

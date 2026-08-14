@@ -1,6 +1,6 @@
 # Jovalekić et al. 2018 — Experimental study of LoRa transmission over seawater
 
-> Reading note · part of the [Knowledge Hub](../README.md) library.
+> Reading note · part of the [Knowledge Hub](../../README.md) library.
 > Source row: [`jovalekic-2018`](../sources.md#lora--lpwan-over-seawater) · DOI [10.3390/s18092853](https://doi.org/10.3390/s18092853) · 🔓 open access (MDPI Sensors)
 
 **What it says.** Field measurements of LoRa point-to-point links over open seawater in two ISM bands
