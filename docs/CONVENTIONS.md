@@ -43,8 +43,7 @@ When in doubt: **ask Claude, don't guess.** A misplaced file is harder to find t
 ```
 
 Spaces break shell commands, get URL-encoded into `%20` in links, and behave differently on
-Mac vs. Windows vs. Linux. Trailing spaces are invisible and cost real debugging time — we lost
-some to exactly that in August 2026.
+Mac vs. Windows vs. Linux. Trailing spaces are invisible and cost real debugging time.
 
 ### Files
 
