@@ -121,15 +121,20 @@ body{
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
   font-feature-settings:"ss01";
 }
-/* Seamless page-to-page transitions: a left-to-right slide with a fade, between separate
-   documents on same-origin navigation. Pure CSS and script-free. Browsers without
-   cross-document view transitions simply navigate normally. */
+/* Seamless page-to-page transitions: the main content slides left-to-right with a fade while
+   the header and notice ribbon stay fixed. Pure CSS, script-free, same-origin only. Naming the
+   header and ribbon pulls them out of the animated root snapshot, so they hold still across the
+   navigation. Browsers without cross-document view transitions navigate normally. */
 @view-transition{navigation:auto}
+.site-header{view-transition-name:site-header}
+.ribbon{view-transition-name:site-ribbon}
 @media (prefers-reduced-motion:no-preference){
-  ::view-transition-old(root){animation:page-out 260ms var(--ease) both}
-  ::view-transition-new(root){animation:page-in 400ms var(--ease) both}
-  @keyframes page-out{to{opacity:0;transform:translateX(-7%)}}
-  @keyframes page-in{from{opacity:0;transform:translateX(7%)}}
+  ::view-transition-group(site-header),
+  ::view-transition-group(site-ribbon){animation-duration:0s}
+  ::view-transition-old(root){animation:page-out 480ms var(--ease) both}
+  ::view-transition-new(root){animation:page-in 680ms var(--ease) both}
+  @keyframes page-out{to{opacity:0;transform:translateX(-5%)}}
+  @keyframes page-in{from{opacity:0;transform:translateX(5%)}}
 }
 h1,h2,h3,h4{font-family:var(--font);font-weight:520;line-height:1.1;
   letter-spacing:-0.02em;color:var(--ink);margin:0}
