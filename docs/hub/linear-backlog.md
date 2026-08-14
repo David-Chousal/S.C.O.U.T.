@@ -1,18 +1,19 @@
 # Linear Backlog — Proposed Issues
 
-> **Summary** — A staging doc for **Linear issues that still need to be created**, written so a
-> future session *with access to the `scout1` Linear workspace* can walk this list top to bottom
-> and file each one with the right title, labels, owner, priority, and project. It mirrors the
+> **Summary** — A staging doc for Linear issues, written so a session *with access to the
+> `scout1` Linear workspace* could walk this list top to bottom and file each one with the right
+> title, labels, owner, priority, and project. It mirrored the
 > [Open Research Questions](research/open-questions.md), the open rows in [`facts.md`](facts.md)
 > and [`decision-log.md`](decision-log.md#pending-decisions-not-yet-made), the blockers in
 > [`status.md`](status.md), and the follow-on work implied by the merged PRs.
 >
 > Part of the [Knowledge Hub](README.md). **As of 2026-08-14.**
 >
-> ⚠️ **Why this exists:** the authoring session's Linear MCP points at the Ekho corporate
-> workspace, **not** S.C.O.U.T.'s `scout1`, so it could not create these directly. Nothing here is in
-> Linear yet. When a row is filed, replace its **Linear** cell with the `SCO-##` link and, once
-> all are filed, this doc can be retired (or kept as the creation record).
+> ✅ **Filed 2026-08-14.** All 18 proposed issues below (A1, A3, A4, B1–B11, C1–C4) are now in
+> Linear as **SCO-10 through SCO-27** — each row's heading carries its `SCO-##` link. A2 was not
+> filed separately; it duplicates the pre-existing **SCO-8**. This doc is retained as the creation
+> record rather than deleted; new backlog items go straight into Linear from here on, not into
+> this file.
 
 ---
 
@@ -37,11 +38,12 @@ From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](..
 - **Body template:** `Context` (1–2 sentences) · `Acceptance criteria` (checkboxes) · `Blocked by` (issue ID or "nothing") · `Source` (meeting/doc/ADR/PR).
 - **On filing:** also add a row to [`decision-log.md`](decision-log.md) when the issue *records a decision*, and mirror any resolved open fact back into [`facts.md`](facts.md).
 
-> **Pre-existing IDs to reconcile first:** [CLAUDE.md](../../CLAUDE.md) references **SCO-5 … SCO-9**
-> as Phase-0 design-alignment issues that were "never closed." Several are already resolved:
-> ADR-0001 / ADR-0003 and PRs #1-#8, and **SCO-6 (deployment depth) by PR #29** (depth revised to
-> 2-7 m). **Check the board before creating** any of A1-A4 below; they may already exist under those
-> IDs and just need updating or closing rather than re-filing.
+> **Pre-existing IDs, reconciled 2026-08-14:** [CLAUDE.md](../../CLAUDE.md) referenced **SCO-5 …
+> SCO-9** as Phase-0 design-alignment issues that were "never closed." Resolution: **SCO-5** (MCU/
+> radio) → Done, per ADR-0001 Accepted; **SCO-6** (deployment depth) → Done, per PR #29 (2–7 m);
+> **SCO-7** (LoRa range figure) → Done, reconciled to ~2 km per PR #7, real-range *measurement*
+> spun out as new issue **SCO-14**; **SCO-8** (hydrophone part) → still open, matches **A2** below,
+> no duplicate filed; **SCO-9** (academic year) → Done, reconciled to 2026–2027 per PR #7.
 
 ---
 
@@ -50,25 +52,25 @@ From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](..
 These are the items `status.md` names as blocking the most, and the rows `decision-log.md`/`facts.md`
 explicitly mark "Needs a Linear issue."
 
-### A1 · `hardware: decide the LiFePO₄ charging path on the Feather M0`
+### A1 · `hardware: decide the LiFePO₄ charging path on the Feather M0` — [SCO-10](https://linear.app/scout1/issue/SCO-10)
 - **Label** `ece` · **Owner** Isabella · **Type** `Feature` · **Priority** `High` · **Project** Phase 0
 - **Context** — Battery chemistry (LiFePO₄) and charge controller (BQ25570 MPPT) are chosen, but the actual charging path is undecided. `status.md` lists this as **blocker #1**.
 - **Acceptance** — [ ] Charging topology decided and written into [ADR-0002](decisions/0002-lifepo4-charging-path.md) (status → Accepted); [ ] `facts.md` charge-controller row updated; [ ] unblocks battery/solar sizing + firmware battery thresholds.
 - **Blocked by** — nothing · **Source** — [ADR-0002](decisions/0002-lifepo4-charging-path.md), `status.md` blocker #1
 
-### A2 · `hardware: resolve the hydrophone part number (H2a-XLR vs H2dM)`
+### A2 · `hardware: resolve the hydrophone part number (H2a-XLR vs H2dM)` — matches [SCO-8](https://linear.app/scout1/issue/SCO-8) (pre-existing, not re-filed)
 - **Label** `ece` · **Owner** Isabella · **Type** `Bug` (spec conflict) · **Priority** `High` · **Project** Phase 0
 - **Context** — Diagram cites Aquarian **H2a-XLR**, EDD BOM specifies **H2dM**. `status.md` **blocker #2** — blocks the audio front-end design and the BOM order.
 - **Acceptance** — [ ] One part chosen; [ ] BOM + diagram + [`facts.md`](facts.md) hydrophone row reconciled to it; [ ] [ADR-0003 related gaps](decisions/0003-single-point-sensing.md) updated.
 - **Blocked by** — nothing · **Source** — `facts.md` open facts, `status.md` blocker #2, [README known-inconsistencies](../../README.md#known-inconsistencies)
 
-### A3 · `hardware: decide dissolved-oxygen inclusion (V1.5 vs future)`
+### A3 · `hardware: decide dissolved-oxygen inclusion (V1.5 vs future)` — [SCO-11](https://linear.app/scout1/issue/SCO-11)
 - **Label** `ece` · **Owner** Isabella · **Type** `Feature` · **Priority** `High` · **Project** Phase 0
 - **Context** — DO is wanted (interviews, meeting notes) and listed V1.5 in sensor-selection, but absent from the EDD/BOM. `status.md` **blocker #3** — blocks closing the V1 sensor list.
 - **Acceptance** — [ ] Decision recorded (V1.5 vs future) with rationale; [ ] `facts.md` DO row + sensor-selection updated; [ ] V1 sensor list closed.
 - **Blocked by** — nothing · **Source** — `facts.md` open facts, `status.md` blocker #3
 
-### A4 · `csen: decide on-board turbidity units — raw ADC/volts vs calibrated NTU`
+### A4 · `csen: decide on-board turbidity units — raw ADC/volts vs calibrated NTU` — [SCO-13](https://linear.app/scout1/issue/SCO-13)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 0 → Phase 1
 - **Context** — The CSV schema needs to know whether the buoy ships raw SEN0189 ADC/volts or calibrated NTU. Decision depends on the calibration research in **B7**.
 - **Acceptance** — [ ] Units decided and fixed in [Data Schema](../engineering/data-schema.md); [ ] `facts.md` turbidity-units row resolved.
@@ -81,67 +83,67 @@ explicitly mark "Needs a Linear issue."
 Each open row becomes a `research` (or discipline) issue. Sources already gathered in
 [`sources.md`](research/sources.md); notes in [`research/notes/`](research/notes/).
 
-### B1 · `research: measure real over-saltwater LoRa range at 915 MHz`
+### B1 · `research: measure real over-saltwater LoRa range at 915 MHz` — [SCO-14](https://linear.app/scout1/issue/SCO-14)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 4
 - **Context** — Datasheet ~2 km is line-of-sight in air; packet cadence + shore-station siting depend on the real number at a sub-meter buoy antenna.
 - **Acceptance** — [ ] Field range/PDR vs distance measured over saltwater at 915 MHz; [ ] result written to `facts.md` LoRa-range row.
 - **Blocked by** — hardware bring-up · **Source** — open-questions; literature-bounded by `jovalekic-2018` / `gutierrez-gomez-2021` / `parri-2019`
 
-### B2 · `mechanical: choose a biofouling mitigation approach for a 1+ year deployment`
+### B2 · `mechanical: choose a biofouling mitigation approach for a 1+ year deployment` — [SCO-15](https://linear.app/scout1/issue/SCO-15)
 - **Label** `geng` · **Owner** John · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 3 → 4
 - **Context** — Stakeholder-flagged top risk (Shantz); wipers / copper / reef-safe coatings unresolved. *Mechanical* half only — the data half is **B3**.
 - **Acceptance** — [ ] Mitigation approach selected with rationale + ADR/decision-log row.
 - **Blocked by** — nothing · **Source** — open-questions, [Stakeholder Interviews](../research/stakeholder-interviews.md)
 
-### B3 · `csen: detect biofouling sensor drift in the telemetry QC`
+### B3 · `csen: detect biofouling sensor drift in the telemetry QC` — [SCO-16](https://linear.app/scout1/issue/SCO-16)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2
 - **Context** — Fouled optical/turbidity sensors drift *monotonically* → mimics a real turbidity trend in `turbidity.py`. Addressable now in software.
 - **Acceptance** — [ ] QARTOD-style flat-line / rate-of-change flags in `qc.py`; [ ] cross-signal consistency check; [ ] documented in telemetry methodology.
 - **Blocked by** — nothing · **Source** — `manov-2004`, `qartod-optics-2017` (see [notes](research/notes/)) · related **B8**
 
-### B4 · `mechanical: choose a reef-safe anchoring / mooring approach`
+### B4 · `mechanical: choose a reef-safe anchoring / mooring approach` — [SCO-17](https://linear.app/scout1/issue/SCO-17)
 - **Label** `geng` · **Owner** John · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 3 → 5
 - **Context** — Deployment system is as important as the sensors (Oliver); must not damage the reef it monitors. No approach chosen.
 - **Acceptance** — [ ] Mooring/anchor concept selected + reef-safety rationale; [ ] decision-log row.
 - **Blocked by** — nothing · **Source** — open-questions, Stakeholder Interviews
 
-### B5 · `research: assess chlorophyll fluorometer feasibility vs cost`
+### B5 · `research: assess chlorophyll fluorometer feasibility vs cost` — [SCO-18](https://linear.app/scout1/issue/SCO-18)
 - **Label** `ece` · **Owner** Isabella · **Type** `Feature` · **Priority** `Low` · **Project** later (V1.5+)
 - **Context** — High NOAA interest (satellites struggle nearshore) but sensors are $2k+. Deferred, tracked so it isn't lost.
 - **Acceptance** — [ ] Feasibility + cost note; [ ] V1.5-vs-future recommendation.
 - **Blocked by** — nothing · **Source** — open-questions, Stakeholder Interviews
 
-### B6 · `research: confirm US 915 MHz RF-band compliance for the Hawaii deployment`
+### B6 · `research: confirm US 915 MHz RF-band compliance for the Hawaii deployment` — [SCO-19](https://linear.app/scout1/issue/SCO-19)
 - **Label** `cross-discipline` · **Owner** Team · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 5
 - **Context** — Must confirm the FCC frequency-hopping / dwell-time constraint (the `adelantado-2017` 1% duty cycle is an EU rule) and any marine-deployment permitting.
 - **Acceptance** — [ ] US 915 MHz ISM constraint documented; [ ] firmware TX cadence confirmed compliant.
 - **Blocked by** — nothing · **Source** — open-questions, `adelantado-2017`
 
-### B7 · `csen: calibrate SEN0189 turbidity to NTU`
+### B7 · `csen: calibrate SEN0189 turbidity to NTU` — [SCO-12](https://linear.app/scout1/issue/SCO-12)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 1
 - **Context** — Gates **A4** (CSV units) and quantitative use of the `sully-2020` Kd490 temp×turbidity interaction. Method available (`droujko-2022`): formazin ladder + ISO 7027 IR nephelometry — port the *method + caveat*, not coefficients (particle-directionality is site-dependent).
 - **Acceptance** — [ ] Calibration curve for S.C.O.U.T.'s SEN0189; [ ] NTU→Kd490 note; [ ] feeds A4.
 - **Blocked by** — nothing · **Source** — open-questions, `droujko-2022`, `sully-2020`
 
-### B8 · `csen: design a drift reference for a single buoy`
+### B8 · `csen: design a drift reference for a single buoy` — [SCO-20](https://linear.app/scout1/issue/SCO-20)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Low` · **Project** Phase 2
 - **Context** — Detecting fouling drift needs something to compare against, but a lone buoy has no redundant sensor.
 - **Acceptance** — [ ] Approach chosen (periodic wiped/covered reference reading vs cross-signal consistency).
 - **Blocked by** — nothing · **Source** — open-questions, `manov-2004` · pairs with **B3**
 
-### B9 · `csen: define the daily-packet delivery reliability strategy`
+### B9 · `csen: define the daily-packet delivery reliability strategy` — [SCO-21](https://linear.app/scout1/issue/SCO-21)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 1 → 4
 - **Context** — A lost 82-byte daily packet costs *timeliness*, not data (full record on flash) → soft requirement. Approach identified: strongest coding rate (CR 4/8) + blind repetition; avoid ACKed retransmit (avalanche).
 - **Acceptance** — [ ] CR + repetition scheme implemented in firmware; [ ] confirmed in Phase 4 range tests.
 - **Blocked by** — hardware bring-up · **Source** — open-questions, `ali-2024`, `carvalho-2021`
 
-### B10 · `research: identify the nearest NOAA STR series to the Hawaii site`
+### B10 · `research: identify the nearest NOAA STR series to the Hawaii site` — [SCO-22](https://linear.app/scout1/issue/SCO-22)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Low` · **Project** Phase 5
 - **Context** — Supplies the in-situ temperature / DHW ground-truth comparator for validating S.C.O.U.T.'s record.
 - **Acceptance** — [ ] Nearest STR station + DOI/landing page identified and recorded.
 - **Blocked by** — site selection · **Source** — open-questions, `noaa-ncrmp-str`
 
-### B11 · `hardware: measure sleep current against the <5 mA target`
+### B11 · `hardware: measure sleep current against the <5 mA target` — [SCO-23](https://linear.app/scout1/issue/SCO-23)
 - **Label** `ece` · **Owner** Isabella · **Type** `Improvement` · **Priority** `Medium` · **Project** Phase 1
 - **Context** — `< 5 mA` is an analytical *target*, not a measurement; the real power budget (battery/solar sizing) depends on it. Firmware standby sleep now exists (PR #17) to measure against.
 - **Acceptance** — [ ] Measured sleep current recorded in `facts.md`; [ ] feeds battery/solar sizing.
@@ -153,25 +155,25 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 
 Derived from the 17 merged PRs — natural next steps, not yet tracked. File the ones the team agrees on.
 
-### C1 · `csen: bring up the real LoRa receiver on the shore station`
+### C1 · `csen: bring up the real LoRa receiver on the shore station` — [SCO-24](https://linear.app/scout1/issue/SCO-24)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `High` · **Project** Phase 1 → 2
 - **Context** — PR #10 shipped a *simulated* LoRa→CSV path (codec, simulator, receiver, store). `status.md` marks the shore station 🔴 early, **blocked on radio bring-up**. Next: real RFM95 receive on the Raspberry Pi.
 - **Acceptance** — [ ] Pi receives a real RFM95 packet, validates, and appends to the CSV store; [ ] matches the codec from PR #10.
 - **Blocked by** — firmware TX (PR #16/#17) · **Source** — PR #10, [shore/](../../shore/), `status.md`
 
-### C2 · `firmware: validate the Phase-1 SAMD21 drivers on real hardware`
+### C2 · `firmware: validate the Phase-1 SAMD21 drivers on real hardware` — [SCO-25](https://linear.app/scout1/issue/SCO-25)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `High` · **Project** Phase 1
 - **Context** — PRs #16/#17 scaffolded the SAMD21 firmware (verified packet codec, scheduler, drivers, state machine, real standby sleep). Next: validate DS18B20 / SEN0189 / RFM95 / PCF8523 on the actual Feather M0.
 - **Acceptance** — [ ] Each driver verified on hardware; [ ] end-to-end sense→log→TX cycle on the bench.
 - **Blocked by** — **A1** (power), hardware assembly · **Source** — PR #16, PR #17
 
-### C3 · `analytics: fix the run_pipeline --audio_dir / hyphen flag inconsistency`
+### C3 · `analytics: fix the run_pipeline --audio_dir / hyphen flag inconsistency` — [SCO-26](https://linear.app/scout1/issue/SCO-26)
 - **Label** `csen` · **Owner** David (me) · **Type** `Improvement` · **Priority** `Low` · **Project** any
 - **Context** — `run_pipeline.py` uses `--audio_dir` (underscore) while other scripts use hyphens. [CLAUDE.md](../../CLAUDE.md) says this is known and **must not be "fixed" without an issue** — this is that issue.
 - **Acceptance** — [ ] Flags made consistent (or documented as intentional) across `analytics/` CLIs.
 - **Blocked by** — nothing · **Source** — [CLAUDE.md → Before committing](../../CLAUDE.md)
 
-### C4 · `analytics: recover the missing Sesoko 201807 recording`
+### C4 · `analytics: recover the missing Sesoko 201807 recording` — [SCO-27](https://linear.app/scout1/issue/SCO-27)
 - **Label** `csen` · **Owner** David (me) · **Type** `Bug` · **Priority** `Low` · **Project** any
 - **Context** — Session `201807` has 4 of 5 files; one recording failed to download. Pipeline tolerates it (median of what's present), but the archive is incomplete.
 - **Acceptance** — [ ] File re-downloaded via `utils/download_sesoko.py`, or gap documented as permanent.

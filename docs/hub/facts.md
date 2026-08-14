@@ -90,11 +90,11 @@
 These are **not** canonical values — they are known gaps tracked so nobody treats a placeholder
 as settled. Each should have a Linear issue and, when resolved, become a row above.
 
-| Open fact | Why it's open | Owner |
-|---|---|---|
-| Hydrophone part number | H2a-XLR (diagram) vs H2dM (BOM) | Isabella (ECE) |
-| Dissolved oxygen inclusion | Wanted vs absent from BOM — decide V1.5 vs future | Isabella (ECE) |
-| LiFePO₄ charging path | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) not yet decided | Isabella (ECE) |
-| Turbidity units (NTU) | Ship raw ADC + volts for v1, or invest in a calibration curve | David (CSEN) |
-| Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) |
-| Over-saltwater LoRa range | ~2 km is the datasheet figure; real range measured in Phase 4 | David (CSEN) |
+| Open fact | Why it's open | Owner | Linear |
+|---|---|---|---|
+| Hydrophone part number | H2a-XLR (diagram) vs H2dM (BOM) | Isabella (ECE) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
+| Dissolved oxygen inclusion | Wanted vs absent from BOM — decide V1.5 vs future | Isabella (ECE) | [SCO-11](https://linear.app/scout1/issue/SCO-11) |
+| LiFePO₄ charging path | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) not yet decided | Isabella (ECE) | [SCO-10](https://linear.app/scout1/issue/SCO-10) |
+| Turbidity units (NTU) | Ship raw ADC + volts for v1, or invest in a calibration curve | David (CSEN) | [SCO-13](https://linear.app/scout1/issue/SCO-13) (blocked by [SCO-12](https://linear.app/scout1/issue/SCO-12)) |
+| Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) | [SCO-23](https://linear.app/scout1/issue/SCO-23) |
+| Over-saltwater LoRa range | ~2 km is the datasheet figure; real range measured in Phase 4 | David (CSEN) | [SCO-14](https://linear.app/scout1/issue/SCO-14) |
