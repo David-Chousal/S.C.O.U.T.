@@ -17,9 +17,11 @@
     sections.push(sec);
     a.addEventListener('click', function (e) {
       e.preventDefault();
+      // Don't set the target active immediately — let the observer drive it as the page
+      // smooth-scrolls, so the active marker slides from the current section to the target
+      // instead of jumping ahead and snapping back.
       sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (history.replaceState) history.replaceState(null, '', '#' + id);
-      setActive(id);
     });
   });
 

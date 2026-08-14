@@ -194,7 +194,9 @@ main figure{margin:0}
 .brand-txt b{font-weight:700;letter-spacing:0.02em;font-size:0.85rem}
 .brand-txt span{font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
   margin-top:2px}
-.nav-links{display:flex;align-items:center;justify-self:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
+/* Centred by the header grid's `1fr auto 1fr` columns — no justify-self needed (and it would
+   wrongly shrink-to-fit the absolutely-positioned mobile dropdown). */
+.nav-links{display:flex;align-items:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
   list-style:none;margin:0;padding:0}
 .nav-links a{color:var(--muted);font-size:0.64rem;font-weight:500;
   letter-spacing:var(--track);text-transform:uppercase;padding:0.4rem 0;position:relative}
@@ -222,13 +224,15 @@ main figure{margin:0}
   .nav-toggle:checked ~ .nav-burger span{background:transparent}
   .nav-toggle:checked ~ .nav-burger span::before{top:0;transform:rotate(45deg)}
   .nav-toggle:checked ~ .nav-burger span::after{top:0;transform:rotate(-45deg)}
-  /* Slide-down panel with every link (opt items included), anchored to the sticky header. */
+  /* Full-width panel with every link (opt items included), anchored to the sticky header.
+     It fades and slides (no max-height animation, which bumped at the end against short
+     content). Absolute, so it never pushes the page. */
   .nav-links{position:absolute;left:0;right:0;top:100%;z-index:1;flex-direction:column;
     align-items:stretch;gap:0;padding:0.3rem 0 0.6rem;background:var(--bg);
     border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);
-    max-height:0;overflow:hidden;visibility:hidden;
-    transition:max-height var(--dur) var(--ease),visibility var(--dur) var(--ease)}
-  .nav-toggle:checked ~ .nav-links{max-height:82vh;visibility:visible}
+    opacity:0;visibility:hidden;transform:translateY(-8px);
+    transition:opacity 0.24s var(--ease),transform 0.24s var(--ease),visibility 0.24s}
+  .nav-toggle:checked ~ .nav-links{opacity:1;visibility:visible;transform:translateY(0)}
   .nav-links li{width:100%}
   .nav-links .opt{display:block}
   .nav-links a{display:block;text-align:center;padding:0.9rem 1rem;font-size:0.8rem}
