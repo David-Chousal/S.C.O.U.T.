@@ -72,10 +72,13 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
 - **Real & verified:** `scout_packet` (encoder proven byte-identical to the Python shore
   decoder) and `scout_scheduler` (unit-tested). The state machine and CSV row format
   ([data-schema.md](../docs/engineering/data-schema.md)) are wired end to end.
+- **Implemented, pending bench verification:** **standby sleep** — real SAMD21 deep sleep
+  (`ArduinoLowPower`) woken by the PCF8523 countdown-timer INT on `PIN_RTC_INT`, with a
+  flag-clear on wake so it re-arms each interval. Needs the INT wired and a current
+  measurement to confirm the low-power draw.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
-  on-hardware verification and pin confirmation; **deep sleep** is a placeholder pending the
-  SAMD21 standby + PCF8523-INT wake path; **audio** (PCM1808/hydrophone) is a scheduled hook
-  only — it's a V1 stretch, not on the confirmed Feather build.
+  on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
+  hook only — it's a V1 stretch, not on the confirmed Feather build.
 
 ## Notes
 

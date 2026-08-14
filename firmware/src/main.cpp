@@ -11,6 +11,7 @@
  * and true SAMD21 standby sleep are marked TODO for Phase 1–2 bring-up (see notes inline).
  */
 #include <Arduino.h>
+#include <ArduinoLowPower.h>
 
 #include "config.h"
 #include "drivers/battery.h"
@@ -59,11 +60,19 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
     if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
 }
 
+// Wake ISR — the work happens back in loop() after deepSleep() returns; this just needs to
+// exist for the wake source. Keep it trivial (no I2C/Serial from interrupt context).
+static void on_rtc_wake() {}
+
 static void enter_deep_sleep() {
-    // TODO(Phase 2): true SAMD21 standby via ArduinoLowPower, waking on PIN_RTC_INT (the
-    // PCF8523 countdown-timer INT). Placeholder keeps the loop cadence during bench bring-up.
     g_lora.sleep();
-    delay(SAMPLE_INTERVAL_S * 1000UL);
+    Serial.flush();
+    // SAMD21 standby (~microamps) until the PCF8523 countdown-timer INT pulls PIN_RTC_INT low.
+    // NOTE: USB/Serial drops during standby — expected in deployment; use the RTC cadence, not
+    // the USB monitor, to confirm wake timing on the bench.
+    LowPower.deepSleep();
+    // Woke: release the timer flag so INT1 deasserts and the next interval can trigger.
+    g_rtc.ackTimer();
 }
 
 void setup() {
@@ -82,6 +91,10 @@ void setup() {
     }
     if (g_rtc_ok) {
         g_rtc.enablePeriodicWake(SAMPLE_INTERVAL_MIN);
+        // PCF8523 INT1 is open-drain, active-low → pull-up, wake on the falling edge.
+        pinMode(PIN_RTC_INT, INPUT_PULLUP);
+        LowPower.attachInterruptWakeup(PIN_RTC_INT, on_rtc_wake, FALLING);
+        g_rtc.ackTimer();  // start from a clean flag
     }
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
