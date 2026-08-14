@@ -94,9 +94,9 @@ All raw data is stored locally while summarized environmental data is transmitte
 
 The SCOUT buoy shall:
 
-- Measure water temperature using three independent sensors.
+- Measure water temperature using one sensor (per [ADR-0003](../decisions/0003-single-point-sensing.md); 2 additional units held as field spares).
 
-- Measure water turbidity using three independent sensors.
+- Measure water turbidity using one sensor (per ADR-0003; 2 additional units held as field spares).
 
 - Record underwater acoustic data using one hydrophone.
 
@@ -114,7 +114,7 @@ The SCOUT buoy shall:
 
 #### Temperature
 
-- Three sensors
+- One sensor deployed (+2 spares — ADR-0003)
 
 - Six measurements/day
 
@@ -122,7 +122,7 @@ The SCOUT buoy shall:
 
 #### Turbidity
 
-- Three sensors
+- One sensor deployed (+2 spares — ADR-0003)
 
 - Six measurements/day
 
@@ -404,19 +404,17 @@ The housing contains:
 
 - Internal wiring
 
-### Sensor String
+### Sensor Mount
 
-A single vertical sensor string extends beneath the buoy.
+Per [ADR-0003](../decisions/0003-single-point-sensing.md), sensors are sited together at a single point beneath the buoy (not a multi-depth string):
 
-The string supports:
+- One DS18B20 temperature sensor (+2 field spares)
 
-- Three DS18B20 temperature sensors
+- One turbidity sensor (+2 field spares)
 
-- Three turbidity sensors
+- One Aquarian hydrophone
 
-- One Aquarian H2dM hydrophone
-
-Sensors are spaced vertically to sample different water depths.
+A future revision may distribute sensors vertically to sample multiple depths — see [Sensor String Architecture](sensor-string-architecture.md).
 
 ### Float Assembly
 
@@ -634,7 +632,7 @@ Operating frequency:
 
 Devices:
 
-- Three DS18B20 sensors
+- One DS18B20 sensor (+2 field spares — ADR-0003)
 
 #### SPI Bus
 
@@ -654,7 +652,7 @@ Device:
 
 Devices:
 
-- Three SEN0189 Turbidity Sensors
+- One SEN0189 turbidity sensor (+2 field spares — ADR-0003)
 
 ### Audio Interface
 
@@ -716,7 +714,7 @@ Powered:
 
 - TPS22916
 
-- Three SEN0189 Sensors
+- One SEN0189 sensor (+2 field spares — ADR-0003)
 
 #### Audio Recording
 
@@ -1172,7 +1170,7 @@ Operation:
 
 2.  Broadcasts a single Convert-T command.
 
-3.  All three sensors perform conversion simultaneously.
+3.  The sensor performs conversion.
 
 4.  ESP32 enters Light Sleep during conversion.
 
@@ -1216,7 +1214,7 @@ Operation:
 
 2.  Enable TPS22916 load switch.
 
-3.  Apply power to all three sensors simultaneously.
+3.  Apply power to the sensor.
 
 4.  Wait 500 ms for stabilization.
 
@@ -1930,7 +1928,7 @@ Sequence:
 
 4.  Wake.
 
-5.  Read all three sensors.
+5.  Read the sensor.
 
 6.  Save measurements.
 
@@ -2142,7 +2140,7 @@ Each temperature event follows the sequence below.
 
 4.  Wake after conversion.
 
-5.  Read all three sensors.
+5.  Read the sensor.
 
 6.  Store measurements.
 
@@ -2715,9 +2713,9 @@ Manufacturer specifications and engineering assumptions are intentionally separa
 
 | **Item** | **Assumption** |
 |----|----|
-| Temperature Sensors | Three DS18B20 sensors |
+| Temperature Sensors | One DS18B20 (+2 field spares — ADR-0003) |
 | Temperature Samples | Six per sensor per day |
-| Turbidity Sensors | Three SEN0189 sensors |
+| Turbidity Sensors | One SEN0189 (+2 field spares — ADR-0003) |
 | Turbidity Samples | Six per sensor per day |
 | Sensor Synchronization | Temperature and turbidity sampled during the same wake event |
 
