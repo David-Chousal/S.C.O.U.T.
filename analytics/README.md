@@ -145,6 +145,19 @@ to GitHub Pages on a schedule — the publish loop is documented in
 python run_telemetry.py --source ../shore/data --mmm 27.6 --web site
 ```
 
+**Multi-buoy (fleet) mode.** With `--fleet`, the source is treated as *many* buoys: records are
+grouped by `buoy_id` and the full per-buoy pipeline runs for each (blending buoys into one
+stream would corrupt daily means and DHW). Because buoys sit at different reefs, DHW needs a
+per-site MMM — pass a JSON map with `--mmm-config` (`--mmm` is the fallback for buoys not in it).
+
+```bash
+echo '{"SCOUT-01": 27.6, "SCOUT-02": 25.5}' > sites.json
+python run_telemetry.py --source ../shore/data --fleet --mmm-config sites.json --out data/fleet
+```
+
+Writes `data/fleet/<buoy_id>/{telemetry_daily.csv,telemetry_summary.json}` per buoy plus a
+`fleet_summary.json` (one status row per buoy: completeness, trend, peak alert, events).
+
 Tests (standard-library `unittest`; `pytest` also runs them):
 
 ```bash

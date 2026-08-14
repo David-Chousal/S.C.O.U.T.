@@ -72,10 +72,26 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
 - **Real & verified:** `scout_packet` (encoder proven byte-identical to the Python shore
   decoder) and `scout_scheduler` (unit-tested). The state machine and CSV row format
   ([data-schema.md](../docs/engineering/data-schema.md)) are wired end to end.
-- **Implemented, pending bench verification:** **standby sleep** — real SAMD21 deep sleep
-  (`ArduinoLowPower`) woken by the PCF8523 countdown-timer INT on `PIN_RTC_INT`, with a
-  flag-clear on wake so it re-arms each interval. Needs the INT wired and a current
-  measurement to confirm the low-power draw.
+- **Implemented, pending bench verification:**
+  - **Standby sleep** — real SAMD21 deep sleep (`ArduinoLowPower`) woken by the PCF8523
+    countdown-timer INT on `PIN_RTC_INT`, with a flag-clear on wake so it re-arms each
+    interval. Needs the INT wired and a current measurement to confirm the low-power draw.
+  - **Watchdog** — the SAMD21 WDT (`Adafruit_SleepyDog`, ~16 s) guards each active cycle and
+    init; a hang resets the buoy so it recovers on its own. Disabled during standby (its
+    timeout is far shorter than the 30-min interval) and re-armed on wake. A watchdog reset is
+    detected at boot (`PM->RCAUSE`) and logged.
+  - **Adaptive transmission (graceful degradation)** — a power mode derived from battery
+    voltage (`scout_power_mode`): **NORMAL** (all sensing, transmit each interval) →
+    **CONSERVE** (audio off, transmit ×`TRANSMIT_CONSERVE_FACTOR` less often) → **CRITICAL**
+    (temperature + logging only; no turbidity, audio, or TX). Core temperature always logs.
+    The `POWER_CONSERVE` flag marks throttled rows so shore can see it. Pure logic in
+    `scout_scheduler`, unit-tested; thresholds in `config.h` (provisional, ADR-0002).
+  - **Retained state across resets** — `record_seq` and `last_tx_epoch` live in a no-init RAM
+    section (magic-guarded) that the C startup doesn't clear, so a watchdog/system reset keeps
+    the counter monotonic and doesn't re-send the daily packet. RAM-based: a full power loss
+    still cold-starts (the PCF8523 has no user NVRAM; SD/flash persistence was declined to
+    avoid wear for the rarer power-loss case). Verify by inducing a reset and confirming
+    `resume_seq` continues in the boot log.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
   on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
   hook only — it's a V1 stretch, not on the confirmed Feather build.
