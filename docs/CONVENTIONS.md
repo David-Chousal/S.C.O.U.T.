@@ -221,6 +221,19 @@ git push                      # send them up
 **The habit:** `git pull` before you start, `git push` when you stop. Most conflicts come from
 skipping the first one.
 
+> ### 🚦 Everything reaches `main` through a Pull Request — always
+>
+> Even a one-line doc fix. **Do not commit on `main` and `git push`** — direct pushes to
+> `main` are blocked (a hook reads them as a force push), so you'll just get rejected and
+> stuck. Branch first, push the branch, open a PR. The flow that always works:
+>
+> ```bash
+> git switch -c docs/my-change          # 1. branch — see Branches for naming
+> git add . && git commit -m "docs: …"  # 2. commit — see Commit messages
+> git push -u origin HEAD               # 3. push the branch (not main)
+> #                                       4. open a PR — see Pull requests — then merge
+> ```
+
 If you'd rather not use the terminal at all, [GitHub Desktop](https://desktop.github.com/) does
 all four with buttons, and you can drag files straight into it. That is a completely legitimate
 way to work on this project — nobody is going to judge your workflow.
@@ -257,12 +270,19 @@ mechanical/endcap-oring-redesign
 docs/reconcile-deployment-depth
 ```
 
-Branch for anything non-trivial. Small doc fixes can go straight to `main`.
+**Always branch.** Every change — even a one-line doc fix — reaches `main` through a PR, never
+by pushing to `main` directly (it's blocked; see [Two repo gotchas](#two-repo-gotchas)).
 
 ### Pull requests
 
-**Every PR gets a description with these four sections, in this order.** Explain the *why* —
-the diff already shows the *what*.
+**All work merges through a PR — there is no direct-to-`main` path.** Branch → commit → push
+the branch → open a PR → merge. Every PR needs both of the following:
+
+**A title** in the commit-message format — `<type>(<scope>): <summary>`, using the same types
+and scopes as [Commit messages](#commit-messages). Example: `docs: resolve ADR-0001`.
+
+**A description** with these four sections, in this order. Explain the *why* — the diff
+already shows the *what*.
 
 - **DATE** — the date the PR was opened (`YYYY-MM-DD`).
 - **What Changed and Why** — a summary of the decisions made and the changes that follow from
@@ -290,8 +310,9 @@ YYYY-MM-DD
 
 ### Two repo gotchas
 
-**`git push origin main` is blocked.** A local hook reads it as a force push. Use plain
-`git push` — the upstream is already set.
+**Direct pushes to `main` are blocked.** A local hook reads `git push origin main` as a force
+push and rejects it. This is intentional — `main` only moves via a merged PR. Push your branch
+(`git push -u origin HEAD`) and open a PR instead; never try to push to `main` directly.
 
 **`gh` (the GitHub CLI) is not installed.** Use `git` over SSH, which is configured and working.
 If a guide online tells you to run `gh something`, that won't work here.
