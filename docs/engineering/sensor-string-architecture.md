@@ -4,6 +4,11 @@
 >
 > **Source document** — `Vertical Sensor String Architecture.docx`
 
+> 🔭 **Future concept — not the current build.** Per
+> [ADR-0003](../decisions/0003-single-point-sensing.md) (2026-08-14), the capstone build uses
+> **one sensor of each modality at a single point** beneath the buoy, with extra units held as
+> spares. This multi-depth string is retained as a documented direction for a future revision.
+
 ---
 
 ## Concept

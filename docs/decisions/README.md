@@ -20,6 +20,7 @@ multiple subsystems.
 |---|---|---|
 | [0001](0001-mcu-and-radio-selection.md) | Microcontroller and LoRa radio selection | 🟢 Accepted |
 | [0002](0002-lifepo4-charging-path.md) | LiFePO₄ charging path on the Feather M0 | 🟡 Open |
+| [0003](0003-single-point-sensing.md) | Single-point sensing per modality (multi-depth deferred) | 🟢 Accepted |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 
