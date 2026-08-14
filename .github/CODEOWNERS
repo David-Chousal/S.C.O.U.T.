@@ -1,0 +1,23 @@
+# SCOUT code owners — routes PR review by area to the discipline lead who owns it.
+#
+# Discipline map (CLAUDE.md → Linear conventions → Labels):
+#   csen  — firmware, analytics pipeline, shore station, docs  → David Chousal Cantu
+#   ece   — PCB, power system, sensors, radio (hardware/**)     → Isabella Rodriguez  (handle TBD)
+#   geng  — hull, enclosure, mooring, deployment (mechanical/**) → John Ryan Myrdal   (handle TBD)
+#
+# There is intentionally NO global "*" owner: paths not listed below (notably hardware/**
+# and mechanical/**) are left UNOWNED for now, because we don't yet have Isabella's and
+# John's GitHub usernames. Those PRs still require a general approving review under the
+# branch ruleset — they just don't require a discipline-specific code-owner approval yet.
+# When the handles are known, add:
+#   /hardware/    @<isabella-handle>
+#   /mechanical/  @<john-handle>
+
+# csen — software & docs (David Chousal Cantu)
+/firmware/    @David-Chousal
+/analytics/   @David-Chousal
+/shore/       @David-Chousal
+/docs/        @David-Chousal
+/.github/     @David-Chousal
+/README.md    @David-Chousal
+/CLAUDE.md    @David-Chousal

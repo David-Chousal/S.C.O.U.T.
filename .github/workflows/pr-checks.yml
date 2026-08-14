@@ -1,0 +1,77 @@
+name: PR checks
+
+# Governance checks that enforce docs/CONVENTIONS.md and CLAUDE.md on every pull request.
+# These complement (do not duplicate) the test suites in ci.yml. Each job reports its own
+# status check, so branch protection can require them individually:
+#   - pr-title       <type>(<scope>): <summary>
+#   - pr-body        the five required sections, in order
+#   - knowledge-hub  Standing rule 7 (touch docs/hub/** or say "Hub: no relevant surface")
+#   - conventions    filenames, forbidden files, markdown, source registry
+#
+# All jobs are pure stdlib Python — no pip install, no network, no hardware.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pr-title:
+    name: pr-title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: python .github/scripts/check_pr_title.py
+
+  pr-body:
+    name: pr-body
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate PR body sections
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: python .github/scripts/check_pr_body.py
+
+  knowledge-hub:
+    name: knowledge-hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check Knowledge Hub touch / opt-out
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA...HEAD" > changed.txt
+          python .github/scripts/check_knowledge_hub.py --changed-file changed.txt
+
+  conventions:
+    name: conventions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Lint conventions
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: python .github/scripts/check_conventions.py --base "$BASE_REF"
