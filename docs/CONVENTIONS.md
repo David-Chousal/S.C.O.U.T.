@@ -276,7 +276,7 @@ by pushing to `main` directly (it's blocked; see [Two repo gotchas](#two-repo-go
 ### Pull requests
 
 **All work merges through a PR — there is no direct-to-`main` path.** Branch → commit → push
-the branch → open a PR → **auto-merge**. Every PR needs both of the following:
+the branch → open a PR → **review** → merge. Every PR needs both of the following:
 
 **A title** in the commit-message format — `<type>(<scope>): <summary>`, using the same types
 and scopes as [Commit messages](#commit-messages). Example: `docs: resolve ADR-0001`.
@@ -308,15 +308,13 @@ YYYY-MM-DD
 - …
 ```
 
-**Auto-merge, don't sit on it.** Turn on auto-merge the moment you open a compliant PR — the
-**Enable auto-merge** button, or `gh pr merge <n> --auto --merge`. It then lands the PR as soon
-as it's mergeable: immediately when there are no required checks, or once checks pass when
-there are. Merged branches delete themselves. The one exception: if a PR needs a human review,
-request it first, *then* enable auto-merge.
+**Open for review; merge only after approval — never auto-merge.** A PR is opened to be
+reviewed, not merged on creation. Leave it open until a teammate has looked at it, then merge
+manually: the **Merge pull request** button, or `gh pr merge <n> --merge --delete-branch`.
 
-> Auto-merge requires the repo setting **Settings → General → Allow auto-merge** to be on —
-> that's an admin-only toggle. Until it's enabled, merge a green PR right away instead of
-> leaving it open (`gh pr merge <n> --merge --delete-branch`).
+When an agent (Claude) opens a PR, it **stops there** — it does not merge on its own. It merges
+only when a human explicitly asks it to (a follow-up "merge it"), or a human merges the PR
+directly.
 
 ### Two repo gotchas
 
