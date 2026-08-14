@@ -9,8 +9,8 @@ battery of automated real-time flags (gross range, spike, rate-of-change, flat-l
 timing/gap, climatology) and names **biofouling and calibration drift as the central data-quality
 challenges** the QC is meant to surface. Data get standard flags (pass / not-evaluated / suspect / fail).
 
-**Why it matters to SCOUT.** This is the off-the-shelf standard SCOUT's [`qc.py`](../../../../analytics/telemetry/qc.py)
-should implement, and adopting it is what makes SCOUT's data *credible and interoperable* with the reef-
+**Why it matters to S.C.O.U.T.** This is the off-the-shelf standard S.C.O.U.T.'s [`qc.py`](../../../../analytics/telemetry/qc.py)
+should implement, and adopting it is what makes S.C.O.U.T.'s data *credible and interoperable* with the reef-
 science community rather than a bespoke pipeline. Concretely: the **flat-line and rate-of-change tests
 catch a stuck or drifting fouled sensor**, and the standard flag vocabulary gives every downstream
 consumer a shared meaning. It converts "we should detect biofouling" into a named, implementable checklist
@@ -18,5 +18,5 @@ that pairs directly with [`manov-2004`](manov-2004-biofouling-optical-drift.md)'
 
 **Caveat / how to use it.** QARTOD is real-time **gross** QC — it *flags* suspect data, it does not
 *correct* drift; delayed-mode recalibration and the turbidity→NTU work ([`droujko-2022`](droujko-2022-turbidity-sensor.md))
-are still needed. Thresholds (gross range, spike size) must be set per SCOUT site and sensor, and there are
+are still needed. Thresholds (gross range, spike size) must be set per S.C.O.U.T. site and sensor, and there are
 sibling QARTOD manuals for temperature that apply to the DS18B20 channel.

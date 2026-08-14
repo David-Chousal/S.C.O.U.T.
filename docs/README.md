@@ -1,4 +1,4 @@
-# SCOUT Documentation
+# S.C.O.U.T. Documentation
 
 All project documentation, converted to Notion-compatible Markdown. Every page here can be
 imported directly into Notion with formatting intact.
@@ -11,7 +11,7 @@ imported directly into Notion with formatting intact.
 |---|---|
 | Know what's true, decided, and where the project stands right now | **[Knowledge Hub](hub/README.md)** |
 | Know where a file goes or what to name it | **[Conventions](CONVENTIONS.md)** |
-| Understand what SCOUT is and why | [MVP System Overview](overview/mvp-system-overview.md) |
+| Understand what S.C.O.U.T. is and why | [MVP System Overview](overview/mvp-system-overview.md) |
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
 | Find the schedule | [Team Timeline](planning/team-timeline.md) |
@@ -21,7 +21,7 @@ imported directly into Notion with formatting intact.
 
 ## Knowledge Hub
 
-The always-current, always-cited surface for what SCOUT has decided, learned, and where it
+The always-current, always-cited surface for what S.C.O.U.T. has decided, learned, and where it
 stands. **Start here for any "what's true right now?" question.** Updated on every PR
 ([CLAUDE.md → Standing rule 7](../CLAUDE.md#standing-rules)).
 

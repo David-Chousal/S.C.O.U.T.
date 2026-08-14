@@ -10,16 +10,16 @@ drift, worst in turbid, productive water**. Its detection strategy is the durabl
 suspect sensor's time series against complementary/redundant measurements to separate genuine
 environmental variability from instrument drift.
 
-**Why it matters to SCOUT.** This is the specific, quantified failure mode that threatens SCOUT's
+**Why it matters to S.C.O.U.T.** This is the specific, quantified failure mode that threatens S.C.O.U.T.'s
 turbidity signal over a 1+ year unattended deployment — and it's the exact risk Dr. Shantz flagged in the
-[stakeholder interviews](../../../research/stakeholder-interviews.md). The danger for SCOUT is subtle: fouling
+[stakeholder interviews](../../../research/stakeholder-interviews.md). The danger for S.C.O.U.T. is subtle: fouling
 drift is **monotonic**, so it will masquerade as a real turbidity *trend* and be picked up by the
 Mann-Kendall test in [`turbidity.py`](../../../../analytics/telemetry/turbidity.py). The paper's message —
 never trust a single fouled optical channel; cross-check against an independent signal — is a design
-requirement for SCOUT's QC, not a nicety.
+requirement for S.C.O.U.T.'s QC, not a nicety.
 
 **Caveat / how to use it.** The study uses higher-end oceanographic instruments and open-ocean moorings;
-SCOUT's low-cost SEN0189 will foul *faster* in shallow nearshore water, not slower. The cross-comparison
-method assumes a reference SCOUT may not have at a lone buoy — so it argues for building in a drift check
+S.C.O.U.T.'s low-cost SEN0189 will foul *faster* in shallow nearshore water, not slower. The cross-comparison
+method assumes a reference S.C.O.U.T. may not have at a lone buoy — so it argues for building in a drift check
 (e.g. a periodic wiped/covered reference reading, or cross-signal consistency) rather than assuming clean
 turbidity. Mitigation *hardware* (copper, wipers) is the GENG lane and deliberately out of scope here.

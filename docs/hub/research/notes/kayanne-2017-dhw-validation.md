@@ -8,8 +8,8 @@ eight northwestern-Pacific sites. Recorded bleaching years matched DHW **> 8 °C
 logistic fit gave a positive, monotonic relationship between DHW and bleaching probability — an empirical
 check on the thresholds Liu et al. defined operationally.
 
-**Why it matters to SCOUT.** It is the difference between "we implemented an index" and "the index
-predicts the thing." It gives SCOUT defensible confidence that a DHW derived from buoy temperature is
+**Why it matters to S.C.O.U.T.** It is the difference between "we implemented an index" and "the index
+predicts the thing." It gives S.C.O.U.T. defensible confidence that a DHW derived from buoy temperature is
 ecologically meaningful, and it justifies surfacing the 4/8 °C-week bands as alert levels in the telemetry
 output rather than as arbitrary numbers. Northwestern Pacific is also a reasonable analog for the Hawaii
 deployment climate.

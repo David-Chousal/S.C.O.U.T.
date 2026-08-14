@@ -1,6 +1,6 @@
-# SCOUT Knowledge Hub
+# S.C.O.U.T. Knowledge Hub
 
-> **Summary** — The one always-current, always-cited surface for **what SCOUT has decided, what
+> **Summary** — The one always-current, always-cited surface for **what S.C.O.U.T. has decided, what
 > it has learned, and where it stands today.** If you have five minutes and one question about
 > the project, start here.
 

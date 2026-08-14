@@ -2,7 +2,7 @@
 
 > **Summary** — The shore-side base station that receives, validates, stores, and analyzes the
 > buoy's data. It is a **Raspberry Pi** with a LoRa radio, and it is the canonical home for
-> Raspberry Pi in SCOUT. This page is the reference for what the Pi does and how it fits the
+> Raspberry Pi in S.C.O.U.T. This page is the reference for what the Pi does and how it fits the
 > system.
 
 ---

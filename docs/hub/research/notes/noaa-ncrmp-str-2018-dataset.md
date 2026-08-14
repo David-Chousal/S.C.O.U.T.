@@ -9,13 +9,13 @@ northwestern Hawaiian Islands — using high-accuracy Sea-Bird loggers at fixed 
 sampling every 1–20 min and published as hourly-averaged, gap-padded time series, with records spanning
 2005–2024 depending on site.
 
-**Why it matters to SCOUT.** Two concrete uses. (1) **Ground truth / validation**: a co-located or nearby
-STR record is the reference SCOUT's own in-situ temperature — and its derived DHW — can be checked against,
-and the Hawaiian-archipelago subset overlaps SCOUT's intended deployment region. (2) **A quality bar**: it
+**Why it matters to S.C.O.U.T.** Two concrete uses. (1) **Ground truth / validation**: a co-located or nearby
+STR record is the reference S.C.O.U.T.'s own in-situ temperature — and its derived DHW — can be checked against,
+and the Hawaiian-archipelago subset overlaps S.C.O.U.T.'s intended deployment region. (2) **A quality bar**: it
 shows the accuracy class (Sea-Bird) and cadence the reef-science community treats as trustworthy, framing
-how SCOUT must characterize its low-cost DS18B20 to be taken seriously as ground truth.
+how S.C.O.U.T. must characterize its low-cost DS18B20 to be taken seriously as ground truth.
 
 **Caveat / how to use it.** It is a **dataset, not a method** — cite it as a data source, and confirm the
-specific Hawaii-site STR series (and its exact DOI/landing page) before using one as SCOUT's comparator.
-STRs measure at depth on the reef; match depth and averaging window before comparing to a SCOUT buoy
+specific Hawaii-site STR series (and its exact DOI/landing page) before using one as S.C.O.U.T.'s comparator.
+STRs measure at depth on the reef; match depth and averaging window before comparing to a S.C.O.U.T. buoy
 reading.

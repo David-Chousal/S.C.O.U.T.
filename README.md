@@ -11,14 +11,14 @@ Santa Clara University · Senior Design Capstone · 2026–2027
 
 ---
 
-## What SCOUT is
+## What S.C.O.U.T. is
 
 Coral reefs are among the most threatened ecosystems on Earth, and the instruments used to
 monitor them are expensive and rarely serviced. Existing monitoring buoys cost tens of
 thousands of dollars, and researchers interviewed for this project described sites where data
 is physically retrieved only every few years.
 
-SCOUT is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
+S.C.O.U.T. is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
 reefs and left alone. It samples a stack of environmental signals — water temperature and
 turbidity today, with dissolved oxygen, light, chlorophyll, and reef soundscapes on the
 sensor roadmap — stores everything locally, and transmits a summarized daily packet to a
@@ -174,7 +174,7 @@ Quality Score, and applies modified Mann-Kendall tests to detect multi-month tre
 
 It was developed and validated against a published reef acoustic dataset from **Sesoko
 Island, Okinawa, Japan** — 8 monthly sessions spanning August 2017 to July 2018 — which
-serves as a stand-in until SCOUT collects its own recordings.
+serves as a stand-in until S.C.O.U.T. collects its own recordings.
 
 Notable design choices, documented in full in
 [Coral Bioacoustic Methodology](docs/analysis/coral-bioacoustic-methodology.md):
@@ -218,7 +218,7 @@ Markdown and can be imported directly.
 |---|---|
 | **[Knowledge Hub](docs/hub/README.md)** | **What's true, decided, and where the project stands right now — the always-current surface** |
 | **[Conventions](docs/CONVENTIONS.md)** | **Where files go, what to name them, formats, git, units — start here before adding anything** |
-| [MVP System Overview](docs/overview/mvp-system-overview.md) | What SCOUT is and what it must do |
+| [MVP System Overview](docs/overview/mvp-system-overview.md) | What S.C.O.U.T. is and what it must do |
 | [Engineering Design Document](docs/engineering/engineering-design-document.md) | The authoritative technical baseline — 22 sections including full BOM |
 | [Stakeholder Interviews](docs/research/stakeholder-interviews.md) | What reef researchers actually need |
 | [Coral Bioacoustic Methodology](docs/analysis/coral-bioacoustic-methodology.md) | The science behind the acoustic analysis |
@@ -252,7 +252,7 @@ than silently reconciled, since resolving each required a team decision.
 
 ## Related
 
-- Team repository: [github.com/irodriguez-17/SCOUT](https://github.com/irodriguez-17/SCOUT)
+- Team repository: [github.com/irodriguez-17/S.C.O.U.T.](https://github.com/irodriguez-17/S.C.O.U.T.)
 - Project proposal deck: [`assets/presentations/SCOUT-Proposal.pptx`](assets/presentations/)
 
 ## License
