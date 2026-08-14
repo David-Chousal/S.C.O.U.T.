@@ -31,9 +31,16 @@ REQUIRED = [
 ]
 
 
-def heading_positions(body: str) -> dict[str, int]:
-    """Map each required section (lowercased) to the line index of its heading, first hit."""
-    found: dict[str, int] = {}
+def heading_positions(body: str) -> dict[str, tuple[int, str]]:
+    """Map each required section (lowercased) to ``(line index, inline content)``.
+
+    A heading matches a section when its text equals the section name, or *starts with* it
+    followed by a non-alphanumeric separator — so ``## DATE: 2026-08-14`` and
+    ``## Open tasks — none`` both match, and any text after the name is captured as inline
+    content (which counts toward the section being filled in). First match wins per section;
+    the section names are distinct, so no heading matches two of them.
+    """
+    found: dict[str, tuple[int, str]] = {}
     in_fence = False
     for i, line in enumerate(body.splitlines()):
         if re.match(r"^\s*```", line):
@@ -44,11 +51,16 @@ def heading_positions(body: str) -> dict[str, int]:
         m = re.match(r"^\s{0,3}#{1,6}\s+(.*?)\s*$", line)
         if not m:
             continue
-        title = m.group(1).strip().lower()
+        title = m.group(1).strip()
+        lowered = title.lower()
         for name in REQUIRED:
             key = name.lower()
-            if title == key and key not in found:
-                found[key] = i
+            if key in found:
+                continue
+            if lowered == key:
+                found[key] = (i, "")
+            elif lowered.startswith(key) and not lowered[len(key)].isalnum():
+                found[key] = (i, title[len(key):].lstrip(" \t:–—-").strip())
     return found
 
 
@@ -56,15 +68,16 @@ COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 LIST_MARKER_RE = re.compile(r"^\s*(?:[-*+]|\d+\.)\s*")
 
 
-def section_bodies(body: str, found: dict[str, int]) -> dict[str, str]:
-    """Return each present section's text (keyed by lowercase name), from just after its
-    heading to the next section heading (or end of body)."""
+def section_bodies(body: str, found: dict[str, tuple[int, str]]) -> dict[str, str]:
+    """Return each present section's text (keyed by lowercase name): any inline content on
+    the heading line plus everything up to the next section heading (or end of body)."""
     lines = body.splitlines()
-    ordered = sorted((idx, key) for key, idx in found.items())
+    ordered = sorted((idx, key, inline) for key, (idx, inline) in found.items())
     out: dict[str, str] = {}
-    for i, (idx, key) in enumerate(ordered):
+    for i, (idx, key, inline) in enumerate(ordered):
         end = ordered[i + 1][0] if i + 1 < len(ordered) else len(lines)
-        out[key] = "\n".join(lines[idx + 1 : end])
+        following = "\n".join(lines[idx + 1 : end])
+        out[key] = f"{inline}\n{following}" if inline else following
     return out
 
 
@@ -104,7 +117,7 @@ def check(body: str) -> list[str]:
 
     present = [n for n in REQUIRED if n.lower() in found]
     if len(present) >= 2:
-        order = [found[n.lower()] for n in present]
+        order = [found[n.lower()][0] for n in present]
         if order != sorted(order):
             errors.append(
                 "Sections are out of order. Required order: "
