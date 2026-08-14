@@ -83,6 +83,14 @@
 | Validation dataset | Sesoko Island, Okinawa, Japan — 8 monthly sessions, Aug 2017 – Jul 2018, 1.5 m depth | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md#data-sources) |
 | Trend test | Modified Mann-Kendall (Hamed & Rao 1998) via `pyMannKendall` | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) |
 
+## Analytics (environmental telemetry)
+
+| Fact | Canonical value | Source |
+|---|---|---|
+| Thermal-stress metric | **NOAA Coral Reef Watch Degree Heating Weeks** over a 12-week window, against a per-site Maximum Monthly Mean; alert levels No Stress → Watch → Warning → Alert 1/2 | [Telemetry Methodology](../analysis/telemetry-methodology.md) |
+| Multi-buoy analysis | Each `buoy_id` is analysed **in isolation** (never blended — merging streams corrupts daily means and DHW), each with **its own MMM** | [`analytics/telemetry/fleet.py`](../../analytics/telemetry/fleet.py) |
+| Live dashboard | Self-contained static site on GitHub Pages, republished per publish (not real-time); **Analytics** (one buoy) and **Fleet** (network overview) pages are data-driven | [Live Dashboard](../engineering/live-dashboard.md) |
+
 ---
 
 ## Open facts (deliberately not settled yet)
