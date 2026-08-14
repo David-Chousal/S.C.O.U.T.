@@ -52,8 +52,9 @@ Each daily CSV starts with the header row below.
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
 | 10 | `uptime_s` | uint32 | s | `172800` | Seconds since boot (State-of-Health). |
 | 11 | `audio_file` | string | — | `SCOUT-01_20260814T003000Z.wav` | Filename in `/AUDIO/` if a recording was taken this cycle, else empty. |
-| 12 | `flags` | string | — | `TEMP_TIMEOUT` | `|`-separated status/error codes; empty when clean. |
-| 13 | `fw_version` | string | — | `v0.1.0` | Firmware tag that wrote the row. |
+| 12 | `flags` | string | — | `TEMP_TIMEOUT` | `|`-separated per-cycle event codes; empty when clean. |
+| 13 | `soh` | string | — | `WATCHDOG_RESET` | `|`-separated device State-of-Health codes (set at boot); empty when healthy. |
+| 14 | `fw_version` | string | — | `v0.1.0` | Firmware tag that wrote the row. |
 
 ### Optional / future columns (append at the end when the hardware lands)
 
@@ -65,6 +66,12 @@ Each daily CSV starts with the header row below.
   the one deployed DS18B20 in `temp_c` and these columns do not exist.
 - `turbidity_ntu` becomes populated once a calibration exists.
 
+### `soh` vocabulary (v1)
+
+Device State-of-Health, set at boot and carried in every row/packet (distinct from the
+per-cycle `flags`): `WATCHDOG_RESET` · `RTC_UNSET` · `SD_INIT_FAIL` · `LORA_INIT_FAIL`. A
+recurring `WATCHDOG_RESET` means a cycle is hanging. Matches `SOH_BITS` in the packet codec.
+
 ### `flags` vocabulary (v1)
 
 `SD_RETRY` · `TEMP_TIMEOUT` · `TURBIDITY_RANGE` · `BATT_LOW_SKIP_TX` · `RTC_LOST` — extend as
@@ -73,11 +80,11 @@ needed; keep them SCREAMING_SNAKE_CASE and documented here.
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_ntu,battery_v,uptime_s,audio_file,flags,fw_version
-1,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,v0.1.0
-1,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,v0.1.0
-1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,SCOUT-01_20260814T060000Z.wav,,v0.1.0
-1,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX,v0.1.0
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version
+1,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0
+1,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0
+1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,SCOUT-01_20260814T060000Z.wav,,,v0.1.0
+1,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX,WATCHDOG_RESET,v0.1.0
 ```
 
 ## Relationship to the LoRa daily packet

@@ -6,11 +6,12 @@
 #include "scout_packet.h"
 
 // From packet.py: Reading(buoy_id=1, ts=2027-03-01T00:00:00Z, seq=42, temp=26.44,
-// turb=514, batt=3.28, uptime=75600, flags={SD_RETRY,BATT_LOW_SKIP_TX}, audio=1, fw v0.1.0)
+// turb=514, batt=3.28, uptime=75600, flags={SD_RETRY,BATT_LOW_SKIP_TX},
+// soh={WATCHDOG_RESET,SD_INIT_FAIL}, audio=1, fw v0.1.0)
 static const uint8_t GOLDEN[SCOUT_PACKET_SIZE] = {
     0x01, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x2a, 0x00, 0x00,
     0x00, 0x54, 0x0a, 0x02, 0x02, 0xd0, 0x0c, 0x50, 0x27, 0x01,
-    0x00, 0x09, 0x00, 0x01, 0x00, 0x01, 0x00, 0x0b, 0x79};
+    0x00, 0x09, 0x00, 0x05, 0x01, 0x00, 0x01, 0x00, 0x0d, 0x1f};
 
 static ScoutReading golden_reading() {
     ScoutReading r;
@@ -23,6 +24,7 @@ static ScoutReading golden_reading() {
     r.battery_mv = scout_battery_mv(3.28f);
     r.uptime_s = 75600;
     r.flags = SCOUT_FLAG_SD_RETRY | SCOUT_FLAG_BATT_LOW_SKIP_TX;
+    r.soh = SCOUT_SOH_WATCHDOG_RESET | SCOUT_SOH_SD_INIT_FAIL;
     r.audio_present = 1;
     r.fw_major = 0;
     r.fw_minor = 1;
@@ -38,7 +40,7 @@ void test_encode_matches_shore_golden(void) {
 }
 
 void test_crc_of_body_is_known(void) {
-    TEST_ASSERT_EQUAL_HEX16(0x790b, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
+    TEST_ASSERT_EQUAL_HEX16(0x1f0d, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
 }
 
 void test_fixed_point_helpers(void) {

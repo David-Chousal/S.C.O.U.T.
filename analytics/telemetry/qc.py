@@ -49,6 +49,7 @@ class QCReport:
     turbidity_out_of_range: int = 0
     battery_missing: int = 0
     flag_counts: dict[str, int] = field(default_factory=dict)
+    soh_counts: dict[str, int] = field(default_factory=dict)
 
     @property
     def total_missing(self) -> int:
@@ -97,8 +98,10 @@ def run_qc(
     battery_missing = sum(1 for r in ordered if r.battery_v is None)
 
     flag_counts: Counter[str] = Counter()
+    soh_counts: Counter[str] = Counter()
     for r in ordered:
         flag_counts.update(r.flags)
+        soh_counts.update(r.soh)
 
     completeness = 100.0 * len(ordered) / expected if expected else 0.0
     return QCReport(
@@ -114,6 +117,7 @@ def run_qc(
         turbidity_out_of_range=turb_oor,
         battery_missing=battery_missing,
         flag_counts=dict(flag_counts),
+        soh_counts=dict(soh_counts),
     )
 
 
