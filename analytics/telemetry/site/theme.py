@@ -292,9 +292,9 @@ img{max-width:100%;height:auto;display:block}
 /* ── Pill image cards ─────────────────────────────────────────────────────── */
 /* Four pills across, on the standard content width so the section lines up with the ones above
    and below. Explicit 4-up (not auto-fit, which spawned a phantom 5th column) with a tight gap. */
-.pill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
 @media(max-width:720px){.pill-row{grid-template-columns:repeat(2,1fr)}}
-.pill{position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
+.pill{position:relative;width:100%;margin:0;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
   aspect-ratio:6/8;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .pill.wide{aspect-ratio:1/1}
