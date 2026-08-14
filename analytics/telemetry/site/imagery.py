@@ -59,6 +59,10 @@ CATALOG: tuple[Reef, ...] = (
 )
 _BY_KEY = {r.key: r for r in CATALOG}
 
+# The Home hero photograph (wide 2:1). Falls back to the authored atmosphere if absent.
+HERO = Photo(photographer="Renata Romeo", file="hero.jpg")
+HERO_ALT = "A sunlit tropical coral reef alive with schooling fish."
+
 
 def _photo_available(reef: Reef, img_dir: Path | None) -> bool:
     return bool(
@@ -91,21 +95,44 @@ def pill(key: str, base: str, *, uid: int, img_dir: Path | None = None, wide: bo
     )
 
 
+def _hero_available(img_dir: Path | None) -> bool:
+    return bool(HERO.file and HERO.photographer and img_dir and (img_dir / HERO.file).exists())
+
+
+def hero(base: str, img_dir: Path | None = None) -> tuple[str, str]:
+    """Return ``(media_html, credit_html)`` for the Home hero — real photo or authored scene."""
+    if _hero_available(img_dir):
+        media = (
+            f'<img src="{base}assets/img/{html.escape(HERO.file)}" alt="{html.escape(HERO_ALT)}" '
+            'loading="eager" fetchpriority="high" decoding="async" width="1440" height="720">'
+        )
+        credit = (
+            f'<p class="pill-credit">{html.escape(HERO.photographer)} / '
+            f'<a href="{HERO.source_url}">{html.escape(HERO.source)}</a></p>'
+        )
+        return media, credit
+    from . import assets
+    return assets.reef_atmosphere("sunlit", 10), ""
+
+
 def any_photos(img_dir: Path | None) -> bool:
-    return any(_photo_available(r, img_dir) for r in CATALOG)
+    return _hero_available(img_dir) or any(_photo_available(r, img_dir) for r in CATALOG)
 
 
 def credits_page_body(img_dir: Path | None) -> str:
     """Body HTML for assets/credits.html — lists real-photo attributions + the authored note."""
-    placed = [r for r in CATALOG if _photo_available(r, img_dir)]
+    entries: list[tuple[str, Photo]] = []
+    if _hero_available(img_dir):
+        entries.append(("Home hero — sunlit coral reef", HERO))
+    entries += [(r.title, r.photo) for r in CATALOG if _photo_available(r, img_dir)]
     rows = ""
-    if placed:
+    if entries:
         rows = "<ul class='prose'>" + "".join(
-            f'<li><strong>{html.escape(r.title)}</strong> — '
-            f'{html.escape(r.photo.photographer)} / '
-            f'<a href="{r.photo.source_url}">{html.escape(r.photo.source)}</a>, '
+            f'<li><strong>{html.escape(label)}</strong> — '
+            f'{html.escape(photo.photographer)} / '
+            f'<a href="{photo.source_url}">{html.escape(photo.source)}</a>, '
             f'used under the Ocean Image Bank licence.</li>'
-            for r in placed
+            for label, photo in entries
         ) + "</ul>"
     authored_note = (
         "<p>Reef scenes not individually credited above are <em>authored illustrations</em> — "

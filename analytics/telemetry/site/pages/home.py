@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import assets, components as c, imagery
+from .. import components as c, imagery
 from ..context import SiteContext
 
 TITLE = "S.C.O.U.T. — Nearshore Ocean Monitoring Buoy"
@@ -19,7 +19,7 @@ _ARROW = ('<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-wid
 
 def _hero(ctx: SiteContext) -> str:
     live = ctx.live
-    hero_media = assets.reef_atmosphere("sunlit", 10)
+    hero_media, hero_credit = imagery.hero(ctx.base, ctx.img_dir)
     return (
         '<section class="hero"><div class="wrap">'
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
@@ -38,7 +38,7 @@ def _hero(ctx: SiteContext) -> str:
         '<span class="signal soon">Dissolved oxygen</span>'
         '<span class="signal soon">Reef soundscape</span>'
         "</div>"
-        f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>'
+        f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>{hero_credit}'
         '<figcaption>Shallow, sunlit nearshore water — the habitat SCOUT is built for, and '
         "where satellite products struggle most.</figcaption></figure>"
         "</div></section>"
