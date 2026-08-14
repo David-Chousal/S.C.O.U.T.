@@ -240,7 +240,7 @@ than silently reconciled, since resolving each required a team decision.
 | Issue | Detail |
 |---|---|
 | ~~**MCU and radio**~~ ✅ Resolved | Settled by [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md): Feather M0 + RFM95 is the build platform; ESP32-C3 + SX1262 is the future production target |
-| ~~**Deployment depth**~~ ✅ Resolved | **2–7 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
+| ~~**Deployment depth**~~ ✅ Resolved | **2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
 | ~~**LoRa range**~~ ✅ Resolved | Standardized to **~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd and 15–20 km figures corrected. Real over-saltwater range still to be measured in Phase 4 |
 | ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
 | **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — see [ADR-0003](docs/decisions/0003-single-point-sensing.md) related gaps |
