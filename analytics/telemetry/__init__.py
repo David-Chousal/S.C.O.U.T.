@@ -12,6 +12,7 @@ docs/analysis/telemetry-methodology.md.
 
 from . import bleaching, turbidity
 from .aggregate import DailyAggregate, aggregate_daily, daily_temperature_series
+from .fleet import FleetReport, analyze_fleet, group_by_buoy, run_fleet, summarize_fleet
 from .io import TelemetryFormatError, load_csv, load_dir
 from .model import TelemetryRecord
 from .pipeline import TelemetryReport, analyze, run
@@ -35,4 +36,9 @@ __all__ = [
     "analyze",
     "run",
     "TelemetryReport",
+    "analyze_fleet",
+    "run_fleet",
+    "group_by_buoy",
+    "summarize_fleet",
+    "FleetReport",
 ]

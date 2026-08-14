@@ -1,5 +1,37 @@
 #include "scout_scheduler.h"
 
+scout_power_mode_t scout_power_mode(uint16_t battery_mv, uint16_t conserve_mv,
+                                    uint16_t critical_mv) {
+    if (battery_mv >= conserve_mv) {
+        return SCOUT_POWER_NORMAL;
+    }
+    if (battery_mv >= critical_mv) {
+        return SCOUT_POWER_CONSERVE;
+    }
+    return SCOUT_POWER_CRITICAL;
+}
+
+uint32_t scout_transmit_period_s(scout_power_mode_t mode, uint32_t base_period_s,
+                                 uint32_t conserve_factor) {
+    switch (mode) {
+        case SCOUT_POWER_NORMAL:
+            return base_period_s;
+        case SCOUT_POWER_CONSERVE:
+            return base_period_s * conserve_factor;
+        case SCOUT_POWER_CRITICAL:
+        default:
+            return UINT32_MAX;
+    }
+}
+
+bool scout_sense_turbidity(scout_power_mode_t mode) {
+    return mode != SCOUT_POWER_CRITICAL;
+}
+
+bool scout_sense_audio(scout_power_mode_t mode) {
+    return mode == SCOUT_POWER_NORMAL;
+}
+
 uint32_t scout_next_wake_epoch(uint32_t now_epoch, uint32_t interval_s) {
     if (interval_s == 0) {
         return now_epoch;

@@ -21,15 +21,22 @@
 #include <stdint.h>
 
 #define SCOUT_PACKET_VERSION 1
-#define SCOUT_PACKET_SIZE 29
-#define SCOUT_PACKET_BODY_SIZE 27
+#define SCOUT_PACKET_SIZE 30
+#define SCOUT_PACKET_BODY_SIZE 28
 
-/* Flag bits — must equal FLAG_BITS in packet.py. */
+/* Per-cycle event flags — must equal FLAG_BITS in packet.py. */
 #define SCOUT_FLAG_SD_RETRY (1u << 0)
 #define SCOUT_FLAG_TEMP_TIMEOUT (1u << 1)
 #define SCOUT_FLAG_TURBIDITY_RANGE (1u << 2)
 #define SCOUT_FLAG_BATT_LOW_SKIP_TX (1u << 3)
 #define SCOUT_FLAG_RTC_LOST (1u << 4)
+#define SCOUT_FLAG_POWER_CONSERVE (1u << 5)
+
+/* Device State-of-Health bits (set at boot/init) — must equal SOH_BITS in packet.py. */
+#define SCOUT_SOH_WATCHDOG_RESET (1u << 0)
+#define SCOUT_SOH_RTC_UNSET (1u << 1)
+#define SCOUT_SOH_SD_INIT_FAIL (1u << 2)
+#define SCOUT_SOH_LORA_INIT_FAIL (1u << 3)
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +51,8 @@ typedef struct {
     uint16_t turbidity_adc;
     uint16_t battery_mv;    /* battery volts × 1000 */
     uint32_t uptime_s;
-    uint16_t flags;         /* SCOUT_FLAG_* bitfield */
+    uint16_t flags;         /* SCOUT_FLAG_* bitfield (per-cycle events) */
+    uint8_t soh;            /* SCOUT_SOH_* bitfield (device State-of-Health) */
     uint8_t audio_present;  /* 0 or 1 */
     uint8_t fw_major;
     uint8_t fw_minor;
@@ -54,7 +62,7 @@ typedef struct {
 /* CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) — matches crc16_ccitt in packet.py. */
 uint16_t scout_crc16_ccitt(const uint8_t *data, size_t len);
 
-/* Encode `r` into `out` (must hold >= SCOUT_PACKET_SIZE). Returns bytes written (29). */
+/* Encode `r` into `out` (must hold >= SCOUT_PACKET_SIZE). Returns bytes written (30). */
 size_t scout_packet_encode(const ScoutReading *r, uint8_t *out);
 
 /* Fixed-point helpers matching the Python scaling (round-half-away-from-zero). */

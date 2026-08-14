@@ -1,0 +1,47 @@
+name: CI
+
+# Runs the full test suite on every push to main and every PR. No hardware, no external
+# services — the Python suites are standard-library only; the firmware native tests build the
+# hardware-free libraries (packet, scheduler) on the host via PlatformIO.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python-tests:
+    name: Python (shore · telemetry · packet contract)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Shore tests
+        working-directory: shore
+        run: python -m unittest discover -s tests -v
+
+      - name: Telemetry tests
+        working-directory: analytics
+        run: python -m unittest discover -s telemetry/tests -t . -v
+
+      - name: Packet contract guard (firmware GOLDEN == shore encoder)
+        run: python scripts/check_packet_contract.py
+
+  firmware-tests:
+    name: Firmware native unit tests (packet · scheduler)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Run native tests
+        working-directory: firmware
+        run: pio test -e native -v

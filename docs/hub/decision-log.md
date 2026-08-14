@@ -39,6 +39,9 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 
 | Date | Area | Decision | Record |
 |---|---|---|---|
+| 2026-08-14 | mechanical | Revised deployment depth to **2–8 m** (was 5–8 m), confirmed against the actual Hawaii site by the field/mechanical lead | [SCO-6](https://linear.app/scout1/issue/SCO-6) |
+| 2026-08-14 | process | Protected `main` with the "Protect main" ruleset: PR-only, the six required checks, conversation resolution, blocked force-push and deletion; owner keeps an Always-bypass | [ruleset settings](https://github.com/David-Chousal/S.C.O.U.T./settings/rules/20865742) |
+| 2026-08-14 | process | CI enforces the PR conventions — title format, five-section body, Knowledge-Hub touch, and a conventions lint (filenames · forbidden files · markdown · source registry); `main` protection ruleset to follow | [pr-checks.yml](../../.github/workflows/pr-checks.yml) |
 | 2026-08-14 | process | Knowledge Hub established: canonical facts, decision log, status journal, research library | [Hub README](README.md) |
 | 2026-08-14 | docs | Reconciled the EDD requirements to single-sensor per ADR-0003 | commit `73d31ef` (PR #8) |
 | 2026-08-14 | docs | Reconciled depth (5–8 m), LoRa range (~2 km), academic year (2026–2027), and project name | commit `d496bc2` (PR #7) |

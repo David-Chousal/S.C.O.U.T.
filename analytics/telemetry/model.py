@@ -24,5 +24,6 @@ class TelemetryRecord:
     uptime_s: int | None
     audio_file: str
     flags: frozenset[str] = field(default_factory=frozenset)
+    soh: frozenset[str] = field(default_factory=frozenset)  # device State-of-Health bits
     schema_version: int = 1
     fw_version: str = ""

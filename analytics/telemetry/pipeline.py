@@ -130,6 +130,7 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
             "temp_missing": qc.temp_missing,
             "temp_out_of_range": qc.temp_out_of_range,
             "flags": qc.flag_counts,
+            "soh": qc.soh_counts,
         },
         "temperature_trend": asdict(report.temp_trend),
         "turbidity_trend": asdict(report.turbidity_trend),

@@ -58,6 +58,7 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             uptime_s=_opt_int(row.get("uptime_s", "")),
             audio_file=row.get("audio_file", "").strip(),
             flags=frozenset(f for f in row.get("flags", "").split("|") if f),
+            soh=frozenset(s for s in row.get("soh", "").split("|") if s),
             schema_version=int(row.get("schema_version", "1") or "1"),
             fw_version=row.get("fw_version", "").strip(),
         )
