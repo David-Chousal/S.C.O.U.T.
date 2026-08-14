@@ -7,8 +7,9 @@
  * The packet encoder (lib/scout_packet) mirrors the shore decoder byte-for-byte; the
  * scheduling math (lib/scout_scheduler) is pure and unit-tested off-target.
  *
- * Scaffold status: sensor/SD/LoRa/RTC paths are wired to their drivers; the audio subsystem
- * and true SAMD21 standby sleep are marked TODO for Phase 1–2 bring-up (see notes inline).
+ * Standby sleep (ArduinoLowPower + PCF8523 INT wake) and the watchdog are implemented;
+ * record_seq/last_tx are retained across resets in a no-init RAM section. The audio subsystem
+ * and on-hardware driver verification remain Phase 1–2 bring-up (see notes inline).
  */
 #include <Adafruit_SleepyDog.h>
 #include <Arduino.h>
@@ -28,9 +29,19 @@ static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
     "turbidity_ntu,battery_v,uptime_s,audio_file,flags,fw_version";
 
-// Persisted across sleep cycles (SAMD21 standby retains RAM). Reset only on hard power loss.
-static uint32_t g_record_seq = 0;
-static uint32_t g_last_tx_epoch = 0;
+// Sequence counter and last-transmit time, kept in a NO-INIT RAM section that the C startup
+// does not clear. They therefore survive a watchdog/system reset (the MCU stays powered), so
+// record_seq stays monotonic and we don't re-send the daily packet after a reset. A magic
+// guard tells real retained state from garbage on a cold power-on. This is RAM, so a full
+// power loss still cold-starts — the PCF8523 has no user NVRAM to hold it, and we chose not
+// to add SD/flash wear for the rarer power-loss case.
+struct RetainedState {
+    uint32_t magic;
+    uint32_t record_seq;
+    uint32_t last_tx_epoch;
+};
+static const uint32_t RETAINED_MAGIC = 0x5C002701u;
+__attribute__((section(".noinit"))) static RetainedState g_state;
 
 static TemperatureSensor g_temp;
 static TurbiditySensor g_turbidity;
@@ -87,6 +98,15 @@ void setup() {
     // State-of-Health — a recurring watchdog reset means a cycle is hanging.
     g_watchdog_reset = PM->RCAUSE.bit.WDT;
 
+    // Restore the retained counter/last-TX across a reset; cold-start them if the magic is
+    // absent (fresh power-on → the no-init RAM holds garbage).
+    bool warm_start = (g_state.magic == RETAINED_MAGIC);
+    if (!warm_start) {
+        g_state.magic = RETAINED_MAGIC;
+        g_state.record_seq = 0;
+        g_state.last_tx_epoch = 0;
+    }
+
     // Guard initialization too — a hung driver init shouldn't brick the buoy. loop() re-arms
     // it each cycle and disables it before the long standby sleep.
     Watchdog.enable(WDT_TIMEOUT_MS);
@@ -120,7 +140,9 @@ void setup() {
     Serial.print(" sd=");
     Serial.print(g_sd_ok ? "ok" : "FAIL");
     Serial.print(" lora=");
-    Serial.println(g_lora_ok ? "ok" : "FAIL");
+    Serial.print(g_lora_ok ? "ok" : "FAIL");
+    Serial.print(warm_start ? " start=warm resume_seq=" : " start=cold resume_seq=");
+    Serial.println(g_state.record_seq);
     (void)startup_flags;  // folded into the first record below
 }
 
@@ -158,7 +180,7 @@ void loop() {
     // 5. Battery gate.
     bool battery_ok = scout_battery_ok(battery_mv, BATTERY_SKIP_TX_MV);
 
-    g_record_seq++;
+    g_state.record_seq++;
 
     // 6. Log a CSV row (data-schema.md). Retry once on SD failure.
     char timestamp[24];
@@ -178,9 +200,9 @@ void loop() {
     char line[192];
     snprintf(line, sizeof(line),
              "%u,SCOUT-%02u,%s,%lu,%.2f,%u,%.3f,,%.2f,%lu,%s,,v%d.%d.%d",
-             SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_record_seq,
+             SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
              temp_c, turbidity_adc, turbidity_v, battery_mv / 1000.0f,
-             (unsigned long)(g_record_seq * SAMPLE_INTERVAL_S), audio_file, FW_MAJOR, FW_MINOR,
+             (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, FW_MAJOR, FW_MINOR,
              FW_PATCH);
 
     if (g_sd_ok) {
@@ -203,16 +225,16 @@ void loop() {
     // 7. Transmit the summarized packet once per day, if the battery allows.
     if (!battery_ok) {
         flags |= SCOUT_FLAG_BATT_LOW_SKIP_TX;
-    } else if (g_lora_ok && scout_is_transmit_cycle(now, g_last_tx_epoch, TRANSMIT_PERIOD_S)) {
+    } else if (g_lora_ok && scout_is_transmit_cycle(now, g_state.last_tx_epoch, TRANSMIT_PERIOD_S)) {
         ScoutReading r;
         r.schema_version = SCOUT_PACKET_VERSION;
         r.buoy_id = BUOY_ID;
         r.timestamp = now;
-        r.record_seq = g_record_seq;
+        r.record_seq = g_state.record_seq;
         r.temp_c_centi = scout_temp_centi(temp_c);
         r.turbidity_adc = turbidity_adc;
         r.battery_mv = battery_mv;
-        r.uptime_s = g_record_seq * SAMPLE_INTERVAL_S;
+        r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
         r.flags = flags;
         r.audio_present = audio_present ? 1 : 0;
         r.fw_major = FW_MAJOR;
@@ -222,14 +244,14 @@ void loop() {
         uint8_t packet[SCOUT_PACKET_SIZE];
         size_t n = scout_packet_encode(&r, packet);
         if (g_lora.send(packet, (uint8_t)n)) {
-            g_last_tx_epoch = now;
+            g_state.last_tx_epoch = now;
         }
     }
 
     char flag_str[80];
     format_flags(flags, flag_str, sizeof(flag_str));
     Serial.print("seq=");
-    Serial.print(g_record_seq);
+    Serial.print(g_state.record_seq);
     Serial.print(" flags=");
     Serial.println(flag_str[0] ? flag_str : "-");
 
