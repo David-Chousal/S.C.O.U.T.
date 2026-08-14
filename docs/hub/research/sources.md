@@ -34,7 +34,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `sueur-2008` | Sueur et al. (2008). "Rapid acoustic survey for biodiversity appraisal." *PLOS ONE* 3(12):e4065. [doi](https://doi.org/10.1371/journal.pone.0004065) | 🔓 | library/sueur-2008.pdf | Acoustic entropy (H) index |
 | `villanueva-rivera-2011` | Villanueva-Rivera et al. (2011). "A primer of acoustic analysis for landscape ecologists." *Landscape Ecology* 26(9):1233–1246. [doi](https://doi.org/10.1007/s10980-011-9636-9) | 🔒 | — | Acoustic Diversity Index (ADI) |
 | `bradfer-lawrence-2019` | Bradfer-Lawrence et al. (2019). "Guidelines for the use of acoustic indices in environmental research." *Methods in Ecology and Evolution* 10(10):1796–1807. [doi](https://doi.org/10.1111/2041-210X.13254) | 🔒 | — | Why indices co-vary (the "shrimp counter" problem) → PCA over weighted composite |
-| `bohnenstiehl-2018` | Bohnenstiehl et al. (2018). "Investigating the utility of ecoacoustic metrics in marine soundscapes." *Journal of Ecoacoustics* 2:R1156L. [doi](https://doi.org/10.22261/JEA.R1156L) | 🔓 | — | Index redundancy in marine soundscapes |
+| `bohnenstiehl-2018` | Bohnenstiehl et al. (2018). "Investigating the utility of ecoacoustic metrics in marine soundscapes." *Journal of Ecoacoustics* 2:R1156L. [doi](https://doi.org/10.22261/JEA.R1156L) | 🔓 | library/bohnenstiehl-2018.pdf | Index redundancy in marine soundscapes |
 
 ## Soundscape ecology & reef acoustics
 
@@ -53,8 +53,8 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `liu-2014` | Liu et al. (2014). "Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch." *Remote Sensing* 6(11):11579–11606. [doi](https://doi.org/10.3390/rs61111579) | 🔓 | — | Defines HotSpot / **DHW** and the 4/8/12 °C-week bleaching bands — the algorithm telemetry `bleaching.py` implements — [notes](notes/liu-2014-dhw.md) |
-| `skirving-2020` | Skirving et al. (2020). "CoralTemp and the Coral Reef Watch coral bleaching heat stress product suite v3.1." *Remote Sensing* 12(23):3856. [doi](https://doi.org/10.3390/rs12233856) | 🔓 | — | Defines the **MMM** climatology (`--mmm` in `run_telemetry.py`) DHW is measured against — [notes](notes/skirving-2020-coraltemp-mmm.md) |
+| `liu-2014` | Liu et al. (2014). "Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch." *Remote Sensing* 6(11):11579–11606. [doi](https://doi.org/10.3390/rs61111579) | 🔓 | library/liu-2014.pdf | Defines HotSpot / **DHW** and the 4/8/12 °C-week bleaching bands — the algorithm telemetry `bleaching.py` implements — [notes](notes/liu-2014-dhw.md) |
+| `skirving-2020` | Skirving et al. (2020). "CoralTemp and the Coral Reef Watch coral bleaching heat stress product suite v3.1." *Remote Sensing* 12(23):3856. [doi](https://doi.org/10.3390/rs12233856) | 🔓 | library/skirving-2020.pdf | Defines the **MMM** climatology (`--mmm` in `run_telemetry.py`) DHW is measured against — [notes](notes/skirving-2020-coraltemp-mmm.md) |
 | `kayanne-2017` | Kayanne (2017). "Validation of degree heating weeks as a coral bleaching index." *Coral Reefs* 36:63–70. [doi](https://doi.org/10.1007/s00338-016-1524-y) | 🔒 | — | **Empirical validation:** DHW > 8 °C-weeks matches observed bleaching → justifies the alert bands — [notes](notes/kayanne-2017-dhw-validation.md) |
 | `hobday-2016` | Hobday et al. (2016). "A hierarchical approach to defining marine heatwaves." *Progress in Oceanography* 141:227–238. [doi](https://doi.org/10.1016/j.pocean.2015.12.014) | 🔒 | — | Standard **marine-heatwave** definition/vocabulary for interpreting SCOUT temperature events |
 
@@ -99,11 +99,11 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `jovalekic-2018` | Jovalekić et al. (2018). "Experimental study of LoRa transmission over seawater." *Sensors* 18(9):2853. [doi](https://doi.org/10.3390/s18092853) | 🔓 | — | **Upper bound:** clear-LOS LoRa feasible to ~22 km over seawater (868/434 MHz); sea surface not the limiter — [notes](notes/jovalekic-2018-lora-seawater.md) |
-| `gutierrez-gomez-2021` | Gutiérrez-Gómez et al. (2021). "Analysis of LoRa P2P near-surface links over water." *Sensors* 21(20):6872. [doi](https://doi.org/10.3390/s21206872) | 🔓 | — | **Lower bound:** near-surface antenna height dominates path loss — the buoy's real constraint — [notes](notes/gutierrez-gomez-2021-lora-near-surface.md) |
-| `parri-2019` | Parri et al. (2019). "Offshore LoRaWAN networking: … buoy-height antennas at sea." *Sensors* 19(14):3239. [doi](https://doi.org/10.3390/s19143239) | 🔓 | — | **Closest analog:** LoRaWAN measured at 2.1 m / 3.5 m buoy-height antennas offshore — the Phase 4 prior — [notes](notes/parri-2019-lpwan-at-sea.md) |
+| `jovalekic-2018` | Jovalekić et al. (2018). "Experimental study of LoRa transmission over seawater." *Sensors* 18(9):2853. [doi](https://doi.org/10.3390/s18092853) | 🔓 | library/jovalekic-2018.pdf | **Upper bound:** clear-LOS LoRa feasible to ~22 km over seawater (868/434 MHz); sea surface not the limiter — [notes](notes/jovalekic-2018-lora-seawater.md) |
+| `gutierrez-gomez-2021` | Gutiérrez-Gómez et al. (2021). "Analysis of LoRa P2P near-surface links over water." *Sensors* 21(20):6872. [doi](https://doi.org/10.3390/s21206872) | 🔓 | library/gutierrez-gomez-2021.pdf | **Lower bound:** near-surface antenna height dominates path loss — the buoy's real constraint — [notes](notes/gutierrez-gomez-2021-lora-near-surface.md) |
+| `parri-2019` | Parri et al. (2019). "Offshore LoRaWAN networking: … buoy-height antennas at sea." *Sensors* 19(14):3239. [doi](https://doi.org/10.3390/s19143239) | 🔓 | library/parri-2019.pdf | **Closest analog:** LoRaWAN measured at 2.1 m / 3.5 m buoy-height antennas offshore — the Phase 4 prior — [notes](notes/parri-2019-lpwan-at-sea.md) |
 | `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | library/adelantado-2017.pdf | Duty-cycle / airtime / SF trade — the theory under the 1×/day 82-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
-| `bouguera-2018` | Bouguera et al. (2018). "Energy consumption model for sensor nodes based on LoRa and LoRaWAN." *Sensors* 18(7):2104. [doi](https://doi.org/10.3390/s18072104) | 🔓 | — | Energy-per-packet model (SF × power × payload) → feeds the open battery/solar sizing — [notes](notes/bouguera-2018-lora-energy.md) |
+| `bouguera-2018` | Bouguera et al. (2018). "Energy consumption model for sensor nodes based on LoRa and LoRaWAN." *Sensors* 18(7):2104. [doi](https://doi.org/10.3390/s18072104) | 🔓 | library/bouguera-2018.pdf | Energy-per-packet model (SF × power × payload) → feeds the open battery/solar sizing — [notes](notes/bouguera-2018-lora-energy.md) |
 
 ## Link reliability & FEC
 
@@ -117,7 +117,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `manov-2004` | Manov, Chang & Dickey (2004). "Methods for reducing biofouling of moored optical sensors." *Journal of Atmospheric and Oceanic Technology* 21(6):958–968. [doi](https://doi.org/10.1175/1520-0426(2004)021%3C0958:MFRBOM%3E2.0.CO;2) | 🔒 | — | Optical-sensor **fouling drift is monotonic** → mimics a turbidity trend in `turbidity.py`; detect by cross-comparison — [notes](notes/manov-2004-biofouling-optical-drift.md) |
-| `qartod-optics-2017` | U.S. IOOS (2017). "Manual for real-time quality control of ocean optics data, v1.1." 49 pp. [doi](https://doi.org/10.25923/v9p8-ft24) | 🔓 | — | QC **flag standard** (flat-line / rate-of-change catch a fouled sensor) for turbidity — implement in `qc.py` — [notes](notes/qartod-optics-2017-qc.md) |
+| `qartod-optics-2017` | U.S. IOOS (2017). "Manual for real-time quality control of ocean optics data, v1.1." 49 pp. [doi](https://doi.org/10.25923/v9p8-ft24) | 🔓 | library/qartod-optics-2017.pdf | QC **flag standard** (flat-line / rate-of-change catch a fouled sensor) for turbidity — implement in `qc.py` — [notes](notes/qartod-optics-2017-qc.md) |
 
 ---
 
