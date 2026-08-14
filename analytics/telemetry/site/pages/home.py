@@ -81,7 +81,7 @@ def _senses() -> str:
     cards = "".join(f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>'
                     for g, k, t, b in signals)
     platform = (
-        '<article class="col-6 card">'
+        '<article class="col-6">'
         '<div class="bento" style="align-items:center;gap:1.2rem">'
         '<div class="col-4"><p class="kicker">A platform</p>'
         '<h3>One buoy, several possible signals</h3>'
