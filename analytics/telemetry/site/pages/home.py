@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, imagery
+from .. import components as c, drawings, imagery
 from ..context import SiteContext
 
 TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
@@ -15,36 +15,6 @@ DESCRIPTION = (
 _ARROW = ('<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" '
           'aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" '
           'stroke-linejoin="round"/></svg>')
-
-# John Myrdal's mechanical CAD drawings (PETG parts), rendered from mechanical/cad/*.pdf into
-# assets/img/mechanical/. (file, caption) — captions match each drawing's own title block.
-_DRAWINGS = (
-    ("floatation-top.png", "Floatation top"),
-    ("floatation-shell.png", "Floatation shell"),
-    ("floatation-bottom.png", "Floatation bottom"),
-    ("turbidity-sensor.png", "Turbidity sensor housing"),
-)
-
-
-def _drawings(base: str) -> str:
-    """A gallery of John's engineering drawings, framed like prints. Each links to the full image."""
-    figs = "".join(
-        '<figure class="drawing reveal">'
-        f'<a href="{base}assets/img/mechanical/{file}" aria-label="{caption} — full drawing">'
-        f'<img src="{base}assets/img/mechanical/{file}" width="1275" height="1650" '
-        f'loading="lazy" decoding="async" alt="Engineering drawing — {caption}"></a>'
-        f"<figcaption>{caption}</figcaption></figure>"
-        for file, caption in _DRAWINGS
-    )
-    return (
-        '<div class="drawings">'
-        '<div class="drawings-head reveal"><p class="eyebrow">Mechanical design</p>'
-        "<h3>The buoy, drawn</h3>"
-        '<p class="drawings-sub">CAD drawings by John Ryan Myrdal — the flotation collar and the '
-        "turbidity-sensor housing, printed in PETG.</p></div>"
-        f'<div class="drawings-grid">{figs}</div></div>'
-    )
-
 
 def _hero(ctx: SiteContext) -> str:
     live = ctx.live
@@ -143,7 +113,10 @@ def _habitat(ctx: SiteContext) -> str:
                      "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
                      "productive, and it is also where remote sensing is least accurate.")
         + f'<div class="pill-row" style="margin-top:2.8rem">{pills}</div>'
-        + _drawings(ctx.base),
+        + drawings.gallery(
+            ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
+            sub="CAD drawings by John Ryan Myrdal. The flotation collar and the turbidity-sensor "
+                "housing, printed in PETG."),
         cls="section-sm",
         sid="habitat",
     )
