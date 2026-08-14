@@ -218,7 +218,13 @@ img{max-width:100%;height:auto;display:block}
 .textlink:hover svg{transform:translateX(3px)}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
-.hero{padding-block:clamp(4rem,2.4rem + 7vw,8rem) clamp(3rem,2rem + 4vw,5rem);text-align:center}
+.hero{position:relative;isolation:isolate;
+  padding-block:clamp(4rem,2.4rem + 7vw,8rem) clamp(3rem,2rem + 4vw,5rem);text-align:center}
+.hero>.wrap{position:relative;z-index:1}
+.hero-fish{position:absolute;left:0;right:0;top:6%;bottom:34%;z-index:0;pointer-events:none;
+  overflow:hidden;opacity:0.85}
+.hero-fish svg,.hero-fish canvas{display:block;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.hero-fish{display:none}}
 .hero .eyebrow{margin-bottom:2rem}
 .hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--ink);
   margin:0}

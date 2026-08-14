@@ -32,12 +32,13 @@ data changes. That makes a **static site** the right tool:
 
 - **No server, no infra, free, public.** GitHub Pages just serves files. Nothing to keep
   running, nothing to secure, and the link is shareable with NOAA/stakeholders.
-- **Every page is self-contained** — inline design-system CSS and inline SVG graphics, with
-  self-hosted fonts and images (no external scripts, stylesheets, CDNs, or third-party
-  requests). The pages render offline and pass a strict content-security policy; the Analytics
-  page is held to a no-external-reference contract enforced by
-  [`test_web.py`](../../analytics/telemetry/tests/test_web.py). The site is a single deliberate
-  light (warm sand) theme.
+- **Pages are self-contained and same-origin.** Inline design-system CSS and inline SVG
+  graphics, with self-hosted fonts and images, and no CDNs or third-party requests. The
+  **Analytics** page is script-free and held to a no-external-reference contract enforced by
+  [`test_web.py`](../../analytics/telemetry/tests/test_web.py); Technology, Science and About are
+  script-free too. The **Home** page is the one exception: it loads a self-hosted Lottie runtime
+  and animation (same-origin JavaScript) for the hero fish, so it is not script-free, though it
+  still makes no external request. The site is a single light (warm sand) theme.
 
 A live backend (Flask/FastAPI on the Pi, or a cloud host) would only be worth it for
 sub-daily, interactive, or multi-user-write use cases — out of scope for a daily packet.
