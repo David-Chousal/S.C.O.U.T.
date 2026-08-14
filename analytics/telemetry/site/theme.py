@@ -290,11 +290,14 @@ img{max-width:100%;height:auto;display:block}
 .card-ink .stat .stat-value{color:var(--bg)}
 
 /* ── Pill image cards ─────────────────────────────────────────────────────── */
-/* Four pills across, within the standard content width so the section lines up with the ones
-   above and below. They grow taller (not wider) to feel larger. */
-.pill-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:clamp(0.35rem,0.15rem + 0.4vw,0.6rem)}
-.pill{position:relative;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
+/* Four pills across. The row breaks out to the wide content width (its own .wrap-wide in
+   home.py) so the images read larger than the text column, and the gap is kept tight so they
+   sit almost shoulder-to-shoulder. */
+.pill-row{display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(0.2rem,0.1rem + 0.2vw,0.35rem)}
+@media(max-width:720px){.pill-row{grid-template-columns:repeat(2,1fr);
+  gap:clamp(0.3rem,0.2rem + 0.6vw,0.6rem)}}
+.pill{position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
   aspect-ratio:4/7;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .pill.wide{aspect-ratio:1/1}

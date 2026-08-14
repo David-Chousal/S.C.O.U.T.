@@ -110,17 +110,21 @@ def _habitat(ctx: SiteContext) -> str:
         imagery.pill("open-water", ctx.base, uid=104, img_dir=ctx.img_dir),
     ])
     return c.section(
-        c.head_block("The environment", "The nearshore zone",
-                     "SCOUT is built for shallow nearshore water. It is biodiverse and "
-                     "productive, and it is also where remote sensing is least accurate.")
-        + f'<div class="pill-row" style="margin-top:2.8rem">{pills}</div>'
-        + '<div style="margin-top:1.8rem">'
+        '<div class="wrap">'
+        + c.head_block("The environment", "The nearshore zone",
+                       "SCOUT is built for shallow nearshore water. It is biodiverse and "
+                       "productive, and it is also where remote sensing is least accurate.")
+        + "</div>"
+        # The image row breaks out to the wide width so the pills read larger than the text column.
+        + f'<div class="wrap wrap-wide"><div class="pill-row" style="margin-top:2.8rem">{pills}</div></div>'
+        + '<div class="wrap" style="margin-top:1.8rem">'
         + c.render_slot("Coming soon", "Buoy renders",
                         "Studio renders of the buoy will go here, showing the hardware above and "
                         "below the waterline.")
         + "</div>",
         cls="section-sm",
         sid="habitat",
+        wrap="",
     )
 
 
