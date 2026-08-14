@@ -6,9 +6,10 @@ with wide tracking. Chrome stays quiet and warm-neutral; colour comes from the r
 the data. Cards are softly rounded with a hairline ring and a whisper-soft shadow.
 
 Everything is emitted as a string into each page. There are **no external requests**: the fonts
-are self-hosted (same-origin, with a graceful system fallback), colours are OKLCH tokens, both
-light and dark are deliberate, and every graphic is inline SVG. Motion is a single gentle
-load-fade — never scroll-dependent — so content is always visible.
+are self-hosted (same-origin, with a graceful system fallback), colours are warm tokens, and
+every graphic is inline SVG. The site is deliberately **light-only** — one sandy, beige canvas
+regardless of the OS colour-scheme. Motion is a single gentle load-fade — never
+scroll-dependent — so content is always visible.
 """
 
 from __future__ import annotations
@@ -55,8 +56,9 @@ def styles(*, base: str = "", fonts_present: bool = False) -> str:
 
 _CSS = """
 :root{
-  color-scheme:light dark;
-  /* Warm sand & ink — the reference palette */
+  color-scheme:light only;
+  /* Warm sand & ink — the reference palette. The site is deliberately light-only:
+     a single sandy, beige canvas regardless of the OS colour-scheme preference. */
   --sand:#f5f1ec;
   --bg:#f5f1ec;
   --bg-2:#efeae2;
@@ -109,38 +111,6 @@ _CSS = """
   --ease:cubic-bezier(0.22,1,0.36,1);
   --dur:600ms;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    /* Warm dark — espresso, not navy; keeps the beachy warmth after dark */
-    --bg:#1b1814;
-    --bg-2:#211d18;
-    --surface:#241f1a;
-    --surface-2:#2b251f;
-    --ink:#f3ede4;
-    --text:#ece5db;
-    --muted:#b3a99c;
-    --faint:#8c8377;
-    --line:rgba(243,237,228,0.12);
-    --line-2:rgba(243,237,228,0.18);
-    --accent:#6fc5bd;
-    --accent-soft:#22322f;
-    --coral:#e0876a;
-    --on-accent:#1b1814;
-    --ring:0 0 0 1px rgba(243,237,228,0.08);
-    --shadow-1:0 0 0 1px rgba(0,0,0,0.3), 0 16px 44px -24px rgba(0,0,0,0.7);
-    --shadow-2:0 0 0 1px rgba(0,0,0,0.3), 0 34px 80px -34px rgba(0,0,0,0.8);
-    --c-temp:#e08a63;
-    --c-dhw:#e0ad5c;
-    --c-turb:#5fb6bd;
-    --c-batt:#7fb98a;
-    --a-nostress:#5fc0a2;
-    --a-watch:#e0bd5c;
-    --a-warning:#e0955c;
-    --a-alert1:#e37866;
-    --a-alert2:#c98bbb;
-  }
-}
-
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
@@ -309,12 +279,14 @@ img{max-width:100%;height:auto;display:block}
 .pill:hover img,.pill:hover svg.atmos{transform:scale(1.06)}
 .pill-scrim{position:absolute;inset:0;z-index:1;
   background:linear-gradient(180deg,transparent 45%,rgba(20,16,12,0.62))}
-.pill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.2rem 1.3rem;color:#f6f2ec}
+.pill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.2rem 1.3rem;color:#f6f2ec;
+  text-shadow:0 1px 6px rgba(15,12,8,0.45)}
 .pill-cap b{display:block;font-weight:600;font-size:1.05rem}
 .pill-cap span{display:block;font-size:var(--text-micro);color:rgba(246,242,236,0.8);
   margin-top:0.25rem;letter-spacing:0.02em}
 .pill-credit{position:absolute;top:0.8rem;right:1rem;z-index:2;font-size:0.6rem;
-  color:rgba(246,242,236,0.82);text-align:right;max-width:72%;letter-spacing:0.02em}
+  color:rgba(246,242,236,0.9);text-align:right;max-width:72%;letter-spacing:0.02em;
+  text-shadow:0 1px 4px rgba(15,12,8,0.6)}
 .pill-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 
 /* ── Render slot (buoy wall-art, coming soon) ─────────────────────────────── */

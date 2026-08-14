@@ -45,13 +45,17 @@ class Reef:
 # intentional; when a photo is placed, its alt text + credit take over.
 CATALOG: tuple[Reef, ...] = (
     Reef("shallow-reef", "sunlit", "Shallow reef", "Sunlit nearshore water — SCOUT's habitat",
-         "Sunlight over a shallow nearshore coral reef."),
+         "A sunlit shallow coral reef, Raja Ampat, Indonesia.",
+         Photo(photographer="Noemi Merz", file="shallow-reef.jpg")),
     Reef("coral-detail", "reef", "Coral colony", "Where thermal stress is measured",
-         "Close view of a hard-coral colony."),
+         "A vivid soft-coral colony on a tropical reef.",
+         Photo(photographer="Cinzia Osele Bismarck", file="coral-detail.jpg")),
     Reef("kelp-column", "kelp", "Water column", "Turbidity and light through the column",
-         "Sunlight filtering through a vegetated water column."),
+         "A kelp forest on the Great Southern Reef, Australia.",
+         Photo(photographer="Stefan Andrews", file="kelp-column.jpg")),
     Reef("open-water", "abyss", "Open water", "Beyond the shelf — the platform's horizon",
-         "Deep open ocean fading to blue."),
+         "The open ocean surface from below.",
+         Photo(photographer="Kurt Arrigo", file="open-water.jpg")),
 )
 _BY_KEY = {r.key: r for r in CATALOG}
 

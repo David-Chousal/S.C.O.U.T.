@@ -114,8 +114,7 @@ def document(
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{title}</title>\n"
         f'<meta name="description" content="{description}">\n'
-        '<meta name="theme-color" content="#0a1a26" media="(prefers-color-scheme: dark)">\n'
-        '<meta name="theme-color" content="#f4f7f9" media="(prefers-color-scheme: light)">\n'
+        '<meta name="theme-color" content="#f5f1ec">\n'
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"

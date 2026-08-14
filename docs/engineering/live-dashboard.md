@@ -36,8 +36,8 @@ data changes. That makes a **static site** the right tool:
   self-hosted fonts and images (no external scripts, stylesheets, CDNs, or third-party
   requests). The pages render offline and pass a strict content-security policy; the Analytics
   page is held to a no-external-reference contract enforced by
-  [`test_web.py`](../../analytics/telemetry/tests/test_web.py). Light and dark themes follow
-  `prefers-color-scheme`.
+  [`test_web.py`](../../analytics/telemetry/tests/test_web.py). The site is a single deliberate
+  light (warm sand) theme.
 
 A live backend (Flask/FastAPI on the Pi, or a cloud host) would only be worth it for
 sub-daily, interactive, or multi-user-write use cases — out of scope for a daily packet.
