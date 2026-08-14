@@ -201,6 +201,7 @@ Markdown and can be imported directly.
 
 | Document | Why you'd read it |
 |---|---|
+| **[Conventions](docs/CONVENTIONS.md)** | **Where files go, what to name them, formats, git, units — start here before adding anything** |
 | [MVP System Overview](docs/overview/mvp-system-overview.md) | What SCOUT is and what it must do |
 | [Engineering Design Document](docs/engineering/engineering-design-document.md) | The authoritative technical baseline — 22 sections including full BOM |
 | [Stakeholder Interviews](docs/research/stakeholder-interviews.md) | What reef researchers actually need |

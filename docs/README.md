@@ -9,6 +9,7 @@ imported directly into Notion with formatting intact.
 
 | If you want to… | Read |
 |---|---|
+| Know where a file goes or what to name it | **[Conventions](CONVENTIONS.md)** |
 | Understand what SCOUT is and why | [MVP System Overview](overview/mvp-system-overview.md) |
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
@@ -74,6 +75,11 @@ Schedule, meetings, and administrative records.
 ---
 
 ## Conventions
+
+**Full reference: [CONVENTIONS.md](CONVENTIONS.md)** — naming, file placement, formats, git,
+units, citations, and a teammate FAQ.
+
+The rules that apply specifically to documents in this directory:
 
 - **One H1 per page.** Notion uses it as the page title.
 - **Summary callout at the top** of each converted document, naming the original source file.

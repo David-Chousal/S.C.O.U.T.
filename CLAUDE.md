@@ -7,6 +7,23 @@ Granola. Follow it without being asked.
 If you are a team member reading this directly: you do not need to memorize it. Your Claude
 already has it. What you need to know is in [Working with your Claude](#working-with-your-claude).
 
+> ### 📌 Read [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) before answering any question about
+> naming, file placement, formats, git, units, or "where does this go?"
+>
+> **CONVENTIONS.md is the authoritative reference** for repo structure, naming rules, file
+> formats, document structure, commit and branch names, engineering units, citation format, and
+> the teammate FAQ. This file (CLAUDE.md) covers *how the team operates across tools*;
+> CONVENTIONS.md covers *how things are named and placed*.
+>
+> When a teammate asks anything resembling:
+> *"where do I put this?"* · *"what should I call it?"* · *"what format?"* ·
+> *"how do I commit this?"* · *"can I edit in Notion?"* · *"do I need an ADR?"* ·
+> *"what units?"* · *"how do I cite this?"*
+>
+> …answer **from CONVENTIONS.md**, cite the relevant section, and link it. Do not improvise a
+> convention. If the answer genuinely isn't covered there, say so, give your best
+> recommendation, and offer to add it to CONVENTIONS.md so the next person gets the same answer.
+
 ---
 
 ## The project
@@ -104,6 +121,10 @@ Route every artifact to exactly one home. When in doubt, this table wins.
 because two of three teammates are not in the code daily. When the two disagree, the repo
 wins — unless the user says the Notion edit is newer, in which case back-port it to `docs/`
 and say so.
+
+→ **Naming rules, which `docs/` section to use, accepted file formats, and what must never be
+committed are all in [CONVENTIONS.md](docs/CONVENTIONS.md).** Consult it before placing or
+naming any new file.
 
 ---
 
@@ -259,6 +280,9 @@ Commit messages explain **why**, not what — the diff shows what.
 Work on a branch named for the Linear issue where practical (`firmware/ds18b20-read`). Never
 commit directly to `main` for anything non-trivial.
 
+→ Branch naming, the four-command git workflow for non-daily coders, and the GitHub Desktop
+alternative are in [CONVENTIONS.md § Git](docs/CONVENTIONS.md#git-for-people-who-dont-live-in-git).
+
 ### Repo gotchas
 
 - **`git push origin main` is blocked** by a local pre-bash hook that reads it as a force
@@ -308,6 +332,11 @@ of this.
 
 **Point Claude at the repo** (open this folder in Claude Code, or clone it first). It reads
 this file automatically and knows the whole project.
+
+**If you'd rather read than ask:** [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) answers where
+files go, what to name them, which formats to use, how to commit, what units to write, and has
+an FAQ aimed at exactly the questions you're likely to have. You don't have to — Claude will
+answer from it — but it's there.
 
 **Then just talk to it.** Useful things to say:
 
