@@ -23,7 +23,7 @@ decisions; nothing downstream starts until those land. Full plan:
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
 | Firmware | 🟢 Unblocked | Platform decided ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)); Phase 1 ready | — |
 | Electrical design | 🟡 In progress | Build platform decided; wiring/PCB pending | Charging path ([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) |
-| Mechanical design | 🟡 In progress | Enclosure + hull concepts developed | Mooring, biofouling approach |
+| Mechanical design | 🟡 In progress | Enclosure + hull concepts developed; flotation + turbidity-housing drawings in `mechanical/cad/` | Native CAD + STEP exports, mooring, biofouling approach |
 | Shore station | 🔴 Early | Raspberry Pi + LoRa receiver; schema-side started ([`shore/`](../../shore/)) | Radio bring-up |
 | Field deployment | 🔴 Planned | Hawaii, Phase 6 (Mar–May 2027) | Everything upstream |
 
