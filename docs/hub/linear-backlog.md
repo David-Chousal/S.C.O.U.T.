@@ -38,9 +38,10 @@ From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](..
 - **On filing:** also add a row to [`decision-log.md`](decision-log.md) when the issue *records a decision*, and mirror any resolved open fact back into [`facts.md`](facts.md).
 
 > **Pre-existing IDs to reconcile first:** [CLAUDE.md](../../CLAUDE.md) references **SCO-5 … SCO-9**
-> as Phase-0 design-alignment issues that were "never closed." Several may already be resolved by
-> ADR-0001 / ADR-0003 and PRs #1–#8. **Check the board before creating** any of A1–A4 below — they
-> may already exist under those IDs and just need updating/closing rather than re-filing.
+> as Phase-0 design-alignment issues that were "never closed." Several are already resolved:
+> ADR-0001 / ADR-0003 and PRs #1-#8, and **SCO-6 (deployment depth) by PR #29** (depth revised to
+> 2-7 m). **Check the board before creating** any of A1-A4 below; they may already exist under those
+> IDs and just need updating or closing rather than re-filing.
 
 ---
 
@@ -178,7 +179,7 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 
 ---
 
-## Reference — the 17 merged PRs (for tagging / `Source` lines)
+## Reference: the merged PRs (for tagging / `Source` lines)
 
 | PR | Date | Area | Summary |
 |---|---|---|---|
@@ -202,18 +203,41 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 | #18 | 2026-08-14 | csen | Firmware watchdog timer for autonomous hang recovery |
 | #20 | 2026-08-14 | csen | Retain `record_seq`/`last_tx` across resets (no-init RAM) |
 | #21 | 2026-08-14 | docs | Add all 16 open-access source PDFs to the public library |
+| #22 | 2026-08-14 | csen | State-of-Health (SoH) field in the packet + CSV |
+| #23 | 2026-08-14 | ci | Test workflow + cross-language packet-contract guard |
+| #24 | 2026-08-14 | csen | Firmware adaptive transmission (battery-tiered graceful degradation) |
+| #25 | 2026-08-14 | csen | Multi-buoy (fleet) telemetry backend, Phase A |
+| #26 | 2026-08-14 | ci | PR governance checks, CODEOWNERS, PR template |
+| #28 | 2026-08-14 | docs | Log the main-protection ruleset in the decision log |
+| #29 | 2026-08-14 | mechanical | Revise deployment depth to 2-7 m (resolves SCO-6) |
+| #30 | 2026-08-14 | ci | Make the pr-body check reject empty sections |
+| #31 | 2026-08-14 | mechanical | Scaffold CAD subsystem folders |
+| #32 | 2026-08-14 | mechanical | Import flotation and turbidity-housing CAD drawings |
+| #33 | 2026-08-14 | assets | Add SCOUT logo files |
+| #34 | 2026-08-14 | ci | Re-run PR checks on edit; hint on bold headings |
 
-> **Count note:** **20 merged** as of this writing (PR #19 is this doc, still open).
-> **In flight — watch when it lands:** PR #22 adds a **State-of-Health (SoH) field to the packet +
-> CSV**, which will change the packet layout — update [`facts.md`](facts.md) packet-size row and the
-> [Data Schema](../engineering/data-schema.md) when it merges.
-> The repo is under active concurrent work — re-run `gh pr list --state merged` before filing and
-> append any newer PRs.
+> **Count note:** **32 merged** as of this writing; PRs **#19** (this doc) and **#27** (telemetry
+> site redesign) are still open. The repo is under active concurrent work, so re-run
+> `gh pr list --state merged` before filing and append anything newer.
 >
-> Firmware Phase-1 line = PRs **#16–#18, #20** (scaffold → standby sleep → watchdog → retained
-> state); on-hardware validation of all of it is tracked by **C2**. PR **#21** already resolved the
-> "open-access PDFs → `library/`" follow-up, so the 🔓 rows in [`sources.md`](research/sources.md) now
-> have their `Local` PDFs.
+> **Landed since v1 of this doc, worth flagging for the filing session:**
+> - **PR #22** merged the **State-of-Health (SoH) field** into the packet and CSV, so the packet
+>   layout changed. Confirm [`facts.md`](facts.md) packet-size and the
+>   [Data Schema](../engineering/data-schema.md) reflect it before filing anything that cites the old
+>   82-byte figure.
+> - **PR #29** revised **deployment depth to 2-7 m** (was 5-8 m) and is tied to **SCO-6**, so SCO-6
+>   exists and is resolved. Reconcile the SCO-5..9 list against it (see the note up top).
+> - **PRs #23, #26, #30, #34** added the CI governance now gating every PR: `pr-title`, `pr-body`
+>   (five `##` sections, in order), `knowledge-hub`, `conventions`, plus the Python and firmware test
+>   suites. Any PR the filing session opens must satisfy these.
+> - **PRs #31, #32** scaffolded the mechanical CAD tree and imported the first drawings, so the
+>   mechanical track (John, `geng`) is now active: **B2** (biofouling mitigation) and **B4** (mooring)
+>   are freshly actionable.
+>
+> Firmware Phase-1 line = PRs **#16-#18, #20, #24** (scaffold, standby sleep, watchdog, retained
+> state, adaptive transmission); on-hardware validation is tracked by **C2**. PR **#21** already
+> dropped the open-access PDFs into `library/`, so the 🔓 rows in
+> [`sources.md`](research/sources.md) now have their `Local` PDFs.
 
 ## Settled decisions — do **not** create tickets for these
 
