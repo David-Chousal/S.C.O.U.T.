@@ -9,19 +9,21 @@ all) enforced by ``telemetry/tests/test_web.py``.
 
 from __future__ import annotations
 
-from . import theme
+from . import assets, theme
 
 REPO_URL = "https://github.com/David-Chousal/S.C.O.U.T."
 SCU_URL = "https://www.scu.edu/engineering/"
+CONTACT_EMAIL = "davidchousal@icloud.com"
 
-# (slug, label, optional-on-mobile). Home slug is "" (site root).
+# (slug, label, optional-on-mobile, in-header). Home slug is "" (site root). Fleet is in the
+# footer only for now.
 _NAV = (
-    ("", "Home", False),
-    ("technology/", "Technology", True),
-    ("science/", "Science", True),
-    ("analytics/", "Analytics", False),
-    ("fleet/", "Fleet", True),
-    ("about/", "About", True),
+    ("", "Home", False, True),
+    ("technology/", "Technology", True, True),
+    ("science/", "Science", True, True),
+    ("analytics/", "Analytics", False, True),
+    ("fleet/", "Fleet", True, False),
+    ("about/", "About", True, True),
 )
 _ACTIVE_SLUG = {"home": "", "technology": "technology/", "science": "science/",
                 "analytics": "analytics/", "fleet": "fleet/", "about": "about/"}
@@ -39,21 +41,37 @@ def _brand(base: str) -> str:
     )
 
 
-def header(base: str, active: str) -> str:
+def _nav_social(base: str) -> str:
+    return (
+        '<div class="nav-social">'
+        f'<a href="{REPO_URL}" aria-label="SCOUT on GitHub">{assets.social_icon("github")}</a>'
+        f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
+        f'{assets.social_icon("linkedin")}</a>'
+        "</div>"
+    )
+
+
+def header(base: str, active: str, external: bool = True) -> str:
     active_slug = _ACTIVE_SLUG.get(active, "")
     links = []
-    for slug, label, optional in _NAV:
-        active = slug == active_slug
-        cur = ' aria-current="page"' if active else ""
+    for slug, label, optional, in_header in _NAV:
+        if not in_header:
+            continue
+        is_active = slug == active_slug
+        cur = ' aria-current="page"' if is_active else ""
         cls = ' class="opt"' if optional else ""
         # A real element (not ::after) so it can carry a view-transition-name and slide
         # between pages during the cross-document transition.
-        mark = '<span class="nav-mark"></span>' if active else ""
+        mark = '<span class="nav-mark"></span>' if is_active else ""
         links.append(f'<li{cls}><a href="{_href(base, slug)}"{cur}>{label}{mark}</a></li>')
+    # Social icons carry external (https) links, so keep them off the strict Analytics/per-buoy
+    # pages, which must stay cross-origin-free.
+    social = _nav_social(base) if external else ""
     return (
         '<header class="site-header"><nav class="wrap nav" aria-label="Primary">'
         f"{_brand(base)}"
         f'<ul class="nav-links">{"".join(links)}</ul>'
+        f"{social}"
         "</nav></header>"
     )
 
@@ -79,7 +97,13 @@ def _footer_seaweed(base: str) -> str:
 def footer(base: str, *, external: bool = True) -> str:
     explore = "".join(
         f'<li><a href="{_href(base, slug)}">{label}</a></li>'
-        for slug, label, _ in _NAV if slug  # skip Home
+        for slug, label, *_ in _NAV if slug  # skip Home; keeps Fleet in the footer
+    )
+    email = (
+        '<div class="footer-social">'
+        f'<a href="mailto:{CONTACT_EMAIL}" aria-label="Email the team">'
+        f'{assets.social_icon("mail")}</a></div>'
+        if external else ""
     )
     resources = (
         (
@@ -104,7 +128,8 @@ def footer(base: str, *, external: bool = True) -> str:
         '<div class="footer-brand">'
         f"{_brand(base)}"
         "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, solar-powered nearshore "
-        "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p></div>"
+        "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p>"
+        f"{email}</div>"
         f'<div class="footer-col"><h4>Explore</h4><ul>{explore}</ul></div>'
         f"{resources}"
         '<div class="wrap footer-base" style="padding-inline:0">'
@@ -145,7 +170,7 @@ def document(
         f'</head>\n<body data-lottie-base="{base}assets/lottie/">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
-        f"{header(base, active)}\n"
+        f"{header(base, active, external=external)}\n"
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
         f"{footer(base, external=external)}\n"

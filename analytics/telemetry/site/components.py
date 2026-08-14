@@ -85,12 +85,17 @@ def spec(pairs: list[tuple[str, str]]) -> str:
     return f'<dl class="spec">{rows}</dl>'
 
 
-def member(name: str, role: str, disc: str, bio: str, initials: str, uid: int, hue: int) -> str:
+def member(name: str, role: str, disc: str, bio: str, initials: str, uid: int, hue: int,
+           linkedin: str) -> str:
     return (
         '<article class="member reveal">'
+        '<div class="member-top">'
         f"{assets.avatar(initials, uid, hue)}"
+        f'<a class="member-linkedin" href="{linkedin}" aria-label="{html.escape(name)} on LinkedIn">'
+        f'{assets.social_icon("linkedin")}</a>'
+        "</div>"
         f'<span class="disc">{disc}</span>'
-        f"<h3>{name}</h3><p class=\"role\">{role}</p><p>{bio}</p>"
+        f'<h3>{name}</h3><p class="role">{role}</p><p>{bio}</p>'
         "</article>"
     )
 
