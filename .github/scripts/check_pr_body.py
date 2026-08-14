@@ -88,7 +88,19 @@ def check(body: str) -> list[str]:
     found = heading_positions(body)
     missing = [n for n in REQUIRED if n.lower() not in found]
     if missing:
-        errors.append("Missing required section(s): " + ", ".join(f"## {m}" for m in missing))
+        msg = "Missing required section(s): " + ", ".join(f"## {m}" for m in missing)
+        # Common mistake: the section names are present as bold or plain text rather than as
+        # Markdown headings (`## DATE`). Detect that and point at the real fix.
+        lowered = body.lower()
+        if any(re.search(r"\*\*\s*" + re.escape(m.lower()), lowered) for m in missing) or any(
+            re.search(r"^\s*\**\s*" + re.escape(m.lower()) + r"\b", lowered, re.MULTILINE)
+            for m in missing
+        ):
+            msg += (
+                ".\n  Each section must be a Markdown heading — a line starting with '## ' "
+                "(e.g. '## DATE') — not bold '**DATE**' or plain text."
+            )
+        errors.append(msg)
 
     present = [n for n in REQUIRED if n.lower() in found]
     if len(present) >= 2:
