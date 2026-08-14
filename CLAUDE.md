@@ -1,7 +1,7 @@
 # CLAUDE.md — S.C.O.U.T. Project Operating Manual
 
 **This file is read automatically at the start of every Claude session pointed at this repo.**
-It is the shared contract for how the SCOUT team works across GitHub, Linear, Notion, and
+It is the shared contract for how the S.C.O.U.T. team works across GitHub, Linear, Notion, and
 Granola. Follow it without being asked.
 
 If you are a team member reading this directly: you do not need to memorize it. Your Claude
@@ -336,7 +336,7 @@ known and documented; do not "fix" it without an issue.
    you to merge — never on your own initiative, and never auto-merge. Never push to `main`
    directly — it is blocked. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
 7. **Every PR updates the Knowledge Hub — no exception, wherever relevant.** The
-   [Knowledge Hub](docs/hub/README.md) is the always-current surface for what SCOUT has decided,
+   [Knowledge Hub](docs/hub/README.md) is the always-current surface for what S.C.O.U.T. has decided,
    learned, and where it stands. **Before opening any PR**, check each Hub surface and update the
    ones this PR touches — this is not optional and not a follow-up task:
    - Decided anything? → row in [`decision-log.md`](docs/hub/decision-log.md) (+ an ADR if significant).

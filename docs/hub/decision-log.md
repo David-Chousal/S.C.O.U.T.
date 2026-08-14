@@ -53,7 +53,7 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 | 2026-08-14 | hardware | **Feather M0 + RFM95** confirmed as build platform; ESP32-C3 + SX1262 the future PCB target | [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
 | 2026-08-14 | process | Adopted `CONVENTIONS.md` as the naming/placement/format reference | [CONVENTIONS.md](../CONVENTIONS.md) |
 | 2026-08-14 | process | Re-baselined the project timeline to Aug 2026 – May 2027 (Phases 0–6) | [Team Timeline](../planning/team-timeline.md) |
-| 2026-08-14 | docs | Reframed SCOUT as a nearshore monitoring **platform**, not a single-purpose reef buoy | [MVP System Overview](../overview/mvp-system-overview.md) |
+| 2026-08-14 | docs | Reframed S.C.O.U.T. as a nearshore monitoring **platform**, not a single-purpose reef buoy | [MVP System Overview](../overview/mvp-system-overview.md) |
 | 2026-08-14 | process | Restructured the repo into the multi-discipline layout (`docs/`, `firmware/`, `hardware/`, …) | commit — repo restructure |
 | 2026-08-13 | analytics | Initial bioacoustic pipeline: 5 indices → session-local PCA → Acoustic Quality Score | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) |
 

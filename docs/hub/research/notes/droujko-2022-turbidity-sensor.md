@@ -9,12 +9,12 @@ in the tens of dollars. It documents the practical failure mode of cheap nephelo
 light uniformly, but natural sediment does not** — scattering directionality depends on particle size and
 shape, so a formazin-calibrated NTU reading does not map cleanly onto field turbidity from real sediment.
 
-**Why it matters to SCOUT.** This is the how-to and the caveat for SCOUT's own turbidity path (SEN0189). It
+**Why it matters to S.C.O.U.T.** This is the how-to and the caveat for S.C.O.U.T.'s own turbidity path (SEN0189). It
 gives a concrete calibration recipe (formazin dilution ladder, ISO 7027 IR nephelometry at ~850–880 nm) to
 attack the open turbidity→NTU question, and it names exactly why the answer is site-dependent — the
 particle-size/directionality problem — which is why field turbidity should be reported with its calibration
 provenance, not as an absolute truth.
 
 **Caveat / how to use it.** Freshwater river sediment, a different sensor build than SEN0189 — port the
-*method and the caveat*, not the coefficients. Any SCOUT NTU calibration must be tied to the actual Hawaii
+*method and the caveat*, not the coefficients. Any S.C.O.U.T. NTU calibration must be tied to the actual Hawaii
 sediment/optics and re-checked for biofouling drift over a deployment.

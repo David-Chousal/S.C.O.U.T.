@@ -1,6 +1,6 @@
 # Open Research Questions
 
-> **Summary** — What SCOUT still needs to learn from outside the team, and what's been asked.
+> **Summary** — What S.C.O.U.T. still needs to learn from outside the team, and what's been asked.
 > A question lands here the moment someone says "we should look into…"; it leaves when the
 > answer is captured in a doc and its sources are added to the [Source Registry](sources.md).
 >
@@ -34,4 +34,4 @@ its sources are in the [Source Registry](sources.md).
 |---|---|---|
 | Which acoustic indices, and how to combine them? | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) | ✅ 7 index papers in [sources.md](sources.md) |
 | How to detect multi-month acoustic trends robustly? | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) | ✅ Mann-Kendall papers in [sources.md](sources.md) |
-| What do reef researchers actually need from SCOUT? | [Stakeholder Interviews](../research/stakeholder-interviews.md) | ✅ Cited by person + date |
+| What do reef researchers actually need from S.C.O.U.T.? | [Stakeholder Interviews](../research/stakeholder-interviews.md) | ✅ Cited by person + date |

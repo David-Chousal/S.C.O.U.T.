@@ -1,6 +1,6 @@
 # MVP System Overview & Framework
 
-> **Summary** — Defines the SCOUT minimum viable product: mission, sensing payload, power strategy, communications, mechanical design, and shore station.
+> **Summary** — Defines the S.C.O.U.T. minimum viable product: mission, sensing payload, power strategy, communications, mechanical design, and shore station.
 >
 > **Source document** — `Project Description/Subsections, and MVP.docx`
 
@@ -12,7 +12,7 @@
 
 ---
 
-**https://github.com/irodriguez-17/SCOUT**
+**https://github.com/irodriguez-17/S.C.O.U.T.**
 
 Last Updated: May 2026
 
@@ -36,7 +36,7 @@ S.C.O.U.T. is a **small, solar-powered, modular marine buoy system** for **long-
 
 - Small, visually simple form factor
 
-**Long-term vision:** A global reef monitoring network with many SCOUT buoys deployed across reef systems.
+**Long-term vision:** A global reef monitoring network with many S.C.O.U.T. buoys deployed across reef systems.
 
 ## Primary Mission (MVP)
 

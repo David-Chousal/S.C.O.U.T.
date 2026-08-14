@@ -18,7 +18,7 @@ and distributes sensing elements down a multi-conductor cable. This enables mult
 measurement (thermoclines, turbidity stratification) while keeping the serviceable
 electronics dry and accessible.
 
-![SCOUT buoy sensor architecture](../../assets/diagrams/sensor-string-architecture.png)
+![S.C.O.U.T. buoy sensor architecture](../../assets/diagrams/sensor-string-architecture.png)
 
 ## String layout
 

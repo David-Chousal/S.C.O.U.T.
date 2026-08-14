@@ -9,13 +9,13 @@ turbidity**, and **increased sedimentation**. It synthesizes evidence that eleva
 sediment depress coral growth, recruitment, and survival, and shift competitive balance toward
 macroalgae — making turbidity a genuine ecological stressor, not merely an optics nuisance.
 
-**Why it matters to SCOUT.** This is the scientific warrant for treating turbidity as a first-class reef-
+**Why it matters to S.C.O.U.T.** This is the scientific warrant for treating turbidity as a first-class reef-
 health signal and for the anomaly/event detection in telemetry `turbidity.py`. It is why all three NOAA
 interviewees rated turbidity so highly (sediment runoff, brown-water events, watershed impact). It frames
-what a turbidity spike *means* ecologically, so SCOUT's output is interpretable to a reef manager rather
+what a turbidity spike *means* ecologically, so S.C.O.U.T.'s output is interpretable to a reef manager rather
 than being an unlabeled voltage.
 
-**Caveat / how to use it.** The review is about chronic, ecosystem-scale exposure; SCOUT measures a point
+**Caveat / how to use it.** The review is about chronic, ecosystem-scale exposure; S.C.O.U.T. measures a point
 in time at one buoy. Use it to justify *flagging and trending* turbidity, not to claim a single reading
 implies coral harm. Pairs directly with [`sully-2020`](sully-2020-turbid-refugia.md), which shows turbidity's
 effect flips sign under acute heat stress.

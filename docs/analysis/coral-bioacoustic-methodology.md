@@ -1,14 +1,14 @@
-# SCOUT — Coral Bioacoustic Waveform Analysis
+# S.C.O.U.T. — Coral Bioacoustic Waveform Analysis
 
 **S**anta **C**lara **O**ceanic **U**tility **T**ransmitter
 
-> This document covers the acoustic index pipeline used to assess coral reef health from passive hydrophone recordings. It is one component of the broader SCOUT system and does not describe the full sensor network, data ingestion, or transmission architecture.
+> This document covers the acoustic index pipeline used to assess coral reef health from passive hydrophone recordings. It is one component of the broader S.C.O.U.T. system and does not describe the full sensor network, data ingestion, or transmission architecture.
 
 ---
 
 ## Executive Summary
 
-SCOUT monitors coral reef health using passive acoustic recordings and five bioacoustic indices (ACI, BI, NDSI, H, ADI) computed from WAV files. Within a single recording session, recordings are ranked by a PCA-derived Acoustic Quality Score (PC1 of the five standardised indices — see [Reef Health Classification](#reef-health-classification)) and flagged for anthropogenic disturbances via z-score outlier detection. Across sessions, a single PC1 Mann-Kendall trend test — corrected for temporal autocorrelation — detects monotonic decline or recovery in reef acoustic signatures over months to years.
+S.C.O.U.T. monitors coral reef health using passive acoustic recordings and five bioacoustic indices (ACI, BI, NDSI, H, ADI) computed from WAV files. Within a single recording session, recordings are ranked by a PCA-derived Acoustic Quality Score (PC1 of the five standardised indices — see [Reef Health Classification](#reef-health-classification)) and flagged for anthropogenic disturbances via z-score outlier detection. Across sessions, a single PC1 Mann-Kendall trend test — corrected for temporal autocorrelation — detects monotonic decline or recovery in reef acoustic signatures over months to years.
 
 ---
 
@@ -33,9 +33,9 @@ All five indices are computed from WAV files resampled to 22,050 Hz using the [s
 
 A naive two-band split at 1,000 Hz is ecologically incorrect for coral reef systems. The vast majority of vocalizing reef fishes — groupers, damselfish, squirrelfish — call primarily between 100 Hz and 800 Hz (Tricas & Boyle, 2014; McWilliam et al., 2018), which directly overlaps the anthropogenic band used in the original NDSI formulation. Classifying this range as "anthropogenic" would cause a healthy spawning chorus at 400 Hz to drive NDSI down and falsely trigger the disturbance flag.
 
-SCOUT uses a **three-zone spectrum model** following Duarte et al. (2021):
+S.C.O.U.T. uses a **three-zone spectrum model** following Duarte et al. (2021):
 
-| Zone | Band | Dominant sources | Role in SCOUT |
+| Zone | Band | Dominant sources | Role in S.C.O.U.T. |
 |------|------|-----------------|---------------|
 | **Anthropogenic** | 0 – 200 Hz | Heavy shipping, industrial machinery | NDSI α component |
 | **Mixed** | 200 – 1,000 Hz | Reef fish calls *and* small-vessel engines | Excluded from NDSI; reserved for future fish-chorus index |
@@ -83,9 +83,9 @@ $$\text{NDSI} = \frac{\beta - \alpha}{\beta + \alpha}$$
 
 where $\beta$ is integrated power in the biological band (1,000–8,000 Hz) and $\alpha$ is integrated power in the anthropogenic band (0–200 Hz). The 200–1,000 Hz mixed zone is excluded from both terms. NDSI = +1 indicates a purely biophonic soundscape; NDSI = −1 indicates a purely anthropophonic soundscape.
 
-**Why 0–200 Hz for the anthropogenic band**: Large vessel engines and industrial machinery concentrate acoustic energy below 200 Hz (Duarte et al., 2021). The original NDSI formulation used 0–1,000 Hz, which captures this energy but also encompasses the primary vocal range of most reef fish (100–800 Hz; Tricas & Boyle, 2014). A large, healthy spawning chorus under the original definition would increase $\alpha$, suppress NDSI, and falsely trigger the disturbance alarm. By restricting $\alpha$ to 0–200 Hz, SCOUT ensures that fish choruses raise $\beta$ without inflating $\alpha$, preserving NDSI's meaning as a pollution indicator rather than a fish-activity indicator.
+**Why 0–200 Hz for the anthropogenic band**: Large vessel engines and industrial machinery concentrate acoustic energy below 200 Hz (Duarte et al., 2021). The original NDSI formulation used 0–1,000 Hz, which captures this energy but also encompasses the primary vocal range of most reef fish (100–800 Hz; Tricas & Boyle, 2014). A large, healthy spawning chorus under the original definition would increase $\alpha$, suppress NDSI, and falsely trigger the disturbance alarm. By restricting $\alpha$ to 0–200 Hz, S.C.O.U.T. ensures that fish choruses raise $\beta$ without inflating $\alpha$, preserving NDSI's meaning as a pollution indicator rather than a fish-activity indicator.
 
-**Ecological interpretation**: NDSI is the primary indicator of heavy anthropogenic noise pressure. A healthy, undisturbed reef consistently achieves NDSI > 0. Sustained negative NDSI drift — even absent acute disturbance events — indicates chronic large-vessel traffic, proximity to industrial operations, or progressive reef simplification. Note that SCOUT's NDSI is intentionally less sensitive to small outboard motors than the classic formulation; see [Disturbance Detection](#disturbance-detection) for how BI compensates for this.
+**Ecological interpretation**: NDSI is the primary indicator of heavy anthropogenic noise pressure. A healthy, undisturbed reef consistently achieves NDSI > 0. Sustained negative NDSI drift — even absent acute disturbance events — indicates chronic large-vessel traffic, proximity to industrial operations, or progressive reef simplification. Note that S.C.O.U.T.'s NDSI is intentionally less sensitive to small outboard motors than the classic formulation; see [Disturbance Detection](#disturbance-detection) for how BI compensates for this.
 
 **Original paper**:
 > [Kasten et al., 2012] — "The remote environmental assessment laboratory's acoustic library: An archive for studying soundscape ecology" — *Ecological Informatics*, 12:50–67 — [https://doi.org/10.1016/j.ecoinf.2012.01.003](https://doi.org/10.1016/j.ecoinf.2012.01.003)
@@ -129,7 +129,7 @@ where $p_i$ is the proportion of active bands occupied by band $i$.
 
 ### Why Mann-Kendall
 
-Acoustic indices are non-normally distributed time series with heavy-tailed behaviour from occasional disturbance events. Standard approaches to trend detection — linear regression, Pearson correlation — assume normality and are vulnerable to outliers pulling slope estimates. SCOUT uses the **Mann-Kendall test** (Mann 1945; Kendall 1975) for three reasons:
+Acoustic indices are non-normally distributed time series with heavy-tailed behaviour from occasional disturbance events. Standard approaches to trend detection — linear regression, Pearson correlation — assume normality and are vulnerable to outliers pulling slope estimates. S.C.O.U.T. uses the **Mann-Kendall test** (Mann 1945; Kendall 1975) for three reasons:
 
 1. **Non-parametric**: makes no assumption about the distribution of index values.
 2. **Monotonic test**: directly answers the ecologically relevant question — "is this reef getting consistently worse or better over time?" — without assuming a specific functional form.
@@ -139,7 +139,7 @@ Acoustic indices are non-normally distributed time series with heavy-tailed beha
 
 Standard Mann-Kendall assumes temporal independence between observations. Adjacent monthly recordings at the same reef site are almost certainly autocorrelated — a healthy month is likely followed by another healthy month. This inflates the Type I error rate of the uncorrected test (i.e., it finds trends that aren't there).
 
-SCOUT uses the **modified Mann-Kendall test (Hamed & Rao 1998)**, which adjusts the variance of the S-statistic for the autocorrelation structure of the series, producing honest p-values. When the series is perfectly monotonic (a degenerate case where the autocorrelation correction produces numerical NaN), SCOUT falls back to the standard Mann-Kendall test via the `pymannkendall` library.
+S.C.O.U.T. uses the **modified Mann-Kendall test (Hamed & Rao 1998)**, which adjusts the variance of the S-statistic for the autocorrelation structure of the series, producing honest p-values. When the series is perfectly monotonic (a degenerate case where the autocorrelation correction produces numerical NaN), S.C.O.U.T. falls back to the standard Mann-Kendall test via the `pymannkendall` library.
 
 ### Sen's Slope
 
@@ -159,7 +159,7 @@ Sen's slope is the standard companion estimator to the Mann-Kendall test. It sha
 
 **Statistical power caveat**: With $n = 8$ sessions, the Mann-Kendall test requires $|\tau| \geq 0.64$ for $p < 0.05$ (two-sided). This is a demanding threshold — it requires a near-perfectly monotonic sequence. Results classified as "no trend" should be interpreted cautiously: the absence of a statistically significant trend at $n = 8$ does not rule out a real but moderate decline. Power improves substantially beyond $n = 12$ sessions.
 
-**Primary vs. diagnostic use**: SCOUT's overall reef classification is read directly from a *single* Mann-Kendall test on the PC1 Acoustic Quality Score (see [PC1 Mann-Kendall](#pc1-mann-kendall-primary-method)), not from these per-index results. A legacy tau-weighted voting scheme across ACI, BI, and NDSI (`classify_reef_trend`) is still computed and retained in the diagnostic output — it shows which indices are individually trending — but it no longer determines the overall trajectory label. Because ACI, BI, and NDSI are highly correlated (see [Index Correlation and Snapping Shrimp Dominance](#4-index-correlation-and-snapping-shrimp-dominance)), five simultaneous per-index Mann-Kendall tests are not independent evidence; the Bonferroni-corrected significance threshold per index would be $\alpha = 0.01$ if treated as independent tests, which is why they are reported for context only.
+**Primary vs. diagnostic use**: S.C.O.U.T.'s overall reef classification is read directly from a *single* Mann-Kendall test on the PC1 Acoustic Quality Score (see [PC1 Mann-Kendall](#pc1-mann-kendall-primary-method)), not from these per-index results. A legacy tau-weighted voting scheme across ACI, BI, and NDSI (`classify_reef_trend`) is still computed and retained in the diagnostic output — it shows which indices are individually trending — but it no longer determines the overall trajectory label. Because ACI, BI, and NDSI are highly correlated (see [Index Correlation and Snapping Shrimp Dominance](#4-index-correlation-and-snapping-shrimp-dominance)), five simultaneous per-index Mann-Kendall tests are not independent evidence; the Bonferroni-corrected significance threshold per index would be $\alpha = 0.01$ if treated as independent tests, which is why they are reported for context only.
 
 ### Key References
 
@@ -187,7 +187,7 @@ Without correction, a winter recording at a healthy reef will look statistically
 
 ### Z-Score Normalization Within Season
 
-SCOUT removes seasonal bias by z-scoring each index value *within its season group*:
+S.C.O.U.T. removes seasonal bias by z-scoring each index value *within its season group*:
 
 $$z_{i} = \frac{x_i - \mu_{\text{season}(i)}}{\sigma_{\text{season}(i)}}$$
 
@@ -195,7 +195,7 @@ where $\mu_{\text{season}}$ and $\sigma_{\text{season}}$ are the mean and standa
 
 #### Okinawa Season Definitions
 
-Standard northern-hemisphere temperate seasons (winter/spring/summer/fall) do not match the ecological calendar at Sesoko Island. SCOUT uses three biologically meaningful seasons:
+Standard northern-hemisphere temperate seasons (winter/spring/summer/fall) do not match the ecological calendar at Sesoko Island. S.C.O.U.T. uses three biologically meaningful seasons:
 
 | Season | Months | Ecological rationale |
 |--------|--------|---------------------|
@@ -205,7 +205,7 @@ Standard northern-hemisphere temperate seasons (winter/spring/summer/fall) do no
 
 #### Fallback Behaviour
 
-When a season group contains fewer than 2 sessions (insufficient to compute a within-group standard deviation), SCOUT falls back to full-dataset z-scoring using the mean and standard deviation across all sessions. For the 8-session baseline dataset (Aug 2017 – Jul 2018), all three season groups contain 2–3 sessions under the Okinawa calendar, so fallback is not triggered.
+When a season group contains fewer than 2 sessions (insufficient to compute a within-group standard deviation), S.C.O.U.T. falls back to full-dataset z-scoring using the mean and standard deviation across all sessions. For the 8-session baseline dataset (Aug 2017 – Jul 2018), all three season groups contain 2–3 sessions under the Okinawa calendar, so fallback is not triggered.
 
 A minimum standard deviation floor is applied: $\sigma_{\text{season}} = \max(\sigma_{\text{season}}, 0.01 \times \sigma_{\text{dataset}})$. This prevents near-identical sessions within a season (e.g., two very similar baiu months) from producing artificially extreme z-scores through near-zero division.
 
@@ -244,7 +244,7 @@ The 15-knot and 2 mm/hr thresholds were chosen to exclude events likely to produ
 
 #### Fallback filter — acoustic heuristic
 
-When weather station data is unavailable, SCOUT detects the characteristic abiotic signature acoustically. Rain and high wind produce a pattern that is rarely caused by biological activity:
+When weather station data is unavailable, S.C.O.U.T. detects the characteristic abiotic signature acoustically. Rain and high wind produce a pattern that is rarely caused by biological activity:
 
 | Signal | Direction | Mechanism |
 |--------|-----------|-----------|
@@ -258,9 +258,9 @@ All three conditions must be met simultaneously. A healthy shrimp chorus raises 
 
 ### Approach
 
-SCOUT flags individual recordings as disturbance events when anthropogenic noise suppresses biological indices below their session-normal range. The two primary indicators are:
+S.C.O.U.T. flags individual recordings as disturbance events when anthropogenic noise suppresses biological indices below their session-normal range. The two primary indicators are:
 
-- **NDSI**: drops when heavy shipping or industrial noise elevates energy in the 0–200 Hz band, pushing the bio/anthro ratio negative. Because SCOUT restricts the anthropogenic band to 0–200 Hz, NDSI is specifically sensitive to *large-vessel* traffic rather than small outboards. This is intentional — it prevents healthy fish choruses (which produce energy in the 200–1,000 Hz range) from being misclassified as anthropogenic noise.
+- **NDSI**: drops when heavy shipping or industrial noise elevates energy in the 0–200 Hz band, pushing the bio/anthro ratio negative. Because S.C.O.U.T. restricts the anthropogenic band to 0–200 Hz, NDSI is specifically sensitive to *large-vessel* traffic rather than small outboards. This is intentional — it prevents healthy fish choruses (which produce energy in the 200–1,000 Hz range) from being misclassified as anthropogenic noise.
 - **BI**: drops when any broadband noise source (including small outboard motors, whose propeller cavitation extends above 1,000 Hz) masks or suppresses snapping shrimp activity in the biological band. BI therefore provides complementary sensitivity to disturbances that may not be captured by the narrowed NDSI anthropogenic band.
 
 Together, the NDSI + BI combination covers the full disturbance spectrum: NDSI catches large shipping events via the 0–200 Hz signature; BI catches smaller vessels via above-1 kHz masking. Neither alone is sufficient.
@@ -300,17 +300,17 @@ $$\text{score}_i = 0.6 \times \text{clip}\!\left(\frac{-z_{\text{NDSI},i}}{2.0},
 
 ## Reef Health Classification
 
-SCOUT classifies reef health at two temporal scales.
+S.C.O.U.T. classifies reef health at two temporal scales.
 
 ### Per-Recording Classification (Within Session)
 
 #### Why not heuristic weights?
 
-The previous version of SCOUT used a weighted linear composite (ACI: 0.30, BI: 0.25, NDSI: 0.20, H: 0.15, ADI: 0.10). This approach has a fundamental flaw: ACI, BI, and NDSI are all dominated by snapping shrimp (*Alpheidae* spp.) activity in the 1–8 kHz band and are therefore highly intercorrelated. Assigning independent weights to correlated variables does not separate distinct ecological signals — it amplifies the dominant covariance structure (shrimp density) three times while suppressing the less-correlated indices (H, ADI) that carry distinct information about acoustic diversity and complexity. The composite was effectively a 75%-weighted snapping shrimp counter (Bradfer-Lawrence et al., 2019; Bohnenstiehl et al., 2018).
+The previous version of S.C.O.U.T. used a weighted linear composite (ACI: 0.30, BI: 0.25, NDSI: 0.20, H: 0.15, ADI: 0.10). This approach has a fundamental flaw: ACI, BI, and NDSI are all dominated by snapping shrimp (*Alpheidae* spp.) activity in the 1–8 kHz band and are therefore highly intercorrelated. Assigning independent weights to correlated variables does not separate distinct ecological signals — it amplifies the dominant covariance structure (shrimp density) three times while suppressing the less-correlated indices (H, ADI) that carry distinct information about acoustic diversity and complexity. The composite was effectively a 75%-weighted snapping shrimp counter (Bradfer-Lawrence et al., 2019; Bohnenstiehl et al., 2018).
 
 #### PCA-based Acoustic Quality Score
 
-SCOUT replaces the weighted composite with the **first principal component (PC1)** of the five standardised indices. PCA finds the direction of maximum variance across the five indices without requiring arbitrary weight assignment, and naturally accounts for their covariance structure.
+S.C.O.U.T. replaces the weighted composite with the **first principal component (PC1)** of the five standardised indices. PCA finds the direction of maximum variance across the five indices without requiring arbitrary weight assignment, and naturally accounts for their covariance structure.
 
 **Procedure:**
 
@@ -356,7 +356,7 @@ Running three separate Mann-Kendall tests and aggregating via a voting scheme ha
 
 #### PC1 Mann-Kendall (primary method)
 
-SCOUT fits a **single global PCA** on the $n_{\text{sessions}} \times 5$ index matrix, projects each session onto PC1, and runs **one** modified Mann-Kendall test on that scalar time series. This eliminates the voting scheme and its threshold entirely.
+S.C.O.U.T. fits a **single global PCA** on the $n_{\text{sessions}} \times 5$ index matrix, projects each session onto PC1, and runs **one** modified Mann-Kendall test on that scalar time series. This eliminates the voting scheme and its threshold entirely.
 
 **Procedure:**
 
@@ -431,7 +431,7 @@ All baseline analyses use passive acoustic recordings from **Sesoko Island, Okin
 The longitudinal pipeline currently spans 8 months (Aug 2017 – Jul 2018), providing one data point per season under the Okinawa calendar. Key consequences:
 
 - **Statistical power**: Mann-Kendall requires $|\tau| \geq 0.64$ for $p < 0.05$ at $n = 8$. Real moderate declines (e.g., 20% reduction in BI over 8 months) may not reach statistical significance. Absence of a significant trend is not evidence of reef stability; it reflects data scarcity.
-- **Seasonal baselines are approximate**: With 2–3 sessions per season, each observation contributes substantially to the baseline used to normalize it. As SCOUT accumulates data, seasonal corrections converge toward reliable multi-year climatologies.
+- **Seasonal baselines are approximate**: With 2–3 sessions per season, each observation contributes substantially to the baseline used to normalize it. As S.C.O.U.T. accumulates data, seasonal corrections converge toward reliable multi-year climatologies.
 - **No inter-annual comparison**: The current dataset cannot distinguish a seasonal pattern from a genuine multi-year trend. A true monotonic decline would require at least 2–3 years of monthly recordings to achieve reliable detection.
 
 ### 2. Single Depth and Site
@@ -444,7 +444,7 @@ All data are from Site A at 1.5 m depth. This introduces several constraints:
 
 ### 3. No Ground Truth Validation
 
-SCOUT's health scores and trend labels have not yet been validated against independent reef health metrics (benthic surveys, fish counts, bleaching records). Specifically:
+S.C.O.U.T.'s health scores and trend labels have not yet been validated against independent reef health metrics (benthic surveys, fish counts, bleaching records). Specifically:
 
 - The choice of which five indices feed the PCA (ACI, BI, NDSI, H, ADI) is based on literature review and expert judgement, not site-specific calibration.
 - The `health_label` classification thresholds (±0.5σ from median) are heuristic.
@@ -458,7 +458,7 @@ ACI, BI, and NDSI are all strongly driven by snapping shrimp (*Alpheidae* spp.) 
 
 **What PCA addresses**: the per-session `health_score` now uses PC1, which correctly treats the shared shrimp-driven variance as a single dimension rather than triple-counting it. The `pc1_variance_explained` column quantifies how much of the total index variance collapses onto this first axis — values above 0.60 confirm the shrimp-dominance hypothesis for that session.
 
-**What PCA does not address**: fish diversity information, encoded primarily in the 200–1,000 Hz mixed band, is not yet used in any SCOUT metric. PC1 still captures predominantly invertebrate (snapping shrimp) activity; a dedicated fish-chorus index derived from the mixed band would add an independent ecological dimension to PC1, partially decoupling the longitudinal trend signal from shrimp density alone. Per-index MK results remain in the diagnostic output and are still run as five correlated tests — but they no longer determine the overall classification, so the multiple-testing inflation is now a reporting concern rather than a methodological one.
+**What PCA does not address**: fish diversity information, encoded primarily in the 200–1,000 Hz mixed band, is not yet used in any S.C.O.U.T. metric. PC1 still captures predominantly invertebrate (snapping shrimp) activity; a dedicated fish-chorus index derived from the mixed band would add an independent ecological dimension to PC1, partially decoupling the longitudinal trend signal from shrimp density alone. Per-index MK results remain in the diagnostic output and are still run as five correlated tests — but they no longer determine the overall classification, so the multiple-testing inflation is now a reporting concern rather than a methodological one.
 
 **Roadmap — Fish-Chorus Index (200–1,000 Hz):** Two candidate metrics for when this work is ready:
 
@@ -499,4 +499,4 @@ All indices are sensitive to recording gain, hydrophone placement, and instrumen
 
 ---
 
-*Last updated: 2026-06-03. SCOUT is under active development. Methodology is subject to revision as additional data are collected and validation analyses are completed.*
+*Last updated: 2026-06-03. S.C.O.U.T. is under active development. Methodology is subject to revision as additional data are collected and validation analyses are completed.*
