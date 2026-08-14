@@ -12,6 +12,10 @@ name: PR checks
 
 on:
   pull_request:
+    # `edited` so that fixing a bad title or body (an edit, not a new commit) re-runs the
+    # pr-title / pr-body checks instead of leaving a stale red X. The default set is
+    # opened + synchronize + reopened; we add edited.
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
