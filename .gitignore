@@ -1,0 +1,11 @@
+.DS_Store
+
+# Bulk raw audio archive - not tracked, too large for git
+/data/
+analytics/data/raw_audio/
+analytics/data/raw_audio_site_b/
+
+# Longitudinal sessions - only one sample session tracked for testing
+analytics/data/longitudinal/*
+!analytics/data/longitudinal/201708_20170801/
+!analytics/data/longitudinal/201708_20170801/**
