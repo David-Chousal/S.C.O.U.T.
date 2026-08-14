@@ -9,6 +9,7 @@ imported directly into Notion with formatting intact.
 
 | If you want to… | Read |
 |---|---|
+| Know what's true, decided, and where the project stands right now | **[Knowledge Hub](hub/README.md)** |
 | Know where a file goes or what to name it | **[Conventions](CONVENTIONS.md)** |
 | Understand what SCOUT is and why | [MVP System Overview](overview/mvp-system-overview.md) |
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
@@ -17,6 +18,21 @@ imported directly into Notion with formatting intact.
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---
+
+## Knowledge Hub
+
+The always-current, always-cited surface for what SCOUT has decided, learned, and where it
+stands. **Start here for any "what's true right now?" question.** Updated on every PR
+([CLAUDE.md → Standing rule 7](../CLAUDE.md#standing-rules)).
+
+| Document | Contents |
+|---|---|
+| [Hub README](hub/README.md) | Front door — the five surfaces and how they fit together |
+| [Canonical Facts](hub/facts.md) | The values every doc must agree with (the anti-drift keystone) |
+| [Decision Log](hub/decision-log.md) | Reverse-chron ledger of every decision, linking to its full record |
+| [Status](hub/status.md) + [Journal](hub/journal/) | Current subsystem state + dated history |
+| [Source Registry](hub/research/sources.md) | Every external work cited, with access status and reading notes |
+| [Open Research Questions](hub/research/open-questions.md) | What we still need to learn, and what's been asked |
 
 ## Overview
 

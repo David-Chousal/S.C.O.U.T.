@@ -214,6 +214,7 @@ Markdown and can be imported directly.
 
 | Document | Why you'd read it |
 |---|---|
+| **[Knowledge Hub](docs/hub/README.md)** | **What's true, decided, and where the project stands right now — the always-current surface** |
 | **[Conventions](docs/CONVENTIONS.md)** | **Where files go, what to name them, formats, git, units — start here before adding anything** |
 | [MVP System Overview](docs/overview/mvp-system-overview.md) | What SCOUT is and what it must do |
 | [Engineering Design Document](docs/engineering/engineering-design-document.md) | The authoritative technical baseline — 22 sections including full BOM |
@@ -229,6 +230,10 @@ Markdown and can be imported directly.
 Surfaced during the August 2026 documentation audit. Resolved items are struck through with
 their resolution; the remaining open ones are marked ⏳ with an owner. Recorded here rather
 than silently reconciled, since resolving each required a team decision.
+
+> The settled values now live in [`docs/hub/facts.md`](docs/hub/facts.md) (canonical) and the
+> open ones in [`facts.md` → Open facts](docs/hub/facts.md#open-facts-deliberately-not-settled-yet).
+> This table is the historical audit record; `facts.md` is what to check going forward.
 
 | Issue | Detail |
 |---|---|
