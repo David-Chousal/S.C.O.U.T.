@@ -18,7 +18,7 @@ The published site is a small, cohesive multi-page site emitted by the pipeline 
 | Technology | `technology/` | Architecture, subsystems, the 82-byte packet, build platform |
 | Science | `science/` | NOAA CRW thermal-stress methodology (DHW), caveats, references |
 | Analytics | `analytics/` | **The live dashboard** — regenerated from the telemetry report |
-| Fleet | `fleet/` | **Network overview** — one tile per buoy, drilling down to a per-buoy dashboard |
+| Fleet | `fleet/` | **Network overview** — a tile per buoy, drilling into each buoy's dashboard |
 | About | `about/` | Team, advisors, institution, roadmap |
 
 The **static pages are authored** (they change only when the source changes); the **Analytics

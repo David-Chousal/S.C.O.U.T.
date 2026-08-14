@@ -116,7 +116,7 @@ def _span_days(first: datetime | None, last: datetime | None) -> str:
     if not (first and last):
         return "—"
     days = (last.date() - first.date()).days + 1
-    return f"{days} d"
+    return f"{days} day" if days == 1 else f"{days} days"
 
 
 def _current_alert(report: TelemetryReport) -> str:
