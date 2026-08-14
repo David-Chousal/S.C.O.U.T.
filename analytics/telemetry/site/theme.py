@@ -386,10 +386,10 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 .site-footer{position:relative;isolation:isolate;overflow:hidden;
   border-top:1px solid var(--line);margin-top:var(--section);
-  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(6.5rem,4.5rem + 6vw,11rem)}
-/* The seaweed sits a good distance above the page's bottom edge, so there is always a band of
-   sand beneath it and the page never ends on a cut-off frond. */
-.footer-seaweed{position:absolute;left:0;right:0;bottom:clamp(3.5rem,5vw,5.5rem);height:230px;
+  padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(4rem,3rem + 2.5vw,5.5rem)}
+/* The seaweed sits a little above the page's bottom edge, so there is a small band of sand
+   beneath it and the page never ends on a cut-off frond, without leaving dead space. */
+.footer-seaweed{position:absolute;left:0;right:0;bottom:clamp(2rem,3vw,3rem);height:210px;
   z-index:0;max-width:1200px;margin-inline:auto;pointer-events:none}
 .footer-seaweed .weed{position:absolute;bottom:0;aspect-ratio:144/402}
 .footer-seaweed .weed svg{width:100%;height:100%;display:block}
