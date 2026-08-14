@@ -31,7 +31,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `pieretti-2011` | Pieretti et al. (2011). "A new methodology to infer the singing activity of an avian community: The Acoustic Complexity Index (ACI)." *Ecological Indicators* 11(3):868–873. [doi](https://doi.org/10.1016/j.ecolind.2010.11.005) | 🔒 | — | ACI definition — [methodology](../analysis/coral-bioacoustic-methodology.md) |
 | `boelman-2007` | Boelman et al. (2007). "Multi-trophic invasion resistance in Hawaii: bioacoustics, field surveys, and airborne remote sensing." *Ecological Applications* 17(8):2137–2144. [doi](https://doi.org/10.1890/07-0004.1) | 🔒 | — | Bioacoustic Index (BI) basis |
 | `kasten-2012` | Kasten et al. (2012). "The REAL acoustic library: an archive for studying soundscape ecology." *Ecological Informatics* 12:50–67. [doi](https://doi.org/10.1016/j.ecoinf.2012.01.003) | 🔒 | — | NDSI origin |
-| `sueur-2008` | Sueur et al. (2008). "Rapid acoustic survey for biodiversity appraisal." *PLOS ONE* 3(12):e4065. [doi](https://doi.org/10.1371/journal.pone.0004065) | 🔓 | — | Acoustic entropy (H) index |
+| `sueur-2008` | Sueur et al. (2008). "Rapid acoustic survey for biodiversity appraisal." *PLOS ONE* 3(12):e4065. [doi](https://doi.org/10.1371/journal.pone.0004065) | 🔓 | library/sueur-2008.pdf | Acoustic entropy (H) index |
 | `villanueva-rivera-2011` | Villanueva-Rivera et al. (2011). "A primer of acoustic analysis for landscape ecologists." *Landscape Ecology* 26(9):1233–1246. [doi](https://doi.org/10.1007/s10980-011-9636-9) | 🔒 | — | Acoustic Diversity Index (ADI) |
 | `bradfer-lawrence-2019` | Bradfer-Lawrence et al. (2019). "Guidelines for the use of acoustic indices in environmental research." *Methods in Ecology and Evolution* 10(10):1796–1807. [doi](https://doi.org/10.1111/2041-210X.13254) | 🔒 | — | Why indices co-vary (the "shrimp counter" problem) → PCA over weighted composite |
 | `bohnenstiehl-2018` | Bohnenstiehl et al. (2018). "Investigating the utility of ecoacoustic metrics in marine soundscapes." *Journal of Ecoacoustics* 2:R1156L. [doi](https://doi.org/10.22261/JEA.R1156L) | 🔓 | — | Index redundancy in marine soundscapes |
@@ -63,7 +63,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `noaa-ncrmp-str` | NOAA NCRMP Subsurface Temperature Recorder (STR) network, U.S. Pacific reefs (Sea-Bird loggers, ~5/15/25 m, 2005–2024). NOAA NCEI. [doi](https://doi.org/10.7289/v5ks6pv2) | 🔓 | — | **Ground-truth comparator** for SCOUT in-situ temperature + DHW (Hawaii subset overlaps deployment); sets the accuracy bar for the DS18B20 — [notes](notes/noaa-ncrmp-str-2018-dataset.md) |
-| `margaritis-2025` | Margaritis et al. (2025). "Intercomparison of satellite and in-situ sea-surface temperature on Caribbean reefs." *PLOS Climate* 4:e0000480. [doi](https://doi.org/10.1371/journal.pclm.0000480) | 🔓 | — | CoralTemp overstates nearshore warming (~0.20 °C/decade) → **strongest external warrant** for in-situ ground truth — [notes](notes/margaritis-2025-sst-intercomparison.md) |
+| `margaritis-2025` | Margaritis et al. (2025). "Intercomparison of satellite and in-situ sea-surface temperature on Caribbean reefs." *PLOS Climate* 4:e0000480. [doi](https://doi.org/10.1371/journal.pclm.0000480) | 🔓 | library/margaritis-2025.pdf | CoralTemp overstates nearshore warming (~0.20 °C/decade) → **strongest external warrant** for in-situ ground truth — [notes](notes/margaritis-2025-sst-intercomparison.md) |
 
 ## Turbidity, sedimentation & water quality
 
@@ -71,7 +71,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 |---|---|---|---|---|
 | `fabricius-2005` | Fabricius (2005). "Effects of terrestrial runoff on the ecology of corals and coral reefs: review and synthesis." *Marine Pollution Bulletin* 50(2):125–146. [doi](https://doi.org/10.1016/j.marpolbul.2004.11.028) | 🔒 | — | Scientific warrant for turbidity as a first-class reef-health signal — [notes](notes/fabricius-2005-runoff.md) |
 | `sully-2020` | Sully & van Woesik (2020). "Turbid reefs moderate coral bleaching under climate-related thermal stress." *Global Change Biology* 26(3):1367–1373. [doi](https://doi.org/10.1111/gcb.14948) | 🔒 | — | Temp × turbidity interaction has a **sign** → stress score must not be additive — [notes](notes/sully-2020-turbid-refugia.md) |
-| `droujko-2022` | Droujko & Molnar (2022). "Open-source, low-cost, in-situ turbidity sensor for river network monitoring." *Scientific Reports* 12:10341. [doi](https://doi.org/10.1038/s41598-022-14228-4) | 🔓 | — | Formazin calibration recipe + the particle-directionality caveat for the SEN0189 NTU path — [notes](notes/droujko-2022-turbidity-sensor.md) |
+| `droujko-2022` | Droujko & Molnar (2022). "Open-source, low-cost, in-situ turbidity sensor for river network monitoring." *Scientific Reports* 12:10341. [doi](https://doi.org/10.1038/s41598-022-14228-4) | 🔓 | library/droujko-2022.pdf | Formazin calibration recipe + the particle-directionality caveat for the SEN0189 NTU path — [notes](notes/droujko-2022-turbidity-sensor.md) |
 
 ## Trend detection & statistics
 
@@ -79,15 +79,15 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 |---|---|---|---|---|
 | `sen-1968` | Sen (1968). "Estimates of the regression coefficient based on Kendall's tau." *JASA* 63(324):1379–1389. [doi](https://doi.org/10.1080/01621459.1968.10480934) | 🔒 | — | Sen's slope estimator |
 | `hamed-rao-1998` | Hamed & Rao (1998). "A modified Mann-Kendall trend test for autocorrelated data." *J. Hydrology* 204(1–4):182–196. [doi](https://doi.org/10.1016/S0022-1694(97)00125-X) | 🔒 | — | **Trend test used** for multi-month detection |
-| `hussain-mahmud-2019` | Hussain & Mahmud (2019). "pyMannKendall: a Python package for non-parametric Mann-Kendall trend tests." *JOSS* 4(39):1556. [doi](https://doi.org/10.21105/joss.01556) | 🔓 | — | The library implementing the trend test |
+| `hussain-mahmud-2019` | Hussain & Mahmud (2019). "pyMannKendall: a Python package for non-parametric Mann-Kendall trend tests." *JOSS* 4(39):1556. [doi](https://doi.org/10.21105/joss.01556) | 🔓 | library/hussain-mahmud-2019.pdf | The library implementing the trend test |
 
 ## Tooling / software cited
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `ulloa-2021` | Ulloa et al. (2021). "scikit-maad: … quantitative analysis of eco-acoustic … " *Methods in Ecology and Evolution*. [doi](https://doi.org/10.1111/2041-210X.13711) | ❓ | — | Acoustic index computation library |
-| `virtanen-2020` | Virtanen et al. (2020). "SciPy 1.0." *Nature Methods* 17:261–272. [doi](https://doi.org/10.1038/s41592-019-0686-2) | 🔓 | — | Signal processing, spectrograms |
-| `harris-2020` | Harris et al. (2020). "Array programming with NumPy." *Nature* 585:357–362. [doi](https://doi.org/10.1038/s41586-020-2649-2) | 🔓 | — | Numerical computation |
+| `virtanen-2020` | Virtanen et al. (2020). "SciPy 1.0." *Nature Methods* 17:261–272. [doi](https://doi.org/10.1038/s41592-019-0686-2) | 🔓 | library/virtanen-2020.pdf | Signal processing, spectrograms |
+| `harris-2020` | Harris et al. (2020). "Array programming with NumPy." *Nature* 585:357–362. [doi](https://doi.org/10.1038/s41586-020-2649-2) | 🔓 | library/harris-2020.pdf | Numerical computation |
 
 ## Communications protocol
 
@@ -102,14 +102,14 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `jovalekic-2018` | Jovalekić et al. (2018). "Experimental study of LoRa transmission over seawater." *Sensors* 18(9):2853. [doi](https://doi.org/10.3390/s18092853) | 🔓 | — | **Upper bound:** clear-LOS LoRa feasible to ~22 km over seawater (868/434 MHz); sea surface not the limiter — [notes](notes/jovalekic-2018-lora-seawater.md) |
 | `gutierrez-gomez-2021` | Gutiérrez-Gómez et al. (2021). "Analysis of LoRa P2P near-surface links over water." *Sensors* 21(20):6872. [doi](https://doi.org/10.3390/s21206872) | 🔓 | — | **Lower bound:** near-surface antenna height dominates path loss — the buoy's real constraint — [notes](notes/gutierrez-gomez-2021-lora-near-surface.md) |
 | `parri-2019` | Parri et al. (2019). "Offshore LoRaWAN networking: … buoy-height antennas at sea." *Sensors* 19(14):3239. [doi](https://doi.org/10.3390/s19143239) | 🔓 | — | **Closest analog:** LoRaWAN measured at 2.1 m / 3.5 m buoy-height antennas offshore — the Phase 4 prior — [notes](notes/parri-2019-lpwan-at-sea.md) |
-| `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | — | Duty-cycle / airtime / SF trade — the theory under the 1×/day 82-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
+| `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | library/adelantado-2017.pdf | Duty-cycle / airtime / SF trade — the theory under the 1×/day 82-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
 | `bouguera-2018` | Bouguera et al. (2018). "Energy consumption model for sensor nodes based on LoRa and LoRaWAN." *Sensors* 18(7):2104. [doi](https://doi.org/10.3390/s18072104) | 🔓 | — | Energy-per-packet model (SF × power × payload) → feeds the open battery/solar sizing — [notes](notes/bouguera-2018-lora-energy.md) |
 
 ## Link reliability & FEC
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `ali-2024` | Ali et al. (2024). "Error mitigation in LPWAN systems: a study on the efficacy of Hamming-coded RPW." *PLOS ONE* 19(6):e0304386. [doi](https://doi.org/10.1371/journal.pone.0304386) | 🔓 | — | **PHY FEC dial:** Hamming coding (LoRa's CR 4/5–4/8) buys several dB of margin — near-free at 1×/day — [notes](notes/ali-2024-lpwan-hamming-fec.md) |
+| `ali-2024` | Ali et al. (2024). "Error mitigation in LPWAN systems: a study on the efficacy of Hamming-coded RPW." *PLOS ONE* 19(6):e0304386. [doi](https://doi.org/10.1371/journal.pone.0304386) | 🔓 | library/ali-2024.pdf | **PHY FEC dial:** Hamming coding (LoRa's CR 4/5–4/8) buys several dB of margin — near-free at 1×/day — [notes](notes/ali-2024-lpwan-hamming-fec.md) |
 | `carvalho-2021` | Fernandes Carvalho, Ferrari, Flammini & Sisinni (2021). "Improving redundancy in LoRaWAN for mixed-criticality scenarios." *IEEE Systems Journal* 15(3):3682–3691. [doi](https://doi.org/10.1109/JSYST.2020.3015274) | 🔒 | — | **App-layer redundancy:** repeating a sporadic packet cut failure prob. from >78% to 2.5% — the lever for the daily packet — [notes](notes/carvalho-2021-lora-redundancy.md) |
 
 ## Data quality & sensor integrity
