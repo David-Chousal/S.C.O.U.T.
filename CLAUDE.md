@@ -181,20 +181,25 @@ Seven phase projects mirror [docs/planning/team-timeline.md](docs/planning/team-
 **Every issue belongs to exactly one.** Each project description carries that phase's
 per-discipline work and exit criteria.
 
-| Project | Window |
-|---|---|
-| Phase 0 — Kickoff | through May 2026 |
-| Phase 1 — Subsystem Bring-Up | June 2026 |
-| Phase 2 — System Integration | July 2026 |
-| Phase 3 — Enclosure & Waterproofing | Aug 15 – Sep 30 2026 |
-| Phase 4 — Field Prototype Deployment | Oct – Nov 2026 |
-| Phase 5 — Hawaii Deployment Prep | Dec 2026 |
-| Phase 6 — Hawaii Live Deployment | Jan – Mar 2027 |
+**Re-baselined 2026-08-14.** The project now runs **Aug 14, 2026 → May 28, 2027**.
 
-All seven were created in `Backlog` state. The team sets real states — do not assume a phase
-is complete because its window has passed. As of August 2026 the calendar says Phase 3, but
-firmware has not started, so Phase 1–2 deliverables are still open. Flag that gap rather than
-papering over it.
+| Project | Window | State |
+|---|---|---|
+| Phase 0 — Kickoff | Aug 14 – Sep 4, 2026 | In Progress |
+| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | Planned |
+| Phase 2 — System Integration | Oct 19 – Nov 25, 2026 | Planned |
+| Phase 3 — Enclosure & Waterproofing | Nov 30, 2026 – Jan 15, 2027 | Planned |
+| Phase 4 — Field Prototype Deployment | Jan 18 – Feb 26, 2027 | Planned |
+| Phase 5 — Hawaii Deployment Prep | Mar 1 – Mar 19, 2027 | Planned |
+| Phase 6 — Hawaii Live Deployment | Mar 22 – May 28, 2027 | Planned |
+
+These dates are mirrored in [docs/planning/team-timeline.md](docs/planning/team-timeline.md).
+If one changes, change both in the same session.
+
+Phase 0 is the only phase currently active — it holds the open design-alignment decisions
+(SCO-5 through SCO-9) that were never closed during the original summer plan. Nothing
+downstream should start until those land, particularly
+[ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md).
 
 ### Status discipline
 

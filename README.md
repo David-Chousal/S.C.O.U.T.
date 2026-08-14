@@ -46,7 +46,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Firmware | 🔴 Not started — blocked on [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
 | Shore station | 🔴 Not started |
-| Field deployment | 🔴 Planned — Hawaii, Phase 6 (Jan–Mar 2027) |
+| Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Most urgent open decision:** the microcontroller and LoRa radio are specified inconsistently
 across documents, and this blocks PCB layout, firmware toolchain selection, and power budget

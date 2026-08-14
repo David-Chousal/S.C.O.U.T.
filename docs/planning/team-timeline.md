@@ -5,6 +5,11 @@
 > **Source document** — `SCOUT_TeamTimeline.docx`
 >
 > **Note** — the original used wide 4-column tables. Restructured into per-phase sections so each track reads cleanly in Notion.
+>
+> **Re-baselined 2026-08-14** — the original plan ran Phases 0–2 over summer 2026. Those
+> deliverables did not complete (firmware had not started), so the schedule was reset to run
+> **Aug 14, 2026 → May 28, 2027**. The windows below are the current plan; the Linear phase
+> projects mirror these dates exactly.
 
 ---
 
@@ -21,7 +26,7 @@ every member completes before the next phase begins.
 
 ## PHASE 0
 
-**Window:** NOW — Late May 2026
+**Window:** Aug 14 – Sep 4, 2026 (3 weeks)
 
 **Goal:** Kickoff: Order Parts · Set Up Tools · Align on Design
 
@@ -61,7 +66,7 @@ every member completes before the next phase begins.
 
 ## PHASE 1
 
-**Window:** June 2026 — Weeks 1–4 (Early Summer)
+**Window:** Sep 7 – Oct 16, 2026 (6 weeks, Fall Quarter)
 
 **Goal:** Subsystem Bring-Up — All Three Tracks Running in Parallel
 
@@ -107,7 +112,7 @@ every member completes before the next phase begins.
 
 ## PHASE 2
 
-**Window:** July 2026 — Weeks 5–8 (Mid Summer)
+**Window:** Oct 19 – Nov 25, 2026 (5.5 weeks, Fall Quarter)
 
 **Goal:** System Integration — Full Duty-Cycle Loop Running
 
@@ -153,7 +158,7 @@ every member completes before the next phase begins.
 
 ## PHASE 3
 
-**Window:** Late August – September 2026 (Early Fall Quarter)
+**Window:** Nov 30, 2026 – Jan 15, 2027 (spans winter break)
 
 **Goal:** Enclosure Assembly · Waterproofing · First Submersion Test
 
@@ -199,7 +204,7 @@ every member completes before the next phase begins.
 
 ## PHASE 4
 
-**Window:** October – November 2026 (Fall Quarter)
+**Window:** Jan 18 – Feb 26, 2027 (6 weeks, Winter Quarter)
 
 **Goal:** Field Prototype Deployment · Iteration · Range Testing
 
@@ -245,7 +250,7 @@ every member completes before the next phase begins.
 
 ## PHASE 5
 
-**Window:** December 2026 (Winter Break)
+**Window:** Mar 1 – Mar 19, 2027 (3 weeks, before spring break)
 
 **Goal:** Hawaii Deployment Prep · Final Hardware Sign-Off · Ship
 
@@ -291,7 +296,7 @@ every member completes before the next phase begins.
 
 ## PHASE 6
 
-**Window:** January – March 2027 (Winter Break → Spring Break)
+**Window:** Mar 22 – May 28, 2027 (~10 weeks live deployment)
 
 **Goal:** Hawaii Live Deployment · Data Collection · Remote Monitoring
 
