@@ -1,4 +1,4 @@
-"""Technology — how SCOUT works, from sleeping buoy to public dashboard."""
+"""Technology — how S.C.O.U.T. works, from sleeping buoy to public dashboard."""
 
 from __future__ import annotations
 
@@ -111,7 +111,7 @@ def body(ctx: SiteContext) -> str:
     return (
         c.page_header("Technology",
                       "How the buoy works",
-                      "SCOUT runs for a long time because it spends most of its time asleep. The "
+                      "S.C.O.U.T. runs for a long time because it spends most of its time asleep. The "
                       "design follows from one constraint: a solar-powered buoy that transmits a "
                       "single small packet per day.")
         + _architecture()

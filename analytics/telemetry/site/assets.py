@@ -15,7 +15,7 @@ import html
 
 
 def logo_mark(cls: str = "mark") -> str:
-    """Concentric sonar rings — the SCOUT mark. Uses ``currentColor`` + the accent token."""
+    """Concentric sonar rings — the S.C.O.U.T. mark. Uses ``currentColor`` + the accent token."""
     return (
         f'<svg class="{cls}" viewBox="0 0 32 32" role="img" aria-label="S.C.O.U.T. mark" fill="none">'
         '<rect width="32" height="32" rx="8" fill="var(--surface-2)"/>'

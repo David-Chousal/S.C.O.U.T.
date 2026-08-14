@@ -44,7 +44,7 @@ class Reef:
 # The curated set. Titles/captions describe the mood so the authored atmospheres read as
 # intentional; when a photo is placed, its alt text + credit take over.
 CATALOG: tuple[Reef, ...] = (
-    Reef("shallow-reef", "sunlit", "Shallow reef", "Sunlit nearshore water, SCOUT's habitat",
+    Reef("shallow-reef", "sunlit", "Shallow reef", "Sunlit nearshore water, S.C.O.U.T.'s habitat",
          "A sunlit shallow coral reef, Raja Ampat, Indonesia.",
          Photo(photographer="Noemi Merz", file="shallow-reef.jpg")),
     Reef("coral-detail", "reef", "Coral colony", "Where thermal stress is measured",
@@ -145,7 +145,7 @@ def credits_page_body(img_dir: Path | None) -> str:
     return (
         '<section class="section"><div class="wrap narrow prose">'
         '<p class="eyebrow">Attribution</p><h1>Image credits</h1>'
-        "<p class=\"lead\">SCOUT uses free reef photography from the Ocean Image Bank "
+        "<p class=\"lead\">S.C.O.U.T. uses free reef photography from the Ocean Image Bank "
         "(The Ocean Agency) under its licence, which requires crediting each photographer. "
         "Photographs are used for ocean conservation and education, as the licence intends.</p>"
         f"{rows}{authored_note}"

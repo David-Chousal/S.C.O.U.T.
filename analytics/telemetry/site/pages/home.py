@@ -1,4 +1,4 @@
-"""Home — the hero: what SCOUT is, the mission, live signal, and reef atmosphere."""
+"""Home — the hero: what S.C.O.U.T. is, the mission, live signal, and reef atmosphere."""
 
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ def _hero(ctx: SiteContext) -> str:
         '<span class="signal soon">Reef soundscape</span>'
         "</div>"
         f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>{hero_credit}'
-        '<figcaption>Shallow nearshore water, where SCOUT operates and where satellite data is '
+        '<figcaption>Shallow nearshore water, where S.C.O.U.T. operates and where satellite data is '
         "least accurate.</figcaption></figure>"
         "</div></section>"
     )
@@ -59,7 +59,7 @@ def _mission() -> str:
         "every few years. When we interviewed reef scientists, they pointed to the same gap: "
         "<strong>affordable measurements in the shallow nearshore water where satellite products "
         "lose accuracy</strong>.</p>"
-        "<p>SCOUT is designed to run unattended, with solar power, low maintenance, and a modular "
+        "<p>S.C.O.U.T. is designed to run unattended, with solar power, low maintenance, and a modular "
         "sensor payload. The target system cost is under $5,000, the figure researchers gave as "
         "a practical ceiling.</p>"
         "</div></div>",
@@ -94,7 +94,7 @@ def _senses() -> str:
         "</div></article>"
     )
     return c.section(
-        c.head_block("What it measures", "The signals SCOUT records",
+        c.head_block("What it measures", "The signals S.C.O.U.T. records",
                      "One sensor per measurement sits below the buoy. The electronics stay sealed "
                      "above the waterline, and readings are logged on board before transmission.")
         + f'<div class="bento" style="margin-top:2.8rem">{cards}{platform}</div>',
@@ -111,7 +111,7 @@ def _habitat(ctx: SiteContext) -> str:
     ])
     return c.section(
         c.head_block("The environment", "The nearshore zone",
-                     "SCOUT is built for shallow nearshore water. It is biodiverse and "
+                     "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
                      "productive, and it is also where remote sensing is least accurate.")
         + f'<div class="pill-row" style="margin-top:2.8rem">{pills}</div>'
         + '<div style="margin-top:1.8rem">'

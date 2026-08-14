@@ -7,7 +7,7 @@ from ..context import SiteContext
 
 TITLE = "Science · S.C.O.U.T."
 DESCRIPTION = (
-    "The science behind SCOUT: NOAA Coral Reef Watch thermal-stress metrics (HotSpot, Maximum "
+    "The science behind S.C.O.U.T.: NOAA Coral Reef Watch thermal-stress metrics (HotSpot, Maximum "
     "Monthly Mean, bleaching threshold, Degree Heating Weeks), turbidity anomaly detection, "
     "reef bioacoustics (ACI, BI, NDSI, H, ADI and an Acoustic Quality Score), and Mann-Kendall "
     "trends, with their limitations."
@@ -94,14 +94,14 @@ _REFS_ACOUSTIC = [
 
 def _tracks() -> str:
     return c.section(
-        c.head_block("What SCOUT tracks", "The signals and what we derive",
-                     "SCOUT samples a small set of environmental signals and turns each into a "
+        c.head_block("What S.C.O.U.T. tracks", "The signals and what we derive",
+                     "S.C.O.U.T. samples a small set of environmental signals and turns each into a "
                      "reviewed metric. Temperature and turbidity transmit daily; the reef "
                      "soundscape is recorded and analysed on board.")
         + '<div style="margin-top:2rem">'
         + c.data_table(
             "Each signal, its sensor, and the metrics the pipeline produces.",
-            ["Signal", "Sensor", "What SCOUT derives"], _TRACK_ROWS)
+            ["Signal", "Sensor", "What S.C.O.U.T. derives"], _TRACK_ROWS)
         + "</div>",
     )
 
@@ -109,7 +109,7 @@ def _tracks() -> str:
 def _thermal() -> str:
     return c.section(
         c.head_block("Thermal stress", "Thermal stress metrics",
-                     "SCOUT uses NOAA Coral Reef Watch's operational framework, the standard "
+                     "S.C.O.U.T. uses NOAA Coral Reef Watch's operational framework, the standard "
                      "method for anticipating mass coral bleaching.")
         + '<div class="bento" style="margin-top:2.4rem;align-items:start">'
         '<div class="col-3 prose">'
@@ -155,7 +155,7 @@ def _soundscape() -> str:
     return c.section(
         c.head_block("Reef soundscapes", "Listening to the reef",
                      "A healthy reef is loud: snapping shrimp, fish choruses, and the movement "
-                     "of the reef itself. SCOUT records the soundscape and reduces it to "
+                     "of the reef itself. S.C.O.U.T. records the soundscape and reduces it to "
                      "established bioacoustic indices, a biological signal that complements the "
                      "temperature and turbidity record.")
         + f'<div class="bento" style="margin-top:2.6rem">{cards}</div>'
@@ -175,7 +175,7 @@ def _soundscape() -> str:
         "<h3>Validation, and what stays on board</h3>"
         "<p>The pipeline is validated on a published reef dataset from <strong>Sesoko Island, "
         "Okinawa</strong>: eight monthly sessions from August 2017 to July 2018, a stand-in "
-        "until SCOUT records its own audio.</p>"
+        "until S.C.O.U.T. records its own audio.</p>"
         '<p class="callout"><strong>Raw audio never leaves the buoy.</strong> Waveform data is '
         "far too large for the daily LoRa packet, so the buoy stores recordings on board and "
         "transmits only summary statistics.</p>"
@@ -227,12 +227,12 @@ def _caveats() -> str:
         "present, which biases it low. The pipeline reports each day's window coverage.</p>"
         "<p><strong>MMM dependency.</strong> Results are only as good as the supplied climatology. "
         "For Hawaii, the MMM is read from the CRW 5 km product for the deployment cell.</p>"
-        "<p><strong>Uncalibrated turbidity.</strong> Output is in ADC counts, not NTU, so SCOUT "
+        "<p><strong>Uncalibrated turbidity.</strong> Output is in ADC counts, not NTU, so S.C.O.U.T. "
         "reports relative events only. A calibration curve against turbidity standards is a "
         "documented follow-up.</p>"
         "<p><strong>Acoustic scores are relative.</strong> The indices track change within a "
         "deployment rather than an absolute measure of biodiversity, and they are validated "
-        "against a single reference reef. SCOUT has not yet recorded its own audio.</p>"
+        "against a single reference reef. S.C.O.U.T. has not yet recorded its own audio.</p>"
         "</div></div>",
         cls="section-sm",
     )
@@ -267,7 +267,7 @@ def body(ctx: SiteContext) -> str:
     return (
         c.page_header("Science",
                       "The science",
-                      "SCOUT's readings only mean something in the context of established reef "
+                      "S.C.O.U.T.'s readings only mean something in the context of established reef "
                       "science. This page explains what it tracks, the thermal-stress and "
                       "bioacoustic methods behind the numbers, and their limitations.")
         + _tracks()

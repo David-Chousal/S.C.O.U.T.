@@ -48,7 +48,7 @@ def _story() -> str:
         '<p class="quote">It started from a question: where is the real gap in reef '
         "monitoring?</p></div>"
         '<div class="col-4 prose reveal">'
-        "<p>SCOUT began as a Santa Clara University senior design capstone. Early on, we "
+        "<p>S.C.O.U.T. began as a Santa Clara University senior design capstone. Early on, we "
         "interviewed three NOAA coral-reef researchers to understand where the need was "
         "greatest. They consistently pointed to the same gap: <strong>affordable ground-truth "
         "measurements in shallow nearshore water</strong>, where satellite products lose "
@@ -120,7 +120,7 @@ def body(ctx: SiteContext) -> str:
     return (
         c.page_header("About",
                       "About the project",
-                      "SCOUT is a Santa Clara University senior design capstone, built by three "
+                      "S.C.O.U.T. is a Santa Clara University senior design capstone, built by three "
                       "students in electrical, mechanical, and software engineering, with a field "
                       "deployment as the goal.")
         + _story()
