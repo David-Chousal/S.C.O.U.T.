@@ -1,3 +1,8 @@
+<!-- Fill in EVERY section below. Put the WHY of the change inside "What Changed and Why",
+     not in a paragraph above this line. A section left empty — a lone "-" or just these
+     comment hints — fails the pr-body check. Write "None" for an empty Open questions /
+     Open tasks; write "Hub: no relevant surface" for Knowledge Hub if none apply. -->
+
 ## DATE
 <!-- The date this PR was opened, ISO 8601: YYYY-MM-DD -->
 
