@@ -30,9 +30,10 @@ def main() -> None:
     parser.add_argument("--mmm", type=float, default=None, help="site Maximum Monthly Mean SST (°C) for DHW")
     parser.add_argument("--out", type=Path, default=Path("data/processed"), help="output directory")
     parser.add_argument("--dashboard", action="store_true", help="also render the PNG dashboard (needs matplotlib)")
+    parser.add_argument("--web", type=Path, default=None, help="render the static GitHub Pages dashboard into this dir")
     args = parser.parse_args()
 
-    report = run(args.source, mmm=args.mmm, out_dir=args.out, dashboard=args.dashboard)
+    report = run(args.source, mmm=args.mmm, out_dir=args.out, dashboard=args.dashboard, web_dir=args.web)
 
     qc = report.qc
     print(f"records         : {qc.n_records}  ({qc.completeness_pct}% complete)")
@@ -49,6 +50,8 @@ def main() -> None:
     else:
         print("thermal stress  : skipped (no --mmm provided)")
     print(f"outputs written : {args.out.resolve()}")
+    if args.web:
+        print(f"static site     : {(args.web / 'index.html').resolve()}")
 
 
 if __name__ == "__main__":

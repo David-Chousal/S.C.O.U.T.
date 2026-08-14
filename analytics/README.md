@@ -136,6 +136,15 @@ Writes `telemetry_daily.csv` (per-day temp, HotSpot, DHW, alert level, turbidity
 `--mmm` it still runs QC, aggregation, trends, and turbidity — only the DHW/bleaching stage is
 skipped (undefined without a climatology).
 
+**Live dashboard (GitHub Pages).** Add `--web <dir>` to also render a **self-contained static
+`index.html`** (inline SVG charts, no external requests) that the shore Raspberry Pi can push
+to GitHub Pages on a schedule — the publish loop is documented in
+[Live Dashboard](../docs/engineering/live-dashboard.md).
+
+```bash
+python run_telemetry.py --source ../shore/data --mmm 27.6 --web site
+```
+
 Tests (standard-library `unittest`; `pytest` also runs them):
 
 ```bash
