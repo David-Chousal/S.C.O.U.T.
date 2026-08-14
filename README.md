@@ -53,7 +53,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | System architecture | ✅ Complete — [Engineering Design Document v0.2](docs/engineering/engineering-design-document.md) |
 | Mechanical design | 🟡 In progress — enclosure and hull concepts developed |
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); wiring/PCB pending |
-| Firmware | 🟢 Unblocked — platform decided, ready to start Phase 1 ([`firmware/`](firmware/README.md)) |
+| Firmware | 🟡 Phase 1 scaffold — state machine + drivers in place; packet codec (byte-identical to shore) and scheduler verified; hardware bring-up next ([`firmware/`](firmware/README.md)) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
 | Shore station | 🔴 Not started — Raspberry Pi + LoRa, documented in [Shore Station](docs/engineering/shore-station.md) |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
@@ -89,7 +89,7 @@ S.C.O.U.T./
 │   ├── planning/       Timeline, meeting notes, administrative
 │   └── decisions/      Architecture Decision Records
 ├── analytics/      Coral bioacoustic analysis pipeline (Python) — implemented
-├── firmware/       Buoy embedded software — not yet started
+├── firmware/       Buoy embedded software (SAMD21/PlatformIO) — Phase 1 scaffold
 ├── hardware/       Schematics, PCB, wiring diagrams — not yet started
 ├── mechanical/     CAD, hull design, mooring specs — not yet started
 ├── assets/         Diagrams and presentations

@@ -1,0 +1,195 @@
+/*
+ * SCOUT buoy firmware — duty-cycle state machine.
+ *
+ *   Sleep → Wake → Sense → Log → Battery check → Transmit (daily) → Sleep
+ *
+ * Platform: Adafruit Feather M0 + RFM95 (SAMD21), Arduino core (ADR-0001).
+ * The packet encoder (lib/scout_packet) mirrors the shore decoder byte-for-byte; the
+ * scheduling math (lib/scout_scheduler) is pure and unit-tested off-target.
+ *
+ * Scaffold status: sensor/SD/LoRa/RTC paths are wired to their drivers; the audio subsystem
+ * and true SAMD21 standby sleep are marked TODO for Phase 1–2 bring-up (see notes inline).
+ */
+#include <Arduino.h>
+
+#include "config.h"
+#include "drivers/battery.h"
+#include "drivers/lora_link.h"
+#include "drivers/rtc.h"
+#include "drivers/sd_logger.h"
+#include "drivers/temperature.h"
+#include "drivers/turbidity.h"
+#include "scout_packet.h"
+#include "scout_scheduler.h"
+
+static const char *CSV_HEADER =
+    "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
+    "turbidity_ntu,battery_v,uptime_s,audio_file,flags,fw_version";
+
+// Persisted across sleep cycles (SAMD21 standby retains RAM). Reset only on hard power loss.
+static uint32_t g_record_seq = 0;
+static uint32_t g_last_tx_epoch = 0;
+
+static TemperatureSensor g_temp;
+static TurbiditySensor g_turbidity;
+static Battery g_battery;
+static Rtc g_rtc;
+static SdLogger g_sd;
+static LoraLink g_lora;
+static bool g_rtc_ok = false;
+static bool g_sd_ok = false;
+static bool g_lora_ok = false;
+
+// ── flag-name formatting (matches the data-schema flags vocabulary) ──────────
+static void append_flag(char *buf, size_t cap, bool &first, const char *name) {
+    size_t len = strlen(buf);
+    int written = snprintf(buf + len, cap - len, "%s%s", first ? "" : "|", name);
+    if (written > 0) {
+        first = false;
+    }
+}
+
+static void format_flags(uint16_t flags, char *buf, size_t cap) {
+    buf[0] = '\0';
+    bool first = true;
+    if (flags & SCOUT_FLAG_SD_RETRY) append_flag(buf, cap, first, "SD_RETRY");
+    if (flags & SCOUT_FLAG_TEMP_TIMEOUT) append_flag(buf, cap, first, "TEMP_TIMEOUT");
+    if (flags & SCOUT_FLAG_TURBIDITY_RANGE) append_flag(buf, cap, first, "TURBIDITY_RANGE");
+    if (flags & SCOUT_FLAG_BATT_LOW_SKIP_TX) append_flag(buf, cap, first, "BATT_LOW_SKIP_TX");
+    if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
+}
+
+static void enter_deep_sleep() {
+    // TODO(Phase 2): true SAMD21 standby via ArduinoLowPower, waking on PIN_RTC_INT (the
+    // PCF8523 countdown-timer INT). Placeholder keeps the loop cadence during bench bring-up.
+    g_lora.sleep();
+    delay(SAMPLE_INTERVAL_S * 1000UL);
+}
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(PIN_SENSOR_GATE, OUTPUT);
+    digitalWrite(PIN_SENSOR_GATE, LOW);
+
+    g_battery.begin();
+    g_temp.begin();
+    g_turbidity.begin();
+
+    g_rtc_ok = g_rtc.begin();
+    uint16_t startup_flags = 0;
+    if (!g_rtc_ok || g_rtc.lostPower()) {
+        startup_flags |= SCOUT_FLAG_RTC_LOST;
+    }
+    if (g_rtc_ok) {
+        g_rtc.enablePeriodicWake(SAMPLE_INTERVAL_MIN);
+    }
+    g_sd_ok = g_sd.begin();
+    g_lora_ok = g_lora.begin();
+    (void)startup_flags;  // folded into the first record below
+}
+
+void loop() {
+    uint16_t flags = 0;
+    uint32_t now = g_rtc_ok ? g_rtc.nowEpoch() : 0;
+    if (!g_rtc_ok) {
+        flags |= SCOUT_FLAG_RTC_LOST;
+    }
+
+    // 1. Power the switched sensor rail and let it settle.
+    digitalWrite(PIN_SENSOR_GATE, HIGH);
+    delay(SENSOR_WARMUP_MS);
+
+    // 2. Sense.
+    float temp_c = 0.0f;
+    if (!g_temp.read(temp_c)) {
+        flags |= SCOUT_FLAG_TEMP_TIMEOUT;
+    }
+    uint16_t turbidity_adc = g_turbidity.readAdc();
+    float turbidity_v = g_turbidity.readVolts();
+    uint16_t battery_mv = g_battery.readMillivolts();
+
+    // 3. Sensors off.
+    digitalWrite(PIN_SENSOR_GATE, LOW);
+
+    // 4. Audio (scheduled 3×/day). TODO(Phase 1+): the PCM1808/hydrophone path is a V1 stretch
+    //    and not on the confirmed Feather build; record the intent only.
+    bool audio_present = scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC));
+
+    // 5. Battery gate.
+    bool battery_ok = scout_battery_ok(battery_mv, BATTERY_SKIP_TX_MV);
+
+    g_record_seq++;
+
+    // 6. Log a CSV row (data-schema.md). Retry once on SD failure.
+    char timestamp[24];
+    if (g_rtc_ok) {
+        DateTime dt((uint32_t)now);
+        snprintf(timestamp, sizeof(timestamp), "%04u-%02u-%02uT%02u:%02u:%02uZ", dt.year(),
+                 dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
+    } else {
+        snprintf(timestamp, sizeof(timestamp), "1970-01-01T00:00:00Z");
+    }
+    char audio_file[20] = "";
+    if (audio_present) {
+        snprintf(audio_file, sizeof(audio_file), "%02u%02u%02uZ.wav",
+                 (unsigned)((now % 86400) / 3600), (unsigned)((now % 3600) / 60), 0u);
+    }
+
+    char line[192];
+    snprintf(line, sizeof(line),
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%u,%.3f,,%.2f,%lu,%s,,v%d.%d.%d",
+             SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_record_seq,
+             temp_c, turbidity_adc, turbidity_v, battery_mv / 1000.0f,
+             (unsigned long)(g_record_seq * SAMPLE_INTERVAL_S), audio_file, FW_MAJOR, FW_MINOR,
+             FW_PATCH);
+
+    if (g_sd_ok) {
+        char date_ymd[9];
+        if (g_rtc_ok) {
+            DateTime dt((uint32_t)now);
+            snprintf(date_ymd, sizeof(date_ymd), "%04u%02u%02u", dt.year(), dt.month(), dt.day());
+        } else {
+            snprintf(date_ymd, sizeof(date_ymd), "19700101");
+        }
+        if (!g_sd.appendLine(date_ymd, CSV_HEADER, line)) {
+            flags |= SCOUT_FLAG_SD_RETRY;
+            g_sd.appendLine(date_ymd, CSV_HEADER, line);  // one retry
+        }
+    }
+
+    // 7. Transmit the summarized packet once per day, if the battery allows.
+    if (!battery_ok) {
+        flags |= SCOUT_FLAG_BATT_LOW_SKIP_TX;
+    } else if (g_lora_ok && scout_is_transmit_cycle(now, g_last_tx_epoch, TRANSMIT_PERIOD_S)) {
+        ScoutReading r;
+        r.schema_version = SCOUT_PACKET_VERSION;
+        r.buoy_id = BUOY_ID;
+        r.timestamp = now;
+        r.record_seq = g_record_seq;
+        r.temp_c_centi = scout_temp_centi(temp_c);
+        r.turbidity_adc = turbidity_adc;
+        r.battery_mv = battery_mv;
+        r.uptime_s = g_record_seq * SAMPLE_INTERVAL_S;
+        r.flags = flags;
+        r.audio_present = audio_present ? 1 : 0;
+        r.fw_major = FW_MAJOR;
+        r.fw_minor = FW_MINOR;
+        r.fw_patch = FW_PATCH;
+
+        uint8_t packet[SCOUT_PACKET_SIZE];
+        size_t n = scout_packet_encode(&r, packet);
+        if (g_lora.send(packet, (uint8_t)n)) {
+            g_last_tx_epoch = now;
+        }
+    }
+
+    char flag_str[80];
+    format_flags(flags, flag_str, sizeof(flag_str));
+    Serial.print("seq=");
+    Serial.print(g_record_seq);
+    Serial.print(" flags=");
+    Serial.println(flag_str[0] ? flag_str : "-");
+
+    // 8. Back to sleep until the next scheduled wake.
+    enter_deep_sleep();
+}
