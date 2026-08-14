@@ -16,18 +16,18 @@ DESCRIPTION = (
 # (name, role, disc, initials, hue, _h2, bio, linkedin, photo). ``photo`` is a basename under
 # assets/img/ (or None → circular monogram fallback).
 _TEAM = [
-    ("Isabella Rodriguez", "Hardware lead", "ECEN", "IR", 210, 200,
-     "Leads the electrical design: the PCB, the power system, and the sensor and radio front "
-     "end, all of which have to run for a year in salt water on solar power.",
-     "https://www.linkedin.com/in/isabellarodriguez17/", "team/isabella.jpg"),
-    ("John Ryan Myrdal", "Field &amp; mechanical lead", "GENG", "JM", 32, 30,
-     "Leads the physical build: hull, enclosure, mooring, and deployment. This is the part of "
-     "the system exposed directly to the ocean.",
-     "https://www.linkedin.com/in/john-ryan-myrdal-33a292298/", "team/john.jpg"),
     ("David Chousal Cantu", "Software lead", "CSEN", "DC", 165, 165,
      "Leads the software: firmware on the buoy, the shore-station receiver, and the telemetry "
      "pipeline that produces the metrics on this site.",
      "https://www.linkedin.com/in/david-chousal-749010297", "team/david.jpg"),
+    ("John Ryan Myrdal", "Field &amp; mechanical lead", "GENG", "JM", 32, 30,
+     "Leads the physical build: hull, enclosure, mooring, and deployment. This is the part of "
+     "the system exposed directly to the ocean.",
+     "https://www.linkedin.com/in/john-ryan-myrdal-33a292298/", "team/john.jpg"),
+    ("Isabella Rodriguez", "Hardware lead", "ECEN", "IR", 210, 200,
+     "Leads the electrical design: the PCB, the power system, and the sensor and radio front "
+     "end, all of which have to run for a year in salt water on solar power.",
+     "https://www.linkedin.com/in/isabellarodriguez17/", "team/isabella.jpg"),
 ]
 
 _PHASES = [

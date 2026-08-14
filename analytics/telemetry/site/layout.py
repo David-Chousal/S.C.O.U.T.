@@ -136,7 +136,6 @@ def footer(base: str, *, external: bool = True) -> str:
     return (
         f'<footer class="site-footer">{seaweed}<div class="wrap footer-grid">'
         '<div class="footer-brand">'
-        f"{_brand(base)}"
         "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, solar-powered nearshore "
         "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p>"
         f"{email}</div>"
