@@ -32,10 +32,13 @@ reef-safe, with long-term mooring stability and minimal reef disturbance.
 
 ```
 mechanical/
-├── cad/            Source CAD models and exported STEP/STL
-├── drawings/       Dimensioned drawings, hull cross-sections
-├── mooring/        Anchor, line, swivel, and shackle specifications
-└── test/           Buoyancy, waterline, pressure, and submersion test records
+├── cad/                        Source CAD models and exported STEP/STL
+│   ├── floatation/             Hull, float, and buoyancy structure
+│   ├── electronics-housing/    Sealed electronics bay enclosure
+│   └── sensor-housing/         Sensor mounting and housing
+├── drawings/                   Dimensioned drawings, hull cross-sections
+├── mooring/                    Anchor, line, swivel, and shackle specifications
+└── test/                       Buoyancy, waterline, pressure, and submersion test records
 ```
 
 ## Open items
