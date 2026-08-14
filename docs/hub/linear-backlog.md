@@ -199,9 +199,11 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 | #15 | 2026-08-14 | docs | Consolidate coral/water-quality + networks research library |
 | #16 | 2026-08-14 | csen | Firmware Phase-1 SAMD21 scaffold (codec, scheduler, drivers, state machine) |
 | #17 | 2026-08-14 | csen | Real SAMD21 standby sleep (ArduinoLowPower + PCF8523 INT wake) |
+| #18 | 2026-08-14 | csen | Firmware watchdog timer for autonomous hang recovery |
 
-> **Count note:** 17 merged as of this writing; if you were told "18," an 18th firmware PR may have
-> merged after — re-run `gh pr list --state merged` to confirm and append.
+> **Count note:** **18 merged** as of this writing. The repo is under active concurrent work — re-run
+> `gh pr list --state merged` before filing and append any newer PRs. (PRs #16–#18 are the firmware
+> Phase-1 line: scaffold → standby sleep → watchdog; their on-hardware validation is tracked by **C2**.)
 
 ## Settled decisions — do **not** create tickets for these
 
