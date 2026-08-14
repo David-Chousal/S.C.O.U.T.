@@ -1,11 +1,18 @@
-# Analytics — Coral Bioacoustic Pipeline
+# Analytics
 
-Passive acoustic analysis pipeline that turns raw hydrophone recordings into reef health
-indicators and multi-month trend classifications.
+Two analysis pipelines:
 
-Full scientific rationale, equations, and citations live in
-[Coral Bioacoustic Methodology](../docs/analysis/coral-bioacoustic-methodology.md). This
-README covers running the code.
+1. **Bioacoustic** — turns raw hydrophone recordings into reef-health indices and multi-month
+   trends. Rationale in [Coral Bioacoustic Methodology](../docs/analysis/coral-bioacoustic-methodology.md).
+2. **Environmental telemetry** ([`telemetry/`](telemetry)) — turns the buoy's temperature /
+   turbidity / battery CSV into quality-controlled daily series, NOAA Coral Reef Watch
+   thermal-stress metrics (HotSpot, Degree Heating Weeks, bleaching alert levels),
+   Mann-Kendall trends, and turbidity anomaly flags. Rationale in
+   [Environmental Telemetry Methodology](../docs/analysis/telemetry-methodology.md).
+
+This README covers running the code. The telemetry pipeline's scientific core is **pure Python
+standard library** (no install needed; runs on a bare Raspberry Pi); the bioacoustic pipeline
+needs the dependencies below.
 
 ---
 
@@ -102,6 +109,38 @@ python compare_sites.py --sites "Site A:data/raw_audio" "Site B:data/raw_audio_s
 > **Note** — flag naming is inconsistent across scripts: `run_pipeline.py` uses
 > `--audio_dir` with an underscore, while the others use hyphenated flags. Left as-is to
 > avoid breaking existing invocations; worth normalizing in a future change.
+
+## Environmental telemetry
+
+Analyze the buoy/shore telemetry CSV ([data-schema.md](../docs/engineering/data-schema.md)).
+No dependencies required for the core; add `pymannkendall` for the autocorrelation-corrected
+trend test and `matplotlib` for `--dashboard`.
+
+```bash
+# One daily file, with the site's NOAA CRW Maximum Monthly Mean SST for Degree Heating Weeks
+python run_telemetry.py --source ../shore/data/SCOUT-01_20260814.csv --mmm 27.6
+
+# A directory of daily files, plus the dashboard
+python run_telemetry.py --source ../shore/data --mmm 27.6 --dashboard --out data/processed
+```
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--source` | — (required) | Telemetry CSV file, or a directory of daily CSVs |
+| `--mmm` | none | Site Maximum Monthly Mean SST (°C) from NOAA CRW; enables DHW/bleaching alerts |
+| `--out` | `data/processed` | Output directory |
+| `--dashboard` | off | Also render the PNG dashboard (needs matplotlib) |
+
+Writes `telemetry_daily.csv` (per-day temp, HotSpot, DHW, alert level, turbidity, battery) and
+`telemetry_summary.json` (completeness, trends, peak thermal stress, turbidity events). Without
+`--mmm` it still runs QC, aggregation, trends, and turbidity — only the DHW/bleaching stage is
+skipped (undefined without a climatology).
+
+Tests (standard-library `unittest`; `pytest` also runs them):
+
+```bash
+python -m unittest discover -s telemetry/tests -t .
+```
 
 ## Design decisions
 
