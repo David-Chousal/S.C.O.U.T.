@@ -31,22 +31,37 @@ _FIXED = datetime(2027, 3, 11, 12, 0, tzinfo=timezone.utc)
 
 
 class WebDashboardTest(unittest.TestCase):
-    def test_no_external_or_cross_origin_references(self):
-        """The page loads the shared self-hosted ambient animations, so it now carries
-        same-origin scripts, but it references no external/CDN host: no absolute URLs, and every
-        ``src`` is a same-origin relative path. It still needs no third party and no network
-        beyond its own origin."""
+    def test_loads_nothing_cross_origin(self):
+        """The page loads no cross-origin resource: no CDN, no remote fonts/images/scripts, no
+        external stylesheet. Every *loaded* resource — ``src=``, ``<link href>``, CSS ``url()`` —
+        is same-origin/relative. External *hyperlinks* (``<a href>``, e.g. the header GitHub
+        icon) are user navigations, not loaded resources, and are allowed: the only external URLs
+        in the document must all sit inside anchor tags."""
         import re
 
         html = render_html(analyze(_records(), mmm=28.0), generated_at=_FIXED)
         self.assertTrue(html.lstrip().startswith("<!doctype html>"))
-        for needle in ("http://", "https://", "//unpkg", "lottie.host", "cdn."):
-            self.assertNotIn(needle, html, f"page must not reference external host {needle!r}")
-        for src in re.findall(r'src="([^"]*)"', html):
-            self.assertFalse(
-                src.startswith("http") or src.startswith("//"),
-                f"every src must be same-origin/relative, got {src!r}",
-            )
+
+        def is_external(url: str) -> bool:
+            return url.startswith(("http://", "https://", "//"))
+
+        # No known CDN / third-party hosts, and no remote stylesheet import, anywhere.
+        for needle in ("//unpkg", "lottie.host", "cdn.", "@import"):
+            self.assertNotIn(needle, html, f"page must not reference {needle!r}")
+
+        # Every resource-loading context must be same-origin.
+        for src in re.findall(r'\bsrc="([^"]*)"', html):
+            self.assertFalse(is_external(src), f"src must be same-origin, got {src!r}")
+        for href in re.findall(r'<link\b[^>]*\bhref="([^"]*)"', html):
+            self.assertFalse(is_external(href), f"<link> href must be same-origin, got {href!r}")
+        for url in re.findall(r'url\(\s*["\']?([^"\')]+)', html):
+            self.assertFalse(is_external(url), f"CSS url() must be same-origin, got {url!r}")
+
+        # Any external URL that does appear must be a hyperlink, never a loaded resource.
+        anchor_hrefs = set(re.findall(r'<a\b[^>]*\bhref="([^"]*)"', html))
+        for url in re.findall(r'(?:https?:)?//[^\s"\'<>()]+', html):
+            self.assertIn(url, anchor_hrefs,
+                          f"external URL {url!r} must be a hyperlink, not a loaded resource")
 
     def test_shows_thermal_status_when_mmm_given(self):
         html = render_html(analyze(_records(days=14), mmm=28.0), generated_at=_FIXED)

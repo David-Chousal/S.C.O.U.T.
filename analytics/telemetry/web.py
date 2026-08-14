@@ -6,11 +6,14 @@ and pushes the result; GitHub Pages serves it. See docs/engineering/live-dashboa
 
 The page is rendered through the shared site design system (:mod:`telemetry.site`) so it reads
 as one surface with the rest of the site. Its data content is entirely inline (inline CSS and
-inline SVG charts) and it references **no external or cross-origin host** (no CDN, no
-third-party). Like the rest of the site it now also loads the shared self-hosted ambient
-animations (the footer seaweed and the roaming fish), which are same-origin JavaScript, so the
-page is no longer script-free; this is verified by ``tests/test_web.py``. Chart colours are CSS
-design tokens. Standard library only (on the Python side).
+inline SVG charts) and it **loads nothing cross-origin**: no CDN, no third-party, every
+resource (fonts, animations, data) same-origin. The header GitHub icon is an external
+*hyperlink* — a user navigation, not a loaded resource — so it is present here as on every
+page; ``tests/test_web.py`` enforces the real invariant (no cross-origin resource loads) rather
+than banning outbound links. Like the rest of the site it also loads the shared self-hosted
+ambient animations (the footer seaweed and the roaming fish), which are same-origin JavaScript,
+so the page is not script-free. Chart colours are CSS design tokens. Standard library only (on
+the Python side).
 """
 
 from __future__ import annotations

@@ -2,9 +2,10 @@
 
 Every page is one standalone HTML document with the design-system CSS inlined. Navigation and
 asset URLs are resolved through ``base`` (``""`` at the site root, ``"../"`` one level deep) so
-pretty directory URLs work on GitHub Pages. External links in the footer are gated off on the
-Analytics page, which is held to the strict self-contained contract (no external references at
-all) enforced by ``telemetry/tests/test_web.py``.
+pretty directory URLs work on GitHub Pages. The footer's external resource links are gated off
+on the Analytics page, which is held to the self-contained contract enforced by
+``telemetry/tests/test_web.py``: it loads nothing cross-origin. External *hyperlinks* (the
+header GitHub icon) are user navigations, not loaded resources, so they appear on every page.
 """
 
 from __future__ import annotations
@@ -51,7 +52,7 @@ def _nav_social(base: str) -> str:
     )
 
 
-def header(base: str, active: str, external: bool = True) -> str:
+def header(base: str, active: str, social: bool = True) -> str:
     active_slug = _ACTIVE_SLUG.get(active, "")
     links = []
     for slug, label, optional, in_header in _NAV:
@@ -64,14 +65,15 @@ def header(base: str, active: str, external: bool = True) -> str:
         # between pages during the cross-document transition.
         mark = '<span class="nav-mark"></span>' if is_active else ""
         links.append(f'<li{cls}><a href="{_href(base, slug)}"{cur}>{label}{mark}</a></li>')
-    # Social icons carry external (https) links, so keep them off the strict Analytics/per-buoy
-    # pages, which must stay cross-origin-free.
-    social = _nav_social(base) if external else ""
+    # The GitHub icon is an external *hyperlink* (a user navigation), not a resource the page
+    # loads, so it is safe even on the strict Analytics/per-buoy pages: those still fetch nothing
+    # cross-origin on load. Shown everywhere.
+    social_html = _nav_social(base) if social else ""
     return (
         '<header class="site-header"><nav class="wrap nav" aria-label="Primary">'
         f"{_brand(base)}"
         f'<ul class="nav-links">{"".join(links)}</ul>'
-        f"{social}"
+        f"{social_html}"
         "</nav></header>"
     )
 
@@ -170,7 +172,9 @@ def document(
         f'</head>\n<body data-lottie-base="{base}assets/lottie/">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
-        f"{header(base, active, external=external)}\n"
+        # Header social icons appear on every page (they are hyperlinks, not loaded resources).
+        # The footer's external resource links stay gated on ``external``.
+        f"{header(base, active, social=True)}\n"
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
         f"{footer(base, external=external)}\n"
