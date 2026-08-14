@@ -57,9 +57,14 @@ Run all commands from the `analytics/` directory — default paths are relative 
 **Single session**
 
 ```bash
-python run_pipeline.py --audio-dir data/longitudinal/201708_20170801 \
+python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 \
                        --output data/processed/results.csv
 ```
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--audio_dir` | `data/raw_audio` | Directory containing `.wav` files |
+| `--output` | `data/processed/results.csv` | Output CSV path |
 
 Produces a per-file index table, a reef health classification, and a dashboard figure.
 
@@ -67,9 +72,17 @@ Produces a per-file index table, a reef health classification, and a dashboard f
 
 ```bash
 python run_longitudinal.py --sessions-dir data/longitudinal \
-                           --output-csv data/processed/longitudinal_results.csv \
-                           --output-plot data/processed/longitudinal_trend.png
+                           --csv data/processed/longitudinal_results.csv \
+                           --output data/processed/longitudinal_trend.png \
+                           --skip-download
 ```
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--sessions-dir` | `data/longitudinal` | Directory of per-session subdirectories |
+| `--output` | `data/processed/longitudinal_trend.png` | Output trend chart |
+| `--csv` | `data/processed/longitudinal_results.csv` | Per-session index means |
+| `--skip-download` | off | Use already-present files instead of downloading |
 
 Aggregates each session, fits one global PCA across all sessions, and runs a Hamed-Rao
 modified Mann-Kendall test on the resulting PC1 time series.
@@ -77,8 +90,18 @@ modified Mann-Kendall test on the resulting PC1 time series.
 **Site comparison**
 
 ```bash
-python compare_sites.py --output data/processed/site_comparison.png
+python compare_sites.py --sites "Site A:data/raw_audio" "Site B:data/raw_audio_site_b" \
+                        --output data/processed/site_comparison.png
 ```
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--sites` | Site A + Site B | `Label:path` pairs |
+| `--output` | `data/processed/site_comparison.png` | Output comparison chart |
+
+> **Note** — flag naming is inconsistent across scripts: `run_pipeline.py` uses
+> `--audio_dir` with an underscore, while the others use hyphenated flags. Left as-is to
+> avoid breaking existing invocations; worth normalizing in a future change.
 
 ## Design decisions
 

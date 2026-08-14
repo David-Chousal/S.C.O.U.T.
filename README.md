@@ -99,7 +99,7 @@ cd analytics
 pip install -r requirements.txt
 
 # Analyze the committed sample session
-python run_pipeline.py --audio-dir data/longitudinal/201708_20170801 \
+python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 \
                        --output data/processed/results.csv
 ```
 
