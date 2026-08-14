@@ -51,6 +51,7 @@ FLAG_BITS = {
     "TURBIDITY_RANGE": 2,
     "BATT_LOW_SKIP_TX": 3,
     "RTC_LOST": 4,
+    "POWER_CONSERVE": 5,
 }
 
 # Device State-of-Health bits (set at boot/init; persistent, distinct from the per-cycle

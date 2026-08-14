@@ -72,6 +72,7 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
     if (flags & SCOUT_FLAG_TURBIDITY_RANGE) append_flag(buf, cap, first, "TURBIDITY_RANGE");
     if (flags & SCOUT_FLAG_BATT_LOW_SKIP_TX) append_flag(buf, cap, first, "BATT_LOW_SKIP_TX");
     if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
+    if (flags & SCOUT_FLAG_POWER_CONSERVE) append_flag(buf, cap, first, "POWER_CONSERVE");
 }
 
 static void format_soh(uint8_t soh, char *buf, size_t cap) {
@@ -178,26 +179,38 @@ void loop() {
     digitalWrite(PIN_SENSOR_GATE, HIGH);
     delay(SENSOR_WARMUP_MS);
 
-    // 2. Sense.
-    float temp_c = 0.0f;
+    // 2. Sense. Read the battery first so the power mode can gate the rest (graceful
+    //    degradation: NORMAL → CONSERVE → CRITICAL as the pack drains).
+    uint16_t battery_mv = g_battery.readMillivolts();
+    scout_power_mode_t mode = scout_power_mode(battery_mv, BATTERY_CONSERVE_MV, BATTERY_CRITICAL_MV);
+
+    float temp_c = 0.0f;  // core signal — always sampled, even in CRITICAL
     if (!g_temp.read(temp_c)) {
         flags |= SCOUT_FLAG_TEMP_TIMEOUT;
     }
-    uint16_t turbidity_adc = g_turbidity.readAdc();
-    float turbidity_v = g_turbidity.readVolts();
-    uint16_t battery_mv = g_battery.readMillivolts();
+
+    bool turbidity_sampled = scout_sense_turbidity(mode);  // paused in CRITICAL
+    uint16_t turbidity_adc = 0;
+    float turbidity_v = 0.0f;
+    if (turbidity_sampled) {
+        turbidity_adc = g_turbidity.readAdc();
+        turbidity_v = g_turbidity.readVolts();
+    }
 
     // 3. Sensors off.
     digitalWrite(PIN_SENSOR_GATE, LOW);
 
-    // 4. Audio (scheduled 3×/day). TODO(Phase 1+): the PCM1808/hydrophone path is a V1 stretch
-    //    and not on the confirmed Feather build; record the intent only.
-    bool audio_present = scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC));
+    // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
+    //    V1 stretch not on the confirmed build; this records the intent.
+    bool audio_present =
+        scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
+        scout_sense_audio(mode);
 
-    // 5. Battery gate. Set the flag now (before logging) so the CSV row captures it.
-    bool battery_ok = scout_battery_ok(battery_mv, BATTERY_SKIP_TX_MV);
-    if (!battery_ok) {
+    // 5. Power-mode flags, set before logging so the CSV row captures them.
+    if (mode == SCOUT_POWER_CRITICAL) {
         flags |= SCOUT_FLAG_BATT_LOW_SKIP_TX;
+    } else if (mode == SCOUT_POWER_CONSERVE) {
+        flags |= SCOUT_FLAG_POWER_CONSERVE;
     }
 
     g_state.record_seq++;
@@ -222,11 +235,19 @@ void loop() {
     char soh_str[80];
     format_soh(g_soh, soh_str, sizeof(soh_str));
 
+    // Turbidity columns are blank when the sensor was paused for power (CRITICAL mode).
+    char turb_adc_s[8] = "";
+    char turb_v_s[12] = "";
+    if (turbidity_sampled) {
+        snprintf(turb_adc_s, sizeof(turb_adc_s), "%u", turbidity_adc);
+        snprintf(turb_v_s, sizeof(turb_v_s), "%.3f", turbidity_v);
+    }
+
     char line[224];
     snprintf(line, sizeof(line),
-             "%u,SCOUT-%02u,%s,%lu,%.2f,%u,%.3f,,%.2f,%lu,%s,%s,%s,v%d.%d.%d",
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d",
              SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
-             temp_c, turbidity_adc, turbidity_v, battery_mv / 1000.0f,
+             temp_c, turb_adc_s, turb_v_s, battery_mv / 1000.0f,
              (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, flag_str, soh_str,
              FW_MAJOR, FW_MINOR, FW_PATCH);
 
@@ -247,10 +268,11 @@ void loop() {
     // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s).
     Watchdog.reset();
 
-    // 7. Transmit the summarized packet once per day, if the battery allows. (The battery-low
-    //    flag was set in step 5.)
-    if (battery_ok && g_lora_ok &&
-        scout_is_transmit_cycle(now, g_state.last_tx_epoch, TRANSMIT_PERIOD_S)) {
+    // 7. Transmit — throttled by power mode (base period in NORMAL, ×factor in CONSERVE),
+    //    and never in CRITICAL. The power-mode flags were set in step 5.
+    uint32_t tx_period = scout_transmit_period_s(mode, TRANSMIT_PERIOD_S, TRANSMIT_CONSERVE_FACTOR);
+    if (mode != SCOUT_POWER_CRITICAL && g_lora_ok &&
+        scout_is_transmit_cycle(now, g_state.last_tx_epoch, tx_period)) {
         ScoutReading r;
         r.schema_version = SCOUT_PACKET_VERSION;
         r.buoy_id = BUOY_ID;
@@ -274,8 +296,13 @@ void loop() {
         }
     }
 
+    const char *mode_str = mode == SCOUT_POWER_NORMAL ? "NORMAL"
+                           : mode == SCOUT_POWER_CONSERVE ? "CONSERVE"
+                                                          : "CRITICAL";
     Serial.print("seq=");
     Serial.print(g_state.record_seq);
+    Serial.print(" mode=");
+    Serial.print(mode_str);
     Serial.print(" flags=");
     Serial.print(flag_str[0] ? flag_str : "-");
     Serial.print(" soh=");

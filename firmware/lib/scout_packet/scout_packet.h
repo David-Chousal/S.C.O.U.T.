@@ -30,6 +30,7 @@
 #define SCOUT_FLAG_TURBIDITY_RANGE (1u << 2)
 #define SCOUT_FLAG_BATT_LOW_SKIP_TX (1u << 3)
 #define SCOUT_FLAG_RTC_LOST (1u << 4)
+#define SCOUT_FLAG_POWER_CONSERVE (1u << 5)
 
 /* Device State-of-Health bits (set at boot/init) — must equal SOH_BITS in packet.py. */
 #define SCOUT_SOH_WATCHDOG_RESET (1u << 0)
