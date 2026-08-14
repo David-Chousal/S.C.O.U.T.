@@ -32,7 +32,7 @@ def _href(base: str, slug: str) -> str:
 
 def _brand(base: str) -> str:
     return (
-        f'<a class="brand" href="{_href(base, "")}" aria-label="S.C.O.U.T. — home">'
+        f'<a class="brand" href="{_href(base, "")}" aria-label="S.C.O.U.T. home">'
         '<span class="brand-txt"><b>S.C.O.U.T.</b>'
         "<span>Oceanic Utilities Transmitter</span></span></a>"
     )
@@ -79,8 +79,8 @@ def footer(base: str, *, external: bool = True) -> str:
         '<footer class="site-footer"><div class="wrap footer-grid">'
         '<div class="footer-brand">'
         f"{_brand(base)}"
-        "<p>Santa Clara Oceanic Utilities Transmitter — a low-cost, solar-powered nearshore "
-        "monitoring buoy. Santa Clara University Senior Design Capstone, 2026–2027.</p></div>"
+        "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, solar-powered nearshore "
+        "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p></div>"
         f'<div class="footer-col"><h4>Explore</h4><ul>{explore}</ul></div>'
         f"{resources}"
         '<div class="wrap footer-base" style="padding-inline:0">'

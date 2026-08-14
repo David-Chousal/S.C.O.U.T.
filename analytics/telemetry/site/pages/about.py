@@ -6,7 +6,7 @@ from .. import components as c
 from ..context import SiteContext
 from ..layout import REPO_URL
 
-TITLE = "About — S.C.O.U.T."
+TITLE = "About · S.C.O.U.T."
 DESCRIPTION = (
     "S.C.O.U.T. is a Santa Clara University Senior Design Capstone (2026–2027): a three-person "
     "team building a low-cost nearshore reef-monitoring buoy, advised by Jes Kuczenski and "
@@ -15,14 +15,14 @@ DESCRIPTION = (
 
 _TEAM = [
     ("Isabella Rodriguez", "Hardware lead", "ECEN", "IR", 210, 200,
-     "Owns the electrical design — the PCB, the power system, and the sensor and radio "
-     "front end that has to survive a year in salt water on a solar budget."),
+     "Leads the electrical design: the PCB, the power system, and the sensor and radio front "
+     "end, all of which have to run for a year in salt water on solar power."),
     ("John Ryan Myrdal", "Field &amp; mechanical lead", "GENG", "JM", 32, 30,
-     "Owns the physical buoy — hull, enclosure, mooring and deployment. The part of SCOUT that "
-     "meets the ocean directly and has to come back working."),
+     "Leads the physical build: hull, enclosure, mooring, and deployment. This is the part of "
+     "the system exposed directly to the ocean."),
     ("David Chousal Cantu", "Software lead", "CSEN", "DC", 165, 165,
-     "Owns the software path end to end — firmware on the buoy, the shore-station receiver, and "
-     "the telemetry pipeline that turns packets into the metrics on this site."),
+     "Leads the software: firmware on the buoy, the shore-station receiver, and the telemetry "
+     "pipeline that produces the metrics on this site."),
 ]
 
 _PHASES = [
@@ -40,17 +40,18 @@ def _story() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-2 reveal"><p class="eyebrow">The story</p>'
-        '<p class="quote">We asked reef scientists what they actually needed. They did not say '
-        '"another satellite."</p></div>'
+        '<p class="quote">It started from a question: where is the real gap in reef '
+        "monitoring?</p></div>"
         '<div class="col-4 prose reveal">'
-        "<p>SCOUT began as a Santa Clara University Senior Design Capstone with a question rather "
-        "than a product: where is the real gap in reef monitoring? Interviews with three NOAA "
-        "coral-reef researchers pointed consistently at the same answer — not replacing existing "
-        "systems, but providing <strong>affordable, accessible ground-truth measurements</strong> "
-        "in shallow nearshore water, exactly where satellite products degrade.</p>"
-        "<p>So we set out to build a buoy that a small program could actually afford to deploy and "
-        "leave alone: solar-powered, low-maintenance, modular, and honest about its own data "
-        "quality. Coral-reef health is the first application; the platform is meant to outlast it.</p>"
+        "<p>SCOUT began as a Santa Clara University senior design capstone. Early on, we "
+        "interviewed three NOAA coral-reef researchers to understand where the need was "
+        "greatest. They consistently pointed to the same gap: <strong>affordable ground-truth "
+        "measurements in shallow nearshore water</strong>, where satellite products lose "
+        "accuracy. The aim is to add coverage where it is currently missing.</p>"
+        "<p>The result is a buoy a small program can afford to deploy and leave in place, with "
+        "solar power, low maintenance, a modular sensor payload, and data-quality reporting "
+        "built in. Coral-reef health is the first application, and the platform is designed to "
+        "support others.</p>"
         "</div></div>",
     )
 
@@ -61,9 +62,9 @@ def _team() -> str:
         for uid, (name, role, disc, initials, hue, _h2, bio) in enumerate(_TEAM, start=1)
     )
     return c.section(
-        c.head_block("The team", "Three disciplines, one buoy",
-                     "A cross-disciplinary team — electrical, mechanical, and software — each "
-                     "owning the part of SCOUT their field is built to get right.")
+        c.head_block("The team", "The team",
+                     "Three students, one each from electrical, mechanical, and software "
+                     "engineering, each responsible for the part of the system in their field.")
         + f'<div class="team" style="margin-top:2.4rem">{cards}</div>',
         cls="section-sm",
     )
@@ -99,9 +100,9 @@ def _roadmap() -> str:
             f'<dd style="text-align:right">{window}</dd><dd>{chip}</dd></div>'
         )
     return c.section(
-        c.head_block("Roadmap", "Kickoff to a live reef, in seven phases",
-                     "Re-baselined August 2026. The plan runs from campus bring-up to a live "
-                     "deployment on a Hawaiian reef.")
+        c.head_block("Roadmap", "Project phases",
+                     "Re-baselined in August 2026. The plan runs from campus bring-up to a field "
+                     "deployment in Hawaii.")
         + f'<dl class="spec" style="margin-top:2rem">{rows}</dl>',
         cls="section-sm",
     )
@@ -110,15 +111,15 @@ def _roadmap() -> str:
 def body(ctx: SiteContext) -> str:
     return (
         c.page_header("About",
-                      "A capstone with a buoy in the water",
-                      "SCOUT is built by three Santa Clara University seniors across electrical, "
-                      "mechanical and software engineering — with a real deployment as the "
-                      "deadline.")
+                      "About the project",
+                      "SCOUT is a Santa Clara University senior design capstone, built by three "
+                      "students in electrical, mechanical, and software engineering, with a field "
+                      "deployment as the goal.")
         + _story()
         + _team()
         + _institution()
         + _roadmap()
-        + c.cta("Open source", "The whole project is public, under the MIT License",
+        + c.cta("Open source", "The project is open source under the MIT License",
                 f'<a class="btn btn-primary" href="{REPO_URL}">View on GitHub</a>'
                 '<a class="btn" href="../analytics/">See the live data</a>')
     )

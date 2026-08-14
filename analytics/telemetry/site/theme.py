@@ -57,7 +57,7 @@ def styles(*, base: str = "", fonts_present: bool = False) -> str:
 _CSS = """
 :root{
   color-scheme:light only;
-  /* Warm sand & ink — the reference palette. The site is deliberately light-only:
+  /* Warm sand and ink, the reference palette. The site is deliberately light-only:
      a single sandy, beige canvas regardless of the OS colour-scheme preference. */
   --sand:#f5f1ec;
   --bg:#f5f1ec;
@@ -70,7 +70,7 @@ _CSS = """
   --faint:#9c948a;
   --line:rgba(42,37,32,0.10);
   --line-2:rgba(42,37,32,0.16);
-  --accent:#1f6f6a;            /* calm deep-sea teal — links, focus, the one accent */
+  --accent:#1f6f6a;            /* calm deep-sea teal, for links, focus, the one accent */
   --accent-soft:#dfeae6;
   --coral:#c76b52;
   --on-accent:#fbf9f5;

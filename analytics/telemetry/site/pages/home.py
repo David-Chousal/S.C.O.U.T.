@@ -5,7 +5,7 @@ from __future__ import annotations
 from .. import components as c, imagery
 from ..context import SiteContext
 
-TITLE = "S.C.O.U.T. — Nearshore Ocean Monitoring Buoy"
+TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
 DESCRIPTION = (
     "S.C.O.U.T. is a low-cost, solar-powered nearshore monitoring buoy measuring reef "
     "temperature, turbidity and health, and computing NOAA Coral Reef Watch thermal-stress "
@@ -25,8 +25,8 @@ def _hero(ctx: SiteContext) -> str:
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
         '<p class="hero-expand">Santa Clara Oceanic Utilities Transmitter</p>'
-        '<p class="hero-lead">A low-cost, solar-powered buoy that watches a reef the way a reef '
-        "needs watching — patiently, for years, and for a fraction of the cost.</p>"
+        '<p class="hero-lead">A low-cost, solar-powered buoy that monitors nearshore reef '
+        "conditions for a year or more on a single deployment.</p>"
         '<div class="btn-row">'
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
@@ -39,8 +39,8 @@ def _hero(ctx: SiteContext) -> str:
         '<span class="signal soon">Reef soundscape</span>'
         "</div>"
         f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>{hero_credit}'
-        '<figcaption>Shallow, sunlit nearshore water — the habitat SCOUT is built for, and '
-        "where satellite products struggle most.</figcaption></figure>"
+        '<figcaption>Shallow nearshore water, where SCOUT operates and where satellite data is '
+        "least accurate.</figcaption></figure>"
         "</div></section>"
     )
 
@@ -48,16 +48,17 @@ def _hero(ctx: SiteContext) -> str:
 def _mission() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
-        '<div class="col-2"><p class="eyebrow">The mission</p>'
-        '<p class="quote">Affordable ground-truth for the reefs satellites see worst.</p></div>'
+        '<div class="col-2"><p class="eyebrow">Background</p>'
+        '<p class="quote">The gap is affordable data from shallow, nearshore water.</p></div>'
         '<div class="col-4 prose">'
-        "<p>Coral reefs are among the most threatened ecosystems on Earth, yet the instruments "
-        "that monitor them cost tens of thousands of dollars and are serviced only every few "
-        "years. Reef scientists told us the highest-value gap is not another satellite — it is "
-        "<strong>affordable measurements from the shallow nearshore water where satellite "
-        "products degrade badly</strong>.</p>"
-        "<p>SCOUT is built to be left alone: solar-powered, low-maintenance, and modular, with "
-        "a target system cost well below the $5,000 ceiling researchers named as practical.</p>"
+        "<p>Coral reefs are among the most threatened ecosystems on Earth, but the instruments "
+        "used to monitor them cost tens of thousands of dollars and are often serviced only "
+        "every few years. When we interviewed reef scientists, they pointed to the same gap: "
+        "<strong>affordable measurements in the shallow nearshore water where satellite products "
+        "lose accuracy</strong>.</p>"
+        "<p>SCOUT is designed to run unattended, with solar power, low maintenance, and a modular "
+        "sensor payload. The target system cost is under $5,000, the figure researchers gave as "
+        "a practical ceiling.</p>"
         "</div></div>",
         sid="mission",
     )
@@ -66,33 +67,33 @@ def _mission() -> str:
 def _senses() -> str:
     signals = [
         ("temp", "Signal", "Water temperature",
-         "A precision digital thermometer feeds NOAA Coral Reef Watch thermal-stress metrics — "
-         "the community standard for anticipating bleaching."),
+         "A digital thermometer provides the temperature record used to compute NOAA Coral Reef "
+         "Watch thermal-stress metrics."),
         ("turbidity", "Signal", "Turbidity",
-         "An optical sensor flags runoff, resuspension and sediment plumes as relative events "
-         "against the site's own baseline."),
+         "An optical sensor detects runoff, resuspension, and sediment plumes as changes "
+         "relative to the site's baseline."),
         ("battery", "Signal", "Battery &amp; health",
-         "State-of-health and daily minimum voltage keep a year-long solar deployment honest "
-         "about its own power budget."),
+         "Battery state-of-health and daily minimum voltage track whether the solar power budget "
+         "is holding up over a long deployment."),
     ]
     cards = "".join(f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>'
                     for g, k, t, b in signals)
     platform = (
         '<article class="col-6 card card-accent">'
         '<div class="bento" style="align-items:center;gap:1.2rem">'
-        '<div class="col-4"><p class="kicker">Platform, not instrument</p>'
-        '<h3>One buoy, many signals, many sites</h3>'
-        "<p>The sensing payload is modular by design. Dissolved oxygen, light, chlorophyll and "
-        "reef soundscapes are on the roadmap — coral-reef health is the first mission, not the "
-        "boundary.</p></div>"
+        '<div class="col-4"><p class="kicker">A platform</p>'
+        '<h3>One buoy, several possible signals</h3>'
+        "<p>The sensor payload is modular. Dissolved oxygen, light, chlorophyll, and reef "
+        "soundscapes are on the roadmap. Coral-reef health is the first application, with others "
+        "planned.</p></div>"
         '<div class="col-2" style="text-align:left">'
         '<a class="textlink" href="technology/">See the architecture ' + _ARROW + "</a></div>"
         "</div></article>"
     )
     return c.section(
-        c.head_block("What it senses", "A stack of signals from a single point",
-                     "One sensor of each modality beneath the buoy, electronics sealed above the "
-                     "waterline, everything logged locally and summarized to shore.")
+        c.head_block("What it measures", "The signals SCOUT records",
+                     "One sensor per measurement sits below the buoy. The electronics stay sealed "
+                     "above the waterline, and readings are logged on board before transmission.")
         + f'<div class="bento" style="margin-top:2.8rem">{cards}{platform}</div>',
         sid="senses",
     )
@@ -106,14 +107,14 @@ def _habitat(ctx: SiteContext) -> str:
         imagery.pill("open-water", ctx.base, uid=104, img_dir=ctx.img_dir),
     ])
     return c.section(
-        c.head_block("The habitat", "Built for shallow, complicated water",
-                     "The nearshore zone SCOUT is designed for — beautiful, biodiverse, and "
-                     "exactly where remote sensing struggles most.")
+        c.head_block("The environment", "The nearshore zone",
+                     "SCOUT is built for shallow nearshore water. It is biodiverse and "
+                     "productive, and it is also where remote sensing is least accurate.")
         + f'<div class="pill-row" style="margin-top:2.8rem">{pills}</div>'
         + '<div style="margin-top:1.8rem">'
-        + c.render_slot("Coming soon", "Buoy wall-art renders",
-                        "Studio renders of the SCOUT buoy will live here — a considered look at "
-                        "the hardware, above and below the waterline.")
+        + c.render_slot("Coming soon", "Buoy renders",
+                        "Studio renders of the buoy will go here, showing the hardware above and "
+                        "below the waterline.")
         + "</div>",
         cls="section-sm",
         sid="habitat",
@@ -122,17 +123,17 @@ def _habitat(ctx: SiteContext) -> str:
 
 def _how() -> str:
     steps = c.steps([
-        ("Sense", "On an RTC alarm the buoy wakes, samples temperature and turbidity, reads "
-                  "battery, then returns to deep sleep."),
-        ("Store", "Every reading is written to onboard flash. Raw data never leaves the buoy "
-                  "over radio — the archive stays local."),
-        ("Transmit", "Once a day an 82-byte summary packet goes to shore over LoRa radio — no "
-                     "cellular, no internet at the buoy."),
-        ("Publish", "The shore Raspberry Pi validates, runs the pipeline, and republishes the "
-                    "dashboard you can read now."),
+        ("Sense", "The buoy wakes on a timer, samples temperature and turbidity, records "
+                  "battery voltage, and returns to sleep."),
+        ("Store", "Every reading is written to onboard storage. Raw data is not transmitted, so "
+                  "the full archive stays on the buoy."),
+        ("Transmit", "Once a day the buoy sends an 82-byte summary to shore over LoRa radio. It "
+                     "uses no cellular or internet connection."),
+        ("Publish", "The shore Raspberry Pi validates each packet, runs the analysis pipeline, "
+                    "and regenerates this dashboard."),
     ])
     return c.section(
-        c.head_block("How it works", "From a sleeping buoy to a public dashboard")
+        c.head_block("How it works", "The data path")
         + f'<div style="margin-top:2.8rem">{steps}</div>',
         cls="section-sm",
         sid="how",
@@ -141,7 +142,7 @@ def _how() -> str:
 
 def _live_band(ctx: SiteContext) -> str:
     live = ctx.live
-    note = ("Sample data — simulated until the buoy is live."
+    note = ("Sample data, simulated until the buoy is deployed."
             if live.is_sample else "Latest publish.")
     stat = (lambda label, value, cls="": (
         f'<div class="stat"><p class="stat-label">{label}</p>'

@@ -5,11 +5,11 @@ from __future__ import annotations
 from .. import assets, components as c
 from ..context import SiteContext
 
-TITLE = "Science — S.C.O.U.T."
+TITLE = "Science · S.C.O.U.T."
 DESCRIPTION = (
-    "The science behind SCOUT's dashboard: NOAA Coral Reef Watch thermal-stress metrics — "
-    "HotSpot, Maximum Monthly Mean, the bleaching threshold and Degree Heating Weeks — plus "
-    "turbidity anomaly detection and Mann-Kendall trends, with their limitations stated plainly."
+    "The science behind SCOUT's dashboard: NOAA Coral Reef Watch thermal-stress metrics "
+    "(HotSpot, Maximum Monthly Mean, the bleaching threshold, and Degree Heating Weeks), plus "
+    "turbidity anomaly detection and Mann-Kendall trends, with their limitations."
 )
 
 _ALERT_ROWS = [
@@ -37,15 +37,17 @@ _REFS = [
 
 def _thermal() -> str:
     return c.section(
-        c.head_block("Thermal stress", "How temperature becomes a bleaching warning",
-                     "SCOUT uses NOAA Coral Reef Watch's operational framework — the community "
-                     "standard for anticipating mass bleaching.")
+        c.head_block("Thermal stress", "Thermal stress metrics",
+                     "SCOUT uses NOAA Coral Reef Watch's operational framework, the standard "
+                     "method for anticipating mass coral bleaching.")
         + '<div class="bento" style="margin-top:2.4rem;align-items:start">'
         '<div class="col-3 prose">'
         + c.spec([
-            ("MMM", "Maximum Monthly Mean — the warmest climatological monthly SST for the site, "
-                    "from a long baseline (not the deployment). A required input."),
-            ("HotSpot", "max(0, daily SST − MMM) — the positive thermal anomaly."),
+            ("MMM", "The Maximum Monthly Mean: the warmest of the site's climatological monthly "
+                    "mean temperatures, taken from a long baseline rather than the deployment. "
+                    "It is a required input."),
+            ("HotSpot", "max(0, daily SST − MMM), the amount by which a day is warmer than the "
+                        "climatological maximum."),
             ("Threshold", "MMM + 1 °C. Sustained temperature above this drives stress."),
             ("DHW", "The trailing 12-week sum of HotSpots ≥ 1 °C, in °C-weeks: "
                     "Σ(HotSpot ≥ 1 over 84 days) ⁄ 7."),
@@ -53,19 +55,21 @@ def _thermal() -> str:
         + "</div>"
         '<figure class="figure-card col-3 reveal">'
         + assets.dhw_svg()
-        + "<figcaption>Once daily SST crosses the bleaching threshold, the excess accumulates "
-        "into Degree Heating Weeks — the reef's heat dose over time.</figcaption></figure>"
+        + "<figcaption>When daily temperature crosses the bleaching threshold, the excess "
+        "accumulates as Degree Heating Weeks, a measure of the reef's heat exposure over "
+        "time.</figcaption></figure>"
         "</div>"
     )
 
 
 def _alerts() -> str:
     return c.section(
-        c.head_block("Alert levels", "Five states, from calm to critical")
+        c.head_block("Alert levels", "Bleaching alert levels")
         + '<div style="margin-top:2rem">'
         + c.data_table(
-            "NOAA Coral Reef Watch Bleaching Alert Levels. Warning and above require a current "
-            "HotSpot ≥ 1 °C — if the water cools, accumulated DHW no longer raises the alert.",
+            "NOAA Coral Reef Watch bleaching alert levels. Warning and above require a current "
+            "HotSpot of at least 1 °C. If the water cools, accumulated DHW no longer raises the "
+            "alert.",
             ["Level", "Condition", "Meaning"], _ALERT_ROWS)
         + "</div>",
         cls="section-sm",
@@ -74,26 +78,26 @@ def _alerts() -> str:
 
 def _pipeline() -> str:
     stages = [
-        ("cpu", "01 · Quality control", "Measured, never repaired",
-         "Completeness against the 30-min cadence, gaps, duplicates and implausible readings — "
-         "reported, never silently dropped or interpolated."),
-        ("temp", "02 · Daily aggregation", "Honest daily means",
-         "A day earns a mean temperature only if ≥ 50% of its samples are present; sparse days "
-         "keep their calendar slot but add no temperature."),
-        ("turbidity", "03 · Turbidity", "Relative events, not NTU",
-         "The uncalibrated sensor flags positive excursions with an Iglewicz–Hoaglin modified "
-         "z-score on the raw per-sample series."),
-        ("waves", "04 · Trends", "Mann-Kendall + Sen's slope",
+        ("cpu", "01 · Quality control", "Quality control",
+         "The pipeline reports completeness against the 30-minute cadence, along with gaps, "
+         "duplicates, and implausible readings. It does not drop or interpolate data."),
+        ("temp", "02 · Daily aggregation", "Daily aggregation",
+         "A day is given a mean temperature only if at least 50% of its samples are present. "
+         "Sparse days keep their place on the calendar but contribute no temperature."),
+        ("turbidity", "03 · Turbidity", "Turbidity",
+         "Because the sensor is uncalibrated, it reports relative events rather than NTU, using "
+         "an Iglewicz–Hoaglin modified z-score on the raw samples."),
+        ("waves", "04 · Trends", "Trends",
          "A non-parametric, outlier-robust test for monotonic change, with an autocorrelation "
-         "correction when available. Power is limited early on."),
+         "correction when available. Statistical power is limited early in a deployment."),
     ]
     grid = "".join(
         f'<div class="col-3">{c.feature_card(g, k, t, b)}</div>' for g, k, t, b in stages
     )
     return c.section(
-        c.head_block("The pipeline", "From raw records to reviewed metrics",
-                     "Every stage runs on the Python standard library — it executes, and is "
-                     "unit-tested, on a bare Raspberry Pi.")
+        c.head_block("The pipeline", "The analysis pipeline",
+                     "Every stage runs on the Python standard library, so it executes and is "
+                     "unit-tested on a bare Raspberry Pi.")
         + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
         cls="section-sm",
     )
@@ -103,20 +107,20 @@ def _caveats() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-2">'
-        + c.head_block("Stated plainly", "What these numbers can't tell you")
+        + c.head_block("Limitations", "Limitations")
         + "</div>"
         '<div class="col-4 prose">'
         "<p><strong>Diurnal bias.</strong> CRW builds daily SST from nighttime satellite "
-        "retrievals to suppress skin warming; a shallow surface buoy sees a real diurnal cycle, "
-        "so its daily mean can run slightly warm. Daily coverage is exposed so this is "
-        "auditable.</p>"
+        "retrievals to suppress skin warming. A shallow surface buoy sees a real diurnal cycle, "
+        "so its daily mean can run slightly warm. The pipeline reports daily coverage so this "
+        "is auditable.</p>"
         "<p><strong>Gap bias.</strong> DHW over a window with missing days sums only the days "
-        "present, biasing it low — so each day's window coverage is reported, not hidden.</p>"
+        "present, which biases it low. The pipeline reports each day's window coverage.</p>"
         "<p><strong>MMM dependency.</strong> Results are only as good as the supplied climatology. "
         "For Hawaii, the MMM is read from the CRW 5 km product for the deployment cell.</p>"
-        "<p><strong>Uncalibrated turbidity.</strong> Output is ADC counts, not NTU; SCOUT reports "
-        "relative events only. A calibration curve against turbidity standards is a documented "
-        "follow-up.</p>"
+        "<p><strong>Uncalibrated turbidity.</strong> Output is in ADC counts, not NTU, so SCOUT "
+        "reports relative events only. A calibration curve against turbidity standards is a "
+        "documented follow-up.</p>"
         "</div></div>",
         cls="section-sm",
     )
@@ -138,16 +142,15 @@ def _refs() -> str:
 def body(ctx: SiteContext) -> str:
     return (
         c.page_header("Science",
-                      "Turning a temperature into a warning",
-                      "A number on a buoy is not yet knowledge. Here is the established reef "
-                      "science that makes SCOUT's readings mean something — and the honest limits "
-                      "of what they can say.")
+                      "The science",
+                      "SCOUT's readings only mean something in the context of established reef "
+                      "science. This page explains the methods it uses and their limitations.")
         + _thermal()
         + _alerts()
         + _pipeline()
         + _caveats()
         + _refs()
-        + c.cta("See it live", "Watch the metrics move on real telemetry",
+        + c.cta("See it live", "The metrics on live data",
                 '<a class="btn btn-primary" href="../analytics/">Open the dashboard</a>'
                 '<a class="btn" href="../technology/">How the data gets there</a>')
     )

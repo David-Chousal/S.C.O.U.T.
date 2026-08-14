@@ -99,10 +99,14 @@ def build_site(
     generated = generated_at.strftime("%Y-%m-%d %H:%M UTC")
     fonts_present = (assets_out / "fonts" / "dmsans-latin.woff2").exists()
     img_dir = assets_out / "img"
-    ribbon = (
-        f'<b>Sample data</b> — {banner.split("—", 1)[-1].strip()}'
-        if banner else None
-    )
+    # Site-wide notice ribbon. Emphasise the label before the first colon, if present.
+    ribbon = None
+    if banner:
+        if ":" in banner:
+            label, rest = banner.split(":", 1)
+            ribbon = f"<b>{label.strip()}:</b>{rest}"
+        else:
+            ribbon = banner
     live = _live_stats(report, banner)
 
     def page(base: str, active: str, mod, body_html: str) -> str:
@@ -128,7 +132,7 @@ def build_site(
 
     # Image-credits page (required by the Ocean Image Bank licence when photos are placed).
     _write(assets_out / "credits.html", layout.document(
-        title="Image credits — S.C.O.U.T.", description="Photography attributions for the "
+        title="Image credits · S.C.O.U.T.", description="Photography attributions for the "
         "S.C.O.U.T. site.", active="", body=imagery.credits_page_body(img_dir), base="../",
         fonts_present=fonts_present, external=True,
     ))
