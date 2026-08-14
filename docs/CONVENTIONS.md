@@ -276,7 +276,7 @@ by pushing to `main` directly (it's blocked; see [Two repo gotchas](#two-repo-go
 ### Pull requests
 
 **All work merges through a PR — there is no direct-to-`main` path.** Branch → commit → push
-the branch → open a PR → merge. Every PR needs both of the following:
+the branch → open a PR → **auto-merge**. Every PR needs both of the following:
 
 **A title** in the commit-message format — `<type>(<scope>): <summary>`, using the same types
 and scopes as [Commit messages](#commit-messages). Example: `docs: resolve ADR-0001`.
@@ -307,6 +307,16 @@ YYYY-MM-DD
 ## Open tasks
 - …
 ```
+
+**Auto-merge, don't sit on it.** Turn on auto-merge the moment you open a compliant PR — the
+**Enable auto-merge** button, or `gh pr merge <n> --auto --merge`. It then lands the PR as soon
+as it's mergeable: immediately when there are no required checks, or once checks pass when
+there are. Merged branches delete themselves. The one exception: if a PR needs a human review,
+request it first, *then* enable auto-merge.
+
+> Auto-merge requires the repo setting **Settings → General → Allow auto-merge** to be on —
+> that's an admin-only toggle. Until it's enabled, merge a green PR right away instead of
+> leaving it open (`gh pr merge <n> --merge --delete-branch`).
 
 ### Two repo gotchas
 
