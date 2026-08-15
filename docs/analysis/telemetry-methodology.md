@@ -30,6 +30,67 @@ and the implied missing-sample count, duplicate timestamps, physically implausib
 (seawater temperature outside −5…45 °C; turbidity ADC outside 0…4095), and a tally of firmware
 flags.
 
+### 1a. Per-channel sensor tests (QARTOD)
+
+Completeness and range checks catch missing or impossible data; they do not catch a sensor that
+is failing while still reporting plausible numbers. Each channel therefore also gets the two
+**IOOS QARTOD** tests aimed at the instrument rather than the water:
+
+| Test | Catches | Thresholds |
+|---|---|---|
+| Flat-line | A stuck or saturated channel repeating one value | Suspect at 6 consecutive equal samples (≈ 3 h), fail at 12 (≈ 6 h) |
+| Rate-of-change | A step too large to be physical, vs. the SD of a 25 h rolling window | Suspect beyond 3 σ |
+
+QARTOD deliberately leaves both to the operator; the counts above are set for the 30-minute
+cadence. Real reef water at the DS18B20's 0.0625 °C resolution can hold steady for an hour or
+two overnight, so shorter flat-line counts would flag calm water as a broken sensor.
+
+Rate-of-change runs on **temperature only**. Turbidity's excursions — runoff, resuspension —
+are genuinely abrupt, so an n-sigma step rule flags weather rather than faults: on the 30-day
+shore sample it marked ~12 % of turbidity samples and 0 % of temperature. Turbidity excursions
+are already detected in §4 with a purpose-built robust statistic, so running both would
+double-report the same events with weaker math. The turbidity channel keeps the flat-line test
+(which catches a saturated fouled sensor) and the drift screen below. A sample the test could
+not judge — the first sample, one following a gap, or a window too small or too flat to give a
+usable spread — is reported as *not evaluated* rather than silently passed.
+
+### 1b. Biofouling drift screen
+
+Biofilm micrometers thick on an optical window biases a moored turbidity sensor, and the bias
+grows over weeks (Manov et al. 2004). This is the failure mode
+[stakeholder interviews](../research/stakeholder-interviews.md) flagged as the top risk for a
+1+ year deployment, and it defeats every test above: each individual reading is in range,
+unchanging, and smooth. Worse, the drift is **monotonic**, so it is indistinguishable from a
+real creeping-turbidity trend to the Mann-Kendall test in §5 — which will report it as
+`increasing` with high confidence.
+
+The discriminator is the **daily clean-water floor**: the 10th percentile of each day's
+turbidity samples, approximating the clearest water that day. Genuine turbidity is *episodic* —
+events spike the upper tail and settle back, leaving the floor where it was. Fouling instead
+moves the floor itself, because a coated sensor can no longer read clean water as clean. That
+floor series is tested for monotonic change with the same Mann-Kendall machinery as everything
+else.
+
+Following Manov et al.'s cross-comparison method, the daily temperature series is the
+independent, non-optical reference — the DS18B20 is sealed and does not suffer optical-window
+fouling. Verdicts:
+
+| Verdict | Condition |
+|---|---|
+| Insufficient data | Fewer than 14 usable days — fouling is a weeks-scale process |
+| No drift detected | The floor is stationary; variation is episodic |
+| Suspect | The floor is marginally trending, **or** it trends while temperature also trends (a real regime change may explain it; one buoy cannot separate the two) |
+| Likely | The floor trends while the reference channel is stationary — a baseline shift with no environmental correlate |
+
+**Direction is deliberately not assumed.** Whether fouling drives `turbidity_adc` up or down
+depends on the SEN0189's ADC→turbidity polarity, which is not yet settled in this repo (see
+[Open questions](../hub/research/open-questions.md)). A persistent monotonic march is the signal
+either way, so both signs are flagged and the observed direction is reported.
+
+This screen reports; it never corrects. It is a *screen*, not proof: a lone buoy carries no
+clean reference sensor, so a genuine long-term turbidity change cannot be fully separated from
+instrument drift. Closing that gap is tracked as SCO-20.
+
 ## 2. Daily aggregation
 
 DHW and trends operate on **daily** values. Each UTC day is reduced to a mean temperature, but
@@ -107,6 +168,12 @@ and `matplotlib` (dashboard) are optional accelerators.
 - Single-point sensing ([ADR-0003](../decisions/0003-single-point-sensing.md)) — no depth
   structure.
 - Daily-mean vs CRW nighttime SST introduces a small warm bias in DHW.
+- Biofouling drift is *screened*, not measured or corrected — with no clean reference sensor on
+  a lone buoy, a genuine long-term turbidity change and instrument drift cannot be fully
+  separated (SCO-20).
+- The SEN0189's ADC→turbidity polarity is unresolved, so the *sign* of a turbidity change is not
+  yet interpretable as "clearer" or "dirtier" — see
+  [Open questions](../hub/research/open-questions.md).
 
 ## References
 
@@ -122,5 +189,10 @@ and `matplotlib` (dashboard) are optional accelerators.
   of the American Statistical Association* 63(324), 1379–1389.
   https://doi.org/10.1080/01621459.1968.10480934
 - Iglewicz, B. & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers.* ASQC Quality Press.
+- Manov, D. V., Chang, G. C. & Dickey, T. D. (2004). Methods for reducing biofouling of moored
+  optical sensors. *Journal of Atmospheric and Oceanic Technology* 21(6), 958–968.
+  https://doi.org/10.1175/1520-0426(2004)021%3C0958:MFRBOM%3E2.0.CO;2
+- U.S. Integrated Ocean Observing System (2017). *Manual for Real-Time Quality Control of
+  In-Situ Optical Observations.* https://doi.org/10.25923/v9p8-ft24
 - Mann, H. B. (1945). Nonparametric tests against trend. *Econometrica* 13(3), 245–259.
   https://doi.org/10.2307/1907187

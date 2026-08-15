@@ -14,6 +14,12 @@
 > filed separately; it duplicates the pre-existing **SCO-8**. This doc is retained as the creation
 > record rather than deleted; new backlog items go straight into Linear from here on, not into
 > this file.
+>
+> ⏳ **One exception, staged 2026-08-15.** [Section D](#d-staged-not-yet-in-linear) holds items
+> raised by a session that could not reach the `scout1` workspace. They are **not in Linear yet**
+> and will not be picked up unless someone files them. File them, add the `SCO-##` link to the
+> heading, and move the entry up into the record above. Use this section only when Linear is
+> genuinely unreachable — otherwise file directly, as the note above says.
 
 ---
 
@@ -95,11 +101,13 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 - **Acceptance** — [ ] Mitigation approach selected with rationale + ADR/decision-log row.
 - **Blocked by** — nothing · **Source** — open-questions, [Stakeholder Interviews](../research/stakeholder-interviews.md)
 
-### B3 · `csen: detect biofouling sensor drift in the telemetry QC` — [SCO-16](https://linear.app/scout1/issue/SCO-16)
+### B3 · `csen: detect biofouling sensor drift in the telemetry QC` — [SCO-16](https://linear.app/scout1/issue/SCO-16) ✅ Done
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2
 - **Context** — Fouled optical/turbidity sensors drift *monotonically* → mimics a real turbidity trend in `turbidity.py`. Addressable now in software.
-- **Acceptance** — [ ] QARTOD-style flat-line / rate-of-change flags in `qc.py`; [ ] cross-signal consistency check; [ ] documented in telemetry methodology.
+- **Acceptance** — [x] QARTOD-style flat-line / rate-of-change flags in `qc.py`; [x] cross-signal consistency check; [x] documented in telemetry methodology.
 - **Blocked by** — nothing · **Source** — `manov-2004`, `qartod-optics-2017` (see [notes](research/notes/)) · related **B8**
+- **Delivered** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45): QARTOD flat-line + rate-of-change per channel in [`qc.py`](../../analytics/telemetry/qc.py), a clean-water-floor drift screen in the new [`drift.py`](../../analytics/telemetry/drift.py) cross-checked against the non-optical temperature channel, and [Telemetry Methodology §1a–1b](../analysis/telemetry-methodology.md). Rate-of-change is temperature-only — on turbidity it flagged ~12% of the shore sample, i.e. weather rather than faults. Raised **D1** (SEN0189 polarity) on the way through.
+- ⏳ **Linear still shows this open** — the status change needs a human with `scout1` access; it lands when PR #45 merges.
 
 ### B4 · `mechanical: choose a reef-safe anchoring / mooring approach` — [SCO-17](https://linear.app/scout1/issue/SCO-17)
 - **Label** `geng` · **Owner** John · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 3 → 5
@@ -128,8 +136,9 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 ### B8 · `csen: design a drift reference for a single buoy` — [SCO-20](https://linear.app/scout1/issue/SCO-20)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Low` · **Project** Phase 2
 - **Context** — Detecting fouling drift needs something to compare against, but a lone buoy has no redundant sensor.
-- **Acceptance** — [ ] Approach chosen (periodic wiped/covered reference reading vs cross-signal consistency).
+- **Acceptance** — [x] Cross-signal consistency built (**B3**/PR #45 — turbidity floor vs the non-optical temperature channel); [ ] decide whether a periodic wiped/covered reference reading is still needed on top of it.
 - **Blocked by** — nothing · **Source** — open-questions, `manov-2004` · pairs with **B3**
+- **Narrowed 2026-08-15** — B3 delivered the cross-signal half of this, so the open question is no longer "which approach" but whether software cross-checking alone is enough without a physical clean reference. PR #45's screen is explicitly a *screen, not proof* for exactly this reason.
 
 ### B9 · `csen: define the daily-packet delivery reliability strategy` — [SCO-21](https://linear.app/scout1/issue/SCO-21)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 1 → 4
@@ -178,6 +187,22 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 - **Context** — Session `201807` has 4 of 5 files; one recording failed to download. Pipeline tolerates it (median of what's present), but the archive is incomplete.
 - **Acceptance** — [ ] File re-downloaded via `utils/download_sesoko.py`, or gap documented as permanent.
 - **Blocked by** — nothing · **Source** — [README → Data](../../README.md#data)
+
+---
+
+## D. Staged, not yet in Linear
+
+⏳ **These are not filed.** Raised 2026-08-15 by a session without `scout1` access. Whoever files
+them should add the `SCO-##` link to the heading and move the entry into the record above.
+
+### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ⏳ not filed
+- **Label** `csen` · **Owner** David (me) · **Type** `Bug` (implementation vs. datasheet conflict) · **Priority** `High` · **Project** Phase 1
+- **Context** — [`turbidity.py`](../../analytics/telemetry/turbidity.py) treats a **rising** `turbidity_adc` as dirtier water and flags only positive excursions. But the DFRobot SEN0189's analog output voltage **falls** as turbidity rises, and the firmware logs `analogRead` with no inversion ([`turbidity.h`](../../firmware/src/drivers/turbidity.h)). If the sensor behaves as its datasheet describes, the event detector is flagging the wrong tail — reporting the *clearest* water as sediment plumes. Nothing in the repo currently states the intended convention either way.
+- **Why `High`** — it is a live correctness defect in analysis code that already feeds the public dashboard, and it is cheap to settle (one bench reading) alongside **B7**/[SCO-12](https://linear.app/scout1/issue/SCO-12). Not `Urgent`: the buoy is not deployed, so no real measurement is being misread yet. It must be right *before* Phase 4 data starts flowing.
+- **Acceptance** — [ ] Polarity confirmed empirically (clear vs. visibly turbid water on the bench) and cross-checked against the DFRobot datasheet; [ ] the convention written into the [Data Schema](../engineering/data-schema.md) `turbidity_adc` row and [`facts.md`](facts.md); [ ] if inverted, `turbidity.py`'s excursion direction corrected with a regression test; [ ] the pending row in [`decision-log.md`](decision-log.md#pending-decisions-not-yet-made) moved to settled and the [`open-questions.md`](research/open-questions.md) row moved to Answered.
+- **Blocked by** — nothing. The datasheet review can start now; the empirical confirmation rides along with **B7**'s formazin ladder rather than needing its own bench session.
+- **Source** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45), [`open-questions.md`](research/open-questions.md), `manov-2004` drift work (**B3**/[SCO-16](https://linear.app/scout1/issue/SCO-16))
+- **Note for the filer** — the biofouling drift screen delivered in PR #45 is deliberately **sign-agnostic**, so it stays correct whichever way this resolves. Only `turbidity.py` is at risk.
 
 ---
 
