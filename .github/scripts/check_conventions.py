@@ -40,7 +40,12 @@ ALLOW_BASENAMES = {
     "CODEOWNERS", "pull_request_template.md", "SECURITY.md", "CONTRIBUTING.md",
     ".gitignore", ".gitattributes", ".gitmodules", ".gitkeep",
     "requirements.txt", "platformio.ini", "Makefile",
+    "OFL.txt",  # SIL Open Font License — the standard, upper-case name shipped with a font
 }
+
+# Vendored third-party bundles keep their upstream names: a minified bundle like
+# ``lottie.min.js`` carries the conventional ``.min.<ext>`` double extension.
+VENDOR_MIN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*\.min\.(?:js|css)$")
 
 # Documented exceptions (CONVENTIONS.md): generated artifacts + sample audio live under
 # analytics/data/**; the kept slide deck lives under assets/presentations/**.
@@ -100,7 +105,8 @@ def check_filenames(added: list[str]) -> list[str]:
                 break
         if bad_dir:
             continue
-        if base in ALLOW_BASENAMES or any(f.startswith(p) for p in EXEMPT_PREFIXES):
+        if (base in ALLOW_BASENAMES or VENDOR_MIN.match(base)
+                or any(f.startswith(p) for p in EXEMPT_PREFIXES)):
             continue
         if any(ch.isupper() for ch in base):
             problems.append(f"{f}: '{base}' contains uppercase (use lowercase)")

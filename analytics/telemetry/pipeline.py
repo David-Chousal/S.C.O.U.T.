@@ -172,8 +172,9 @@ def run(
 ) -> TelemetryReport:
     """Load from a file or directory, analyze, and write outputs.
 
-    ``web_dir`` additionally renders the self-contained static dashboard (index.html + raw
-    data) for GitHub Pages — see :mod:`telemetry.web`.
+    ``web_dir`` additionally builds the full multi-page static site (home, technology, science,
+    about, and the data-driven analytics dashboard + raw data) for GitHub Pages — see
+    :mod:`telemetry.site`.
     """
     source = Path(source)
     records = load_dir(source) if source.is_dir() else load_csv(source)
@@ -187,7 +188,9 @@ def run(
 
         plot_dashboard(report, out_dir / "telemetry_dashboard.png")
     if web_dir is not None:
-        from .web import write_site  # local import; stdlib only
+        from .site import build_site  # local import; stdlib only
 
-        write_site(report, web_dir, banner=web_banner)
+        # Pass the raw records so the site also builds the Fleet page (per-buoy, never blended).
+        # The single ``mmm`` becomes the fleet default until a per-buoy MMM map is wired through.
+        build_site(report, web_dir, banner=web_banner, records=records, default_mmm=mmm)
     return report
