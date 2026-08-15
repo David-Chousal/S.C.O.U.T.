@@ -31,6 +31,8 @@ jobs:
         run: python scripts/check_packet_contract.py
 
   firmware-tests:
+    # Do NOT rename: the "Protect main" ruleset matches required checks by this exact
+    # string, and a rename silently leaves the PR waiting on a check that never reports.
     name: Firmware native unit tests (packet · scheduler)
     runs-on: ubuntu-latest
     steps:
@@ -39,9 +41,26 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Toolchain + libraries are ~200 MB; without this every run re-downloads them.
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            firmware/.pio
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
       - name: Install PlatformIO
         run: pip install platformio
 
       - name: Run native tests
         working-directory: firmware
         run: pio test -e native -v
+
+      # The native env excludes src/ and never includes CMSIS, so it cannot catch a
+      # compile break in main.cpp or the drivers — which is exactly how three of them
+      # reached main unnoticed. Build the real target so that cannot happen again.
+      - name: Build for the Feather M0 target
+        working-directory: firmware
+        run: pio run -e feather_m0
