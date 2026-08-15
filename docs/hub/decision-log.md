@@ -40,6 +40,7 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 | Date | Area | Decision | Record |
 |---|---|---|---|
 | 2026-08-14 | process | Branch + PR is absolute for every repo change, no exceptions — no direct commits to `main` regardless of size | [CLAUDE.md § Absolute blocker](../../CLAUDE.md#-absolute-blocker--never-commit-or-push-anything-that-violates-conventionsmd) |
+| 2026-08-14 | process | Installed and authenticated the **`gh` CLI**, replacing the compare-URL workaround for opening PRs. Auth lives in the macOS keyring; `GITHUB_TOKEN` must never be exported, as `gh` prefers it over the keyring | [CONVENTIONS → Two repo gotchas](../CONVENTIONS.md) |
 | 2026-08-14 | process | Filed the [Linear Backlog](linear-backlog.md) as 18 issues (SCO-10–SCO-27); reconciled the pre-existing SCO-5/7/9 to Done against already-settled decisions (ADR-0001, PR #7) | [linear-backlog.md](linear-backlog.md) |
 | 2026-08-14 | mechanical | Revised deployment depth to **2–8 m** (was 5–8 m), confirmed against the actual Hawaii site by the field/mechanical lead | [SCO-6](https://linear.app/scout1/issue/SCO-6) |
 | 2026-08-14 | process | Protected `main` with the "Protect main" ruleset: PR-only, the six required checks, conversation resolution, blocked force-push and deletion; owner keeps an Always-bypass | [ruleset settings](https://github.com/David-Chousal/S.C.O.U.T./settings/rules/20865742) |
