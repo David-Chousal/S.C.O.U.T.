@@ -21,10 +21,12 @@ decisions; nothing downstream starts until those land. Full plan:
 | Stakeholder research | ✅ Complete | 3 NOAA researchers interviewed | — |
 | System architecture | ✅ Complete | [EDD v0.2](../engineering/engineering-design-document.md) | — |
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
-| Firmware | 🟢 Unblocked | Platform decided ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)); Phase 1 ready | — |
+| Environmental telemetry pipeline | ✅ Working | QC, NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)) | — |
+| Live dashboard | 🟢 Deployed | Static GitHub Pages telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md)) | — |
+| Firmware | 🟡 In progress | Phase 1: state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, adaptive transmission | Hardware bring-up |
+| Shore station | 🟡 In progress | Simulated LoRa→CSV data path (codec, receiver, store) + tests ([`shore/`](../../shore/)) | Real radio bring-up |
 | Electrical design | 🟡 In progress | Build platform decided; wiring/PCB pending | Charging path ([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) |
-| Mechanical design | 🟡 In progress | Enclosure + hull concepts developed | Mooring, biofouling approach |
-| Shore station | 🔴 Early | Raspberry Pi + LoRa receiver; schema-side started ([`shore/`](../../shore/)) | Radio bring-up |
+| Mechanical design | 🟡 In progress | Enclosure + hull concepts developed; flotation + turbidity-housing drawings in `mechanical/cad/` | Native CAD + STEP exports, mooring, biofouling approach |
 | Field deployment | 🔴 Planned | Hawaii, Phase 6 (Mar–May 2027) | Everything upstream |
 
 **Legend:** ✅ Complete · 🟢 Ready/unblocked · 🟡 In progress · 🔴 Not started or early

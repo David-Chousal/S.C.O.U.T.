@@ -1,7 +1,7 @@
 # CLAUDE.md — S.C.O.U.T. Project Operating Manual
 
 **This file is read automatically at the start of every Claude session pointed at this repo.**
-It is the shared contract for how the SCOUT team works across GitHub, Linear, Notion, and
+It is the shared contract for how the S.C.O.U.T. team works across GitHub, Linear, Notion, and
 Granola. Follow it without being asked.
 
 If you are a team member reading this directly: you do not need to memorize it. Your Claude
@@ -23,6 +23,48 @@ already has it. What you need to know is in [Working with your Claude](#working-
 > …answer **from CONVENTIONS.md**, cite the relevant section, and link it. Do not improvise a
 > convention. If the answer genuinely isn't covered there, say so, give your best
 > recommendation, and offer to add it to CONVENTIONS.md so the next person gets the same answer.
+
+---
+
+## 🚫 Absolute blocker — never commit or push anything that violates CONVENTIONS.md
+
+**This overrides speed, convenience, and "the user didn't ask me to check this."** It applies
+to every commit, on every branch, in every session — not just ones someone asked you to review.
+
+Before any `git add` / `git commit` / `git push`, and before opening or updating a PR:
+
+1. **Run the real check, don't eyeball it:**
+   ```bash
+   python3 .github/scripts/check_conventions.py --base origin/main
+   ```
+   This is the same script CI runs in `pr-checks.yml`. It catches bad filenames, forbidden
+   file types, missing/duplicate H1s, HTML tables, and orphaned source-registry entries. If it
+   exits non-zero, the FATAL lines tell you exactly what's wrong and where.
+2. **If something violates convention, fix it — then say so.** Rename the file, move it,
+   reformat the table, strip the offending content, correct the commit message. Never fix
+   silently: state plainly what you changed and why, e.g. *"Renamed `Sensor Test.md` →
+   `sensor-test.md` before committing — CONVENTIONS.md requires kebab-case."*
+3. **If you can't safely fix it** — placement depends on a call only a teammate can make, the
+   naming is genuinely ambiguous, the content itself needs human judgment — **do not commit or
+   push it.** Stop, explain precisely what's wrong, and ask. Do not push it "to clean up later."
+
+This is a second line of defense, not a duplicate of CI — the goal is to never hand a teammate
+a red PR check in the first place. If `check_conventions.py` and your own read disagree, the
+script wins; it is the authoritative, versioned check. Also verify PR title format
+(`<type>(<scope>): <summary>`), the four-section PR body, and
+[Standing rule 7](#standing-rules) (Knowledge Hub touch) before opening a PR — `pr-checks.yml`
+gates on all three independently of the conventions script.
+
+**Branch + PR, no exceptions, confirmed 2026-08-14.** Before your first `git add` in a
+session, check `git branch --show-current`. If it says `main`, stop and create a branch first
+— do not commit. This applies to every change regardless of size: a one-line typo fix goes
+through a branch and a PR exactly like a multi-file feature. `git push` must never target
+`main` directly, full stop; if a command you're about to run would do that, it is wrong,
+not the exception. Open the PR yourself (title + the four-section body above) and leave it
+for review — merging still requires an explicit human ask, per Standing Rule 6. `gh` is not
+installed; open the PR via the compare URL in a browser
+(`https://github.com/David-Chousal/S.C.O.U.T./compare/main...<branch>?quick_pull=1`) rather
+than skipping the step because the CLI isn't there.
 
 ---
 
@@ -102,6 +144,25 @@ Before ending a work session, verify and report:
 
 State plainly what you did and did not do. A skipped step reported is fine; a skipped step
 hidden is not.
+
+## Every message ends with a stack-sync nudge
+
+Not just at session end — **every response** you send during a session, closes with a
+one-line reminder to keep the stack in sync. Keep it to one line. Do not turn it into a
+checklist or re-explain the four tools every time.
+
+**If your response already did the syncing** (filed the Linear issue, updated the Notion
+page, committed the doc), say what you updated instead of prompting for it:
+
+> _Updated: SCO-14 created, `docs/hub/facts.md` revised. Notion mirror still pending — say
+> the word and I'll push it._
+
+**If it didn't**, use a light version of:
+
+> _Anything here that should land in Linear, Notion, or Granola? Keep the stack synced._
+
+Skip the line only for purely conversational exchanges that touched no file, tool, or fact —
+answering "what does NDSI stand for?" doesn't need one. Everything else gets the nudge.
 
 ---
 
@@ -336,7 +397,7 @@ known and documented; do not "fix" it without an issue.
    you to merge — never on your own initiative, and never auto-merge. Never push to `main`
    directly — it is blocked. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
 7. **Every PR updates the Knowledge Hub — no exception, wherever relevant.** The
-   [Knowledge Hub](docs/hub/README.md) is the always-current surface for what SCOUT has decided,
+   [Knowledge Hub](docs/hub/README.md) is the always-current surface for what S.C.O.U.T. has decided,
    learned, and where it stands. **Before opening any PR**, check each Hub surface and update the
    ones this PR touches — this is not optional and not a follow-up task:
    - Decided anything? → row in [`decision-log.md`](docs/hub/decision-log.md) (+ an ADR if significant).

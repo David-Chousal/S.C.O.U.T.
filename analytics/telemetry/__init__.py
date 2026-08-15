@@ -36,9 +36,9 @@ __all__ = [
     "analyze",
     "run",
     "TelemetryReport",
-    "FleetReport",
     "analyze_fleet",
-    "group_by_buoy",
     "run_fleet",
+    "group_by_buoy",
     "summarize_fleet",
+    "FleetReport",
 ]

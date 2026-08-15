@@ -18,7 +18,7 @@ and distributes sensing elements down a multi-conductor cable. This enables mult
 measurement (thermoclines, turbidity stratification) while keeping the serviceable
 electronics dry and accessible.
 
-![SCOUT buoy sensor architecture](../../assets/diagrams/sensor-string-architecture.png)
+![S.C.O.U.T. buoy sensor architecture](../../assets/diagrams/sensor-string-architecture.png)
 
 ## String layout
 
@@ -85,10 +85,9 @@ SURFACE
 
 ## Open items
 
-- **Deployment depth is 5–8 m** (resolved 2026-08-14). The `~30 m` annotation on the diagram
-  image is outdated — the deployment target is the 5–8 m maximum from the
-  [MVP System Overview](../overview/mvp-system-overview.md). The diagram PNG should be
-  re-exported to drop the ~30 m label.
+- **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
+  Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The `~30 m` annotation on
+  the diagram image is outdated. The diagram PNG should be re-exported to drop the ~30 m label.
 - **Hydrophone part number differs across documents.** The diagram cites the Aquarian
   H2a-XLR; the [Engineering Design Document](engineering-design-document.md) BOM specifies
   the Aquarian H2dM.

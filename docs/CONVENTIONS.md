@@ -1,4 +1,4 @@
-# SCOUT Conventions
+# S.C.O.U.T. Conventions
 
 The reference for "where does this go?" and "what do I call it?"
 
@@ -41,6 +41,27 @@ When in doubt: **ask Claude, don't guess.** A misplaced file is harder to find t
 
 Spaces break shell commands, get URL-encoded into `%20` in links, and behave differently on
 Mac vs. Windows vs. Linux. Trailing spaces are invisible and cost real debugging time.
+
+### The project's name
+
+Write the name **S.C.O.U.T.** — with the periods — in all prose: documentation, the website,
+READMEs, ADRs, commit and PR descriptions, and comments. It expands, once, to **Santa Clara
+Oceanic Utilities Transmitter**. Never introduce a third spelling (`Scout`, a bare `SCOUT` in a
+sentence, or `S.C.O.U.T` without the trailing period).
+
+The compact form **`SCOUT`** is reserved for **identifiers**, where periods are invalid or
+awkward:
+
+| `SCOUT` (compact) is correct in | Example |
+|---|---|
+| Buoy IDs — part of the packet contract | `SCOUT-01` |
+| Code symbols — C macros, packages, variables | `SCOUT_PACKET_H`, `scout_shore` |
+| File and branch names | `scout-mark.png`, `docs/stylize-scout-name` |
+| The Linear workspace slug | `scout1` |
+
+Rule of thumb: **if a human reads it as a word, it's `S.C.O.U.T.`; if a machine parses it as a
+token, it's `SCOUT`.** This is the same consistency the August 2026 audit was chasing when it
+found three different expansions of the acronym in circulation.
 
 ### Files
 
@@ -116,7 +137,7 @@ before adding your first file there.
 
 | If it… | Section |
 |---|---|
-| Explains what SCOUT is or reports status | `overview/` |
+| Explains what S.C.O.U.T. is or reports status | `overview/` |
 | Specifies how something is built | `engineering/` |
 | Captures input from outside the team | `research/` |
 | Describes data methodology or results | `analysis/` |
@@ -317,6 +338,12 @@ YYYY-MM-DD
   (list only what this PR touched, or write "Hub: no relevant surface")
 ```
 
+**Fill in every section — a heading with no content under it is not enough.** Put the *why*
+inside **What Changed and Why**, not in a paragraph above the sections. The `pr-body` check
+rejects a section left as a bare `-` or the template's comment hint; write `None` for an empty
+**Open questions** / **Open tasks**, and `Hub: no relevant surface` for **Knowledge Hub** when
+none apply.
+
 **Open for review; merge only after approval — never auto-merge.** A PR is opened to be
 reviewed, not merged on creation. Leave it open until a teammate has looked at it, then merge
 manually: the **Merge pull request** button, or `gh pr merge <n> --merge --delete-branch`.
@@ -495,7 +522,7 @@ team conversation first — but if it's just unclear or incomplete, improve it.
 
 In August 2026 we audited the project and found ten documents with names that didn't match their
 contents, a folder whose trailing space broke shell tooling, a 799-line script claiming to
-convert a file it never opened, three different expansions of the SCOUT acronym, and five
+convert a file it never opened, three different expansions of the S.C.O.U.T. acronym, and five
 factual contradictions across documents — including two different microcontrollers and two
 different hydrophones in a BOM we were about to order from.
 

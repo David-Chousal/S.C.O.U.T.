@@ -1,0 +1,24 @@
+# SCOUT code owners — routes PR review by area to the discipline lead who owns it.
+#
+# Discipline map (CLAUDE.md → Linear conventions → Labels):
+#   csen  — firmware, analytics pipeline, shore station, docs  → David Chousal Cantu (@David-Chousal)
+#   ece   — PCB, power system, sensors, radio (hardware/**)     → Isabella Rodriguez (@irodriguez2scu)
+#   geng  — hull, enclosure, mooring, deployment (mechanical/**) → John Ryan Myrdal  (@jmyrdal)
+#
+# There is intentionally NO global "*" owner: paths not listed below stay unowned and only
+# require a general approving review, not a discipline-specific one.
+
+# ece — hardware (Isabella Rodriguez)
+/hardware/    @irodriguez2scu
+
+# geng — mechanical (John Ryan Myrdal)
+/mechanical/  @jmyrdal
+
+# csen — software, data & docs (David Chousal Cantu)
+/firmware/    @David-Chousal
+/analytics/   @David-Chousal
+/shore/       @David-Chousal
+/docs/        @David-Chousal
+/.github/     @David-Chousal
+/README.md    @David-Chousal
+/CLAUDE.md    @David-Chousal
