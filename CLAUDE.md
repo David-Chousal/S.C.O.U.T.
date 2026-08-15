@@ -47,11 +47,26 @@ Before any `git add` / `git commit` / `git push`, and before opening or updating
 3. **If you can't safely fix it** — placement depends on a call only a teammate can make, the
    naming is genuinely ambiguous, the content itself needs human judgment — **do not commit or
    push it.** Stop, explain precisely what's wrong, and ask. Do not push it "to clean up later."
+4. **Sync with `main` before you open the PR** — not after GitHub marks it conflicted:
+   ```bash
+   git fetch origin && git merge origin/main
+   ```
+   Branches drift while you work; one other PR merging is enough. Merging first surfaces the
+   conflict while you still hold the context that makes it easy to resolve, instead of a day
+   later in review. Re-run the conventions check afterwards.
+
+   **Resolve conflicts by hand, and default to keeping both sides** in the append-only Hub
+   files. Two rows in [`decision-log.md`](docs/hub/decision-log.md) are usually two *different*
+   decisions — dropping one loses it permanently and silently, which is the exact drift the Hub
+   exists to prevent. Deliberately not automated: a `merge=union` driver would resolve this
+   file, but it would also silently duplicate two differently-worded rows about the same
+   decision, and on [`open-questions.md`](docs/hub/research/open-questions.md) it would leave a
+   row in **both** the Open and Answered tables when one is moved between them.
 
 This is a second line of defense, not a duplicate of CI — the goal is to never hand a teammate
 a red PR check in the first place. If `check_conventions.py` and your own read disagree, the
 script wins; it is the authoritative, versioned check. Also verify PR title format
-(`<type>(<scope>): <summary>`), the four-section PR body, and
+(`<type>(<scope>): <summary>`), the five-section PR body, and
 [Standing rule 7](#standing-rules) (Knowledge Hub touch) before opening a PR — `pr-checks.yml`
 gates on all three independently of the conventions script.
 
@@ -60,10 +75,10 @@ session, check `git branch --show-current`. If it says `main`, stop and create a
 — do not commit. This applies to every change regardless of size: a one-line typo fix goes
 through a branch and a PR exactly like a multi-file feature. `git push` must never target
 `main` directly, full stop; if a command you're about to run would do that, it is wrong,
-not the exception. Open the PR yourself (title + the four-section body above) and leave it
+not the exception. Open the PR yourself (title + the five-section body above) and leave it
 for review — merging still requires an explicit human ask, per Standing Rule 6. Open it with
 `gh pr create --base main --head <branch> --title '<type>(<scope>): <summary>' --body-file <file>`
-(pass the body as a file — the four required `##` sections do not survive shell quoting well).
+(pass the body as a file — the five required `##` sections do not survive shell quoting well).
 If `gh` is ever unavailable, fall back to the compare URL in a browser
 (`https://github.com/David-Chousal/S.C.O.U.T./compare/main...<branch>?quick_pull=1`) rather
 than skipping the step.
@@ -402,8 +417,9 @@ known and documented; do not "fix" it without an issue.
 4. **Cite sources in docs.** Anything asserting a scientific fact gets a DOI or link.
 5. **Report failures plainly.** If tests fail, show the output. If a step was skipped, say so.
 6. **Everything reaches `main` through a reviewed PR.** Branch → commit → push the branch →
-   open a PR with a conventional title (`<type>(<scope>): <summary>`) and the four-section
-   description (DATE · What Changed and Why · Open questions · Open tasks), then **stop and
+   open a PR with a conventional title (`<type>(<scope>): <summary>`) and the five-section
+   description (DATE · What Changed and Why · Open questions · Open tasks · Knowledge Hub),
+   then **stop and
    leave it open for review**. Merge only after a human review or when a human explicitly asks
    you to merge — never on your own initiative, and never auto-merge. Never push to `main`
    directly — it is blocked. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
