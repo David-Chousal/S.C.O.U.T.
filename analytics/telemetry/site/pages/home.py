@@ -74,12 +74,15 @@ def _senses() -> str:
         ("turbidity", "Signal", "Turbidity",
          "An optical sensor detects runoff, resuspension, and sediment plumes as changes "
          "relative to the site's baseline."),
+        ("sound", "Signal", "Reef soundscape",
+         "A hydrophone records the reef's acoustics on board. The audio is stored locally and "
+         "retrieved by hand — never sent over the radio — then analysed for bioacoustic "
+         "signs of reef health."),
         ("battery", "Signal", "Battery &amp; health",
          "Battery state-of-health and daily minimum voltage track whether the solar power budget "
          "is holding up over a long deployment."),
     ]
-    cards = "".join(f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>'
-                    for g, k, t, b in signals)
+    cards = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in signals)
     platform = (
         '<article class="col-6">'
         '<div class="bento" style="align-items:center;gap:1.2rem">'
@@ -96,7 +99,8 @@ def _senses() -> str:
         c.head_block("What it measures", "The signals S.C.O.U.T. records",
                      "One sensor per measurement sits below the buoy. The electronics stay sealed "
                      "above the waterline, and readings are logged on board before transmission.")
-        + f'<div class="bento" style="margin-top:2.8rem">{cards}{platform}</div>',
+        + f'<div class="signal-grid">{cards}</div>'
+        + f'<div class="bento" style="margin-top:2.4rem">{platform}</div>',
         sid="senses",
     )
 

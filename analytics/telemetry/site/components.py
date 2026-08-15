@@ -65,6 +65,16 @@ def feature_card(glyph_name: str, kicker: str, title: str, body: str, *, cls: st
     )
 
 
+def feature_plain(glyph_name: str, kicker: str, title: str, body: str, *, cls: str = "") -> str:
+    """A signal descriptor with no card chrome — glyph, kicker, title, body straight on the page."""
+    return (
+        f'<div class="feature-plain reveal {cls}">'
+        f"{assets.glyph(glyph_name)}"
+        f'<p class="kicker">{kicker}</p><h3>{title}</h3><p>{body}</p>'
+        "</div>"
+    )
+
+
 def stat_card(value: str, unit: str, label: str, *, deep: bool = False) -> str:
     cls = "card feature-deep reveal" if deep else "card reveal"
     return (
