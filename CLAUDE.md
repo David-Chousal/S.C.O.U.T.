@@ -420,6 +420,8 @@ known and documented; do not "fix" it without an issue.
      [`research/sources.md`](docs/hub/research/sources.md) (PDF to the right library).
    - Answered or raised a research question? → update
      [`research/open-questions.md`](docs/hub/research/open-questions.md).
+   - Captured a design-iteration narrative (concepts tried, why, what was learned)? → add a
+     row to [`design-notes.md`](docs/hub/design-notes.md), linking to the full write-up.
 
    The PR's **Open tasks** section must state which Hub surfaces were updated, or explicitly
    "Hub: no relevant surface" if genuinely none apply. The default assumption is that at least

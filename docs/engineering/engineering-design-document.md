@@ -192,7 +192,7 @@ The S.C.O.U.T. buoy shall:
 
 - Marine environment
 
-- Fits within approximately a 4-inch Schedule 40 PVC electronics housing
+- Dimensions TBD — built around an approximate 4-inch Schedule 40 PVC electronics housing as a working reference, not a finalized spec
 
 - Low average power
 
@@ -388,7 +388,9 @@ The mechanical system was designed to:
 
 ### Main Housing
 
-Electronics are contained inside a vertical enclosure based on approximately a 4-inch Schedule 40 PVC tube.
+Electronics are contained inside a vertical enclosure. Final dimensions are **TBD**; design work
+is being built around an approximate 4-inch Schedule 40 PVC tube as a working reference, not a
+locked spec.
 
 The housing contains:
 
@@ -2817,7 +2819,8 @@ This section documents the engineering constraints that influenced the S.C.O.U.T
 
 #### Electronics Housing
 
-- Electronics shall fit within an approximately 4-inch Schedule 40 PVC enclosure.
+- Enclosure dimensions are **TBD**; design is being built around an approximate 4-inch Schedule
+  40 PVC reference, not a finalized spec.
 
 - Internal layout shall remain modular to simplify maintenance and future revisions.
 
@@ -3383,7 +3386,7 @@ This Bill of Materials identifies the primary hardware required to construct one
 
 | **Qty**  | **Component**                  | **Purpose**            |
 |----------|--------------------------------|------------------------|
-| 1        | 4-inch Schedule 40 PVC Housing | Electronics enclosure  |
+| 1        | Electronics Housing (dimensions TBD — built around ~4-inch Schedule 40 PVC reference) | Electronics enclosure  |
 | 2        | End Caps                       | Waterproof sealing     |
 | Multiple | O-rings                        | Face seals             |
 | Multiple | Cable Glands                   | Waterproof cable entry |

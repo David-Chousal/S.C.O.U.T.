@@ -50,7 +50,7 @@ When a decision is significant and hard to reverse, record it as an
 | Decision area | Priority | Owner | Status | Decision / recommendation |
 |---|---|---|---|---|
 | Buoy geometry & industrial design | | | In progress | Cylindrical waterline, tapered top and bottom |
-| Waterproofing / enclosure system | | | In progress | 4" Schedule 40 PVC, O-ring sealed end caps |
+| Waterproofing / enclosure system | | | In progress | Dimensions TBD — built around an approximate 4" Schedule 40 PVC reference, O-ring sealed end caps |
 | Marine materials | | | Not started | |
 | Mooring & anchoring | | | Not started | |
 | Biofouling mitigation | | | Not started | Flagged by stakeholders as a major risk |

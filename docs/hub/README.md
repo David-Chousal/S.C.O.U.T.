@@ -10,7 +10,7 @@ back into the contradictions the August 2026 audit found.
 
 ---
 
-## The five surfaces
+## The six surfaces
 
 | Surface | Answers | Open |
 |---|---|---|
@@ -19,6 +19,7 @@ back into the contradictions the August 2026 audit found.
 | **Status** | Where does each subsystem stand today? What's blocking? | [`status.md`](status.md) |
 | **State Journal** | Dated history of where the project stood over time | [`journal/`](journal/) |
 | **Research Library** | What have we learned from outside, and what backs each claim? | [`research/`](research/sources.md) |
+| **Design Iteration Notes** | What concepts were tried for a subsystem, and why? | [`design-notes.md`](design-notes.md) |
 
 ### How they fit with what already exists
 
@@ -54,6 +55,8 @@ into [CLAUDE.md → Standing rules](../../CLAUDE.md#standing-rules) and enforced
   (and drop the PDF in the right library).
 - Did it **answer or raise a research question**? → update
   [`research/open-questions.md`](research/open-questions.md).
+- Did it **capture a design-iteration narrative** (concepts tried, why, what was learned)? →
+  add a row to [`design-notes.md`](design-notes.md), linking to the full write-up.
 
 If none apply, the PR says so in its **Open tasks** section ("Hub: no relevant surface"). The
 default is that at least one applies.
