@@ -119,7 +119,7 @@ def _tracks() -> str:
     return (
         '<section class="section" id="tracks" '
         'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
-        'padding-top:calc(var(--section) + 1.2rem)">'
+        'padding-top:calc(var(--section) + 1.2rem + 5px)">'
         f'<div class="wrap">{inner}</div></section>'
     )
 

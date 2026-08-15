@@ -60,7 +60,7 @@ def _architecture() -> str:
     return (
         '<div style="padding-top:calc('
         "clamp(1.6rem,0.9rem + 2vw,3rem) + 1.2rem "
-        "+ clamp(5rem,3.4rem + 8vw,11rem) - clamp(3.4rem,2.4rem + 4vw,6rem))\">"
+        "+ clamp(5rem,3.4rem + 8vw,11rem) - clamp(3.4rem,2.4rem + 4vw,6rem) + 5px)\">"
         + c.data_path()
         + "</div>"
     )
