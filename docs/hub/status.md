@@ -21,7 +21,7 @@ decisions; nothing downstream starts until those land. Full plan:
 | Stakeholder research | ✅ Complete | 3 NOAA researchers interviewed | — |
 | System architecture | ✅ Complete | [EDD v0.2](../engineering/engineering-design-document.md) | — |
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
-| Environmental telemetry pipeline | ✅ Working | QC, NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)) | — |
+| Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)) | — |
 | Live dashboard | 🟢 Deployed | Static GitHub Pages telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md)) | — |
 | Firmware | 🟡 In progress | Phase 1: state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, adaptive transmission | Hardware bring-up |
 | Shore station | 🟡 In progress | Simulated LoRa→CSV data path (codec, receiver, store) + tests ([`shore/`](../../shore/)) | Real radio bring-up |
