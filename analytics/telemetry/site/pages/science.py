@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import assets, components as c, docnav
+from .. import assets, components as c, docnav, imagery
 from ..context import SiteContext
 
 TITLE = "Science · S.C.O.U.T."
@@ -153,7 +153,14 @@ def _thermal() -> str:
     )
 
 
-def _alerts() -> str:
+def _alerts(ctx: SiteContext) -> str:
+    media, credit = imagery.bleaching(ctx.base, ctx.img_dir)
+    figure = (
+        '<figure class="hero-figure reveal" style="margin-top:2.6rem;aspect-ratio:16/9">'
+        f'{media}<div class="pill-scrim"></div>{credit}'
+        "<figcaption>Bleached staghorn coral, Great Barrier Reef, 2017 — the Alert Level 2 "
+        "outcome the thresholds above are meant to anticipate.</figcaption></figure>"
+    ) if media else ""
     return c.section(
         c.head_block("Alert levels", "Bleaching alert levels")
         + '<div style="margin-top:2rem">'
@@ -162,7 +169,8 @@ def _alerts() -> str:
             "HotSpot of at least 1 °C. If the water cools, accumulated DHW no longer raises the "
             "alert.",
             ["Level", "Condition", "Meaning"], _ALERT_ROWS)
-        + "</div>",
+        + "</div>"
+        + figure,
         cls="section-sm",
         sid="alerts",
     )
@@ -296,7 +304,7 @@ def body(ctx: SiteContext) -> str:
                       "bioacoustic methods behind the numbers, and their limitations.")
         + _tracks()
         + _thermal()
-        + _alerts()
+        + _alerts(ctx)
         + _soundscape()
         + _pipeline()
         + _caveats()

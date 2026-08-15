@@ -63,6 +63,11 @@ _BY_KEY = {r.key: r for r in CATALOG}
 HERO = Photo(photographer="Renata Romeo", file="hero.jpg")
 HERO_ALT = "A sunlit tropical coral reef alive with schooling fish."
 
+# A single bleaching photograph for the Science "Bleaching alert levels" section. Optional:
+# if the file is absent the section simply shows the table with no figure.
+BLEACHING = Photo(photographer="The Ocean Agency", file="bleaching.jpg")
+BLEACHING_ALT = "A field of stark-white bleached staghorn coral on the Great Barrier Reef, 2017."
+
 
 def _photo_available(reef: Reef, img_dir: Path | None) -> bool:
     return bool(
@@ -115,8 +120,39 @@ def hero(base: str, img_dir: Path | None = None) -> tuple[str, str]:
     return assets.reef_atmosphere("sunlit", 10), ""
 
 
+def _bleaching_available(img_dir: Path | None) -> bool:
+    return bool(
+        BLEACHING.file and BLEACHING.photographer and img_dir and (img_dir / BLEACHING.file).exists()
+    )
+
+
+def bleaching(base: str, img_dir: Path | None = None) -> tuple[str, str]:
+    """Return ``(media_html, credit_html)`` for the Science bleaching figure.
+
+    Empty strings when no photo is placed, so the alert-levels section falls back to just the
+    table. The image is same-origin (WebP with a raster fallback), keeping the no-cross-origin
+    contract intact.
+    """
+    if not _bleaching_available(img_dir):
+        return "", ""
+    from . import assets  # local import avoids a cycle at module load
+    media = assets.picture(
+        f'<img src="{base}assets/img/{html.escape(BLEACHING.file)}" alt="{html.escape(BLEACHING_ALT)}" '
+        'loading="lazy" decoding="async" width="1600" height="1067">'
+    )
+    credit = (
+        f'<p class="pill-credit">{html.escape(BLEACHING.photographer)} / '
+        f'<a href="{BLEACHING.source_url}">{html.escape(BLEACHING.source)}</a></p>'
+    )
+    return media, credit
+
+
 def any_photos(img_dir: Path | None) -> bool:
-    return _hero_available(img_dir) or any(_photo_available(r, img_dir) for r in CATALOG)
+    return (
+        _hero_available(img_dir)
+        or _bleaching_available(img_dir)
+        or any(_photo_available(r, img_dir) for r in CATALOG)
+    )
 
 
 def credits_page_body(img_dir: Path | None) -> str:
@@ -124,6 +160,8 @@ def credits_page_body(img_dir: Path | None) -> str:
     entries: list[tuple[str, Photo]] = []
     if _hero_available(img_dir):
         entries.append(("Home hero, sunlit coral reef", HERO))
+    if _bleaching_available(img_dir):
+        entries.append(("Science, bleached staghorn coral", BLEACHING))
     entries += [(r.title, r.photo) for r in CATALOG if _photo_available(r, img_dir)]
     rows = ""
     if entries:

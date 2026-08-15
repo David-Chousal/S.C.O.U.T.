@@ -15,3 +15,12 @@ page avatars are 400 px square crops of these.
 Romeo**, from the **[Ocean Image Bank](https://oceanimagebank.theoceanagency.org)** (The Ocean
 Agency), used under its licence, which requires crediting the photographer. The site ships a
 1440×720 crop as the hero and shows the credit; see `assets/credits.html` in the built site.
+
+## Bleaching
+
+`bleaching-source-the-ocean-agency.jpg` — the Science "Bleaching alert levels" figure source
+(4769×3179 full-resolution original), bleached staghorn coral on the Great Barrier Reef, 2017.
+Credited **The Ocean Agency**, from the
+**[Ocean Image Bank](https://oceanimagebank.theoceanagency.org)**, used under its licence, which
+requires crediting each photographer. The site ships 1600 px-wide optimized WebP + JPEG
+derivatives and shows the credit; see `assets/credits.html` in the built site.
