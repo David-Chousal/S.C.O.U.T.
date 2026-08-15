@@ -34,6 +34,10 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
+> These three are **page-specific mirrors** and are still outstanding. They were not blocked by
+> connector access (see the correction above) — the 2026-08-15 session cleared the root page and
+> stopped there. Any session that can fetch the S.C.O.U.T. root page can clear these directly.
+
 ### 1 · Telemetry Methodology — two new sections · ⏳ not yet in Notion
 
 - **Notion page** — Analysis → *Environmental Telemetry Methodology*
@@ -120,4 +124,4 @@ mirrored rather than silently emptying.
 
 | Entry | Mirrored on | By |
 |---|---|---|
-| _(nothing yet)_ | | |
+| Root **S.C.O.U.T.** page — status table (telemetry, dashboard, firmware, shore, mechanical), platform reframing to a nearshore monitoring platform, packet size 82 → 30 bytes in the architecture diagram, three new Known-inconsistency rows | 2026-08-15 | Claude session, direct connector write |
