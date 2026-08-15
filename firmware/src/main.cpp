@@ -46,7 +46,7 @@ __attribute__((section(".noinit"))) static RetainedState g_state;
 static TemperatureSensor g_temp;
 static TurbiditySensor g_turbidity;
 static Battery g_battery;
-static Rtc g_rtc;
+static ScoutRtc g_rtc;
 static SdLogger g_sd;
 static LoraLink g_lora;
 static bool g_rtc_ok = false;
@@ -107,7 +107,9 @@ void setup() {
 
     // Did the watchdog just reset us? (SAMD21 Power Manager reset-cause register.) Useful for
     // State-of-Health — a recurring watchdog reset means a cycle is hanging.
-    g_watchdog_reset = PM->RCAUSE.bit.WDT;
+    // Read via the mask, not `RCAUSE.bit.WDT`: CMSIS defines `WDT` as a peripheral-pointer
+    // macro, so the bitfield name is macro-expanded and the target build fails to compile.
+    g_watchdog_reset = (PM->RCAUSE.reg & PM_RCAUSE_WDT) != 0;
 
     // Restore the retained counter/last-TX across a reset; cold-start them if the magic is
     // absent (fresh power-on → the no-init RAM holds garbage).
