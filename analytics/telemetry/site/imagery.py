@@ -138,7 +138,7 @@ def bleaching(base: str, img_dir: Path | None = None) -> tuple[str, str]:
     from . import assets  # local import avoids a cycle at module load
     media = assets.picture(
         f'<img src="{base}assets/img/{html.escape(BLEACHING.file)}" alt="{html.escape(BLEACHING_ALT)}" '
-        'loading="lazy" decoding="async" width="750" height="500">'
+        'loading="lazy" decoding="async" width="1600" height="1067">'
     )
     credit = (
         f'<p class="pill-credit">{html.escape(BLEACHING.photographer)} / '
