@@ -14,7 +14,7 @@ The published site is a small, cohesive multi-page site emitted by the pipeline 
 
 | Page | Path | Content |
 |---|---|---|
-| Home | `index.html` | What SCOUT is, the mission, reef imagery, a live status band |
+| Home | `index.html` | What S.C.O.U.T. is, the mission, reef imagery, a live status band |
 | Technology | `technology/` | Architecture, subsystems, the 82-byte packet, build platform |
 | Science | `science/` | NOAA CRW thermal-stress methodology (DHW), caveats, references |
 | Analytics | `analytics/` | **The live dashboard** — regenerated from the telemetry report |
