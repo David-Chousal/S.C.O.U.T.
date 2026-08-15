@@ -27,7 +27,7 @@ stands. **Start here for any "what's true right now?" question.** Updated on eve
 
 | Document | Contents |
 |---|---|
-| [Hub README](hub/README.md) | Front door — the five surfaces and how they fit together |
+| [Hub README](hub/README.md) | Front door — the six surfaces and how they fit together |
 | [Canonical Facts](hub/facts.md) | The values every doc must agree with (the anti-drift keystone) |
 | [Decision Log](hub/decision-log.md) | Reverse-chron ledger of every decision, linking to its full record |
 | [Status](hub/status.md) + [Journal](hub/journal/) | Current subsystem state + dated history |

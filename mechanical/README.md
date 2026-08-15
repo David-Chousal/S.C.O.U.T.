@@ -15,7 +15,7 @@ Specified in
 
 | Element | Current design |
 |---|---|
-| Main housing | 4" Schedule 40 PVC |
+| Main housing (electronics) | **TBD** — built around an approximate 4" Schedule 40 PVC reference, not finalized |
 | Sealing | O-ring sealed removable end caps |
 | Cable entry | IP68 cable glands, marine epoxy |
 | Assembly | Heat-set inserts (replaced embedded nuts) |

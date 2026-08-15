@@ -50,7 +50,7 @@
 | Local flash | Winbond W25Q02JV QSPI | [Systems Decision Matrix](../research/systems-decision-matrix.md) |
 | Battery chemistry | **LiFePO₄** (final sizing pending measured power budget) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
 | Charge controller | BQ25570 MPPT (charging path itself still open) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
-| Enclosure | 4" Schedule 40 PVC, O-ring sealed end caps | [Project Update 2026-07](../overview/project-update-2026-07.md) |
+| Enclosure dimensions | **TBD** — design is built around an approximate 4" Schedule 40 PVC reference form factor; not finalized | [mechanical/cad/electronics-housing](../../mechanical/cad/electronics-housing/README.md) |
 
 ## Sensing (single-point per modality — see ADR-0003)
 
