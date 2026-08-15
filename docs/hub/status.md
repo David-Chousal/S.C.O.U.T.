@@ -35,8 +35,11 @@ decisions; nothing downstream starts until those land. Full plan:
 
 1. **[ADR-0002](../decisions/0002-lifepo4-charging-path.md)** (LiFePO₄ charging path) — blocks
    power bench bring-up, battery/solar sizing, and firmware battery thresholds.
+   [SCO-10](https://linear.app/scout1/issue/SCO-10)
 2. **Hydrophone part number** (H2a-XLR vs H2dM) — blocks the audio front-end and BOM order.
+   [SCO-8](https://linear.app/scout1/issue/SCO-8)
 3. **Dissolved oxygen decision** — blocks closing the V1 sensor list.
+   [SCO-11](https://linear.app/scout1/issue/SCO-11)
 
 ## Latest decisions
 
