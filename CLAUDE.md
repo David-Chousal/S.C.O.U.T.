@@ -300,8 +300,15 @@ Planning · Decisions.
   put it under Planning and say so on the page.
 - **One H1 per page** — Notion uses it as the page title.
 - **Summary callout at the top** of every mirrored page, naming the source file.
-- **Tables must be Notion table blocks**, not Markdown pipe tables. Notion's API does not
-  parse pipe syntax; converting is Claude's job, not the user's.
+- **Tables depend on how the content gets there** — the two paths are not the same, and
+  treating them as one breaks a table either way:
+  - **Pushing through the Notion API** (Claude writing a page directly): convert to **Notion
+    table blocks**. The API does not parse pipe syntax, so a pasted pipe table lands as a
+    literal block of `|` characters. Converting is Claude's job, not the user's.
+  - **Importing or pasting a Markdown file** (a human moving a `docs/` file across): leave the
+    **Markdown pipe tables alone** — Notion's importer converts them to real table blocks. Do
+    not hand-convert them to HTML `<table>`, which the importer chokes on
+    ([CONVENTIONS → Markdown rules](docs/CONVENTIONS.md)).
 - **Cross-links between Notion pages use Notion URLs**, not GitHub links — teammates reading
   in Notion should stay in Notion.
 - Nothing in Notion is authoritative on its own. If a Notion edit changes a fact, that change

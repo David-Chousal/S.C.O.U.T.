@@ -25,10 +25,10 @@
    payload below marks these `[text](→ Notion: Page Name)`.
 4. Tick the entry's checkbox and delete its payload.
 
-**Tables:** paste or import as Markdown pipe tables — Notion's importer converts them to real
-table blocks. Do **not** hand-convert them to HTML `<table>`, which the importer chokes on
-([CONVENTIONS → Markdown rules](../CONVENTIONS.md)). The "must be Notion table blocks" note in
-CLAUDE.md applies to pushes through the Notion **API**, not to an import or paste.
+**Tables:** everything in this queue reaches Notion by paste or import, so leave the Markdown
+pipe tables exactly as they are — Notion's importer converts them to real table blocks. The
+full rule, including why a push through the Notion **API** needs the opposite treatment, is in
+[CLAUDE.md → Notion conventions](../../CLAUDE.md#notion-conventions).
 
 ---
 
