@@ -49,7 +49,7 @@ def _brand(base: str) -> str:
 def _nav_social(base: str) -> str:
     return (
         '<div class="nav-social">'
-        f'<a href="{REPO_URL}" aria-label="SCOUT on GitHub">{assets.social_icon("github")}</a>'
+        f'<a href="{REPO_URL}" aria-label="S.C.O.U.T. on GitHub">{assets.social_icon("github")}</a>'
         f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
         f'{assets.social_icon("linkedin")}</a>'
         "</div>"
