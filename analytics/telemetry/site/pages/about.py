@@ -42,13 +42,13 @@ _PHASES = [
 
 
 def _overview() -> str:
-    return c.section(
+    inner = (
         c.head_block(
             "The project",
             "A monitoring platform, not a one-off buoy",
-            "S.C.O.U.T. — the Santa Clara Oceanic Utilities Transmitter — is a low-cost, "
+            "S.C.O.U.T., the Santa Clara Oceanic Utilities Transmitter, is a low-cost, "
             "solar-powered buoy that carries several sensing signals at once. Coral-reef health is "
-            "the first mission; the platform is built to take on others.")
+            "the first mission, and the platform is built to take on others.")
         + '<div class="bento" style="align-items:start;margin-top:2.6rem">'
         '<div class="col-4 prose reveal">'
         "<p>S.C.O.U.T. addresses a specific gap in ocean monitoring. Satellites map "
@@ -61,8 +61,8 @@ def _overview() -> str:
         "battery health, then sleeps to conserve power. Once a day it sends one small summary to "
         "a shore station over a long-range 915&nbsp;MHz radio link; the full raw archive, audio "
         "included, never leaves the buoy. On shore, a Raspberry&nbsp;Pi runs quality control and "
-        "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site — there "
-        "is no server to keep running.</p>"
+        "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "
+        "server to keep running.</p>"
         "<p>Every choice serves one constraint: it has to survive. The buoy must run "
         "<strong>more than a year unattended</strong> on solar power in salt water, stay under a "
         "cost ceiling a small program can actually afford, and be simple enough for a "
@@ -81,8 +81,15 @@ def _overview() -> str:
             ("First site", "Hawaii · Spring 2027"),
             ("License", "Open source · MIT"),
         ])
-        + "</div></div>",
-        sid="overview",
+        + "</div></div>"
+    )
+    # Extra breathing room: `margin-top` opens space below the "About the project" hero;
+    # the padding-top bump adds a little more above the "The project" heading.
+    return (
+        '<section class="section" id="overview" '
+        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
+        'padding-top:calc(var(--section) + 1.2rem)">'
+        f'<div class="wrap">{inner}</div></section>'
     )
 
 
