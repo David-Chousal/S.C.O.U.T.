@@ -14,6 +14,12 @@
 > filed separately; it duplicates the pre-existing **SCO-8**. This doc is retained as the creation
 > record rather than deleted; new backlog items go straight into Linear from here on, not into
 > this file.
+>
+> ⏳ **One exception, staged 2026-08-15.** [Section D](#d-staged-not-yet-in-linear) holds items
+> raised by a session that could not reach the `scout1` workspace. They are **not in Linear yet**
+> and will not be picked up unless someone files them. File them, add the `SCO-##` link to the
+> heading, and move the entry up into the record above. Use this section only when Linear is
+> genuinely unreachable — otherwise file directly, as the note above says.
 
 ---
 
@@ -178,6 +184,22 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 - **Context** — Session `201807` has 4 of 5 files; one recording failed to download. Pipeline tolerates it (median of what's present), but the archive is incomplete.
 - **Acceptance** — [ ] File re-downloaded via `utils/download_sesoko.py`, or gap documented as permanent.
 - **Blocked by** — nothing · **Source** — [README → Data](../../README.md#data)
+
+---
+
+## D. Staged, not yet in Linear
+
+⏳ **These are not filed.** Raised 2026-08-15 by a session without `scout1` access. Whoever files
+them should add the `SCO-##` link to the heading and move the entry into the record above.
+
+### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ⏳ not filed
+- **Label** `csen` · **Owner** David (me) · **Type** `Bug` (implementation vs. datasheet conflict) · **Priority** `High` · **Project** Phase 1
+- **Context** — [`turbidity.py`](../../analytics/telemetry/turbidity.py) treats a **rising** `turbidity_adc` as dirtier water and flags only positive excursions. But the DFRobot SEN0189's analog output voltage **falls** as turbidity rises, and the firmware logs `analogRead` with no inversion ([`turbidity.h`](../../firmware/src/drivers/turbidity.h)). If the sensor behaves as its datasheet describes, the event detector is flagging the wrong tail — reporting the *clearest* water as sediment plumes. Nothing in the repo currently states the intended convention either way.
+- **Why `High`** — it is a live correctness defect in analysis code that already feeds the public dashboard, and it is cheap to settle (one bench reading) alongside **B7**/[SCO-12](https://linear.app/scout1/issue/SCO-12). Not `Urgent`: the buoy is not deployed, so no real measurement is being misread yet. It must be right *before* Phase 4 data starts flowing.
+- **Acceptance** — [ ] Polarity confirmed empirically (clear vs. visibly turbid water on the bench) and cross-checked against the DFRobot datasheet; [ ] the convention written into the [Data Schema](../engineering/data-schema.md) `turbidity_adc` row and [`facts.md`](facts.md); [ ] if inverted, `turbidity.py`'s excursion direction corrected with a regression test; [ ] the pending row in [`decision-log.md`](decision-log.md#pending-decisions-not-yet-made) moved to settled and the [`open-questions.md`](research/open-questions.md) row moved to Answered.
+- **Blocked by** — nothing. The datasheet review can start now; the empirical confirmation rides along with **B7**'s formazin ladder rather than needing its own bench session.
+- **Source** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45), [`open-questions.md`](research/open-questions.md), `manov-2004` drift work (**B3**/[SCO-16](https://linear.app/scout1/issue/SCO-16))
+- **Note for the filer** — the biofouling drift screen delivered in PR #45 is deliberately **sign-agnostic**, so it stays correct whichever way this resolves. Only `turbidity.py` is at risk.
 
 ---
 
