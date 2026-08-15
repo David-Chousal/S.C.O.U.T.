@@ -16,15 +16,20 @@ navigate normally. Motion is never scroll-dependent, so content is always visibl
 
 from __future__ import annotations
 
-# ── Favicon — a quiet sonar glyph on sand (base64 so the page carries no literal "http") ──────
+# ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
+# the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
 FAVICON = (
     "data:image/svg+xml;base64,"
-    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+"
-    "PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOSIgZmlsbD0iI2VmZWFlMiIvPjxjaXJjbGUg"
-    "Y3g9IjE2IiBjeT0iMTYiIHI9IjIuNiIgZmlsbD0iIzFmNmY2YSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0i"
-    "MTYiIHI9IjYuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWY2ZjZhIiBzdHJva2Utd2lkdGg9IjEuNCIg"
-    "b3BhY2l0eT0iLjYiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMC40IiBmaWxsPSJub25lIiBz"
-    "dHJva2U9IiMxZjZmNmEiIHN0cm9rZS13aWR0aD0iMS4yIiBvcGFjaXR5PSIuMyIvPjwvc3ZnPg=="
+    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ij"
+    "AgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOSIgZmls"
+    "bD0iI2VmZWFlMiIvPjxwYXRoIGQ9Ik0xNiA2LjggVjE1LjMiIGZpbGw9Im5vbmUiIH"
+    "N0cm9rZT0iIzJhMjUyMCIgc3Ryb2tlLXdpZHRoPSIyLjEiIHN0cm9rZS1saW5lY2Fw"
+    "PSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYuNyIgcj0iMi41IiBmaWxsPS"
+    "IjMmEyNTIwIi8+PGVsbGlwc2UgY3g9IjE2IiBjeT0iMjAuOCIgcng9IjguNyIgcnk9"
+    "IjIuMzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJhMjUyMCIgc3Ryb2tlLXdpZHRoPS"
+    "IxLjQiLz48ZWxsaXBzZSBjeD0iMTYiIGN5PSIyMC44IiByeD0iNC4zIiByeT0iMS4x"
+    "IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYTI1MjAiIHN0cm9rZS13aWR0aD0iMS4yNS"
+    "IvPjwvc3ZnPg=="
 )
 
 SERIES = {
