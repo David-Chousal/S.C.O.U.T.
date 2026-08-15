@@ -350,6 +350,15 @@ main figure{margin:0}
 .card .kicker{font-size:var(--text-micro);letter-spacing:var(--track);text-transform:uppercase;
   color:var(--muted);font-weight:500;margin-bottom:1.1rem}
 .card-glyph{width:34px;height:34px;color:var(--accent);margin-bottom:1.1rem}
+.signal-grid{display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem}
+@media(max-width:900px){.signal-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.signal-grid{grid-template-columns:1fr}}
+.feature-plain h3{margin-bottom:0.4rem}
+.feature-plain p{color:var(--muted);margin-bottom:0}
+.feature-plain .card-glyph{margin-bottom:0.9rem}
+.feature-plain .kicker{font-size:var(--text-micro);letter-spacing:var(--track);
+  text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:0.5rem}
 .big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
   letter-spacing:-0.03em;color:var(--ink)}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}

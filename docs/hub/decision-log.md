@@ -39,6 +39,7 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 
 | Date | Area | Decision | Record |
 |---|---|---|---|
+| 2026-08-15 | analytics | Adopted QARTOD flat-line + rate-of-change per channel, and screen biofouling drift via the **daily clean-water floor** (10th percentile) cross-checked against the non-optical temperature channel. Rate-of-change runs on temperature only — on turbidity it flagged ~12% of the shore sample, i.e. weather, not faults | [Telemetry Methodology §1a–1b](../../analysis/telemetry-methodology.md), [SCO-16](https://linear.app/scout1/issue/SCO-16) |
 | 2026-08-14 | process | Branch + PR is absolute for every repo change, no exceptions — no direct commits to `main` regardless of size | [CLAUDE.md § Absolute blocker](../../CLAUDE.md#-absolute-blocker--never-commit-or-push-anything-that-violates-conventionsmd) |
 | 2026-08-14 | process | Installed and authenticated the **`gh` CLI**, replacing the compare-URL workaround for opening PRs. Auth lives in the macOS keyring; `GITHUB_TOKEN` must never be exported, as `gh` prefers it over the keyring | [CONVENTIONS → Two repo gotchas](../CONVENTIONS.md) |
 | 2026-08-14 | process | Filed the [Linear Backlog](linear-backlog.md) as 18 issues (SCO-10–SCO-27); reconciled the pre-existing SCO-5/7/9 to Done against already-settled decisions (ADR-0001, PR #7) | [linear-backlog.md](linear-backlog.md) |
@@ -74,3 +75,4 @@ reader sees settled and unsettled in one place. When one resolves, move it into 
 | 2026-08-14 | hardware | Hydrophone part number (H2a-XLR vs H2dM) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
 | 2026-08-14 | hardware | Dissolved oxygen: V1.5 or future | [SCO-11](https://linear.app/scout1/issue/SCO-11) |
 | 2026-08-14 | csen | Turbidity units — raw ADC/volts vs NTU calibration | [Data Schema open questions](../engineering/data-schema.md), [SCO-13](https://linear.app/scout1/issue/SCO-13) |
+| 2026-08-15 | csen | SEN0189 ADC→turbidity polarity — does a rising `turbidity_adc` mean clearer or dirtier water? `turbidity.py` assumes dirtier; the sensor's output voltage falls as turbidity rises and the firmware does not invert | [linear-backlog D1](linear-backlog.md#d-staged-not-yet-in-linear) ⏳ not yet in Linear, [open-questions.md](research/open-questions.md); settle on the bench during [SCO-12](https://linear.app/scout1/issue/SCO-12) |

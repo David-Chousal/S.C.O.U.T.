@@ -15,6 +15,7 @@ from pathlib import Path
 
 from . import bleaching, turbidity
 from .aggregate import DailyAggregate, aggregate_daily, daily_temperature_series
+from .drift import DriftAssessment, assess_drift
 from .io import load_csv, load_dir
 from .model import TelemetryRecord
 from .qc import QCReport, run_qc
@@ -49,6 +50,7 @@ class TelemetryReport:
     thermal: list[bleaching.DailyThermal]
     thermal_summary: bleaching.ThermalStressSummary | None
     turbidity_anomalies: turbidity.TurbidityAnomalies
+    turbidity_drift: DriftAssessment
     mmm: float | None
 
 
@@ -67,6 +69,10 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
     turb_raw = [(r.timestamp, r.turbidity_adc) for r in records if r.turbidity_adc is not None]
     turbidity_anomalies = turbidity.detect_events(turb_raw)
 
+    # The turbidity trend above cannot tell creeping water from a fouling sensor — both are
+    # monotonic. This screens the daily clean-water floor against the non-optical channel.
+    turbidity_drift = assess_drift(records, reference_series=temp_series)
+
     thermal: list[bleaching.DailyThermal] = []
     thermal_summary: bleaching.ThermalStressSummary | None = None
     if mmm is not None and temp_series:
@@ -81,6 +87,7 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
         thermal=thermal,
         thermal_summary=thermal_summary,
         turbidity_anomalies=turbidity_anomalies,
+        turbidity_drift=turbidity_drift,
         mmm=mmm,
     )
 
@@ -131,6 +138,7 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
             "temp_out_of_range": qc.temp_out_of_range,
             "flags": qc.flag_counts,
             "soh": qc.soh_counts,
+            "channels": {name: asdict(ch) for name, ch in qc.channels.items()},
         },
         "temperature_trend": asdict(report.temp_trend),
         "turbidity_trend": asdict(report.turbidity_trend),
@@ -155,6 +163,15 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
             "n_events": len(report.turbidity_anomalies.events),
             "event_days": sorted({_event_day(e).isoformat() for e in report.turbidity_anomalies.events}),
             "note": report.turbidity_anomalies.note,
+        },
+        "biofouling_drift": {
+            "verdict": report.turbidity_drift.verdict,
+            "n_days": report.turbidity_drift.n_days,
+            "clean_water_floor_trend": asdict(report.turbidity_drift.floor_trend),
+            "reference_channel_trend": asdict(report.turbidity_drift.reference_trend),
+            "floor_slope_adc_per_year": report.turbidity_drift.floor_slope_per_year,
+            "rationale": report.turbidity_drift.rationale,
+            "note": report.turbidity_drift.note,
         },
     }
     path.write_text(json.dumps(summary, indent=2))
