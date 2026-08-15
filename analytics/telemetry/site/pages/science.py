@@ -104,7 +104,7 @@ _REFS_ACOUSTIC = [
 
 
 def _tracks() -> str:
-    return c.section(
+    inner = (
         c.head_block("What S.C.O.U.T. tracks", "The signals and what we derive",
                      "S.C.O.U.T. samples a small set of environmental signals and turns each into a "
                      "reviewed metric. Temperature and turbidity transmit daily; the reef "
@@ -113,8 +113,14 @@ def _tracks() -> str:
         + c.data_table(
             "Each signal, its sensor, and the metrics the pipeline produces.",
             ["Signal", "Sensor", "What S.C.O.U.T. derives"], _TRACK_ROWS)
-        + "</div>",
-        sid="tracks",
+        + "</div>"
+    )
+    # Extra top space so the first section sits below the "The science" hero, matching About.
+    return (
+        '<section class="section" id="tracks" '
+        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
+        'padding-top:calc(var(--section) + 1.2rem)">'
+        f'<div class="wrap">{inner}</div></section>'
     )
 
 

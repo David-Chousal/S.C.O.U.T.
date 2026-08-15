@@ -50,8 +50,20 @@ _REFS_DOCS = [
 
 def _architecture() -> str:
     # The data-path section is shared verbatim with the Home page via components.data_path(),
-    # so the two never drift. Its section id is "how" (see the sidebar item below).
-    return c.data_path()
+    # so the two never drift. Its section id is "how" (see the sidebar item below). The wrapper
+    # only adds top space here (pushing it below the "How the buoy works" hero, matching About and
+    # Science) without touching the shared component, so Home's spacing is unaffected.
+    # data_path() is a `.section-sm` (tighter top padding than the full `.section` used for
+    # Science's first block), so the wrapper adds the same margin+bump as Science *plus* the
+    # section-vs-section-sm padding delta, landing "The data path" at the same hero gap as the
+    # About and Science landing sections across viewports.
+    return (
+        '<div style="padding-top:calc('
+        "clamp(1.6rem,0.9rem + 2vw,3rem) + 1.2rem "
+        "+ clamp(5rem,3.4rem + 8vw,11rem) - clamp(3.4rem,2.4rem + 4vw,6rem))\">"
+        + c.data_path()
+        + "</div>"
+    )
 
 
 def _cycle() -> str:
