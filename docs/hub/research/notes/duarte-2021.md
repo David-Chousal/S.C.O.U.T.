@@ -8,17 +8,17 @@
 
 A synthesis of how human-generated noise has reshaped ocean soundscapes, distinguishing the
 frequency bands dominated by anthropogenic sources (shipping, industrial activity) from those
-carrying biological signal. SCOUT uses its framing to justify treating low frequencies as the
+carrying biological signal. S.C.O.U.T. uses its framing to justify treating low frequencies as the
 anthropogenic band rather than lumping the whole low end together.
 
-## Why it matters to SCOUT
+## Why it matters to S.C.O.U.T.
 
-This is the basis for SCOUT's **three-zone spectrum model**: anthropogenic energy concentrates
-below ~200 Hz, so SCOUT restricts the NDSI anthropogenic band (α) to 0–200 Hz instead of the
+This is the basis for S.C.O.U.T.'s **three-zone spectrum model**: anthropogenic energy concentrates
+below ~200 Hz, so S.C.O.U.T. restricts the NDSI anthropogenic band (α) to 0–200 Hz instead of the
 original 0–1000 Hz. That change stops a healthy reef-fish chorus (100–800 Hz) from being
 misclassified as pollution and falsely suppressing NDSI. See
 [Coral Bioacoustic Methodology](../../analysis/coral-bioacoustic-methodology.md).
 
 ## Follow-ups
 
-- Confirm the exact frequency boundaries the paper reports vs. the ones SCOUT adopted.
+- Confirm the exact frequency boundaries the paper reports vs. the ones S.C.O.U.T. adopted.

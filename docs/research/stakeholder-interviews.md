@@ -1,6 +1,6 @@
 # External Stakeholder Interview Summary
 
-> **Summary** — Findings from Summer 2026 interviews with three NOAA coral reef researchers, and the resulting recommended direction for SCOUT.
+> **Summary** — Findings from Summer 2026 interviews with three NOAA coral reef researchers, and the resulting recommended direction for S.C.O.U.T.
 >
 > **Source document** — `Stakeholder Meetings.docx`
 
@@ -12,7 +12,7 @@
 
 ## Purpose
 
-Over the course of Summer 2026, several discussions were held with NOAA researchers and coral reef monitoring experts to better understand current monitoring needs, existing gaps, operational challenges, and opportunities for SCOUT. The purpose of these meetings was to evaluate the potential scientific value, technical feasibility, and practical applications of a low-cost reef monitoring platform.
+Over the course of Summer 2026, several discussions were held with NOAA researchers and coral reef monitoring experts to better understand current monitoring needs, existing gaps, operational challenges, and opportunities for S.C.O.U.T. The purpose of these meetings was to evaluate the potential scientific value, technical feasibility, and practical applications of a low-cost reef monitoring platform.
 
 Interviewees included:
 
@@ -112,7 +112,7 @@ Challenges include:
 
 - Increased cost.
 
-These measurements may be better suited for future versions of SCOUT.
+These measurements may be better suited for future versions of S.C.O.U.T.
 
 ### Biofouling
 
@@ -248,7 +248,7 @@ This limits:
 
 - Event detection.
 
-SCOUT’s communication capabilities may significantly improve data accessibility.
+S.C.O.U.T.’s communication capabilities may significantly improve data accessibility.
 
 ### Deployment and Servicing
 
@@ -394,11 +394,11 @@ Problems include:
 
 - Coastal complexity.
 
-SCOUT may provide valuable ground-truth measurements.
+S.C.O.U.T. may provide valuable ground-truth measurements.
 
 ### Combining Satellite and In Situ Data
 
-One of Tom’s strongest recommendations was to integrate SCOUT data with satellite products.
+One of Tom’s strongest recommendations was to integrate S.C.O.U.T. data with satellite products.
 
 Potential outputs include:
 
@@ -520,7 +520,7 @@ Challenges include:
 
 Current monitoring programs often suffer from delayed access to data.
 
-SCOUT could provide:
+S.C.O.U.T. could provide:
 
 - Near real-time observations.
 
@@ -532,7 +532,7 @@ SCOUT could provide:
 
 Nearshore environments are poorly represented by existing satellite products.
 
-SCOUT measurements may:
+S.C.O.U.T. measurements may:
 
 - Validate satellite observations.
 
@@ -540,7 +540,7 @@ SCOUT measurements may:
 
 - Fill important data gaps.
 
-## Recommended SCOUT Direction
+## Recommended S.C.O.U.T. Direction
 
 ### Highest Priority
 
@@ -574,9 +574,9 @@ SCOUT measurements may:
 
 ## Proposed Problem Statement
 
-Rather than solely describing SCOUT as a coral reef monitoring buoy, the interviews suggest a broader framing:
+Rather than solely describing S.C.O.U.T. as a coral reef monitoring buoy, the interviews suggest a broader framing:
 
-“SCOUT is a low-cost nearshore water quality and reef monitoring platform that combines in situ environmental measurements with remote sensing products to improve coastal monitoring and data accessibility.”
+“S.C.O.U.T. is a low-cost nearshore water quality and reef monitoring platform that combines in situ environmental measurements with remote sensing products to improve coastal monitoring and data accessibility.”
 
 ## Next Steps
 
@@ -598,10 +598,10 @@ Rather than solely describing SCOUT as a coral reef monitoring buoy, the intervi
 
 9.  Develop cost models including maintenance and servicing.
 
-10. Present findings to the SCOUT team and advisors.
+10. Present findings to the S.C.O.U.T. team and advisors.
 
 ## Final Conclusion
 
 Across all interviews, the strongest consensus was that low-cost, accessible measurements of temperature and water quality fill a significant monitoring gap.
 
-SCOUT may have its greatest impact not by replacing existing monitoring systems, but by providing affordable, scalable, and accessible environmental measurements that complement existing observations and improve coastal monitoring.
+S.C.O.U.T. may have its greatest impact not by replacing existing monitoring systems, but by providing affordable, scalable, and accessible environmental measurements that complement existing observations and improve coastal monitoring.

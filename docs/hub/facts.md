@@ -37,7 +37,7 @@
 |---|---|---|
 | Total system cost | **< $5,000** (practical ceiling from researcher interviews) | [Stakeholder Interviews](../research/stakeholder-interviews.md) |
 | Autonomous deployment | **1+ year** unattended | [MVP System Overview](../overview/mvp-system-overview.md) |
-| Deployment depth | **5–8 m** max (MVP). The ~30 m on the sensor-string diagram is an outdated image | [ADR-0003](../decisions/0003-single-point-sensing.md) |
+| Deployment depth | **2–8 m** max, confirmed against the actual Hawaii site (revised 2026-08-14, was 5–8 m). The ~30 m on the sensor-string diagram is an outdated image | [SCO-6](https://linear.app/scout1/issue/SCO-6) |
 | First deployment site | **Hawaii**, Phase 6 (Mar–May 2027) | [Team Timeline](../planning/team-timeline.md) |
 
 ## Build platform (settled — see ADR-0001)
@@ -68,7 +68,7 @@
 |---|---|---|
 | LoRa frequency | **915 MHz** (US ISM band) | [EDD](../engineering/engineering-design-document.md) |
 | LoRa range | **~2 km line of sight** (Adafruit RFM9x FAQ). Real over-saltwater range TBD in Phase 4 | [ADR-0001 reconciliation](../decisions/0001-mcu-and-radio-selection.md) |
-| Daily packet size | **82 bytes**, 1× per day — a summary, not a row dump | [Data Schema](../engineering/data-schema.md), EDD §10/§14 |
+| Daily packet | 1× per day — a summary, not a row dump. ⚠️ **Size contested:** firmware (`SCOUT_PACKET_SIZE`) and shore (`PACKET_SIZE`) both encode **30 bytes**; the **82 bytes** cited here and in the EDD is the §10 *budget ceiling* (`LORA_PAYLOAD_BUDGET_BYTES`), not the actual size | [SCO-40](https://linear.app/scout1/issue/SCO-40), [Data Schema](../engineering/data-schema.md), EDD §10/§14 |
 | Raw audio over LoRa | **Never transmitted.** Stored onboard in `/AUDIO/`, retrieved physically | [EDD §10](../engineering/engineering-design-document.md) |
 | Sample interval | ~30 min wake/sample cycle (turbidity + audio run less often) | [Data Schema](../engineering/data-schema.md) |
 | On-board log format | Append-only CSV, one row per wake event, UTC ISO 8601, `schema_version` 1 | [Data Schema](../engineering/data-schema.md) |
@@ -98,11 +98,12 @@
 These are **not** canonical values — they are known gaps tracked so nobody treats a placeholder
 as settled. Each should have a Linear issue and, when resolved, become a row above.
 
-| Open fact | Why it's open | Owner |
-|---|---|---|
-| Hydrophone part number | H2a-XLR (diagram) vs H2dM (BOM) | Isabella (ECE) |
-| Dissolved oxygen inclusion | Wanted vs absent from BOM — decide V1.5 vs future | Isabella (ECE) |
-| LiFePO₄ charging path | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) not yet decided | Isabella (ECE) |
-| Turbidity units (NTU) | Ship raw ADC + volts for v1, or invest in a calibration curve | David (CSEN) |
-| Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) |
-| Over-saltwater LoRa range | ~2 km is the datasheet figure; real range measured in Phase 4 | David (CSEN) |
+| Open fact | Why it's open | Owner | Linear |
+|---|---|---|---|
+| Hydrophone part number | H2a-XLR (diagram) vs H2dM (BOM) | Isabella (ECE) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
+| Dissolved oxygen inclusion | Wanted vs absent from BOM — decide V1.5 vs future | Isabella (ECE) | [SCO-11](https://linear.app/scout1/issue/SCO-11) |
+| LiFePO₄ charging path | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) not yet decided | Isabella (ECE) | [SCO-10](https://linear.app/scout1/issue/SCO-10) |
+| Turbidity units (NTU) | Ship raw ADC + volts for v1, or invest in a calibration curve | David (CSEN) | [SCO-13](https://linear.app/scout1/issue/SCO-13) (blocked by [SCO-12](https://linear.app/scout1/issue/SCO-12)) |
+| Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) | [SCO-23](https://linear.app/scout1/issue/SCO-23) |
+| Over-saltwater LoRa range | ~2 km is the datasheet figure; real range measured in Phase 4 | David (CSEN) | [SCO-14](https://linear.app/scout1/issue/SCO-14) |
+| Daily packet size | 30 B actual (firmware + shore agree) vs the 82 B EDD §10 budget ceiling, stated interchangeably across docs | David (CSEN) | [SCO-40](https://linear.app/scout1/issue/SCO-40) |

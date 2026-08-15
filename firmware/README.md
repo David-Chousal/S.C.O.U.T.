@@ -3,9 +3,11 @@
 Embedded firmware for the SCOUT buoy: sensor sampling, duty-cycle scheduling, local logging,
 and LoRa transmission.
 
-> **Status:** Not yet implemented — but **unblocked**. The platform is decided
-> ([ADR-0001](../docs/decisions/0001-mcu-and-radio-selection.md), accepted 2026-08-14), so
-> development can begin per [Team Timeline](../docs/planning/team-timeline.md) Phase 1.
+> **Status:** **Phase 1 scaffold.** The project structure, the duty-cycle state machine, the
+> hardware-driver wrappers, and the build/test setup are in place. The **pure-logic core is
+> real and verified** (packet codec byte-identical to the shore decoder; scheduling math
+> unit-tested). Hardware bring-up on the bench — real sensor reads, SD, LoRa, and true SAMD21
+> standby sleep — is the next step, per [Team Timeline](../docs/planning/team-timeline.md) Phase 1.
 
 ## Platform & toolchain
 
@@ -39,21 +41,67 @@ Per [Engineering Design Document §12](../docs/engineering/engineering-design-do
 - Watchdog timer and error recovery
 - State of Health telemetry — battery voltage, internal temperature, humidity
 
-## Suggested layout, once started
+## Layout
 
 ```
 firmware/
-├── src/            Main firmware source
-├── lib/            Project-specific libraries (sensor drivers, packet format)
-├── test/           Unit tests for pure logic (packet encoding, scheduling math)
-└── docs/           Pin assignments, wiring notes, flashing guide
+├── platformio.ini          Feather M0 build + native (host) test envs
+├── src/
+│   ├── main.cpp            Duty-cycle state machine: Sleep→Wake→Sense→Log→Battery→TX→Sleep
+│   ├── config.h            Pin map, cadence, thresholds  (⚠ confirm pins with ECE)
+│   └── drivers/            Thin hardware wrappers (DS18B20, turbidity, PCF8523, SD, RFM95, battery)
+├── lib/                    Hardware-free, host-testable libraries:
+│   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
+│   └── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
+├── test/                   Unity unit tests (run on the host)
+│   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
+│   └── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
+└── docs/                   pin-assignments.md, flashing-guide.md
 ```
+
+## Build & test
+
+```bash
+pio run                 # build for the Feather M0
+pio run -t upload       # flash (double-tap RESET for the bootloader)
+pio test -e native      # run the pure-logic unit tests on your computer (no board needed)
+```
+
+## What's real vs. scaffold
+
+- **Real & verified:** `scout_packet` (encoder proven byte-identical to the Python shore
+  decoder) and `scout_scheduler` (unit-tested). The state machine and CSV row format
+  ([data-schema.md](../docs/engineering/data-schema.md)) are wired end to end.
+- **Implemented, pending bench verification:**
+  - **Standby sleep** — real SAMD21 deep sleep (`ArduinoLowPower`) woken by the PCF8523
+    countdown-timer INT on `PIN_RTC_INT`, with a flag-clear on wake so it re-arms each
+    interval. Needs the INT wired and a current measurement to confirm the low-power draw.
+  - **Watchdog** — the SAMD21 WDT (`Adafruit_SleepyDog`, ~16 s) guards each active cycle and
+    init; a hang resets the buoy so it recovers on its own. Disabled during standby (its
+    timeout is far shorter than the 30-min interval) and re-armed on wake. A watchdog reset is
+    detected at boot (`PM->RCAUSE`) and logged.
+  - **Adaptive transmission (graceful degradation)** — a power mode derived from battery
+    voltage (`scout_power_mode`): **NORMAL** (all sensing, transmit each interval) →
+    **CONSERVE** (audio off, transmit ×`TRANSMIT_CONSERVE_FACTOR` less often) → **CRITICAL**
+    (temperature + logging only; no turbidity, audio, or TX). Core temperature always logs.
+    The `POWER_CONSERVE` flag marks throttled rows so shore can see it. Pure logic in
+    `scout_scheduler`, unit-tested; thresholds in `config.h` (provisional, ADR-0002).
+  - **Retained state across resets** — `record_seq` and `last_tx_epoch` live in a no-init RAM
+    section (magic-guarded) that the C startup doesn't clear, so a watchdog/system reset keeps
+    the counter monotonic and doesn't re-send the daily packet. RAM-based: a full power loss
+    still cold-starts (the PCF8523 has no user NVRAM; SD/flash persistence was declined to
+    avoid wear for the rarer power-loss case). Verify by inducing a reset and confirming
+    `resume_seq` continues in the boot log.
+- **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
+  on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
+  hook only — it's a V1 stretch, not on the confirmed Feather build.
 
 ## Notes
 
-- The on-board CSV log format is specified in
-  [docs/engineering/data-schema.md](../docs/engineering/data-schema.md) — the contract between
-  this firmware (writer) and the shore station / `analytics/` pipeline (readers).
-- The packet format is the contract between this directory and the shore station. Define it
-  once, in a header shared with (or mirrored by) the receiver.
-- Keep the packet encoder free of hardware dependencies so it can be unit tested off-target.
+- **The packet layout is the contract with the shore station.** `lib/scout_packet` mirrors
+  `shore/scout_shore/packet.py` exactly; `test_packet` enforces it against a golden vector
+  generated by the Python side. Change one, change both, and bump `SCOUT_PACKET_VERSION`.
+- The CSV log format is specified in
+  [data-schema.md](../docs/engineering/data-schema.md) — the writer↔reader contract with
+  `analytics/`.
+- Pure-logic code stays in `lib/` (no Arduino includes) so it compiles and tests on the host.

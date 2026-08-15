@@ -1,6 +1,6 @@
 # Environmental Telemetry Methodology
 
-> **Summary** — The science behind the environmental-telemetry pipeline: how SCOUT's
+> **Summary** — The science behind the environmental-telemetry pipeline: how S.C.O.U.T.'s
 > temperature, turbidity, and battery records become quality-controlled daily series, NOAA
 > Coral Reef Watch thermal-stress metrics (HotSpot, Degree Heating Weeks, bleaching alert
 > levels), monotonic trends, and turbidity anomaly flags.
@@ -41,7 +41,7 @@ worst-case for power planning).
 
 ## 3. Thermal stress — NOAA Coral Reef Watch
 
-SCOUT uses NOAA Coral Reef Watch's (CRW) operational thermal-stress framework, the community
+S.C.O.U.T. uses NOAA Coral Reef Watch's (CRW) operational thermal-stress framework, the community
 standard for anticipating mass bleaching (Liu et al. 2014; Skirving et al. 2020).
 
 - **MMM (Maximum Monthly Mean).** The warmest of the twelve climatological monthly-mean SSTs

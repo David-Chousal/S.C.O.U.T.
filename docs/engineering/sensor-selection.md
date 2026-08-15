@@ -32,7 +32,7 @@ Also, the chlorophyll sensor you’re thinking of is almost certainly a **fluoro
 
 #### Recommendation:
 
-**Temperature + Turbidity + Hydrophone = SCOUT V1**
+**Temperature + Turbidity + Hydrophone = S.C.O.U.T. V1**
 
 ## MEDIUM PRIORITY (V1.5)
 

@@ -39,6 +39,11 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 
 | Date | Area | Decision | Record |
 |---|---|---|---|
+| 2026-08-14 | process | Branch + PR is absolute for every repo change, no exceptions — no direct commits to `main` regardless of size | [CLAUDE.md § Absolute blocker](../../CLAUDE.md#-absolute-blocker--never-commit-or-push-anything-that-violates-conventionsmd) |
+| 2026-08-14 | process | Filed the [Linear Backlog](linear-backlog.md) as 18 issues (SCO-10–SCO-27); reconciled the pre-existing SCO-5/7/9 to Done against already-settled decisions (ADR-0001, PR #7) | [linear-backlog.md](linear-backlog.md) |
+| 2026-08-14 | mechanical | Revised deployment depth to **2–8 m** (was 5–8 m), confirmed against the actual Hawaii site by the field/mechanical lead | [SCO-6](https://linear.app/scout1/issue/SCO-6) |
+| 2026-08-14 | process | Protected `main` with the "Protect main" ruleset: PR-only, the six required checks, conversation resolution, blocked force-push and deletion; owner keeps an Always-bypass | [ruleset settings](https://github.com/David-Chousal/S.C.O.U.T./settings/rules/20865742) |
+| 2026-08-14 | process | CI enforces the PR conventions — title format, five-section body, Knowledge-Hub touch, and a conventions lint (filenames · forbidden files · markdown · source registry); `main` protection ruleset to follow | [pr-checks.yml](../../.github/workflows/pr-checks.yml) |
 | 2026-08-14 | process | Knowledge Hub established: canonical facts, decision log, status journal, research library | [Hub README](README.md) |
 | 2026-08-14 | docs | Reconciled the EDD requirements to single-sensor per ADR-0003 | commit `73d31ef` (PR #8) |
 | 2026-08-14 | docs | Reconciled depth (5–8 m), LoRa range (~2 km), academic year (2026–2027), and project name | commit `d496bc2` (PR #7) |
@@ -50,7 +55,7 @@ If it is significant enough for an ADR, write the ADR first, then link it here.
 | 2026-08-14 | hardware | **Feather M0 + RFM95** confirmed as build platform; ESP32-C3 + SX1262 the future PCB target | [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
 | 2026-08-14 | process | Adopted `CONVENTIONS.md` as the naming/placement/format reference | [CONVENTIONS.md](../CONVENTIONS.md) |
 | 2026-08-14 | process | Re-baselined the project timeline to Aug 2026 – May 2027 (Phases 0–6) | [Team Timeline](../planning/team-timeline.md) |
-| 2026-08-14 | docs | Reframed SCOUT as a nearshore monitoring **platform**, not a single-purpose reef buoy | [MVP System Overview](../overview/mvp-system-overview.md) |
+| 2026-08-14 | docs | Reframed S.C.O.U.T. as a nearshore monitoring **platform**, not a single-purpose reef buoy | [MVP System Overview](../overview/mvp-system-overview.md) |
 | 2026-08-14 | process | Restructured the repo into the multi-discipline layout (`docs/`, `firmware/`, `hardware/`, …) | commit — repo restructure |
 | 2026-08-13 | analytics | Initial bioacoustic pipeline: 5 indices → session-local PCA → Acoustic Quality Score | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) |
 
@@ -64,7 +69,7 @@ reader sees settled and unsettled in one place. When one resolves, move it into 
 
 | Raised | Area | Decision needed | Where it's tracked |
 |---|---|---|---|
-| 2026-08-14 | hardware | LiFePO₄ charging path on the Feather M0 | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) 🟡 Open |
-| 2026-08-14 | hardware | Hydrophone part number (H2a-XLR vs H2dM) | Needs a Linear issue (`ece`) |
-| 2026-08-14 | hardware | Dissolved oxygen: V1.5 or future | Needs a Linear issue (`ece`) |
-| 2026-08-14 | csen | Turbidity units — raw ADC/volts vs NTU calibration | [Data Schema open questions](../engineering/data-schema.md) |
+| 2026-08-14 | hardware | LiFePO₄ charging path on the Feather M0 | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) 🟡 Open, [SCO-10](https://linear.app/scout1/issue/SCO-10) |
+| 2026-08-14 | hardware | Hydrophone part number (H2a-XLR vs H2dM) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
+| 2026-08-14 | hardware | Dissolved oxygen: V1.5 or future | [SCO-11](https://linear.app/scout1/issue/SCO-11) |
+| 2026-08-14 | csen | Turbidity units — raw ADC/volts vs NTU calibration | [Data Schema open questions](../engineering/data-schema.md), [SCO-13](https://linear.app/scout1/issue/SCO-13) |

@@ -1,6 +1,6 @@
-# SCOUT Knowledge Hub
+# S.C.O.U.T. Knowledge Hub
 
-> **Summary** — The one always-current, always-cited surface for **what SCOUT has decided, what
+> **Summary** — The one always-current, always-cited surface for **what S.C.O.U.T. has decided, what
 > it has learned, and where it stands today.** If you have five minutes and one question about
 > the project, start here.
 
@@ -30,6 +30,9 @@ The Hub **indexes**, it does not replace:
   worklist of decisions still to make; the Decision Log is the backward ledger of ones made.
 - The deep docs (EDD, methodology, interviews) remain authoritative on their topics; `facts.md`
   just holds the handful of cross-cutting values they must all agree on.
+- The [Linear Backlog](linear-backlog.md) stages issues that still need filing in the `scout1`
+  Linear workspace, each with its title/labels/owner/priority ready — a session with Linear
+  access files them from there and swaps in the `SCO-##` links.
 
 ---
 

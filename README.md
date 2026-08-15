@@ -1,5 +1,7 @@
 # S.C.O.U.T.
 
+[![CI](https://github.com/David-Chousal/S.C.O.U.T./actions/workflows/ci.yml/badge.svg)](https://github.com/David-Chousal/S.C.O.U.T./actions/workflows/ci.yml)
+
 **Santa Clara Oceanic Utilities Transmitter** — a low-cost, solar-powered, modular
 **nearshore environmental monitoring platform**: one buoy carrying many sensing signals
 (temperature, turbidity, dissolved oxygen, and more), with coral-reef health as its first
@@ -9,14 +11,14 @@ Santa Clara University · Senior Design Capstone · 2026–2027
 
 ---
 
-## What SCOUT is
+## What S.C.O.U.T. is
 
 Coral reefs are among the most threatened ecosystems on Earth, and the instruments used to
 monitor them are expensive and rarely serviced. Existing monitoring buoys cost tens of
 thousands of dollars, and researchers interviewed for this project described sites where data
 is physically retrieved only every few years.
 
-SCOUT is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
+S.C.O.U.T. is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
 reefs and left alone. It samples a stack of environmental signals — water temperature and
 turbidity today, with dissolved oxygen, light, chlorophyll, and reef soundscapes on the
 sensor roadmap — stores everything locally, and transmits a summarized daily packet to a
@@ -51,11 +53,13 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 |---|---|
 | Stakeholder research | ✅ Complete — 3 NOAA researchers interviewed |
 | System architecture | ✅ Complete — [Engineering Design Document v0.2](docs/engineering/engineering-design-document.md) |
-| Mechanical design | 🟡 In progress — enclosure and hull concepts developed |
-| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); wiring/PCB pending |
-| Firmware | 🟢 Unblocked — platform decided, ready to start Phase 1 ([`firmware/`](firmware/README.md)) |
 | Acoustic analysis pipeline | ✅ Working — validated on 8 sessions of reef recordings |
-| Shore station | 🔴 Not started — Raspberry Pi + LoRa, documented in [Shore Station](docs/engineering/shore-station.md) |
+| Environmental telemetry pipeline | ✅ Working — QC, NOAA CRW Degree Heating Weeks + bleaching alerts, trends, and turbidity anomalies ([`analytics/telemetry/`](analytics/telemetry/)) |
+| Firmware | 🟡 Phase 1 in progress — state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, and battery-tiered adaptive transmission; hardware bring-up next ([`firmware/`](firmware/README.md)) |
+| Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
+| Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
+| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); charging path ([ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) and wiring/PCB pending |
+| Mechanical design | 🟡 In progress — enclosure and hull concepts; flotation + turbidity-housing CAD drawings in [`mechanical/cad/`](mechanical/cad/) |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +
@@ -82,17 +86,20 @@ as the future production-PCB target. This unblocks firmware and wiring. See
 ```
 S.C.O.U.T./
 ├── docs/           All project documentation (Notion-compatible Markdown)
+│   ├── hub/            Knowledge Hub — facts, decisions, status, research library
 │   ├── overview/       Project vision, MVP definition, status updates
-│   ├── engineering/    Design document, sensor selection, architecture
+│   ├── engineering/    Design document, sensor selection, architecture, shore station
 │   ├── research/       Stakeholder interviews, decision matrix
-│   ├── analysis/       Bioacoustic methodology and citations
+│   ├── analysis/       Bioacoustic + telemetry methodology and citations
 │   ├── planning/       Timeline, meeting notes, administrative
 │   └── decisions/      Architecture Decision Records
-├── analytics/      Coral bioacoustic analysis pipeline (Python) — implemented
-├── firmware/       Buoy embedded software — not yet started
+├── analytics/      Acoustic + environmental-telemetry pipelines (Python) — implemented
+├── shore/          Shore-station receiver, store, and packet codec (Python) — simulated path working
+├── firmware/       Buoy embedded software (SAMD21/PlatformIO) — Phase 1 in progress
 ├── hardware/       Schematics, PCB, wiring diagrams — not yet started
-├── mechanical/     CAD, hull design, mooring specs — not yet started
-├── assets/         Diagrams and presentations
+├── mechanical/     CAD, hull design, mooring specs — flotation + sensor-housing drawings started
+├── assets/         Brand, diagrams, and presentations
+├── scripts/        Repo-level helper scripts (e.g. cross-language packet-contract guard)
 └── data/           Raw audio archive (excluded from git — see Data below)
 ```
 
@@ -103,20 +110,33 @@ it is blocked on.
 
 ## Quick start
 
-The analytics pipeline is the only runnable component today.
+Several components run today with no hardware: the two analytics pipelines and the shore-station
+data path.
+
+**Acoustic pipeline** — five bioacoustic indices → PCA health score → dashboard figure, on the
+committed sample session:
 
 ```bash
 cd analytics
 pip install -r requirements.txt
-
-# Analyze the committed sample session
 python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 \
                        --output data/processed/results.csv
 ```
 
-This computes five bioacoustic indices per recording, derives a PCA-based health score, and
-writes a dashboard figure. See [`analytics/README.md`](analytics/README.md) for longitudinal
-trend analysis and site comparison.
+**Shore data path + environmental telemetry** — simulate a buoy, push the packets through the shore
+receiver into daily CSVs, then analyze them (QC, NOAA CRW Degree Heating Weeks, trends, turbidity):
+
+```bash
+cd shore
+pip install -r requirements.txt
+python scripts/run_loopback.py --count 48 --out ./data     # sensor sim → encode → receive → store
+
+cd ../analytics
+python run_telemetry.py --source ../shore/data --mmm 27.6 --dashboard
+```
+
+See [`analytics/README.md`](analytics/README.md) and [`shore/README.md`](shore/README.md) for the
+full options, and the [live telemetry dashboard](docs/engineering/live-dashboard.md) for the deployed view.
 
 ---
 
@@ -172,7 +192,7 @@ Quality Score, and applies modified Mann-Kendall tests to detect multi-month tre
 
 It was developed and validated against a published reef acoustic dataset from **Sesoko
 Island, Okinawa, Japan** — 8 monthly sessions spanning August 2017 to July 2018 — which
-serves as a stand-in until SCOUT collects its own recordings.
+serves as a stand-in until S.C.O.U.T. collects its own recordings.
 
 Notable design choices, documented in full in
 [Coral Bioacoustic Methodology](docs/analysis/coral-bioacoustic-methodology.md):
@@ -184,6 +204,24 @@ Notable design choices, documented in full in
   trend detection — scores are explicitly not comparable across sessions.
 - **Median aggregation** and an **abiotic contamination filter** to stay robust against
   wind- and rain-contaminated recordings at 1.5 m depth.
+
+---
+
+## The environmental telemetry pipeline
+
+Alongside the acoustic work, [`analytics/telemetry/`](analytics/telemetry/) turns the buoy's daily
+CSV records into reef-relevant indicators. It quality-controls the series (QARTOD-style range, spike,
+flat-line, and gap flags), computes **NOAA Coral Reef Watch thermal-stress metrics** — HotSpot,
+Degree Heating Weeks, and the 4/8/12 °C-week bleaching alert levels — detects multi-month temperature
+and turbidity trends with modified Mann-Kendall, and flags turbidity anomalies. Run it with
+`run_telemetry.py`; the method is written up in
+[Environmental Telemetry Methodology](docs/analysis/telemetry-methodology.md), and the external
+research behind it (DHW, turbidity, LoRa-over-saltwater) lives in the
+[Knowledge Hub research library](docs/hub/research/sources.md).
+
+The [`shore/`](shore/README.md) package closes the loop: a packet codec (byte-identical to the
+firmware), a simulated LoRa link with configurable loss and corruption, a receiver, and a daily CSV
+store — so the whole buoy → shore → analysis path runs today without hardware.
 
 ---
 
@@ -216,7 +254,7 @@ Markdown and can be imported directly.
 |---|---|
 | **[Knowledge Hub](docs/hub/README.md)** | **What's true, decided, and where the project stands right now — the always-current surface** |
 | **[Conventions](docs/CONVENTIONS.md)** | **Where files go, what to name them, formats, git, units — start here before adding anything** |
-| [MVP System Overview](docs/overview/mvp-system-overview.md) | What SCOUT is and what it must do |
+| [MVP System Overview](docs/overview/mvp-system-overview.md) | What S.C.O.U.T. is and what it must do |
 | [Engineering Design Document](docs/engineering/engineering-design-document.md) | The authoritative technical baseline — 22 sections including full BOM |
 | [Stakeholder Interviews](docs/research/stakeholder-interviews.md) | What reef researchers actually need |
 | [Coral Bioacoustic Methodology](docs/analysis/coral-bioacoustic-methodology.md) | The science behind the acoustic analysis |
@@ -238,7 +276,7 @@ than silently reconciled, since resolving each required a team decision.
 | Issue | Detail |
 |---|---|
 | ~~**MCU and radio**~~ ✅ Resolved | Settled by [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md): Feather M0 + RFM95 is the build platform; ESP32-C3 + SX1262 is the future production target |
-| ~~**Deployment depth**~~ ✅ Resolved | **5–8 m** max (MVP overview). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
+| ~~**Deployment depth**~~ ✅ Resolved | **2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
 | ~~**LoRa range**~~ ✅ Resolved | Standardized to **~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd and 15–20 km figures corrected. Real over-saltwater range still to be measured in Phase 4 |
 | ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
 | **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — see [ADR-0003](docs/decisions/0003-single-point-sensing.md) related gaps |
@@ -250,7 +288,7 @@ than silently reconciled, since resolving each required a team decision.
 
 ## Related
 
-- Team repository: [github.com/irodriguez-17/SCOUT](https://github.com/irodriguez-17/SCOUT)
+- Team repository: [github.com/irodriguez-17/S.C.O.U.T.](https://github.com/irodriguez-17/S.C.O.U.T.)
 - Project proposal deck: [`assets/presentations/SCOUT-Proposal.pptx`](assets/presentations/)
 
 ## License
