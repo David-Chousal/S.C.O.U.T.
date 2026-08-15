@@ -41,6 +41,58 @@ _PHASES = [
 ]
 
 
+def _overview() -> str:
+    inner = (
+        c.head_block(
+            "The project",
+            "A monitoring platform, not a one-off buoy",
+            "S.C.O.U.T., the Santa Clara Oceanic Utilities Transmitter, is a low-cost, "
+            "solar-powered buoy that carries several sensing signals at once. Coral-reef health is "
+            "the first mission, and the platform is built to take on others.")
+        + '<div class="bento" style="align-items:start;margin-top:2.6rem">'
+        '<div class="col-4 prose reveal">'
+        "<p>S.C.O.U.T. addresses a specific gap in ocean monitoring. Satellites map "
+        "sea-surface temperature at scale but lose accuracy in the shallow nearshore water where "
+        "reefs actually live, and research-grade moorings cost too much to place in the numbers "
+        "real coverage would need. The result is thin ground-truth data in exactly the places "
+        "that matter most for reef health. S.C.O.U.T. is a buoy <strong>cheap and rugged enough "
+        "to put there and leave in place</strong>.</p>"
+        "<p>A single buoy wakes about every half hour to log water temperature, turbidity, and "
+        "battery health, then sleeps to conserve power. Once a day it sends one small summary to "
+        "a shore station over a long-range 915&nbsp;MHz radio link; the full raw archive, audio "
+        "included, never leaves the buoy. On shore, a Raspberry&nbsp;Pi runs quality control and "
+        "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "
+        "server to keep running.</p>"
+        "<p>Every choice serves one constraint: it has to survive. The buoy must run "
+        "<strong>more than a year unattended</strong> on solar power in salt water, stay under a "
+        "cost ceiling a small program can actually afford, and be simple enough for a "
+        "three-person team to build, deploy, and maintain. The sensor payload is modular, so the "
+        "same platform can grow past temperature and turbidity as the science asks for more.</p>"
+        "</div>"
+        '<div class="col-2 reveal">'
+        + c.spec([
+            ("Platform", "Nearshore monitoring buoy"),
+            ("First mission", "Coral-reef health"),
+            ("Target cost", "Under $5,000"),
+            ("Autonomy", "1+ year unattended"),
+            ("Power", "Solar"),
+            ("Deployment depth", "2–8 m"),
+            ("Shore link", "915 MHz LoRa · ~2 km"),
+            ("First site", "Hawaii · Spring 2027"),
+            ("License", "Open source · MIT"),
+        ])
+        + "</div></div>"
+    )
+    # Extra breathing room: `margin-top` opens space below the "About the project" hero;
+    # the padding-top bump adds a little more above the "The project" heading.
+    return (
+        '<section class="section" id="overview" '
+        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
+        'padding-top:calc(var(--section) + 1.2rem + 5px)">'
+        f'<div class="wrap">{inner}</div></section>'
+    )
+
+
 def _story() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
@@ -123,6 +175,7 @@ def body(ctx: SiteContext) -> str:
                       "S.C.O.U.T. is a Santa Clara University senior design capstone, built by three "
                       "students in electrical, mechanical, and software engineering, with a field "
                       "deployment as the goal.")
+        + _overview()
         + _story()
         + _team(ctx.base)
         + _institution()
