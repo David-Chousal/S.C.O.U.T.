@@ -101,11 +101,13 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 - **Acceptance** — [ ] Mitigation approach selected with rationale + ADR/decision-log row.
 - **Blocked by** — nothing · **Source** — open-questions, [Stakeholder Interviews](../research/stakeholder-interviews.md)
 
-### B3 · `csen: detect biofouling sensor drift in the telemetry QC` — [SCO-16](https://linear.app/scout1/issue/SCO-16)
+### B3 · `csen: detect biofouling sensor drift in the telemetry QC` — [SCO-16](https://linear.app/scout1/issue/SCO-16) ✅ Done
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2
 - **Context** — Fouled optical/turbidity sensors drift *monotonically* → mimics a real turbidity trend in `turbidity.py`. Addressable now in software.
-- **Acceptance** — [ ] QARTOD-style flat-line / rate-of-change flags in `qc.py`; [ ] cross-signal consistency check; [ ] documented in telemetry methodology.
+- **Acceptance** — [x] QARTOD-style flat-line / rate-of-change flags in `qc.py`; [x] cross-signal consistency check; [x] documented in telemetry methodology.
 - **Blocked by** — nothing · **Source** — `manov-2004`, `qartod-optics-2017` (see [notes](research/notes/)) · related **B8**
+- **Delivered** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45): QARTOD flat-line + rate-of-change per channel in [`qc.py`](../../analytics/telemetry/qc.py), a clean-water-floor drift screen in the new [`drift.py`](../../analytics/telemetry/drift.py) cross-checked against the non-optical temperature channel, and [Telemetry Methodology §1a–1b](../analysis/telemetry-methodology.md). Rate-of-change is temperature-only — on turbidity it flagged ~12% of the shore sample, i.e. weather rather than faults. Raised **D1** (SEN0189 polarity) on the way through.
+- ⏳ **Linear still shows this open** — the status change needs a human with `scout1` access; it lands when PR #45 merges.
 
 ### B4 · `mechanical: choose a reef-safe anchoring / mooring approach` — [SCO-17](https://linear.app/scout1/issue/SCO-17)
 - **Label** `geng` · **Owner** John · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 3 → 5
@@ -134,8 +136,9 @@ Each open row becomes a `research` (or discipline) issue. Sources already gather
 ### B8 · `csen: design a drift reference for a single buoy` — [SCO-20](https://linear.app/scout1/issue/SCO-20)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Low` · **Project** Phase 2
 - **Context** — Detecting fouling drift needs something to compare against, but a lone buoy has no redundant sensor.
-- **Acceptance** — [ ] Approach chosen (periodic wiped/covered reference reading vs cross-signal consistency).
+- **Acceptance** — [x] Cross-signal consistency built (**B3**/PR #45 — turbidity floor vs the non-optical temperature channel); [ ] decide whether a periodic wiped/covered reference reading is still needed on top of it.
 - **Blocked by** — nothing · **Source** — open-questions, `manov-2004` · pairs with **B3**
+- **Narrowed 2026-08-15** — B3 delivered the cross-signal half of this, so the open question is no longer "which approach" but whether software cross-checking alone is enough without a physical clean reference. PR #45's screen is explicitly a *screen, not proof* for exactly this reason.
 
 ### B9 · `csen: define the daily-packet delivery reliability strategy` — [SCO-21](https://linear.app/scout1/issue/SCO-21)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 1 → 4
