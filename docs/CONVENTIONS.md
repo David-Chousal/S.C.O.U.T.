@@ -358,8 +358,10 @@ directly.
 push and rejects it. This is intentional — `main` only moves via a merged PR. Push your branch
 (`git push -u origin HEAD`) and open a PR instead; never try to push to `main` directly.
 
-**`gh` (the GitHub CLI) is not installed.** Use `git` over SSH, which is configured and working.
-If a guide online tells you to run `gh something`, that won't work here.
+**`gh` (the GitHub CLI) is installed and authenticated**, so `gh pr create`, `gh pr checks`, and
+`gh pr view` all work. Git operations themselves go over SSH, which is configured and working.
+One caveat: never `export GITHUB_TOKEN` — `gh` prefers that variable over its stored credential,
+so setting it to anything stale or placeholder breaks `gh` with a confusing auth error.
 
 ---
 
