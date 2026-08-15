@@ -19,8 +19,14 @@ DEFAULT_INTERVAL_S = 1800  # 30-minute duty cycle (EDD / data-schema)
 # Provisional environmental model — tune once real data exists.
 _TEMP_MEAN_C = 26.5
 _TEMP_DIURNAL_AMPLITUDE_C = 1.2
-_TURBIDITY_BASELINE_ADC = 500
-_TURBIDITY_EVENT_ADC = 900
+# A HIGHER ADC count is CLEARER water: the SEN0189's output voltage falls as turbidity rises
+# ("the output value will decrease when in liquids with a high turbidity" — DFRobot datasheet),
+# and the firmware logs raw analogRead with no inversion. Clear water (< 0.5 NTU) is ~4.1 V at
+# the sensor, so a baseline near the top of the 12-bit range and a downward excursion for a
+# sediment plume is the physically correct shape. Exact counts stay provisional until the
+# analog front end is designed (ADR-0002) — that divider sets the sensor-volts→ADC mapping.
+_TURBIDITY_BASELINE_ADC = 3300
+_TURBIDITY_EVENT_ADC = 2000
 _BATTERY_FULL_V = 3.35
 _BATTERY_MIN_V = 3.05
 _BATT_LOW_SKIP_TX_V = 3.10
@@ -44,7 +50,8 @@ def generate_reading(
         + rng.uniform(-0.1, 0.1)
     )
 
-    # Turbidity: mostly clear, with an occasional runoff/sediment spike.
+    # Turbidity: mostly clear, with an occasional runoff/sediment event — which reads as a
+    # DIP in ADC counts, not a spike (see the polarity note on the constants above).
     is_event = rng.random() < 0.08
     turbidity_adc = int(
         (_TURBIDITY_EVENT_ADC if is_event else _TURBIDITY_BASELINE_ADC) + rng.uniform(-40, 40)

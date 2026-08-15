@@ -46,7 +46,7 @@ Each daily CSV starts with the header row below.
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the buoy sends each daily packet several times without acknowledgement, and the copies must collapse to one row. |
 | 5 | `temp_c` | float | °C | `26.42` | DS18B20 water temperature, 2 dp (sensor is ±0.5 °C — see [sensor-selection](sensor-selection.md)). |
-| 6 | `turbidity_adc` | uint16 | counts | `512` | Raw SEN0189 ADC reading. Always logged — it is the ground truth. |
+| 6 | `turbidity_adc` | uint16 | counts | `3300` | Raw SEN0189 ADC reading, **not inverted**. Always logged — it is the ground truth. **A higher count is clearer water** (see the polarity note below). |
 | 7 | `turbidity_v` | float | V | `1.65` | Derived sensor voltage (ADC × Vref ÷ full-scale). |
 | 8 | `turbidity_ntu` | float | NTU | `` | Only if a calibration curve is applied; otherwise empty. See open questions. |
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
@@ -65,6 +65,32 @@ Each daily CSV starts with the header row below.
   [ADR-0003](../decisions/0003-single-point-sensing.md) the build is single-point, so v1 logs
   the one deployed DS18B20 in `temp_c` and these columns do not exist.
 - `turbidity_ntu` becomes populated once a calibration exists.
+
+### Turbidity polarity — a higher ADC count is *clearer* water
+
+Settled 2026-08-15. The SEN0189 measures **transmittance**: suspended particles block light
+reaching its phototransistor, so its analog output *falls* as turbidity rises. The DFRobot
+datasheet states it directly — *"Analog Signal Output, the output value will decrease when in
+liquids with a high turbidity"* — and clear water (< 0.5 NTU) reads ≈ 4.1 V at the sensor.
+The firmware logs raw `analogRead` with no inversion
+([`drivers/turbidity.h`](../../firmware/src/drivers/turbidity.h)), so `turbidity_adc` inherits
+that direction:
+
+| Water | Sensor volts | `turbidity_adc` |
+|---|---|---|
+| Clear | High (≈ 4.1 V) | **High** |
+| Turbid (runoff, resuspension, plume) | Low | **Low** |
+
+A sediment plume is therefore a **dip** in this column, not a spike. Anything reading this
+field — event detection, drift screening, dashboards, a future NTU calibration curve — must
+treat a falling count as worsening water quality.
+
+> **Constraint for the analog front end (ECE).** The SEN0189 swings up to 4.5 V and the SAMD21
+> ADC tops out at 3.3 V, so a level-shifting front end sits between them
+> ([ADR-0002](../decisions/0002-lifepo4-charging-path.md), still open). That stage **must be
+> non-inverting** — a resistive divider or a buffer, not an inverting amplifier. An inverting
+> stage would flip this convention and silently invert every downstream interpretation. If the
+> design ends up inverting for another reason, say so here first and the analytics follow.
 
 ### `soh` vocabulary (v1)
 

@@ -167,9 +167,9 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
         "biofouling_drift": {
             "verdict": report.turbidity_drift.verdict,
             "n_days": report.turbidity_drift.n_days,
-            "clean_water_floor_trend": asdict(report.turbidity_drift.floor_trend),
+            "clean_water_trend": asdict(report.turbidity_drift.clean_water_trend),
             "reference_channel_trend": asdict(report.turbidity_drift.reference_trend),
-            "floor_slope_adc_per_year": report.turbidity_drift.floor_slope_per_year,
+            "clean_water_slope_adc_per_year": report.turbidity_drift.clean_water_slope_per_year,
             "rationale": report.turbidity_drift.rationale,
             "note": report.turbidity_drift.note,
         },
