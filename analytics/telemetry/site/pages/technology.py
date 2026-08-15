@@ -122,12 +122,10 @@ def _subsystems() -> str:
          "The shore Raspberry Pi validates and stores each packet, runs the analysis, and "
          "regenerates this site, using only the Python standard library."),
     ]
-    grid = "".join(
-        f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>' for g, k, t, b in specs
-    )
+    grid = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
         c.head_block("Subsystems", "The subsystems")
-        + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
+        + f'<div class="subsystem-grid">{grid}</div>',
         cls="section-sm",
         sid="subsystems",
     )
