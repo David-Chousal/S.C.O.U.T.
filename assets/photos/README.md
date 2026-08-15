@@ -24,3 +24,18 @@ Credited **The Ocean Agency**, from the
 **[Ocean Image Bank](https://oceanimagebank.theoceanagency.org)**, used under its licence, which
 requires crediting each photographer. The site ships 1600 px-wide optimized WebP + JPEG
 derivatives and shows the credit; see `assets/credits.html` in the built site.
+
+## Nearshore reef cards
+
+The four pill photographs in the Home "The nearshore zone" section, all from the
+**[Ocean Image Bank](https://oceanimagebank.theoceanagency.org)** under its licence (each
+photographer credited on the card and in `assets/credits.html`). Masters here are 2400 px
+long-edge exports of the full-resolution originals; the site ships 900×1200 (3:4) WebP + JPEG
+crops. The untouched originals can be re-fetched from the Ocean Image Bank by the filenames below.
+
+| Master | Photographer | Ocean Image Bank original | Original size |
+|---|---|---|---|
+| `shallow-reef-source-noemi-merz.jpg` | Noemi Merz | `OceanImageBank_NoemiMerz_34` (Coral reef, Raja Ampat) | 8640×5760 |
+| `coral-detail-source-cinzia-osele-bismarck.jpg` | Cinzia Osele Bismarck | `OceanImageBank_CinziaOseleBismarck_22` (Soft Coral Explosion) | 6000×4000 |
+| `kelp-column-source-stefan-andrews.jpg` | Stefan Andrews | `OceanImageBank_StefanAndrews_13` (Sargeant Baker, Great Southern Reef) | 8192×5464 |
+| `open-water-source-kurt-arrigo.jpg` | Kurt Arrigo | `OceanImageBank_KurtArrigo_02` (Ocean surface) | 3640×5464 |
