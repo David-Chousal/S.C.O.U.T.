@@ -61,8 +61,14 @@ class MockLoRaLink:
 class ReceiverStats:
     received: int = 0
     stored: int = 0
+    duplicates: int = 0  # valid repeats of a reading already stored — expected, not an error
     decode_errors: int = 0
     schema_errors: int = 0
+
+    @property
+    def accounted(self) -> int:
+        """Every payload lands in exactly one bucket; this must equal ``received``."""
+        return self.stored + self.duplicates + self.decode_errors + self.schema_errors
 
 
 class Receiver:
@@ -74,7 +80,11 @@ class Receiver:
         self.stats = ReceiverStats()
 
     def poll_once(self) -> Reading | None:
-        """Process a single waiting payload. Returns the stored Reading, or ``None``."""
+        """Process a single waiting payload. Returns the stored Reading, or ``None``.
+
+        ``None`` also covers a duplicate — the buoy repeats each daily packet blindly, so
+        copies after the first are counted and dropped rather than stored again.
+        """
         payload = self._link.receive()
         if payload is None:
             return None
@@ -89,7 +99,9 @@ class Receiver:
         except SchemaError:
             self.stats.schema_errors += 1
             return None
-        self._store.append(reading)
+        if self._store.append(reading) is None:
+            self.stats.duplicates += 1
+            return None
         self.stats.stored += 1
         return reading
 

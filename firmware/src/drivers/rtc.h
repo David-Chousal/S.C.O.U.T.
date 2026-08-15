@@ -9,7 +9,11 @@
 
 #include "../config.h"
 
-class Rtc {
+/* Named ScoutRtc, not Rtc: the SAMD21 CMSIS device header (samd21g18a.h) defines
+ * `typedef union {...} Rtc` for the MCU's own RTC peripheral, and a bare `class Rtc` here
+ * collides with it — "using typedef-name 'Rtc' after 'class'" — which breaks every target
+ * build. The native test env never includes CMSIS, so the collision is invisible off-target. */
+class ScoutRtc {
 public:
     bool begin() { return rtc_.begin(); }
 

@@ -52,10 +52,12 @@ firmware/
 │   └── drivers/            Thin hardware wrappers (DS18B20, turbidity, PCF8523, SD, RFM95, battery)
 ├── lib/                    Hardware-free, host-testable libraries:
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
-│   └── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
+│   ├── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
+│   └── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
 ├── test/                   Unity unit tests (run on the host)
 │   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
-│   └── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
+│   ├── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
+│   └── test_link/          Repeat counts by power mode, gap widening, watchdog headroom
 └── docs/                   pin-assignments.md, flashing-guide.md
 ```
 
@@ -92,6 +94,17 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     still cold-starts (the PCF8523 has no user NVRAM; SD/flash persistence was declined to
     avoid wear for the rarer power-loss case). Verify by inducing a reset and confirming
     `resume_seq` continues in the boot log.
+  - **Daily-packet delivery reliability** — CR 4/8 forward error correction plus **blind
+    repetition**: the same frame goes out `SCOUT_LINK_REPEATS_NORMAL` times, spaced with
+    widening gaps, and the buoy never listens for an acknowledgement. A lost daily packet
+    costs timeliness, not data (the full record is on the SD card), so ACKed retransmit would
+    buy little and risks an avalanche across a multi-buoy deployment. Repeat count degrades
+    with the power mode like everything else (3 in NORMAL, 1 in CONSERVE, 0 in CRITICAL).
+    The shore station deduplicates on `(buoy_id, record_seq)`, so copies collapse to one row.
+    Spreading factor stays at SF7 pending the FCC dwell-time question (SCO-19) — see the note
+    in `drivers/lora_link.h`. Policy is pure logic in `scout_link`, unit-tested, including a
+    guard that the repeat schedule cannot outrun the watchdog. Needs a real range test
+    (SCO-14) to confirm the delivery gain over the air.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
   on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
   hook only — it's a V1 stretch, not on the confirmed Feather build.
