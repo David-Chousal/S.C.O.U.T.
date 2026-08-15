@@ -29,8 +29,14 @@ committed here per [CONVENTIONS.md](../../../docs/CONVENTIONS.md#file-formats).
 4. Settled on **snap-fit components across multiple prints** — assembled with adhesives plus
    mechanical (printed) fasteners, avoiding the single-print size ceiling.
 
-**Iterations, oldest to newest** (numbering is John Ryan's own, not inferred — file timestamps
-were unreliable since everything was bulk re-exported from Onshape on the same day):
+**Manufacturing approach.** Deliberately restricted to **in-house additive manufacturing**
+(3D printing) rather than outsourced large-scale processes (injection molding, CNC) — those are
+expensive at capstone/small-batch volume. Printing in-house saves material and cost, and keeps
+iteration fast. Fit was validated by printing test components in **PLA at 1/4, 1/2, and 1:1
+scale** before committing a design to full-scale, final-material (PETG) prints.
+
+**Iterations, oldest to newest** — the numbering below is John Ryan's own concept order (file
+timestamps were unreliable since everything was bulk re-exported from Onshape on the same day):
 
 | # | File(s) | Notes |
 |---|---|---|
