@@ -9,8 +9,8 @@ full library while nothing infringing ever enters this repo's public history.
 
 This directory is a placeholder. To activate it:
 
-1. **Create a private repo** on GitHub (e.g. `S.C.O.U.T.-library`). `gh` is not installed here,
-   so create it in the browser (30 seconds).
+1. **Create a private repo** on GitHub (e.g. `S.C.O.U.T.-library`) — either in the browser or
+   with `gh repo create S.C.O.U.T.-library --private`.
 2. Mount it as a submodule at this path:
    ```bash
    git submodule add git@github.com:<owner>/S.C.O.U.T.-library.git docs/hub/research/library-restricted

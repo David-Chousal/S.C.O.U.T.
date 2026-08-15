@@ -61,10 +61,12 @@ session, check `git branch --show-current`. If it says `main`, stop and create a
 through a branch and a PR exactly like a multi-file feature. `git push` must never target
 `main` directly, full stop; if a command you're about to run would do that, it is wrong,
 not the exception. Open the PR yourself (title + the four-section body above) and leave it
-for review — merging still requires an explicit human ask, per Standing Rule 6. `gh` is not
-installed; open the PR via the compare URL in a browser
+for review — merging still requires an explicit human ask, per Standing Rule 6. Open it with
+`gh pr create --base main --head <branch> --title '<type>(<scope>): <summary>' --body-file <file>`
+(pass the body as a file — the four required `##` sections do not survive shell quoting well).
+If `gh` is ever unavailable, fall back to the compare URL in a browser
 (`https://github.com/David-Chousal/S.C.O.U.T./compare/main...<branch>?quick_pull=1`) rather
-than skipping the step because the CLI isn't there.
+than skipping the step.
 
 ---
 
@@ -353,8 +355,10 @@ alternative are in [CONVENTIONS.md § Git](docs/CONVENTIONS.md#git-for-people-wh
 
 - **`git push origin main` is blocked** by a local pre-bash hook that reads it as a force
   push. Use plain `git push` (upstream is already tracked).
-- **`gh` CLI is not installed.** Use `git` over SSH; SSH auth to GitHub is configured and
-  working. Do not suggest `gh` commands.
+- **`gh` CLI is installed and authenticated** (since 2026-08-14, as `David-Chousal`, token in
+  the macOS keyring with `repo` scope). Use it for PRs, CI status, and issues. Git operations
+  still go over SSH. Do **not** set `GITHUB_TOKEN` in the environment — `gh` prefers it over
+  the keyring, so a stale or placeholder value silently breaks every `gh` command.
 - **Never commit `.wav` files** outside `analytics/data/longitudinal/201708_20170801/`. The
   full archive is ~7 GB. `.gitignore` enforces this — do not weaken it.
 - Regenerate nothing under `analytics/data/processed/` without saying so; those figures are
