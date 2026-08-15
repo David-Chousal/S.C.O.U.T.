@@ -196,7 +196,7 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 ⏳ **These are not filed.** Raised 2026-08-15 by a session without `scout1` access. Whoever files
 them should add the `SCO-##` link to the heading and move the entry into the record above.
 
-### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ⏳ not filed
+### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ✅ Resolved 2026-08-15 (never filed)
 - **Label** `csen` · **Owner** David (me) · **Type** `Bug` (implementation vs. datasheet conflict) · **Priority** `High` · **Project** Phase 1
 - **Context** — [`turbidity.py`](../../analytics/telemetry/turbidity.py) treats a **rising** `turbidity_adc` as dirtier water and flags only positive excursions. But the DFRobot SEN0189's analog output voltage **falls** as turbidity rises, and the firmware logs `analogRead` with no inversion ([`turbidity.h`](../../firmware/src/drivers/turbidity.h)). If the sensor behaves as its datasheet describes, the event detector is flagging the wrong tail — reporting the *clearest* water as sediment plumes. Nothing in the repo currently states the intended convention either way.
 - **Why `High`** — it is a live correctness defect in analysis code that already feeds the public dashboard, and it is cheap to settle (one bench reading) alongside **B7**/[SCO-12](https://linear.app/scout1/issue/SCO-12). Not `Urgent`: the buoy is not deployed, so no real measurement is being misread yet. It must be right *before* Phase 4 data starts flowing.

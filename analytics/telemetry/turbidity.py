@@ -1,15 +1,23 @@
 """Turbidity anomaly detection.
 
 The SEN0189 ships **uncalibrated** — its output is raw ADC counts / volts, not NTU (see
-data-schema.md open questions). Absolute water-quality thresholds are therefore not
-defensible yet, so this module deliberately detects **relative** turbidity events (runoff,
-resuspension, sediment plumes) against the deployment's own robust baseline, and says nothing
-about NTU.
+data-schema.md). Absolute water-quality thresholds are therefore not defensible yet, so this
+module deliberately detects **relative** turbidity events (runoff, resuspension, sediment
+plumes) against the deployment's own robust baseline, and says nothing about NTU.
+
+**Polarity: a lower ADC count means dirtier water.** The SEN0189 is a transmittance sensor —
+suspended particles block light reaching its phototransistor, so its analog output *falls* as
+turbidity rises. The DFRobot datasheet states it directly: "Analog Signal Output, the output
+value will decrease when in liquids with a high turbidity." Clear water (< 0.5 NTU) reads
+≈ 4.1 V; the firmware logs that as raw ``analogRead`` with no inversion, so the ADC count
+inherits the same direction. This module therefore flags **negative** excursions. Until
+2026-08-15 it flagged positive ones and was reporting each day's *clearest* water as a
+sediment plume.
 
 Method: the Iglewicz–Hoaglin modified z-score, which uses the median and MAD instead of the
 mean and standard deviation, so a few large spikes don't inflate the baseline they're being
-measured against. A day is an event when its modified z-score exceeds ``threshold`` (3.5 is
-the Iglewicz–Hoaglin recommendation). Only positive excursions (dirtier water) are flagged.
+measured against. A sample is an event when its modified z-score falls below ``-threshold``
+(3.5 is the Iglewicz–Hoaglin recommendation).
 
 When more than half the days share one value the MAD collapses to zero; Iglewicz & Hoaglin's
 documented fallback uses the mean absolute deviation instead, so a lone spike above an
@@ -44,7 +52,10 @@ class TurbidityAnomalies:
     baseline_median: float | None
     events: list[TurbidityEvent]
     n_days: int
-    note: str = "Uncalibrated (ADC counts) — relative events only, not NTU."
+    note: str = (
+        "Uncalibrated (ADC counts) — relative events only, not NTU. A lower ADC count is "
+        "dirtier water, so events carry a negative modified z-score."
+    )
 
 
 def detect_events(
@@ -77,7 +88,8 @@ def detect_events(
     events: list[TurbidityEvent] = []
     for label, value in points:
         mod_z = modified_z(value)
-        if mod_z is not None and mod_z > threshold:  # positive excursions only (dirtier water)
+        # Negative excursions only: a falling ADC count is dirtier water (see module docstring).
+        if mod_z is not None and mod_z < -threshold:
             events.append(TurbidityEvent(at=label, value=value, modified_z=round(mod_z, 2)))
 
     return TurbidityAnomalies(
