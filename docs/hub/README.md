@@ -33,6 +33,9 @@ The Hub **indexes**, it does not replace:
 - The [Linear Backlog](linear-backlog.md) stages issues that still need filing in the `scout1`
   Linear workspace, each with its title/labels/owner/priority ready — a session with Linear
   access files them from there and swaps in the `SCO-##` links.
+- The [Notion Sync Queue](notion-sync-queue.md) stages repo changes that still need mirroring
+  into Notion, for the same reason: a Claude session without access to the S.C.O.U.T. Notion
+  workspace leaves the mirror here rather than skipping it silently. Clear it, then tick it.
 
 ---
 
