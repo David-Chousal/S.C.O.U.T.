@@ -7,6 +7,7 @@ name: PR checks
 #   - pr-body        the five required sections, in order
 #   - knowledge-hub  Standing rule 7 (touch docs/hub/** or say "Hub: no relevant surface")
 #   - conventions    filenames, forbidden files, markdown, source registry
+#   - deploy-target  website/deploy changes (analytics/**, shore/**, pages.yml) must base on main
 #
 # All jobs are pure stdlib Python — no pip install, no network, no hardware.
 
@@ -79,3 +80,21 @@ jobs:
         env:
           BASE_REF: ${{ github.event.pull_request.base.sha }}
         run: python .github/scripts/check_conventions.py --base "$BASE_REF"
+
+  # Hard blocker: anything the Pages deploy watches (analytics/**, shore/**, pages.yml) must be
+  # merged to `main`, because Pages builds and deploys only from `main`. Runs on PRs to ANY base
+  # (no branch filter) so a mis-targeted website PR is caught before it strands the change.
+  deploy-target:
+    name: deploy-target
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Website/deploy changes must target main
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA...HEAD" > changed.txt
+          python .github/scripts/check_deploy_target.py --base-ref "$BASE_REF" --changed-file changed.txt
