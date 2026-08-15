@@ -22,6 +22,7 @@
 #include "drivers/sd_logger.h"
 #include "drivers/temperature.h"
 #include "drivers/turbidity.h"
+#include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
 
@@ -293,7 +294,30 @@ void loop() {
 
         uint8_t packet[SCOUT_PACKET_SIZE];
         size_t n = scout_packet_encode(&r, packet);
-        if (g_lora.send(packet, (uint8_t)n)) {
+
+        // Blind repetition (lib/scout_link): send the same frame a few times, spaced, and
+        // never listen for an ACK. A lost daily packet costs timeliness, not data — the full
+        // record is on the SD card — so ACKed retransmit would buy little and risk an
+        // avalanche across a multi-buoy deployment. The shore station deduplicates on
+        // (buoy_id, record_seq), so the copies collapse to one row.
+        uint8_t copies = scout_link_repeat_count(mode, SCOUT_LINK_REPEATS_NORMAL,
+                                                 SCOUT_LINK_REPEATS_CONSERVE);
+        bool any_sent = false;
+        for (uint8_t i = 0; i < copies; i++) {
+            if (g_lora.send(packet, (uint8_t)n)) {
+                any_sent = true;
+            }
+            // Pet before the gap, not after: the watchdog must not expire while we wait.
+            // scout_link_fits_watchdog asserts this policy leaves 2x headroom.
+            Watchdog.reset();
+            if (i + 1 < copies) {
+                delay(scout_link_repeat_delay_ms((uint8_t)(i + 1),
+                                                 SCOUT_LINK_REPEAT_BASE_DELAY_MS));
+                Watchdog.reset();
+            }
+        }
+        // Advance only if at least one copy reached the air; otherwise retry next cycle.
+        if (any_sent) {
             g_state.last_tx_epoch = now;
         }
     }

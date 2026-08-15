@@ -44,7 +44,7 @@ Each daily CSV starts with the header row below.
 | 1 | `schema_version` | int | — | `1` | Bumped when columns change. Constant within a file. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
-| 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. |
+| 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the buoy sends each daily packet several times without acknowledgement, and the copies must collapse to one row. |
 | 5 | `temp_c` | float | °C | `26.42` | DS18B20 water temperature, 2 dp (sensor is ±0.5 °C — see [sensor-selection](sensor-selection.md)). |
 | 6 | `turbidity_adc` | uint16 | counts | `512` | Raw SEN0189 ADC reading. Always logged — it is the ground truth. |
 | 7 | `turbidity_v` | float | V | `1.65` | Derived sensor voltage (ADC × Vref ÷ full-scale). |
