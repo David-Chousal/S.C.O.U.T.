@@ -11,7 +11,7 @@ from telemetry.drift import (
     DRIFT_SUSPECT,
     MIN_DRIFT_DAYS,
     assess_drift,
-    daily_clean_water_floor,
+    daily_clean_water_reading,
 )
 from telemetry.model import TelemetryRecord
 from telemetry.qc import ChannelQCConfig, evaluate_channel, run_qc
@@ -138,30 +138,35 @@ class RateOfChangeTest(unittest.TestCase):
         self.assertEqual(report.channels["temp_c"].rate_of_change_suspect, 0)
 
 
-class CleanWaterFloorTest(unittest.TestCase):
-    def test_floor_tracks_the_clearest_reading_not_the_events(self):
+class CleanWaterReadingTest(unittest.TestCase):
+    def test_it_tracks_the_clearest_reading_not_the_events(self):
         rng = random.Random(7)
-        # One day: a quiet baseline plus a few large excursions.
-        turbs = [int(v) for v in _wobble(rng, 500, 5, 44)] + [900, 950, 1000, 1100]
-        floor = daily_clean_water_floor(_series(turbs=turbs, n=48))
-        self.assertEqual(len(floor), 1)
-        _, value = floor[0]
-        self.assertLess(value, 550)  # excursions must not lift the floor
+        # One day of quiet clear water (high ADC) plus a few sediment plumes, which on the
+        # SEN0189 read as DIPS. The clean-water reading must ignore the dips.
+        turbs = [int(v) for v in _wobble(rng, 3000, 5, 44)] + [2100, 2050, 2000, 1900]
+        clean = daily_clean_water_reading(_series(turbs=turbs, n=48))
+        self.assertEqual(len(clean), 1)
+        _, value = clean[0]
+        self.assertGreater(value, 2950)  # plumes must not drag the clean-water reading down
 
     def test_days_with_too_few_samples_are_dropped(self):
-        floor = daily_clean_water_floor(_series(turbs=[500, 501, 502], n=3))
-        self.assertEqual(floor, [])
+        clean = daily_clean_water_reading(_series(turbs=[500, 501, 502], n=3))
+        self.assertEqual(clean, [])
 
 
-def _deployment(days, floor_at, temp_at, rng, events_per_day=0):
-    """Build a multi-day deployment from per-day floor and temperature functions."""
+def _deployment(days, clean_at, temp_at, rng, events_per_day=0):
+    """Build a multi-day deployment from per-day clean-water and temperature functions.
+
+    Turbidity is in raw SEN0189 ADC counts, so a *higher* value is clearer water and an
+    event pulls the reading DOWN.
+    """
     records = []
     for day in range(days):
         for i in range(48):
             minutes = day * 24 * 60 + i * _STEP_MIN
-            turb = floor_at(day) + rng.uniform(0, 8)
+            turb = clean_at(day) - rng.uniform(0, 8)
             if events_per_day and i % (48 // events_per_day) == 0 and i:
-                turb += 400  # an episodic runoff/resuspension excursion
+                turb -= 400  # an episodic runoff/resuspension excursion
             records.append(
                 _rec(minutes, temp=temp_at(day) + rng.uniform(-0.3, 0.3), turb=int(turb))
             )
@@ -169,16 +174,18 @@ def _deployment(days, floor_at, temp_at, rng, events_per_day=0):
 
 
 class DriftTest(unittest.TestCase):
-    def test_a_creeping_baseline_with_no_environmental_correlate_reads_as_drift(self):
+    def test_a_declining_clean_water_reading_with_no_correlate_reads_as_drift(self):
+        # Fouling attenuates light, so the clearest-water reading sinks over weeks.
         rng = random.Random(8)
-        records = _deployment(30, lambda d: 500 + 3.0 * d, lambda d: 26.0, rng)
+        records = _deployment(30, lambda d: 3000 - 3.0 * d, lambda d: 26.0, rng)
         result = assess_drift(records)
         self.assertEqual(result.verdict, DRIFT_LIKELY)
-        self.assertGreater(result.floor_slope_per_year, 0)
+        self.assertLess(result.clean_water_slope_per_year, 0)
+        self.assertIn("consistent with fouling", result.rationale)
 
     def test_episodic_events_on_a_stable_baseline_are_not_drift(self):
         rng = random.Random(9)
-        records = _deployment(30, lambda d: 500, lambda d: 26.0, rng, events_per_day=3)
+        records = _deployment(30, lambda d: 3000, lambda d: 26.0, rng, events_per_day=3)
         result = assess_drift(records)
         self.assertEqual(result.verdict, DRIFT_NONE)
 
@@ -186,28 +193,29 @@ class DriftTest(unittest.TestCase):
         # Temperature is the independent, non-optical channel. If it is also moving, a real
         # environmental regime change may explain the turbidity baseline — we cannot separate.
         rng = random.Random(10)
-        records = _deployment(30, lambda d: 500 + 3.0 * d, lambda d: 26.0 + 0.1 * d, rng)
+        records = _deployment(30, lambda d: 3000 - 3.0 * d, lambda d: 26.0 + 0.1 * d, rng)
         result = assess_drift(records)
         self.assertEqual(result.verdict, DRIFT_SUSPECT)
 
-    def test_drift_is_detected_in_either_direction(self):
-        # The SEN0189 ADC→turbidity polarity is unresolved (see module docstring), so a
-        # persistent baseline march must be caught whichever sign it takes.
+    def test_a_rising_reading_is_caught_but_called_inconsistent_with_fouling(self):
+        # Detection stays direction-agnostic (the analog front end is undesigned, ADR-0002),
+        # but a rise is not fouling and the rationale must say so rather than mislabel it.
         rng = random.Random(11)
-        records = _deployment(30, lambda d: 800 - 3.0 * d, lambda d: 26.0, rng)
+        records = _deployment(30, lambda d: 2000 + 3.0 * d, lambda d: 26.0, rng)
         result = assess_drift(records)
         self.assertEqual(result.verdict, DRIFT_LIKELY)
-        self.assertLess(result.floor_slope_per_year, 0)
+        self.assertGreater(result.clean_water_slope_per_year, 0)
+        self.assertIn("inconsistent with fouling", result.rationale)
 
     def test_a_short_deployment_cannot_support_a_verdict(self):
         rng = random.Random(12)
-        records = _deployment(MIN_DRIFT_DAYS - 2, lambda d: 500 + 3.0 * d, lambda d: 26.0, rng)
+        records = _deployment(MIN_DRIFT_DAYS - 2, lambda d: 3000 - 3.0 * d, lambda d: 26.0, rng)
         result = assess_drift(records)
         self.assertEqual(result.verdict, DRIFT_INSUFFICIENT)
 
     def test_assessment_states_its_own_limitation(self):
         rng = random.Random(13)
-        result = assess_drift(_deployment(20, lambda d: 500, lambda d: 26.0, rng))
+        result = assess_drift(_deployment(20, lambda d: 3000, lambda d: 26.0, rng))
         self.assertIn("reference", result.note.lower())
 
 

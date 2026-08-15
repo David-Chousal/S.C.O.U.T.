@@ -39,9 +39,11 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 - **Notion page** — Analysis → *Environmental Telemetry Methodology*
 - **Source** — [`docs/analysis/telemetry-methodology.md`](../analysis/telemetry-methodology.md)
 - **From** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45) (merged 2026-08-15)
-- **What changed** — two new subsections under §1 Quality control, two new references, and two
-  new bullets under Limitations. Nothing existing was rewritten, so this is an insert, not a
-  replace.
+- **What changed** — two new subsections under §1 Quality control (§1a QARTOD tests, §1b drift
+  screen), two new references, and two new bullets under Limitations. **Revised again by
+  [PR #54](https://github.com/David-Chousal/S.C.O.U.T./pull/54)**: §1b now uses the 90th
+  percentile (was 10th), §4 gained a *Polarity* subsection, and one Limitations bullet changed.
+  Copy §1a, §1b, §4 and Limitations wholesale rather than diffing.
 
 **Where it goes:** immediately after the existing §1 Quality control paragraph, before
 §2 Daily aggregation.
@@ -53,9 +55,15 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 | Link in the source | Replace with |
 |---|---|
-| `[stakeholder interviews](../research/stakeholder-interviews.md)` | `[stakeholder interviews](→ Notion: Stakeholder Interviews)` |
-| `[Open questions](../hub/research/open-questions.md)` (appears twice — in §1b and in Limitations) | `[Open questions](→ Notion: Open Research Questions)` |
-| `SCO-20`, `SCO-19` etc. in prose | Leave as plain text, or link to the Linear issue — these are not Notion pages |
+| `[stakeholder interviews](../research/stakeholder-interviews.md)` (§1b) | `[stakeholder interviews](→ Notion: Stakeholder Interviews)` |
+| `[Data Schema → Turbidity polarity](../engineering/data-schema.md)` (§1b and §4) | `[Data Schema → Turbidity polarity](→ Notion: On-Board CSV Data Schema)` |
+| `[ADR-0002](../decisions/0002-lifepo4-charging-path.md)` (§1b) | `[ADR-0002](→ Notion: ADR-0002 LiFePO₄ Charging Path)` |
+| `SCO-20`, `SCO-19`, `SCO-12` etc. in prose | Leave as plain text, or link to the Linear issue — these are not Notion pages |
+
+> **Revised 2026-08-15** after [PR #54](https://github.com/David-Chousal/S.C.O.U.T./pull/54). The
+> earlier version of this table listed two `[Open questions]` links; the polarity fix replaced
+> both, and §4 gained a polarity subsection. This is the staleness the header warns about —
+> re-derive from the source if this entry sits much longer.
 
 Also append to the page's **References** section:
 
@@ -77,6 +85,13 @@ Also append to the page's **References** section:
   > to one row.
 
   Edit that single cell in the Notion table block; do not re-import the whole table.
+
+  **Also from [PR #54](https://github.com/David-Chousal/S.C.O.U.T./pull/54):** the
+  `turbidity_adc` row changed (example `512` → `3300`, plus a "higher count is clearer
+  water" note), and a whole new **Turbidity polarity** subsection was added after the
+  optional-columns list — including a two-row table and a callout stating the
+  non-inverting requirement on the analog front end. That callout matters to ECE, so it
+  should land in Notion where Isabella will see it.
 
 ### 3 · Knowledge Hub pages — routine updates · ⏳ not yet in Notion
 

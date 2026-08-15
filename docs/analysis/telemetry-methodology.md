@@ -64,12 +64,13 @@ unchanging, and smooth. Worse, the drift is **monotonic**, so it is indistinguis
 real creeping-turbidity trend to the Mann-Kendall test in §5 — which will report it as
 `increasing` with high confidence.
 
-The discriminator is the **daily clean-water floor**: the 10th percentile of each day's
-turbidity samples, approximating the clearest water that day. Genuine turbidity is *episodic* —
-events spike the upper tail and settle back, leaving the floor where it was. Fouling instead
-moves the floor itself, because a coated sensor can no longer read clean water as clean. That
-floor series is tested for monotonic change with the same Mann-Kendall machinery as everything
-else.
+The discriminator is the **daily clean-water reading**: the 90th percentile of each day's
+turbidity samples, approximating the clearest water the sensor saw that day. A *high*
+percentile because a higher ADC count is clearer water — see the polarity note in §4. Genuine
+turbidity is *episodic*: events pull readings down and they settle back, leaving the day's
+clearest reading where it was. Fouling instead moves that clearest reading itself, because a
+coated window can no longer transmit clean water as clean. That series is tested for monotonic
+change with the same Mann-Kendall machinery as everything else.
 
 Following Manov et al.'s cross-comparison method, the daily temperature series is the
 independent, non-optical reference — the DS18B20 is sealed and does not suffer optical-window
@@ -78,14 +79,16 @@ fouling. Verdicts:
 | Verdict | Condition |
 |---|---|
 | Insufficient data | Fewer than 14 usable days — fouling is a weeks-scale process |
-| No drift detected | The floor is stationary; variation is episodic |
-| Suspect | The floor is marginally trending, **or** it trends while temperature also trends (a real regime change may explain it; one buoy cannot separate the two) |
-| Likely | The floor trends while the reference channel is stationary — a baseline shift with no environmental correlate |
+| No drift detected | The clean-water reading is stationary; variation is episodic |
+| Suspect | It is marginally trending, **or** it trends while temperature also trends (a real regime change may explain it; one buoy cannot separate the two) |
+| Likely | It trends while the reference channel is stationary — a shift with no environmental correlate |
 
-**Direction is deliberately not assumed.** Whether fouling drives `turbidity_adc` up or down
-depends on the SEN0189's ADC→turbidity polarity, which is not yet settled in this repo (see
-[Open questions](../hub/research/open-questions.md)). A persistent monotonic march is the signal
-either way, so both signs are flagged and the observed direction is reported.
+**Detection stays direction-agnostic, but the direction is interpreted.** Fouling attenuates
+light, so it drives the clean-water reading **down**; that is reported as *consistent with
+fouling*. A *rise* is still flagged, because the analog front end is not yet designed
+([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) and an inverting stage there would flip
+the sign — but it is reported as *inconsistent with fouling*, pointing instead at a cleaned or
+swapped sensor, a wiring change, or exactly that inverting front end.
 
 This screen reports; it never corrects. It is a *screen*, not proof: a lone buoy carries no
 clean reference sensor, so a genuine long-term turbidity change cannot be fully separated from
@@ -138,8 +141,19 @@ The SEN0189 is **uncalibrated** (raw ADC/volts, not NTU — see the data-schema 
 so absolute water-quality thresholds are not defensible. The pipeline instead detects
 **relative** turbidity events (runoff, resuspension, sediment plumes) against the deployment's
 own robust baseline using the **Iglewicz–Hoaglin modified z-score** (median + MAD, with a
-mean-absolute-deviation fallback when the MAD degenerates), flagging positive excursions above a
-3.5 modified-z threshold (Iglewicz & Hoaglin 1993). Detection runs on the **raw per-sample**
+mean-absolute-deviation fallback when the MAD degenerates), flagging excursions beyond a 3.5
+modified-z threshold (Iglewicz & Hoaglin 1993).
+
+**Polarity — a dirtier reading is a lower number.** The SEN0189 measures transmittance, so its
+output *falls* as turbidity rises: *"the output value will decrease when in liquids with a high
+turbidity"* (DFRobot datasheet), with clear water (< 0.5 NTU) at ≈ 4.1 V. The firmware logs raw
+`analogRead` with no inversion, so a sediment plume is a **dip** in `turbidity_adc`. Detection
+therefore flags **negative** excursions. Until 2026-08-15 it flagged positive ones and was
+reporting each day's clearest water as a plume; see
+[Data Schema → Turbidity polarity](../engineering/data-schema.md) for the full convention and
+the non-inverting requirement it places on the analog front end.
+
+Detection runs on the **raw per-sample**
 series, not the daily median, so short sub-daily events are not smoothed away. Converting to
 NTU requires a calibration curve against turbidity standards — a documented follow-up.
 
@@ -171,9 +185,9 @@ and `matplotlib` (dashboard) are optional accelerators.
 - Biofouling drift is *screened*, not measured or corrected — with no clean reference sensor on
   a lone buoy, a genuine long-term turbidity change and instrument drift cannot be fully
   separated (SCO-20).
-- The SEN0189's ADC→turbidity polarity is unresolved, so the *sign* of a turbidity change is not
-  yet interpretable as "clearer" or "dirtier" — see
-  [Open questions](../hub/research/open-questions.md).
+- Turbidity polarity is settled from the datasheet (higher ADC = clearer water) but has not yet
+  been confirmed on a bench with the actual sensor and front end; that confirmation rides along
+  with the NTU calibration in SCO-12.
 
 ## References
 
