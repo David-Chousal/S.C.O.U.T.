@@ -34,7 +34,10 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
-### 1 · Telemetry Methodology — two new sections · ⏳ not yet in Notion
+> **All three cleared 2026-08-16.** Payloads are retained below only as a record of what was
+> mirrored; delete them on the next pass. Entry 3 is *partial* by necessity — see its note.
+
+### 1 · Telemetry Methodology — two new sections · ✅ mirrored 2026-08-16
 
 - **Notion page** — Analysis → *Environmental Telemetry Methodology*
 - **Source** — [`docs/analysis/telemetry-methodology.md`](../analysis/telemetry-methodology.md)
@@ -73,7 +76,7 @@ Also append to the page's **References** section:
 - U.S. Integrated Ocean Observing System (2017). *Manual for Real-Time Quality Control of
   In-Situ Optical Observations.* https://doi.org/10.25923/v9p8-ft24
 
-### 2 · Data Schema — `record_seq` is now an idempotency key · ⏳ not yet in Notion
+### 2 · Data Schema — `record_seq` is now an idempotency key · ✅ mirrored 2026-08-16
 
 - **Notion page** — Engineering → *On-Board CSV Data Schema*
 - **Source** — [`docs/engineering/data-schema.md`](../engineering/data-schema.md)
@@ -93,7 +96,7 @@ Also append to the page's **References** section:
   non-inverting requirement on the analog front end. That callout matters to ECE, so it
   should land in Notion where Isabella will see it.
 
-### 3 · Knowledge Hub pages — routine updates · ⏳ not yet in Notion
+### 3 · Knowledge Hub pages — routine updates · ✅ partially mirrored 2026-08-16
 
 - **Notion page** — Decisions → *Hub* (whichever pages mirror the Hub files)
 - **From** — PRs [#45](https://github.com/David-Chousal/S.C.O.U.T./pull/45) and
@@ -111,6 +114,13 @@ Also append to the page's **References** section:
 If the Hub is mirrored as a single Notion page rather than one page per file, paste these as
 sections under matching headings and keep the file names visible so the mapping stays obvious.
 
+> **What was actually mirrored, 2026-08-16.** The Notion Hub has exactly three sub-pages —
+> *Canonical Facts*, *Decision Log*, *Project Status*. **Project Status** was refreshed in full.
+> **`journal/`, `research/open-questions.md`, and `linear-backlog.md` have no Notion counterpart
+> at all**, so those rows in the table above have nowhere to go. That is a structural gap, not a
+> backlog item: either those pages get created in Notion, or the Hub mirror is openly scoped to
+> the three surfaces that exist. Worth deciding rather than re-queueing every PR.
+
 ---
 
 ## Done
@@ -120,4 +130,7 @@ mirrored rather than silently emptying.
 
 | Entry | Mirrored on | By |
 |---|---|---|
-| _(nothing yet)_ | | |
+| Root **S.C.O.U.T.** page — status table (telemetry, dashboard, firmware, shore, mechanical), platform reframing to a nearshore monitoring platform, packet size 82 → 30 bytes in the architecture diagram, three new Known-inconsistency rows | 2026-08-15 | Claude session, direct connector write |
+| **1 · Telemetry Methodology** — §1a QARTOD tests and §1b biofouling drift screen added in full; §4 rewritten with the Turbidity polarity paragraph (it still said "flagging **positive** excursions", i.e. the pre-PR-#54 inverted science); two Limitations bullets and two references (Manov 2004, IOOS QARTOD 2017) added. All links rewritten to Notion URLs | 2026-08-16 | Claude session |
+| **2 · Data Schema** — `record_seq` row gained the idempotency-key note; `turbidity_adc` row updated; new **Turbidity polarity** section with the clear/turbid table and a red callout stating the non-inverting requirement for ECE | 2026-08-16 | Claude session |
+| **3 · Knowledge Hub (partial)** — **Project Status** page fully refreshed (telemetry, dashboard, firmware, shore, mechanical rows; SCO-47 added as a fourth blocker; mechanical chokepoint called out). See the note in entry 3 for what has no Notion target | 2026-08-16 | Claude session |

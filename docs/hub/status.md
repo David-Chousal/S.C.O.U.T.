@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-14.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-08-16.**
 
 ---
 
@@ -21,12 +21,12 @@ decisions; nothing downstream starts until those land. Full plan:
 | Stakeholder research | ✅ Complete | 3 NOAA researchers interviewed | — |
 | System architecture | ✅ Complete | [EDD v0.2](../engineering/engineering-design-document.md) | — |
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
-| Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)) | — |
-| Live dashboard | 🟢 Deployed | Static GitHub Pages telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md)) | — |
+| Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)). SEN0189 polarity corrected pipeline-wide ([SCO-41](https://linear.app/scout1/issue/SCO-41)) | — |
+| Live dashboard | 🟢 Deployed | Public multi-page GitHub Pages site + telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md), [SCO-44](https://linear.app/scout1/issue/SCO-44)). Drift verdict not yet surfaced ([SCO-51](https://linear.app/scout1/issue/SCO-51)) | — |
 | Firmware | 🟡 In progress | Phase 1: state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, adaptive transmission, CR 4/8 + blind repetition. **Target build compiles and is now gated in CI** | Hardware bring-up |
 | Shore station | 🟡 In progress | Simulated LoRa→CSV data path (codec, receiver, idempotent store) + tests ([`shore/`](../../shore/)) | Real radio bring-up |
 | Electrical design | 🟡 In progress | Build platform decided; wiring/PCB pending | Charging path ([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) |
-| Mechanical design | 🟡 In progress | Enclosure + hull concepts developed; flotation + turbidity-housing drawings in `mechanical/cad/` | Native CAD + STEP exports, mooring, biofouling approach |
+| Mechanical design | 🟡 In progress | **All five CAD categories documented** ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor pod, stem, solar mount — 40 STEP exports from the live Onshape document, in-house additive only. ADR-0003 reaffirmed against the pod design ([SCO-52](https://linear.app/scout1/issue/SCO-52)) | Final floatation design ([SCO-48](https://linear.app/scout1/issue/SCO-48)), housing dimensions ([SCO-49](https://linear.app/scout1/issue/SCO-49)), cap cable gland ([SCO-53](https://linear.app/scout1/issue/SCO-53)), stem/solar refinement ([SCO-54](https://linear.app/scout1/issue/SCO-54)), O-ring method ([SCO-55](https://linear.app/scout1/issue/SCO-55)), mooring, biofouling |
 | Field deployment | 🔴 Planned | Hawaii, Phase 6 (Mar–May 2027) | Everything upstream |
 
 **Legend:** ✅ Complete · 🟢 Ready/unblocked · 🟡 In progress · 🔴 Not started or early
@@ -40,6 +40,9 @@ decisions; nothing downstream starts until those land. Full plan:
    [SCO-8](https://linear.app/scout1/issue/SCO-8)
 3. **Dissolved oxygen decision** — blocks closing the V1 sensor list.
    [SCO-11](https://linear.app/scout1/issue/SCO-11)
+4. **SEN0189 analog front end must be non-inverting** — an inverting stage would silently
+   invert every downstream turbidity interpretation with no error anywhere.
+   [SCO-47](https://linear.app/scout1/issue/SCO-47)
 
 ## Latest decisions
 

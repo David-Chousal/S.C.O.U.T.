@@ -121,7 +121,7 @@ through with their resolution; the remaining open ones are marked ⏳ with an ow
 | ✅ ~~Deployment depth~~ | **Resolved: 2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated and should be re-exported |
 | ✅ ~~LoRa range~~ | **Resolved: ~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd / 15–20 km corrected. Actual over-saltwater range to be measured in Phase 4 |
 | ✅ ~~Sensor count~~ | **Resolved** by [ADR-0003](decisions/0003-single-point-sensing.md): one sensor per modality deployed; extras are field spares; multi-depth deferred |
-| **Hydrophone part** ⏳ | Diagram cites Aquarian H2a-XLR; EDD BOM specifies H2dM. **Owner: Isabella (ECE)** — needs a Linear issue (see [ADR-0003](decisions/0003-single-point-sensing.md)) |
-| **Dissolved oxygen status** ⏳ | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — needs a Linear issue |
+| **Hydrophone part** ⏳ | Diagram cites Aquarian H2a-XLR; EDD BOM specifies H2dM. **Owner: Isabella (ECE)** — [SCO-8](https://linear.app/scout1/issue/SCO-8), `Needs Decision` |
+| **Dissolved oxygen status** ⏳ | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — [SCO-11](https://linear.app/scout1/issue/SCO-11), `Needs Decision` |
 | ✅ ~~Academic year~~ | **Resolved: 2026–2027.** No stray 2025–2027 remains in the docs |
 | **Audio over LoRa** | EDD states raw audio is stored onboard and never transmitted. Any plan to transmit waveform data contradicts the design baseline and is not bandwidth-feasible |

@@ -132,8 +132,10 @@ because the user asked for something specific — do it first, briefly, then pro
 
 1. **Check repo state** — `git status` and `git log --oneline -5`. Report uncommitted work or
    unpushed commits.
-2. **Check Linear** — list issues in `In Progress` and `Todo`. Report what is open and what
-   is stale (no update in >7 days).
+2. **Check Linear** — list issues in `In Progress`, `Todo`, `Blocked`, `Needs Decision`, and
+   `Waiting on Parts`. Report what is open and what is stale (no update in >7 days). The last
+   three are the ones worth naming out loud: they are not moving, and somebody has to unstick
+   them.
 3. **Ask the alignment question.** Verbatim intent, phrased naturally:
 
    > Before we start — has anything changed outside this repo since last time? Specifically:
@@ -213,8 +215,31 @@ naming any new file.
 
 ## Linear conventions
 
-Workspace `S.C.O.U.T.` · one team, `S.C.O.U.T.`, issue key **`SCO`** (issues read `SCO-12`) ·
-statuses: `Backlog` `Todo` `In Progress` `Done` `Canceled` `Duplicate`.
+Workspace `S.C.O.U.T.` · one team, `S.C.O.U.T.`, issue key **`SCO`** (issues read `SCO-12`).
+
+### Statuses
+
+Twelve workflow states, grouped by Linear category. **Pick the one that says why the issue is
+not moving** — that is the whole point of having this many.
+
+| Status | Category | Use it when |
+|---|---|---|
+| `Backlog` | backlog | Real work, will be done, nobody has started |
+| `Deferred` | backlog | **Deliberately parked** beyond current scope. Not "not yet" — "not this version." Distinct from `Canceled`, which means it will never happen |
+| `Todo` | unstarted | Queued and ready; next up |
+| `Needs Decision` | unstarted | **Waiting on a human to choose**, not on work. If the acceptance criteria start with "decide" or "choose", it belongs here |
+| `Waiting on Parts` | unstarted | Cannot start until hardware arrives. Hardware projects live here for weeks; do not hide it inside `Blocked` |
+| `In Progress` | started | Actively being worked |
+| `Blocked` | started | Started, then hit a dependency on **another task**. Always set the `blockedBy` relation too — the status says *that* it's stuck, the relation says *on what* |
+| `In Review` | started | Work done, PR open, waiting on a human review |
+| `In Test` | started | Implementation done, being verified — bench, submersion, range, field. Verification is its own EDD section (§21), not a sub-step of building |
+| `Done` | completed | Acceptance criteria met |
+| `Canceled` | canceled | Will not be done |
+| `Duplicate` | duplicate | Superseded by another issue |
+
+**`Blocked` vs `Needs Decision` vs `Waiting on Parts`** is the distinction that matters most —
+all three mean "not moving", and conflating them hides *why*. Blocked → another ticket.
+Needs Decision → a person. Waiting on Parts → a shipment.
 
 ### When to create an issue
 
@@ -302,6 +327,11 @@ downstream should start until those land, particularly
 
 Move to `In Progress` when work actually starts, not when it is planned. Anything in
 `In Progress` for over a week without a comment gets flagged at session start.
+
+**Do not leave an issue in `In Progress` when it is actually stuck.** Move it to `Blocked`,
+`Needs Decision`, or `Waiting on Parts` and say what it is waiting on. An issue parked in
+`In Progress` looks like someone is working on it, which is how a blocker sits unnoticed for
+a month — the exact failure the August 2026 audit found across the documentation.
 
 ---
 

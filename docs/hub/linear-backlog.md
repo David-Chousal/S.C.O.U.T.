@@ -269,6 +269,51 @@ them should add the `SCO-##` link to the heading and move the entry into the rec
 > dropped the open-access PDFs into `library/`, so the 🔓 rows in
 > [`sources.md`](research/sources.md) now have their `Local` PDFs.
 
+## Filing status — reconciled 2026-08-15
+
+A session on 2026-08-15 reached the `scout1` workspace and reconciled Linear against PRs
+#40–#56. Everything staged in this document has now been filed; the sections below are kept as
+the record of how the backlog was derived, not as a queue.
+
+| Filed retroactively as **Done** | Covering |
+|---|---|
+| [SCO-41](https://linear.app/scout1/issue/SCO-41) | SEN0189 polarity corrected pipeline-wide (this was staged item **D1** — resolved by PR #54 before it was ever filed) |
+| [SCO-42](https://linear.app/scout1/issue/SCO-42) | Firmware target build fixed and gated in CI (PR #49) |
+| [SCO-43](https://linear.app/scout1/issue/SCO-43) | Shore CSV store made idempotent (PR #49) |
+| [SCO-44](https://linear.app/scout1/issue/SCO-44) | Public multi-page website (PRs #27, #40, #43–#48, #50, #55) |
+| [SCO-45](https://linear.app/scout1/issue/SCO-45) | Floatation CAD iteration history v1–v9 (PR #53) |
+| [SCO-46](https://linear.app/scout1/issue/SCO-46) | Electronics housing dimensions corrected to TBD (PR #53) |
+
+| Filed as **open** | Owner |
+|---|---|
+| [SCO-47](https://linear.app/scout1/issue/SCO-47) — SEN0189 analog front end must be non-inverting | Isabella (ece) |
+| [SCO-48](https://linear.app/scout1/issue/SCO-48) — choose the final floatation iteration | John Ryan (geng) |
+| [SCO-49](https://linear.app/scout1/issue/SCO-49) — decide electronics housing dimensions | John Ryan (geng) |
+| [SCO-50](https://linear.app/scout1/issue/SCO-50) — document remaining CAD categories | John Ryan (geng) |
+| [SCO-51](https://linear.app/scout1/issue/SCO-51) — surface the drift verdict on the dashboard | David (csen) |
+
+### Second pass — PRs #58–#60 (mechanical CAD), reconciled 2026-08-16
+
+| Filed retroactively as **Done** | Covering |
+|---|---|
+| [SCO-52](https://linear.app/scout1/issue/SCO-52) | Multi-depth pod vs ADR-0003 — flagged and resolved same day (PR #59) |
+
+| Filed as **open** — all John Ryan (`geng`) | From |
+|---|---|
+| [SCO-53](https://linear.app/scout1/issue/SCO-53) — electronics housing cap needs a cable gland | PR #58 (explicitly "not yet a Linear issue") |
+| [SCO-54](https://linear.app/scout1/issue/SCO-54) — refine stem and solar mount into current iterations | PR #60 |
+| [SCO-55](https://linear.app/scout1/issue/SCO-55) — decide the O-ring manufacturing method | PR #60 |
+| [SCO-56](https://linear.app/scout1/issue/SCO-56) — audit the Onshape "Initial Frame" folder | PR #60 |
+
+**SCO-50** → Done: all five CAD categories delivered across PRs #58–#60, with the Onshape
+share link satisfying the native-source rule that PR #60 clarified for cloud CAD tools.
+**SCO-48** stays open with a comment — the candidate set grew from v1–v9 to include the
+wedge-based Master V3 and Outer Octagon designs.
+
+Also moved: **SCO-16** → Done (PR #45). **SCO-21** stays open with the firmware half recorded
+as a comment, pending Phase 4 field confirmation. **SCO-15** and **SCO-18** were missing phase
+projects and now have them.
+
 ## Settled decisions — do **not** create tickets for these
 
 Context so the filing session doesn't re-open closed calls (full ledger: [`decision-log.md`](decision-log.md)):
