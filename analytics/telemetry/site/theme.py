@@ -283,7 +283,7 @@ main figure{margin:0}
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
-  border-radius:var(--radius-pill);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
+  border-radius:var(--radius);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
   border:1px solid var(--line-2);color:var(--ink);background:transparent;cursor:pointer;
   transition:transform var(--dur) var(--ease),background var(--dur) var(--ease),
     border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
