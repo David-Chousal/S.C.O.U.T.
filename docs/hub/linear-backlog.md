@@ -177,24 +177,29 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 - **Acceptance** — [ ] Each driver verified on hardware; [ ] end-to-end sense→log→TX cycle on the bench.
 - **Blocked by** — **A1** (power), hardware assembly · **Source** — PR #16, PR #17
 
-### C3 · `analytics: fix the run_pipeline --audio_dir / hyphen flag inconsistency` — [SCO-26](https://linear.app/scout1/issue/SCO-26)
+### C3 · `analytics: fix the run_pipeline --audio_dir / hyphen flag inconsistency` — [SCO-26](https://linear.app/scout1/issue/SCO-26) · ⏭️ **next up**
 - **Label** `csen` · **Owner** David (me) · **Type** `Improvement` · **Priority** `Low` · **Project** any
 - **Context** — `run_pipeline.py` uses `--audio_dir` (underscore) while other scripts use hyphens. [CLAUDE.md](../../CLAUDE.md) says this is known and **must not be "fixed" without an issue** — this is that issue.
 - **Acceptance** — [ ] Flags made consistent (or documented as intentional) across `analytics/` CLIs.
 - **Blocked by** — nothing · **Source** — [CLAUDE.md → Before committing](../../CLAUDE.md)
+- **⏭️ Next up (2026-08-16)** — with the drift/polarity/delivery work merged, this and **C4** are the only unblocked CSEN items left; everything else needs hardware. Add the **`On Deck`** workflow label in Linear ([CLAUDE.md → Labels](../../CLAUDE.md)) so the queue reflects it. Priority stays `Low` — cheap, not important.
 
-### C4 · `analytics: recover the missing Sesoko 201807 recording` — [SCO-27](https://linear.app/scout1/issue/SCO-27)
+### C4 · `analytics: recover the missing Sesoko 201807 recording` — [SCO-27](https://linear.app/scout1/issue/SCO-27) · ⏭️ **next up**
 - **Label** `csen` · **Owner** David (me) · **Type** `Bug` · **Priority** `Low` · **Project** any
 - **Context** — Session `201807` has 4 of 5 files; one recording failed to download. Pipeline tolerates it (median of what's present), but the archive is incomplete.
 - **Acceptance** — [ ] File re-downloaded via `utils/download_sesoko.py`, or gap documented as permanent.
 - **Blocked by** — nothing · **Source** — [README → Data](../../README.md#data)
+- **⏭️ Next up (2026-08-16)** — paired with **C3** as the remaining unblocked CSEN work. Add the **`On Deck`** label in Linear. Note the acceptance criterion allows *documenting the gap as permanent* — if the source no longer serves the file, closing it that way is a real outcome, not a failure.
 
 ---
 
 ## D. Staged, not yet in Linear
 
-⏳ **These are not filed.** Raised 2026-08-15 by a session without `scout1` access. Whoever files
-them should add the `SCO-##` link to the heading and move the entry into the record above.
+⏳ **Not filed.** Raised by sessions without `scout1` access. Whoever files one should add the
+`SCO-##` link to its heading and move the entry into the record above.
+
+**D1 is resolved and needs no issue** — it is kept as a record. **D2 and D3 are live and
+unfiled.**
 
 ### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ✅ Resolved 2026-08-15 (never filed)
 - **Label** `csen` · **Owner** David (me) · **Type** `Bug` (implementation vs. datasheet conflict) · **Priority** `High` · **Project** Phase 1
@@ -204,6 +209,21 @@ them should add the `SCO-##` link to the heading and move the entry into the rec
 - **Blocked by** — nothing. The datasheet review can start now; the empirical confirmation rides along with **B7**'s formazin ladder rather than needing its own bench session.
 - **Source** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45), [`open-questions.md`](research/open-questions.md), `manov-2004` drift work (**B3**/[SCO-16](https://linear.app/scout1/issue/SCO-16))
 - **Note for the filer** — the biofouling drift screen delivered in PR #45 is deliberately **sign-agnostic**, so it stays correct whichever way this resolves. Only `turbidity.py` is at risk.
+
+### D2 · `csen: surface biofouling drift state on the Fleet page` — ⏳ not filed
+- **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2 → 5
+- **Context** — [SCO-51](https://linear.app/scout1/issue/SCO-51) put the drift verdict on the single-buoy Analytics page. The **Fleet** page ([`fleet_web.py`](../../analytics/telemetry/fleet_web.py)) is a separate renderer and shows no drift state at all, so a fouling buoy looks identical to a healthy one in the network view.
+- **Why it matters more here, not less** — a lone buoy has no clean reference, which is why the screen is only a *screen* ([SCO-20](https://linear.app/scout1/issue/SCO-20)). A fleet does: one buoy whose clean-water reading sinks while its neighbours hold steady is close to the redundant comparison `manov-2004` actually asks for. This is arguably the cheapest partial answer to SCO-20 available — no extra hardware, just cross-buoy comparison of a number already computed.
+- **Acceptance** — [ ] Each buoy tile carries its drift verdict; [ ] the rollup surfaces any buoy at `suspect`/`likely`; [ ] cross-buoy divergence in the clean-water reading is reported, or explicitly deferred with a reason.
+- **Blocked by** — nothing technically; **low value until more than one buoy exists**. File it, then park it in `Backlog` rather than `On Deck`.
+- **Source** — [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65) open questions · related **B8**/[SCO-20](https://linear.app/scout1/issue/SCO-20)
+
+### D3 · `analytics: add the drift verdict to the matplotlib PNG dashboard` — ⏳ not filed
+- **Label** `csen` · **Owner** David (me) · **Type** `Improvement` · **Priority** `Low` · **Project** any
+- **Context** — [`dashboard.py`](../../analytics/telemetry/dashboard.py) renders the optional PNG dashboard (`--dashboard`) and omits the drift verdict that the web page now shows. Deliberately skipped in [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65): nothing in the Pages build uses it, so widening scope there would have been unrelated work.
+- **Worth asking first** — whether the PNG dashboard is still wanted at all now that the static site covers the same ground. If it is only used for slides or the report, "add the verdict" and "retire it" are both valid closes; decide before building.
+- **Acceptance** — [ ] Verdict shown on the PNG, **or** the PNG dashboard retired with a note saying why.
+- **Blocked by** — nothing · **Source** — [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65) open tasks
 
 ---
 

@@ -43,6 +43,27 @@ The turbidity legend states the polarity (**higher ADC is clearer water**) becau
 one thing a reader can get exactly backwards; see
 [Data Schema → Turbidity polarity](data-schema.md).
 
+**`insufficient data` is deliberately unstyled.** The other three verdicts are colour-coded
+green / amber / red; a deployment too short to judge gets no colour at all. An absence of
+evidence is not a warning, and rendering it as one would train the reader to ignore the amber
+that does mean something. If this ever looks like an oversight, it is not — it is the point.
+
+#### Design iteration — where the polarity note ended up
+
+Worth recording because the lesson generalises. The polarity hint first went in the panel's
+**unit slot** (`ADC · uncalibrated · higher = clearer`), which reads correctly and passed every
+test. Building the page and *looking at it* showed the longer string wrapped the panel head
+onto two lines, leaving the turbidity panel visibly taller than the three beside it — the only
+panel in the grid with a two-line head.
+
+It moved to the **legend**, which has horizontal room and sits next to the series it describes
+anyway, so the fix improved the placement rather than merely working around the width.
+
+The generalisable part: **no string assertion would have caught this.** The tests asserted the
+text was present, and it was. Layout regressions on this page are only visible by building the
+site and opening it, so a browser pass belongs in the loop for any change touching panel heads,
+cards, or the legend — not just for changes that look visual up front.
+
 ### The Fleet page
 
 The Analytics page shows one telemetry stream; the **Fleet** page
