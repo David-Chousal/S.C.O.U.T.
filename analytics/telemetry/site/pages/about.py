@@ -2,9 +2,18 @@
 
 from __future__ import annotations
 
-from .. import components as c
+from .. import components as c, docnav
 from ..context import SiteContext
 from ..layout import REPO_URL
+
+# (section id, sidebar label) — ids must match the `sid=` on each section below.
+_NAV = [
+    ("overview", "Overview"),
+    ("story", "Story"),
+    ("team", "Team"),
+    ("institution", "University"),
+    ("roadmap", "Roadmap"),
+]
 
 TITLE = "About · S.C.O.U.T."
 DESCRIPTION = (
@@ -103,6 +112,7 @@ def _story() -> str:
         "built in. Coral-reef health is the first application, and the platform is designed to "
         "support others.</p>"
         "</div></div>",
+        sid="story",
     )
 
 
@@ -139,6 +149,7 @@ def _institution() -> str:
         ])
         + "</div></div>",
         cls="section-sm",
+        sid="institution",
     )
 
 
@@ -158,11 +169,12 @@ def _roadmap() -> str:
                      "deployment in Hawaii.")
         + f'<dl class="spec" style="margin-top:2rem">{rows}</dl>',
         cls="section-sm",
+        sid="roadmap",
     )
 
 
 def body(ctx: SiteContext) -> str:
-    return (
+    content = (
         c.page_header("About",
                       "About the project",
                       "S.C.O.U.T. is a Santa Clara University senior design capstone, built by three "
@@ -177,3 +189,4 @@ def body(ctx: SiteContext) -> str:
                 f'<a class="btn btn-primary" href="{REPO_URL}">View on GitHub</a>'
                 '<a class="btn" href="../analytics/">See the live data</a>')
     )
+    return docnav.page(title="About", items=_NAV, content=content, base=ctx.base)
