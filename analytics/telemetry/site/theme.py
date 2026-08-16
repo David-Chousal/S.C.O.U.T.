@@ -700,9 +700,10 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
 .chat-head b{display:block;font-size:1rem;color:var(--ink)}
 .chat-head span{display:block;font-size:var(--text-micro);color:var(--muted);margin-top:0.15rem}
-.chat-close{border:none;background:none;font-size:1.5rem;line-height:1;color:var(--muted);
-  cursor:pointer;padding:0 0.2rem}
-.chat-close:hover{color:var(--ink)}
+.chat-close{border:none;background:none;color:var(--muted);cursor:pointer;padding:0.2rem;
+  display:grid;place-items:center;border-radius:8px}
+.chat-close svg{width:20px;height:20px;display:block}
+.chat-close:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
 .chat-log{flex:1;overflow-y:auto;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.7rem}
 .chat-msg{max-width:86%;padding:0.6rem 0.85rem;font-size:0.92rem;line-height:1.5;border-radius:14px}
 .chat-bot{align-self:flex-start;background:var(--surface-2);color:var(--ink);
