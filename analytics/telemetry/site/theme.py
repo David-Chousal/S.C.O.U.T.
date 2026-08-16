@@ -495,7 +495,7 @@ main figure{margin:0}
 @media(max-width:560px){.spec-row{grid-template-columns:1fr;gap:0.2rem}}
 
 /* ── Data table ───────────────────────────────────────────────────────────── */
-.table-scroll{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow-1);
+.table-scroll{overflow-x:auto;border-radius:0;box-shadow:var(--shadow-1);
   background:var(--surface);-webkit-overflow-scrolling:touch}
 table.data{border-collapse:collapse;width:100%;min-width:520px;font-size:0.94rem}
 table.data caption{text-align:left;padding:1rem 1.2rem 0;color:var(--muted);
