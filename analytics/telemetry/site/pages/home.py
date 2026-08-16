@@ -21,8 +21,6 @@ def _hero(ctx: SiteContext) -> str:
     hero_media, hero_credit = imagery.hero(ctx.base, ctx.img_dir)
     return (
         '<section class="hero">'
-        f'<div class="hero-fish" id="hero-fish" aria-hidden="true" '
-        f'data-lottie="{ctx.base}assets/lottie/fish.json"></div>'
         '<div class="wrap">'
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
