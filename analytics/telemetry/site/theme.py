@@ -612,6 +612,8 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .rl-a1{stroke:var(--a-alert1)}.tx-a1{fill:var(--a-alert1)}
 .rl-a2{stroke:var(--a-alert2)}.tx-a2{fill:var(--a-alert2)}
 .mk-event{fill:var(--coral)}
+.panel-note{margin:0.8rem 0 0;font-size:var(--text-micro);color:var(--muted);line-height:1.5}
+.panel-note .pn-verdict{font-weight:600}
 .legend{display:flex;flex-wrap:wrap;gap:0.4rem 1.1rem;margin-top:0.8rem;
   font-size:var(--text-micro);color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:0.4rem}

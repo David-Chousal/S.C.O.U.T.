@@ -34,8 +34,22 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
-> **All three cleared 2026-08-16.** Payloads are retained below only as a record of what was
+> **Entries 1–3 cleared 2026-08-16.** Payloads are retained below only as a record of what was
 > mirrored; delete them on the next pass. Entry 3 is *partial* by necessity — see its note.
+> **Entry 4 is new and not yet mirrored.**
+
+### 4 · Live Dashboard — sensor health on the Analytics page · ⏳ not yet in Notion
+
+- **Notion page** — Engineering → *Live Dashboard*
+- **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
+- **From** — [SCO-51](https://linear.app/scout1/issue/SCO-51)
+- **What changed** — one new subsection, *"Sensor health is shown next to the data it affects"*,
+  after the authored-vs-data-driven paragraph. Explains why the biofouling verdict renders both
+  as a status card **and** as a rationale note under the turbidity chart, and that the turbidity
+  legend now states the polarity.
+- **Link to rewrite on paste** — `[Data Schema → Turbidity polarity](data-schema.md)` →
+  `(→ Notion: On-Board CSV Data Schema)`. The `drift.py` link is a repo path with no Notion
+  counterpart; leave it as plain text or point it at GitHub.
 
 ### 1 · Telemetry Methodology — two new sections · ✅ mirrored 2026-08-16
 

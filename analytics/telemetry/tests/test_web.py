@@ -28,7 +28,62 @@ def _records(days=10, temp=30.0):
     return out
 
 
+def _fouling_records(days=30, per_day_drop=3.0):
+    """A deployment whose clean-water reading sinks — the fouling signature."""
+    out = []
+    seq = 0
+    for d in range(days):
+        for s in range(48):
+            seq += 1
+            out.append(TelemetryRecord(
+                timestamp=_T0 + timedelta(days=d, minutes=30 * s),
+                buoy_id="SCOUT-01", record_seq=seq, temp_c=26.0,
+                turbidity_adc=int(3000 - per_day_drop * d - (s % 7)),
+                turbidity_v=None, turbidity_ntu=None, battery_v=3.3, uptime_s=seq * 1800,
+                audio_file="", flags=frozenset(),
+            ))
+    return out
+
+
 _FIXED = datetime(2027, 3, 11, 12, 0, tzinfo=timezone.utc)
+
+
+class DriftVerdictTest(unittest.TestCase):
+    """SCO-51 — a fouling warning nobody can see is not a warning."""
+
+    def _html(self, records):
+        return render_html(analyze(records, mmm=27.6), generated_at=_FIXED)
+
+    def test_drift_verdict_is_surfaced_on_the_page(self):
+        page = self._html(_fouling_records())
+        self.assertIn("Sensor drift", page)
+        self.assertIn("likely", page)
+
+    def test_the_rationale_is_shown_not_just_the_verdict(self):
+        # "likely" alone tells a reader nothing actionable; the why is the useful part.
+        page = self._html(_fouling_records())
+        self.assertIn("consistent with fouling", page)
+
+    def test_the_screen_not_proof_caveat_travels_with_it(self):
+        page = self._html(_fouling_records())
+        self.assertIn("Screen, not proof", page)
+
+    def test_a_healthy_deployment_reads_as_no_drift(self):
+        page = self._html(_records(days=30))
+        self.assertIn("no drift detected", page)
+        self.assertNotIn("consistent with fouling", page)
+
+    def test_severity_is_colour_coded(self):
+        fouled = self._html(_fouling_records())
+        healthy = self._html(_records(days=30))
+        self.assertIn("a-alert1", fouled)      # likely → the strongest treatment
+        self.assertIn("a-nostress", healthy)
+
+    def test_a_short_deployment_is_neutral_not_alarming(self):
+        # Too little data must not render as a warning — it is an absence of evidence.
+        page = self._html(_records(days=5))
+        self.assertIn("insufficient data", page)
+        self.assertNotIn("consistent with fouling", page)
 
 
 class WebDashboardTest(unittest.TestCase):

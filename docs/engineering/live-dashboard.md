@@ -25,6 +25,24 @@ The **static pages are authored** (they change only when the source changes); th
 and Fleet pages are data-driven** — their cards and charts regenerate from a `TelemetryReport`
 on every publish, so the data flow survives the redesign.
 
+### Sensor health is shown next to the data it affects
+
+The Analytics page carries a **Sensor drift** card (the biofouling verdict from
+[`drift.py`](../../analytics/telemetry/drift.py), colour-coded on the same severity palette as
+the bleaching alerts) and repeats the verdict *with its rationale* directly beneath the
+turbidity chart.
+
+Both, not one, and deliberately: a fouled sensor drifts monotonically, so the turbidity chart
+of a fouling buoy looks exactly like genuinely worsening water. A reader drawing conclusions
+from that chart is precisely the person who needs to know the instrument may be the cause, and
+they will not go looking for a card to find out. The note carries the *"screen, not proof"*
+caveat with it for the same reason — the verdict travels with its own limits rather than
+arriving as a bare label.
+
+The turbidity legend states the polarity (**higher ADC is clearer water**) because it is the
+one thing a reader can get exactly backwards; see
+[Data Schema → Turbidity polarity](data-schema.md).
+
 ### The Fleet page
 
 The Analytics page shows one telemetry stream; the **Fleet** page
