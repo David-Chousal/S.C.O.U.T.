@@ -49,21 +49,10 @@ _REFS_DOCS = [
 
 
 def _architecture() -> str:
-    # The data-path section is shared verbatim with the Home page via components.data_path(),
-    # so the two never drift. Its section id is "how" (see the sidebar item below). The wrapper
-    # only adds top space here (pushing it below the "How the buoy works" hero, matching About and
-    # Science) without touching the shared component, so Home's spacing is unaffected.
-    # data_path() is a `.section-sm` (tighter top padding than the full `.section` used for
-    # Science's first block), so the wrapper adds the same margin+bump as Science *plus* the
-    # section-vs-section-sm padding delta, landing "The data path" at the same hero gap as the
-    # About and Science landing sections across viewports.
-    return (
-        '<div style="padding-top:calc('
-        "clamp(1.6rem,0.9rem + 2vw,3rem) + 1.2rem "
-        "+ clamp(5rem,3.4rem + 8vw,11rem) - clamp(3.4rem,2.4rem + 4vw,6rem) + 5px)\">"
-        + c.data_path()
-        + "</div>"
-    )
+    # The data-path section is shared verbatim with the Home page via components.data_path()
+    # (a `.section-sm` with id "how"), so the two never drift and the first-section gap is the
+    # standard one used everywhere else on the page.
+    return c.data_path()
 
 
 def _cycle() -> str:
@@ -124,7 +113,7 @@ def _subsystems() -> str:
     ]
     grid = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
-        c.head_block("Subsystems", "The subsystems")
+        c.head_block("Inside the buoy", "The subsystems")
         + f'<div class="subsystem-grid">{grid}</div>',
         cls="section-sm",
         sid="subsystems",
@@ -135,7 +124,7 @@ def _platform() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-3">'
-        + c.head_block("Build platform", "Hardware platform",
+        + c.head_block("MCU and radio", "Hardware platform",
                        "The microcontroller and radio are settled in ADR-0001, which lets "
                        "firmware and wiring proceed. A production PCB target is kept on the shelf.")
         + '<div class="prose" style="margin-top:1rem"><p>The confirmed build platform is the '

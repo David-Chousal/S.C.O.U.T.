@@ -27,8 +27,6 @@ def _hero(ctx: SiteContext) -> str:
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
         '<p class="hero-expand">Santa Clara Oceanic Utilities Transmitter</p>'
-        '<p class="hero-lead">A low-cost, solar-powered buoy that monitors nearshore reef '
-        "conditions for a year or more on a single deployment.</p>"
         '<div class="btn-row">'
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
@@ -38,7 +36,7 @@ def _hero(ctx: SiteContext) -> str:
         '<span class="signal">Turbidity</span>'
         '<span class="signal">Battery &amp; health</span>'
         '<span class="signal soon">Dissolved oxygen</span>'
-        '<span class="signal soon">Reef soundscape</span>'
+        '<span class="signal">Reef soundscape</span>'
         "</div>"
         "</div>"  # /.wrap — the banner below is full-bleed, so it lives outside the wrap
         f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>{hero_credit}'

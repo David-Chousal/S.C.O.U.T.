@@ -114,7 +114,7 @@ _CSS = """
   --gutter:clamp(1.4rem,0.8rem + 3vw,4rem);
   --section:clamp(5rem,3.4rem + 8vw,11rem);
   --radius:16px;
-  --radius-lg:28px;
+  --radius-lg:0;      /* card surfaces are square (cards, team cards, panels, reef photos, render slot) */
   --radius-pill:999px;
   --track:0.18em;
   --ease:cubic-bezier(0.22,1,0.36,1);
@@ -283,7 +283,7 @@ main figure{margin:0}
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
-  border-radius:var(--radius-pill);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
+  border-radius:var(--radius);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
   border:1px solid var(--line-2);color:var(--ink);background:transparent;cursor:pointer;
   transition:transform var(--dur) var(--ease),background var(--dur) var(--ease),
     border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
@@ -299,23 +299,25 @@ main figure{margin:0}
 .textlink:hover svg{transform:translateX(3px)}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
-.hero{position:relative;isolation:isolate;
-  padding-block:clamp(4rem,2.4rem + 7vw,8rem) 0;text-align:center}
-.hero>.wrap{position:relative;z-index:1}
+.hero{position:relative;isolation:isolate;padding-block:0;text-align:center}
+/* The hero text fills the first screen so the full-bleed banner below always starts under the
+   fold — no image peeking at the very top of the page. */
+.hero>.wrap{position:relative;z-index:1;min-height:calc(100vh - 56px);
+  min-height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:center;
+  padding-block:clamp(2.5rem,6vh,5rem)}
 .hero-fish{position:absolute;left:0;right:0;top:6%;bottom:34%;z-index:0;pointer-events:none;
   overflow:hidden;opacity:0.85}
 .hero-fish svg,.hero-fish canvas{display:block;width:100%;height:100%}
 @media (prefers-reduced-motion:reduce){.hero-fish{display:none}}
 .hero .eyebrow{margin-bottom:2rem}
-.hero .btn-row{justify-content:center}
+.hero .btn-row{justify-content:center;margin-top:clamp(2rem,1.4rem + 1.6vw,2.6rem)}
 .hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--ink);
   margin:0}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
-.hero-lead{max-width:38ch;margin:2rem auto 2.4rem;font-size:var(--text-lead);color:var(--muted)}
 /* Home hero image is a full-bleed banner: it lives outside .wrap, so it spans the whole
    page width and sits flush against the next section. */
-.hero-figure{margin-top:clamp(3rem,2rem + 4vw,5rem);overflow:hidden;
+.hero-figure{margin-top:0;overflow:hidden;
   height:clamp(420px,66vh,820px);position:relative;background:var(--surface-2)}
 .hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover}
@@ -354,7 +356,7 @@ main figure{margin:0}
 .card-glyph{width:34px;height:34px;color:var(--accent);margin-bottom:1.1rem}
 .signal-grid,.subsystem-grid{display:grid;
   gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem}
-.signal-grid{grid-template-columns:repeat(4,1fr)}
+.signal-grid{grid-template-columns:repeat(4,1fr);gap:clamp(0.7rem,0.4rem + 0.8vw,1rem)}
 .subsystem-grid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:900px){.signal-grid,.subsystem-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.signal-grid,.subsystem-grid{grid-template-columns:1fr}}
@@ -363,6 +365,19 @@ main figure{margin:0}
 .feature-plain .card-glyph{margin-bottom:0.9rem}
 .feature-plain .kicker{font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:0.5rem}
+/* The "What it measures" signals sit in square cards (scoped to .signal-grid so the
+   Technology subsystems, also .feature-plain, stay card-less). */
+.signal-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
+  padding:clamp(1.15rem,0.85rem + 0.8vw,1.5rem);box-shadow:var(--shadow-1);
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.signal-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.signal-grid .feature-plain .card-glyph{margin-bottom:0.6rem}
+.signal-grid .feature-plain h3{margin-bottom:0.3rem}
+/* The Technology "The subsystems" grid uses the same white square cards. */
+.subsystem-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
+  padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.subsystem-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
 .big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
   letter-spacing:-0.03em;color:var(--ink)}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}
@@ -480,7 +495,7 @@ main figure{margin:0}
 @media(max-width:560px){.spec-row{grid-template-columns:1fr;gap:0.2rem}}
 
 /* ── Data table ───────────────────────────────────────────────────────────── */
-.table-scroll{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow-1);
+.table-scroll{overflow-x:auto;border-radius:0;box-shadow:var(--shadow-1);
   background:var(--surface);-webkit-overflow-scrolling:touch}
 table.data{border-collapse:collapse;width:100%;min-width:520px;font-size:0.94rem}
 table.data caption{text-align:left;padding:1rem 1.2rem 0;color:var(--muted);
@@ -556,12 +571,6 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .weed-c{left:44%;height:132px;opacity:0.4}
 @media (max-width:640px){.weed-c{display:none}}
 @media (prefers-reduced-motion:reduce){.footer-seaweed{display:none}}
-/* Roaming fish: transient elements spawned by init.js anywhere in the viewport, at intervals. */
-.roaming-fish{position:fixed;z-index:4;pointer-events:none;aspect-ratio:1600/615;opacity:0;
-  animation:roam 8s ease both}
-.roaming-fish svg{width:100%;height:100%;display:block;transform:scaleX(var(--flip,1))}
-@keyframes roam{0%{opacity:0}12%{opacity:0.9}80%{opacity:0.9}100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.roaming-fish{display:none}}
 /* Ambient footer critters — one submarine, crab, and starfish, spread around the footer and
    sitting behind the text (z-index 0, below the footer-grid). */
 .footer-critters{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
@@ -623,7 +632,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   font-size:var(--text-micro);margin-right:0.4rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
   gap:clamp(0.8rem,0.4rem + 0.8vw,1.2rem);margin:0 0 2.4rem}
-.stat{background:var(--surface);border-radius:var(--radius);padding:1.1rem 1.25rem;
+.stat{background:var(--surface);border-radius:0;padding:1.1rem 1.25rem;
   box-shadow:var(--shadow-1)}
 .stat .stat-label{color:var(--faint);font-size:var(--text-micro);letter-spacing:0.08em;
   text-transform:uppercase;font-weight:500}

@@ -41,8 +41,7 @@ def _brand(base: str) -> str:
             f'<img class="mark" src="{base}assets/img/brand/scout-mark.png" alt="" '
             'width="30" height="30" decoding="async">'
         )
-        + '<span class="brand-txt"><b>S.C.O.U.T.</b>'
-        "<span>Oceanic Utilities Transmitter</span></span></a>"
+        + '<span class="brand-txt"><b>S.C.O.U.T.</b></span></a>'
     )
 
 

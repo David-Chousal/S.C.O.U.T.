@@ -2,9 +2,18 @@
 
 from __future__ import annotations
 
-from .. import components as c
+from .. import components as c, docnav
 from ..context import SiteContext
 from ..layout import REPO_URL
+
+# (section id, sidebar label) — ids must match the `sid=` on each section below.
+_NAV = [
+    ("overview", "Overview"),
+    ("story", "Story"),
+    ("team", "Team"),
+    ("institution", "University"),
+    ("roadmap", "Roadmap"),
+]
 
 TITLE = "About · S.C.O.U.T."
 DESCRIPTION = (
@@ -83,14 +92,7 @@ def _overview() -> str:
         ])
         + "</div></div>"
     )
-    # Extra breathing room: `margin-top` opens space below the "About the project" hero;
-    # the padding-top bump adds a little more above the "The project" heading.
-    return (
-        '<section class="section" id="overview" '
-        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
-        'padding-top:calc(var(--section) + 1.2rem + 5px)">'
-        f'<div class="wrap">{inner}</div></section>'
-    )
+    return c.section(inner, sid="overview", cls="section-sm")
 
 
 def _story() -> str:
@@ -110,6 +112,7 @@ def _story() -> str:
         "built in. Coral-reef health is the first application, and the platform is designed to "
         "support others.</p>"
         "</div></div>",
+        sid="story",
     )
 
 
@@ -121,7 +124,7 @@ def _team(base: str) -> str:
         in enumerate(_TEAM, start=1)
     )
     return c.section(
-        c.head_block("The team", "The team",
+        c.head_block("Who built it", "The team",
                      "Three students, one each from electrical, mechanical, and software "
                      "engineering, each responsible for the part of the system in their field.")
         + f'<div class="team" style="margin-top:2.4rem">{cards}</div>',
@@ -146,6 +149,7 @@ def _institution() -> str:
         ])
         + "</div></div>",
         cls="section-sm",
+        sid="institution",
     )
 
 
@@ -165,13 +169,14 @@ def _roadmap() -> str:
                      "deployment in Hawaii.")
         + f'<dl class="spec" style="margin-top:2rem">{rows}</dl>',
         cls="section-sm",
+        sid="roadmap",
     )
 
 
 def body(ctx: SiteContext) -> str:
-    return (
+    content = (
         c.page_header("About",
-                      "About the project",
+                      "A student-built reef buoy",
                       "S.C.O.U.T. is a Santa Clara University senior design capstone, built by three "
                       "students in electrical, mechanical, and software engineering, with a field "
                       "deployment as the goal.")
@@ -184,3 +189,4 @@ def body(ctx: SiteContext) -> str:
                 f'<a class="btn btn-primary" href="{REPO_URL}">View on GitHub</a>'
                 '<a class="btn" href="../analytics/">See the live data</a>')
     )
+    return docnav.page(title="About", items=_NAV, content=content, base=ctx.base)
