@@ -696,6 +696,9 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 3rem));
   display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
   border:1px solid var(--line);box-shadow:var(--shadow-2)}
+/* The explicit display above would otherwise override the [hidden] attribute, so the panel
+   could never collapse — pin it hidden when the attribute is set. */
+.chat-panel[hidden]{display:none}
 .chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
   padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
 .chat-head b{display:block;font-size:1rem;color:var(--ink)}
