@@ -46,7 +46,9 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 - **What changed** — one new subsection, *"Sensor health is shown next to the data it affects"*,
   after the authored-vs-data-driven paragraph. Explains why the biofouling verdict renders both
   as a status card **and** as a rationale note under the turbidity chart, and that the turbidity
-  legend now states the polarity.
+  legend now states the polarity. **Extended 2026-08-16**: also carries why `insufficient data`
+  is deliberately unstyled, and a *"Design iteration"* sub-subsection on the panel-head wrapping
+  that only a browser pass caught.
 - **Link to rewrite on paste** — `[Data Schema → Turbidity polarity](data-schema.md)` →
   `(→ Notion: On-Board CSV Data Schema)`. The `drift.py` link is a repo path with no Notion
   counterpart; leave it as plain text or point it at GitHub.
