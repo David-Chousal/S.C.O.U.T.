@@ -116,7 +116,7 @@ def _habitat(ctx: SiteContext) -> str:
         c.head_block("The environment", "The nearshore zone",
                      "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
                      "productive, and it is also where remote sensing is least accurate.")
-        + f'<div class="pill-row" style="margin-top:2.8rem">{pills}</div>'
+        + f'<div style="margin-top:2.8rem">{c.carousel(pills, label="Nearshore zone photographs")}</div>'
         + drawings.gallery(
             ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
             sub="CAD drawings by John Ryan Myrdal. The flotation collar and the turbidity-sensor "
@@ -161,4 +161,5 @@ def body(ctx: SiteContext) -> str:
         + _habitat(ctx)
         + c.data_path()
         + _live_band(ctx)
+        + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
     )

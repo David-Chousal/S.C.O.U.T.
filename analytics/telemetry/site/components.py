@@ -75,6 +75,35 @@ def feature_plain(glyph_name: str, kicker: str, title: str, body: str, *, cls: s
     )
 
 
+_CHEVRON_L = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+              'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+              '<path d="M15 18l-6-6 6-6"/></svg>')
+_CHEVRON_R = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+              'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+              '<path d="M9 18l6-6-6-6"/></svg>')
+
+
+def carousel(slides: str, *, label: str, cls: str = "") -> str:
+    """A scroll-snap carousel around pre-rendered slide HTML.
+
+    Progressive enhancement: without JS the track is still a horizontally scrollable,
+    snapping strip. ``assets/js/carousel.js`` adds the arrows' behaviour and the dots
+    (dots are injected by the script so they always match the real slide count)."""
+    return (
+        f'<div class="carousel reveal {cls}" data-carousel>'
+        '<div class="carousel-viewport">'
+        f'<button class="carousel-arrow carousel-prev" type="button" '
+        f'aria-label="Previous">{_CHEVRON_L}</button>'
+        f'<div class="carousel-track" role="group" aria-roledescription="carousel" '
+        f'aria-label="{html.escape(label)}">{slides}</div>'
+        f'<button class="carousel-arrow carousel-next" type="button" '
+        f'aria-label="Next">{_CHEVRON_R}</button>'
+        "</div>"
+        '<div class="carousel-dots" role="tablist" aria-label="Choose slide"></div>'
+        "</div>"
+    )
+
+
 def stat_card(value: str, unit: str, label: str, *, deep: bool = False) -> str:
     cls = "card feature-deep reveal" if deep else "card reveal"
     return (

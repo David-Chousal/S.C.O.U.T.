@@ -382,8 +382,6 @@ main figure{margin:0}
 /* ── Pill image cards ─────────────────────────────────────────────────────── */
 /* Four pills across, on the standard content width so the section lines up with the ones above
    and below. Explicit 4-up (not auto-fit, which spawned a phantom 5th column) with a tight gap. */
-.pill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-@media(max-width:720px){.pill-row{grid-template-columns:repeat(2,1fr)}}
 .pill{position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;isolation:isolate;
   aspect-ratio:6/8;background:var(--surface-2);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
@@ -403,6 +401,29 @@ main figure{margin:0}
   color:rgba(246,242,236,0.9);text-align:right;max-width:72%;letter-spacing:0.02em;
   text-shadow:0 1px 4px rgba(15,12,8,0.6)}
 .pill-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+/* Carousel (Home "The nearshore zone") — native scroll-snap; each .pill is a slide.
+   Without JS the track is still a scrollable, snapping strip; carousel.js adds arrows + dots. */
+.carousel-viewport{position:relative}
+.carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:6px 2px}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-track>.pill{flex:0 0 82%;scroll-snap-align:center}
+@media(min-width:721px){.carousel-track>.pill{flex-basis:calc(50% - 6px)}}
+@media(min-width:1024px){.carousel-track>.pill{flex-basis:calc(33.333% - 8px)}}
+.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;color:var(--ink);
+  background:color-mix(in srgb,var(--surface) 86%,transparent);box-shadow:var(--shadow-1);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;
+  transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.carousel-prev{left:-10px}.carousel-next{right:-10px}
+.carousel-arrow:hover{transform:translateY(-50%) scale(1.06)}
+.carousel-arrow svg{width:20px;height:20px}
+.carousel-arrow[disabled]{opacity:0;pointer-events:none}
+.carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:1.3rem}
+.carousel-dot{width:8px;height:8px;padding:0;border:none;border-radius:50%;cursor:pointer;
+  background:var(--line-2);transition:background var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.carousel-dot[aria-selected="true"]{background:var(--accent);transform:scale(1.3)}
+@media(prefers-reduced-motion:reduce){.carousel-track{scroll-behavior:auto}}
 
 /* ── Mechanical drawings gallery (home) — John's CAD prints, framed on the sand ─── */
 .drawings{margin-top:clamp(2.2rem,1.6rem + 2vw,3.6rem)}
