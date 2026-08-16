@@ -356,7 +356,7 @@ main figure{margin:0}
 .card-glyph{width:34px;height:34px;color:var(--accent);margin-bottom:1.1rem}
 .signal-grid,.subsystem-grid{display:grid;
   gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem}
-.signal-grid{grid-template-columns:repeat(4,1fr)}
+.signal-grid{grid-template-columns:repeat(4,1fr);gap:clamp(0.7rem,0.4rem + 0.8vw,1rem)}
 .subsystem-grid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:900px){.signal-grid,.subsystem-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.signal-grid,.subsystem-grid{grid-template-columns:1fr}}
@@ -368,9 +368,11 @@ main figure{margin:0}
 /* The "What it measures" signals sit in square cards (scoped to .signal-grid so the
    Technology subsystems, also .feature-plain, stay card-less). */
 .signal-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
-  padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);
+  padding:clamp(1.15rem,0.85rem + 0.8vw,1.5rem);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .signal-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.signal-grid .feature-plain .card-glyph{margin-bottom:0.6rem}
+.signal-grid .feature-plain h3{margin-bottom:0.3rem}
 .big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
   letter-spacing:-0.03em;color:var(--ink)}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}
