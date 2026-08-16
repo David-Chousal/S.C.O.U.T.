@@ -55,3 +55,35 @@ final CAD selection in a follow-up; until then, treat all of the above as histor
 not a build spec. It's also not yet confirmed whether any of these numbered iterations
 correspond directly to the three-part (`top`/`shell`/`bottom`) design in the PDF drawings above,
 or whether that's a separate, later pass — worth reconciling once the final iteration is picked.
+
+## Wedge-based design (DFM/V3) — a separate concept from v1–v9
+
+Two more recent Part Studios, found in the Onshape document's `With Tolerances > DFM > V3`
+folder, represent a **different floatation approach** from the v1–v9 history above — not a
+continuation of that numbering, and not yet declared as the final choice for
+[SCO-48](https://linear.app/scout1/issue/SCO-48).
+
+- **`chassis-floatation-integrated-v3-part{1,2,3}.step`** ("Master V3") — the primary design.
+  Individual **floatation wedges snap into keyholes shared with adjacent wedges**, forming a
+  ring around the central electronics-housing chassis cylinder. Assembly sequence: wedges are
+  **mechanically inserted and locked** into the chassis first, then **filled with expanding
+  flotation foam** — the foam provides structure, buoyancy, and waterproofing all at once.
+  **Epoxy is used additionally**, to pre-fasten parts before the foam fill.
+- **`chassis-floatation-bolted-v3-part{1,2}.step`** ("Master V3 Copy 1") — a simpler variant of
+  the same wedge concept: no snap/keyhole locking, just **heat-set inserts in the chassis
+  cylinder and bolts alone** to hold the wedges in place.
+
+**Field-replaceability.** Each wedge can be swapped out on-site without disturbing the others —
+a deployment/maintenance advantage over a monolithic shell, and worth carrying into the
+project's lifecycle analysis (fewer full-buoy replacements, cheaper field service).
+
+## Outer Octagon — a separate, distinct design
+
+`outer-octagon-shell.step` and `outer-octagon-bottom.step` (Onshape: `With Tolerances > Outer
+Octagon > Main` / `Bottom`) are a **separate floatation concept from Master V3** — confirmed by
+John Ryan, not a source/derivative relationship. It's a ribbed octagonal shell with a bottom
+cap, sized around the same central chassis cylinder cutout. Not yet reconciled against the
+wedge-based design or the v1–v9 history as to which is the leading candidate for SCO-48.
+
+**Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
+document covers the whole project, not a separate one per subsystem.
