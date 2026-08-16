@@ -279,8 +279,8 @@ than silently reconciled, since resolving each required a team decision.
 | ~~**Deployment depth**~~ ✅ Resolved | **2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
 | ~~**LoRa range**~~ ✅ Resolved | Standardized to **~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd and 15–20 km figures corrected. Real over-saltwater range still to be measured in Phase 4 |
 | ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
-| **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — see [ADR-0003](docs/decisions/0003-single-point-sensing.md) related gaps |
-| **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE).** Needs a Linear issue (`ece`) — decide V1.5 vs future |
+| **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE)** — [SCO-8](https://linear.app/scout1/issue/SCO-8), `Needs Decision` |
+| **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — [SCO-11](https://linear.app/scout1/issue/SCO-11), `Needs Decision` |
 | ~~**Academic year**~~ ✅ Resolved | **2026–2027**. No stray 2025–2027 remains in the docs |
 | ~~**Project name**~~ ✅ Resolved | **"Oceanic Utilities Transmitter"** (plural) — used consistently across all docs; no "Utility" (singular) instances remain |
 
