@@ -35,7 +35,9 @@ mechanical/
 ├── cad/                        Source CAD models and exported STEP/STL
 │   ├── floatation/             Hull, float, and buoyancy structure
 │   ├── electronics-housing/    Sealed electronics bay enclosure
-│   └── sensor-housing/         Sensor mounting and housing
+│   ├── sensor-housing/         Sensor mounting and housing
+│   ├── stem/                   Structural member carrying the sensor pod underwater
+│   └── solar-mount/            Solar panel mounting bracket
 ├── drawings/                   Dimensioned drawings, hull cross-sections
 ├── mooring/                    Anchor, line, swivel, and shackle specifications
 └── test/                       Buoyancy, waterline, pressure, and submersion test records

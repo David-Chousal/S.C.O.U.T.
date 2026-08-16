@@ -8,6 +8,16 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
   cylinder body ("Full Print Body Upper")
 - [`electronics-housing-endcap-no-port.step`](electronics-housing-endcap-no-port.step) — end
   cap that slides into and seals the chassis cylinder ("Top-Bottom No Port")
+- [`electronics-housing-top-fitting.step`](electronics-housing-top-fitting.step) — the
+  **waterproof top fitting** ("Body Upper"). **Printed and physically tested**: validated
+  heat-set insert M4 fastening and lid fit.
+- [`electronics-housing-tpu-ring.step`](electronics-housing-tpu-ring.step) — a **TPU-printed
+  O-ring experiment**. John Ryan has also considered **printed injection molds** to batch-cast
+  his own O-rings in-house, rather than sourcing off-the-shelf — not yet pursued, but a live
+  option consistent with the project's in-house-additive manufacturing approach (see
+  [floatation → Manufacturing approach](../floatation/README.md#manufacturing-approach)).
+- [`electronics-housing-o-ring.step`](electronics-housing-o-ring.step) — the housing's O-ring
+  seal, modeled directly (as opposed to the TPU-print experiment above).
 
 ## Assembly
 
@@ -20,3 +30,6 @@ specified in [`mechanical/README.md`](../../README.md#design-baseline)) — this
 placeholder for that geometry, not the build spec.
 
 Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
+
+**Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
+document covers the whole project, not a separate one per subsystem.

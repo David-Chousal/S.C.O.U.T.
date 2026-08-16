@@ -164,6 +164,12 @@ Always commit **both** the native source and a neutral export for CAD and schema
 source is editable; the export is what a teammate (or a future team) can actually open without
 buying software.
 
+**Cloud CAD tools (Onshape) have no downloadable native file** — the document only exists as a
+live cloud document, unlike SolidWorks/Fusion. For CAD built in Onshape, "native source" means
+a **share link to the live document**, recorded in the CAD folder's `README.md` next to the
+STEP export, not a file in the repo. Use a link with at least view access so any teammate can
+open it.
+
 ### Never commit these
 
 | Never | Why | Instead |
