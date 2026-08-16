@@ -66,11 +66,11 @@ _CSS = """
   color-scheme:light only;
   /* Warm sand and ink, the reference palette. The site is deliberately light-only:
      a single sandy, beige canvas regardless of the OS colour-scheme preference. */
-  --sand:#f5f1ec;
-  --bg:#f5f1ec;
-  --bg-2:#efeae2;
-  --surface:#fbf9f5;
-  --surface-2:#f1ece4;
+  --sand:#f8f4f1;
+  --bg:#f8f4f1;
+  --bg-2:#f3efe9;
+  --surface:#fcfaf8;
+  --surface-2:#f4f1eb;
   --ink:#2a2520;
   --text:#2a2520;
   --muted:#6f675e;
