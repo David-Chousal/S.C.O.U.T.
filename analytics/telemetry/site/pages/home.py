@@ -40,10 +40,11 @@ def _hero(ctx: SiteContext) -> str:
         '<span class="signal soon">Dissolved oxygen</span>'
         '<span class="signal soon">Reef soundscape</span>'
         "</div>"
+        "</div>"  # /.wrap — the banner below is full-bleed, so it lives outside the wrap
         f'<figure class="hero-figure">{hero_media}<div class="pill-scrim"></div>{hero_credit}'
         '<figcaption>Shallow nearshore water, where S.C.O.U.T. operates and where satellite data is '
         "least accurate.</figcaption></figure>"
-        "</div></section>"
+        "</section>"
     )
 
 

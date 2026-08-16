@@ -300,7 +300,7 @@ main figure{margin:0}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 .hero{position:relative;isolation:isolate;
-  padding-block:clamp(4rem,2.4rem + 7vw,8rem) clamp(3rem,2rem + 4vw,5rem);text-align:center}
+  padding-block:clamp(4rem,2.4rem + 7vw,8rem) 0;text-align:center}
 .hero>.wrap{position:relative;z-index:1}
 .hero-fish{position:absolute;left:0;right:0;top:6%;bottom:34%;z-index:0;pointer-events:none;
   overflow:hidden;opacity:0.85}
@@ -313,8 +313,10 @@ main figure{margin:0}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
 .hero-lead{max-width:38ch;margin:2rem auto 2.4rem;font-size:var(--text-lead);color:var(--muted)}
-.hero-figure{margin-top:clamp(3rem,2rem + 4vw,5rem);border-radius:var(--radius-lg);overflow:hidden;
-  box-shadow:var(--shadow-1);aspect-ratio:16/8;position:relative;background:var(--surface-2)}
+/* Home hero image is a full-bleed banner: it lives outside .wrap, so it spans the whole
+   page width and sits flush against the next section. */
+.hero-figure{margin-top:clamp(3rem,2rem + 4vw,5rem);overflow:hidden;
+  height:clamp(420px,66vh,820px);position:relative;background:var(--surface-2)}
 .hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover}
 .hero-figure figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.4rem 1.6rem;
