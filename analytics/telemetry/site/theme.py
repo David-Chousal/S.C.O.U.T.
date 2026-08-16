@@ -305,12 +305,12 @@ main figure{margin:0}
 .hero>.wrap{position:relative;z-index:1;min-height:calc(100vh - 56px);
   min-height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(2.5rem,6vh,5rem)}
-.hero-fish{position:absolute;left:0;right:0;top:12svh;bottom:auto;height:46svh;z-index:0;
-  pointer-events:none;overflow:hidden;opacity:0.85}
+.hero-fish{position:absolute;left:0;right:0;top:6%;bottom:34%;z-index:0;pointer-events:none;
+  overflow:hidden;opacity:0.85}
 .hero-fish svg,.hero-fish canvas{display:block;width:100%;height:100%}
 @media (prefers-reduced-motion:reduce){.hero-fish{display:none}}
 .hero .eyebrow{margin-bottom:2rem}
-.hero .btn-row{justify-content:center}
+.hero .btn-row{justify-content:center;margin-top:clamp(2rem,1.4rem + 1.6vw,2.6rem)}
 .hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--ink);
   margin:0}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
