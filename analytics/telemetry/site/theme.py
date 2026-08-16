@@ -710,8 +710,8 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);top:calc(68px + 0.55rem);
   width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 68px - 1.6rem));z-index:60;
   display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
-  border:1px solid var(--line);box-shadow:var(--shadow-2);transform-origin:top right;
-  transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
+  border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -24px rgba(20,40,45,.4);
+  transform-origin:top right;transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
   transition:transform .28s var(--ease),opacity .2s ease,visibility 0s .28s}
 .chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
   transition:transform .34s var(--ease),opacity .22s ease,visibility 0s}
@@ -720,27 +720,49 @@ table.data .lvl{font-weight:560;color:var(--ink)}
     height:min(560px,calc(100dvh - 3rem))}}
 @media (prefers-reduced-motion:reduce){
   .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
-.chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
-  padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
-.chat-head b{display:block;font-size:1rem;color:var(--ink)}
-.chat-head span{display:block;font-size:var(--text-micro);color:var(--muted);margin-top:0.15rem}
-.chat-close{border:none;background:none;color:var(--muted);cursor:pointer;padding:0.2rem;
-  display:grid;place-items:center;border-radius:8px}
-.chat-close svg{width:20px;height:20px;display:block}
-.chat-close:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
-.chat-log{flex:1;overflow-y:auto;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.7rem}
-.chat-msg{max-width:86%;padding:0.6rem 0.85rem;font-size:0.92rem;line-height:1.5;border-radius:14px}
-.chat-bot{align-self:flex-start;background:var(--surface-2);color:var(--ink);
-  border-bottom-left-radius:4px}
-.chat-user{align-self:flex-end;background:var(--accent);color:var(--on-accent);
-  border-bottom-right-radius:4px}
+/* Header — Fred's avatar + name + role, hairline divider (Fin/Intercom layout). */
+.chat-head{display:flex;align-items:center;gap:0.7rem;
+  padding:0.85rem 1rem;background:linear-gradient(180deg,var(--surface-2),var(--surface));
+  border-bottom:1px solid var(--line)}
+.chat-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);
+  color:var(--on-accent);display:grid;place-items:center}
+.chat-avatar svg{width:19px;height:19px;display:block}
+.chat-id{min-width:0;line-height:1.25}
+.chat-id b{display:block;font-size:0.98rem;color:var(--ink)}
+.chat-id span{display:block;font-size:var(--text-micro);color:var(--muted)}
+.chat-close{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;
+  padding:0.25rem;display:grid;place-items:center;border-radius:50%}
+.chat-close svg{width:19px;height:19px;display:block}
+.chat-close:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 7%,transparent)}
+/* Message list — each row stacks a bubble over a small credit line. */
+.chat-log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.85rem}
+.chat-row{display:flex;flex-direction:column;max-width:88%}
+.chat-row-user{align-self:flex-end;align-items:flex-end}
+.chat-row-bot{align-self:flex-start;align-items:flex-start}
+.chat-msg{padding:0.62rem 0.9rem;font-size:0.93rem;line-height:1.5;border-radius:16px}
+.chat-bot{background:var(--surface-2);color:var(--ink);border-bottom-left-radius:5px}
+.chat-user{background:var(--accent);color:var(--on-accent);border-bottom-right-radius:5px}
+.chat-meta{margin-top:0.28rem;padding:0 0.2rem;font-size:var(--text-micro);color:var(--muted)}
 .chat-typing{color:var(--muted);letter-spacing:0.18em}
-.chat-form{display:flex;gap:0.5rem;padding:0.8rem 0.9rem;border-top:1px solid var(--line)}
-.chat-input{flex:1;min-width:0;border:1px solid var(--line-2);border-radius:10px;
-  padding:0.6rem 0.8rem;font:inherit;font-size:0.92rem;color:var(--ink);background:var(--bg)}
-.chat-input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
-.chat-send{flex:none;width:42px;border:none;border-radius:10px;background:var(--accent);
-  color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
-.chat-send:hover{opacity:1;filter:brightness(1.06)}
-.chat-send svg{width:18px;height:18px}
+/* Starter-question chips shown with the greeting. */
+.chat-chips{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.2rem}
+.chat-chip{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);
+  border-radius:999px;padding:0.4rem 0.8rem;font:inherit;font-size:0.82rem;cursor:pointer;
+  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+.chat-chip:hover{border-color:var(--accent);color:var(--accent)}
+/* Composer — rounded field wrapping a borderless input and a circular send button. */
+.chat-form{padding:0.7rem 0.9rem 0.85rem;border-top:1px solid var(--line)}
+.chat-field{display:flex;align-items:center;gap:0.4rem;border:1px solid var(--line-2);
+  border-radius:22px;padding:0.28rem 0.28rem 0.28rem 0.9rem;background:var(--bg);
+  transition:border-color var(--dur) var(--ease)}
+.chat-field:focus-within{border-color:var(--accent)}
+.chat-input{flex:1;min-width:0;border:none;background:none;padding:0.4rem 0;font:inherit;
+  font-size:0.93rem;color:var(--ink)}
+.chat-input:focus{outline:none}
+.chat-send{flex:none;width:36px;height:36px;border:none;border-radius:50%;background:var(--accent);
+  color:var(--on-accent);display:grid;place-items:center;cursor:pointer;
+  transition:filter var(--dur) var(--ease)}
+.chat-send:hover{filter:brightness(1.08)}
+.chat-send svg{width:17px;height:17px}
+.chat-fineprint{margin:0.55rem 0 0;text-align:center;font-size:var(--text-micro);color:var(--muted)}
 """

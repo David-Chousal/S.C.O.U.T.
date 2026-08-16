@@ -182,31 +182,48 @@ def footer(base: str, *, external: bool = True) -> str:
     )
 
 
+# Fred's avatar glyph — a stylised wave, shown in the header and beside his messages.
+_FRED_WAVE = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M3 9c1.8-2.4 3.6-2.4 5.4 0s3.6 2.4 5.4 0 3.6-2.4 5.4 0"/>'
+    '<path d="M3 15c1.8-2.4 3.6-2.4 5.4 0s3.6 2.4 5.4 0 3.6-2.4 5.4 0"/></svg>'
+)
+
+
 def chat_widget(base: str) -> str:
-    """The 'Ask S.C.O.U.T.' chat panel plus its mobile floating launcher. The desktop launcher
-    lives in the navbar (see _nav_social); both share the .chat-toggle hook. Its script (chat.js)
-    POSTs only to CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
-    send_icon = (
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+    """'Ask Fred' — the project chat panel plus its mobile floating launcher. The desktop
+    launcher lives in the navbar (see _nav_social); both share the .chat-toggle hook. Its
+    script (chat.js) POSTs only to CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
+    send_icon = (  # upward arrow, Fin/Intercom style
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>'
+        '<path d="M12 20V5M6 11l6-6 6 6"/></svg>'
+    )
+    close_icon = (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M18 6 6 18M6 6l12 12"/></svg>'
     )
     return (
         f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
         f'<button class="chat-toggle chat-fab" type="button" aria-expanded="false" '
-        f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{_CHAT_ICON}</button>'
-        '<div class="chat-panel" id="scout-chat-panel" role="dialog" '
-        'aria-label="Ask about S.C.O.U.T.">'
-        '<div class="chat-head"><div><b>Ask Fred about the project</b></div>'
-        '<button class="chat-close" type="button" aria-label="Close chat">'
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M18 6 6 18M6 6l12 12"/></svg></button></div>'
+        f'aria-controls="scout-chat-panel" aria-label="Ask Fred about the project">{_CHAT_ICON}</button>'
+        '<div class="chat-panel" id="scout-chat-panel" role="dialog" aria-label="Ask Fred about '
+        'the S.C.O.U.T. project">'
+        '<div class="chat-head">'
+        f'<span class="chat-avatar" aria-hidden="true">{_FRED_WAVE}</span>'
+        '<div class="chat-id"><b>Fred</b><span>Ask me about the S.C.O.U.T. project</span></div>'
+        f'<button class="chat-close" type="button" aria-label="Close chat">{close_icon}</button>'
+        "</div>"
         '<div class="chat-log" role="log" aria-live="polite"></div>'
         '<form class="chat-form">'
-        '<input class="chat-input" type="text" placeholder="Ask about the research or the team…" '
+        '<div class="chat-field">'
+        '<input class="chat-input" type="text" placeholder="Ask a question…" '
         'aria-label="Your question" maxlength="500" autocomplete="off">'
         f'<button class="chat-send" type="submit" aria-label="Send">{send_icon}</button>'
+        "</div>"
+        '<p class="chat-fineprint">Fred answers from the project docs and can be wrong.</p>'
         "</form></div></div>"
         f'<script defer src="{base}assets/js/chat.js"></script>'
     )
