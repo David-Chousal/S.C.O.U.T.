@@ -101,10 +101,15 @@ multi-depth in a future revision, the pod itself won't be the blocker.
 | [`sensor-housing-top-cap-v1.step`](sensor-housing-top-cap-v1.step) | Top cap, earliest revision | Iteration |
 | [`sensor-housing-top-cap-v2.step`](sensor-housing-top-cap-v2.step) | Top cap, second revision | Iteration |
 | [`sensor-housing-top-cap-no-port.step`](sensor-housing-top-cap-no-port.step) | Top cap, no-port variant | Iteration |
+| [`sensor-housing-o-ring.step`](sensor-housing-o-ring.step) | O-ring seal, modeled directly | Current |
 
-Body sealing uses an **AS568-137 O-ring**. File naming here is John Ryan's own designation
-("current" vs. prior iterations) from the source folder — not inferred, since (as with the
-[floatation iterations](../floatation/README.md)) bulk Onshape re-export timestamps aren't a
-reliable ordering signal.
+Body sealing uses an **AS568-137 O-ring**. The current iteration also uses **heat-set inserts
+on the inside diameter of the body cylinder** for the top-cap fastening. File naming here is
+John Ryan's own designation ("current" vs. prior iterations) from the source folder — not
+inferred, since (as with the [floatation iterations](../floatation/README.md)) bulk Onshape
+re-export timestamps aren't a reliable ordering signal.
 
 Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
+
+**Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
+document covers the whole project, not a separate one per subsystem.
