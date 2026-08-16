@@ -86,7 +86,7 @@ fouling. Verdicts:
 **Detection stays direction-agnostic, but the direction is interpreted.** Fouling attenuates
 light, so it drives the clean-water reading **down**; that is reported as *consistent with
 fouling*. A *rise* is still flagged, because the analog front end is not yet designed
-([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) and an inverting stage there would flip
+(tracked as SCO-47; ADR-0002 is the charging path, not this) and an inverting stage there would flip
 the sign — but it is reported as *inconsistent with fouling*, pointing instead at a cleaned or
 swapped sensor, a wiring change, or exactly that inverting front end.
 
