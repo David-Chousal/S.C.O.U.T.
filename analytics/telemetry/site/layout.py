@@ -114,7 +114,10 @@ def footer(base: str, *, external: bool = True) -> str:
     email = (
         '<div class="footer-social">'
         f'<a href="mailto:{CONTACT_EMAIL}" aria-label="Email the team">'
-        f'{assets.social_icon("mail")}</a></div>'
+        f'{assets.social_icon("mail")}</a>'
+        f'<a href="{REPO_URL}" aria-label="S.C.O.U.T. on GitHub">{assets.social_icon("github")}</a>'
+        f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
+        f'{assets.social_icon("linkedin")}</a></div>'
         if external else ""
     )
     resources = (

@@ -472,15 +472,17 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 
 /* ── Team ─────────────────────────────────────────────────────────────────── */
 .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.6rem}
-.member{background:var(--surface);border-radius:var(--radius-lg);
+.member{display:block;color:inherit;text-decoration:none;background:var(--surface);
+  border-radius:var(--radius-lg);
   padding:clamp(1.6rem,1.2rem + 1vw,2.1rem);box-shadow:var(--shadow-1);
   transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
 .member:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.member:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .member-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem}
 .member .avatar{width:60px;height:60px;border-radius:50%;margin:0;object-fit:cover;display:block}
 .member-linkedin{color:var(--faint);display:inline-flex;margin-top:0.2rem;
   transition:color var(--dur) var(--ease)}
-.member-linkedin:hover{color:var(--accent);opacity:1}
+.member:hover .member-linkedin,.member:focus-visible .member-linkedin{color:var(--accent)}
 .member-linkedin svg{width:19px;height:19px}
 .member h3{font-size:1.22rem;margin-bottom:0.2rem}
 .member .role{color:var(--accent);font-size:0.9rem;font-weight:500;margin-bottom:1rem}

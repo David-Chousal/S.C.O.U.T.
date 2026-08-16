@@ -109,16 +109,17 @@ def spec(pairs: list[tuple[str, str]]) -> str:
 def member(name: str, role: str, disc: str, bio: str, initials: str, uid: int, hue: int,
            linkedin: str, photo: str | None = None) -> str:
     avatar = assets.avatar_photo(photo, name) if photo else assets.avatar(initials, uid, hue)
+    # The whole card is the link to the member's LinkedIn. The icon is a decorative span (no
+    # nested <a>); it changes colour on card hover/focus via .member:hover .member-linkedin.
     return (
-        '<article class="member reveal">'
+        f'<a class="member reveal" href="{linkedin}" aria-label="{html.escape(name)} on LinkedIn">'
         '<div class="member-top">'
         f"{avatar}"
-        f'<a class="member-linkedin" href="{linkedin}" aria-label="{html.escape(name)} on LinkedIn">'
-        f'{assets.social_icon("linkedin")}</a>'
+        f'<span class="member-linkedin">{assets.social_icon("linkedin")}</span>'
         "</div>"
         f'<span class="disc">{disc}</span>'
         f'<h3>{name}</h3><p class="role">{role}</p><p>{bio}</p>'
-        "</article>"
+        "</a>"
     )
 
 
