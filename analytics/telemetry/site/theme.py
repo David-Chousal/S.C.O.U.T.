@@ -424,6 +424,11 @@ main figure{margin:0}
   background:var(--line-2);transition:background var(--dur) var(--ease),transform var(--dur) var(--ease)}
 .carousel-dot[aria-selected="true"]{background:var(--accent);transform:scale(1.3)}
 @media(prefers-reduced-motion:reduce){.carousel-track{scroll-behavior:auto}}
+/* Full-bleed variant: spans the page width; slides get edge padding, arrows inset. */
+.carousel-full{margin-block:2.8rem clamp(3rem,2rem + 4vw,5.5rem)}
+.carousel-full .carousel-track{padding-inline:clamp(1rem,4vw,4rem)}
+.carousel-full .carousel-prev{left:clamp(10px,2.5vw,32px)}
+.carousel-full .carousel-next{right:clamp(10px,2.5vw,32px)}
 
 /* ── Mechanical drawings gallery (home) — John's CAD prints, framed on the sand ─── */
 .drawings{margin-top:clamp(2.2rem,1.6rem + 2vw,3.6rem)}

@@ -105,24 +105,35 @@ def _senses() -> str:
     )
 
 
+_HABITAT_PHOTOS = (
+    "shallow-reef", "reef-flat", "green-turtle", "coral-detail", "coral-bommie",
+    "anemonefish", "sponge-garden", "anthias-swarm", "kelp-column", "open-water",
+)
+
+
 def _habitat(ctx: SiteContext) -> str:
-    pills = "".join([
-        imagery.pill("shallow-reef", ctx.base, uid=101, img_dir=ctx.img_dir),
-        imagery.pill("coral-detail", ctx.base, uid=102, img_dir=ctx.img_dir),
-        imagery.pill("kelp-column", ctx.base, uid=103, img_dir=ctx.img_dir),
-        imagery.pill("open-water", ctx.base, uid=104, img_dir=ctx.img_dir),
-    ])
+    pills = "".join(
+        imagery.pill(key, ctx.base, uid=101 + i, img_dir=ctx.img_dir)
+        for i, key in enumerate(_HABITAT_PHOTOS)
+    )
+    # The carousel is full-bleed: heading and CAD gallery stay in the wrap, the carousel spans
+    # the page (section is emitted with wrap="" so the carousel is a direct, full-width child).
     return c.section(
-        c.head_block("The environment", "The nearshore zone",
-                     "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
-                     "productive, and it is also where remote sensing is least accurate.")
-        + f'<div style="margin-top:2.8rem">{c.carousel(pills, label="Nearshore zone photographs")}</div>'
+        '<div class="wrap">'
+        + c.head_block("The environment", "The nearshore zone",
+                       "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
+                       "productive, and it is also where remote sensing is least accurate.")
+        + "</div>"
+        + c.carousel(pills, label="Nearshore zone photographs", cls="carousel-full")
+        + '<div class="wrap">'
         + drawings.gallery(
             ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
             sub="CAD drawings by John Ryan Myrdal. The flotation collar and the turbidity-sensor "
-                "housing, printed in PETG."),
+                "housing, printed in PETG.")
+        + "</div>",
         cls="section-sm",
         sid="habitat",
+        wrap="",
     )
 
 
