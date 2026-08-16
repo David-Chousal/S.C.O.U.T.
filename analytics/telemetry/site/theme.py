@@ -299,11 +299,14 @@ main figure{margin:0}
 .textlink:hover svg{transform:translateX(3px)}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
-.hero{position:relative;isolation:isolate;
-  padding-block:clamp(4rem,2.4rem + 7vw,8rem) 0;text-align:center}
-.hero>.wrap{position:relative;z-index:1}
-.hero-fish{position:absolute;left:0;right:0;top:6%;bottom:34%;z-index:0;pointer-events:none;
-  overflow:hidden;opacity:0.85}
+.hero{position:relative;isolation:isolate;padding-block:0;text-align:center}
+/* The hero text fills the first screen so the full-bleed banner below always starts under the
+   fold — no image peeking at the very top of the page. */
+.hero>.wrap{position:relative;z-index:1;min-height:calc(100vh - 56px);
+  min-height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:center;
+  padding-block:clamp(2.5rem,6vh,5rem)}
+.hero-fish{position:absolute;left:0;right:0;top:12svh;bottom:auto;height:46svh;z-index:0;
+  pointer-events:none;overflow:hidden;opacity:0.85}
 .hero-fish svg,.hero-fish canvas{display:block;width:100%;height:100%}
 @media (prefers-reduced-motion:reduce){.hero-fish{display:none}}
 .hero .eyebrow{margin-bottom:2rem}
@@ -312,10 +315,9 @@ main figure{margin:0}
   margin:0}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
-.hero-lead{max-width:38ch;margin:2rem auto 2.4rem;font-size:var(--text-lead);color:var(--muted)}
 /* Home hero image is a full-bleed banner: it lives outside .wrap, so it spans the whole
    page width and sits flush against the next section. */
-.hero-figure{margin-top:clamp(3rem,2rem + 4vw,5rem);overflow:hidden;
+.hero-figure{margin-top:0;overflow:hidden;
   height:clamp(420px,66vh,820px);position:relative;background:var(--surface-2)}
 .hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover}

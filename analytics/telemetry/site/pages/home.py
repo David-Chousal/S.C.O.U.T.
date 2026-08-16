@@ -27,7 +27,6 @@ def _hero(ctx: SiteContext) -> str:
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
         '<p class="hero-expand">Santa Clara Oceanic Utilities Transmitter</p>'
-        '<p class="hero-lead">Monitoring nearshore reef conditions.</p>'
         '<div class="btn-row">'
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
