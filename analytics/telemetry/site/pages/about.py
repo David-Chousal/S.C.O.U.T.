@@ -83,14 +83,7 @@ def _overview() -> str:
         ])
         + "</div></div>"
     )
-    # Extra breathing room: `margin-top` opens space below the "About the project" hero;
-    # the padding-top bump adds a little more above the "The project" heading.
-    return (
-        '<section class="section" id="overview" '
-        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
-        'padding-top:calc(var(--section) + 1.2rem + 5px)">'
-        f'<div class="wrap">{inner}</div></section>'
-    )
+    return c.section(inner, sid="overview", cls="section-sm")
 
 
 def _story() -> str:

@@ -115,13 +115,7 @@ def _tracks() -> str:
             ["Signal", "Sensor", "What S.C.O.U.T. derives"], _TRACK_ROWS)
         + "</div>"
     )
-    # Extra top space so the first section sits below the "The science" hero, matching About.
-    return (
-        '<section class="section" id="tracks" '
-        'style="margin-top:clamp(1.6rem,0.9rem + 2vw,3rem);'
-        'padding-top:calc(var(--section) + 1.2rem + 5px)">'
-        f'<div class="wrap">{inner}</div></section>'
-    )
+    return c.section(inner, sid="tracks", cls="section-sm")
 
 
 def _thermal() -> str:

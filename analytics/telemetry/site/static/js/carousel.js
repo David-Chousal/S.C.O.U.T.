@@ -67,6 +67,29 @@
     window.addEventListener('resize', update);
 
     update();
+
+    // Autoplay: advance every INTERVAL, loop back at the end. Pauses on hover, keyboard
+    // focus, and when the tab is hidden. Disabled entirely under prefers-reduced-motion.
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      var INTERVAL = 5000;
+      var paused = false;
+      function atEnd() {
+        return track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+      }
+      setInterval(function () {
+        if (paused) return;
+        if (atEnd()) scrollToIndex(0);
+        else scrollToIndex(currentIndex() + 1);
+      }, INTERVAL);
+      var pause = function () { paused = true; };
+      var resume = function () { paused = false; };
+      root.addEventListener('mouseenter', pause);
+      root.addEventListener('mouseleave', resume);
+      root.addEventListener('focusin', pause);
+      root.addEventListener('focusout', resume);
+      document.addEventListener('visibilitychange', function () { paused = document.hidden; });
+    }
   }
 
   function boot() {
