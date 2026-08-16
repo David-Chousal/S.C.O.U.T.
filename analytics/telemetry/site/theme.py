@@ -114,7 +114,7 @@ _CSS = """
   --gutter:clamp(1.4rem,0.8rem + 3vw,4rem);
   --section:clamp(5rem,3.4rem + 8vw,11rem);
   --radius:16px;
-  --radius-lg:28px;
+  --radius-lg:0;      /* card surfaces are square (cards, team cards, panels, reef photos, render slot) */
   --radius-pill:999px;
   --track:0.18em;
   --ease:cubic-bezier(0.22,1,0.36,1);
@@ -625,7 +625,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   font-size:var(--text-micro);margin-right:0.4rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
   gap:clamp(0.8rem,0.4rem + 0.8vw,1.2rem);margin:0 0 2.4rem}
-.stat{background:var(--surface);border-radius:var(--radius);padding:1.1rem 1.25rem;
+.stat{background:var(--surface);border-radius:0;padding:1.1rem 1.25rem;
   box-shadow:var(--shadow-1)}
 .stat .stat-label{color:var(--faint);font-size:var(--text-micro);letter-spacing:0.08em;
   text-transform:uppercase;font-weight:500}
