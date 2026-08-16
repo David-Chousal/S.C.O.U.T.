@@ -22,7 +22,7 @@ import html
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import bleaching
+from . import bleaching, drift
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
 from .site import layout
 
@@ -33,6 +33,14 @@ _ALERT_CLASS = {
     bleaching.ALERT_WARNING: "a-warning",
     bleaching.ALERT_LEVEL_1: "a-alert1",
     bleaching.ALERT_LEVEL_2: "a-alert2",
+}
+# Biofouling verdict → the same severity palette. Distinct labels keep the two readable as
+# different things: a bleaching alert is about the reef, a drift verdict about the instrument.
+# "insufficient data" stays unstyled on purpose — an absence of evidence is not a warning.
+_DRIFT_CLASS = {
+    drift.DRIFT_NONE: "a-nostress",
+    drift.DRIFT_SUSPECT: "a-warning",
+    drift.DRIFT_LIKELY: "a-alert1",
 }
 _W, _H = 720, 200
 _PAD_L, _PAD_R, _PAD_T, _PAD_B = 46, 14, 14, 26
@@ -146,11 +154,26 @@ def _legend(items: list[tuple[str, str]]) -> str:
     return f'<div class="legend">{spans}</div>'
 
 
-def _panel(title: str, unit: str, chart: str, legend: str = "") -> str:
+def _panel(title: str, unit: str, chart: str, legend: str = "", note: str = "") -> str:
     return (
         '<section class="panel reveal"><div class="panel-head">'
         f'<h3>{html.escape(title)}</h3><span class="unit">{html.escape(unit)}</span></div>'
-        f"{chart}{legend}</section>"
+        f"{chart}{legend}{note}</section>"
+    )
+
+
+def _drift_note(drift) -> str:
+    """The biofouling verdict, rendered where someone is already reading turbidity.
+
+    A fouled sensor drifts monotonically and looks exactly like genuinely worsening water, so
+    the verdict belongs next to the turbidity chart rather than filed away in the summary JSON
+    — a reader drawing conclusions from that chart is precisely who needs the caveat.
+    """
+    cls = _DRIFT_CLASS.get(drift.verdict, "")
+    return (
+        '<p class="panel-note">'
+        f'<span class="pn-verdict {cls}">Sensor drift: {html.escape(drift.verdict)}</span> — '
+        f"{html.escape(drift.rationale)} {html.escape(drift.note)}</p>"
     )
 
 
@@ -197,6 +220,9 @@ def render_html(
               f"{tt.slope_per_year:g} °C/yr" if tt.slope_per_year is not None else "—",
               sub=tt.label),
         _stat("Turbidity events", str(len(report.turbidity_anomalies.events))),
+        _stat("Sensor drift", report.turbidity_drift.verdict,
+              cls=_DRIFT_CLASS.get(report.turbidity_drift.verdict, ""),
+              sub=f"biofouling screen · {report.turbidity_drift.n_days} d"),
         _stat("Data completeness", f"{report.qc.completeness_pct:g}%"),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
     ])
@@ -233,8 +259,13 @@ def render_html(
     panels.append(_panel(
         "Turbidity (daily median)", "ADC · uncalibrated",
         _svg_chart(turb, series="turb", days=days, markers=turb_markers),
-        '<div class="legend"><span><i style="background:var(--c-turb)"></i>Daily median</span>'
+        # Polarity rides in the legend rather than the unit: it is the one thing a reader can
+        # get exactly backwards here, and the unit slot is too narrow to hold it without
+        # wrapping the panel head.
+        '<div class="legend">'
+        '<span><i style="background:var(--c-turb)"></i>Daily median — higher is clearer water</span>'
         '<span><i style="background:var(--coral)"></i>Anomaly event</span></div>',
+        note=_drift_note(report.turbidity_drift),
     ))
     panels.append(_panel(
         "Battery (daily minimum)", "V",
