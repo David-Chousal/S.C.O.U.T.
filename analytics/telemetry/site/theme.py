@@ -472,12 +472,20 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 
 /* ── Team ─────────────────────────────────────────────────────────────────── */
 .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.6rem}
+/* Card is a link; on hover an accent outline draws clockwise around the rounded card
+   (conic mask over a border, angle animated via @property). No dim, no lift. */
+@property --edge-angle{syntax:"<angle>";inherits:true;initial-value:0deg}
 .member{display:block;color:inherit;text-decoration:none;background:var(--surface);
-  border-radius:var(--radius-lg);
+  border-radius:var(--radius-lg);position:relative;--edge-angle:0deg;
   padding:clamp(1.6rem,1.2rem + 1vw,2.1rem);box-shadow:var(--shadow-1);
-  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
-.member:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  transition:--edge-angle 0.7s var(--ease)}
+.member::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  border:2px solid var(--accent);pointer-events:none;
+  -webkit-mask:conic-gradient(from -90deg,#000 var(--edge-angle),#0000 0);
+          mask:conic-gradient(from -90deg,#000 var(--edge-angle),#0000 0)}
+.member:hover{opacity:1;--edge-angle:360deg}
 .member:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.member{transition:none}}
 .member-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem}
 .member .avatar{width:60px;height:60px;border-radius:50%;margin:0;object-fit:cover;display:block}
 .member-linkedin{color:var(--faint);display:inline-flex;margin-top:0.2rem;
