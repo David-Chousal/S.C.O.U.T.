@@ -275,7 +275,7 @@ def render_html(
 
     dash_head = (
         '<section class="page-head"><div class="wrap">'
-        '<p class="eyebrow">Live telemetry</p>'
+        '<p class="eyebrow">From the buoy</p>'
         '<h1>Reef telemetry</h1>'
         '<div class="dash-meta" style="margin-top:1rem">'
         f'<span><span class="k">Generated</span> {html.escape(generated)}</span>'

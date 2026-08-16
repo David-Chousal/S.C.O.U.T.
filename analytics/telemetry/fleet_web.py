@@ -197,7 +197,7 @@ def render_overview(
     buoy_word = "buoy" if n_buoys == 1 else "buoys"
     head = (
         '<section class="page-head"><div class="wrap">'
-        '<p class="eyebrow">Fleet</p><h1>Fleet overview</h1>'
+        '<p class="eyebrow">Fleet</p><h1>Every buoy at a glance</h1>'
         f'<p class="lead">{n_buoys} {buoy_word} reporting across the network. Each is analysed '
         "independently — its own daily means, its own Degree Heating Weeks against its own site "
         "climatology — then summarised here.</p>"

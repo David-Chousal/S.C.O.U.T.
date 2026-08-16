@@ -120,7 +120,7 @@ def _tracks() -> str:
 
 def _thermal() -> str:
     return c.section(
-        c.head_block("Thermal stress", "Thermal stress metrics",
+        c.head_block("Heat and bleaching", "Thermal stress metrics",
                      "S.C.O.U.T. uses NOAA Coral Reef Watch's operational framework, the standard "
                      "method for anticipating mass coral bleaching.")
         + '<div class="bento" style="margin-top:2.4rem;align-items:start">'
@@ -156,7 +156,7 @@ def _alerts(ctx: SiteContext) -> str:
         "outcome the thresholds above are meant to anticipate.</figcaption></figure>"
     ) if media else ""
     return c.section(
-        c.head_block("Alert levels", "Bleaching alert levels")
+        c.head_block("Warning tiers", "Bleaching alert levels")
         + '<div style="margin-top:2rem">'
         + c.data_table(
             "NOAA Coral Reef Watch bleaching alert levels. Warning and above require a current "
@@ -227,7 +227,7 @@ def _pipeline() -> str:
         f'<div class="col-3">{c.feature_card(g, k, t, b)}</div>' for g, k, t, b in stages
     )
     return c.section(
-        c.head_block("The pipeline", "The analysis pipeline",
+        c.head_block("Processing", "The analysis pipeline",
                      "Every environmental stage runs on the Python standard library, so it "
                      "executes and is unit-tested on a bare Raspberry Pi.")
         + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
@@ -240,7 +240,7 @@ def _caveats() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-2">'
-        + c.head_block("Limitations", "Limitations")
+        + c.head_block("Limitations", "What the data can't tell you")
         + "</div>"
         '<div class="col-4 prose">'
         "<p><strong>Diurnal bias.</strong> CRW builds daily SST from nighttime satellite "
@@ -292,7 +292,7 @@ def _refs() -> str:
 def body(ctx: SiteContext) -> str:
     content = (
         c.page_header("Science",
-                      "The science",
+                      "The science behind the numbers",
                       "S.C.O.U.T.'s readings only mean something in the context of established reef "
                       "science. This page explains what it tracks, the thermal-stress and "
                       "bioacoustic methods behind the numbers, and their limitations.")

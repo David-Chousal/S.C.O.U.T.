@@ -113,7 +113,7 @@ def _subsystems() -> str:
     ]
     grid = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
-        c.head_block("Subsystems", "The subsystems")
+        c.head_block("Inside the buoy", "The subsystems")
         + f'<div class="subsystem-grid">{grid}</div>',
         cls="section-sm",
         sid="subsystems",
@@ -124,7 +124,7 @@ def _platform() -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-3">'
-        + c.head_block("Build platform", "Hardware platform",
+        + c.head_block("MCU and radio", "Hardware platform",
                        "The microcontroller and radio are settled in ADR-0001, which lets "
                        "firmware and wiring proceed. A production PCB target is kept on the shelf.")
         + '<div class="prose" style="margin-top:1rem"><p>The confirmed build platform is the '

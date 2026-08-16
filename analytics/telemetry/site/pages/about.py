@@ -124,7 +124,7 @@ def _team(base: str) -> str:
         in enumerate(_TEAM, start=1)
     )
     return c.section(
-        c.head_block("The team", "The team",
+        c.head_block("Who built it", "The team",
                      "Three students, one each from electrical, mechanical, and software "
                      "engineering, each responsible for the part of the system in their field.")
         + f'<div class="team" style="margin-top:2.4rem">{cards}</div>',
@@ -176,7 +176,7 @@ def _roadmap() -> str:
 def body(ctx: SiteContext) -> str:
     content = (
         c.page_header("About",
-                      "About the project",
+                      "A student-built reef buoy",
                       "S.C.O.U.T. is a Santa Clara University senior design capstone, built by three "
                       "students in electrical, mechanical, and software engineering, with a field "
                       "deployment as the goal.")
