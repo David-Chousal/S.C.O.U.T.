@@ -4,18 +4,15 @@
 >
 > **Source document** — `Vertical Sensor String Architecture.docx`
 
-> ⚠️ **Status contested — flagging, not resolving.** [ADR-0003](../decisions/0003-single-point-sensing.md)
-> (2026-08-14) marks this deferred: the capstone build was decided to use **one sensor of each
-> modality at a single point**, with extra units as spares. But mechanical (John Ryan) is
-> **actively building CAD for a multi-depth sensor stem** (2026-08-15) — 8 pod iterations in
-> [`mechanical/cad/sensor-housing/`](../../mechanical/cad/sensor-housing/README.md) — directly
-> motivated by the stakeholder interviews this project is based on: *"Multiple turbidity
-> measurements at different depths may allow the observation of turbidity stratification"* and
-> *"Temperature stratification"* / *"Multi-depth temperature"* are explicit findings in
-> [Stakeholder Interviews](../research/stakeholder-interviews.md). ADR-0003's own listed
-> "Affects" — wiring, power budget, CSV schema — means this needs a cross-discipline decision
-> (mechanical + CS/ECE), not a unilateral change by either side. See
-> [decision-log.md](../hub/decision-log.md) for the flagged conflict.
+> ✅ **Resolved 2026-08-15 (John Ryan).** [ADR-0003](../decisions/0003-single-point-sensing.md)
+> stands: the capstone build deploys **one sensor of each modality at a single point**,
+> multi-depth deferred. The sensor pod CAD in
+> [`mechanical/cad/sensor-housing/`](../../mechanical/cad/sensor-housing/README.md) is being
+> built to **enable** multi-depth scaling in a future revision — a self-contained, repeatable
+> pod module — without activating it now. See
+> [Why build for scale now](../../mechanical/cad/sensor-housing/README.md#why-build-for-scale-now)
+> for the full reasoning, and [decision-log.md](../hub/decision-log.md) for the resolution
+> record.
 
 ---
 
