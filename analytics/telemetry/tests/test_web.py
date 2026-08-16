@@ -157,7 +157,7 @@ class WebDashboardTest(unittest.TestCase):
         elements carrying the UA default ``margin:1em 40px`` — it must be reset, and the reset
         must stay scoped to ``main`` so it never touches the header/footer; the pill cards must
         keep ``width:100%`` so each fills its grid track (otherwise they mis-align); and the
-        nearshore pill-row gap is pinned to the value we set."""
+        nearshore carousel-track gap is pinned to the value we set."""
         import re
 
         css = re.sub(r"\s+", " ", theme.styles())          # keep single spaces: `main figure`
@@ -181,10 +181,10 @@ class WebDashboardTest(unittest.TestCase):
         self.assertIn(
             "width:100%", pill.group(1).replace(" ", ""),
             ".pill must keep width:100% so it fills its grid track and stays centred")
-        # 4. the nearshore pill gap stays as set this session.
+        # 4. the nearshore carousel track gap stays as set this session.
         self.assertRegex(
-            tight, r"\.pill-row\{[^{}]*gap:9px",
-            ".pill-row gap must stay 9px")
+            tight, r"\.carousel-track\{[^{}]*gap:12px",
+            ".carousel-track gap must stay 12px")
 
 
 if __name__ == "__main__":
