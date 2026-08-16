@@ -365,6 +365,12 @@ main figure{margin:0}
 .feature-plain .card-glyph{margin-bottom:0.9rem}
 .feature-plain .kicker{font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:0.5rem}
+/* The "What it measures" signals sit in square cards (scoped to .signal-grid so the
+   Technology subsystems, also .feature-plain, stay card-less). */
+.signal-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
+  padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.signal-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
 .big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
   letter-spacing:-0.03em;color:var(--ink)}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}
