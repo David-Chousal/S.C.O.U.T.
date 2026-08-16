@@ -407,10 +407,20 @@ alternative are in [CONVENTIONS.md § Git](docs/CONVENTIONS.md#git-for-people-wh
 
 - **`git push origin main` is blocked** by a local pre-bash hook that reads it as a force
   push. Use plain `git push` (upstream is already tracked).
-- **`gh` CLI is installed and authenticated** (since 2026-08-14, as `David-Chousal`, token in
-  the macOS keyring with `repo` scope). Use it for PRs, CI status, and issues. Git operations
-  still go over SSH. Do **not** set `GITHUB_TOKEN` in the environment — `gh` prefers it over
-  the keyring, so a stale or placeholder value silently breaks every `gh` command.
+- **`gh` CLI is installed and authenticated** (since 2026-08-14, token in the macOS keyring
+  with `repo` scope). Use it for PRs, CI status, and issues. Git operations still go over SSH.
+  Do **not** set `GITHUB_TOKEN` in the environment — `gh` prefers it over the keyring, so a
+  stale or placeholder value silently breaks every `gh` command.
+- **`gh` runs as `davidchousal`, which is *not* the repo owner.** The repo belongs to
+  `David-Chousal`; `davidchousal` is a separate account with **push, not admin**
+  (`gh api repos/David-Chousal/S.C.O.U.T. --jq .permissions` confirms it). Everyday work is
+  unaffected — branches, PRs, CI status, issues all work. **Admin-only operations do not**:
+  editing branch-protection rulesets, repo settings, or collaborators returns a bare
+  `404 Not Found` rather than a permission error, because GitHub hides resources you cannot
+  administer. A 404 on a write to something you can read is this, not a missing resource.
+  Those changes go through the GitHub web UI signed in as `David-Chousal` — and GitHub will
+  additionally demand a password (sudo mode) to save them, which **Claude must never type**;
+  hand that step to a human.
 - **Never commit `.wav` files** outside `analytics/data/longitudinal/201708_20170801/`. The
   full archive is ~7 GB. `.gitignore` enforces this — do not weaken it.
 - Regenerate nothing under `analytics/data/processed/` without saying so; those figures are
