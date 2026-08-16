@@ -8,10 +8,9 @@ Self-hosted so the site makes no external request.
   The dotLottie's PNG sprites are inlined as base64 so this one file is self-contained.
 - `seaweed.json` — the footer animation, from the "Seaweed" dotLottie (LottieFiles). Pure
   vector, so nothing to inline.
-- `fish2.json` — the roaming fish, from the "Fish" dotLottie (LottieFiles), sprites inlined.
-- `init.js` — plays any element carrying a `data-lottie` path (the `#hero-fish` container and
-  the footer `.weed` containers), and spawns a roaming fish at intervals anywhere in the
-  viewport. Honours `prefers-reduced-motion` and no-ops if the runtime is unavailable.
+- `init.js` — plays any element carrying a `data-lottie` path (the `#hero-fish` container, the
+  footer `.weed` containers, and the footer/side critters). Honours `prefers-reduced-motion`
+  and no-ops if the runtime is unavailable.
 
-The runtime loads on **every page** (footer seaweed and roaming fish everywhere; the hero fish
-only on Home). Everything is same-origin; no page references an external host.
+The runtime loads on **every page** (footer seaweed + critters everywhere; the hero fish only
+on Home). Everything is same-origin; no page references an external host.

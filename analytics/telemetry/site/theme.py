@@ -571,12 +571,6 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .weed-c{left:44%;height:132px;opacity:0.4}
 @media (max-width:640px){.weed-c{display:none}}
 @media (prefers-reduced-motion:reduce){.footer-seaweed{display:none}}
-/* Roaming fish: transient elements spawned by init.js anywhere in the viewport, at intervals. */
-.roaming-fish{position:fixed;z-index:4;pointer-events:none;aspect-ratio:1600/615;opacity:0;
-  animation:roam 8s ease both}
-.roaming-fish svg{width:100%;height:100%;display:block;transform:scaleX(var(--flip,1))}
-@keyframes roam{0%{opacity:0}12%{opacity:0.9}80%{opacity:0.9}100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.roaming-fish{display:none}}
 /* Ambient footer critters — one submarine, crab, and starfish, spread around the footer and
    sitting behind the text (z-index 0, below the footer-grid). */
 .footer-critters{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
