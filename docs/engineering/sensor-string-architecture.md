@@ -4,10 +4,15 @@
 >
 > **Source document** — `Vertical Sensor String Architecture.docx`
 
-> 🔭 **Future concept — not the current build.** Per
-> [ADR-0003](../decisions/0003-single-point-sensing.md) (2026-08-14), the capstone build uses
-> **one sensor of each modality at a single point** beneath the buoy, with extra units held as
-> spares. This multi-depth string is retained as a documented direction for a future revision.
+> ✅ **Resolved 2026-08-15 (John Ryan).** [ADR-0003](../decisions/0003-single-point-sensing.md)
+> stands: the capstone build deploys **one sensor of each modality at a single point**,
+> multi-depth deferred. The sensor pod CAD in
+> [`mechanical/cad/sensor-housing/`](../../mechanical/cad/sensor-housing/README.md) is being
+> built to **enable** multi-depth scaling in a future revision — a self-contained, repeatable
+> pod module — without activating it now. See
+> [Why build for scale now](../../mechanical/cad/sensor-housing/README.md#why-build-for-scale-now)
+> for the full reasoning, and [decision-log.md](../hub/decision-log.md) for the resolution
+> record.
 
 ---
 
@@ -75,16 +80,40 @@ SURFACE
 | Temp + turbidity pair 3 | Near bottom (optional) | Measures reef-level conditions |
 | Hydrophone 2 | Bottom of cable | Captures reef soundscape closer to fish/coral habitat |
 
+## Pod construction — dry/flood chamber
+
+Each turbidity/sensor pod (narrated by John Ryan; CAD in
+[`mechanical/cad/sensor-housing/`](../../mechanical/cad/sensor-housing/README.md)) splits into
+two chambers:
+
+- **Dry chamber** — holds the small board/chip/circuit that reads the turbidity probes.
+  Sealed and never contacts water.
+- **Flood chamber** — deliberately water-filled. The turbidity probes stick into it, and it's
+  shaped to **block ambient light around the probes** (avoiding light pollution in the
+  turbidity reading) while still letting water flow through freely. An earlier iteration
+  exposed the probes directly on the outside of the cylindrical wall; the flood chamber
+  replaced that to control for light.
+- The two chambers meet at an **epoxied, watertight interface**.
+
+This exists specifically for turbidity: the **hydrophone and temperature (thermometer)
+sensors are pre-waterproofed off-the-shelf** and don't need it. The turbidity probe is
+generally **not** pre-waterproofed, which is what drives the dry/flood chamber split.
+
 ## Design rationale
 
+- Cables run from the top of the buoy — near where the solar panel and LoRa/antenna
+  equipment sit — down to each underwater sensor.
 - All sensors connect to the electronics housing via a single multi-conductor cable.
 - Data is logged to onboard storage and summarized data transmitted via LoRa.
 - Sensors are spaced vertically to measure stratification.
 - Hydrophones capture acoustic data at two depths.
-- Sensor nodes are modular and individually replaceable.
+- Sensor nodes are modular and individually replaceable — a stakeholder-driven requirement, so
+  a fouled or failed pod can be swapped without disturbing the rest of the string.
 
 ## Open items
 
+- **Deferred-vs-current status is contested — see the callout above.** Needs a cross-discipline
+  decision, not a doc edit deciding it either way.
 - **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
   Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The `~30 m` annotation on
   the diagram image is outdated. The diagram PNG should be re-exported to drop the ~30 m label.

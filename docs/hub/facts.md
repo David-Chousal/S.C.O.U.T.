@@ -61,7 +61,7 @@
 | Turbidity polarity | **A higher `turbidity_adc` count means CLEARER water.** The SEN0189 is a transmittance sensor: particles block light to its phototransistor, so its output *falls* as turbidity rises — "the output value will decrease when in liquids with a high turbidity" ([DFRobot datasheet](https://media.digikey.com/pdf/data%20sheets/dfrobot%20pdfs/sen0189_web.pdf)). Clear water (< 0.5 NTU) ≈ 4.1 V. The firmware logs raw `analogRead` with no inversion, so the ADC inherits that direction. **Constraint for ECE:** the analog front end ([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) must be **non-inverting** (divider/buffer, not an inverting amp) or this convention and the analytics that rely on it break | [Data Schema](../engineering/data-schema.md), [datasheet](https://media.digikey.com/pdf/data%20sheets/dfrobot%20pdfs/sen0189_web.pdf) |
 | Hydrophone | **Aquarian** — ⏳ part number unresolved: H2a-XLR (diagram) vs H2dM (BOM) | [ADR-0003 related gaps](../decisions/0003-single-point-sensing.md) |
 | Dissolved oxygen | ⏳ status unresolved — wanted, V1.5 in sensor list, absent from EDD/BOM | [Sensor Selection](../engineering/sensor-selection.md) |
-| Multi-depth string | **Deferred** — documented future concept, not the current build | [ADR-0003](../decisions/0003-single-point-sensing.md) |
+| Multi-depth string | **Deferred, confirmed 2026-08-15.** ADR-0003 stands — one sensor per modality now. The sensor pod mechanical design is intentionally built to enable multi-depth scaling in a future revision, without activating it | [ADR-0003](../decisions/0003-single-point-sensing.md), [Sensor Housing → Why build for scale now](../../mechanical/cad/sensor-housing/README.md#why-build-for-scale-now) |
 
 ## Communications & data
 
