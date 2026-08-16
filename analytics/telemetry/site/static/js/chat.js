@@ -28,10 +28,14 @@
     return el;
   }
 
+  // Visibility is driven by the .chat-open class on the root, not the [hidden] attribute:
+  // the panel animates (scale/opacity/visibility), so it must stay in the box model to spill
+  // in and out of the icon.
+  function isOpen() { return root.classList.contains('chat-open'); }
+
   function openPanel() {
-    panel.hidden = false;
-    toggle.setAttribute('aria-expanded', 'true');
     root.classList.add('chat-open');
+    toggle.setAttribute('aria-expanded', 'true');
     if (!greeted) {
       greeted = true;
       addMsg('bot', configured
@@ -42,16 +46,20 @@
   }
 
   function closePanel() {
-    panel.hidden = true;
-    toggle.setAttribute('aria-expanded', 'false');
     root.classList.remove('chat-open');
+    toggle.setAttribute('aria-expanded', 'false');
     toggle.focus();
   }
 
-  toggle.addEventListener('click', function () { panel.hidden ? openPanel() : closePanel(); });
+  toggle.addEventListener('click', function () { isOpen() ? closePanel() : openPanel(); });
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !panel.hidden) closePanel();
+    if (e.key === 'Escape' && isOpen()) closePanel();
+  });
+  // Click anywhere outside the widget closes it. The opening click originates inside #scout-chat
+  // (the toggle), so root.contains() is true for it and it won't self-close.
+  document.addEventListener('click', function (e) {
+    if (isOpen() && !root.contains(e.target)) closePanel();
   });
 
   form.addEventListener('submit', function (e) {

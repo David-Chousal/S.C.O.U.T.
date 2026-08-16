@@ -688,17 +688,25 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .chat{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60}
 .chat-toggle{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
   background:var(--accent);color:var(--on-accent);display:grid;place-items:center;
-  box-shadow:var(--shadow-2);transition:transform var(--dur) var(--ease)}
+  box-shadow:var(--shadow-2);transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease)}
 .chat-toggle:hover{transform:translateY(-2px) scale(1.04)}
 .chat-toggle svg{width:24px;height:24px}
-.chat.chat-open .chat-toggle{display:none}
+/* Open: the icon shrinks away as the panel spills out from the same corner. */
+.chat.chat-open .chat-toggle{transform:scale(0);opacity:0;pointer-events:none}
+/* The panel grows out of (and collapses back into) the icon: scaled from the bottom-right
+   corner where the FAB sits. visibility is transitioned with a delay so it only flips to
+   hidden after the shrink finishes — that keeps it out of the tab order when collapsed while
+   still allowing the close animation to play. No display:none, so the motion is animatable. */
 .chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);
   width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 3rem));
   display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
-  border:1px solid var(--line);box-shadow:var(--shadow-2)}
-/* The explicit display above would otherwise override the [hidden] attribute, so the panel
-   could never collapse — pin it hidden when the attribute is set. */
-.chat-panel[hidden]{display:none}
+  border:1px solid var(--line);box-shadow:var(--shadow-2);transform-origin:bottom right;
+  transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
+  transition:transform .28s var(--ease),opacity .2s ease,visibility 0s .28s}
+.chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
+  transition:transform .34s var(--ease),opacity .22s ease,visibility 0s}
+@media (prefers-reduced-motion:reduce){
+  .chat-toggle,.chat.chat-open .chat-toggle,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
 .chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
   padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
 .chat-head b{display:block;font-size:1rem;color:var(--ink)}

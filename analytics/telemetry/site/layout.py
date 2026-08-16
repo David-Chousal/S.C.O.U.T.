@@ -187,7 +187,7 @@ def chat_widget(base: str) -> str:
         f'<button class="chat-toggle" type="button" aria-expanded="false" '
         f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{chat_icon}</button>'
         '<div class="chat-panel" id="scout-chat-panel" role="dialog" '
-        'aria-label="Ask about S.C.O.U.T." hidden>'
+        'aria-label="Ask about S.C.O.U.T.">'
         '<div class="chat-head"><div><b>Ask S.C.O.U.T.</b>'
         '<span>Answers from the project docs</span></div>'
         '<button class="chat-close" type="button" aria-label="Minimize chat">'
