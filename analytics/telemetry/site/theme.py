@@ -188,7 +188,7 @@ main figure{margin:0}
 
 /* ── Header / nav ─────────────────────────────────────────────────────────── */
 .site-header{position:sticky;top:0;z-index:50;
-  background:color-mix(in srgb,var(--bg) 82%,transparent);
+  background:color-mix(in srgb,var(--bg) 67%,transparent);
   backdrop-filter:saturate(1.3) blur(16px);-webkit-backdrop-filter:saturate(1.3) blur(16px)}
 /* Three-column header: brand left, nav menu centred, social icons right. */
 .nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:68px}
