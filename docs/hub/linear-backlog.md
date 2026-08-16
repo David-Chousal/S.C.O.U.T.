@@ -292,6 +292,24 @@ the record of how the backlog was derived, not as a queue.
 | [SCO-50](https://linear.app/scout1/issue/SCO-50) — document remaining CAD categories | John Ryan (geng) |
 | [SCO-51](https://linear.app/scout1/issue/SCO-51) — surface the drift verdict on the dashboard | David (csen) |
 
+### Second pass — PRs #58–#60 (mechanical CAD), reconciled 2026-08-16
+
+| Filed retroactively as **Done** | Covering |
+|---|---|
+| [SCO-52](https://linear.app/scout1/issue/SCO-52) | Multi-depth pod vs ADR-0003 — flagged and resolved same day (PR #59) |
+
+| Filed as **open** — all John Ryan (`geng`) | From |
+|---|---|
+| [SCO-53](https://linear.app/scout1/issue/SCO-53) — electronics housing cap needs a cable gland | PR #58 (explicitly "not yet a Linear issue") |
+| [SCO-54](https://linear.app/scout1/issue/SCO-54) — refine stem and solar mount into current iterations | PR #60 |
+| [SCO-55](https://linear.app/scout1/issue/SCO-55) — decide the O-ring manufacturing method | PR #60 |
+| [SCO-56](https://linear.app/scout1/issue/SCO-56) — audit the Onshape "Initial Frame" folder | PR #60 |
+
+**SCO-50** → Done: all five CAD categories delivered across PRs #58–#60, with the Onshape
+share link satisfying the native-source rule that PR #60 clarified for cloud CAD tools.
+**SCO-48** stays open with a comment — the candidate set grew from v1–v9 to include the
+wedge-based Master V3 and Outer Octagon designs.
+
 Also moved: **SCO-16** → Done (PR #45). **SCO-21** stays open with the firmware half recorded
 as a comment, pending Phase 4 field confirmation. **SCO-15** and **SCO-18** were missing phase
 projects and now have them.
