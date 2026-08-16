@@ -685,28 +685,41 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 @media print{.site-header,.site-footer{display:none}}
 
 /* ── Ask S.C.O.U.T. chat widget ──────────────────────────────────────────────── */
-.chat{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60}
-.chat-toggle{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
-  background:var(--accent);color:var(--on-accent);display:grid;place-items:center;
-  box-shadow:var(--shadow-2);transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease)}
-.chat-toggle:hover{transform:translateY(-2px) scale(1.04)}
-.chat-toggle svg{width:24px;height:24px}
-/* Open: the icon shrinks away as the panel spills out from the same corner. */
-.chat.chat-open .chat-toggle{transform:scale(0);opacity:0;pointer-events:none}
-/* The panel grows out of (and collapses back into) the icon: scaled from the bottom-right
-   corner where the FAB sits. visibility is transitioned with a delay so it only flips to
-   hidden after the shrink finishes — that keeps it out of the tab order when collapsed while
-   still allowing the close animation to play. No display:none, so the motion is animatable. */
-.chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);
-  width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 3rem));
+.chat{z-index:60}
+.chat-toggle{border:none;background:none;cursor:pointer;color:inherit;padding:0;font:inherit}
+/* Navbar launcher (desktop) — matches the GitHub/LinkedIn icons in .nav-social. */
+.nav-chat{display:inline-flex;color:var(--muted);transition:color var(--dur) var(--ease)}
+.nav-chat:hover{color:var(--accent)}
+.nav-chat svg{width:15px;height:15px}
+.chat.chat-open .nav-chat{color:var(--accent)}
+/* Floating launcher — shown only on mobile, where .nav-social (and its navbar chat icon) is
+   hidden. It is the round FAB the panel spills out of down there. */
+.chat-fab{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60;
+  width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+  display:none;place-items:center;box-shadow:var(--shadow-2);
+  transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease)}
+.chat-fab:hover{transform:translateY(-2px) scale(1.04)}
+.chat-fab svg{width:24px;height:24px}
+@media(max-width:720px){.chat-fab{display:grid}}
+.chat.chat-open .chat-fab{transform:scale(0);opacity:0;pointer-events:none}
+/* The panel grows out of (and collapses back into) the launcher: scaled from the corner where
+   the icon sits — top-right under the navbar on desktop, bottom-right by the FAB on mobile.
+   visibility is transitioned with a delay so it only flips to hidden after the shrink finishes,
+   keeping it out of the tab order when collapsed while still letting the close animation play.
+   No display:none, so the motion is animatable. */
+.chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);top:calc(68px + 0.55rem);
+  width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 68px - 1.6rem));z-index:60;
   display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
-  border:1px solid var(--line);box-shadow:var(--shadow-2);transform-origin:bottom right;
+  border:1px solid var(--line);box-shadow:var(--shadow-2);transform-origin:top right;
   transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
   transition:transform .28s var(--ease),opacity .2s ease,visibility 0s .28s}
 .chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
   transition:transform .34s var(--ease),opacity .22s ease,visibility 0s}
+@media(max-width:720px){
+  .chat-panel{top:auto;bottom:clamp(1rem,2vw,1.6rem);transform-origin:bottom right;
+    height:min(560px,calc(100dvh - 3rem))}}
 @media (prefers-reduced-motion:reduce){
-  .chat-toggle,.chat.chat-open .chat-toggle,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
+  .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
 .chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
   padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
 .chat-head b{display:block;font-size:1rem;color:var(--ink)}

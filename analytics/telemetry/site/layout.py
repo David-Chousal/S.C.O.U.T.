@@ -52,12 +52,26 @@ def _brand(base: str) -> str:
     )
 
 
+# The speech-bubble icon shared by the navbar launcher and the floating (mobile) launcher.
+_CHAT_ICON = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6a8.5 8.5 0 0 '
+    '1-.9-3.9A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>'
+)
+
+
 def _nav_social(base: str) -> str:
+    # The chat launcher sits next to LinkedIn on desktop. On mobile the whole .nav-social row is
+    # hidden, so the floating .chat-fab (in chat_widget) takes over there — both open the same
+    # panel (#scout-chat-panel) and share the .chat-toggle hook wired by chat.js.
     return (
         '<div class="nav-social">'
         f'<a href="{REPO_URL}" aria-label="S.C.O.U.T. on GitHub">{assets.social_icon("github")}</a>'
         f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
         f'{assets.social_icon("linkedin")}</a>'
+        '<button class="chat-toggle nav-chat" type="button" aria-expanded="false" '
+        f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{_CHAT_ICON}</button>'
         "</div>"
     )
 
@@ -169,14 +183,9 @@ def footer(base: str, *, external: bool = True) -> str:
 
 
 def chat_widget(base: str) -> str:
-    """The floating 'Ask S.C.O.U.T.' chat widget. Its script (chat.js) POSTs only to
-    CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
-    chat_icon = (
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6a8.5 8.5 0 0 '
-        '1-.9-3.9A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>'
-    )
+    """The 'Ask S.C.O.U.T.' chat panel plus its mobile floating launcher. The desktop launcher
+    lives in the navbar (see _nav_social); both share the .chat-toggle hook. Its script (chat.js)
+    POSTs only to CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
     send_icon = (
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
@@ -184,8 +193,8 @@ def chat_widget(base: str) -> str:
     )
     return (
         f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
-        f'<button class="chat-toggle" type="button" aria-expanded="false" '
-        f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{chat_icon}</button>'
+        f'<button class="chat-toggle chat-fab" type="button" aria-expanded="false" '
+        f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{_CHAT_ICON}</button>'
         '<div class="chat-panel" id="scout-chat-panel" role="dialog" '
         'aria-label="Ask about S.C.O.U.T.">'
         '<div class="chat-head"><div><b>Ask S.C.O.U.T.</b>'
