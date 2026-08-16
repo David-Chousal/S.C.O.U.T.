@@ -683,4 +683,39 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .buoy-tile:hover .tile-more{color:var(--accent)}
 
 @media print{.site-header,.site-footer{display:none}}
+
+/* ── Ask S.C.O.U.T. chat widget ──────────────────────────────────────────────── */
+.chat{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60}
+.chat-toggle{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--accent);color:var(--on-accent);display:grid;place-items:center;
+  box-shadow:var(--shadow-2);transition:transform var(--dur) var(--ease)}
+.chat-toggle:hover{transform:translateY(-2px) scale(1.04)}
+.chat-toggle svg{width:24px;height:24px}
+.chat.chat-open .chat-toggle{display:none}
+.chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);
+  width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 3rem));
+  display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
+  border:1px solid var(--line);box-shadow:var(--shadow-2)}
+.chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+  padding:1rem 1.1rem;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.chat-head b{display:block;font-size:1rem;color:var(--ink)}
+.chat-head span{display:block;font-size:var(--text-micro);color:var(--muted);margin-top:0.15rem}
+.chat-close{border:none;background:none;font-size:1.5rem;line-height:1;color:var(--muted);
+  cursor:pointer;padding:0 0.2rem}
+.chat-close:hover{color:var(--ink)}
+.chat-log{flex:1;overflow-y:auto;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.7rem}
+.chat-msg{max-width:86%;padding:0.6rem 0.85rem;font-size:0.92rem;line-height:1.5;border-radius:14px}
+.chat-bot{align-self:flex-start;background:var(--surface-2);color:var(--ink);
+  border-bottom-left-radius:4px}
+.chat-user{align-self:flex-end;background:var(--accent);color:var(--on-accent);
+  border-bottom-right-radius:4px}
+.chat-typing{color:var(--muted);letter-spacing:0.18em}
+.chat-form{display:flex;gap:0.5rem;padding:0.8rem 0.9rem;border-top:1px solid var(--line)}
+.chat-input{flex:1;min-width:0;border:1px solid var(--line-2);border-radius:10px;
+  padding:0.6rem 0.8rem;font:inherit;font-size:0.92rem;color:var(--ink);background:var(--bg)}
+.chat-input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.chat-send{flex:none;width:42px;border:none;border-radius:10px;background:var(--accent);
+  color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
+.chat-send:hover{opacity:1;filter:brightness(1.06)}
+.chat-send svg{width:18px;height:18px}
 """
