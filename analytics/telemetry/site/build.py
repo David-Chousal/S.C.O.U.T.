@@ -37,30 +37,37 @@ _ALERT_CLASS = {
 
 _STATIC = Path(__file__).parent / "static"
 
-# Docs bundled into the chat assistant's knowledge (Hub first — the current source of truth —
-# then core engineering/science docs). Relative to the repo root; missing files are skipped.
-# Capped so the Groq prompt stays well inside the model's context window.
+# Docs bundled into the chat assistant's knowledge, in priority order: the plain-language
+# overview and the Hub (the current source of truth) first, then core sensor/schema/decision
+# reference, then deep methodology docs last. Relative to the repo root; missing files skipped.
+#
+# The caps are sized for Groq's FREE-tier rate limit, not the model's context window: the whole
+# knowledge base (~29k tokens) blows past the 12k tokens/minute ceiling on
+# llama-3.3-70b-versatile, so every request 502s. Keeping the emitted context near ~4k tokens
+# leaves headroom for the system prompt, a few conversation turns, and the reply within 12k TPM.
+# Lowest-priority docs fall off the end first when the total cap bites, so the essentials always
+# survive. If the account moves to a paid Groq tier, these caps can be raised well past this.
 _CHAT_DOCS = (
+    "docs/overview/mvp-system-overview.md",
     "docs/hub/facts.md",
-    "docs/hub/decision-log.md",
     "docs/hub/status.md",
+    "docs/hub/decision-log.md",
+    "docs/engineering/sensor-selection.md",
+    "docs/engineering/data-schema.md",
     "docs/hub/design-notes.md",
     "docs/hub/research/open-questions.md",
-    "docs/hub/research/sources.md",
-    "docs/overview/mvp-system-overview.md",
-    "docs/overview/project-update-2026-07.md",
-    "docs/engineering/engineering-design-document.md",
-    "docs/engineering/data-schema.md",
-    "docs/engineering/shore-station.md",
-    "docs/engineering/sensor-selection.md",
-    "docs/analysis/telemetry-methodology.md",
-    "docs/analysis/coral-bioacoustic-methodology.md",
     "docs/decisions/0001-mcu-and-radio-selection.md",
     "docs/decisions/0002-lifepo4-charging-path.md",
     "docs/decisions/0003-single-point-sensing.md",
+    "docs/overview/project-update-2026-07.md",
+    "docs/engineering/shore-station.md",
+    "docs/hub/research/sources.md",
+    "docs/analysis/telemetry-methodology.md",
+    "docs/analysis/coral-bioacoustic-methodology.md",
+    "docs/engineering/engineering-design-document.md",
 )
-_CHAT_CONTEXT_CAP = 120_000
-_CHAT_PER_FILE_CAP = 16_000
+_CHAT_CONTEXT_CAP = 16_000
+_CHAT_PER_FILE_CAP = 3_000
 
 
 def _write_chat_context(out: Path) -> None:
