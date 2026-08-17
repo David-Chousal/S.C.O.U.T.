@@ -704,12 +704,12 @@ table.data .lvl{font-weight:560;color:var(--ink)}
    the input pill. The column is click-through (pointer-events:none) so the page stays fully
    usable around and between its pieces — only the card and pill capture clicks. Never dims the
    page; closes only via the header chevron or Escape. */
-.chat-panel{position:fixed;left:50%;top:50%;z-index:60;pointer-events:none;
-  width:min(442px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);
+.chat-panel{position:fixed;left:50%;bottom:clamp(1rem,2vw,1.4rem);z-index:60;pointer-events:none;
+  width:min(442px,calc(100vw - 2rem));max-height:calc(100dvh - 2.5rem);
   display:flex;flex-direction:column;gap:0.7rem;
-  transform:translate(-50%,-47%);opacity:0;visibility:hidden;
+  transform:translateX(-50%) translateY(14px);opacity:0;visibility:hidden;
   transition:opacity .26s ease,transform .3s var(--ease),visibility 0s .3s}
-.chat.chat-open .chat-panel{opacity:1;visibility:visible;transform:translate(-50%,-50%);
+.chat.chat-open .chat-panel{opacity:1;visibility:visible;transform:translateX(-50%);
   transition:opacity .26s ease,transform .32s var(--ease),visibility 0s}
 /* Frosted conversation card — smoked deep-ocean glass; the page shows through, blurred. */
 .chat-glass{pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;
