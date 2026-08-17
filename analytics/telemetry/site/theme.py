@@ -705,7 +705,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
    usable around and between its pieces — only the card and pill capture clicks. Never dims the
    page; closes only via the header chevron or Escape. */
 .chat-panel{position:fixed;left:50%;top:50%;z-index:60;pointer-events:none;
-  width:min(680px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);
+  width:min(442px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);
   display:flex;flex-direction:column;gap:0.7rem;
   transform:translate(-50%,-47%);opacity:0;visibility:hidden;
   transition:opacity .26s ease,transform .3s var(--ease),visibility 0s .3s}
@@ -713,7 +713,7 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   transition:opacity .26s ease,transform .32s var(--ease),visibility 0s}
 /* Frosted conversation card — smoked deep-ocean glass; the page shows through, blurred. */
 .chat-glass{pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;
-  height:min(560px,calc(100dvh - 9rem));border-radius:22px;color:#fff;
+  height:min(364px,calc(100dvh - 9rem));border-radius:22px;color:#fff;
   background:linear-gradient(155deg,rgba(38,64,68,.62),rgba(15,32,36,.74));
   backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);
   border:1px solid rgba(255,255,255,.14);box-shadow:0 34px 90px -34px rgba(8,22,26,.65)}
