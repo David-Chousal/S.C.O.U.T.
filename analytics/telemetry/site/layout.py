@@ -17,10 +17,10 @@ SCU_URL = "https://www.scu.edu/engineering/"
 CONTACT_EMAIL = "davidchousal@icloud.com"
 
 # The "Ask S.C.O.U.T." chat widget POSTs here. This is the deployed Cloudflare Worker
-# (chatbot/), the ONLY place the Groq key lives. Until it's deployed, leave the placeholder —
-# the widget detects it and shows a "not configured yet" note instead of calling out.
-# It is the site's one sanctioned cross-origin endpoint (see test_web's allowlist).
-CHAT_ENDPOINT = "https://scout-chat.example.workers.dev"
+# (chatbot/), the ONLY place the Groq key lives. It is the site's one sanctioned cross-origin
+# endpoint (see test_web's allowlist). To rotate or point at a different Worker, change this
+# and update ALLOWED_ORIGIN/CONTEXT_URL in chatbot/wrangler.toml to match.
+CHAT_ENDPOINT = "https://scout-chat.scout1.workers.dev"
 
 # (slug, label, optional-on-mobile, in-header). Home slug is "" (site root). Fleet is in the
 # footer only for now.
