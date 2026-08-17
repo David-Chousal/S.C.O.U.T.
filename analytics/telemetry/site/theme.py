@@ -750,8 +750,9 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* Composer — a detached solid pill floating below the glass. */
 .chat-form{pointer-events:auto;display:flex;flex-direction:column}
 .chat-field{display:flex;align-items:center;gap:0.5rem;background:var(--surface);
-  border:none;border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
-  box-shadow:0 18px 44px -22px rgba(8,22,26,.5)}
+  border:1px solid var(--line);border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
+  box-shadow:0 18px 44px -22px rgba(8,22,26,.5);transition:border-color var(--dur) var(--ease)}
+.chat-field:focus-within{border-color:var(--accent)}
 .chat-input{flex:1;min-width:0;border:none;background:none;padding:0.5rem 0;font:inherit;
   font-size:0.95rem;color:var(--ink)}
 .chat-input::placeholder{color:var(--muted)}
