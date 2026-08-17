@@ -750,9 +750,8 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 /* Composer — a detached solid pill floating below the glass. */
 .chat-form{pointer-events:auto;display:flex;flex-direction:column}
 .chat-field{display:flex;align-items:center;gap:0.5rem;background:var(--surface);
-  border:1px solid var(--line);border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
-  box-shadow:0 18px 44px -22px rgba(8,22,26,.5);transition:border-color var(--dur) var(--ease)}
-.chat-field:focus-within{border-color:var(--accent)}
+  border:none;border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
+  box-shadow:0 18px 44px -22px rgba(8,22,26,.5)}
 .chat-input{flex:1;min-width:0;border:none;background:none;padding:0.5rem 0;font:inherit;
   font-size:0.95rem;color:var(--ink)}
 .chat-input::placeholder{color:var(--muted)}
@@ -762,7 +761,6 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   transition:filter var(--dur) var(--ease)}
 .chat-send:hover{filter:brightness(1.08)}
 .chat-send svg{width:18px;height:18px}
-.chat-fineprint{margin:0.55rem 0 0;text-align:center;font-size:var(--text-micro);color:var(--muted)}
 @media(max-width:720px){
   .chat-panel{width:calc(100vw - 1.4rem);max-height:calc(100dvh - 1.4rem)}
   .chat-glass{height:calc(100dvh - 8rem)}}

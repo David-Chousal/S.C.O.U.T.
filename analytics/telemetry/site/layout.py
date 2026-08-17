@@ -223,7 +223,6 @@ def chat_widget(base: str) -> str:
         'aria-label="Your question" maxlength="500" autocomplete="off">'
         f'<button class="chat-send" type="submit" aria-label="Send">{send_icon}</button>'
         "</div>"
-        '<p class="chat-fineprint">Fred answers from the project docs and can be wrong.</p>'
         "</form></div></div>"
         f'<script defer src="{base}assets/js/chat.js"></script>'
     )
