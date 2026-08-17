@@ -8,6 +8,7 @@ from pathlib import Path
 from telemetry import analyze
 from telemetry.model import TelemetryRecord
 from telemetry.site import theme
+from telemetry.site.layout import CHAT_ENDPOINT
 from telemetry.web import render_html, write_site
 
 _T0 = datetime(2027, 3, 1, tzinfo=timezone.utc)
@@ -113,11 +114,14 @@ class WebDashboardTest(unittest.TestCase):
         for url in re.findall(r'url\(\s*["\']?([^"\')]+)', html):
             self.assertFalse(is_external(url), f"CSS url() must be same-origin, got {url!r}")
 
-        # Any external URL that does appear must be a hyperlink, never a loaded resource.
+        # Any external URL that does appear must be a hyperlink, never a loaded resource — with
+        # one sanctioned exception: the chat proxy endpoint (the widget POSTs to it from chat.js).
         anchor_hrefs = set(re.findall(r'<a\b[^>]*\bhref="([^"]*)"', html))
+        allowed = anchor_hrefs | {CHAT_ENDPOINT}
         for url in re.findall(r'(?:https?:)?//[^\s"\'<>()]+', html):
-            self.assertIn(url, anchor_hrefs,
-                          f"external URL {url!r} must be a hyperlink, not a loaded resource")
+            self.assertIn(url, allowed,
+                          f"external URL {url!r} must be a hyperlink or the chat endpoint, "
+                          "not a loaded resource")
 
     def test_shows_thermal_status_when_mmm_given(self):
         html = render_html(analyze(_records(days=14), mmm=28.0), generated_at=_FIXED)

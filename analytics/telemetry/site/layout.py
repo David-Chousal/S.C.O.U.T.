@@ -16,6 +16,12 @@ REPO_URL = "https://github.com/David-Chousal/S.C.O.U.T."
 SCU_URL = "https://www.scu.edu/engineering/"
 CONTACT_EMAIL = "davidchousal@icloud.com"
 
+# The "Ask S.C.O.U.T." chat widget POSTs here. This is the deployed Cloudflare Worker
+# (chatbot/), the ONLY place the Groq key lives. Until it's deployed, leave the placeholder —
+# the widget detects it and shows a "not configured yet" note instead of calling out.
+# It is the site's one sanctioned cross-origin endpoint (see test_web's allowlist).
+CHAT_ENDPOINT = "https://scout-chat.example.workers.dev"
+
 # (slug, label, optional-on-mobile, in-header). Home slug is "" (site root). Fleet is in the
 # footer only for now.
 _NAV = (
@@ -45,12 +51,26 @@ def _brand(base: str) -> str:
     )
 
 
+# The speech-bubble icon shared by the navbar launcher and the floating (mobile) launcher.
+_CHAT_ICON = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6a8.5 8.5 0 0 '
+    '1-.9-3.9A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>'
+)
+
+
 def _nav_social(base: str) -> str:
+    # The chat launcher sits next to LinkedIn on desktop. On mobile the whole .nav-social row is
+    # hidden, so the floating .chat-fab (in chat_widget) takes over there — both open the same
+    # panel (#scout-chat-panel) and share the .chat-toggle hook wired by chat.js.
     return (
         '<div class="nav-social">'
         f'<a href="{REPO_URL}" aria-label="S.C.O.U.T. on GitHub">{assets.social_icon("github")}</a>'
         f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
         f'{assets.social_icon("linkedin")}</a>'
+        '<button class="chat-toggle nav-chat" type="button" aria-expanded="false" '
+        f'aria-controls="scout-chat-panel" aria-label="Ask about S.C.O.U.T.">{_CHAT_ICON}</button>'
         "</div>"
     )
 
@@ -161,6 +181,52 @@ def footer(base: str, *, external: bool = True) -> str:
     )
 
 
+def chat_widget(base: str) -> str:
+    """'Ask Fred' — a centred, frosted-glass chat that floats over the page (Fin-style): a
+    smoked-glass conversation card with a detached input pill below it. It never dims or blocks
+    the page — the rest of the site stays usable while chatting. Launched from the navbar icon
+    (desktop) or the floating button (mobile). chat.js POSTs only to CHAT_ENDPOINT."""
+    # Fred's avatar is the S.C.O.U.T. buoy mark on his accent-coloured disc (CSS whitens the
+    # black artwork so it reads on the teal). Same-origin WebP-with-raster-fallback via picture().
+    avatar = assets.picture(
+        f'<img src="{base}assets/img/brand/scout-mark.png" alt="" '
+        'width="22" height="22" decoding="async">'
+    )
+    send_icon = (  # upward arrow
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M12 20V5M6 11l6-6 6 6"/></svg>'
+    )
+    close_icon = (  # down chevron — minimise back to the launcher (Fin-style)
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M6 9l6 6 6-6"/></svg>'
+    )
+    return (
+        f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
+        f'<button class="chat-toggle chat-fab" type="button" aria-expanded="false" '
+        f'aria-controls="scout-chat-panel" aria-label="Ask Fred about the project">{_CHAT_ICON}</button>'
+        '<div class="chat-panel" id="scout-chat-panel" role="dialog" aria-label="Ask Fred about '
+        'the S.C.O.U.T. project">'
+        '<div class="chat-glass">'
+        '<div class="chat-head">'
+        f'<span class="chat-avatar" aria-hidden="true">{avatar}</span>'
+        '<div class="chat-id"><b>Fred</b><span>Ask me about the S.C.O.U.T. project</span></div>'
+        f'<button class="chat-close" type="button" aria-label="Close chat">{close_icon}</button>'
+        "</div>"
+        '<div class="chat-log" role="log" aria-live="polite"></div>'
+        "</div>"
+        '<form class="chat-form">'
+        '<div class="chat-field">'
+        '<input class="chat-input" type="text" placeholder="Message…" '
+        'aria-label="Your question" maxlength="500" autocomplete="off">'
+        f'<button class="chat-send" type="submit" aria-label="Send">{send_icon}</button>'
+        "</div>"
+        "</form></div></div>"
+        f'<script defer src="{base}assets/js/chat.js"></script>'
+    )
+
+
 def document(
     *,
     title: str,
@@ -201,5 +267,6 @@ def document(
         # Self-hosted Lottie runtime for the ambient animations, on every page (including
         # Analytics). Same-origin only; the page still makes no cross-origin request.
         f"{_lottie_scripts(base)}"
+        f"{chat_widget(base)}\n"
         "</body>\n</html>\n"
     )

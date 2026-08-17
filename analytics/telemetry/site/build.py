@@ -37,6 +37,61 @@ _ALERT_CLASS = {
 
 _STATIC = Path(__file__).parent / "static"
 
+# Docs bundled into the chat assistant's knowledge (Hub first — the current source of truth —
+# then core engineering/science docs). Relative to the repo root; missing files are skipped.
+# Capped so the Groq prompt stays well inside the model's context window.
+_CHAT_DOCS = (
+    "docs/hub/facts.md",
+    "docs/hub/decision-log.md",
+    "docs/hub/status.md",
+    "docs/hub/design-notes.md",
+    "docs/hub/research/open-questions.md",
+    "docs/hub/research/sources.md",
+    "docs/overview/mvp-system-overview.md",
+    "docs/overview/project-update-2026-07.md",
+    "docs/engineering/engineering-design-document.md",
+    "docs/engineering/data-schema.md",
+    "docs/engineering/shore-station.md",
+    "docs/engineering/sensor-selection.md",
+    "docs/analysis/telemetry-methodology.md",
+    "docs/analysis/coral-bioacoustic-methodology.md",
+    "docs/decisions/0001-mcu-and-radio-selection.md",
+    "docs/decisions/0002-lifepo4-charging-path.md",
+    "docs/decisions/0003-single-point-sensing.md",
+)
+_CHAT_CONTEXT_CAP = 120_000
+_CHAT_PER_FILE_CAP = 16_000
+
+
+def _write_chat_context(out: Path) -> None:
+    """Emit ``chat-context.txt`` — the Hub + core docs concatenated — for the chat proxy to read
+    and inject as knowledge. Sourced from the repo's ``docs/`` (three levels up from this
+    package); if that isn't present (e.g. building outside the repo) the file is simply skipped."""
+    repo_root = Path(__file__).resolve().parents[3]
+    if not (repo_root / "docs").is_dir():
+        return
+    parts = [
+        "S.C.O.U.T. project knowledge — concatenated from the repo's Knowledge Hub and core "
+        "engineering and science docs. Answer questions about the project using only this.\n"
+    ]
+    total = 0
+    for rel in _CHAT_DOCS:
+        p = repo_root / rel
+        if not p.exists():
+            continue
+        try:
+            text = p.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if len(text) > _CHAT_PER_FILE_CAP:
+            text = text[:_CHAT_PER_FILE_CAP] + "\n…(truncated)…\n"
+        block = f"\n\n===== {rel} =====\n{text}"
+        if total + len(block) > _CHAT_CONTEXT_CAP:
+            break
+        parts.append(block)
+        total += len(block)
+    _write(out / "chat-context.txt", "".join(parts))
+
 
 def _copy_static(assets_out: Path) -> None:
     """Copy bundled static assets (fonts, images) into ``<out>/assets`` if any are present."""
@@ -153,6 +208,9 @@ def build_site(
         "S.C.O.U.T. site.", active="", body=imagery.credits_page_body(img_dir), base="../",
         fonts_present=fonts_present, external=True,
     ))
+
+    # Knowledge context for the "Ask S.C.O.U.T." chat proxy (chatbot/worker.js reads this).
+    _write_chat_context(out)
     return out
 
 
