@@ -193,13 +193,14 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 
 ---
 
-## D. Staged, not yet in Linear
+## D. Staged — now all filed
 
-⏳ **Not filed.** Raised by sessions without `scout1` access. Whoever files one should add the
-`SCO-##` link to its heading and move the entry into the record above.
+✅ **Filed 2026-08-17.** These were raised by sessions without `scout1` access. Each heading now
+carries its `SCO-##`. Kept here as the derivation record, not as a queue.
 
-**D1 is resolved and needs no issue** — it is kept as a record. **D2 and D3 are live and
-unfiled.**
+**All of section D is now filed or closed.** D1 was resolved before it was ever filed and is
+kept as a record; **D2 is [SCO-57](https://linear.app/scout1/issue/SCO-57)** and
+**D3 is [SCO-58](https://linear.app/scout1/issue/SCO-58)** (filed 2026-08-17).
 
 ### D1 · `csen: resolve the SEN0189 ADC→turbidity polarity` — ✅ Resolved 2026-08-15 (never filed)
 - **Label** `csen` · **Owner** David (me) · **Type** `Bug` (implementation vs. datasheet conflict) · **Priority** `High` · **Project** Phase 1
@@ -210,7 +211,7 @@ unfiled.**
 - **Source** — [PR #45](https://github.com/David-Chousal/S.C.O.U.T./pull/45), [`open-questions.md`](research/open-questions.md), `manov-2004` drift work (**B3**/[SCO-16](https://linear.app/scout1/issue/SCO-16))
 - **Note for the filer** — the biofouling drift screen delivered in PR #45 is deliberately **sign-agnostic**, so it stays correct whichever way this resolves. Only `turbidity.py` is at risk.
 
-### D2 · `csen: surface biofouling drift state on the Fleet page` — ⏳ not filed
+### D2 · `csen: surface biofouling drift state on the Fleet page` — ✅ [SCO-57](https://linear.app/scout1/issue/SCO-57)
 - **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2 → 5
 - **Context** — [SCO-51](https://linear.app/scout1/issue/SCO-51) put the drift verdict on the single-buoy Analytics page. The **Fleet** page ([`fleet_web.py`](../../analytics/telemetry/fleet_web.py)) is a separate renderer and shows no drift state at all, so a fouling buoy looks identical to a healthy one in the network view.
 - **Why it matters more here, not less** — a lone buoy has no clean reference, which is why the screen is only a *screen* ([SCO-20](https://linear.app/scout1/issue/SCO-20)). A fleet does: one buoy whose clean-water reading sinks while its neighbours hold steady is close to the redundant comparison `manov-2004` actually asks for. This is arguably the cheapest partial answer to SCO-20 available — no extra hardware, just cross-buoy comparison of a number already computed.
@@ -218,11 +219,11 @@ unfiled.**
 - **Blocked by** — nothing technically; **low value until more than one buoy exists**. File it, then park it in `Backlog` rather than `On Deck`.
 - **Source** — [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65) open questions · related **B8**/[SCO-20](https://linear.app/scout1/issue/SCO-20)
 
-### D3 · `analytics: add the drift verdict to the matplotlib PNG dashboard` — ⏳ not filed
+### D3 · `analytics: improve the PNG dashboard for presentations` — ✅ [SCO-58](https://linear.app/scout1/issue/SCO-58)
 - **Label** `csen` · **Owner** David (me) · **Type** `Improvement` · **Priority** `Low` · **Project** any
 - **Context** — [`dashboard.py`](../../analytics/telemetry/dashboard.py) renders the optional PNG dashboard (`--dashboard`) and omits the drift verdict that the web page now shows. Deliberately skipped in [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65): nothing in the Pages build uses it, so widening scope there would have been unrelated work.
-- **Worth asking first** — whether the PNG dashboard is still wanted at all now that the static site covers the same ground. If it is only used for slides or the report, "add the verdict" and "retire it" are both valid closes; decide before building.
-- **Acceptance** — [ ] Verdict shown on the PNG, **or** the PNG dashboard retired with a note saying why.
+- **Answered 2026-08-17 — the PNG stays.** It is still used for **presentations**; a slide needs a self-contained image, not a URL, so the static site does not replace it. "Retire it" is off the table and the issue is scoped as improvement instead.
+- **Acceptance** — [ ] Drift verdict on the PNG with the same "screen, not proof" caveat; [ ] legibility pass at slide scale (fonts, contrast, figure size); [ ] `insufficient data` stays unstyled, matching the web dashboard; [ ] turbidity panel reflects the corrected polarity; [ ] a note in [live-dashboard.md](../engineering/live-dashboard.md) saying what the PNG is *for*, so nobody re-asks whether to retire it.
 - **Blocked by** — nothing · **Source** — [PR #65](https://github.com/David-Chousal/S.C.O.U.T./pull/65) open tasks
 
 ---
