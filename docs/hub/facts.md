@@ -92,6 +92,13 @@
 | Multi-buoy analysis | Each `buoy_id` is analysed **in isolation** (never blended — merging streams corrupts daily means and DHW), each with **its own MMM** | [`analytics/telemetry/fleet.py`](../../analytics/telemetry/fleet.py) |
 | Live dashboard | Self-contained static site on GitHub Pages, republished per publish (not real-time); **Analytics** (one buoy) and **Fleet** (network overview) pages are data-driven | [Live Dashboard](../engineering/live-dashboard.md) |
 
+## Mechanical & deployment
+
+| Fact | Canonical value | Source |
+|---|---|---|
+| Anchoring/mooring approach | **Marked sites** (existing pile/mooring) connect directly via line. **Unmarked sites** use a single **mushroom anchor**, sited adjacent to (never on) coral with enough swing clearance the line can't drag/agitate the reef. Synthetic marine rope by default; chain in high-turbulence sites | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) |
+| O-ring manufacturing method | **Purchased off-the-shelf** (standard AS568-type), not TPU-printed or batch-cast via injection mold — printed parts are porous along layer lines, a waterproofing-critical risk at the 5 m pressure target. Provisional; revisit if standard sizes don't fit | [SCO-55](https://linear.app/scout1/issue/SCO-55), [design-notes.md](design-notes.md) |
+
 ---
 
 ## Open facts (deliberately not settled yet)
