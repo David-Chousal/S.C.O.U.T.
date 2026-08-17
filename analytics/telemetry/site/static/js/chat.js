@@ -15,6 +15,7 @@
   var toggles = [].slice.call(document.querySelectorAll('.chat-toggle'));
   var panel = root.querySelector('.chat-panel');
   var closeBtn = root.querySelector('.chat-close');
+  var expandBtn = root.querySelector('.chat-expand');
   var log = root.querySelector('.chat-log');
   var form = root.querySelector('.chat-form');
   var input = root.querySelector('.chat-input');
@@ -92,14 +93,28 @@
 
   function closePanel() {
     root.classList.remove('chat-open');
+    collapse();  // always reopen docked, not expanded
     setExpanded('false');
     var t = visibleToggle();
     if (t) t.focus();
   }
 
+  // Expand morphs the docked corner panel into a large centered one (Fin's hero-widget look);
+  // collapse returns it to the corner. The icon and label flip with the state.
+  function collapse() {
+    root.classList.remove('chat-expanded');
+    if (expandBtn) expandBtn.setAttribute('aria-label', 'Expand chat');
+  }
+  function toggleExpand() {
+    var expanded = root.classList.toggle('chat-expanded');
+    expandBtn.setAttribute('aria-label', expanded ? 'Collapse chat' : 'Expand chat');
+    input.focus();
+  }
+
   toggles.forEach(function (t) {
     t.addEventListener('click', function () { isOpen() ? closePanel() : openPanel(); });
   });
+  if (expandBtn) expandBtn.addEventListener('click', toggleExpand);
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && isOpen()) closePanel();

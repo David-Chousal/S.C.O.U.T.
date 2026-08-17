@@ -713,27 +713,48 @@ table.data .lvl{font-weight:560;color:var(--ink)}
   border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -24px rgba(20,40,45,.4);
   transform-origin:top right;transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
   transition:transform .28s var(--ease),opacity .2s ease,visibility 0s .28s}
+/* When open, geometry props also transition so the expand/collapse morph is smooth (they don't
+   change on plain open, so the spill is unaffected). */
 .chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
-  transition:transform .34s var(--ease),opacity .22s ease,visibility 0s}
+  transition:transform .34s var(--ease),opacity .22s ease,visibility 0s,
+    top .34s var(--ease),right .34s var(--ease),width .34s var(--ease),height .34s var(--ease)}
+/* Expanded — the large centered panel (Fin's hero-widget look). Anchored by top+right (never
+   auto) so the corner→centre glide animates cleanly. */
+.chat.chat-open.chat-expanded .chat-panel{top:50%;right:50%;
+  width:min(600px,calc(100vw - 3rem));height:min(760px,calc(100dvh - 4rem));
+  transform-origin:center;transform:translate(50%,-50%) scale(1)}
+/* Dimmed backdrop behind the centered panel. */
+.chat-scrim{position:fixed;inset:0;z-index:59;background:rgba(15,35,40,.42);
+  opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s .28s}
+.chat.chat-open.chat-expanded .chat-scrim{opacity:1;visibility:visible;transition:opacity .28s ease}
 @media(max-width:720px){
   .chat-panel{top:auto;bottom:clamp(1rem,2vw,1.6rem);transform-origin:bottom right;
     height:min(560px,calc(100dvh - 3rem))}}
 @media (prefers-reduced-motion:reduce){
-  .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
+  .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel,
+  .chat-scrim,.chat.chat-open.chat-expanded .chat-scrim{transition:none}}
 /* Header — Fred's avatar + name + role, hairline divider (Fin/Intercom layout). */
 .chat-head{display:flex;align-items:center;gap:0.7rem;
   padding:0.85rem 1rem;background:linear-gradient(180deg,var(--surface-2),var(--surface));
   border-bottom:1px solid var(--line)}
 .chat-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);
-  color:var(--on-accent);display:grid;place-items:center}
-.chat-avatar svg{width:19px;height:19px;display:block}
+  color:var(--on-accent);display:grid;place-items:center;overflow:hidden}
+/* The buoy mark is black artwork; whiten it so it reads on the accent disc. */
+.chat-avatar img{width:22px;height:22px;object-fit:contain;display:block;
+  filter:brightness(0) invert(1)}
 .chat-id{min-width:0;line-height:1.25}
 .chat-id b{display:block;font-size:0.98rem;color:var(--ink)}
 .chat-id span{display:block;font-size:var(--text-micro);color:var(--muted)}
-.chat-close{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;
+.chat-actions{margin-left:auto;display:flex;align-items:center;gap:0.1rem}
+.chat-close,.chat-expand{border:none;background:none;color:var(--muted);cursor:pointer;
   padding:0.25rem;display:grid;place-items:center;border-radius:50%}
-.chat-close svg{width:19px;height:19px;display:block}
-.chat-close:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.chat-close svg,.chat-expand svg{width:19px;height:19px;display:block}
+.chat-close:hover,.chat-expand:hover{color:var(--ink);
+  background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.chat-expand .i-collapse{display:none}
+.chat.chat-expanded .chat-expand .i-expand{display:none}
+.chat.chat-expanded .chat-expand .i-collapse{display:block}
+@media(max-width:720px){.chat-expand{display:none}}
 /* Message list — each row stacks a bubble over a small credit line. */
 .chat-log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.85rem}
 .chat-row{display:flex;flex-direction:column;max-width:88%}

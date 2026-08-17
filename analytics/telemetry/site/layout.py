@@ -182,19 +182,16 @@ def footer(base: str, *, external: bool = True) -> str:
     )
 
 
-# Fred's avatar glyph — a stylised wave, shown in the header and beside his messages.
-_FRED_WAVE = (
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-    '<path d="M3 9c1.8-2.4 3.6-2.4 5.4 0s3.6 2.4 5.4 0 3.6-2.4 5.4 0"/>'
-    '<path d="M3 15c1.8-2.4 3.6-2.4 5.4 0s3.6 2.4 5.4 0 3.6-2.4 5.4 0"/></svg>'
-)
-
-
 def chat_widget(base: str) -> str:
     """'Ask Fred' — the project chat panel plus its mobile floating launcher. The desktop
     launcher lives in the navbar (see _nav_social); both share the .chat-toggle hook. Its
     script (chat.js) POSTs only to CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
+    # Fred's avatar is the S.C.O.U.T. buoy mark on his accent-coloured disc (CSS whitens the
+    # black artwork so it reads on the teal). Same-origin WebP-with-raster-fallback via picture().
+    avatar = assets.picture(
+        f'<img src="{base}assets/img/brand/scout-mark.png" alt="" '
+        'width="22" height="22" decoding="async">'
+    )
     send_icon = (  # upward arrow, Fin/Intercom style
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
@@ -205,16 +202,31 @@ def chat_widget(base: str) -> str:
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<path d="M18 6 6 18M6 6l12 12"/></svg>'
     )
+    # Expand and collapse (maximise / minimise) corner-bracket icons — CSS shows one at a time.
+    expand_icon = (
+        '<svg class="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3'
+        'M16 21h3a2 2 0 0 0 2-2v-3"/></svg>'
+        '<svg class="i-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M3 8h3a2 2 0 0 0 2-2V3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3'
+        'M21 16h-3a2 2 0 0 0-2 2v3"/></svg>'
+    )
     return (
         f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
         f'<button class="chat-toggle chat-fab" type="button" aria-expanded="false" '
         f'aria-controls="scout-chat-panel" aria-label="Ask Fred about the project">{_CHAT_ICON}</button>'
+        '<div class="chat-scrim" aria-hidden="true"></div>'
         '<div class="chat-panel" id="scout-chat-panel" role="dialog" aria-label="Ask Fred about '
         'the S.C.O.U.T. project">'
         '<div class="chat-head">'
-        f'<span class="chat-avatar" aria-hidden="true">{_FRED_WAVE}</span>'
+        f'<span class="chat-avatar" aria-hidden="true">{avatar}</span>'
         '<div class="chat-id"><b>Fred</b><span>Ask me about the S.C.O.U.T. project</span></div>'
+        '<div class="chat-actions">'
+        f'<button class="chat-expand" type="button" aria-label="Expand chat">{expand_icon}</button>'
         f'<button class="chat-close" type="button" aria-label="Close chat">{close_icon}</button>'
+        "</div>"
         "</div>"
         '<div class="chat-log" role="log" aria-live="polite"></div>'
         '<form class="chat-form">'
