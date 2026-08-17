@@ -15,7 +15,9 @@
   var toggles = [].slice.call(document.querySelectorAll('.chat-toggle'));
   var panel = root.querySelector('.chat-panel');
   var closeBtn = root.querySelector('.chat-close');
-  var expandBtn = root.querySelector('.chat-expand');
+  var menuBtn = root.querySelector('.chat-menu-btn');
+  var menuList = root.querySelector('.chat-menu-list');
+  var menuItems = [].slice.call(root.querySelectorAll('.chat-menu-item'));
   var log = root.querySelector('.chat-log');
   var form = root.querySelector('.chat-form');
   var input = root.querySelector('.chat-input');
@@ -93,36 +95,61 @@
 
   function closePanel() {
     root.classList.remove('chat-open');
-    collapse();  // always reopen docked, not expanded
+    setMode(null);   // always reopen docked
+    closeMenu();
     setExpanded('false');
     var t = visibleToggle();
     if (t) t.focus();
   }
 
-  // Expand morphs the docked corner panel into a large centered one (Fin's hero-widget look);
-  // collapse returns it to the corner. The icon and label flip with the state.
-  function collapse() {
-    root.classList.remove('chat-expanded');
-    if (expandBtn) expandBtn.setAttribute('aria-label', 'Expand chat');
+  // Presentation modes, chosen from the ⋮ menu (see the menu buttons' data-mode):
+  //   null         → docked corner panel (default)
+  //   'expand'     → large centered panel over a dimmed backdrop (focus modal)
+  //   'interactive'→ small centered frosted pane, NO backdrop — the rest of the page stays usable
+  function currentMode() {
+    return root.classList.contains('chat-expanded') ? 'expand'
+      : root.classList.contains('chat-interactive') ? 'interactive' : null;
   }
-  function toggleExpand() {
-    var expanded = root.classList.toggle('chat-expanded');
-    expandBtn.setAttribute('aria-label', expanded ? 'Collapse chat' : 'Expand chat');
-    input.focus();
+  function setMode(mode) {
+    root.classList.toggle('chat-expanded', mode === 'expand');
+    root.classList.toggle('chat-interactive', mode === 'interactive');
+    menuItems.forEach(function (it) {
+      it.setAttribute('aria-checked', it.getAttribute('data-mode') === mode ? 'true' : 'false');
+    });
   }
+  function openMenu() { root.classList.add('chat-menu-open'); if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true'); }
+  function closeMenu() { root.classList.remove('chat-menu-open'); if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false'); }
 
   toggles.forEach(function (t) {
     t.addEventListener('click', function () { isOpen() ? closePanel() : openPanel(); });
   });
-  if (expandBtn) expandBtn.addEventListener('click', toggleExpand);
+  if (menuBtn) menuBtn.addEventListener('click', function () {
+    root.classList.contains('chat-menu-open') ? closeMenu() : openMenu();
+  });
+  menuItems.forEach(function (it) {
+    it.addEventListener('click', function () {
+      var m = it.getAttribute('data-mode');
+      setMode(currentMode() === m ? null : m);  // re-selecting the active mode returns to docked
+      closeMenu();
+      input.focus();
+    });
+  });
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) closePanel();
+    if (e.key !== 'Escape') return;
+    if (root.classList.contains('chat-menu-open')) { closeMenu(); return; }
+    if (isOpen()) closePanel();
   });
-  // Click outside the panel and away from either launcher closes it. Excluding the toggles
-  // keeps the same click that opened the panel from immediately closing it again.
+  // Click outside the panel and away from either launcher closes it — EXCEPT in interactive
+  // mode, whose whole point is using the rest of the page while chatting (only the X closes it).
   document.addEventListener('click', function (e) {
     if (!isOpen()) return;
+    // Close an open ⋮ menu on any click that isn't the menu itself.
+    if (root.classList.contains('chat-menu-open') && menuBtn && menuList
+        && !menuBtn.contains(e.target) && !menuList.contains(e.target)) {
+      closeMenu();
+    }
+    if (root.classList.contains('chat-interactive')) return;
     // A control inside the panel (e.g. a starter chip) may remove itself in its own handler;
     // by the time this runs its target is detached, so panel.contains() would be false. Treat a
     // detached target as an in-widget click, not an outside one.

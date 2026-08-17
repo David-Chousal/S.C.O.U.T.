@@ -202,16 +202,27 @@ def chat_widget(base: str) -> str:
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<path d="M18 6 6 18M6 6l12 12"/></svg>'
     )
-    # Expand and collapse (maximise / minimise) corner-bracket icons — CSS shows one at a time.
-    expand_icon = (
-        '<svg class="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    kebab_icon = (  # three-dot options menu
+        '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'
+        '<circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/>'
+        '<circle cx="12" cy="19" r="1.7"/></svg>'
+    )
+    mi_expand = (  # maximise corner-brackets — the Expand menu item
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3'
         'M16 21h3a2 2 0 0 0 2-2v-3"/></svg>'
-        '<svg class="i-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M3 8h3a2 2 0 0 0 2-2V3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3'
-        'M21 16h-3a2 2 0 0 0-2 2v3"/></svg>'
+    )
+    mi_interactive = (  # picture-in-picture — the Interactive (small floating pane) menu item
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<rect x="3" y="5" width="18" height="14" rx="2"/>'
+        '<rect x="11.5" y="11" width="7" height="5.5" rx="1"/></svg>'
+    )
+    check = (  # active-mode tick
+        '<svg class="chat-menu-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M20 6 9 17l-5-5"/></svg>'
     )
     return (
         f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
@@ -224,7 +235,14 @@ def chat_widget(base: str) -> str:
         f'<span class="chat-avatar" aria-hidden="true">{avatar}</span>'
         '<div class="chat-id"><b>Fred</b><span>Ask me about the S.C.O.U.T. project</span></div>'
         '<div class="chat-actions">'
-        f'<button class="chat-expand" type="button" aria-label="Expand chat">{expand_icon}</button>'
+        '<button class="chat-menu-btn" type="button" aria-label="Chat options" '
+        f'aria-haspopup="true" aria-expanded="false">{kebab_icon}</button>'
+        '<div class="chat-menu-list" role="menu">'
+        '<button class="chat-menu-item" type="button" role="menuitemcheckbox" '
+        f'aria-checked="false" data-mode="expand">{mi_expand}<span>Expand</span>{check}</button>'
+        '<button class="chat-menu-item" type="button" role="menuitemcheckbox" '
+        f'aria-checked="false" data-mode="interactive">{mi_interactive}<span>Interactive</span>{check}</button>'
+        "</div>"
         f'<button class="chat-close" type="button" aria-label="Close chat">{close_icon}</button>'
         "</div>"
         "</div>"

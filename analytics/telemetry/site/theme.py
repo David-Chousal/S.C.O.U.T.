@@ -718,12 +718,21 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
   transition:transform .34s var(--ease),opacity .22s ease,visibility 0s,
     top .34s var(--ease),right .34s var(--ease),width .34s var(--ease),height .34s var(--ease)}
-/* Expanded — the large centered panel (Fin's hero-widget look). Anchored by top+right (never
-   auto) so the corner→centre glide animates cleanly. */
+/* Expanded — the large centered panel (a focus modal). Anchored by top+right (never auto) so
+   the corner→centre glide animates cleanly. Dimmed backdrop; the rest of the page is blocked. */
 .chat.chat-open.chat-expanded .chat-panel{top:50%;right:50%;
   width:min(600px,calc(100vw - 3rem));height:min(760px,calc(100dvh - 4rem));
   transform-origin:center;transform:translate(50%,-50%) scale(1)}
-/* Dimmed backdrop behind the centered panel. */
+/* Interactive — a small centered frosted pane. NO backdrop, so the rest of the page stays fully
+   usable while chatting; the panel itself is translucent glass over the blurred page. */
+.chat.chat-open.chat-interactive .chat-panel{top:50%;right:50%;
+  width:min(400px,calc(100vw - 3rem));height:min(600px,calc(100dvh - 4rem));
+  transform-origin:center;transform:translate(50%,-50%) scale(1);
+  background:color-mix(in srgb,var(--surface) 72%,transparent);
+  backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15);
+  box-shadow:0 26px 70px -30px rgba(20,40,45,.5)}
+.chat.chat-interactive .chat-head{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+/* Dimmed backdrop behind the centered panel — Expand only (never Interactive). */
 .chat-scrim{position:fixed;inset:0;z-index:59;background:rgba(15,35,40,.42);
   opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s .28s}
 .chat.chat-open.chat-expanded .chat-scrim{opacity:1;visibility:visible;transition:opacity .28s ease}
@@ -745,16 +754,28 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .chat-id{min-width:0;line-height:1.25}
 .chat-id b{display:block;font-size:0.98rem;color:var(--ink)}
 .chat-id span{display:block;font-size:var(--text-micro);color:var(--muted)}
-.chat-actions{margin-left:auto;display:flex;align-items:center;gap:0.1rem}
-.chat-close,.chat-expand{border:none;background:none;color:var(--muted);cursor:pointer;
+.chat-actions{position:relative;margin-left:auto;display:flex;align-items:center;gap:0.1rem}
+.chat-close,.chat-menu-btn{border:none;background:none;color:var(--muted);cursor:pointer;
   padding:0.25rem;display:grid;place-items:center;border-radius:50%}
-.chat-close svg,.chat-expand svg{width:19px;height:19px;display:block}
-.chat-close:hover,.chat-expand:hover{color:var(--ink);
+.chat-close svg,.chat-menu-btn svg{width:19px;height:19px;display:block}
+.chat-close:hover,.chat-menu-btn:hover,.chat.chat-menu-open .chat-menu-btn{color:var(--ink);
   background:color-mix(in srgb,var(--ink) 7%,transparent)}
-.chat-expand .i-collapse{display:none}
-.chat.chat-expanded .chat-expand .i-expand{display:none}
-.chat.chat-expanded .chat-expand .i-collapse{display:block}
-@media(max-width:720px){.chat-expand{display:none}}
+/* ⋮ options menu — a small popover dropping from the kebab, within the panel bounds. */
+.chat-menu-list{position:absolute;top:calc(100% + 6px);right:0;z-index:2;display:none;
+  min-width:172px;padding:0.3rem;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;box-shadow:0 16px 40px -18px rgba(20,40,45,.45)}
+.chat.chat-menu-open .chat-menu-list{display:block}
+.chat-menu-item{display:flex;align-items:center;gap:0.6rem;width:100%;border:none;
+  background:none;cursor:pointer;padding:0.5rem 0.55rem;border-radius:8px;font:inherit;
+  font-size:0.86rem;color:var(--ink);text-align:left}
+.chat-menu-item svg{width:17px;height:17px;flex:none;color:var(--muted)}
+.chat-menu-item span{flex:1}
+.chat-menu-item:hover{background:var(--surface-2)}
+.chat-menu-check{opacity:0}
+.chat-menu-item[aria-checked=true]{color:var(--accent)}
+.chat-menu-item[aria-checked=true] svg{color:var(--accent)}
+.chat-menu-item[aria-checked=true] .chat-menu-check{opacity:1}
+@media(max-width:720px){.chat-menu-btn,.chat-menu-list{display:none}}
 /* Message list — each row stacks a bubble over a small credit line. */
 .chat-log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.85rem}
 .chat-row{display:flex;flex-direction:column;max-width:88%}
