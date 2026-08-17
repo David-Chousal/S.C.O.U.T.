@@ -58,8 +58,9 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Firmware | 🟡 Phase 1 in progress — state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, and battery-tiered adaptive transmission; hardware bring-up next ([`firmware/`](firmware/README.md)) |
 | Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
 | Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
+| Ask S.C.O.U.T. chat | 🟢 Live — "Fred" widget backed by a Cloudflare Worker proxy, answers from the published Hub context ([`chatbot/`](chatbot/README.md)) |
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); charging path ([ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) and wiring/PCB pending |
-| Mechanical design | 🟡 In progress — enclosure and hull concepts; flotation + turbidity-housing CAD drawings in [`mechanical/cad/`](mechanical/cad/) |
+| Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Open: final floatation design, housing dimensions |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +
@@ -96,8 +97,9 @@ S.C.O.U.T./
 ├── analytics/      Acoustic + environmental-telemetry pipelines (Python) — implemented
 ├── shore/          Shore-station receiver, store, and packet codec (Python) — simulated path working
 ├── firmware/       Buoy embedded software (SAMD21/PlatformIO) — Phase 1 in progress
-├── hardware/       Schematics, PCB, wiring diagrams — not yet started
-├── mechanical/     CAD, hull design, mooring specs — flotation + sensor-housing drawings started
+├── hardware/       Schematics, PCB, wiring diagrams — build platform + BOM confirmed, no schematics/PCB files yet
+├── mechanical/     CAD, hull design, mooring specs — all five CAD categories documented
+├── chatbot/        "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
 ├── assets/         Brand, diagrams, and presentations
 ├── scripts/        Repo-level helper scripts (e.g. cross-language packet-contract guard)
 └── data/           Raw audio archive (excluded from git — see Data below)
