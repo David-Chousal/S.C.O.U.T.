@@ -46,7 +46,7 @@ From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](..
 
 > **Pre-existing IDs, reconciled 2026-08-14:** [CLAUDE.md](../../CLAUDE.md) referenced **SCO-5 …
 > SCO-9** as Phase-0 design-alignment issues that were "never closed." Resolution: **SCO-5** (MCU/
-> radio) → Done, per ADR-0001 Accepted; **SCO-6** (deployment depth) → Done, per PR #29 (2–7 m);
+> radio) → Done, per ADR-0001 Accepted; **SCO-6** (deployment depth) → Done, per PR #29 (2–8 m);
 > **SCO-7** (LoRa range figure) → Done, reconciled to ~2 km per PR #7, real-range *measurement*
 > spun out as new issue **SCO-14**; **SCO-8** (hydrophone part) → still open, matches **A2** below,
 > no duplicate filed; **SCO-9** (academic year) → Done, reconciled to 2026–2027 per PR #7.
@@ -258,7 +258,7 @@ kept as a record; **D2 is [SCO-57](https://linear.app/scout1/issue/SCO-57)** and
 | #25 | 2026-08-14 | csen | Multi-buoy (fleet) telemetry backend, Phase A |
 | #26 | 2026-08-14 | ci | PR governance checks, CODEOWNERS, PR template |
 | #28 | 2026-08-14 | docs | Log the main-protection ruleset in the decision log |
-| #29 | 2026-08-14 | mechanical | Revise deployment depth to 2-7 m (resolves SCO-6) |
+| #29 | 2026-08-14 | mechanical | Revise deployment depth to 2-8 m (resolves SCO-6) |
 | #30 | 2026-08-14 | ci | Make the pr-body check reject empty sections |
 | #31 | 2026-08-14 | mechanical | Scaffold CAD subsystem folders |
 | #32 | 2026-08-14 | mechanical | Import flotation and turbidity-housing CAD drawings |
@@ -276,7 +276,8 @@ kept as a record; **D2 is [SCO-57](https://linear.app/scout1/issue/SCO-57)** and
 >   layout changed. Confirm [`facts.md`](facts.md) packet-size and the
 >   [Data Schema](../engineering/data-schema.md) reflect it before filing anything that cites the old
 >   82-byte figure.
-> - **PR #29** revised **deployment depth to 2-7 m** (was 5-8 m) and is tied to **SCO-6**, so SCO-6
+> - **PR #29** revised **deployment depth to 2-8 m** (was 5-8 m, briefly 2-7 m mid-review before
+>   the final merge) and is tied to **SCO-6**, so SCO-6
 >   exists and is resolved. Reconcile the SCO-5..9 list against it (see the note up top).
 > - **PRs #23, #26, #30, #34** added the CI governance now gating every PR: `pr-title`, `pr-body`
 >   (five `##` sections, in order), `knowledge-hub`, `conventions`, plus the Python and firmware test
