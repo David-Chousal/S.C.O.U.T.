@@ -2,8 +2,9 @@
 
 Schematics, PCB layout, wiring diagrams, and electrical test records for the SCOUT buoy.
 
-> **Status:** Not yet populated. This directory is the agreed destination for wiring diagrams
-> and schematics, per [Team Timeline](../docs/planning/team-timeline.md) Phase 1, Week 4.
+> **Status:** Build platform and BOM confirmed (below) — but no schematics, PCB layout, or
+> wiring diagrams committed yet. This directory is the agreed destination for those, per
+> [Team Timeline](../docs/planning/team-timeline.md) Phase 1, Week 4.
 
 **Owner:** ECE lead
 
