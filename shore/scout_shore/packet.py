@@ -4,13 +4,13 @@ The buoy encodes a :class:`Reading` into a compact binary payload and transmits 
 over LoRa once per day; the shore station decodes it back into a :class:`Reading`.
 Both ends MUST agree on this layout — the firmware C encoder mirrors this module.
 
-> ⚠️ **Proposed v1 layout, pending the ECE packet-format spec** (Team Timeline Phase 0,
-> "read LoRa packet format spec from ECE lead"). The field set and encodings below are a
-> working proposal so the shore/analytics path can be built now; reconcile with the ECE
-> spec before firmware freezes it.
+> ✅ **Verified against the firmware encoder** — byte-identical, CI-enforced via a golden
+> vector (`firmware/test/test_packet`). No longer a proposal pending ECE sign-off.
 
-Layout (little-endian), 27-byte body + 2-byte CRC = **29 bytes** (well under the
-82-byte daily budget in EDD §10, leaving room for future signals):
+Layout (little-endian), 28-byte body + 2-byte CRC = **30 bytes** (well under the
+82-byte daily budget ceiling in EDD §10, leaving room for future signals; see
+[`docs/hub/facts.md`](../../docs/hub/facts.md) for why 30 and 82 are different kinds
+of number, not a contradiction):
 
 | Field | Type | Encoding |
 |---|---|---|
