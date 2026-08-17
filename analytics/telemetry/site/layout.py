@@ -183,73 +183,43 @@ def footer(base: str, *, external: bool = True) -> str:
 
 
 def chat_widget(base: str) -> str:
-    """'Ask Fred' — the project chat panel plus its mobile floating launcher. The desktop
-    launcher lives in the navbar (see _nav_social); both share the .chat-toggle hook. Its
-    script (chat.js) POSTs only to CHAT_ENDPOINT — the site's one sanctioned cross-origin call."""
+    """'Ask Fred' — a centred, frosted-glass chat that floats over the page (Fin-style): a
+    smoked-glass conversation card with a detached input pill below it. It never dims or blocks
+    the page — the rest of the site stays usable while chatting. Launched from the navbar icon
+    (desktop) or the floating button (mobile). chat.js POSTs only to CHAT_ENDPOINT."""
     # Fred's avatar is the S.C.O.U.T. buoy mark on his accent-coloured disc (CSS whitens the
     # black artwork so it reads on the teal). Same-origin WebP-with-raster-fallback via picture().
     avatar = assets.picture(
         f'<img src="{base}assets/img/brand/scout-mark.png" alt="" '
         'width="22" height="22" decoding="async">'
     )
-    send_icon = (  # upward arrow, Fin/Intercom style
+    send_icon = (  # upward arrow
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<path d="M12 20V5M6 11l6-6 6 6"/></svg>'
     )
-    close_icon = (
+    close_icon = (  # down chevron — minimise back to the launcher (Fin-style)
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M18 6 6 18M6 6l12 12"/></svg>'
-    )
-    kebab_icon = (  # three-dot options menu
-        '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'
-        '<circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/>'
-        '<circle cx="12" cy="19" r="1.7"/></svg>'
-    )
-    mi_expand = (  # maximise corner-brackets — the Expand menu item
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3'
-        'M16 21h3a2 2 0 0 0 2-2v-3"/></svg>'
-    )
-    mi_interactive = (  # picture-in-picture — the Interactive (small floating pane) menu item
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<rect x="3" y="5" width="18" height="14" rx="2"/>'
-        '<rect x="11.5" y="11" width="7" height="5.5" rx="1"/></svg>'
-    )
-    check = (  # active-mode tick
-        '<svg class="chat-menu-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-        'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M20 6 9 17l-5-5"/></svg>'
+        '<path d="M6 9l6 6 6-6"/></svg>'
     )
     return (
         f'<div id="scout-chat" class="chat" data-endpoint="{CHAT_ENDPOINT}">'
         f'<button class="chat-toggle chat-fab" type="button" aria-expanded="false" '
         f'aria-controls="scout-chat-panel" aria-label="Ask Fred about the project">{_CHAT_ICON}</button>'
-        '<div class="chat-scrim" aria-hidden="true"></div>'
         '<div class="chat-panel" id="scout-chat-panel" role="dialog" aria-label="Ask Fred about '
         'the S.C.O.U.T. project">'
+        '<div class="chat-glass">'
         '<div class="chat-head">'
         f'<span class="chat-avatar" aria-hidden="true">{avatar}</span>'
         '<div class="chat-id"><b>Fred</b><span>Ask me about the S.C.O.U.T. project</span></div>'
-        '<div class="chat-actions">'
-        '<button class="chat-menu-btn" type="button" aria-label="Chat options" '
-        f'aria-haspopup="true" aria-expanded="false">{kebab_icon}</button>'
-        '<div class="chat-menu-list" role="menu">'
-        '<button class="chat-menu-item" type="button" role="menuitemcheckbox" '
-        f'aria-checked="false" data-mode="expand">{mi_expand}<span>Expand</span>{check}</button>'
-        '<button class="chat-menu-item" type="button" role="menuitemcheckbox" '
-        f'aria-checked="false" data-mode="interactive">{mi_interactive}<span>Interactive</span>{check}</button>'
-        "</div>"
         f'<button class="chat-close" type="button" aria-label="Close chat">{close_icon}</button>'
         "</div>"
-        "</div>"
         '<div class="chat-log" role="log" aria-live="polite"></div>'
+        "</div>"
         '<form class="chat-form">'
         '<div class="chat-field">'
-        '<input class="chat-input" type="text" placeholder="Ask a question…" '
+        '<input class="chat-input" type="text" placeholder="Message…" '
         'aria-label="Your question" maxlength="500" autocomplete="off">'
         f'<button class="chat-send" type="submit" aria-label="Send">{send_icon}</button>'
         "</div>"

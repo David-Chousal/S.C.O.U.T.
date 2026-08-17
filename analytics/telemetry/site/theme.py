@@ -684,16 +684,14 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 
 @media print{.site-header,.site-footer{display:none}}
 
-/* ── Ask S.C.O.U.T. chat widget ──────────────────────────────────────────────── */
+/* ── Ask Fred — centred frosted-glass chat (Fin-style) ───────────────────────── */
 .chat{z-index:60}
 .chat-toggle{border:none;background:none;cursor:pointer;color:inherit;padding:0;font:inherit}
 /* Navbar launcher (desktop) — matches the GitHub/LinkedIn icons in .nav-social. */
 .nav-chat{display:inline-flex;color:var(--muted);transition:color var(--dur) var(--ease)}
-.nav-chat:hover{color:var(--accent)}
+.nav-chat:hover,.chat.chat-open .nav-chat{color:var(--accent)}
 .nav-chat svg{width:15px;height:15px}
-.chat.chat-open .nav-chat{color:var(--accent)}
-/* Floating launcher — shown only on mobile, where .nav-social (and its navbar chat icon) is
-   hidden. It is the round FAB the panel spills out of down there. */
+/* Floating launcher — shown only on mobile, where .nav-social is hidden. */
 .chat-fab{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60;
   width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--on-accent);
   display:none;place-items:center;box-shadow:var(--shadow-2);
@@ -701,110 +699,73 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .chat-fab:hover{transform:translateY(-2px) scale(1.04)}
 .chat-fab svg{width:24px;height:24px}
 @media(max-width:720px){.chat-fab{display:grid}}
-.chat.chat-open .chat-fab{transform:scale(0);opacity:0;pointer-events:none}
-/* The panel grows out of (and collapses back into) the launcher: scaled from the corner where
-   the icon sits — top-right under the navbar on desktop, bottom-right by the FAB on mobile.
-   visibility is transitioned with a delay so it only flips to hidden after the shrink finishes,
-   keeping it out of the tab order when collapsed while still letting the close animation play.
-   No display:none, so the motion is animatable. */
-.chat-panel{position:fixed;right:clamp(1rem,2vw,1.6rem);top:calc(68px + 0.55rem);
-  width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100dvh - 68px - 1.6rem));z-index:60;
-  display:flex;flex-direction:column;overflow:hidden;background:var(--surface);
-  border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -24px rgba(20,40,45,.4);
-  transform-origin:top right;transform:scale(0.2);opacity:0;visibility:hidden;pointer-events:none;
-  transition:transform .28s var(--ease),opacity .2s ease,visibility 0s .28s}
-/* When open, geometry props also transition so the expand/collapse morph is smooth (they don't
-   change on plain open, so the spill is unaffected). */
-.chat.chat-open .chat-panel{transform:scale(1);opacity:1;visibility:visible;pointer-events:auto;
-  transition:transform .34s var(--ease),opacity .22s ease,visibility 0s,
-    top .34s var(--ease),right .34s var(--ease),width .34s var(--ease),height .34s var(--ease)}
-/* Expanded — the large centered panel (a focus modal). Anchored by top+right (never auto) so
-   the corner→centre glide animates cleanly. Dimmed backdrop; the rest of the page is blocked. */
-.chat.chat-open.chat-expanded .chat-panel{top:50%;right:50%;
-  width:min(600px,calc(100vw - 3rem));height:min(760px,calc(100dvh - 4rem));
-  transform-origin:center;transform:translate(50%,-50%) scale(1)}
-/* Interactive — a small centered frosted pane. NO backdrop, so the rest of the page stays fully
-   usable while chatting; the panel itself is translucent glass over the blurred page. */
-.chat.chat-open.chat-interactive .chat-panel{top:50%;right:50%;
-  width:min(400px,calc(100vw - 3rem));height:min(600px,calc(100dvh - 4rem));
-  transform-origin:center;transform:translate(50%,-50%) scale(1);
-  background:color-mix(in srgb,var(--surface) 72%,transparent);
-  backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15);
-  box-shadow:0 26px 70px -30px rgba(20,40,45,.5)}
-.chat.chat-interactive .chat-head{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
-/* Dimmed backdrop behind the centered panel — Expand only (never Interactive). */
-.chat-scrim{position:fixed;inset:0;z-index:59;background:rgba(15,35,40,.42);
-  opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s .28s}
-.chat.chat-open.chat-expanded .chat-scrim{opacity:1;visibility:visible;transition:opacity .28s ease}
-@media(max-width:720px){
-  .chat-panel{top:auto;bottom:clamp(1rem,2vw,1.6rem);transform-origin:bottom right;
-    height:min(560px,calc(100dvh - 3rem))}}
-@media (prefers-reduced-motion:reduce){
-  .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel,
-  .chat-scrim,.chat.chat-open.chat-expanded .chat-scrim{transition:none}}
-/* Header — Fred's avatar + name + role, hairline divider (Fin/Intercom layout). */
-.chat-head{display:flex;align-items:center;gap:0.7rem;
-  padding:0.85rem 1rem;background:linear-gradient(180deg,var(--surface-2),var(--surface));
-  border-bottom:1px solid var(--line)}
+.chat.chat-open .chat-fab{opacity:0;pointer-events:none}
+/* The widget: a centred column holding the frosted conversation card and, detached below it,
+   the input pill. The column is click-through (pointer-events:none) so the page stays fully
+   usable around and between its pieces — only the card and pill capture clicks. Never dims the
+   page; closes only via the header chevron or Escape. */
+.chat-panel{position:fixed;left:50%;top:50%;z-index:60;pointer-events:none;
+  width:min(680px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);
+  display:flex;flex-direction:column;gap:0.7rem;
+  transform:translate(-50%,-47%);opacity:0;visibility:hidden;
+  transition:opacity .26s ease,transform .3s var(--ease),visibility 0s .3s}
+.chat.chat-open .chat-panel{opacity:1;visibility:visible;transform:translate(-50%,-50%);
+  transition:opacity .26s ease,transform .32s var(--ease),visibility 0s}
+/* Frosted conversation card — smoked deep-ocean glass; the page shows through, blurred. */
+.chat-glass{pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;
+  height:min(560px,calc(100dvh - 9rem));border-radius:22px;color:#fff;
+  background:linear-gradient(155deg,rgba(38,64,68,.62),rgba(15,32,36,.74));
+  backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 34px 90px -34px rgba(8,22,26,.65)}
+/* Header on the glass. */
+.chat-head{display:flex;align-items:center;gap:0.7rem;padding:0.95rem 1.1rem;
+  border-bottom:1px solid rgba(255,255,255,.12)}
 .chat-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);
-  color:var(--on-accent);display:grid;place-items:center;overflow:hidden}
-/* The buoy mark is black artwork; whiten it so it reads on the accent disc. */
-.chat-avatar img{width:22px;height:22px;object-fit:contain;display:block;
-  filter:brightness(0) invert(1)}
+  display:grid;place-items:center;overflow:hidden}
+.chat-avatar img{width:22px;height:22px;object-fit:contain;display:block;filter:brightness(0) invert(1)}
 .chat-id{min-width:0;line-height:1.25}
-.chat-id b{display:block;font-size:0.98rem;color:var(--ink)}
-.chat-id span{display:block;font-size:var(--text-micro);color:var(--muted)}
-.chat-actions{position:relative;margin-left:auto;display:flex;align-items:center;gap:0.1rem}
-.chat-close,.chat-menu-btn{border:none;background:none;color:var(--muted);cursor:pointer;
-  padding:0.25rem;display:grid;place-items:center;border-radius:50%}
-.chat-close svg,.chat-menu-btn svg{width:19px;height:19px;display:block}
-.chat-close:hover,.chat-menu-btn:hover,.chat.chat-menu-open .chat-menu-btn{color:var(--ink);
-  background:color-mix(in srgb,var(--ink) 7%,transparent)}
-/* ⋮ options menu — a small popover dropping from the kebab, within the panel bounds. */
-.chat-menu-list{position:absolute;top:calc(100% + 6px);right:0;z-index:2;display:none;
-  min-width:172px;padding:0.3rem;background:var(--surface);border:1px solid var(--line);
-  border-radius:12px;box-shadow:0 16px 40px -18px rgba(20,40,45,.45)}
-.chat.chat-menu-open .chat-menu-list{display:block}
-.chat-menu-item{display:flex;align-items:center;gap:0.6rem;width:100%;border:none;
-  background:none;cursor:pointer;padding:0.5rem 0.55rem;border-radius:8px;font:inherit;
-  font-size:0.86rem;color:var(--ink);text-align:left}
-.chat-menu-item svg{width:17px;height:17px;flex:none;color:var(--muted)}
-.chat-menu-item span{flex:1}
-.chat-menu-item:hover{background:var(--surface-2)}
-.chat-menu-check{opacity:0}
-.chat-menu-item[aria-checked=true]{color:var(--accent)}
-.chat-menu-item[aria-checked=true] svg{color:var(--accent)}
-.chat-menu-item[aria-checked=true] .chat-menu-check{opacity:1}
-@media(max-width:720px){.chat-menu-btn,.chat-menu-list{display:none}}
-/* Message list — each row stacks a bubble over a small credit line. */
-.chat-log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.85rem}
+.chat-id b{display:block;font-size:0.98rem;color:#fff}
+.chat-id span{display:block;font-size:var(--text-micro);color:rgba(255,255,255,.62)}
+.chat-close{margin-left:auto;border:none;background:none;color:rgba(255,255,255,.72);cursor:pointer;
+  padding:0.3rem;display:grid;place-items:center;border-radius:50%}
+.chat-close svg{width:20px;height:20px;display:block}
+.chat-close:hover{color:#fff;background:rgba(255,255,255,.14)}
+/* Messages — bot text plain on the glass, user in a subtle translucent bubble. */
+.chat-log{flex:1;min-height:0;overflow-y:auto;padding:1.1rem;display:flex;flex-direction:column;gap:0.95rem}
 .chat-row{display:flex;flex-direction:column;max-width:88%}
 .chat-row-user{align-self:flex-end;align-items:flex-end}
-.chat-row-bot{align-self:flex-start;align-items:flex-start}
-.chat-msg{padding:0.62rem 0.9rem;font-size:0.93rem;line-height:1.5;border-radius:16px}
-.chat-bot{background:var(--surface-2);color:var(--ink);border-bottom-left-radius:5px}
-.chat-user{background:var(--accent);color:var(--on-accent);border-bottom-right-radius:5px}
-.chat-meta{margin-top:0.28rem;padding:0 0.2rem;font-size:var(--text-micro);color:var(--muted)}
-.chat-typing{color:var(--muted);letter-spacing:0.18em}
-/* Starter-question chips shown with the greeting. */
-.chat-chips{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.2rem}
-.chat-chip{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);
-  border-radius:999px;padding:0.4rem 0.8rem;font:inherit;font-size:0.82rem;cursor:pointer;
-  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
-.chat-chip:hover{border-color:var(--accent);color:var(--accent)}
-/* Composer — rounded field wrapping a borderless input and a circular send button. */
-.chat-form{padding:0.7rem 0.9rem 0.85rem;border-top:1px solid var(--line)}
-.chat-field{display:flex;align-items:center;gap:0.4rem;border:1px solid var(--line-2);
-  border-radius:22px;padding:0.28rem 0.28rem 0.28rem 0.9rem;background:var(--bg);
-  transition:border-color var(--dur) var(--ease)}
+.chat-row-bot{align-self:flex-start;align-items:flex-start;max-width:94%}
+.chat-msg{font-size:0.95rem;line-height:1.55}
+.chat-bot{color:rgba(255,255,255,.92)}
+.chat-user{padding:0.55rem 0.85rem;border-radius:16px;border-bottom-right-radius:5px;
+  background:rgba(255,255,255,.16);color:#fff}
+.chat-meta{margin-top:0.32rem;font-size:var(--text-micro);color:rgba(255,255,255,.5)}
+.chat-typing{color:rgba(255,255,255,.55);letter-spacing:0.18em}
+/* Starter-question chips shown with the greeting — translucent light chips on the glass. */
+.chat-chips{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.15rem}
+.chat-chip{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.07);color:#fff;
+  border-radius:999px;padding:0.42rem 0.85rem;font:inherit;font-size:0.83rem;cursor:pointer;
+  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.chat-chip:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.42)}
+/* Composer — a detached solid pill floating below the glass. */
+.chat-form{pointer-events:auto;display:flex;flex-direction:column}
+.chat-field{display:flex;align-items:center;gap:0.5rem;background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
+  box-shadow:0 18px 44px -22px rgba(8,22,26,.5);transition:border-color var(--dur) var(--ease)}
 .chat-field:focus-within{border-color:var(--accent)}
-.chat-input{flex:1;min-width:0;border:none;background:none;padding:0.4rem 0;font:inherit;
-  font-size:0.93rem;color:var(--ink)}
+.chat-input{flex:1;min-width:0;border:none;background:none;padding:0.5rem 0;font:inherit;
+  font-size:0.95rem;color:var(--ink)}
+.chat-input::placeholder{color:var(--muted)}
 .chat-input:focus{outline:none}
-.chat-send{flex:none;width:36px;height:36px;border:none;border-radius:50%;background:var(--accent);
+.chat-send{flex:none;width:40px;height:40px;border:none;border-radius:50%;background:var(--accent);
   color:var(--on-accent);display:grid;place-items:center;cursor:pointer;
   transition:filter var(--dur) var(--ease)}
 .chat-send:hover{filter:brightness(1.08)}
-.chat-send svg{width:17px;height:17px}
+.chat-send svg{width:18px;height:18px}
 .chat-fineprint{margin:0.55rem 0 0;text-align:center;font-size:var(--text-micro);color:var(--muted)}
+@media(max-width:720px){
+  .chat-panel{width:calc(100vw - 1.4rem);max-height:calc(100dvh - 1.4rem)}
+  .chat-glass{height:calc(100dvh - 8rem)}}
+@media (prefers-reduced-motion:reduce){
+  .chat-fab,.chat.chat-open .chat-fab,.chat-panel,.chat.chat-open .chat-panel{transition:none}}
 """
