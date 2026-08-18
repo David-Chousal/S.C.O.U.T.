@@ -98,5 +98,6 @@ reader sees settled and unsettled in one place. When one resolves, move it into 
 |---|---|---|---|
 | 2026-08-14 | hardware | LiFePO₄ charging path on the Feather M0 | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) 🟡 Open, [SCO-10](https://linear.app/scout1/issue/SCO-10) |
 | 2026-08-14 | hardware | Hydrophone part number (H2a-XLR vs H2dM) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
-| 2026-08-14 | hardware | Dissolved oxygen: V1.5 or future | [SCO-11](https://linear.app/scout1/issue/SCO-11) |
 | 2026-08-14 | csen | Turbidity units — raw ADC/volts vs NTU calibration | [Data Schema open questions](../engineering/data-schema.md), [SCO-13](https://linear.app/scout1/issue/SCO-13) |
+| 2026-08-14 | csen | Daily packet size — 30 B actual vs the 82 B EDD budget ceiling, stated inconsistently across docs | [SCO-40](https://linear.app/scout1/issue/SCO-40) |
+| 2026-08-17 | csen | Replacement name for the chat assistant — a coral-reef scientist, a reef-bioacoustics pioneer, or Juliette Gordon Low | [SCO-65](https://linear.app/scout1/issue/SCO-65) |
