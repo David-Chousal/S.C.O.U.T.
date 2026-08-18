@@ -129,7 +129,16 @@
       body: JSON.stringify({ messages: history.slice(-8) })
     })
       .then(function (r) {
-        if (!r.ok) throw new Error('http ' + r.status);
+        if (!r.ok) {
+          // Log why. The Worker returns {error, detail, upstream}; discarding it meant a
+          // decommissioned model id showed up as a generic "something went wrong" with the
+          // real cause sitting unread in the response body.
+          return r.json().catch(function () { return {}; }).then(function (e) {
+            var why = (e && (e.detail || e.error)) || ('http ' + r.status);
+            console.error('[Ask S.C.O.U.T.] chat failed —', r.status, why);
+            throw new Error(why);
+          });
+        }
         return r.json();
       })
       .then(function (data) {

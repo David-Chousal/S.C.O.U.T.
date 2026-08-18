@@ -9,7 +9,7 @@
  *   GROQ_API_KEY  — secret, set with `wrangler secret put GROQ_API_KEY` (NEVER commit it)
  *   CONTEXT_URL   — URL of the published chat-context.txt (the Hub + core docs)
  *   ALLOWED_ORIGIN— the site origin allowed to call this Worker (CORS)
- *   MODEL         — Groq model id (default llama-3.3-70b-versatile)
+ *   MODEL         — Groq model id (default openai/gpt-oss-120b)
  */
 
 const SYSTEM_PROMPT = [
@@ -95,7 +95,7 @@ export default {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: env.MODEL || "llama-3.3-70b-versatile",
+          model: env.MODEL || "openai/gpt-oss-120b",
           temperature: 0.2,
           max_tokens: 700,
           messages: [{ role: "system", content: system }, ...messages],
@@ -107,7 +107,16 @@ export default {
 
     if (!groqRes.ok) {
       const detail = (await groqRes.text().catch(() => "")).slice(0, 300);
-      return json({ error: "model error", detail }, 502, cors);
+      // Map the upstream failure to a status that says what actually broke. Returning 502 for
+      // everything once hid a decommissioned model id behind a generic "bad gateway" — a 4xx
+      // from Groq means *our* request or config is wrong, which is not an upstream outage.
+      const status =
+        groqRes.status === 429
+          ? 429 // rate / token limit — the caller should back off and retry
+          : groqRes.status >= 400 && groqRes.status < 500
+            ? 500 // bad model id, bad key, malformed request — our side
+            : 502; // genuine upstream failure
+      return json({ error: "model error", detail, upstream: groqRes.status }, status, cors);
     }
 
     const data = await groqRes.json();

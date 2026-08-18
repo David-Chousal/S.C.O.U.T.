@@ -7,4 +7,4 @@ compatibility_date = "2024-11-01"
 [vars]
 CONTEXT_URL = "https://david-chousal.github.io/S.C.O.U.T./chat-context.txt"
 ALLOWED_ORIGIN = "https://david-chousal.github.io"
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
