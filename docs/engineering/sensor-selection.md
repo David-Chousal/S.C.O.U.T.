@@ -36,6 +36,13 @@ Also, the chlorophyll sensor you’re thinking of is almost certainly a **fluoro
 
 ## MEDIUM PRIORITY (V1.5)
 
+> **Dissolved oxygen was excluded from V1 on 2026-08-17** — see
+> [ADR-0005](../decisions/0005-v1-sensing-payload.md). NOAA has largely stopped using DO for
+> reef monitoring because a point reading is too locally sensitive to represent reef-wide
+> health. It may return later via the lab's existing **infrared DO sensor**, not the Atlas kit
+> priced below.
+
+
 | **Sensor** | **Purpose** | **Cost** | **Interface** | **Power** | **Link** |
 |----|----|----|----|----|----|
 | Atlas Scientific DO Kit | Reef respiration and oxygen stress | $175–355 | I2C/UART | ~35 mA | [https://atlas-scientific.com/kits/ezo-complete-do-kit/?utm_source=chatgpt.com](https://atlas-scientific.com/kits/ezo-complete-do-kit/?utm_source=chatgpt.com) |
