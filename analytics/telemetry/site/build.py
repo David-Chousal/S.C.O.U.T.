@@ -41,10 +41,12 @@ _STATIC = Path(__file__).parent / "static"
 # overview and the Hub (the current source of truth) first, then core sensor/schema/decision
 # reference, then deep methodology docs last. Relative to the repo root; missing files skipped.
 #
-# The caps are sized for Groq's FREE-tier rate limit, not the model's context window: the whole
-# knowledge base (~29k tokens) blows past the 12k tokens/minute ceiling on
-# the configured Groq model, so every request 502s. Keeping the emitted context near ~4k tokens
-# leaves headroom for the system prompt, a few conversation turns, and the reply within 12k TPM.
+# The caps are sized for Groq's FREE-tier rate limit, not the model's context window. The whole
+# knowledge base (~29k tokens) blows past the ceiling, so every request 429s. That ceiling is
+# now 8k tokens/minute (it was 12k; Groq tightened it), and the context is re-sent on every
+# question, so it sets the per-question cost directly: ~2.2k tokens of context + system prompt
+# + turns + the reply reservation lands near ~2.9k, giving roughly 2-3 questions a minute across
+# ALL visitors to the public site -- the limit is per-organization, not per-user.
 # Lowest-priority docs fall off the end first when the total cap bites, so the essentials always
 # survive. If the account moves to a paid Groq tier, these caps can be raised well past this.
 _CHAT_DOCS = (
@@ -66,8 +68,8 @@ _CHAT_DOCS = (
     "docs/analysis/coral-bioacoustic-methodology.md",
     "docs/engineering/engineering-design-document.md",
 )
-_CHAT_CONTEXT_CAP = 16_000
-_CHAT_PER_FILE_CAP = 3_000
+_CHAT_CONTEXT_CAP = 9_000
+_CHAT_PER_FILE_CAP = 1_800
 
 
 def _write_chat_context(out: Path) -> None:

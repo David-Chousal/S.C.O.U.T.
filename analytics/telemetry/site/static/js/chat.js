@@ -120,36 +120,65 @@
     ask();
   }
 
-  function ask() {
-    busy = true;
-    var typing = addMsg('bot', '…', { plain: true, typing: true });
-    fetch(endpoint, {
+  // Groq's free tier caps tokens-per-minute for the whole account, and one grounded question
+  // costs a large slice of it, so a second question inside the same minute is legitimately
+  // throttled. That is a wait, not a breakage — Groq says how long, so honour it and retry
+  // once instead of reporting a failure the user can do nothing about.
+  function retryDelayMs(detail) {
+    var m = /try again in ([\d.]+)\s*(ms|s)\b/i.exec(String(detail || ''));
+    if (!m) return 0;
+    var n = parseFloat(m[1]);
+    if (!isFinite(n)) return 0;
+    return Math.min(m[2].toLowerCase() === 'ms' ? n : n * 1000, 30000);
+  }
+
+  function setBubble(row, text) {
+    var b = row && row.querySelector('.chat-msg');
+    if (b) b.textContent = text;
+  }
+
+  function send(typing, retried) {
+    return fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history.slice(-8) })
-    })
-      .then(function (r) {
-        if (!r.ok) {
-          // Log why. The Worker returns {error, detail, upstream}; discarding it meant a
-          // decommissioned model id showed up as a generic "something went wrong" with the
-          // real cause sitting unread in the response body.
-          return r.json().catch(function () { return {}; }).then(function (e) {
-            var why = (e && (e.detail || e.error)) || ('http ' + r.status);
-            console.error('[Ask S.C.O.U.T.] chat failed —', r.status, why);
-            throw new Error(why);
+    }).then(function (r) {
+      if (r.ok) return r.json();
+      // The Worker returns {error, detail, upstream}; discarding it meant a decommissioned
+      // model id showed up as a generic "something went wrong" with the real cause sitting
+      // unread in the response body.
+      return r.json().catch(function () { return {}; }).then(function (e) {
+        var why = (e && (e.detail || e.error)) || ('http ' + r.status);
+        console.error('[Ask S.C.O.U.T.] chat failed —', r.status, why);
+        if (r.status === 429 && !retried) {
+          var wait = retryDelayMs(e && e.detail) || 5000;
+          setBubble(typing, 'Busy — retrying in ' + Math.ceil(wait / 1000) + 's…');
+          return new Promise(function (resolve) {
+            setTimeout(function () { resolve(send(typing, true)); }, wait + 250);
           });
         }
-        return r.json();
-      })
+        var err = new Error(why);
+        err.status = r.status;
+        throw err;
+      });
+    });
+  }
+
+  function ask() {
+    busy = true;
+    var typing = addMsg('bot', '…', { plain: true, typing: true });
+    send(typing, false)
       .then(function (data) {
         typing.remove();
         var reply = (data && data.reply) || "Sorry, I couldn't answer that one.";
         addMsg('bot', reply);
         history.push({ role: 'assistant', content: reply });
       })
-      .catch(function () {
+      .catch(function (err) {
         typing.remove();
-        addMsg('bot', 'Something went wrong reaching the assistant. Please try again in a moment.');
+        addMsg('bot', err && err.status === 429
+          ? "I'm getting more questions than my free tier allows right now. Give me a minute and ask again."
+          : 'Something went wrong reaching the assistant. Please try again in a moment.');
       })
       .then(function () { busy = false; input.focus(); });
   }
