@@ -3,9 +3,11 @@
 > **Summary** — Candidate antifouling paint/coating products for the buoy's mitigation
 > approach ([SCO-15](https://linear.app/scout1/issue/SCO-15)), researched against three
 > criteria: cost-effective, purchasable in low quantity (a small buoy needs far less than a
-> boat hull), and ideally available at a general hardware retailer. Flags a real tension
-> between the "Home Depot" criterion and the project's own reef-safe design principle
-> ([ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md)).
+> boat hull), and ideally available at a general hardware retailer. Surfaced a tension between
+> the "Home Depot" criterion and the project's own reef-safe design principle
+> ([ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md)) — resolved 2026-08-18 in
+> favor of reef-safety. **Decided: Sea Hawk Smart Solution** (copper-free), see
+> [Decision](#decision).
 
 ---
 
@@ -36,8 +38,9 @@ criterion:**
   (West Marine, Defender, Fisheries Supply, Hamilton Marine) and cost roughly **2–4× more**
   per container than the copper-based Home Depot option.
 
-**This needs a call from John Ryan, not a default pick.** The options below are presented
-without a single "chosen" row for that reason.
+**Decided 2026-08-18 (John Ryan): no copper-based product.** Ruled out both copper-based
+candidates on that basis, despite the Home Depot convenience of one of them — see
+[Decision](#decision) below.
 
 ## Candidates
 
@@ -53,18 +56,14 @@ spec](https://www.totalboat.com/products/krypton-antifouling-bottom-paint)) — 
 wetted surface is a small fraction of that, so even the pint size is likely more than one
 buoy needs. Container size drives the purchase decision more than actual coverage need does.
 
-## Recommendation
+## Decision
 
-If reef-safety is weighted as a hard constraint (consistent with ADR-0004 and the project's
-mission), **Sea Hawk Smart Solution in a pint** is the best fit found: smallest available
-quantity, copper-free, and the only candidate marketed specifically as low-bioaccumulation.
-It costs more per container than the Home Depot option and isn't available at a general
-retailer.
-
-If retailer convenience is weighted higher, the Rust-Oleum Marine quart at Home Depot is the
-cheapest and most accessible option, but it is a copper-releasing product deployed meters from
-the reef this project exists to protect — worth weighing against the optics and substance of
-that, not just the convenience.
+**Sea Hawk Smart Solution, 1 pint — copper-free (Econea biocide).** Chosen over TotalBoat
+Krypton (the other copper-free candidate) on cost and quantity fit: Smart Solution is
+~\$50–64 in the smallest size found across any candidate (a pint), against Krypton's \$119.99
+and quart-only sizing — a closer match to a small buoy's actual coverage need and to John
+Ryan's cost-effective/low-quantity criteria. Not available at a general retailer; order from
+Hamilton Marine, Fisheries Supply, West Marine, or Defender (see Sources).
 
 ## Sources
 
