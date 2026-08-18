@@ -60,7 +60,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
 | Ask S.C.O.U.T. chat | 🟢 Live — "Fred" widget backed by a Cloudflare Worker proxy, answers from the published Hub context ([`chatbot/`](chatbot/README.md)) |
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); charging path ([ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) and wiring/PCB pending |
-| Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Open: final floatation design, housing dimensions |
+| Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Floatation family chosen 2026-08-17 (bolted wedge + bottom caps), first FEA pass complete ([`mechanical/test/`](mechanical/test/)). Open: buoyancy check, housing dimensions, chassis top-section access, mooring attachment hardware |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
 **Latest decision:** the microcontroller and LoRa radio are now settled — **Feather M0 +

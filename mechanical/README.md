@@ -4,8 +4,13 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 
 > **Status:** All five CAD categories populated — floatation, electronics housing,
 > sensor/turbidity housing, stem, solar mount (40 STEP/PDF files total, see
-> [`cad/README.md`](cad/README.md)). Still open: final floatation design ([SCO-48](https://linear.app/scout1/issue/SCO-48)),
-> housing dimensions ([SCO-49](https://linear.app/scout1/issue/SCO-49)), and the items below.
+> [`cad/README.md`](cad/README.md)). **Floatation family chosen 2026-08-17** — bolted wedge
+> variant with bottom caps ([`cad/floatation/README.md`](cad/floatation/README.md)), first FEA
+> pass complete ([`test/`](test/README.md)). Still open: buoyancy check + PDF-drawing
+> reconciliation on [SCO-48](https://linear.app/scout1/issue/SCO-48), housing dimensions
+> ([SCO-49](https://linear.app/scout1/issue/SCO-49)), chassis top section — sealing/service
+> access ([SCO-68](https://linear.app/scout1/issue/SCO-68)), mooring/sensor-string attachment
+> hardware ([SCO-69](https://linear.app/scout1/issue/SCO-69)), and the items below.
 
 **Owner:** GE lead (field & mechanical)
 
@@ -56,3 +61,9 @@ mechanical/
 - Waterproofing must be pressure tested at 5 m water equivalent before deployment
   ([Team Timeline](../docs/planning/team-timeline.md) Phase 5).
 - Sacrificial anodes and desiccant packs are noted in meeting notes but not yet in the BOM.
+- **Print material is still open** — PETG is the current default; ABS and ASA (and SLA/nylon
+  for comparison) are under evaluation, one sample per material
+  ([SCO-64](https://linear.app/scout1/issue/SCO-64)).
+- **Mooring/sensor-string attachment hardware** on the chassis bottom is not yet designed —
+  leading candidate is a stainless U-bolt with a mounting plate
+  ([SCO-69](https://linear.app/scout1/issue/SCO-69)).

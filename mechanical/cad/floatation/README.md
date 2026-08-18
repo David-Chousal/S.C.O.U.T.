@@ -50,40 +50,88 @@ timestamps were unreliable since everything was bulk re-exported from Onshape on
 | 8 | `floatation-v8-single-connector-{chassis,part2}.step` | Snap assembly, single chassis connector |
 | 9 | `floatation-v9-three-connector-{chassis,part2}.step`, `floatation-v9-bottom-{chassis,part2}.step` | Snap assembly, three chassis connector points — most recent iteration |
 
-**Not yet resolved:** which iteration (or combination) is final. John Ryan will designate the
-final CAD selection in a follow-up; until then, treat all of the above as historical iteration,
-not a build spec. It's also not yet confirmed whether any of these numbered iterations
-correspond directly to the three-part (`top`/`shell`/`bottom`) design in the PDF drawings above,
-or whether that's a separate, later pass — worth reconciling once the final iteration is picked.
+**Resolved, 2026-08-17:** none of v1–v9 is the final design — the bolted variant of the
+wedge-based DFM/V3 family below was chosen instead. Treat v1–v9 as historical iteration, not a
+build spec. It's still not confirmed whether any of these numbered iterations correspond
+directly to the three-part (`top`/`shell`/`bottom`) design in the PDF drawings above, or
+whether that's a separate, later pass — that reconciliation is still open on
+[SCO-48](https://linear.app/scout1/issue/SCO-48).
 
 ## Wedge-based design (DFM/V3) — a separate concept from v1–v9
 
 Two more recent Part Studios, found in the Onshape document's `With Tolerances > DFM > V3`
 folder, represent a **different floatation approach** from the v1–v9 history above — not a
-continuation of that numbering, and not yet declared as the final choice for
-[SCO-48](https://linear.app/scout1/issue/SCO-48).
+continuation of that numbering.
 
-- **`chassis-floatation-integrated-v3-part{1,2,3}.step`** ("Master V3") — the primary design.
-  Individual **floatation wedges snap into keyholes shared with adjacent wedges**, forming a
-  ring around the central electronics-housing chassis cylinder. Assembly sequence: wedges are
-  **mechanically inserted and locked** into the chassis first, then **filled with expanding
-  flotation foam** — the foam provides structure, buoyancy, and waterproofing all at once.
-  **Epoxy is used additionally**, to pre-fasten parts before the foam fill.
-- **`chassis-floatation-bolted-v3-part{1,2}.step`** ("Master V3 Copy 1") — a simpler variant of
-  the same wedge concept: no snap/keyhole locking, just **heat-set inserts in the chassis
-  cylinder and bolts alone** to hold the wedges in place.
+- **`chassis-floatation-integrated-v3-part{1,2,3}.step`** ("Master V3") — individual
+  **floatation wedges snap into keyholes shared with adjacent wedges**, forming a ring around
+  the central electronics-housing chassis cylinder, mechanically inserted and locked before the
+  foam fill (below). **Tried and dropped, 2026-08-17** — see "Bolted variant chosen" below.
+- **`chassis-floatation-bolted-v3-part{1,2}.step`** ("Master V3 Copy 1") — no snap/keyhole
+  locking; **heat-set inserts in the chassis cylinder and bolts alone** hold the wedges in
+  place. **This is the chosen variant** (2026-08-17).
 
 **Field-replaceability.** Each wedge can be swapped out on-site without disturbing the others —
 a deployment/maintenance advantage over a monolithic shell, and worth carrying into the
 project's lifecycle analysis (fewer full-buoy replacements, cheaper field service).
+
+### Bolted variant chosen — 2026-08-17
+
+**Decision (John Ryan):** the design moves forward as the **bolted** wedge variant — heat-set
+inserts in the chassis, bolts alone, no snap/keyhole locking. This corrects and completes the
+2026-08-17 SCOUT Weekly meeting summary in
+[`decision-log.md`](../../../docs/hub/decision-log.md), which recorded the bolted+foam choice
+but predates the bottom caps below and stated the FEA safety-factor figure without the caveat
+that it's a provisional test criterion, not an established target (both fixed here).
+
+**What changed from the snap/keyhole (Master V3) design, and why:**
+
+- **Bottom caps added**, one under each wedge, giving the floatation a thicker bottom section
+  specifically for impact protection (grounding, drops, boat strikes at the waterline).
+- **Print settings**: gyroid infill with many wall layers, for both the wedges and the bottom
+  caps.
+- **Foam fill retained.** The wedge cavities are still injected with expanding flotation foam
+  after assembly — buoyancy, structure, and waterproofing-by-redundancy (a punctured wedge
+  doesn't flood) in one step. Foam fill was never specific to the snap/keyhole variant; it
+  applies to the bolted assembly too.
+- **Radial printed webs between wedges**, inspired by surfboard stringer construction — thin
+  printed sheets that resist bending the same way a stringer resists a board's flex. This is
+  the source of the "I-beam" framing in the meeting write-up: not a literal I-beam, a stringer
+  analogy for a thin panel under a bending moment.
+- **Why bolted, not snap/keyhole:** print testing on the morning of 2026-08-17 tried to
+  integrate the new bottom caps into the same body print as the wedges, using the snap/keyhole
+  design's previously-working keyhole slide-in function. It didn't work as expected — the
+  bottom-cap integration added complexity the keyhole slide relied on not having. The simpler
+  bolted + heat-set-insert approach avoids that failure mode entirely, which is consistent with
+  (though not the sole stated reason for) the decision to drop the mechanical-interlock
+  prototype in favor of bolting plus epoxy.
+
+**Not yet closed on [SCO-48](https://linear.app/scout1/issue/SCO-48):** the family choice
+(bolted wedge over snap/keyhole and over Outer Octagon) is settled, but the issue's other
+acceptance criteria are still open — reconciling against the three-part `top`/`shell`/`bottom`
+PDF drawings, and checking buoyancy against the loaded electronics weight (itself waiting on
+[SCO-49](https://linear.app/scout1/issue/SCO-49), housing dimensions).
+
+**Print material still open.** PETG remains the current default; ABS and ASA are under
+consideration (with SLA and nylon also flagged for comparison at the 2026-08-17 SCOUT Weekly).
+One sample per material is planned — see [SCO-64](https://linear.app/scout1/issue/SCO-64). The
+first FEA pass (below) used ABS material properties for the study; that is not a build-material
+decision.
+
+**First FEA pass — 2026-08-17.** Static side-load study (300 N) on the floatation wedges +
+bottom caps: minimum safety factor 25.4 against a **provisional SF ≥ 4 pass/fail check used
+for this study only** — not yet a validated target, since max expected loads haven't been
+derived from first principles yet. Full results and next steps:
+[`mechanical/test/fea-floatation-side-load-2026-08-17.md`](../../test/fea-floatation-side-load-2026-08-17.md).
 
 ## Outer Octagon — a separate, distinct design
 
 `outer-octagon-shell.step` and `outer-octagon-bottom.step` (Onshape: `With Tolerances > Outer
 Octagon > Main` / `Bottom`) are a **separate floatation concept from Master V3** — confirmed by
 John Ryan, not a source/derivative relationship. It's a ribbed octagonal shell with a bottom
-cap, sized around the same central chassis cylinder cutout. Not yet reconciled against the
-wedge-based design or the v1–v9 history as to which is the leading candidate for SCO-48.
+cap, sized around the same central chassis cylinder cutout. **Not chosen, 2026-08-17** — the
+bolted wedge-based design above was selected instead; kept here as historical iteration like
+v1–v9.
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
