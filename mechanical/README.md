@@ -55,9 +55,12 @@ mechanical/
 - **Deployment depth is 2–8 m** (revised 2026-08-14, was 5–8 m), confirmed against the actual
   Hawaii site — see [SCO-6](https://linear.app/scout1/issue/SCO-6). The ~30 m label on the
   sensor-string diagram image is outdated and should be re-exported.
-- Biofouling mitigation strategy is undecided — candidates include copper mesh, mechanical
-  wipers, and reef-safe antifouling coatings. Stakeholder interviews flagged this as a major
-  risk to sensor accuracy.
+- **Biofouling mitigation approach chosen: antifouling coating**, over copper mesh and
+  mechanical wipers — no moving parts to fail on a 1+ year unattended deployment. Specific
+  product not yet picked; see
+  [Biofouling Antifouling Coatings](../docs/research/biofouling-antifouling-coatings.md) for
+  candidates and the reef-safety-vs-convenience tradeoff
+  ([SCO-15](https://linear.app/scout1/issue/SCO-15)).
 - Waterproofing must be pressure tested at 5 m water equivalent before deployment
   ([Team Timeline](../docs/planning/team-timeline.md) Phase 5).
 - Sacrificial anodes and desiccant packs are noted in meeting notes but not yet in the BOM.

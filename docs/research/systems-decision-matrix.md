@@ -53,7 +53,7 @@ When a decision is significant and hard to reverse, record it as an
 | Waterproofing / enclosure system | | | In progress | Dimensions TBD — built around an approximate 4" Schedule 40 PVC reference, O-ring sealed end caps (O-rings purchased off-the-shelf, [SCO-55](https://linear.app/scout1/issue/SCO-55)) |
 | Marine materials | | | Not started | |
 | Mooring & anchoring | | | Completed | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — marked sites connect to existing infrastructure; unmarked sites use a single mushroom anchor |
-| Biofouling mitigation | | | Not started | Flagged by stakeholders as a major risk |
+| Biofouling mitigation | | geng | In progress | Approach chosen: antifouling coating, over copper mesh and mechanical wipers. Specific product not yet chosen — reef-safety (copper-free) vs. retailer-convenience (copper-based, Home Depot) tradeoff open. See [Biofouling Antifouling Coatings](biofouling-antifouling-coatings.md), [SCO-15](https://linear.app/scout1/issue/SCO-15) |
 | Sensor selection | | | In progress | See [Sensor Selection](../engineering/sensor-selection.md) |
 | Sensor placement & mechanical integration | | | In progress | See [Sensor String Architecture](../engineering/sensor-string-architecture.md) |
 | Manufacturing & scalability | | | Not started | |
