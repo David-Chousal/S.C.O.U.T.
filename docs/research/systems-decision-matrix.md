@@ -50,9 +50,9 @@ When a decision is significant and hard to reverse, record it as an
 | Decision area | Priority | Owner | Status | Decision / recommendation |
 |---|---|---|---|---|
 | Buoy geometry & industrial design | | | In progress | Cylindrical waterline, tapered top and bottom |
-| Waterproofing / enclosure system | | | In progress | Dimensions TBD — built around an approximate 4" Schedule 40 PVC reference, O-ring sealed end caps |
+| Waterproofing / enclosure system | | | In progress | Dimensions TBD — built around an approximate 4" Schedule 40 PVC reference, O-ring sealed end caps (O-rings purchased off-the-shelf, [SCO-55](https://linear.app/scout1/issue/SCO-55)) |
 | Marine materials | | | Not started | |
-| Mooring & anchoring | | | Not started | |
+| Mooring & anchoring | | | Completed | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — marked sites connect to existing infrastructure; unmarked sites use a single mushroom anchor |
 | Biofouling mitigation | | | Not started | Flagged by stakeholders as a major risk |
 | Sensor selection | | | In progress | See [Sensor Selection](../engineering/sensor-selection.md) |
 | Sensor placement & mechanical integration | | | In progress | See [Sensor String Architecture](../engineering/sensor-string-architecture.md) |
@@ -61,7 +61,7 @@ When a decision is significant and hard to reverse, record it as an
 | Temperature sensor selection | | | Completed | DS18B20 |
 | Water quality sensor tradeoff (turbidity vs light) | | | Completed | Turbidity (DFRobot SEN0189) |
 | Hydrophone feasibility | | | In progress | Aquarian H2dM — part number differs across docs |
-| Reef-safe anchoring strategy | | | Not started | |
+| Reef-safe anchoring strategy | | | Completed | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — mushroom anchor, adjacent to coral with swing clearance; synthetic rope default, chain in high-turbulence sites |
 | Housing manufacturing method | | | Not started | |
 
 ## ECEN — electrical & embedded

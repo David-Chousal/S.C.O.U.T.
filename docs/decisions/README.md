@@ -21,6 +21,7 @@ multiple subsystems.
 | [0001](0001-mcu-and-radio-selection.md) | Microcontroller and LoRa radio selection | 🟢 Accepted |
 | [0002](0002-lifepo4-charging-path.md) | LiFePO₄ charging path on the Feather M0 | 🟡 Open |
 | [0003](0003-single-point-sensing.md) | Single-point sensing per modality (multi-depth deferred) | 🟢 Accepted |
+| [0004](0004-reef-safe-anchoring-and-mooring.md) | Reef-safe anchoring and mooring approach | 🟢 Accepted |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 
