@@ -1,9 +1,12 @@
 # ADR-0001 — Microcontroller and LoRa Radio Selection
 
-- **Status:** 🟡 Open — decision not yet made
+- **Status:** 🟢 Accepted — Rev A prototype platform only. **Production/deployment platform is
+  NOT decided by this ADR** (see Decision and Open Questions).
 - **Date raised:** 2026-08-13
+- **Date decided (Rev A prototype scope):** 2026-08-18
 - **Owners:** ECE lead (hardware), CS lead (firmware)
-- **Blocks:** PCB layout, firmware toolchain, power budget verification, audio buffer design
+- **Blocks:** Prototype PCB layout, firmware toolchain — unblocked by this decision. Production
+  PCB layout remains blocked on the still-open production-platform question.
 
 ---
 
@@ -50,9 +53,13 @@ decision is made deliberately rather than by whichever document someone reads fi
   on-device acoustic index computation must be streamed blockwise from storage.
 - Cortex-M0+ has no FPU — DSP work is materially slower than on the ESP32-C3.
 - SX1276 is the older radio generation, with worse receive and sleep current.
-- **The onboard charger is designed for 3.7 V LiPo, not the 3.2 V LiFePO₄ cell the EDD
+- ~~**The onboard charger is designed for 3.7 V LiPo, not the 3.2 V LiFePO₄ cell the EDD
   specifies.** Using the planned battery chemistry means bypassing or replacing the Feather's
-  built-in charging circuit.
+  built-in charging circuit.~~ Addressed for Rev A — see [ADR-0002](0002-battery-chemistry.md).
+  Rev A does not use the Feather's onboard charger at all: charging and power-path management
+  are handled by an external Adafruit bq25185 board (PID 6106), and the Feather is powered as a
+  regulated-5V load via VBUS. Confirmed by direct inspection of the Rev A schematic — the
+  Feather's BAT/VBAT pin is explicitly unconnected. Final deployment chemistry is still open.
 
 ## Possible resolution
 
@@ -69,16 +76,31 @@ discovering it during Phase 3 integration.
 
 ## Decision
 
-**Not yet made.** To be resolved by the ECE and CS leads.
+**Accepted for the Rev A prototype only.** The Feather M0 + RFM95 (Adafruit Product 3178) is
+the selected MCU/radio for the Rev A prototype electrical design, per the Rev A KiCad
+schematic (`hardware/schematics/scout-reva.kicad_sch`). The schematic has been reviewed against
+manufacturer documentation and passes KiCad ERC with 0 violations. **The complete Rev A
+electrical system has not yet been physically assembled or tested** — this acceptance is based
+on schematic and documentation review only, not on physical hardware validation.
 
-## Consequences of deferring
+**This is not acceptance of a final or production SCOUT architecture.** The ESP32-C3 + SX1262
+production platform (Option A) — or any other platform — remains explicitly unresolved and
+deferred. A future ADR (or a revision to this one) is required before production PCB layout
+begins.
 
-- PCB layout cannot begin.
-- The firmware toolchain (Arduino/SAMD21 vs ESP-IDF/RISC-V) cannot be fixed, so firmware
-  written now may need porting.
-- The power budget in EDD §15–17 assumes ESP32-C3 and SX1262 current figures; if the Feather
-  is chosen, battery and solar sizing must be recomputed.
-- Audio subsystem design depends heavily on available RAM.
+## Consequences
+
+- Rev A prototype schematic work, firmware toolchain selection (Arduino/SAMD21), and Phase 1–4
+  bring-up planning can proceed on the Feather M0 + RFM95 basis.
+- Production PCB layout remains blocked until the production-platform question is resolved.
+- **The EDD's power budget (§15–17) was computed against ESP32-C3 and SX1262 current figures
+  and has not been recomputed against Rev A's actual hardware.** This schematic review does not
+  validate that budget — it remains outstanding.
+- Audio subsystem / on-device acoustic index computation is still constrained by the Feather
+  M0's 32 KB SRAM for as long as Rev A remains the active prototype platform.
+- Battery chemistry for the Rev A prototype is LiPo, charged via an external bq25185 board, not
+  the Feather's onboard charger — see [ADR-0002](0002-battery-chemistry.md) for that decision
+  and its own open questions.
 
 ## Open questions
 
@@ -88,10 +110,17 @@ discovering it during Phase 3 integration.
 3. What is the actual required LoRa range? Assumptions in the documents vary widely — the MVP
    doc says ~100 yards, meeting notes cite 15–20 km, and the Feather M0 datasheet claims ~2 km
    line-of-sight. This needs a single agreed figure, measured over saltwater.
-4. If the Feather is selected, how is LiFePO₄ charging handled?
+4. ~~If the Feather is selected, how is LiFePO₄ charging handled?~~ **Addressed for Rev A** —
+   Rev A doesn't use LiFePO₄ or the Feather's onboard charger; see
+   [ADR-0002](0002-battery-chemistry.md). Reopens if a future revision returns to LiFePO₄.
+5. Is the production platform (Option A) still the intended direction, or does the Rev A
+   prototype change that calculus? **Not decided by this ADR.**
 
 ## References
 
 - [Engineering Design Document §5–6, §10](../engineering/engineering-design-document.md) — electrical architecture, component selection, communications
 - [Team Timeline](../planning/team-timeline.md) — Phase 1 hardware bring-up schedule
+- [ADR-0002 — Battery Chemistry](0002-battery-chemistry.md)
+- Rev A schematic: `hardware/schematics/scout-reva.kicad_sch` (native, authoritative) and
+  `hardware/schematics/scout-reva-schematic.pdf` (exported)
 - Deployment region is Hawaii (FCC 902–928 MHz ISM band); both radios are compatible.
