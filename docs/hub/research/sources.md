@@ -120,6 +120,14 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `manov-2004` | Manov, Chang & Dickey (2004). "Methods for reducing biofouling of moored optical sensors." *Journal of Atmospheric and Oceanic Technology* 21(6):958–968. [doi](https://doi.org/10.1175/1520-0426(2004)021%3C0958:MFRBOM%3E2.0.CO;2) | 🔒 | — | Optical-sensor **fouling drift is monotonic** → mimics a turbidity trend in `turbidity.py`; detect by cross-comparison — [notes](notes/manov-2004-biofouling-optical-drift.md) |
 | `qartod-optics-2017` | U.S. IOOS (2017). "Manual for real-time quality control of ocean optics data, v1.1." 49 pp. [doi](https://doi.org/10.25923/v9p8-ft24) | 🔓 | library/qartod-optics-2017.pdf | QC **flag standard** (flat-line / rate-of-change catch a fouled sensor) for turbidity — implement in `qc.py` — [notes](notes/qartod-optics-2017-qc.md) |
 
+## Biofouling mitigation products
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `rustoleum-marine-antifouling` | Rust-Oleum. *Marine Boat Bottom Antifouling Paint* — product page. [Home Depot](https://www.homedepot.com/p/Rust-Oleum-Marine-1-qt-Flat-Blue-Boat-Bottom-Antifouling-Paint-396968/100184819) | 🔓 | — | Copper-based candidate, cheapest and only general-retailer option — [Biofouling Antifouling Coatings](../../research/biofouling-antifouling-coatings.md), [SCO-15](https://linear.app/scout1/issue/SCO-15) |
+| `totalboat-krypton` | TotalBoat. *Krypton Copper-Free Antifouling Bottom Paint* — product page. [totalboat.com](https://www.totalboat.com/products/krypton-antifouling-bottom-paint) | 🔓 | — | Copper-free candidate (zinc pyrithione + tralopyril) — [Biofouling Antifouling Coatings](../../research/biofouling-antifouling-coatings.md) |
+| `seahawk-smart-solution` | Sea Hawk Paints. *Smart Solution Antifouling Paint* — product page. [West Marine](https://www.westmarine.com/sea-hawk-smart-solution-antifouling-paint-P018194134.html) | 🔓 | — | Copper-free (Econea) candidate, smallest available quantity (pint) — [Biofouling Antifouling Coatings](../../research/biofouling-antifouling-coatings.md) |
+
 ---
 
 ## Maintenance
