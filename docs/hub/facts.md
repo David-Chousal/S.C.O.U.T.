@@ -50,7 +50,7 @@
 | Local flash | Winbond W25Q02JV QSPI | [Systems Decision Matrix](../research/systems-decision-matrix.md) |
 | Battery chemistry | **LiFePO₄** (final sizing pending measured power budget) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
 | Charge controller | BQ25570 MPPT (charging path itself still open) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
-| Enclosure dimensions | **TBD** — design is built around an approximate 4" Schedule 40 PVC reference form factor; not finalized | [mechanical/cad/electronics-housing](../../mechanical/cad/electronics-housing/README.md) |
+| Enclosure dimensions | **TBD** — design is built around an approximate 4" Schedule 40 PVC reference form factor; not finalized. **The battery and solar panel, not the PCB, set the lower bound on volume** (confirmed 2026-08-17) | [mechanical/cad/electronics-housing](../../mechanical/cad/electronics-housing/README.md), [SCO-49](https://linear.app/scout1/issue/SCO-49) |
 
 ## Sensing (single-point per modality — see ADR-0003)
 
@@ -72,6 +72,7 @@
 | LoRa frequency | **915 MHz** (US ISM band) | [EDD](../engineering/engineering-design-document.md) |
 | LoRa range | **~2 km line of sight** (Adafruit RFM9x FAQ). Real over-saltwater range TBD in Phase 4 | [ADR-0001 reconciliation](../decisions/0001-mcu-and-radio-selection.md) |
 | Daily packet | 1× per day — a summary, not a row dump. ⚠️ **Size contested:** firmware (`SCOUT_PACKET_SIZE`) and shore (`PACKET_SIZE`) both encode **30 bytes**; the **82 bytes** cited here and in the EDD is the §10 *budget ceiling* (`LORA_PAYLOAD_BUDGET_BYTES`), not the actual size | [SCO-40](https://linear.app/scout1/issue/SCO-40), [Data Schema](../engineering/data-schema.md), EDD §10/§14 |
+| Delivery scheme | **CR 4/8 + blind repetition** (3 copies NORMAL, 1 CONSERVE, widening gaps), never ACKed; shore deduplicates on `(buoy_id, record_seq)`. Spreading factor stays **SF7** — the stock CR 4/8 presets force SF12, which would overrun the TX budget and the FCC dwell limit | [SCO-21](https://linear.app/scout1/issue/SCO-21) |
 | Raw audio over LoRa | **Never transmitted.** Stored onboard in `/AUDIO/`, retrieved physically | [EDD §10](../engineering/engineering-design-document.md) |
 | Sample interval | ~30 min wake/sample cycle (turbidity + audio run less often) | [Data Schema](../engineering/data-schema.md) |
 | On-board log format | Append-only CSV, one row per wake event, UTC ISO 8601, `schema_version` 1 | [Data Schema](../engineering/data-schema.md) |
@@ -99,6 +100,8 @@
 | Fact | Canonical value | Source |
 |---|---|---|
 | Anchoring/mooring approach | **Marked sites** (existing pile/mooring) connect directly via line. **Unmarked sites** use a single **mushroom anchor**, sited adjacent to (never on) coral with enough swing clearance the line can't drag/agitate the reef. Synthetic marine rope by default; chain in high-turbulence sites | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) |
+| Flotation | **Wedge system bolted and epoxied to a central chassis**, injected with expanding foam — buoyancy, structure, and waterproofing-by-redundancy in one (a punctured wedge does not flood). Thin printed internal webs act as I-beams down the panel. FEA minimum safety factor **25** against a threshold of 4 | [SCO-48](https://linear.app/scout1/issue/SCO-48), [design-notes.md](design-notes.md) |
+| Module interconnect | **Modular snap connectors** — each module mates electrically as it stacks, rather than cables routed through the body. Cables remain only where something must leave the chassis, notably the hydrophone | [SCO-61](https://linear.app/scout1/issue/SCO-61) |
 | O-ring manufacturing method | **Purchased off-the-shelf** (standard AS568-type), not TPU-printed or batch-cast via injection mold — printed parts are porous along layer lines, a waterproofing-critical risk at the 5 m pressure target. Provisional; revisit if standard sizes don't fit | [SCO-55](https://linear.app/scout1/issue/SCO-55), [design-notes.md](design-notes.md) |
 
 ---
@@ -116,3 +119,4 @@ as settled. Each should have a Linear issue and, when resolved, become a row abo
 | Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) | [SCO-23](https://linear.app/scout1/issue/SCO-23) |
 | Over-saltwater LoRa range | ~2 km is the datasheet figure; real range measured in Phase 4 | David (CSEN) | [SCO-14](https://linear.app/scout1/issue/SCO-14) |
 | Daily packet size | 30 B actual (firmware + shore agree) vs the 82 B EDD §10 budget ceiling, stated interchangeably across docs | David (CSEN) | [SCO-40](https://linear.app/scout1/issue/SCO-40) |
+| Enclosure dimensions | Battery and solar panel dimensions set the lower bound on housing volume; both still unspecified | Isabella (ECE) | [SCO-49](https://linear.app/scout1/issue/SCO-49) |
