@@ -97,7 +97,10 @@ export default {
         body: JSON.stringify({
           model: env.MODEL || "openai/gpt-oss-120b",
           temperature: 0.2,
-          max_tokens: 700,
+          // Groq counts max_tokens toward the per-minute budget, so this is a rate-limit
+          // knob as much as a length one. 400 still covers the 1-4 sentence replies the
+          // system prompt asks for. Raise it if the account moves off the free tier.
+          max_tokens: 400,
           messages: [{ role: "system", content: system }, ...messages],
         }),
       });
