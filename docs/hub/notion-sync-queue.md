@@ -1,11 +1,13 @@
 # Notion Sync Queue
 
-> **Summary** — Repo changes that still need mirroring into Notion, staged here because the
-> Claude sessions working this repo reach a different Notion workspace and cannot push to the
-> S.C.O.U.T. project. Each entry names the target page, what changed, and — where the content
-> needs reshaping for Notion — the paste-ready text.
+> **Summary** — Repo changes that still need mirroring into Notion. Staged here for sessions
+> whose Notion connector can't reach the S.C.O.U.T. workspace; a session with direct access
+> (confirmed working 2026-08-17) should just push the change directly and log it in **Done**
+> below, rather than adding a queue entry that then needs a second session to clear it. Each
+> entry names the target page, what changed, and — where the content needs reshaping for
+> Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-15.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-08-17.**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -34,11 +36,23 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
-> **Entries 1–3 cleared 2026-08-16.** Payloads are retained below only as a record of what was
-> mirrored; delete them on the next pass. Entry 3 is *partial* by necessity — see its note.
-> **Entry 4 is new and not yet mirrored.**
+> **Entries 1–4 cleared 2026-08-17**, including the Decision Log gap entry 3 left open (all
+> 17 missing rows, 2026-08-15 through 2026-08-17, now mirrored). Payloads are retained below
+> only as a record of what was mirrored; delete them on the next pass.
+> **Entry 5 is new and not yet mirrored.**
 
-### 4 · Live Dashboard — sensor health on the Analytics page · ⏳ not yet in Notion
+### 5 · Live Dashboard — multi-page site restructure · ⏳ not yet in Notion
+
+- **Notion page** — Engineering → *Live Dashboard*
+- **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
+- **What changed** — while clearing entry 4 (below), found the Notion page describes an old
+  **single self-contained static page**, but the source now documents a **six-page site**
+  (Home/Technology/Science/Analytics/Fleet/About). Landed "The site" table and the sensor-health
+  section (entry 4's actual ask) directly, but the **`### The Fleet page` section (lines 67+ in
+  the source) is still unmirrored** — the network-overview page, tile grid, per-buoy drill-down.
+  Worth a dedicated pass since it's a whole page the Notion doc doesn't know exists yet.
+
+### 4 · Live Dashboard — sensor health on the Analytics page · ✅ mirrored 2026-08-17
 
 - **Notion page** — Engineering → *Live Dashboard*
 - **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
@@ -149,4 +163,6 @@ mirrored rather than silently emptying.
 | Root **S.C.O.U.T.** page — status table (telemetry, dashboard, firmware, shore, mechanical), platform reframing to a nearshore monitoring platform, packet size 82 → 30 bytes in the architecture diagram, three new Known-inconsistency rows | 2026-08-15 | Claude session, direct connector write |
 | **1 · Telemetry Methodology** — §1a QARTOD tests and §1b biofouling drift screen added in full; §4 rewritten with the Turbidity polarity paragraph (it still said "flagging **positive** excursions", i.e. the pre-PR-#54 inverted science); two Limitations bullets and two references (Manov 2004, IOOS QARTOD 2017) added. All links rewritten to Notion URLs | 2026-08-16 | Claude session |
 | **2 · Data Schema** — `record_seq` row gained the idempotency-key note; `turbidity_adc` row updated; new **Turbidity polarity** section with the clear/turbid table and a red callout stating the non-inverting requirement for ECE | 2026-08-16 | Claude session |
+| **3 · Decision Log — the gap entry 3 left open.** All 17 rows missing since 2026-08-14 (2026-08-15 through 2026-08-17: chatbot launch, SEN0189 polarity fix, Linear 12-state workflow, CAD reconciliation against PRs #58–60, ADR-0003 flag-and-resolution, QARTOD/CR-4/8/CI decisions) inserted at the top of the Log table | 2026-08-17 | Claude session, direct connector write |
+| **4 · Live Dashboard — sensor health section**, plus "The site" multi-page table (the page was still describing an old single-page dashboard). See new queue entry 5 for the Fleet-page section this did *not* cover | 2026-08-17 | Claude session, direct connector write |
 | **3 · Knowledge Hub (partial)** — **Project Status** page fully refreshed (telemetry, dashboard, firmware, shore, mechanical rows; SCO-47 added as a fourth blocker; mechanical chokepoint called out). See the note in entry 3 for what has no Notion target | 2026-08-16 | Claude session |

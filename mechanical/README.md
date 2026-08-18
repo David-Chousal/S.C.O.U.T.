@@ -2,8 +2,10 @@
 
 CAD models, hull design, enclosure drawings, mooring specifications, and field test records.
 
-> **Status:** Not yet populated. This directory is the agreed destination for CAD files and
-> annotated sketches, per [Team Timeline](../docs/planning/team-timeline.md) Phase 1, Week 4.
+> **Status:** All five CAD categories populated — floatation, electronics housing,
+> sensor/turbidity housing, stem, solar mount (40 STEP/PDF files total, see
+> [`cad/README.md`](cad/README.md)). Still open: final floatation design ([SCO-48](https://linear.app/scout1/issue/SCO-48)),
+> housing dimensions ([SCO-49](https://linear.app/scout1/issue/SCO-49)), and the items below.
 
 **Owner:** GE lead (field & mechanical)
 
@@ -28,7 +30,7 @@ Specified in
 The structure must be waterproof, storm resistant, biofouling resistant, serviceable, and
 reef-safe, with long-term mooring stability and minimal reef disturbance.
 
-## Intended contents
+## Contents
 
 ```
 mechanical/

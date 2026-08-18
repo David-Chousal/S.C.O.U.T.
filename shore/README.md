@@ -60,7 +60,8 @@ python -m unittest discover -s tests -v
 
 ## Contract note
 
-`packet.py` is a **proposed v1 wire format** (29 bytes, well under the 82-byte daily budget in
-EDD §10). It must be reconciled with the ECE packet-format spec (Team Timeline Phase 0) and
-mirrored by the firmware C encoder before it's frozen. `turbidity_v` uses provisional ADC
-constants pending the analog front-end design.
+`packet.py` is the **verified wire format** (30 bytes, well under the 82-byte daily budget
+ceiling in EDD §10 — see [`docs/hub/facts.md`](../docs/hub/facts.md) for why those are two
+different numbers, not a contradiction). It's mirrored byte-identical by the firmware C
+encoder, CI-enforced via a golden vector (`firmware/test/test_packet`). `turbidity_v` still
+uses provisional ADC constants pending the analog front-end design.

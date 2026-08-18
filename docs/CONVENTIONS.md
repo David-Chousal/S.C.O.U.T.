@@ -113,19 +113,23 @@ S.C.O.U.T./
 ├── LICENSE                MIT.
 ├── docs/
 │   ├── CONVENTIONS.md     This file.
+│   ├── hub/               Knowledge Hub — facts, decisions, status, research library
 │   ├── overview/          Project vision, MVP definition, status updates
 │   ├── engineering/       Design document, sensor selection, architecture
 │   ├── research/          Stakeholder interviews, decision matrix
-│   ├── analysis/          Bioacoustic methodology and citations
+│   ├── analysis/          Bioacoustic + telemetry methodology and citations
 │   ├── planning/          Timeline, meeting notes, administrative
 │   └── decisions/         Architecture Decision Records (ADRs)
-├── analytics/             Coral bioacoustic pipeline (Python) — working
-├── firmware/              Buoy embedded software — not started
-├── hardware/              Schematics, PCB, wiring — not started
-├── mechanical/            CAD, hull, mooring — not started
+├── analytics/             Bioacoustic + environmental-telemetry pipelines (Python) — working
+├── shore/                 Shore-station receiver, store, packet codec (Python) — simulated path working
+├── firmware/              Buoy embedded software (SAMD21/PlatformIO) — Phase 1 in progress
+├── hardware/              Schematics, PCB, wiring — build platform + BOM confirmed, files not started
+├── mechanical/            CAD, hull, mooring — all five CAD categories documented
+├── chatbot/               "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
 ├── assets/
 │   ├── diagrams/          Architecture and block diagrams
 │   ├── photos/            Build and field photos
+│   ├── brand/             Logo assets
 │   └── presentations/     Slide decks
 └── data/                  Raw audio archive — excluded from git
 ```
