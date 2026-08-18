@@ -43,7 +43,7 @@ _STATIC = Path(__file__).parent / "static"
 #
 # The caps are sized for Groq's FREE-tier rate limit, not the model's context window: the whole
 # knowledge base (~29k tokens) blows past the 12k tokens/minute ceiling on
-# llama-3.3-70b-versatile, so every request 502s. Keeping the emitted context near ~4k tokens
+# the configured Groq model, so every request 502s. Keeping the emitted context near ~4k tokens
 # leaves headroom for the system prompt, a few conversation turns, and the reply within 12k TPM.
 # Lowest-priority docs fall off the end first when the total cap bites, so the essentials always
 # survive. If the account moves to a paid Groq tier, these caps can be raised well past this.

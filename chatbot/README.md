@@ -51,5 +51,5 @@ If you use a custom site domain, also update `ALLOWED_ORIGIN` (and `CONTEXT_URL`
 |---|---|
 | `CONTEXT_URL` | URL of the published `chat-context.txt` |
 | `ALLOWED_ORIGIN` | Site origin allowed to call the Worker (CORS) |
-| `MODEL` | Groq model id (default `llama-3.3-70b-versatile`) |
+| `MODEL` | Groq model id (default `openai/gpt-oss-120b`) |
 | `GROQ_API_KEY` | **secret** — set via `wrangler secret put`, not here |
