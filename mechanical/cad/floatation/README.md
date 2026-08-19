@@ -124,6 +124,33 @@ for this study only** — not yet a validated target, since max expected loads h
 derived from first principles yet. Full results and next steps:
 [`mechanical/test/fea-floatation-side-load-2026-08-17.md`](../../test/fea-floatation-side-load-2026-08-17.md).
 
+### Cross-section fit-test print, and a validation-target pivot — 2026-08-18
+
+**Print test (John Ryan).** Printed a cross-section of the bolted wedge — sliced to include
+only a single row of the heat-set-insert bolt pattern rather than a full wedge — to check the
+bolted fit against the chassis cylinder without spending the filament on a full-height piece.
+Photo: `assets/photos/bolted-wedge-cross-section-fit-test-2026-08-18.jpg` (pending — file to
+be added once available; see [SCO-48](https://linear.app/scout1/issue/SCO-48) for status).
+
+**Weight datapoint.** Slicer estimate for a full-size wedge at current wall/infill settings:
+**~300 g each**. This is the input the still-open buoyancy check on
+[SCO-48](https://linear.app/scout1/issue/SCO-48) needs (checked against the loaded electronics
+weight); logged canonically in
+[`facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
+
+**Validation-target pivot.** Read against the 2026-08-17 FEA pass above (minimum safety factor
+25.4 against a provisional SF ≥ 4 check), John Ryan judged the current bolted-wedge design
+**over-engineered** — more structure than the buoy needs, at the cost this project is trying to
+hold. Rather than continue optimizing toward an arbitrary safety-factor number, the target
+becomes **impact survivability at controlled cost**: the buoy should tolerate real-world
+impacts (grounding, drops, and ideally a direct boat strike) without losing function, without
+requiring the SF≥4 margin used only as this study's placeholder pass/fail bar. Two verification
+tracks are planned — FEA impact/drop-load simulation, and bench impact/load tests on printed
+wedge or member samples, results cross-checked against each other. Tracked as
+[SCO-71](https://linear.app/scout1/issue/SCO-71); see also
+[`mechanical/test/README.md`](../../test/README.md) and
+[`design-notes.md`](../../../docs/hub/design-notes.md).
+
 ## Outer Octagon — a separate, distinct design
 
 `outer-octagon-shell.step` and `outer-octagon-bottom.step` (Onshape: `With Tolerances > Outer
