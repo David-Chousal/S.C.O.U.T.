@@ -458,11 +458,14 @@ known and documented; do not "fix" it without an issue.
 5. **Report failures plainly.** If tests fail, show the output. If a step was skipped, say so.
 6. **Everything reaches `main` through a reviewed PR.** Branch → commit → push the branch →
    open a PR with a conventional title (`<type>(<scope>): <summary>`) and the five-section
-   description (DATE · What Changed and Why · Open questions · Open tasks · Knowledge Hub),
-   then **stop and
+   description — **DATE, What Changed and Why, Open questions, Open tasks, Knowledge Hub, each
+   as a literal `## ` Markdown heading** (not bold text — `pr-checks.yml`'s `pr-body` check
+   parses headings and fails on anything else). Copy the exact template from
+   [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests) rather than
+   free-handing the format, then **stop and
    leave it open for review**. Merge only after a human review or when a human explicitly asks
    you to merge — never on your own initiative, and never auto-merge. Never push to `main`
-   directly — it is blocked. See [CONVENTIONS.md → Pull requests](docs/CONVENTIONS.md#pull-requests).
+   directly — it is blocked.
 7. **Every PR updates the Knowledge Hub — no exception, wherever relevant.** The
    [Knowledge Hub](docs/hub/README.md) is the always-current surface for what S.C.O.U.T. has decided,
    learned, and where it stands. **Before opening any PR**, check each Hub surface and update the
