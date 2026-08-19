@@ -37,3 +37,11 @@ design). Still to do, per
 - Thermal analysis
 - A validated safety-factor target (this pass used **SF ≥ 4 as a pass/fail check for this
   study only** — not yet an established, derived requirement)
+
+**2026-08-18 — validation-target pivot.** The SF 25.4 result above, read against the
+project's cost target, was judged over-engineered — see
+[`mechanical/cad/floatation/README.md`](../cad/floatation/README.md#cross-section-fit-test-print-and-a-validation-target-pivot--2026-08-18).
+Future studies target **impact survivability at controlled cost** (grounding, drops, ideally a
+boat strike) rather than continuing to push the static-load safety factor. FEA impact/drop-load
+simulation and bench impact tests on printed samples are planned:
+[SCO-71](https://linear.app/scout1/issue/SCO-71).

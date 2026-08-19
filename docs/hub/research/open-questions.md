@@ -14,6 +14,7 @@
 
 | Question | Why it matters | Owner | Status |
 |---|---|---|---|
+| Propeller-resistant mooring/tether line | ADR-0004 set the anchoring/mooring approach but left line material/diameter as a routine sizing decision; a boat crossing the line should ideally foul the propeller rather than cut the line and lose the buoy adrift | John (GENG) | Not started — [SCO-72](https://linear.app/scout1/issue/SCO-72) |
 | Real over-saltwater LoRa range at 915 MHz | Packet cadence and shore-station siting depend on it; datasheet ~2 km is line-of-sight in air | David (CSEN) | Literature-bounded, measure in Phase 4 — [`jovalekic-2018`](sources.md#lora--lpwan-over-seawater) (~22 km LOS upper bound), [`gutierrez-gomez-2021`](sources.md#lora--lpwan-over-seawater) (height-limited lower bound), [`parri-2019`](sources.md#lora--lpwan-over-seawater) (buoy-height offshore analog) |
 | Biofouling — mechanical mitigation for a 1+ year deployment | Flagged by stakeholders as a top risk; wipers / copper / reef-safe coatings unresolved | John (GENG) | Not started |
 | Turbidity → NTU calibration for SEN0189 | Decides whether the CSV ships raw ADC or calibrated NTU; also gates applying the [`sully-2020`](sources.md#turbidity-sedimentation--water-quality) Kd490 temp×turbidity interaction quantitatively | David (CSEN) | Not started — method available: formazin ladder + ISO 7027 IR nephelometry per [`droujko-2022`](sources.md#turbidity-sedimentation--water-quality) (port method + caveat, not coefficients) |
