@@ -3,10 +3,12 @@
 CAD models, hull design, enclosure drawings, mooring specifications, and field test records.
 
 > **Status:** All five CAD categories populated — floatation, electronics housing,
-> sensor/turbidity housing, stem, solar mount (40 STEP/PDF files total, see
+> sensor/turbidity housing, stem, solar mount (49 STEP/PDF files total, see
 > [`cad/README.md`](cad/README.md)). **Floatation family chosen 2026-08-17** — bolted wedge
 > variant with bottom caps ([`cad/floatation/README.md`](cad/floatation/README.md)), first FEA
-> pass complete ([`test/`](test/README.md)). Still open: buoyancy check + PDF-drawing
+> pass complete ([`test/`](test/README.md)). **Chassis cap + wedge cap added 2026-08-20**
+> (first pass at the [SCO-53](https://linear.app/scout1/issue/SCO-53) cable-gland cap revision;
+> cable routing and cap OD still open). Still open: buoyancy check + PDF-drawing
 > reconciliation on [SCO-48](https://linear.app/scout1/issue/SCO-48), housing dimensions
 > ([SCO-49](https://linear.app/scout1/issue/SCO-49)), chassis top section — sealing/service
 > access ([SCO-68](https://linear.app/scout1/issue/SCO-68)), mooring/sensor-string attachment

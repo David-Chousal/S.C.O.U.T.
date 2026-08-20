@@ -151,6 +151,48 @@ wedge or member samples, results cross-checked against each other. Tracked as
 [`mechanical/test/README.md`](../../test/README.md) and
 [`design-notes.md`](../../../docs/hub/design-notes.md).
 
+### Chassis cap + wedge cap added — 2026-08-20
+
+**New parts (John Ryan, modeled 2026-08-19).** Two new caps join the bolted wedge assembly:
+
+- **Chassis cap** — a central cap over the chassis cylinder that extends slightly over the top
+  of each wedge. Whether its outer diameter is **larger than the chassis** or **flush with the
+  chassis** is not yet decided.
+- **Wedge cap** — press-fits and is epoxied into the top of each wedge, sealing the foam cavity
+  before fill.
+
+**Assembly sequence idea.** Epoxy the wedge cap into each wedge first, then inject expanding
+flotation foam into the wedge. The small gap where the chassis cap overlaps the top of the
+wedge gives the foam somewhere to overflow as it expands — trimmed flush afterward for a clean
+fit. This is the same role **flash** plays in injection molding (the excess material a mold
+deliberately lets escape at a parting line or vent, trimmed off after the part sets) — a
+useful term if searching for how others handle this kind of controlled-overflow fit.
+
+**Open — cable routing.** Sensor/harness cables need to exit through the chassis cap and drape
+down the side of the buoy; not yet decided whether that's a **channel down the side of one
+wedge** or a **direct through-hole in the middle of one wedge**.
+
+**Open — solar mount interface.** Likely mounts directly to the chassis cap via screws, with
+slight clearance spacers between the buoy top and the solar panel. Not yet modeled against
+[`solar-mount/solar-mount.step`](../solar-mount/solar-mount.step) — see
+[SCO-54](https://linear.app/scout1/issue/SCO-54).
+
+**Files added:**
+
+- `chassis-floatation-bolted-v4-chassis.step` — updated chassis cylinder (heat-set insert
+  geometry revised from `-v3-part1`)
+- `chassis-floatation-bolted-v4-wedge.step` — wedge body (geometry unchanged from `-v3-part2`,
+  re-exported alongside the new caps as part of the same assembly pass)
+- `chassis-floatation-bolted-v4-wedge-bottom.step` — first CAD for the bottom cap under each
+  wedge described in "Bolted variant chosen" above (impact protection at the waterline)
+- `chassis-floatation-bolted-v4-wedge-cap.step` — the wedge cap described above
+- `chassis-floatation-bolted-v4-chassis-cap.step` — the chassis cap described above
+
+**Not yet closed on [SCO-53](https://linear.app/scout1/issue/SCO-53):** this is the first CAD
+pass at the cable-gland cap revision that issue tracks, but the cable-routing and OD questions
+above are still open, and the acceptance criteria (gland count fixed against the final sensor
+set, sealing approach, submersion test) aren't addressed yet.
+
 ## Outer Octagon — a separate, distinct design
 
 `outer-octagon-shell.step` and `outer-octagon-bottom.step` (Onshape: `With Tolerances > Outer
