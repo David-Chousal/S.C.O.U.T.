@@ -141,6 +141,29 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `faltinsen-1990` | Faltinsen, O.M. (1990). *Sea Loads on Ships and Offshore Structures.* Cambridge University Press. No DOI (book) | 🔒 | — | Catenary mooring-line statics derivation — [Buoy Structural Load Framework §8.2](../../engineering/buoy-structural-load-framework.md#82-lc-a--slack-mooring-calm-water-baseline-catenary-the-physically-correct-resting-state) |
 | `thenavalarch-catenary` | TheNavalArch. "Understanding how buoys affect the catenary of a mooring line" — technical article. [thenavalarch.com](https://thenavalarch.com/understanding-how-buoys-affect-the-catenary-of-a-mooring-line/) | 🔓 | — | Accessible worked derivation of the same catenary relations as `faltinsen-1990`, for a quicker read — [Buoy Structural Load Framework §8.2](../../engineering/buoy-structural-load-framework.md#82-lc-a--slack-mooring-calm-water-baseline-catenary-the-physically-correct-resting-state) |
 
+## FDM wall count vs. infill — structural strength
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `mazlan-2023` | Mazlan, Anas, Izmin & Abdullah (2023). "Effects of Infill Density, Wall Perimeter and Layer Height in Fabricating 3D Printing Products." *Materials (Basel)* 16(2):695. [doi](https://doi.org/10.3390/ma16020695) | 🔓 | — | **PLA specimens** (FEA + tensile testing) — wall perimeter, infill, and layer height all increase tensile elasticity, but simulated strength overestimated real parts by ~3×. General wall/infill tradeoff basis, extrapolated to PETG by principle (not verified for PETG specifically) — used 2026-08-21 for the [SCO-75](https://linear.app/scout1/issue/SCO-75) chassis wall/infill recommendation |
+| `ultimaker-infill-density` | UltiMaker. "3D printing infill density: Optimizing strength and speed" — knowledge base article. [ultimaker.com](https://ultimaker.com/learn/3d-printing-infill-density-optimizing-strength-and-speed/) | 🔓 | — | Vendor guidance: infill has diminishing strength returns relative to material/print-time cost — used 2026-08-21 for [SCO-75](https://linear.app/scout1/issue/SCO-75) |
+| `printstack3d-strength-formula` | PrintStack3D. "The Strength Formula: Optimizing Walls, Infill, and Orientation" — blog. [printstack3d.nl](https://printstack3d.nl/en/blog/maximize-3d-print-strength) | 🔓 | — | Quantified the 2→5 wall-loop (+60% strength/+20% material) vs. 20%→80% infill (+25% strength/+150% material) tradeoff cited in [SCO-75](https://linear.app/scout1/issue/SCO-75) — used 2026-08-21 |
+| `hubs-shell-infill-parameters` | Protolabs Network (Hubs). "What are the optimal shell and infill parameters for FDM 3D printing?" — knowledge base article. [hubs.com](https://www.hubs.com/knowledge-base/selecting-optimal-shell-and-infill-parameters-fdm-3d-printing/) | 🔓 | — | Confirms outer walls are the primary load path in FDM parts (behave like a hollow tube/I-beam); infill mainly braces walls against buckling — used 2026-08-21 for [SCO-75](https://linear.app/scout1/issue/SCO-75) |
+
+## PETG mechanical properties & print anisotropy
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `kumaresan-kanny-2025` | Kumaresan & Kanny (2025). "Advanced RSM-Driven Optimisation for Enhancing the Mechanical Performance of FDM-Printed PETG: A Correlated Microstructural and Mechanical Property Investigation." *Polymers* 17(23):3175. [doi](https://doi.org/10.3390/polym17233175) | 🔓 | — | PETG-specific process-parameter optimization (layer height, raster angle, etc.) — used 2026-08-21 to confirm the existing 0.20 mm layer height is already in PETG's favorable range for [SCO-75](https://linear.app/scout1/issue/SCO-75) |
+| `sciencedirect-layer-orientation-petg` | "Influence of layer orientation on the mechanical properties of fused deposition modelling using PLA and PETG." *ScienceDirect*. ❓ Paywalled — full author/year/DOI not yet confirmed (WebFetch returned 403) | ❓ | — | Cited for the finding that a 90° raster angle can cut flexural strength >40% for PETG — used 2026-08-21 to caveat that chassis print orientation matters as much as wall count in [SCO-75](https://linear.app/scout1/issue/SCO-75); citation needs verification before being treated as settled |
+
+## Threaded insert / heat-set boss design
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `sculpteo-insert-pullout` | Sculpteo. "Pull-out resistance of threaded inserts: Testing and Results" — design guideline. [sculpteo.com](https://www.sculpteo.com/en/3d-learning-hub/design-guidelines/pull-out-resistance-of-threaded-inserts-testing-and-results/) | 🔓 | — | Insert pull-out strength depends primarily on solid perimeters around the hole, not bulk infill — used 2026-08-21 for the insert-boss finding added to [SCO-77](https://linear.app/scout1/issue/SCO-77) |
+| `sovol3d-heat-set-inserts` | Sovol3D. "3D Printing with Heat-Set Inserts: Design Strong Screw Bosses That Last" — blog. [sovol3d.com](https://www.sovol3d.com/blogs/news/3d-printing-with-heat-set-inserts-design-strong-screw-bosses-that-last) | 🔓 | — | Boss diameter ≈2× insert knurl diameter, zero infill gaps inside the boss — used 2026-08-21 for [SCO-77](https://linear.app/scout1/issue/SCO-77) and the U-bolt boss spec on [SCO-75](https://linear.app/scout1/issue/SCO-75) |
+
 ## Maintenance
 
 - **Adding a source:** add a row to the right topic table, fill DOI + access, and — if you have
