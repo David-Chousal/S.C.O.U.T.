@@ -130,6 +130,17 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 ---
 
+## Structural / hydrodynamic loads (FEA)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `usace-cem` | U.S. Army Corps of Engineers. *Coastal Engineering Manual*, EM 1110-2-1100. [USACE publication](https://www.publications.usace.army.mil/USACE-Publications/Engineer-Manuals/) | 🔓 | — | Buoyancy/statics, linear wave theory, and breaking-wave criteria basis — [Buoy Structural Load Framework](../../engineering/buoy-structural-load-framework.md) |
+| `dnv-rp-c205` | DNV. *Recommended Practice DNV-RP-C205: Environmental Conditions and Environmental Loads.* [dnv.com](https://www.dnv.com/energy/standards-guidelines/dnv-rp-c205-environmental-conditions-and-environmental-loads/) | 🔓 | — | Morison equation `C_D`/`C_M` vs. Keulegan–Carpenter number — [Buoy Structural Load Framework §3.1](../../engineering/buoy-structural-load-framework.md#31-correction--how-to-actually-select-c_d-and-c_m-c_a-in-5) |
+| `sharqawy-2010` | Sharqawy, Lienhard & Zubair (2010). "Thermophysical properties of seawater: a review of existing correlations and data." *Desalination and Water Treatment* 16(1–3):354–380. [doi](https://doi.org/10.5004/dwt.2010.1079) | 🔓 | — | Seawater kinematic viscosity for the Reynolds-number lookup — exact table value not yet pulled, order-of-magnitude only — [Buoy Structural Load Framework §3.1](../../engineering/buoy-structural-load-framework.md#31-correction--how-to-actually-select-c_d-and-c_m-c_a-in-5) |
+| `wave-theory-selection` | "A guide for selecting periodic water wave theories — Le Méhauté (1976)'s graph revisited." *Coastal Engineering*. ❓ DOI to confirm | ❓ | — | Ursell-number wave-theory validity regions / breaking check — [Buoy Structural Load Framework §4.1](../../engineering/buoy-structural-load-framework.md#41-correction--check-the-design-wave-against-linear-theorys-validity-limits-before-trusting-these) |
+| `faltinsen-1990` | Faltinsen, O.M. (1990). *Sea Loads on Ships and Offshore Structures.* Cambridge University Press. No DOI (book) | 🔒 | — | Catenary mooring-line statics derivation — [Buoy Structural Load Framework §8.2](../../engineering/buoy-structural-load-framework.md#82-lc-a--slack-mooring-calm-water-baseline-catenary-the-physically-correct-resting-state) |
+| `thenavalarch-catenary` | TheNavalArch. "Understanding how buoys affect the catenary of a mooring line" — technical article. [thenavalarch.com](https://thenavalarch.com/understanding-how-buoys-affect-the-catenary-of-a-mooring-line/) | 🔓 | — | Accessible worked derivation of the same catenary relations as `faltinsen-1990`, for a quicker read — [Buoy Structural Load Framework §8.2](../../engineering/buoy-structural-load-framework.md#82-lc-a--slack-mooring-calm-water-baseline-catenary-the-physically-correct-resting-state) |
+
 ## Maintenance
 
 - **Adding a source:** add a row to the right topic table, fill DOI + access, and — if you have
