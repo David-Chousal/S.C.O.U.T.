@@ -31,8 +31,12 @@ Only one load case has been analyzed so far (static side load on the chosen floa
 design). Still to do, per
 [design-notes.md](../../docs/hub/design-notes.md):
 
-- Max expected loads calculated from first principles (not yet — the 300 N side load used so
-  far was a test input, not a derived design load)
+- Max expected loads calculated from first principles — **methodology now formalized** in
+  [Buoy Structural Load Framework](../../docs/engineering/buoy-structural-load-framework.md)
+  (corrected LC1–LC9 cases), but not yet run: several inputs are still open (mooring
+  scope/line weight, design wave values, final Cd/Cm/Ca coefficients — see the framework's
+  §12). The 300 N side load used in the 2026-08-17 study below was a test input, not a derived
+  design load.
 - FEA across additional planes/directions (top load, torsion, mooring-point pull)
 - Thermal analysis
 - A validated safety-factor target (this pass used **SF ≥ 4 as a pass/fail check for this
