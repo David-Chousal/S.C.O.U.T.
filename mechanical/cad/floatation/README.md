@@ -21,7 +21,7 @@ matching STEP exports:
 - `chassis-floatation-bolted-v4-chassis-cap.pdf` / `.step` — chassis cap
 
 These five drawings are the source data for the mass/buoyancy calculation in
-[Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-mass-and-buoyancy-budget.md).
+[Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md).
 
 These are PDF drawing exports only. Per
 [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats), CAD should also carry

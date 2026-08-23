@@ -4,11 +4,11 @@
 > with the reasoning behind each. **Provisional pending FEA** — derived from FDM/PETG
 > structural-print literature, not yet checked against real load data
 > ([SCO-73](https://linear.app/scout1/issue/SCO-73)). Feeds the effective-density calculations
-> in [Buoy Mass and Buoyancy Budget](buoy-mass-and-buoyancy-budget.md).
+> in [Buoy Mass and Buoyancy Budget](mass-and-buoyancy-budget.md).
 >
-> Part of the [Knowledge Hub](../hub/README.md)'s supporting engineering docs. Logged as a
-> decision in [`decision-log.md`](../hub/decision-log.md) (2026-08-21); canonical value in
-> [`facts.md`](../hub/facts.md#mechanical--deployment).
+> Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Logged as a
+> decision in [`decision-log.md`](../../hub/decision-log.md) (2026-08-21); canonical value in
+> [`facts.md`](../../hub/facts.md#mechanical--deployment).
 
 ---
 
@@ -20,7 +20,7 @@
 | Nozzle | 0.4 mm | Existing design basis |
 | Line width per wall | ~0.42 mm | Standard for a 0.4 mm nozzle |
 | Material | PETG | Existing design basis |
-| Print orientation | Chosen deliberately so the mooring load path runs within layers (XY), not across them (Z) — PETG is meaningfully anisotropic; a 90° raster/layer angle can cut flexural strength >40% | [Research Library → PETG mechanical properties](../hub/research/sources.md#petg-mechanical-properties--print-anisotropy) |
+| Print orientation | Chosen deliberately so the mooring load path runs within layers (XY), not across them (Z) — PETG is meaningfully anisotropic; a 90° raster/layer angle can cut flexural strength >40% | [Research Library → PETG mechanical properties](../../hub/research/sources.md#petg-mechanical-properties--print-anisotropy) |
 
 ## Per-part spec
 
@@ -43,7 +43,7 @@ buckling:
 - 2→5 wall loops: **+60% strength for +20% material**
 - Infill 20%→80%: **+25% strength for +150% material** (sharply diminishing returns)
 
-Full citations and what each was used for: [Research Library → FDM wall count vs. infill](../hub/research/sources.md#fdm-wall-count-vs-infill--structural-strength).
+Full citations and what each was used for: [Research Library → FDM wall count vs. infill](../../hub/research/sources.md#fdm-wall-count-vs-infill--structural-strength).
 
 ## Effective-density conversion
 
@@ -57,7 +57,7 @@ core_thickness      = t - solid_thickness
 effective_fraction  = (solid_thickness + core_thickness * infill%) / t
 ```
 
-Full worked application per part: [Buoy Mass and Buoyancy Budget §1](buoy-mass-and-buoyancy-budget.md#1-constants-and-shared-geometry).
+Full worked application per part: [Buoy Mass and Buoyancy Budget §1](mass-and-buoyancy-budget.md#1-constants-and-shared-geometry).
 
 ## Status
 

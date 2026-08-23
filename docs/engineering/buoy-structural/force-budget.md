@@ -1,13 +1,13 @@
 # Force Budget
 
 > **Summary** — **Living document.** Tracks the actual computed values for each FEA load case
-> defined in the [Buoy Structural Load Framework](buoy-structural-load-framework.md), as the
+> defined in the [Buoy Structural Load Framework](structural-load-framework.md), as the
 > inputs each one needs become available. The framework holds the equations and their
 > derivations; this doc is where real numbers get plugged in and kept current. Right now most
 > cases are still blocked — this file exists so the moment an input lands (environmental design
 > values, mooring hardware, component masses), the next case to compute is obvious.
 >
-> Part of the [Knowledge Hub](../hub/README.md)'s supporting engineering docs. Tracks
+> Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Tracks
 > [SCO-73](https://linear.app/scout1/issue/SCO-73).
 
 ## How to update this document
@@ -19,14 +19,14 @@
 3. Update the case's status in the table and re-check whether any *other* case is now
    unblocked as a result.
 4. If a computed load changes a structural conclusion, log it in
-   [`design-notes.md`](../hub/design-notes.md) and, if significant, add a
-   [`decision-log.md`](../hub/decision-log.md) row.
+   [`design-notes.md`](../../hub/design-notes.md) and, if significant, add a
+   [`decision-log.md`](../../hub/decision-log.md) row.
 
 ---
 
 ## What today's mass/buoyancy work unlocked
 
-[Buoy Mass and Buoyancy Budget](buoy-mass-and-buoyancy-budget.md) supplies the printed shell's
+[Buoy Mass and Buoyancy Budget](mass-and-buoyancy-budget.md) supplies the printed shell's
 `m_b` (part of it) and `V_disp` — real progress on inputs the framework's §1 table had marked
 `[M]` "not yet available until parts are finalized." **This does not fully resolve `m_b`** —
 electronics, battery, solar mount, and mooring hardware mass are still outside those five
@@ -36,7 +36,7 @@ lands.
 
 ## Load case status
 
-Mirrors the [Buoy Structural Load Framework §10](buoy-structural-load-framework.md#10-corrected-fea-load-cases)
+Mirrors the [Buoy Structural Load Framework §10](structural-load-framework.md#10-corrected-fea-load-cases)
 table exactly — same case numbering, same primary checks.
 
 | Case | Load | Status | Blocking input(s) | Result |
@@ -58,7 +58,7 @@ It would be easy to plug today's shell-only numbers (`m_b` ≈ 4.0 kg, `V_disp` 
 excludes electronics, battery, solar mount, and mooring hardware, all of which add weight
 without adding meaningful displacement, so a shell-only calculation would overstate the buoy's
 true net buoyancy and understate the load the shackle actually sees. Per
-[`facts.md`](../hub/facts.md)'s own rule ("a number with no source is a number someone will
+[`facts.md`](../../hub/facts.md)'s own rule ("a number with no source is a number someone will
 build a power budget on"), this stays blank until the real inputs exist rather than publish a
 number that looks final but isn't.
 

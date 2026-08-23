@@ -32,7 +32,7 @@ design). Still to do, per
 [design-notes.md](../../docs/hub/design-notes.md):
 
 - Max expected loads calculated from first principles — **methodology now formalized** in
-  [Buoy Structural Load Framework](../../docs/engineering/buoy-structural-load-framework.md)
+  [Buoy Structural Load Framework](../../docs/engineering/buoy-structural/structural-load-framework.md)
   (corrected LC1–LC9 cases), but not yet run: several inputs are still open (mooring
   scope/line weight, design wave values, final Cd/Cm/Ca coefficients — see the framework's
   §12). The 300 N side load used in the 2026-08-17 study below was a test input, not a derived

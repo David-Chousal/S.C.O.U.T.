@@ -17,7 +17,7 @@
 > guidance to weigh, not as verified fact.
 >
 > Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Related to
-> [Buoy Structural Load Framework](../buoy-structural-load-framework.md) (the U-bolt/mooring
+> [Buoy Structural Load Framework](../buoy-structural/structural-load-framework.md) (the U-bolt/mooring
 > load-path math this review's Action A1/A2 call for) and the floatation CAD history in
 > [`mechanical/cad/floatation/README.md`](../../../mechanical/cad/floatation/README.md).
 
