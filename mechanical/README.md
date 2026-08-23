@@ -8,8 +8,16 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > variant with bottom caps ([`cad/floatation/README.md`](cad/floatation/README.md)), first FEA
 > pass complete ([`test/`](test/README.md)). **Chassis cap + wedge cap added 2026-08-20**
 > (first pass at the [SCO-53](https://linear.app/scout1/issue/SCO-53) cable-gland cap revision;
-> cable routing and cap OD still open). Still open: buoyancy check + PDF-drawing
-> reconciliation on [SCO-48](https://linear.app/scout1/issue/SCO-48), housing dimensions
+> cable routing and cap OD still open). **Design panel review 2026-08-21** — architecture
+> confirmed, proceed to detailed design ([full write-up](../docs/engineering/reviews/buoy-preliminary-design-panel-review-2026-08.md)).
+> Dimensioned v4 drawings (wedge, wedge cap, wedge bottom, chassis, chassis cap) landed the
+> same day, giving a first-pass [mass/buoyancy budget](../docs/engineering/buoy-mass-and-buoyancy-budget.md)
+> (~4.0 kg shell, ~352 N net reserve buoyancy) and confirming the buoy's overall diameter at
+> 18 in. Print-structure spec (walls/infill per part) now lives in its own
+> [Print Settings](../docs/engineering/print-settings.md) doc; the actual FEA load values will
+> land in [Force Budget](../docs/engineering/force-budget.md) as their inputs arrive. Still
+> open: buoyancy check + PDF-drawing reconciliation on
+> [SCO-48](https://linear.app/scout1/issue/SCO-48), housing dimensions
 > ([SCO-49](https://linear.app/scout1/issue/SCO-49)), chassis top section — sealing/service
 > access ([SCO-68](https://linear.app/scout1/issue/SCO-68)), mooring/sensor-string attachment
 > hardware ([SCO-69](https://linear.app/scout1/issue/SCO-69)), and the items below.

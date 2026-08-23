@@ -15,6 +15,14 @@
 > Part of the [Knowledge Hub](../hub/README.md)'s supporting engineering docs. Feeds the FEA
 > work tracked on [SCO-71](https://linear.app/scout1/issue/SCO-71) (impact survivability) and
 > the buoyancy check on [SCO-48](https://linear.app/scout1/issue/SCO-48).
+>
+> **2026-08-21 update** — the `m_b`/`V_disp` inputs below (tagged `[M]`, "not yet available
+> until parts are finalized") are now partially available: [Buoy Mass and Buoyancy Budget](buoy-mass-and-buoyancy-budget.md)
+> computes them for the printed shell from dimensioned drawings (electronics/battery/mooring
+> hardware still pending [SCO-70](https://linear.app/scout1/issue/SCO-70)). The actual computed
+> values for each load case in [§10](#10-corrected-fea-load-cases) are tracked as they become
+> available in [Force Budget](force-budget.md), not in this doc — this one stays the equations
+> and their derivations.
 
 ---
 

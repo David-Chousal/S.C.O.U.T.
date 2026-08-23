@@ -31,6 +31,7 @@ stands. **Start here for any "what's true right now?" question.** Updated on eve
 | [Canonical Facts](hub/facts.md) | The values every doc must agree with (the anti-drift keystone) |
 | [Decision Log](hub/decision-log.md) | Reverse-chron ledger of every decision, linking to its full record |
 | [Status](hub/status.md) + [Journal](hub/journal/) | Current subsystem state + dated history |
+| [Design Notes](hub/design-notes.md) | Design-iteration narratives — what concepts were tried for a subsystem, and why |
 | [Source Registry](hub/research/sources.md) | Every external work cited, with access status and reading notes |
 | [Open Research Questions](hub/research/open-questions.md) | What we still need to learn, and what's been asked |
 
@@ -55,6 +56,11 @@ Technical design and component specification.
 | [On-Board CSV Data Schema](engineering/data-schema.md) | The microSD log format — columns, units, timestamps; the firmware ↔ shore-station/analytics contract |
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |
+| [Buoy Structural Load Framework](engineering/buoy-structural-load-framework.md) | Formalized force/moment equations for FEA structural load cases on the hull, chassis, and mooring shackle — provenance-tagged, corrected from a drafted load summary |
+| [Buoy Mass and Buoyancy Budget](engineering/buoy-mass-and-buoyancy-budget.md) | Living doc: weight, displacement, and buoyancy per printed part, calculated from dimensioned drawings with a slot for real slicer weights as parts are printed |
+| [Force Budget](engineering/force-budget.md) | Living doc: tracks the load framework's actual computed load-case values as their inputs become available |
+| [Print Settings](engineering/print-settings.md) | Canonical wall-count/infill spec per printed part, with the FDM-literature rationale |
+| [Design Panel Reviews](engineering/reviews/) | Panel-review write-ups (raw source PDF + Markdown transcription) of subsystem architecture — currently the [buoy preliminary design panel review](engineering/reviews/buoy-preliminary-design-panel-review-2026-08.md) |
 
 ## Research
 
