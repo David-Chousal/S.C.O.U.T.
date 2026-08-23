@@ -2,7 +2,32 @@
 
 CAD models for the buoy's hull and flotation structure.
 
-## Drawings
+## `current/` — the active bolted-wedge v4 design
+
+Everything else in this folder is historical iteration (v1–v9, Outer Octagon, the pre-caps v3
+bolted/integrated pass) — see [Design iteration history](#design-iteration-history) below.
+**[`current/`](current/) holds only the design that's actually being built right now**, so
+there's no ambiguity about which files in this folder to open. Moved here 2026-08-21 once
+dimensioned drawings existed for the whole set.
+
+Dimensioned drawings for the **current bolted-wedge v4 design** (2026-08-22), paired with their
+matching STEP exports:
+
+- [`current/chassis-floatation-bolted-v4-wedge.pdf`](current/chassis-floatation-bolted-v4-wedge.pdf) / `.step` — the main wedge shell
+- [`current/chassis-floatation-bolted-v4-wedge-cap.pdf`](current/chassis-floatation-bolted-v4-wedge-cap.pdf) / `.step` — wedge cap
+- [`current/chassis-floatation-bolted-v4-wedge-bottom.pdf`](current/chassis-floatation-bolted-v4-wedge-bottom.pdf) / `.step` — wedge bottom
+- [`current/chassis-floatation-bolted-v4-chassis.pdf`](current/chassis-floatation-bolted-v4-chassis.pdf) / `.step` — central chassis body
+- [`current/chassis-floatation-bolted-v4-chassis-cap.pdf`](current/chassis-floatation-bolted-v4-chassis-cap.pdf) / `.step` — chassis cap
+
+These five drawings are the source data for the mass/buoyancy calculation in
+[Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md).
+
+**When a newer design supersedes this one:** move `current/`'s contents out to a version-stamped
+name at the top level of this folder (matching the `-v3`/`-v9` pattern already used for history),
+then move the new design's files into a fresh `current/`. Don't let `current/` silently become
+stale — the whole point of the name is that it's always trustworthy.
+
+## Drawings (historical)
 
 2D drawing exports of the three-part flotation body (v1–v9 concept, superseded — kept as
 history, see [design-notes.md](../../../docs/hub/design-notes.md)):
@@ -11,21 +36,10 @@ history, see [design-notes.md](../../../docs/hub/design-notes.md)):
 - `floatation-shell.pdf` — mid shell
 - `floatation-bottom.pdf` — bottom cap
 
-Dimensioned drawings for the **current bolted-wedge v4 design** (2026-08-22), paired with their
-matching STEP exports:
-
-- `chassis-floatation-bolted-v4-wedge.pdf` / `.step` — the main wedge shell
-- `chassis-floatation-bolted-v4-wedge-cap.pdf` / `.step` — wedge cap
-- `chassis-floatation-bolted-v4-wedge-bottom.pdf` / `.step` — wedge bottom
-- `chassis-floatation-bolted-v4-chassis.pdf` / `.step` — central chassis body
-- `chassis-floatation-bolted-v4-chassis-cap.pdf` / `.step` — chassis cap
-
-These five drawings are the source data for the mass/buoyancy calculation in
-[Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md).
-
-These are PDF drawing exports only. Per
+These are PDF drawing exports only, with no matching STEP export — unlike `current/`'s
+drawings, which are paired. Per
 [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats), CAD should also carry
-its **native source + a STEP export**; add those alongside these drawings when available.
+its **native source + a STEP export**; these predate that being consistently followed.
 
 ## Design iteration history
 
@@ -192,14 +206,14 @@ slight clearance spacers between the buoy top and the solar panel. Not yet model
 
 **Files added:**
 
-- `chassis-floatation-bolted-v4-chassis.step` — updated chassis cylinder (heat-set insert
+- `current/chassis-floatation-bolted-v4-chassis.step` — updated chassis cylinder (heat-set insert
   geometry revised from `-v3-part1`)
-- `chassis-floatation-bolted-v4-wedge.step` — wedge body (geometry unchanged from `-v3-part2`,
+- `current/chassis-floatation-bolted-v4-wedge.step` — wedge body (geometry unchanged from `-v3-part2`,
   re-exported alongside the new caps as part of the same assembly pass)
-- `chassis-floatation-bolted-v4-wedge-bottom.step` — first CAD for the bottom cap under each
+- `current/chassis-floatation-bolted-v4-wedge-bottom.step` — first CAD for the bottom cap under each
   wedge described in "Bolted variant chosen" above (impact protection at the waterline)
-- `chassis-floatation-bolted-v4-wedge-cap.step` — the wedge cap described above
-- `chassis-floatation-bolted-v4-chassis-cap.step` — the chassis cap described above
+- `current/chassis-floatation-bolted-v4-wedge-cap.step` — the wedge cap described above
+- `current/chassis-floatation-bolted-v4-chassis-cap.step` — the chassis cap described above
 
 **Not yet closed on [SCO-53](https://linear.app/scout1/issue/SCO-53):** this is the first CAD
 pass at the cable-gland cap revision that issue tracks, but the cable-routing and OD questions
