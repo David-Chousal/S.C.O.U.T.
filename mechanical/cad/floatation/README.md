@@ -4,11 +4,24 @@ CAD models for the buoy's hull and flotation structure.
 
 ## Drawings
 
-2D drawing exports of the three-part flotation body:
+2D drawing exports of the three-part flotation body (v1–v9 concept, superseded — kept as
+history, see [design-notes.md](../../../docs/hub/design-notes.md)):
 
 - `floatation-top.pdf` — top cap
 - `floatation-shell.pdf` — mid shell
 - `floatation-bottom.pdf` — bottom cap
+
+Dimensioned drawings for the **current bolted-wedge v4 design** (2026-08-22), paired with their
+matching STEP exports:
+
+- `chassis-floatation-bolted-v4-wedge.pdf` / `.step` — the main wedge shell
+- `chassis-floatation-bolted-v4-wedge-cap.pdf` / `.step` — wedge cap
+- `chassis-floatation-bolted-v4-wedge-bottom.pdf` / `.step` — wedge bottom
+- `chassis-floatation-bolted-v4-chassis.pdf` / `.step` — central chassis body
+- `chassis-floatation-bolted-v4-chassis-cap.pdf` / `.step` — chassis cap
+
+These five drawings are the source data for the mass/buoyancy calculation in
+[Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-mass-and-buoyancy-budget.md).
 
 These are PDF drawing exports only. Per
 [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats), CAD should also carry
