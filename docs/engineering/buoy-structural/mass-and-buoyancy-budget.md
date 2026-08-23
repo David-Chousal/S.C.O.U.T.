@@ -17,7 +17,8 @@
 >
 > **Source drawings** — `chassis-floatation-bolted-v4-{wedge,wedge-cap,wedge-bottom,chassis,
 > chassis-cap}.pdf` (John Ryan, dated 2026-08-22), committed alongside the matching STEP files
-> in [`mechanical/cad/floatation/`](../../../mechanical/cad/floatation/).
+> in [`mechanical/cad/floatation/current/`](../../../mechanical/cad/floatation/current/) — the
+> subfolder holding only the design actually being built right now.
 >
 > Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Answers
 > [SCO-74](https://linear.app/scout1/issue/SCO-74). Does **not** answer
