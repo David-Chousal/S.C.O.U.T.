@@ -83,15 +83,23 @@ This is a simplification (real slicers don't behave perfectly linearly), which i
 
 ## 2. Calibration against the one real data point
 
-[`facts.md`](../../hub/facts.md#mechanical--deployment) already records a **slicer-measured** wedge
-weight of **~300 g** (2026-08-18) — real sliced geometry, not a hand calculation. Running this
-doc's method on the Wedge shell (§3) gives **558 g**, about **1.86× high**.
+**Updated 2026-08-21 — superseded the earlier anchor.** The original ~300 g slicer figure
+(2026-08-18) predates the formal [print-structure decision](../../hub/decision-log.md)
+(2026-08-21) and was very likely sliced with different settings than the wedge family's
+now-decided 3–4 walls / ~15% gyroid spec — it's not a like-for-like comparison anymore.
 
-Rather than present a method I know overshoots, the Wedge's own weight uses the slicer's 300 g
-directly, and the **1.86× factor is applied to the other four parts**, which have no slicer
-data yet. Every "calibrated" weight below is `raw ÷ 1.86`, tagged **[C]**. Re-run this the
-moment real slicer weights exist for the other parts — the calibration factor is a stand-in,
-not a law of physics.
+A fresh slice of a single Wedge shell, run with the current decided print settings and PETG,
+gives **474.58 g** (Bambu/Orca-style slicer output — 155.36 m filament, 11h8m print time).
+Running this doc's method on the Wedge shell (§3) gives **559 g**, about **1.18× high** — much
+closer than the old comparison, exactly what you'd expect since the settings now actually
+match.
+
+The Wedge's own weight uses this new **474.58 g** measurement directly, and the **1.18× factor
+is applied to the other three parts without their own slicer data yet** (Wedge Cap, Wedge
+Bottom — Chassis and Chassis Cap are a different, near-solid geometry the wedge-shell
+calibration doesn't transfer to; they stay raw). Every "calibrated" weight below is
+`raw ÷ 1.178`, tagged **[C]**. Re-run this the moment real slicer weights exist for the other
+parts — the calibration factor is a stand-in, not a law of physics.
 
 ## 3. Wedge (shell)
 
@@ -113,8 +121,8 @@ Effective solid fraction (§1 method, 3.5 walls, 0.25 in wall, 15% infill) = **0
 | Result | Value | Tag |
 |---|---|---|
 | Weight (raw geometric) | 559 g | [A] |
-| **Weight (used)** | **300 g** | **[M] — slicer, 2026-08-18** |
-| Weight (measured, scale) | — *pending* | [M] |
+| Weight (superseded) | ~~300 g~~ — 2026-08-18, different/undecided print settings, no longer comparable | [M] |
+| **Weight (used)** | **474.58 g** | **[M] — slicer, 2026-08-21, current decided print settings** |
 | Cavity volume (empty shell, before foam) | envelope − wall = 304.8 − 49.4 = 255.4 in³ = **4.185 L** | [A] (depends on the wall-thickness reading; combined with Wedge Bottom's cavity in [§6](#6-foam-fill-wedge--wedge-bottom-cavities)) |
 | Displacement (own footprint) | 4.996 L | [M] |
 | Buoyant force (own footprint) | 4.996 L × 1.025 kg/L × 9.81 = **50.3 N** | [X] (Archimedes) |
@@ -134,7 +142,7 @@ cm³` → **weight (raw) = 77 g**.
 | Result | Value | Tag |
 |---|---|---|
 | Weight (raw) | 77 g | [A] |
-| **Weight (calibrated, ÷1.86)** | **41 g** | [C] |
+| **Weight (calibrated, ÷1.178)** | **65.4 g** | [C] |
 | Weight (measured, scale) | — *pending* | [M] |
 
 ## 5. Wedge Bottom
@@ -157,7 +165,7 @@ effective solid `= 234 × 0.544 = 127 cm³` → **weight (raw) = 161 g**.
 | Result | Value | Tag |
 |---|---|---|
 | Weight (raw) | 161 g | [A] |
-| **Weight (calibrated, ÷1.86)** | **87 g** | [C] |
+| **Weight (calibrated, ÷1.178)** | **136.7 g** | [C] |
 | Weight (measured, scale) | — *pending* | [M] |
 | Cavity volume (empty shell, before foam) | envelope − wall = 686 − 234 = **452 cm³ = 0.452 L** | [A] — combined with the Wedge's own cavity in [§6](#6-foam-fill-wedge--wedge-bottom-cavities) |
 | Displacement | 0.686 L | [A] |
@@ -274,19 +282,20 @@ each part's own displacement:
 
 | | Weight | Displacement | Buoyant force | Net (buoyancy − weight) |
 |---|---|---|---|---|
-| One wedge module (wedge + cap + bottom + foam) | 300 + 41 + 87 + 148 = **576 g** | 4.996 + 0.686 = **5.682 L** | 57.1 N | **+51.5 N** |
-| **All 6 wedge modules** | 3.46 kg | 34.09 L | 342.8 N | **+308.9 N** |
+| One wedge module (wedge + cap + bottom + foam) | 474.58 + 65.4 + 136.7 + 148 = **824.7 g** | 4.996 + 0.686 = **5.682 L** | 57.1 N | **+49.0 N** |
+| **All 6 wedge modules** | 4.95 kg | 34.09 L | 342.8 N | **+294.3 N** |
 | Chassis + chassis cap | 0.544 kg | 4.841 L | 48.7 N | **+43.4 N** |
-| **Whole shell system** | **4.00 kg** (8.8 lb) | **38.9 L** | **391.4 N** | **+352.2 N (≈35.9 kgf / 79.2 lbf)** |
+| **Whole shell system** | **5.49 kg** (12.1 lb) | **38.9 L** | **391.4 N** | **+337.5 N (≈34.4 kgf / 75.9 lbf)** |
 
-**What this means:** the printed shell + foam system alone can carry ~36 kg of everything
+**What this means:** the printed shell + foam system alone can carry ~34 kg of everything
 else — electronics, battery, solar mount, mooring hardware — before the buoy goes neutrally
-buoyant. That's a large margin relative to a realistic payload (battery + electronics is
-plausibly a few kg), consistent with the 2026-08-18 finding that the floatation FEA safety
-factor (25.4 against a target of 4) reads as over-engineered — now corroborated from the
-buoyancy side as well as the structural side. Separately, [§6](#6-foam-fill-wedge--wedge-bottom-cavities)
-shows the foam alone (shell fully gone) still provides ~28 kgf net across all six wedges — the
-quantified version of the "a cracked wedge should retain useful buoyancy" design intent.
+buoyant. Still a large margin relative to a realistic payload (battery + electronics is
+plausibly a few kg), though a noticeably smaller one than the earlier ~36 kg estimate — the
+real wedge weight came in higher once measured against the actual decided print settings, not
+lower. Separately, [§6](#6-foam-fill-wedge--wedge-bottom-cavities) shows the foam alone (shell
+fully gone) still provides ~28 kgf net across all six wedges — the quantified version of the
+"a cracked wedge should retain useful buoyancy" design intent, unaffected by this update since
+it depends on cavity volume, not shell weight.
 
 ## 10. What this doesn't unlock yet
 
@@ -307,8 +316,9 @@ mooring scope/line weight, independent of anything in this doc.
 - **Chassis wall thickness** — not dimensioned on the drawing; used the decided print spec
   as a stand-in. Should be an explicit drawing dimension once [SCO-75](https://linear.app/scout1/issue/SCO-75)
   finalizes the chassis print structure.
-- **Calibration factor (1.86×)** — derived from one data point (the Wedge). Get real slicer
-  weights for the Wedge Cap, Wedge Bottom, Chassis, and Chassis Cap to replace it with
-  per-part numbers.
+- **Calibration factor (1.178×)** — derived from one data point (the Wedge, re-anchored
+  2026-08-21 to a slice run with the actual decided print settings). Get real slicer weights
+  for the Wedge Cap and Wedge Bottom to replace the shared factor with per-part numbers; the
+  Chassis and Chassis Cap need their own anchor entirely (different, near-solid geometry).
 - **Electronics, battery, solar mount, mooring hardware mass** — none of this is in these five
   drawings; still blocked on [SCO-70](https://linear.app/scout1/issue/SCO-70).
