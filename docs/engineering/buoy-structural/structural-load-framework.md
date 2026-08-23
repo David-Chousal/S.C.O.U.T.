@@ -9,15 +9,15 @@
 >
 > **Source document** — Derived from a ChatGPT-drafted load-calculation summary
 > (`SCOUT_Buoy_FEA_Load_Summary.pdf`, John Ryan, 2026-08-20). Reviewed against
-> [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) and standard references;
+> [ADR-0004](../../decisions/0004-reef-safe-anchoring-and-mooring.md) and standard references;
 > corrections and rationale are called out inline as **Correction** notes.
 >
-> Part of the [Knowledge Hub](../hub/README.md)'s supporting engineering docs. Feeds the FEA
+> Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Feeds the FEA
 > work tracked on [SCO-71](https://linear.app/scout1/issue/SCO-71) (impact survivability) and
 > the buoyancy check on [SCO-48](https://linear.app/scout1/issue/SCO-48).
 >
 > **2026-08-21 update** — the `m_b`/`V_disp` inputs below (tagged `[M]`, "not yet available
-> until parts are finalized") are now partially available: [Buoy Mass and Buoyancy Budget](buoy-mass-and-buoyancy-budget.md)
+> until parts are finalized") are now partially available: [Buoy Mass and Buoyancy Budget](mass-and-buoyancy-budget.md)
 > computes them for the printed shell from dimensioned drawings (electronics/battery/mooring
 > hardware still pending [SCO-70](https://linear.app/scout1/issue/SCO-70)). The actual computed
 > values for each load case in [§10](#10-corrected-fea-load-cases) are tracked as they become
@@ -63,7 +63,7 @@ formulas but never listed here.
 | `U_wind` | Design wind speed | [E] |
 | `d_m`, `L_m` | Mooring-line diameter and submerged length | [M] |
 | `S` | Mooring scope (total line length, anchor to buoy) | [M] — **added; required for the corrected §8 catenary baseline** |
-| `w_m` | Mooring line submerged unit weight (weight per unit length in water) | [M]/[L] — depends on chosen line (synthetic rope vs. chain, [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md)); rope is near-neutrally buoyant, chain is not — **added** |
+| `w_m` | Mooring line submerged unit weight (weight per unit length in water) | [M]/[L] — depends on chosen line (synthetic rope vs. chain, [ADR-0004](../../decisions/0004-reef-safe-anchoring-and-mooring.md)); rope is near-neutrally buoyant, chain is not — **added** |
 | `C_D`, `C_M`, `C_A` | Hydrodynamic drag, inertia, and added-mass coefficients | [L] — see §3.1 for how to select these, not just "appropriate cylinder data" |
 | `r_CP,i` | Lever arm from shackle to the resultant of *each* lateral load component `i` (current, wave, wind — not one shared value) | [M] — **corrected from a single shared `r_CP`; see §9** |
 
@@ -101,13 +101,13 @@ lookup:
 - **Reynolds number** (steady current flow): `Re = U_c D / nu`, where `nu` is the kinematic
   viscosity of seawater. Use **nu ≈ 1.0–1.1 × 10⁻⁶ m²/s** at ~20 °C, ~35 g/kg salinity — order
   of magnitude confirmed against Sharqawy et al. (2010)
-  ([`sharqawy-2010`](../hub/research/sources.md#structural--hydrodynamic-loads-fea)); **pull the
+  ([`sharqawy-2010`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea)); **pull the
   exact table value for the final report** rather than citing this range as final — flagged
   **[A]** until then.
 - **Keulegan–Carpenter number** (oscillatory wave flow): `KC = u_m T / D`, where `u_m` is the
   wave-induced horizontal velocity amplitude at the depth of interest (from §4's `u_w`). Smooth
   circular-cylinder `C_D`/`C_M` vs. KC curves are tabulated in DNV-RP-C205
-  ([`dnv-rp-c205`](../hub/research/sources.md#structural--hydrodynamic-loads-fea)) — the standard
+  ([`dnv-rp-c205`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea)) — the standard
   offshore-engineering source, and should be cited directly for whatever `C_D`, `C_M` values go
   in the final report, not read off a generic steady-flow "cylinder drag" table. Steady-flow and
   oscillatory-flow coefficients are genuinely different regimes; using a steady-flow `C_D` for the
@@ -116,7 +116,7 @@ lookup:
 
 **Open item:** exact `C_D`, `C_M`, `C_A` values cannot be finalized until `D`, `U_c`, `H`, `T`
 are set — this is why they stay **[L]**-tagged placeholders here rather than numbers. Tracked in
-[open-questions.md](../hub/research/open-questions.md).
+[open-questions.md](../../hub/research/open-questions.md).
 
 ---
 
@@ -137,7 +137,7 @@ a_w(z,t) = (H omega^2 / 2)[cosh(k(z+d))/sinh(kd)] sin(kx - omega t)          [W]
 
 Linear wave theory assumes small-amplitude, non-breaking waves. It was applied here with no
 validity check, which matters specifically for SCOUT: the deployment depth is 2–8 m
-([`facts.md`](../hub/facts.md)), shallow water directly adjacent to a reef — exactly where storm
+([`facts.md`](../../hub/facts.md)), shallow water directly adjacent to a reef — exactly where storm
 waves are most likely to shoal and steepen toward breaking, and exactly where linear theory is
 weakest.
 
@@ -146,7 +146,7 @@ weakest.
 1. **Theory selection via Ursell number:** `Ur = H L^2 / d^3`. A large `Ur` in shallow water
    means linear theory is a poor fit and a higher-order theory (Stokes, stream-function) should
    replace it — this is the standard criterion in wave-theory selection guidance
-   ([`wave-theory-selection`](../hub/research/sources.md#structural--hydrodynamic-loads-fea)) [L].
+   ([`wave-theory-selection`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea)) [L].
 2. **Breaking-limit check (Miche criterion):** `H_max approximately 0.142 L tanh(k d)`. If the
    chosen design `H` exceeds this at the site depth, the wave has already broken before reaching
    the buoy and linear kinematics no longer apply — a different (breaking-wave/slamming) load
@@ -262,7 +262,7 @@ pressure boundaries — never as a point load. No correction needed; this was al
 
 The source draft's static case (`F_net,static = F_B - W`, described as what "a nearly vertical
 mooring sees") models a taut vertical line, where the full excess buoyancy shows up directly as
-line tension. But [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) explicitly
+line tension. But [ADR-0004](../../decisions/0004-reef-safe-anchoring-and-mooring.md) explicitly
 sites the anchor "with enough **swing radius** that the mooring line cannot drag across or
 agitate the reef through the tide/current cycle" — that describes a slack/catenary mooring, not
 a taut one. Under a slack scope, calm-water tension is governed by the line's own catenary
@@ -274,9 +274,9 @@ tension. Two corrected cases replace the single original one:
 ### 8.2 LC-A — Slack-mooring calm-water baseline (catenary, the physically correct resting state)
 
 For a line hanging under its own submerged weight (standard mooring catenary — see Faltinsen
-(1990) [`faltinsen-1990`](../hub/research/sources.md#structural--hydrodynamic-loads-fea) or the
+(1990) [`faltinsen-1990`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea) or the
 accessible derivation at
-[`thenavalarch-catenary`](../hub/research/sources.md#structural--hydrodynamic-loads-fea)):
+[`thenavalarch-catenary`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea)):
 
 ```
 y(x) - y0 = c cosh((x - x0) / c),    c = T_H / w_m           [X]  catenary form
@@ -291,7 +291,7 @@ the seabed and buoy-end tension low.
 **This case cannot be evaluated numerically yet** — it needs the actual chosen scope `S` and
 line unit weight `w_m`, neither of which is finalized (mooring hardware CAD hasn't started,
 [SCO-17](https://linear.app/scout1/issue/SCO-17) consequences). Tracked as an open input in
-[open-questions.md](../hub/research/open-questions.md). Treat as **informational** until then —
+[open-questions.md](../../hub/research/open-questions.md). Treat as **informational** until then —
 it's the physically correct resting state, but not yet the number to run in FEA.
 
 ### 8.3 LC-B — Upper-bound vertical tension (taut-line assumption, kept as a conservative structural check)
@@ -399,7 +399,7 @@ result, or conservative assumption.
 
 ## 12. Open items before real numbers can be run
 
-Tracked in full in [open-questions.md](../hub/research/open-questions.md):
+Tracked in full in [open-questions.md](../../hub/research/open-questions.md):
 
 1. **Mooring scope `S` and line unit weight `w_m`** — blocks §8.2's catenary baseline; depends on
    finalizing mooring hardware ([SCO-17](https://linear.app/scout1/issue/SCO-17)).
@@ -415,22 +415,22 @@ Tracked in full in [open-questions.md](../hub/research/open-questions.md):
 ## 13. References
 
 - U.S. Army Corps of Engineers. *Coastal Engineering Manual*, EM 1110-2-1100 —
-  [`usace-cem`](../hub/research/sources.md#structural--hydrodynamic-loads-fea). Buoyancy/statics,
+  [`usace-cem`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea). Buoyancy/statics,
   linear wave theory, and breaking-wave criteria basis.
 - DNV. *Recommended Practice DNV-RP-C205: Environmental Conditions and Environmental Loads* —
-  [`dnv-rp-c205`](../hub/research/sources.md#structural--hydrodynamic-loads-fea). Morison
+  [`dnv-rp-c205`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea). Morison
   equation, `C_D`/`C_M` vs. Keulegan–Carpenter number.
 - Sharqawy, M.H., Lienhard, J.H., Zubair, S.M. (2010). "Thermophysical properties of seawater: a
   review of existing correlations and data." *Desalination and Water Treatment*, 16(1–3):354–380.
   [doi](https://doi.org/10.5004/dwt.2010.1079) —
-  [`sharqawy-2010`](../hub/research/sources.md#structural--hydrodynamic-loads-fea). Seawater
+  [`sharqawy-2010`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea). Seawater
   kinematic viscosity for Reynolds-number calculation.
 - "A guide for selecting periodic water wave theories — Le Méhauté (1976)'s graph revisited." —
-  [`wave-theory-selection`](../hub/research/sources.md#structural--hydrodynamic-loads-fea). Ursell
+  [`wave-theory-selection`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea). Ursell
   number / wave-theory validity regions.
 - Faltinsen, O.M. (1990). *Sea Loads on Ships and Offshore Structures*. Cambridge University
-  Press — [`faltinsen-1990`](../hub/research/sources.md#structural--hydrodynamic-loads-fea).
+  Press — [`faltinsen-1990`](../../hub/research/sources.md#structural--hydrodynamic-loads-fea).
   Catenary mooring-line statics.
 
 Full metadata (access status, links) in the
-[Source Registry](../hub/research/sources.md#structural--hydrodynamic-loads-fea).
+[Source Registry](../../hub/research/sources.md#structural--hydrodynamic-loads-fea).

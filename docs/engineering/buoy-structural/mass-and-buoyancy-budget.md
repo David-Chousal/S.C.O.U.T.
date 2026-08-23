@@ -6,7 +6,7 @@
 > in that part's table with the real slicer/scale weight (there's a **Measured** row waiting in
 > each part's table) and re-run the totals in [§8](#8-aggregate--printed-shell-system). Provides
 > the `m_b` and `V_disp` inputs the
-> [Buoy Structural Load Framework](buoy-structural-load-framework.md) has been waiting on — see
+> [Buoy Structural Load Framework](structural-load-framework.md) has been waiting on — see
 > the companion [Force Budget](force-budget.md) for how those loads get resolved once
 > environmental values are chosen. Print settings (walls/infill) referenced here have their own
 > canonical spec in [Print Settings](print-settings.md).
@@ -17,9 +17,9 @@
 >
 > **Source drawings** — `chassis-floatation-bolted-v4-{wedge,wedge-cap,wedge-bottom,chassis,
 > chassis-cap}.pdf` (John Ryan, dated 2026-08-22), committed alongside the matching STEP files
-> in [`mechanical/cad/floatation/`](../../mechanical/cad/floatation/).
+> in [`mechanical/cad/floatation/`](../../../mechanical/cad/floatation/).
 >
-> Part of the [Knowledge Hub](../hub/README.md)'s supporting engineering docs. Answers
+> Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Answers
 > [SCO-74](https://linear.app/scout1/issue/SCO-74). Does **not** answer
 > [SCO-73](https://linear.app/scout1/issue/SCO-73) (FEA load cases) — those still need
 > environmental design values (`H`, `T`, current, wind) that this doc doesn't touch; see
@@ -35,13 +35,13 @@
    and re-apply to any part that still only has a calculated estimate.
 4. Re-run [§9](#9-aggregate--printed-shell-system)'s totals with the updated numbers.
 5. If a part's real weight changes the overall reserve-buoyancy conclusion, log that in
-   [`design-notes.md`](../hub/design-notes.md) and update [`facts.md`](../hub/facts.md).
+   [`design-notes.md`](../../hub/design-notes.md) and update [`facts.md`](../../hub/facts.md).
 
 ---
 
 ## 0. Provenance legend
 
-Same convention as the [Buoy Structural Load Framework](buoy-structural-load-framework.md#0-provenance-legend):
+Same convention as the [Buoy Structural Load Framework](structural-load-framework.md#0-provenance-legend):
 
 | Tag | Meaning |
 |---|---|
@@ -57,14 +57,14 @@ Same convention as the [Buoy Structural Load Framework](buoy-structural-load-fra
 |---|---|---|
 | PETG density | 1.27 g/cm³ | [L] |
 | Seawater density | 1.025 g/cm³ (1025 kg/m³) | [L] |
-| Flotation foam density | 0.032 g/cm³ (2 lb/ft³, generic closed-cell 2-part marine PU) | **[A] — placeholder.** No product is specified yet ([review §11](reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)); swap this in the moment a product is chosen |
+| Flotation foam density | 0.032 g/cm³ (2 lb/ft³, generic closed-cell 2-part marine PU) | **[A] — placeholder.** No product is specified yet ([review §11](../reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)); swap this in the moment a product is chosen |
 | Nozzle line width | 0.42 mm/wall pass | [A] |
 | Sector angle per wedge | 60° (π/3 rad) | [X] — 6 wedges tile 360° |
 | Outer radius `R_outer` | 9.000 in | [M] — consistent across the Wedge, Wedge Cap, and Wedge Bottom drawings |
 | Inner radius `R_inner` (chassis interface) | 2.875 in — chassis rim OD (Ø5.750) ÷ 2 | [M] |
 
 **Resolves a review open item:** `R_outer` = 9.000 in confirms the buoy's overall diameter is
-**18 in**, not 36 in — the review's [§11](reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)
+**18 in**, not 36 in — the review's [§11](../reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)
 flagged this as ambiguous ("confirm whether 18 in is radius or diameter"); the drawings settle
 it directly.
 
@@ -83,7 +83,7 @@ This is a simplification (real slicers don't behave perfectly linearly), which i
 
 ## 2. Calibration against the one real data point
 
-[`facts.md`](../hub/facts.md#mechanical--deployment) already records a **slicer-measured** wedge
+[`facts.md`](../../hub/facts.md#mechanical--deployment) already records a **slicer-measured** wedge
 weight of **~300 g** (2026-08-18) — real sliced geometry, not a hand calculation. Running this
 doc's method on the Wedge shell (§3) gives **558 g**, about **1.86× high**.
 
@@ -99,7 +99,7 @@ not a law of physics.
 |---|---|---|
 | Height | 8.000 in | [M] |
 | Wall thickness | 0.250 in (from the R9.000/R8.750 pairing) | [M] |
-| Walls / infill | 3–4 walls (avg 3.5), ~15% gyroid | [M] — per [2026-08-21 print-structure decision](../hub/decision-log.md) |
+| Walls / infill | 3–4 walls (avg 3.5), ~15% gyroid | [M] — per [2026-08-21 print-structure decision](../../hub/decision-log.md) |
 
 Outer envelope volume (annular sector, buoyancy-relevant):
 `V = 0.5 * θ * (R_outer² − R_inner²) * h = 0.5 * (π/3) * (81 − 8.266) * 8 = 304.8 in³ = 4.996 L`
@@ -167,7 +167,7 @@ effective solid `= 234 × 0.544 = 127 cm³` → **weight (raw) = 161 g**.
 
 The question isn't just "how much does the foam weigh" — it's also **what does the foam alone
 provide if the printed shell around it is damaged**, since that's the explicit design
-requirement from the [panel review](reviews/buoy-preliminary-design-panel-review-2026-08.md#5-individual-reviewer-responses)
+requirement from the [panel review](../reviews/buoy-preliminary-design-panel-review-2026-08.md#5-individual-reviewer-responses)
 (a cracked wedge shell should not remove its buoyancy). Both are computed here.
 
 ### Foam choice — what "ideal" means for this application
@@ -178,7 +178,7 @@ pour-foam** — every gram of foam density is buoyancy given back. **2 lb/ft³ (
 is used here: it's close to the practical floor for 2-part closed-cell PU flotation foam —
 commercial marine dock-flotation foam is commonly sold at exactly this density, since lower
 densities (~1.5–1.8 lb/ft³) start trading away cell strength and long-term water-absorption
-resistance. **Still [A] — no product is chosen yet** ([review §11](reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)); swap in the
+resistance. **Still [A] — no product is chosen yet** ([review §11](../reviews/buoy-preliminary-design-panel-review-2026-08.md#11-open-data-needed-for-the-next-review)); swap in the
 real product's density/expansion-ratio the moment one is picked.
 
 ### Fill volume and weight
@@ -230,7 +230,7 @@ just a design intention.
 |---|---|---|
 | Height | 11.000 in | [M] |
 | OD | 5.750 in (chassis rim) — assumed to hold for the full tube, not just the rim | [A] |
-| Wall thickness | **Not dimensioned on this sheet.** Used the [print-structure decision](../hub/decision-log.md)'s chassis spec directly: 6 walls × 0.42 mm = 2.52 mm (0.0992 in) | [A] — a decided target, not a drawing measurement |
+| Wall thickness | **Not dimensioned on this sheet.** Used the [print-structure decision](../../hub/decision-log.md)'s chassis spec directly: 6 walls × 0.42 mm = 2.52 mm (0.0992 in) | [A] — a decided target, not a drawing measurement |
 
 At 2.52 mm, the wall is *exactly* 6 wall-loops thick with no room for an infill core —
 effective fraction = **1.0** (fully solid walls, consistent with the U-bolt-region reasoning
@@ -290,7 +290,7 @@ quantified version of the "a cracked wedge should retain useful buoyancy" design
 
 ## 10. What this doesn't unlock yet
 
-This gives the [Buoy Structural Load Framework](buoy-structural-load-framework.md) its `m_b`
+This gives the [Buoy Structural Load Framework](structural-load-framework.md) its `m_b`
 and `V_disp` inputs (tagged `[M]` there, "not yet available until parts finalized" — no longer
 true for the shell, though electronics/battery/mooring-hardware mass still needs
 [SCO-70](https://linear.app/scout1/issue/SCO-70)). It does **not** unlock the force equations
