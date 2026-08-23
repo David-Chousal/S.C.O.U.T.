@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-17.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-08-18.**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -39,7 +39,8 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > **Entries 1–4 cleared 2026-08-17**, including the Decision Log gap entry 3 left open (all
 > 17 missing rows, 2026-08-15 through 2026-08-17, now mirrored). Payloads are retained below
 > only as a record of what was mirrored; delete them on the next pass.
-> **Entry 5 is new and not yet mirrored.**
+> **Entry 5 is still not mirrored**, but as of 2026-08-18 it carries a paste-ready payload —
+> clearing it is now a paste, not a derivation.
 
 ### 5 · Live Dashboard — multi-page site restructure · ⏳ not yet in Notion
 
@@ -51,6 +52,29 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   section (entry 4's actual ask) directly, but the **`### The Fleet page` section (lines 67+ in
   the source) is still unmirrored** — the network-overview page, tile grid, per-buoy drill-down.
   Worth a dedicated pass since it's a whole page the Notion doc doesn't know exists yet.
+- **Payload written 2026-08-18** by a session whose Notion connector authenticates to a
+  different workspace (the S.C.O.U.T. root page 404s for it). The paste-ready text is below, so
+  clearing this needs a Notion paste, not another derivation pass.
+
+**Where it goes:** as a new `### The Fleet page` section on the Notion page, immediately after
+the *"Design iteration — where the polarity note ended up"* subsection and before
+*"Why static, not a live server"*. It is a sibling of *"Sensor health is shown next to the data
+it affects"*, not a child of it.
+
+> **Paste from the source file.** The section is already correct Markdown in
+> [`live-dashboard.md`](../engineering/live-dashboard.md) under `### The Fleet page` — copy it
+> from there rather than from a duplicate that can drift. Only the two links below need editing
+> on paste; there are no Notion-to-Notion links in this section.
+
+| Link in the source | Replace with |
+|---|---|
+| the `fleet_web.py` link (relative repo path) | point it at `https://github.com/David-Chousal/S.C.O.U.T./blob/main/analytics/telemetry/fleet_web.py` — repo file, no Notion counterpart |
+| the `fleet.py` link (relative repo path) | point it at `https://github.com/David-Chousal/S.C.O.U.T./blob/main/analytics/telemetry/fleet.py` — same |
+
+**Also check while you are on the page:** the *"The site"* table landed on 2026-08-17 with all
+six rows, so the Fleet row should already be there. If it is missing, the table needs the row
+`Fleet · fleet/ · Network overview — a tile per buoy, drilling into each buoy's dashboard`
+before this section will make sense to a reader.
 
 ### 4 · Live Dashboard — sensor health on the Analytics page · ✅ mirrored 2026-08-17
 
