@@ -77,31 +77,34 @@ six rows, so the Fleet row should already be there. If it is missing, the table 
 `Fleet · fleet/ · Network overview — a tile per buoy, drilling into each buoy's dashboard`
 before this section will make sense to a reader.
 
-### 6 · Live Dashboard — Home "What it measures" is a sticky split · ⏳ not yet in Notion
+### 6 · Live Dashboard — three sections become sticky splits · ⏳ not yet in Notion
 
 - **Notion page** — Engineering → *Live Dashboard*
 - **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
-- **What changed** — the Home page's signal section moved from a four-across card grid to a
-  sticky split (heading holds still on the left, signals scroll past on the right). The source
-  gained a new `### Home: "What it measures" is a sticky split, not a card grid` section
-  recording why, plus the `ch`-unit trap that cost a round trip.
+- **What changed** — three list sections moved from card grids to a shared sticky split
+  (heading holds still on the left, entries scroll past on the right): Home's *What it
+  measures*, Technology's *The subsystems*, and Science's *Listening to the reef*. The source
+  gained a new `### The sticky split: long lists scroll past a heading that holds still`
+  section recording why, the shared rules, the two per-section judgement calls, and the
+  `ch`-unit trap that cost a round trip.
 - **Queued 2026-08-24** by a session whose Notion connector authenticates to the Ekho workspace,
   not S.C.O.U.T. (re-tested with `notion-fetch id="self"`; the S.C.O.U.T. root still 404s).
 
-**Where it goes:** as a new `### Home: "What it measures" is a sticky split, not a card grid`
-section on the Notion page, immediately after the *"Design iteration — where the polarity note
-ended up"* subsection and **before** the Fleet-page section that entry 5 adds. It is a sibling
-of *"Sensor health is shown next to the data it affects"*, not a child of it.
+**Where it goes:** as a new `### The sticky split: long lists scroll past a heading that holds
+still` section on the Notion page, immediately after the *"Design iteration — where the polarity
+note ended up"* subsection and **before** the Fleet-page section that entry 5 adds. It is a
+sibling of *"Sensor health is shown next to the data it affects"*, not a child of it.
 
 > **Paste from the source file** rather than from a duplicate that can drift. The section
-> contains no links, so nothing needs rewriting on paste — this one is a clean copy.
+> contains no links, so nothing needs rewriting on paste — this one is a clean copy. It does
+> contain a bullet list, which pastes into Notion as real list blocks with no help needed.
 
 **Clear entries 5 and 6 in the same pass.** Both add sibling sections to the same Notion page,
-in the order Home → Fleet, so doing them together is one visit instead of two.
+in the order sticky split → Fleet, so doing them together is one visit instead of two.
 
 - **Also queued** — a new row in Hub → *Design Iteration Notes*, if that page exists in Notion.
-  Copy the `2026-08-24 | analytics | Public site — Home "What it measures"` row from
-  [`design-notes.md`](design-notes.md). Per entry 3's note, the Notion Hub has only three
+  Copy the `2026-08-24 | analytics | Public site — three list sections become sticky splits`
+  row from [`design-notes.md`](design-notes.md). Per entry 3's note, the Notion Hub has only three
   sub-pages (*Canonical Facts*, *Decision Log*, *Project Status*), so this row likely has
   **nowhere to go** — skip it rather than inventing a page, and leave the structural gap
   recorded in entry 3 as the thing to actually decide.

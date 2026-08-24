@@ -111,10 +111,14 @@ def _subsystems() -> str:
          "The shore Raspberry Pi validates and stores each packet, runs the analysis, and "
          "regenerates this site, using only the Python standard library."),
     ]
-    grid = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
+    entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
-        c.head_block("Inside the buoy", "The subsystems")
-        + f'<div class="subsystem-grid">{grid}</div>',
+        '<div class="sticky-split">'
+        '<div class="sticky-split-head">'
+        + c.head_block("Inside the buoy", "The subsystems")
+        + "</div>"
+        + f'<div class="sticky-split-body">{entries}</div>'
+        + "</div>",
         cls="section-sm",
         sid="subsystems",
     )

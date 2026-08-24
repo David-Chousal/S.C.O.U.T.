@@ -350,17 +350,14 @@ main figure{margin:0}
 .card .kicker{font-size:var(--text-micro);letter-spacing:var(--track);text-transform:uppercase;
   color:var(--muted);font-weight:500;margin-bottom:1.1rem}
 .card-glyph{width:34px;height:34px;color:var(--accent);margin-bottom:1.1rem}
-.subsystem-grid{display:grid;gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem;
-  grid-template-columns:repeat(3,1fr)}
-@media(max-width:900px){.subsystem-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.subsystem-grid{grid-template-columns:1fr}}
 .feature-plain h3{margin-bottom:0.4rem}
 .feature-plain p{color:var(--muted);margin-bottom:0}
 .feature-plain .card-glyph{margin-bottom:0.9rem}
 .feature-plain .kicker{font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:0.5rem}
 /* Sticky split - a heading column that holds still beside a column that scrolls past it.
-   Home "What it measures". The heading is only sticky on wide screens; below the breakpoint
+   Home "What it measures", Technology "The subsystems", Science "Listening to the reef".
+   The heading is only sticky on wide screens; below the breakpoint
    the two columns collapse into one ordinary stack, heading first. Layout only, no motion:
    nothing here is scroll-driven, so every entry is visible without JavaScript. */
 .sticky-split{display:grid;gap:clamp(2rem,1.4rem + 2vw,3.2rem)}
@@ -378,11 +375,6 @@ main figure{margin:0}
   /* 68px is .nav's min-height, i.e. the sticky header this must clear. */
   .sticky-split-head{position:sticky;top:calc(68px + clamp(1.4rem,4vh,3rem))}
 }
-/* The Technology "The subsystems" grid uses the same white square cards. */
-.subsystem-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
-  padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);
-  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
-.subsystem-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
 .big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
   letter-spacing:-0.03em;color:var(--ink)}
 .big-unit{font-size:0.85rem;color:var(--muted);font-weight:500;letter-spacing:0.04em}
