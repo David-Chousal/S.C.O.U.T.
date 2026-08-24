@@ -66,7 +66,7 @@ External input and decision tracking.
 | Document | Contents |
 |---|---|
 | [Stakeholder Interviews](research/stakeholder-interviews.md) | Summer 2026 interviews with three NOAA coral reef researchers; consolidated findings and recommended direction |
-| [Market Analysis](research/market-analysis.md) | Is there a market beyond the capstone? Scientific and defence ocean monitoring sized against verifiable sources; what is and is not defensible |
+| [Market Analysis](research/market-analysis.md) | Is there a market beyond the capstone? Scientific and defence ocean monitoring sized against verifiable sources; what is and is not defensible; and §8, the operational sequence to a profitable company — IP gate, buyer pivot, 24-month plan with kill criteria |
 | [Systems Decision Matrix](research/systems-decision-matrix.md) | Master taxonomy of every research and design decision area across all disciplines |
 
 ## Analysis

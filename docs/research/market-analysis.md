@@ -9,10 +9,17 @@
 > niche is a sole-source Navy programme shipping 200,000+ units a year. **The defensible asset is
 > not the buoy — it is the bioacoustic analysis pipeline, which is software.**
 >
+> **[§8](#8-if-the-goal-is-a-profitable-company-here-is-the-actual-sequence) is the operational
+> answer:** what to actually do, in order, to turn that into a profitable company — starting with
+> the ownership question SCU's patent policy raises, and pivoting the buyer from reef science
+> (grant-funded, ~$9 M/yr nationally) to **mandated offshore-wind noise compliance**, where BOEM
+> *requires* passive acoustic monitoring and lessees pay for it as a condition of building.
+>
 > Researched 2026-08-24. Sources are in [`hub/research/sources.md § Market & commercial
 > landscape`](../hub/research/sources.md#market--commercial-landscape). This is a market
 > assessment, not a decision — see
-> [Open Research Questions](../hub/research/open-questions.md).
+> [Open Research Questions](../hub/research/open-questions.md). §8.6 contains the only modelled
+> (unsourced) figures in the document and is marked as such.
 
 ---
 
@@ -265,6 +272,217 @@ These are deliberately small, and each one is falsifiable.
    and AI as priority areas. Both are non-dilutive.
    [VentureWell's Ocean Enterprise Accelerator](https://venturewell.org/spring-2026-stage-2-ocean-enterprise-accelerator-cohort/)
    exists for exactly this stage.
+
+---
+
+## 8. If the goal is a profitable company, here is the actual sequence
+
+Sections 1–7 answer *is there a market*. This section answers a different question — *what would
+we actually do* — and it changes the answer, because **"profitable" and "fundable" are not the
+same target and they pull in opposite directions.**
+
+### 8.1 First, decide which company you are building
+
+| | **A profitable small company** | **A venture-scale company** |
+|---|---|---|
+| Revenue goal | $1–3 M/yr, 3–6 people | $100 M+/yr eventually |
+| Funded by | Customer revenue + non-dilutive grants | $10 M+ of equity, several rounds |
+| Sells | Analysis, mostly as a service at first | A product, at scale |
+| Founders keep | Most of it | A minority, after dilution |
+| Fails if | Nobody pays for the first three jobs | Growth stalls at any round |
+| Realistic for this team | **Yes** | No — see the Andrenam and Sofar numbers in §1 and §4 |
+
+The evidence in this document argues hard against the second column. Sofar took a decade and
+$75.2 M to reach an estimated ~$18 M of revenue as the category leader; Andrenam needed $30 M to
+field 35 buoys. Neither is a path available to three graduating seniors, and both describe
+businesses that are *funded*, not *profitable*.
+
+The first column is genuinely reachable. **The rest of this section assumes that is the goal.**
+If the team later wants the second column, everything below still works as the first two years of
+it — services revenue is the cheapest possible way to find out whether the product is real.
+
+### 8.2 The gate that comes before everything else: who owns this
+
+**Do this before incorporating, before a customer conversation, before a pitch.**
+
+Santa Clara University's patent policy (Faculty Handbook §3.7.5–3.7.6) defines an *Inventor* to
+include **students** who "use University funds, facilities or other resources, or participate in
+University-administered research." Where the University owns an invention, net royalties are split
+**50/50** between the inventors and a University fund
+([SCU Intellectual Property](https://www.scu.edu/provost/research/research-compliance-and-integrity/intellectual-property/),
+[Policy 313 — Patent Policy](https://www.scu.edu/hr/employee-resources/policies-and-guidelines/staff-policy-manual/policy-313---patent-policy/)).
+
+A senior design capstone uses university lab space, university advisors, and in most cases
+university funds. **On a plain reading, that is squarely inside the policy.** This is not a
+technicality to be worked around later — a company whose core asset is IP the university may own
+is unsellable, unfundable, and unlicensable, and the problem gets *harder* the more revenue it has.
+
+The action is small and specific:
+
+1. Email **patents@scu.edu** (or call 408-554-4408) and ask for a written determination on
+   ownership of the S.C.O.U.T. analysis software and design files, naming the capstone explicitly.
+2. If the University claims ownership, ask what a licence back to the founders looks like.
+   Universities do this routinely; it is a conversation, not a refusal.
+3. Use the [Entrepreneurs' Law Clinic](https://law.scu.edu/) at SCU Law — free legal work for SCU
+   startups, including IP licensing, by law students under supervision. It exists for exactly this.
+4. The [Bronco Venture Accelerator](https://santaclaraventures.com/santa-clara-university) is the
+   other on-campus resource worth using while still enrolled and it costs nothing.
+
+**Until this is answered in writing, everything below is on hold.** It is also the single cheapest
+item on the list: one email, and the answer is free.
+
+### 8.3 The wedge: sell to mandated noise compliance, not to reef conservation
+
+This is the most important finding in this section, and it was not visible from the reef-science
+framing.
+
+**BOEM requires offshore wind lessees to conduct long-term passive acoustic monitoring (PAM) on
+their lease areas** — measuring sound levels and monitoring for vocalising marine species. NOAA
+Fisheries and BOEM have published minimum recommendations for how it must be done
+([NOAA Fisheries](https://www.fisheries.noaa.gov/feature-story/new-passive-acoustic-monitoring-framework-help-safeguard-marine-resources-during),
+[Frontiers in Marine Science](https://www.frontiersin.org/journals/marine-science/articles/10.3389/fmars.2021.760840/full)).
+
+BOEM additionally runs **POWERON** (Partnership for an Offshore Wind Energy Regional Observation
+Network), where lessees make **annual contributions** and approved third parties fulfil the PAM
+obligation on their behalf. It was seeded with $5.8 M from the Inflation Reduction Act, and
+Revolution Wind, South Fork Wind (Ørsted) and Coastal Virginia Offshore Wind (Dominion) have opted
+in ([BOEM](https://www.boem.gov/newsroom/press-releases/boem-announces-poweron-acoustic-monitoring-program-offshore-wind-projects)).
+
+Compare the two buyers side by side:
+
+| | Reef science (current framing) | Offshore wind noise compliance |
+|---|---|---|
+| Why they buy | Curiosity, mission, a grant they won | **Legal obligation** — they cannot build without it |
+| Budget source | Competitive federal grants ~$9 M/yr across all of NOAA CRCP (§1) | Project capex on multi-billion-dollar developments |
+| Buying cycle | 12–18 months, tied to grant calendar | Tied to construction schedule; delay costs them more than the service |
+| Price sensitivity | Extreme — $5,000 was named as a ceiling | Low — compliance failure halts piling |
+| What they need | A cheap instrument | **Defensible analysis a regulator will accept** |
+
+**It is the same core competency.** Hydrophone data in, defensible acoustic indices out, with the
+methodology documented well enough to survive review — which is exactly what
+[the bioacoustic methodology](../analysis/coral-bioacoustic-methodology.md) already is. The
+three-zone frequency model exists because the naive band split misclassifies biological sound as
+anthropogenic; that is *literally the failure mode a noise-compliance regulator cares about.*
+
+Two honest caveats:
+
+- **The incumbent is real.** [JASCO Applied Sciences](https://www.jasco.com/wind) has done
+  underwater sound science since 1981 and is already the contractor on Ørsted's South Fork Wind.
+  You will not beat JASCO at whole-programme PAM and should not try. You need one analysis niche
+  they treat as low-margin overflow work.
+- **Sofar already markets Spotter Sound for "noise compliance, marine mammal detection."** Read
+  that as validation that the pull is real, and as a reason to be the analysis layer on their
+  hardware rather than a competitor to it (§6a).
+
+### 8.4 Services first, product second
+
+Three people, no capital, no inventory, and a real analytical skill. There is one business model
+that fits that shape, and it is not a product company.
+
+1. **Sell the analysis as a service.** Take somebody's existing hydrophone recordings and deliver
+   a reviewed report. Bills from day one, needs no manufacturing, no inventory, no fundraising,
+   and — critically — **the customer tells you what the product should be while paying you to
+   learn it.**
+2. **Productise only what repeats.** After three or four jobs, the parts that are identical every
+   time become software. That software is defensible precisely because it was shaped by paying
+   customers rather than guessed at.
+3. **Never build hardware until a customer has pre-paid for it.** §2 and §3 explain why: the
+   hardware is neither differentiated nor the binding cost.
+
+The margin difference is the whole argument, and it does not depend on any market-size estimate:
+
+| | Analysis services | Analysis software | Buoy hardware |
+|---|---|---|---|
+| Gross margin | 50–70% (your time) | 80%+ once written | 20–40%, before field support |
+| Capital needed to start | ~$0 | ~$0 | BOM × inventory + certification |
+| Revenue on day one | Yes | No | No |
+| What breaks it | You run out of hours | Nothing, if it is used | One bad batch, or a recall |
+
+### 8.5 A 24-month sequence, with gates
+
+Each phase has a **gate**: if the gate is not met, the next phase does not start. This is what
+makes it a plan rather than a hope.
+
+| Phase | Months | Do | Gate to continue |
+|---|---|---|---|
+| **0 · Clear the title** | 0–2 | Written IP determination from SCU; licence terms if needed. Run test 1 from §7 in parallel (it is free) | **A written answer on ownership.** No answer, no company |
+| **1 · One paid job** | 2–6 | Find one customer with existing hydrophone data and a report they need. Charge for it. Offshore wind consultancies, POWERON-adjacent bodies, port authorities, aquaculture, an NGO with a grant already awarded | **One invoice paid.** Not a letter of intent — a payment |
+| **2 · Three paid jobs + non-dilutive capital** | 6–12 | Two more paid analyses. Submit **NSF SBIR Phase I** (up to $305 K) or **NOAA SBIR Phase I** (up to $190 K) on the *pipeline*, not the platform. Apply to [VentureWell's Ocean Enterprise Accelerator](https://venturewell.org/spring-2026-stage-2-ocean-enterprise-accelerator-cohort/) | **Three paying customers and at least one grant submitted.** Three is where you can tell a pattern from a coincidence |
+| **3 · Productise the repeat** | 12–18 | Turn the identical 80% into software. Talk to Sofar about running on [Bristlemouth](https://www.sofarocean.com/products/spotter) — their open hardware standard is the distribution channel (§6a). SBIR Phase II if Phase I landed | **Second sale of the same thing** without bespoke work. That is the moment services becomes product |
+| **4 · Choose the company** | 18–24 | Decide deliberately between the two columns in §8.1 | Revenue covering the founders' salaries, or a clear reason to raise |
+
+### 8.6 What "profitable" actually looks like, numerically
+
+**⚠️ The figures in this subsection are an illustrative model, not research.** They are arithmetic
+on assumptions, included so the target is concrete and so the assumptions can be argued with.
+Everything else in this document is sourced; this is not, and it is marked so it never gets quoted
+as though it were.
+
+Three founders at a modest post-graduation salary, plus tooling, insurance, and an accountant, is
+on the order of **$350–450 K/yr** of cost. Working backwards at services margins:
+
+| | Model |
+|---|---|
+| Fully loaded cost, 3 founders | ~$400 K/yr |
+| Needed revenue at 60% gross margin | **~$670 K/yr** |
+| Jobs per year at $50 K per engagement | ~13 |
+| Or: jobs at $100 K per engagement | ~7 |
+
+**Seven to thirteen engagements a year makes three people profitable.** That is a comprehensible,
+non-heroic number, and it is the actual difference between this and the venture path: nobody needs
+to find a billion-dollar market for it to work. One SBIR Phase I award covers roughly half a year
+of that cost on its own, without dilution.
+
+The corresponding hardware model is the reason not to do hardware. At a $5,000 unit price and 30%
+gross margin, the same $400 K of cost needs **~270 buoys sold per year** — against a category
+leader who has deployed 1,000 units *in total* across a decade (§1), while a philanthropy gives
+comparable buoys away for free (§2).
+
+### 8.7 What to do with the buoy: open-source it
+
+Counterintuitive, and it is the right call.
+
+The hardware is not defensible (§5), it is out-competed on price from both directions (§2), and
+maintaining it costs the team time it should be selling. Publishing the full design — as the
+[OLB authors](https://arxiv.org/html/2601.05615v1) did in January 2026 — converts a liability into
+four assets:
+
+- **Credibility.** A published, reproducible platform is a far better calling card to a compliance
+  buyer than a private prototype nobody can inspect.
+- **Distribution.** Every group that builds one is a candidate customer for the analysis, which is
+  the thing being sold.
+- **A cleaner IP conversation.** It is materially easier to ask SCU to release or license *software*
+  when the hardware is going out under an open licence anyway (§8.2).
+- **An academic output.** A capstone-to-publication path the advisors can support, which the
+  spin-out conversation alone does not give them.
+
+Keep the analysis pipeline closed, or source-available with commercial terms. **Give away the part
+that is already free elsewhere; keep the part nobody else has.**
+
+### 8.8 Kill criteria
+
+Written now, while nobody is emotionally invested, because that is the only time they are useful.
+
+- **No written IP answer from SCU within 3 months of asking** → stop and finish the capstone. Do
+  not build a company on unresolved title.
+- **No paying customer within 6 months of starting to look** → the compliance wedge is wrong, or
+  the team cannot sell. Either is fatal and both are cheap to discover.
+- **Three paid jobs with no repeatable 80%** → it is a consultancy, not a company. That is a
+  legitimate outcome, but it should be chosen knowingly rather than drifted into.
+- **Anyone proposes manufacturing buoys before a customer has pre-paid** → re-read §2, §3 and §8.6.
+
+### 8.9 What to do in the next two weeks
+
+Ranked by cost. The first three are free.
+
+1. **Email patents@scu.edu** asking for a written ownership determination (§8.2). One paragraph.
+2. **Email the researchers already interviewed** with test 1 from §7 — capex versus opex split.
+   One question, and it either confirms or kills the current positioning.
+3. **Read the NOAA/BOEM minimum PAM recommendations** and honestly assess how far the existing
+   pipeline is from meeting them. That gap *is* the product roadmap.
+4. **Book a meeting with the Entrepreneurs' Law Clinic** while still enrolled and it is free.
+5. **Find one organisation sitting on unanalysed hydrophone recordings** and offer to analyse a
+   sample at cost. Not free — at cost. A customer who will not pay $1 will not pay $50,000.
 
 ---
 
