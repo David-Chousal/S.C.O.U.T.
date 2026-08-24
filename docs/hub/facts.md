@@ -35,7 +35,7 @@
 
 | Fact | Canonical value | Source |
 |---|---|---|
-| Total system cost | **< $5,000** (practical ceiling from researcher interviews) | [Stakeholder Interviews](../research/stakeholder-interviews.md) |
+| Total system cost | **< $5,000** (practical ceiling from researcher interviews). **Engineering target only — not a commercial differentiator.** A shipping Sofar Spotter retails under $5,000 and an open-source LoRa buoy costs ~$110, so this figure buys no market position; see [Market Analysis §2](../research/market-analysis.md) | [Stakeholder Interviews](../research/stakeholder-interviews.md), [Market Analysis](../research/market-analysis.md) |
 | Autonomous deployment | **1+ year** unattended | [MVP System Overview](../overview/mvp-system-overview.md) |
 | Deployment depth | **2–8 m** max, confirmed against the actual Hawaii site (revised 2026-08-14, was 5–8 m). The ~30 m on the sensor-string diagram is an outdated image | [SCO-6](https://linear.app/scout1/issue/SCO-6) |
 | First deployment site | **Hawaii**, Phase 6 (Mar–May 2027) | [Team Timeline](../planning/team-timeline.md) |
