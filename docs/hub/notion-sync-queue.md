@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-18.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-08-24.**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -39,8 +39,9 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > **Entries 1–4 cleared 2026-08-17**, including the Decision Log gap entry 3 left open (all
 > 17 missing rows, 2026-08-15 through 2026-08-17, now mirrored). Payloads are retained below
 > only as a record of what was mirrored; delete them on the next pass.
-> **Entry 5 is still not mirrored**, but as of 2026-08-18 it carries a paste-ready payload —
-> clearing it is now a paste, not a derivation.
+> **Entries 5 and 6 are not mirrored.** Both carry paste-ready payloads and both add sibling
+> sections to the same Notion page (Engineering → *Live Dashboard*), so clear them in one visit:
+> a paste each, not a derivation.
 
 ### 5 · Live Dashboard — multi-page site restructure · ⏳ not yet in Notion
 
@@ -75,6 +76,38 @@ it affects"*, not a child of it.
 six rows, so the Fleet row should already be there. If it is missing, the table needs the row
 `Fleet · fleet/ · Network overview — a tile per buoy, drilling into each buoy's dashboard`
 before this section will make sense to a reader.
+
+### 6 · Live Dashboard — three sections become sticky splits · ⏳ not yet in Notion
+
+- **Notion page** — Engineering → *Live Dashboard*
+- **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
+- **What changed** — three list sections moved from card grids to a shared sticky split
+  (heading holds still on the left, entries scroll past on the right): Home's *What it
+  measures*, Technology's *The subsystems*, and Science's *Listening to the reef*. The source
+  gained a new `### The sticky split: long lists scroll past a heading that holds still`
+  section recording why, the shared rules, the two per-section judgement calls, and the
+  `ch`-unit trap that cost a round trip.
+- **Queued 2026-08-24** by a session whose Notion connector authenticates to the Ekho workspace,
+  not S.C.O.U.T. (re-tested with `notion-fetch id="self"`; the S.C.O.U.T. root still 404s).
+
+**Where it goes:** as a new `### The sticky split: long lists scroll past a heading that holds
+still` section on the Notion page, immediately after the *"Design iteration — where the polarity
+note ended up"* subsection and **before** the Fleet-page section that entry 5 adds. It is a
+sibling of *"Sensor health is shown next to the data it affects"*, not a child of it.
+
+> **Paste from the source file** rather than from a duplicate that can drift. The section
+> contains no links, so nothing needs rewriting on paste — this one is a clean copy. It does
+> contain a bullet list, which pastes into Notion as real list blocks with no help needed.
+
+**Clear entries 5 and 6 in the same pass.** Both add sibling sections to the same Notion page,
+in the order sticky split → Fleet, so doing them together is one visit instead of two.
+
+- **Also queued** — a new row in Hub → *Design Iteration Notes*, if that page exists in Notion.
+  Copy the `2026-08-24 | analytics | Public site — three list sections become sticky splits`
+  row from [`design-notes.md`](design-notes.md). Per entry 3's note, the Notion Hub has only three
+  sub-pages (*Canonical Facts*, *Decision Log*, *Project Status*), so this row likely has
+  **nowhere to go** — skip it rather than inventing a page, and leave the structural gap
+  recorded in entry 3 as the thing to actually decide.
 
 ### 4 · Live Dashboard — sensor health on the Analytics page · ✅ mirrored 2026-08-17
 
