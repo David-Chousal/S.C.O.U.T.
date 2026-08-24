@@ -350,25 +350,34 @@ main figure{margin:0}
 .card .kicker{font-size:var(--text-micro);letter-spacing:var(--track);text-transform:uppercase;
   color:var(--muted);font-weight:500;margin-bottom:1.1rem}
 .card-glyph{width:34px;height:34px;color:var(--accent);margin-bottom:1.1rem}
-.signal-grid,.subsystem-grid{display:grid;
-  gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem}
-.signal-grid{grid-template-columns:repeat(4,1fr);gap:clamp(0.7rem,0.4rem + 0.8vw,1rem)}
-.subsystem-grid{grid-template-columns:repeat(3,1fr)}
-@media(max-width:900px){.signal-grid,.subsystem-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.signal-grid,.subsystem-grid{grid-template-columns:1fr}}
+.subsystem-grid{display:grid;gap:clamp(1.6rem,1rem + 2vw,2.8rem);margin-top:2.8rem;
+  grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.subsystem-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.subsystem-grid{grid-template-columns:1fr}}
 .feature-plain h3{margin-bottom:0.4rem}
 .feature-plain p{color:var(--muted);margin-bottom:0}
 .feature-plain .card-glyph{margin-bottom:0.9rem}
 .feature-plain .kicker{font-size:var(--text-micro);letter-spacing:var(--track);
   text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:0.5rem}
-/* The "What it measures" signals sit in square cards (scoped to .signal-grid so the
-   Technology subsystems, also .feature-plain, stay card-less). */
-.signal-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
-  padding:clamp(1.15rem,0.85rem + 0.8vw,1.5rem);box-shadow:var(--shadow-1);
-  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
-.signal-grid .feature-plain:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
-.signal-grid .feature-plain .card-glyph{margin-bottom:0.6rem}
-.signal-grid .feature-plain h3{margin-bottom:0.3rem}
+/* Sticky split - a heading column that holds still beside a column that scrolls past it.
+   Home "What it measures". The heading is only sticky on wide screens; below the breakpoint
+   the two columns collapse into one ordinary stack, heading first. Layout only, no motion:
+   nothing here is scroll-driven, so every entry is visible without JavaScript. */
+.sticky-split{display:grid;gap:clamp(2rem,1.4rem + 2vw,3.2rem)}
+/* The grid column sets the heading's width; .head-block's own 56ch cap would fight it, and a
+   `ch` cap here resolves against the block's 1rem font, not the h2's, so it lands far too narrow. */
+.sticky-split-head .head-block{max-width:none}
+.sticky-split-head .lead{max-width:30rem}
+.sticky-split-body>*+*{margin-top:clamp(2.2rem,1.5rem + 2.2vw,3.8rem);
+  padding-top:clamp(2.2rem,1.5rem + 2.2vw,3.8rem);border-top:1px solid var(--line)}
+.sticky-split-body p{max-width:54ch}
+.sticky-split-body .textlink{margin-top:1.1rem}
+@media(min-width:880px){
+  .sticky-split{grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:clamp(2.4rem,0.5rem + 5vw,6rem);align-items:start}
+  /* 68px is .nav's min-height, i.e. the sticky header this must clear. */
+  .sticky-split-head{position:sticky;top:calc(68px + clamp(1.4rem,4vh,3rem))}
+}
 /* The Technology "The subsystems" grid uses the same white square cards. */
 .subsystem-grid .feature-plain{background:var(--surface);border-radius:var(--radius-lg);
   padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);

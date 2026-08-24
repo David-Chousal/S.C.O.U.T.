@@ -64,40 +64,46 @@ def _mission() -> str:
 
 
 def _senses() -> str:
+    # Numbered rather than four repeats of "Signal": in the old 4-up grid the kicker read as a
+    # type label, but stacked in a single column it needs to read as a sequence.
     signals = [
-        ("temp", "Signal", "Water temperature",
+        ("temp", "Signal 01", "Water temperature",
          "A digital thermometer provides the temperature record used to compute NOAA Coral Reef "
          "Watch thermal-stress metrics."),
-        ("turbidity", "Signal", "Turbidity",
+        ("turbidity", "Signal 02", "Turbidity",
          "An optical sensor detects runoff, resuspension, and sediment plumes as changes "
          "relative to the site's baseline."),
-        ("sound", "Signal", "Reef soundscape",
+        ("sound", "Signal 03", "Reef soundscape",
          "A hydrophone records the reef's acoustics on board. The audio is stored locally and "
          "retrieved by hand — never sent over the radio — then analysed for bioacoustic "
          "signs of reef health."),
-        ("battery", "Signal", "Battery &amp; health",
+        ("battery", "Signal 04", "Battery &amp; health",
          "Battery state-of-health and daily minimum voltage track whether the solar power budget "
          "is holding up over a long deployment."),
     ]
-    cards = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in signals)
+    entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in signals)
+    # The modular-payload note closes the scrolling column as a peer of the four signals rather
+    # than sitting in its own band below the section.
     platform = (
-        '<article class="col-6">'
-        '<div class="bento" style="align-items:center;gap:1.2rem">'
-        '<div class="col-4"><p class="kicker">A platform</p>'
+        '<div class="feature-plain reveal">'
+        '<p class="kicker">A platform</p>'
         '<h3>One buoy, several possible signals</h3>'
         "<p>The sensor payload is modular. Dissolved oxygen, light, chlorophyll, and reef "
         "soundscapes are on the roadmap. Coral-reef health is the first application, with others "
-        "planned.</p></div>"
-        '<div class="col-2" style="text-align:left">'
-        '<a class="textlink" href="technology/">See the architecture ' + _ARROW + "</a></div>"
-        "</div></article>"
+        "planned.</p>"
+        '<a class="textlink" href="technology/">See the architecture ' + _ARROW + "</a>"
+        "</div>"
     )
     return c.section(
-        c.head_block("What it measures", "The signals S.C.O.U.T. records",
-                     "One sensor per measurement sits below the buoy. The electronics stay sealed "
-                     "above the waterline, and readings are logged on board before transmission.")
-        + f'<div class="signal-grid">{cards}</div>'
-        + f'<div class="bento" style="margin-top:2.4rem">{platform}</div>',
+        '<div class="sticky-split">'
+        '<div class="sticky-split-head">'
+        + c.head_block("What it measures", "The signals S.C.O.U.T. records",
+                       "One sensor per measurement sits below the buoy. The electronics stay "
+                       "sealed above the waterline, and readings are logged on board before "
+                       "transmission.")
+        + "</div>"
+        + f'<div class="sticky-split-body">{entries}{platform}</div>'
+        + "</div>",
         sid="senses",
     )
 
