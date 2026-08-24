@@ -35,7 +35,7 @@ static const uint32_t TRANSMIT_CONSERVE_FACTOR = 3;                // conserve: 
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
-#define PIN_TURBIDITY A0    // SEN0189 analog out (through level-safe front end — see ADR-0002)
+#define PIN_TURBIDITY A1    // SEN0189 analog out (through level-safe front end — see ADR-0002)
 #define PIN_SENSOR_GATE 11  // MOSFET gate: HIGH powers the switched sensor rail
 #define PIN_BATTERY A7      // Feather M0 onboard 2:1 battery divider
 #define PIN_SD_CS 10        // Adalogger microSD chip-select
