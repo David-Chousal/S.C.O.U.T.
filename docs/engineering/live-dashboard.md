@@ -64,6 +64,28 @@ text was present, and it was. Layout regressions on this page are only visible b
 site and opening it, so a browser pass belongs in the loop for any change touching panel heads,
 cards, or the legend — not just for changes that look visual up front.
 
+### Home: "What it measures" is a sticky split, not a card grid
+
+The Home page's signal section used to be a four-across grid of white cards. Four square cards
+gave every signal identical weight and forced each description down to about two lines, which is
+not enough room to say what a sensor actually does — the hydrophone entry in particular reads as
+a caveat ("stored locally, never sent over the radio") that does not survive being truncated.
+
+It is now a **sticky split**: the section heading holds still in the left column while the
+signals scroll past it on the right, one after another, separated by hairlines. The heading is
+`position:sticky` only above 880 px; below that the two columns collapse into an ordinary stack,
+heading first. Nothing here is scroll-driven — no IntersectionObserver, no scroll listener, no
+JavaScript at all — so every entry is present and readable on first paint, which is the same
+constraint the rest of the site holds to. The kickers are numbered (`Signal 01`…`Signal 04`)
+because in a single column four repeats of the word "Signal" read as noise rather than as a
+label. The modular-payload note ("One buoy, several possible signals") moved from its own band
+below the section into the scrolling column as a fifth, closing entry.
+
+One CSS trap worth recording: a `max-width` in `ch` units on the heading wrapper resolves against
+*that element's* font size, not the `h2` inside it, so a cap that looks generous on paper
+collapsed the heading to roughly a third of its column. The column width itself is the right
+constraint here.
+
 ### The Fleet page
 
 The Analytics page shows one telemetry stream; the **Fleet** page
