@@ -210,6 +210,22 @@ sections under matching headings and keep the file names visible so the mapping 
 
 ---
 
+### 7 · ADR-0006 — Rev A battery chemistry · ⏳ not yet in Notion
+
+- **Notion page** — Decisions → *ADR index* (and a new ADR-0006 page if each ADR is mirrored individually)
+- **Source** — [`docs/decisions/0006-rev-a-battery-chemistry.md`](../decisions/0006-rev-a-battery-chemistry.md)
+- **What changed** — new ADR recording the Rev A prototype's LiPo + external bq25185 power path.
+  Also touches **ADR-0002** (a References entry pointing here), the **ADR index**, and
+  **`facts.md`**, whose battery row split into a *deployment* row (LiFePO₄, unchanged) and a
+  *Rev A prototype* row (LiPo).
+- **The point that must survive the mirror** — ADR-0006 is **prototype scope only**. It does not
+  close ADR-0002 or SCO-10, and LiFePO₄ remains the canonical deployment chemistry. A reader who
+  takes away "the battery is LiPo now" has read it wrong, so keep the scoping caveats intact
+  rather than trimming them for brevity.
+- **Links to rewrite on paste** — the `0002-lifepo4-charging-path.md`, `0001-...`, and `facts.md`
+  links become Notion URLs; `hardware/**` paths have no Notion counterpart, so leave them as
+  text or point at GitHub.
+
 ## Done
 
 Move entries here with the date they were pasted, so the queue shows what has actually been

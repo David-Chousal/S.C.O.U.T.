@@ -23,6 +23,7 @@ multiple subsystems.
 | [0003](0003-single-point-sensing.md) | Single-point sensing per modality (multi-depth deferred) | 🟢 Accepted |
 | [0004](0004-reef-safe-anchoring-and-mooring.md) | Reef-safe anchoring and mooring approach | 🟢 Accepted |
 | [0005](0005-v1-sensing-payload.md) | V1 sensing payload — temperature, turbidity, hydrophone; DO excluded | 🟢 Accepted |
+| [0006](0006-rev-a-battery-chemistry.md) | Rev A prototype battery chemistry and power path (LiPo + external bq25185) | 🟢 Accepted — Rev A scope only; deployment chemistry still open in 0002 |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 
