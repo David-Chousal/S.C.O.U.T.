@@ -9,6 +9,7 @@ structure. First category populated 2026-08-17 with the initial floatation FEA p
 
 | Record | Date | Summary |
 |---|---|---|
+| [`waterproofing-submersion-test-2026-08-24.md`](waterproofing-submersion-test-2026-08-24.md) | 2026-08-24 | Bench submersion test, 3 articles: PLA sensor housing + TPU O-ring passed (~30 hr, dry); PETG print (low quality) and the electronics housing both failed |
 | [`print-weight-verification-2026-08-24.md`](print-weight-verification-2026-08-24.md) | 2026-08-24 | Full slicer weigh-in of all five current bolted-v4 floatation parts. Retires the shared calibration factor; flags an unreconciled ~31% Wedge weight discrepancy against the 2026-08-21 measurement |
 | [`fea-floatation-side-load-2026-08-17.md`](fea-floatation-side-load-2026-08-17.md) | 2026-08-17 | First FEA pass: floatation wedges + bottom caps under a 300 N side load. Min safety factor 25.4 |
 
