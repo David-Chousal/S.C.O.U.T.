@@ -124,7 +124,7 @@ def _subsystems() -> str:
     )
 
 
-def _platform() -> str:
+def _platform(ctx: SiteContext) -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-3">'
@@ -158,7 +158,15 @@ def _platform() -> str:
             ("Future PCB", "ESP32-C3 + SX1262"),
             ("Decision", "ADR-0001, accepted 2026-08-14"),
         ])
-        + "</div></div>",
+        + "</div></div>"
+        + drawings.schematic(
+            ctx.base, eyebrow="Electrical design", heading="Rev A electrical schematic",
+            sub="SCOUT's Rev A electrical prototype establishes the controller/radio, power, "
+                "temperature, turbidity and logging architecture. The schematic is ERC-clean "
+                "and has undergone pre-hardware schematic and integration verification "
+                "against manufacturer documentation — physical assembly and bench validation "
+                "are the next step. Click to view full resolution.",
+            caption="Rev A prototype electrical design"),
         cls="section-sm",
         sid="platform",
     )
@@ -285,7 +293,7 @@ def body(ctx: SiteContext) -> str:
         + _architecture()
         + _cycle()
         + _subsystems()
-        + _platform()
+        + _platform(ctx)
         + _packet()
         + _link()
         + _mechanical(ctx)
