@@ -57,6 +57,7 @@ Technical design and component specification.
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |
 | [Buoy Structural Engineering](engineering/buoy-structural/) | Load equations, mass/buoyancy budget, force tracking, and print settings — grouped together since they cite each other constantly. See the [folder's own index](engineering/buoy-structural/README.md) for what's inside |
+| [Electronics Housing Packing Budget](engineering/electronics-housing-packing-budget.md) | Real component dimensions from Isabella's Rev A datasheets, three candidate cylindrical packing layouts, and the resulting minimum diameter/length/volume for each |
 | [Design Panel Reviews](engineering/reviews/) | Panel-review write-ups (raw source PDF + Markdown transcription) of subsystem architecture — currently the [buoy preliminary design panel review](engineering/reviews/buoy-preliminary-design-panel-review-2026-08.md) |
 
 ## Research
