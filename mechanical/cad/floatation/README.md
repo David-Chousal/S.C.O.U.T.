@@ -22,6 +22,10 @@ matching STEP exports:
 These five drawings are the source data for the mass/buoyancy calculation in
 [Buoy Mass and Buoyancy Budget](../../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md).
 
+**Weigh-in complete, 2026-08-24** — all five parts now have real slicer-measured weights,
+retiring the earlier calibration-factor estimate for the parts that didn't have their own
+slicer data yet. Full per-part detail: [`mechanical/test/print-weight-verification-2026-08-24.md`](../../test/print-weight-verification-2026-08-24.md).
+
 **When a newer design supersedes this one:** move `current/`'s contents out to a version-stamped
 name at the top level of this folder (matching the `-v3`/`-v9` pattern already used for history),
 then move the new design's files into a fresh `current/`. Don't let `current/` silently become

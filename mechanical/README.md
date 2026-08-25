@@ -12,8 +12,10 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > confirmed, proceed to detailed design ([full write-up](../docs/engineering/reviews/buoy-preliminary-design-panel-review-2026-08.md)).
 > Dimensioned v4 drawings (wedge, wedge cap, wedge bottom, chassis, chassis cap) landed the
 > same day, giving a first-pass [mass/buoyancy budget](../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md)
-> (~4.0 kg shell, ~352 N net reserve buoyancy) and confirming the buoy's overall diameter at
-> 18 in. Print-structure spec (walls/infill per part) now lives in its own
+> and confirming the buoy's overall diameter at 18 in. **All five parts now have real
+> slicer-measured weights (2026-08-24)** — whole shell ~5.49 kg, ~337.6 N net reserve buoyancy;
+> see [`test/print-weight-verification-2026-08-24.md`](test/print-weight-verification-2026-08-24.md).
+> Print-structure spec (walls/infill per part) now lives in its own
 > [Print Settings](../docs/engineering/buoy-structural/print-settings.md) doc; the actual FEA load values will
 > land in [Force Budget](../docs/engineering/buoy-structural/force-budget.md) as their inputs arrive. Still
 > open: buoyancy check + PDF-drawing reconciliation on
