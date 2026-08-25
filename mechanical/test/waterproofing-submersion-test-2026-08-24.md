@@ -15,6 +15,14 @@ Afterward, the housing was opened and the paper inspected — any dampness means
 a bone-dry sheet means it held. This is a pass/fail indicator method, not a quantitative leak
 rate — it confirms whether water got in, not how much or how fast.
 
+**All O-rings used across all three articles were 3D-printed**, not the off-the-shelf AS568-type
+parts specified in the [settled O-ring manufacturing decision](../../docs/hub/decision-log.md) —
+chosen purely because printing was faster than sourcing off-the-shelf rings for this particular
+test, not as a deliberate comparison of printed vs. purchased seals. That framing matters for how
+much weight to put on the results below: this test wasn't designed to evaluate the O-ring
+sourcing decision, so a pass or fail here is informative but not a controlled test of that
+question.
+
 ## Test articles and results
 
 | # | Article | Seal | Duration | Result |

@@ -117,13 +117,15 @@ document covers the whole project, not a separate one per subsystem.
 ## Waterproofing bench test — 2026-08-24
 
 A PLA print of this housing, sealed with a **TPU-printed O-ring** (not the AS568-137 spec
-above), passed a ~30-hour bench submersion test dry. A PETG print of the same design at lower
-print quality failed the same test — working hypothesis is a stringy, imperfectly-seated printed
+above — printed rings were used on this test purely for speed, not as a deliberate comparison),
+passed a ~30-hour bench submersion test dry. A PETG print of the same design at lower print
+quality failed the same test — working hypothesis is a stringy, imperfectly-seated printed
 O-ring on that print, not a PLA-vs-PETG material difference, but that's unconfirmed (the two
 articles differ in both variables at once). Full record:
 [`waterproofing-submersion-test-2026-08-24.md`](../../test/waterproofing-submersion-test-2026-08-24.md).
 
-**Worth weighing against [the O-ring manufacturing decision](../../../docs/hub/decision-log.md)**
+**Worth noting next to [the O-ring manufacturing decision](../../../docs/hub/decision-log.md)**
 (2026-08-17: off-the-shelf, not printed, specifically because printed O-rings were assumed
-porous/unreliable) — this is a real data point in tension with that reasoning, not yet resolved
-either way. See [`facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
+porous/unreliable) — informal evidence in the same direction as reopening it, but this test
+wasn't controlled to actually evaluate that question, so it doesn't resolve it either way. See
+[`facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
