@@ -35,7 +35,21 @@ final design replaces that with a **cable gland** (matches the cable-entry metho
 specified in [`mechanical/README.md`](../../README.md#design-baseline)) — this STEP is a
 placeholder for that geometry, not the build spec.
 
-Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
+Dimensions are still TBD for CAD purposes, but a first-pass packing analysis
+(2026-08-25) gives a recommended target — see
+[Electronics Housing Packing Budget](../../../docs/engineering/electronics-housing-packing-budget.md)
+and [`docs/hub/facts.md`](../../../docs/hub/facts.md#build-platform-settled--see-adr-0001).
+Recommended: **~⌀100 mm × 110–130 mm internal**, fitting inside the existing ~4" PVC reference
+with margin. Two things that packing analysis flags as still open and relevant to CAD:
+
+- **The Adafruit PID 6106 charger/boost board's real dimensions aren't known yet** — the packing
+  budget uses an assumed 51 × 25 × 10 mm footprint. Confirm against the physical part once
+  [SCO-88](https://linear.app/scout1/issue/SCO-88) lands before committing internal mounting
+  geometry to it.
+- **Antenna routing isn't decided** — an internal wire whip (no housing penetration, needs
+  routing space) vs. a uFL+SMA bulkhead connector (a housing penetration, a new waterproofing
+  interface not modeled in the current O-ring/cable-gland design). This changes the endcap
+  design, not just internal layout.
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.

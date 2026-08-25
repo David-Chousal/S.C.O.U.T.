@@ -19,6 +19,10 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > passed ~30 hr submerged; PETG (low print quality) and the electronics housing (no bolt-joint
 > washers on the tested article) both failed, see
 > [`test/waterproofing-submersion-test-2026-08-24.md`](test/waterproofing-submersion-test-2026-08-24.md).
+> **Electronics housing packing analysis, 2026-08-25** — real component dimensions from
+> Isabella's Rev A datasheets, three candidate cylindrical layouts computed, recommended
+> ~⌀100 mm × 110–130 mm (fits the existing ~4" PVC reference); see
+> [Electronics Housing Packing Budget](../docs/engineering/electronics-housing-packing-budget.md).
 > Print-structure spec (walls/infill per part) now lives in its own
 > [Print Settings](../docs/engineering/buoy-structural/print-settings.md) doc; the actual FEA load values will
 > land in [Force Budget](../docs/engineering/buoy-structural/force-budget.md) as their inputs arrive. Still
