@@ -48,8 +48,8 @@
 | MCU + radio (future production PCB) | **ESP32-C3 + SX1262** — documented target, not the current build | [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
 | RTC | PCF8523 | [Data Schema](../engineering/data-schema.md) |
 | Local flash | Winbond W25Q02JV QSPI | [Systems Decision Matrix](../research/systems-decision-matrix.md) |
-| Battery chemistry | **LiFePO₄** (final sizing pending measured power budget) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
-| Charge controller | BQ25570 MPPT (charging path itself still open) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
+| Battery chemistry | **LiFePO₄** (production/deployment direction; final sizing pending measured power budget). **The Rev A prototype's merged schematic implements 1S LiPo instead** — schematic-verified evidence, not yet a ratified decision; see [SCO-10](https://linear.app/scout1/issue/SCO-10), open | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
+| Charge controller | BQ25570 MPPT (production/deployment target; charging path itself still open). **Rev A implements an Adafruit PID 6106 board** (BQ25185 charge stage + TPS61023 boost, regulated 5 V system rail) — schematic-verified Rev A evidence, not a canonical replacement | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
 | Enclosure dimensions | **TBD** — design is built around an approximate 4" Schedule 40 PVC reference form factor; not finalized. **The battery and solar panel, not the PCB, set the lower bound on volume** (confirmed 2026-08-17) | [mechanical/cad/electronics-housing](../../mechanical/cad/electronics-housing/README.md), [SCO-49](https://linear.app/scout1/issue/SCO-49) |
 
 ## Sensing (single-point per modality — see ADR-0003)
