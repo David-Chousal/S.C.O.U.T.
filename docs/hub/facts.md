@@ -48,7 +48,8 @@
 | MCU + radio (future production PCB) | **ESP32-C3 + SX1262** — documented target, not the current build | [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
 | RTC | PCF8523 | [Data Schema](../engineering/data-schema.md) |
 | Local flash | Winbond W25Q02JV QSPI | [Systems Decision Matrix](../research/systems-decision-matrix.md) |
-| Battery chemistry | **LiFePO₄** (final sizing pending measured power budget) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
+| Battery chemistry (deployment) | **LiFePO₄** (final sizing pending measured power budget) — unchanged; the Rev A prototype using a different chemistry does not move this | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
+| Battery chemistry (**Rev A prototype only**) | **PKCELL 3.7 V 500 mAh LiPo**, charged by an external Adafruit bq25185 board (PID 6106) — the Feather's onboard charger is unconnected. A deliberate prototype choice to sidestep the ADR-0001 charger/chemistry conflict; 500 mAh is a bring-up stand-in, not a sized cell. **This does not supersede the LiFePO₄ row above** | [ADR-0006](../decisions/0006-rev-a-battery-chemistry.md) |
 | Charge controller | BQ25570 MPPT (charging path itself still open) | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) |
 | Enclosure dimensions | **TBD** — design is built around an approximate 4" Schedule 40 PVC reference form factor; not finalized. **The battery and solar panel, not the PCB, set the lower bound on volume** (confirmed 2026-08-17) | [mechanical/cad/electronics-housing](../../mechanical/cad/electronics-housing/README.md), [SCO-49](https://linear.app/scout1/issue/SCO-49) |
 
@@ -125,3 +126,5 @@ as settled. Each should have a Linear issue and, when resolved, become a row abo
 | Enclosure dimensions | Battery and solar panel dimensions set the lower bound on housing volume; both still unspecified | Isabella (ECE) | [SCO-49](https://linear.app/scout1/issue/SCO-49) |
 | Buoy body print material | PETG is the current default; ABS and ASA (plus SLA/nylon for comparison) are under evaluation, one sample per material | John Ryan (GENG) | [SCO-64](https://linear.app/scout1/issue/SCO-64) |
 | Mooring/sensor-string attachment hardware | Leading candidate is a stainless U-bolt + mounting plate on the chassis bottom; not yet designed or sized against loads | John Ryan (GENG) | [SCO-69](https://linear.app/scout1/issue/SCO-69) |
+| CAD native-source tool | [`mechanical/cad/README.md`](../../mechanical/cad/README.md) documents Onshape as the sole native source, but the 2026-08-24 meeting mentioned switching CAD modeling to Fusion 360 — unclear if that's just for FEA (already Fusion's documented role) or a broader tool change. Not reconciled | John Ryan (GENG) | [meeting-notes.md](../planning/meeting-notes.md#2026-08-24--scout-weekly) |
+| Base-station node architecture | ESP32-S3 + LoRa module vs. M0 + M0 + WiFi module — depends on whether the base station needs concurrent LoRa+WiFi (multithreading) or can do it sequentially | Isabella (ECE) / David (CSEN) | [SCO-86](https://linear.app/scout1/issue/SCO-86) |
