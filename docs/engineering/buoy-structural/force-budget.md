@@ -34,6 +34,13 @@ drawings, blocked on [SCO-70](https://linear.app/scout1/issue/SCO-70). Treat eve
 that depends on `m_b` as using a **shell-only placeholder**, not the final buoy mass, until that
 lands.
 
+**Updated 2026-08-24** — all five shell parts now have real slicer-measured weights (was a mix
+of calculated/calibrated estimates before). Shell-only `m_b` is **5.494 kg**, `V_disp` is
+**38.93 L** — see [Buoy Mass and Buoyancy Budget §9](mass-and-buoyancy-budget.md#9-aggregate--printed-shell-system)
+for the full breakdown. (This also corrects a stale `m_b ≈ 4.0 kg` figure that had been left in
+this section below since before the 2026-08-21 wedge recalibration bumped the shell-only total
+to ~5.49 kg — that earlier value was never updated here.)
+
 ## Load case status
 
 Mirrors the [Buoy Structural Load Framework §10](structural-load-framework.md#10-corrected-fea-load-cases)
@@ -53,7 +60,7 @@ table exactly — same case numbering, same primary checks.
 
 ## Why LC2 isn't computed yet, even though `m_b`/`V_disp` partly exist
 
-It would be easy to plug today's shell-only numbers (`m_b` ≈ 4.0 kg, `V_disp` ≈ 38.9 L) into
+It would be easy to plug today's shell-only numbers (`m_b` ≈ 5.494 kg, `V_disp` ≈ 38.93 L) into
 `F_net ≈ F_B − W` and get a number. That number would be **wrong in a misleading way** — it
 excludes electronics, battery, solar mount, and mooring hardware, all of which add weight
 without adding meaningful displacement, so a shell-only calculation would overstate the buoy's
