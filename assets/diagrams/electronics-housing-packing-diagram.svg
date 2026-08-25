@@ -1,0 +1,45 @@
+<svg width="680" height="460" viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>Electronics housing packing diagram, two-zone hybrid layout</title>
+<desc>Two circular cross-sections at 83mm diameter: Zone 1 holds the Feather M0+Wing stack next to the PID 6106 charger board; Zone 2 holds the SEN0189 turbidity board next to the LiPo battery. Below, an axial length bar shows end cap, zone 1, gap, zone 2, end cap totaling 68mm.</desc>
+<rect x="0" y="0" width="680" height="460" fill="#ffffff"/>
+
+<text x="180" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">Zone 1</text>
+<text x="180" y="40" text-anchor="middle" font-size="12" fill="#5F5E5A">&#8960;83 mm</text>
+<circle cx="180" cy="175" r="125" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.75"/>
+<rect x="99" y="99" width="69" height="153" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="134" y="172" text-anchor="middle" font-size="14" font-weight="600" fill="#26215C">M0+Wing</text>
+<text x="134" y="188" text-anchor="middle" font-size="12" fill="#534AB7">51&#215;23mm</text>
+<rect x="186" y="99" width="75" height="153" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.75"/>
+<text x="224" y="172" text-anchor="middle" font-size="14" font-weight="600" fill="#4A1B0C">PID 6106</text>
+<text x="224" y="188" text-anchor="middle" font-size="12" fill="#993C1D">~51&#215;25mm</text>
+<text x="180" y="320" text-anchor="middle" font-size="12" fill="#5F5E5A">&#8960;83 mm ID</text>
+
+<text x="500" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">Zone 2</text>
+<text x="500" y="40" text-anchor="middle" font-size="12" fill="#5F5E5A">&#8960;83 mm</text>
+<circle cx="500" cy="175" r="125" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.75"/>
+<rect x="404" y="118" width="84" height="114" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
+<text x="446" y="171" text-anchor="middle" font-size="14" font-weight="600" fill="#04342C">SEN0189</text>
+<text x="446" y="187" text-anchor="middle" font-size="12" fill="#0F6E56">38&#215;28mm</text>
+<rect x="506" y="123" width="90" height="105" rx="3" fill="#FBEAF0" stroke="#993556" stroke-width="0.75"/>
+<text x="551" y="172" text-anchor="middle" font-size="14" font-weight="600" fill="#4B1528">Battery</text>
+<text x="551" y="188" text-anchor="middle" font-size="12" fill="#993556">35&#215;30mm</text>
+<text x="500" y="320" text-anchor="middle" font-size="12" fill="#5F5E5A">&#8960;83 mm ID</text>
+
+<rect x="136" y="340" width="90" height="50" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.75"/>
+<text x="181" y="360" text-anchor="middle" font-size="12" fill="#2C2C2A">End cap</text>
+<text x="181" y="375" text-anchor="middle" font-size="12" fill="#5F5E5A">15mm</text>
+<rect x="226" y="340" width="132" height="50" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="292" y="360" text-anchor="middle" font-size="12" fill="#26215C">Zone 1</text>
+<text x="292" y="375" text-anchor="middle" font-size="12" fill="#534AB7">22mm</text>
+<rect x="358" y="340" width="36" height="50" rx="3" fill="none" stroke="#888780" stroke-width="0.75" stroke-dasharray="3,2"/>
+<text x="376" y="360" text-anchor="middle" font-size="12" fill="#5F5E5A">Gap</text>
+<text x="376" y="375" text-anchor="middle" font-size="12" fill="#5F5E5A">6mm</text>
+<rect x="394" y="340" width="60" height="50" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
+<text x="424" y="360" text-anchor="middle" font-size="12" fill="#04342C">Zone 2</text>
+<text x="424" y="375" text-anchor="middle" font-size="12" fill="#0F6E56">10mm</text>
+<rect x="454" y="340" width="90" height="50" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.75"/>
+<text x="499" y="360" text-anchor="middle" font-size="12" fill="#2C2C2A">End cap</text>
+<text x="499" y="375" text-anchor="middle" font-size="12" fill="#5F5E5A">15mm</text>
+
+<text x="340" y="415" text-anchor="middle" font-size="14" fill="#2C2C2A">Bare minimum: 68 mm total &#183; recommended practical: 110&#8211;130 mm</text>
+</svg>

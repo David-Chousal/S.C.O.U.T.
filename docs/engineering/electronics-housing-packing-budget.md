@@ -143,6 +143,45 @@ Zone 2: width = 28 + 30 + 6 = 64 mm, height = 38 mm
 | Length | 22 + 6 (gap) + 10 + 2×15 (end allowances) = **68 mm** | [A] |
 | **Volume** | π × 41.5² × 68 = **367,800 mm³ ≈ 0.368 L** | [X] |
 
+### Diagram
+
+Drawn to scale from the numbers above — the `~51×25mm` label on PID 6106 keeps that assumption
+visible in the diagram itself, since it's still waiting on a caliper (see
+[§6](#6-open-items)):
+
+![Electronics housing packing diagram — two-zone hybrid layout](../../assets/diagrams/electronics-housing-packing-diagram.svg)
+
+Character version, for anyone reading this in a plain-text diff:
+
+```
+ELECTRONICS HOUSING — TWO-ZONE HYBRID PACKING (Method 3)
+
+  ZONE 1 cross-section                    ZONE 2 cross-section
+  (⌀83mm ID)                              (⌀83mm ID)
+
+      .-----------------.                     .-----------------.
+    /                     \                  /                     \
+   /   +-------+ +-------+ \                /  +------+ +--------+  \
+  |    |M0+Wing| |PID6106| |                |  |SEN0189| |Battery |  |
+  |    |51x23mm| |~51x25 | |                |  |38x28mm| |35x30mm | |
+  |    |  mm   | |  mm   | |                |  |       | |        | |
+  |    +-------+ +-------+ |                |  +------+ +--------+  |
+   \                      /                  \                     /
+    \                    /                    \                   /
+      '----------------'                        '----------------'
+
+AXIAL VIEW (side profile, cylinder length)
+
+   +--------+-------------+------+----------+--------+
+   |  end   |   ZONE 1    | gap  |  ZONE 2  |  end   |
+   |  cap   | M0+Wing +   |  --  | SEN0189 +|  cap   |
+   | (gland)|  PID 6106   |      | Battery  |(gland) |
+   | 15 mm  |   22 mm     | 6 mm |  10 mm   | 15 mm  |
+   +--------+-------------+------+----------+--------+
+   |<---------------- 68 mm bare minimum ------------------>|
+   |<------------ 110-130 mm practical target -------------------->|
+```
+
 ## Comparison
 
 | Method | Diameter | Length | Volume | Fits the ~102 mm (4″) PVC reference? |
