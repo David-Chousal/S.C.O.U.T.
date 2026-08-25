@@ -64,6 +64,47 @@ text was present, and it was. Layout regressions on this page are only visible b
 site and opening it, so a browser pass belongs in the loop for any change touching panel heads,
 cards, or the legend — not just for changes that look visual up front.
 
+### The sticky split: long lists scroll past a heading that holds still
+
+Three sections on the site are a list of peers under one heading — Home's **What it measures**
+(the sensing signals), Technology's **The subsystems**, and Science's **Listening to the reef**
+(the bioacoustic indices). All three were card grids, and all three had the same problem: a grid
+of equal squares gives every item identical weight and caps each description at roughly two
+lines. That is not enough room to say what an item actually *is*. The clearest casualty was the
+hydrophone entry on Home, whose "stored locally, never sent over the radio" caveat is the one
+thing a reader most needs to come away with and the first thing truncation removes.
+
+All three are now a **sticky split**: the section heading holds still in the left column while
+the entries scroll past it on the right, one after another, separated by hairlines. Each entry
+gets the vertical space its own content wants instead of the space its neighbours leave it.
+
+The shared rules, in `.sticky-split` / `.sticky-split-head` / `.sticky-split-body`:
+
+- `position:sticky` on the heading **only above 880 px**. Below that the two columns collapse
+  into an ordinary stack, heading first, and the heading is no longer sticky.
+- The sticky offset clears the site header (`.nav` is 68 px) plus breathing room.
+- **No scroll-driven motion at all** — no IntersectionObserver, no scroll listener, no
+  JavaScript. This is layout, so every entry is present and readable on first paint, which is
+  the constraint the rest of the site already holds to.
+- The heading releases when the section's own bottom edge reaches it, because `position:sticky`
+  is bounded by its containing block. The heading rides out with the end of its list rather than
+  following the reader into the next section.
+
+Two per-section judgements are worth recording, because they are about the content rather than
+the layout. On Home the kickers became numbered (`Signal 01`…`Signal 04`): in a grid, four
+repeats of the word "Signal" read as a type label, but stacked in a single column they read as
+noise. And on Science the split covers only the six indices — the two methodology columns that
+follow ("How the indices stay honest", "Validation, and what stays on board") stay a full-width
+bento below it, since they are a different register from the index list and are not governed by
+its heading. They needed a deliberately wide gap to say so: the split's last entry ends on a
+plain baseline, so anything tighter than the ~104 px separating two indices from each other made
+them read as a seventh index.
+
+One CSS trap worth recording: a `max-width` in `ch` units on the heading wrapper resolves against
+*that element's* font size, not the `h2` inside it, so a cap that looks generous on paper
+collapsed the heading to roughly a third of its column. The column width itself is the right
+constraint here.
+
 ### The Fleet page
 
 The Analytics page shows one telemetry stream; the **Fleet** page

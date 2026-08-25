@@ -171,17 +171,25 @@ def _alerts(ctx: SiteContext) -> str:
 
 
 def _soundscape() -> str:
-    cards = "".join(
-        f'<div class="col-2">{c.feature_card(g, k, t, b)}</div>' for g, k, t, b in _INDICES
-    )
+    # The six indices scroll past a heading that holds still; the two methodology columns below
+    # stay a full-width bento, since they are a different register from the index list and are
+    # not governed by its heading.
+    entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in _INDICES)
     return c.section(
-        c.head_block("Reef soundscapes", "Listening to the reef",
-                     "A healthy reef is loud: snapping shrimp, fish choruses, and the movement "
-                     "of the reef itself. S.C.O.U.T. records the soundscape and reduces it to "
-                     "established bioacoustic indices, a biological signal that complements the "
-                     "temperature and turbidity record.")
-        + f'<div class="bento" style="margin-top:2.6rem">{cards}</div>'
-        + '<div class="bento" style="margin-top:2.4rem;align-items:start">'
+        '<div class="sticky-split">'
+        '<div class="sticky-split-head">'
+        + c.head_block("Reef soundscapes", "Listening to the reef",
+                       "A healthy reef is loud: snapping shrimp, fish choruses, and the movement "
+                       "of the reef itself. S.C.O.U.T. records the soundscape and reduces it to "
+                       "established bioacoustic indices, a biological signal that complements "
+                       "the temperature and turbidity record.")
+        + "</div>"
+        + f'<div class="sticky-split-body">{entries}</div>'
+        + "</div>"
+        # More air than the old card grid needed. The split's last entry ends on a plain
+        # baseline, so this gap has to beat the ~104px that separates two indices from each
+        # other — otherwise the methodology columns read as a seventh index.
+        + '<div class="bento" style="margin-top:clamp(5.5rem,4rem + 5vw,9rem);align-items:start">'
         '<div class="col-3 prose">'
         "<h3>How the indices stay honest</h3>"
         "<p>A <strong>three-zone frequency model</strong> carves out a 200–1000 Hz mixed band "

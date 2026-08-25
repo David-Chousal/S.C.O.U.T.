@@ -7,7 +7,7 @@
 | Signal | Pin (`config.h`) | Peripheral | Notes |
 |---|---|---|---|
 | DS18B20 data | `PIN_ONEWIRE` = 12 | 1-Wire temperature | 4.7 kΩ pull-up to 3.3 V |
-| Turbidity analog | `PIN_TURBIDITY` = A0 | SEN0189 | Through a level-safe front end (≤3.3 V; ADR-0002) |
+| Turbidity analog | `PIN_TURBIDITY` = A1 | SEN0189 | Through a level-safe front end (≤3.3 V; ADR-0002) — confirmed against the merged Rev A schematic |
 | Sensor power gate | `PIN_SENSOR_GATE` = 11 | MOSFET | HIGH = switched sensor rail on |
 | Battery sense | `PIN_BATTERY` = A7 | onboard 2:1 divider | Feather M0 default; revisit with ADR-0002 |
 | microSD CS | `PIN_SD_CS` = 10 | Adalogger microSD | SPI shared with LoRa |
