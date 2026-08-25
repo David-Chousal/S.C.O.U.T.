@@ -238,6 +238,21 @@ sections under matching headings and keep the file names visible so the mapping 
   links become Notion URLs; `hardware/**` paths have no Notion counterpart, so leave them as
   text or point at GitHub.
 
+### 8 · Project Status — Electrical design row is stale · ⏳ not fixed here
+
+- **Notion page** — Hub → *Project Status*
+- **Found while** doing the electronics-housing packing-budget sync below (2026-08-25) — the
+  page's **Electrical design** row still reads "Build platform decided; wiring/PCB pending,"
+  while [`status.md`](../../docs/hub/status.md)'s row has grown substantially since (Rev A
+  ERC-clean, PID 6106 5V rail confirmed, `PIN_TURBIDITY` fix, SCO-83/SCO-84 gaps, bring-up parts
+  order). Same gap shape as the earlier structural-gap notes above — flagged so it doesn't read
+  as current when a teammate checks Notion, not silently left to drift further.
+- **Scoped out of today's sync** — only the Mechanical design row's packing-analysis sentence and
+  the page's "As of" date were touched this pass. A full Electrical design row resync is a
+  separate, deliberate pass, not a byproduct of an unrelated PR.
+
+---
+
 ## Done
 
 Move entries here with the date they were pasted, so the queue shows what has actually been
@@ -245,6 +260,7 @@ mirrored rather than silently emptying.
 
 | Entry | Mirrored on | By |
 |---|---|---|
+| **Canonical Facts** — Enclosure dimensions row updated in place with the first-pass packing-analysis range (~⌀100×110–130mm, still not finalized — PID 6106 dims and antenna routing open). **Project Status** — Mechanical design row's Detail cell gained the packing-analysis sentence; "As of" date bumped to 2026-08-25 | 2026-08-25 | Claude session, direct connector write |
 | **Canonical Facts** — Flotation row rewritten in place (325.83 g/wedge shell, slicer-measured 2026-08-24, replacing the stale ~300 g 2026-08-18 estimate; unresolved 474.58 g vs 325.83 g discrepancy noted per Standing Rule 1). New **Mass & buoyancy budget** row added to the settled Mechanical & deployment table (previously missing entirely) — ~5.49 kg / ~38.9 L / ~337.6 N net reserve buoyancy, positioned after Flotation and before Print structure, matching the repo table order. **Project Status** — mechanical design row's `~300 g/wedge weight logged` sentence replaced with the five-part real-weigh-in summary and a link to the budget doc; "As of" date bumped to 2026-08-24. **Design Notes** — new top-of-log row, `2026-08-24 \| mechanical \| Floatation weigh-in — all five parts now measured`, inserted above the existing 2026-08-21 print-structure row (the page had no 2026-08-24 row yet despite the queue's entry 6 assuming one might). **Root S.C.O.U.T. page** — checked; its mechanical status line is already generic (no wedge weight or buoyancy figure cited), so left unchanged. `mass-and-buoyancy-budget.md` and `force-budget.md` links written as GitHub blob URLs (including the anchored `#2-calibration-...` link) — confirmed via `notion-search` that neither doc has a Notion page; see the new structural-gap note above | 2026-08-24 | Claude session, direct connector write |
 | **Team Meeting Notes** — new `2026-08-24 — SCOUT Weekly` section appended (Decisions, Reported, Raised, Flagged — unresolved, Next steps), mirroring [`docs/planning/meeting-notes.md`](../planning/meeting-notes.md#2026-08-24--scout-weekly) | 2026-08-25 | Claude session, direct connector write |
 | **Decision Log** — two new rows for the biofouling decision (approach chosen, then Sea Hawk Smart Solution picked as the specific product, reef-safety over Home Depot convenience). **Canonical Facts** — new Biofouling mitigation row in the settled Mechanical & deployment table | 2026-08-18 | Claude session, direct connector write |
