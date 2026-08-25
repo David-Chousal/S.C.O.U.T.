@@ -15,6 +15,10 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > and confirming the buoy's overall diameter at 18 in. **All five parts now have real
 > slicer-measured weights (2026-08-24)** — whole shell ~5.49 kg, ~337.6 N net reserve buoyancy;
 > see [`test/print-weight-verification-2026-08-24.md`](test/print-weight-verification-2026-08-24.md).
+> **First waterproofing submersion test, 2026-08-24** — PLA sensor housing + TPU-printed O-ring
+> passed ~30 hr submerged; PETG (low print quality) and the electronics housing (no bolt-joint
+> washers on the tested article) both failed, see
+> [`test/waterproofing-submersion-test-2026-08-24.md`](test/waterproofing-submersion-test-2026-08-24.md).
 > Print-structure spec (walls/infill per part) now lives in its own
 > [Print Settings](../docs/engineering/buoy-structural/print-settings.md) doc; the actual FEA load values will
 > land in [Force Budget](../docs/engineering/buoy-structural/force-budget.md) as their inputs arrive. Still

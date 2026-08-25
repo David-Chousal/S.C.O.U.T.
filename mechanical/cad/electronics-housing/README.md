@@ -24,6 +24,12 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
 The end cap slides into the printed chassis cylinder and is secured with **heat-set insert M4
 bolts and washers**. Waterproofing is via **rubber sealing washers** at the bolt joints.
 
+**Not yet built to this spec.** The [2026-08-24 submersion test](../../test/waterproofing-submersion-test-2026-08-24.md)
+tested a physical electronics housing with **no rubber sealing washers at the bolt joints** —
+bare bolt-into-cavity contact — and it failed with significant water ingress, as expected for
+that build. This confirms the gap rather than the design: the documented spec above hasn't
+actually been validated yet, only a version without it.
+
 **Not final:** the current cap has a shackle/connection point in place of a cable entry. The
 final design replaces that with a **cable gland** (matches the cable-entry method already
 specified in [`mechanical/README.md`](../../README.md#design-baseline)) — this STEP is a
