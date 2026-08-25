@@ -451,6 +451,8 @@ main figure{margin:0}
 .drawings-sub{color:var(--muted);font-size:0.98rem;margin:0.5rem 0 0;max-width:58ch}
 .drawings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
 @media(max-width:600px){.drawings-grid{grid-template-columns:1fr}}
+/* Single-item variant (Rev A electrical schematic) — one large card, not the two-up grid. */
+.drawings-grid.single{grid-template-columns:1fr}
 /* .drawing is a <figure>; its UA margin is handled by the scoped `main figure{margin:0}` reset. */
 .drawing{background:#fff;border-radius:var(--radius);overflow:hidden;
   box-shadow:var(--shadow-1);transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}

@@ -124,7 +124,7 @@ def _subsystems() -> str:
     )
 
 
-def _platform() -> str:
+def _platform(ctx: SiteContext) -> str:
     return c.section(
         '<div class="bento" style="align-items:start">'
         '<div class="col-3">'
@@ -135,21 +135,38 @@ def _platform() -> str:
         "<strong>Adafruit Feather M0 with an RFM95 radio</strong>: an Arduino SAMD21 core with "
         "the RadioHead <code>RH_RF95</code> driver, an Adalogger FeatherWing for the microSD "
         "card and PCF8523 real-time clock. An ESP32-C3 with an SX1262 radio is kept as the "
-        "future production-PCB target; current firmware is written for the SAMD21.</p></div></div>"
+        "future production-PCB target; current firmware is written for the SAMD21.</p>"
+        "<p>The current Rev A schematic — the project's first full electrical baseline — is "
+        "ERC-clean and has undergone pre-hardware schematic and integration verification "
+        "against manufacturer documentation. Physical assembly and bench validation are the "
+        "next step.</p></div></div>"
         '<div class="col-3">'
         + c.spec([
             ("Microcontroller", "Adafruit Feather M0 (SAMD21)"),
             ("Radio", "RFM95 LoRa · RadioHead RH_RF95 · 915 MHz"),
             ("Clock", "PCF8523 RTC (wake alarm + timestamps)"),
             ("Storage", "microSD via Adalogger FeatherWing"),
-            ("Power", "Solar + MPPT into a LiFePO₄ pack (path open, ADR-0002)"),
+            ("Power", "Rev A prototype: 1S LiPo through an Adafruit PID 6106 charger/boost "
+                      "board, regulated 5 V system rail. Longer-term deployment battery "
+                      "architecture remains under evaluation (ADR-0002)"),
             ("Temperature", "DS18B20 digital thermometer (±0.5 °C)"),
-            ("Turbidity", "DFRobot SEN0189 optical (uncalibrated)"),
+            ("Turbidity", "DFRobot SEN0189 through a non-inverting level-safe divider — "
+                          "schematic/datasheet verified, bench validation pending"),
+            ("Acoustic", "Planned for a later electrical revision; hydrophone/interface "
+                         "selection under review"),
             ("Enclosure", "4-inch Schedule 40 PVC, O-ring end caps"),
             ("Future PCB", "ESP32-C3 + SX1262"),
             ("Decision", "ADR-0001, accepted 2026-08-14"),
         ])
-        + "</div></div>",
+        + "</div></div>"
+        + drawings.schematic(
+            ctx.base, eyebrow="Electrical design", heading="Rev A electrical schematic",
+            sub="SCOUT's Rev A electrical prototype establishes the controller/radio, power, "
+                "temperature, turbidity and logging architecture. The schematic is ERC-clean "
+                "and has undergone pre-hardware schematic and integration verification "
+                "against manufacturer documentation — physical assembly and bench validation "
+                "are the next step. Click to view full resolution.",
+            caption="Rev A prototype electrical design"),
         cls="section-sm",
         sid="platform",
     )
@@ -276,7 +293,7 @@ def body(ctx: SiteContext) -> str:
         + _architecture()
         + _cycle()
         + _subsystems()
-        + _platform()
+        + _platform(ctx)
         + _packet()
         + _link()
         + _mechanical(ctx)

@@ -68,14 +68,14 @@ When a decision is significant and hard to reverse, record it as an
 
 | Decision area | Priority | Owner | Status | Decision / recommendation |
 |---|---|---|---|---|
-| Embedded controller | | | **Open** | See [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
-| Power system architecture | | | In progress | BQ25570 MPPT + TPS62840 / TPS61299 rails |
-| Battery system | | | In progress | LiFePO₄; final sizing pending measured power budget |
+| Embedded controller | | | **Resolved** | Feather M0 + RFM95 confirmed as build platform — [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
+| Power system architecture | | | In progress | Production target: BQ25570 MPPT + TPS62840/TPS61299 (EDD §16–17). **Rev A prototype implements a different, already-built path**: LiPo + Adafruit PID 6106 (BQ25185 + TPS61023 boost) — schematic-verified, not yet ratified as canonical; see [SCO-10](https://linear.app/scout1/issue/SCO-10) |
+| Battery system | | | In progress | Production target: LiFePO₄, final sizing pending. **Rev A implements 1S LiPo** (PKCELL LP503035) — see [SCO-10](https://linear.app/scout1/issue/SCO-10), open |
 | Solar system | | | In progress | Sizing pending measured power budget |
-| Charge controller / regulation | | | In progress | BQ25570 |
+| Charge controller / regulation | | | In progress | Production target: BQ25570. **Rev A implements Adafruit PID 6106** (schematic-verified) |
 | Sleep logic / power scheduling | | | In progress | See [Engineering Design Document §12–13](../engineering/engineering-design-document.md) |
-| Local data storage | | | In progress | Winbond W25Q02JV QSPI flash |
-| Communications (LoRa) | | | **Open** | See [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
+| Local data storage | | | In progress | Winbond W25Q02JV QSPI flash (production target) — Rev A uses microSD via the Adalogger FeatherWing instead |
+| Communications (LoRa) | | | **Resolved** | RFM95 confirmed as build-platform radio — [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) |
 | Electrical packaging | | | Not started | |
 | PCB / wiring architecture | | | Not started | |
 

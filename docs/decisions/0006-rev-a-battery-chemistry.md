@@ -37,9 +37,13 @@ confirmed by direct inspection of the schematic source, which shows the Feather'
 explicitly unconnected. Instead, Rev A's power architecture is:
 
 1. FlexSolar 10 W panel, regulated 5 V USB output → `SOLAR_5V`
-2. `SOLAR_5V` → **Adafruit bq25185 USB/DC/Solar Charger + 5 V Boost board (PID 6106)**, `IN`
-3. PKCELL 3.7 V LiPo → bq25185 `BAT+`
-4. bq25185's boosted 5 V output → `SYSTEM_5V`
+2. `SOLAR_5V` → **Adafruit PID 6106 board**, `IN` — a **BQ25185** charge/power-path stage
+   feeding a **separate TPS61023 boost converter**
+3. PKCELL 3.7 V LiPo → BQ25185 `BAT+`
+4. The board's boost output → `SYSTEM_5V`, a genuinely regulated **5 V**. (Not ~4.5 V: that
+   figure comes from the bare BQ25185's internal SYS spec and does not describe this board's
+   exposed output. Corrected against Adafruit's own PID 6106 guide — thanks to the Rev A
+   reconciliation in [PR #107](https://github.com/David-Chousal/S.C.O.U.T./pull/107).)
 5. `SYSTEM_5V` → Feather M0 `VBUS`/USB power input, and → SEN0189 5 V supply
 
 The external bq25185 board is the Rev A battery charger and power-path/boost board. This is an

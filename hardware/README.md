@@ -33,7 +33,7 @@ The team has committed to and purchased the following. Datasheet links are in th
 | SD logging + RTC | Adalogger FeatherWing | Adafruit 2922 | microSD + PCF8523 RTC (stacks on the Feather) |
 | Temperature | Waterproof DS18B20 (PTFE, high-temp) | Adafruit 3846 | 1-Wire, 3.0–5.0 V, 4.7 kΩ pullup |
 | Turbidity | Gravity Analog Turbidity Sensor | DFRobot SEN0189 | Analog out; needs 5 V rail + level-safe ADC input |
-| Battery | LiFePO₄ | — | Charging path TBD — see Open items (Feather charger targets LiPo) |
+| Battery | Rev A prototype implementation: 1S LiPo (PKCELL LP503035) via an external Adafruit PID 6106 charger/boost board | Adafruit 6106 | This is what Rev A's schematic actually implements, verified net-by-net. **Not the same as the production/deployment battery direction**, which remains a separate, open evaluation — see [ADR-0002](../docs/decisions/0002-lifepo4-charging-path.md) and [SCO-10](https://linear.app/scout1/issue/SCO-10) |
 
 ## Rev A prototype schematic
 
@@ -61,18 +61,25 @@ Verified schematic connections:
   confirms its raw analog output *decreases* as turbidity increases. This is relevant to
   [SCO-47](https://linear.app/scout1/issue/SCO-47) but does not close it — SCO-47 also
   requires the polarity to be confirmed on the bench with real clear/turbid samples, which
-  hasn't happened yet.
+  hasn't happened yet. Firmware's `PIN_TURBIDITY` now matches this `A1` connection — an
+  earlier mismatch (firmware read `A0`, unconnected in Rev A) was found and fixed in
+  [SCO-85](https://linear.app/scout1/issue/SCO-85), merged via
+  [PR #103](https://github.com/David-Chousal/S.C.O.U.T./pull/103).
 - **Adalogger FeatherWing:** uses the Feather's SPI bus for the microSD card, with chip-select
   on `D10`; RTC (PCF8523) on I²C. Matches the "stacks on the Feather" note above.
 - **Power path (recorded as [ADR-0006](../docs/decisions/0006-rev-a-battery-chemistry.md)):**
-  the Rev A schematic charges a 3.7 V LiPo cell through an external Adafruit bq25185 board (not
-  the Feather's onboard charger), feeding a boosted 5 V rail into the Feather's `VBUS` and the
-  SEN0189 supply. This is a different chemistry and charge path than the LiFePO₄ entry in the
-  table above and than any option recorded in
-  [ADR-0002](../docs/decisions/0002-lifepo4-charging-path.md). ADR-0006 accepts it **for the Rev
-  A prototype only**; it is still evidence toward
-  [SCO-10](https://linear.app/scout1/issue/SCO-10) rather than a deployment decision, and the
-  LiFePO₄ row above remains the canonical fact until that issue is resolved.
+  the Rev A
+  schematic charges a 3.7 V LiPo cell through an external Adafruit PID 6106 board — a BQ25185
+  charge/power-path stage feeding a separate TPS61023 boost converter — producing a regulated
+  5 V `SYSTEM_5V` rail into the Feather's `VBUS` and the SEN0189 supply. (An earlier pass of
+  this document assumed the boosted rail was ~4.5 V, taken from the bare BQ25185's internal
+  SYS spec; the board's actual exposed output, confirmed against Adafruit's own PID 6106
+  guide, is a genuinely regulated 5 V via the separate boost IC.) This is a different chemistry
+  and charge path than any option currently recorded in
+  [ADR-0002](../docs/decisions/0002-lifepo4-charging-path.md) — it's real schematic evidence
+  toward [SCO-10](https://linear.app/scout1/issue/SCO-10). ADR-0006 accepts it **for the Rev A
+  prototype only**, so the production/deployment battery direction remains open until that
+  issue is resolved and the LiFePO₄ row above stays the canonical fact.
 
 ## Production-target baseline (future PCB, per EDD)
 
@@ -114,6 +121,18 @@ hardware/
 
 - **Physical Rev A assembly and system-level testing** — the schematic is reviewed and
   ERC-clean, but nothing has been physically built or bench-tested yet.
+- **Acoustic sensing is intentionally not part of Rev A.** Rev A deliberately scopes the first
+  electrical baseline to controller/radio, power, temperature, turbidity, and logging. The
+  hydrophone/audio front end is planned for a later revision once
+  [SCO-8](https://linear.app/scout1/issue/SCO-8) resolves — this is phased development, not a
+  missing requirement.
+- **Battery-voltage telemetry is currently absent.** Rev A leaves the Feather's `BAT`/`VBAT`
+  pin disconnected (the external pack is managed through PID 6106 instead), so the Feather's
+  normal onboard battery-sense path does not measure the Rev A pack. Tracked in
+  [SCO-83](https://linear.app/scout1/issue/SCO-83).
+- **Battery connector polarity requires physical confirmation before connection.** The PKCELL
+  LP503035 datasheet carries an explicit manufacturer "reverse the plug" warning. Tracked in
+  [SCO-84](https://linear.app/scout1/issue/SCO-84).
 - Sleep current target is **< 5 mA average** ([Team Timeline](../docs/planning/team-timeline.md) Phase 1, Week 3).
 - LoRa and flash share the SPI bus — chip-select conflict verification is required.
 - Battery and solar sizing remain provisional until the measured power budget replaces
