@@ -94,6 +94,11 @@ measured quiescent draw.
 
 ## References
 
+- [ADR-0006 — Rev A Prototype Battery Chemistry and Power Path](0006-rev-a-battery-chemistry.md)
+  — the Rev A prototype sidestepped this conflict entirely by using LiPo and an external
+  bq25185 charger, bypassing the Feather's onboard charger. That is **evidence toward this
+  decision, not a resolution of it**: the deployment chemistry and charging path are still
+  open here, and `facts.md` still records LiFePO₄ as canonical
 - [ADR-0001 — MCU and Radio Selection](0001-mcu-and-radio-selection.md) — where this conflict
   was first surfaced (open question 4)
 - [Engineering Design Document §16 Battery Sizing, §17 Solar Sizing](../engineering/engineering-design-document.md)

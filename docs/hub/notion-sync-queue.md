@@ -210,6 +210,22 @@ sections under matching headings and keep the file names visible so the mapping 
 
 ---
 
+### 7 · ADR-0006 — Rev A battery chemistry · ⏳ not yet in Notion
+
+- **Notion page** — Decisions → *ADR index* (and a new ADR-0006 page if each ADR is mirrored individually)
+- **Source** — [`docs/decisions/0006-rev-a-battery-chemistry.md`](../decisions/0006-rev-a-battery-chemistry.md)
+- **What changed** — new ADR recording the Rev A prototype's LiPo + external bq25185 power path.
+  Also touches **ADR-0002** (a References entry pointing here), the **ADR index**, and
+  **`facts.md`**, whose battery row split into a *deployment* row (LiFePO₄, unchanged) and a
+  *Rev A prototype* row (LiPo).
+- **The point that must survive the mirror** — ADR-0006 is **prototype scope only**. It does not
+  close ADR-0002 or SCO-10, and LiFePO₄ remains the canonical deployment chemistry. A reader who
+  takes away "the battery is LiPo now" has read it wrong, so keep the scoping caveats intact
+  rather than trimming them for brevity.
+- **Links to rewrite on paste** — the `0002-lifepo4-charging-path.md`, `0001-...`, and `facts.md`
+  links become Notion URLs; `hardware/**` paths have no Notion counterpart, so leave them as
+  text or point at GitHub.
+
 ## Done
 
 Move entries here with the date they were pasted, so the queue shows what has actually been
@@ -217,6 +233,7 @@ mirrored rather than silently emptying.
 
 | Entry | Mirrored on | By |
 |---|---|---|
+| **Team Meeting Notes** — new `2026-08-24 — SCOUT Weekly` section appended (Decisions, Reported, Raised, Flagged — unresolved, Next steps), mirroring [`docs/planning/meeting-notes.md`](../planning/meeting-notes.md#2026-08-24--scout-weekly) | 2026-08-25 | Claude session, direct connector write |
 | **Decision Log** — two new rows for the biofouling decision (approach chosen, then Sea Hawk Smart Solution picked as the specific product, reef-safety over Home Depot convenience). **Canonical Facts** — new Biofouling mitigation row in the settled Mechanical & deployment table | 2026-08-18 | Claude session, direct connector write |
 | **Decision Log** — new corrected row for the bolted-wedge floatation + bottom-cap decision, inserted above the incomplete SCOUT Weekly row it corrects. **Canonical Facts** — Flotation row rewritten in place (bottom caps, SF≥4 caveat); two new Open facts rows (print material, mooring attachment hardware). **Project Status** — Mechanical design row updated (O-ring/mooring now shown Done, floatation family chosen, SCO-68/69 added to Blocked-on), "As of" date bumped to 2026-08-17 to match the source. **Root S.C.O.U.T. page** — Mechanical design status line rewritten to match the current `README.md` line (was still listing O-ring/mooring as open; both are Done) | 2026-08-18 | Claude session, direct connector write |
 | Root **S.C.O.U.T.** page — status table (telemetry, dashboard, firmware, shore, mechanical), platform reframing to a nearshore monitoring platform, packet size 82 → 30 bytes in the architecture diagram, three new Known-inconsistency rows | 2026-08-15 | Claude session, direct connector write |

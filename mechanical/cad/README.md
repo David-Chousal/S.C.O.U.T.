@@ -26,3 +26,10 @@ This one document holds the whole project — floatation, sensor housing, electr
 all of it — not a separate document per subsystem. Internal tab/part naming inside it doesn't
 always match this repo's file names (Onshape's auto-generated "Copy 1 Copy 2" naming); the
 `README.md` in each subsystem folder here is the clearer map of what each STEP export is.
+
+**Flagged, not reconciled (2026-08-24):** John mentioned switching primary CAD modeling work to
+**Fusion 360** in the [2026-08-24 SCOUT Weekly](../../docs/planning/meeting-notes.md#2026-08-24--scout-weekly)
+("because it's just better"). Fusion is already the documented tool for FEA studies (see
+[`mechanical/test/README.md`](../test/README.md)), so this may just be that — but it wasn't
+explicit, and if general CAD modeling is actually moving off Onshape, this section is wrong and
+needs updating, not just this note added. Left open rather than guessed at.

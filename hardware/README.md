@@ -67,7 +67,8 @@ Verified schematic connections:
   [PR #103](https://github.com/David-Chousal/S.C.O.U.T./pull/103).
 - **Adalogger FeatherWing:** uses the Feather's SPI bus for the microSD card, with chip-select
   on `D10`; RTC (PCF8523) on I²C. Matches the "stacks on the Feather" note above.
-- **Power path (Rev A implementation evidence, not yet a documented decision):** the Rev A
+- **Power path (recorded as [ADR-0006](../docs/decisions/0006-rev-a-battery-chemistry.md)):**
+  the Rev A
   schematic charges a 3.7 V LiPo cell through an external Adafruit PID 6106 board — a BQ25185
   charge/power-path stage feeding a separate TPS61023 boost converter — producing a regulated
   5 V `SYSTEM_5V` rail into the Feather's `VBUS` and the SEN0189 supply. (An earlier pass of
@@ -76,8 +77,9 @@ Verified schematic connections:
   guide, is a genuinely regulated 5 V via the separate boost IC.) This is a different chemistry
   and charge path than any option currently recorded in
   [ADR-0002](../docs/decisions/0002-lifepo4-charging-path.md) — it's real schematic evidence
-  toward [SCO-10](https://linear.app/scout1/issue/SCO-10), not a decision recorded here. The
-  production/deployment battery direction remains open until that issue is resolved.
+  toward [SCO-10](https://linear.app/scout1/issue/SCO-10). ADR-0006 accepts it **for the Rev A
+  prototype only**, so the production/deployment battery direction remains open until that
+  issue is resolved and the LiFePO₄ row above stays the canonical fact.
 
 ## Production-target baseline (future PCB, per EDD)
 
@@ -141,7 +143,9 @@ hardware/
   (external charger + regulated feed to `3V3`) are recorded in the ADR. Owner: ECE lead. **A
   Rev A prototype schematic now implements a different path (LiPo + external bq25185) as
   evidence toward this decision — see Rev A prototype schematic above and
-  [SCO-10](https://linear.app/scout1/issue/SCO-10). Not yet reflected in ADR-0002.**
+  [SCO-10](https://linear.app/scout1/issue/SCO-10). Now recorded as
+  [ADR-0006](../docs/decisions/0006-rev-a-battery-chemistry.md) — accepted for the Rev A
+  prototype only; ADR-0002 and SCO-10 remain open for the deployment decision.**
 - **Turbidity sensor is 5 V analog.** SEN0189 outputs up to ~4.5 V; the SAMD21 ADC is 3.3 V
   tolerant, so a divider or level-safe front end is required on the analog input. **Rev A's
   schematic implements a non-inverting 10 kΩ/20 kΩ divider as a candidate — see Rev A
