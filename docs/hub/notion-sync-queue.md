@@ -207,6 +207,18 @@ sections under matching headings and keep the file names visible so the mapping 
 > at all**, so those rows in the table above have nowhere to go. That is a structural gap, not a
 > backlog item: either those pages get created in Notion, or the Hub mirror is openly scoped to
 > the three surfaces that exist. Worth deciding rather than re-queueing every PR.
+>
+> **Second structural gap, found 2026-08-24.** Same pattern, different files:
+> [`docs/engineering/buoy-structural/mass-and-buoyancy-budget.md`](../engineering/buoy-structural/mass-and-buoyancy-budget.md)
+> and [`docs/engineering/buoy-structural/force-budget.md`](../engineering/buoy-structural/force-budget.md)
+> have **no Notion page of their own** — confirmed via `notion-search`, no false negative. Their
+> content reaches Notion only secondhand, as links out to GitHub from *Canonical Facts* (Mass &
+> buoyancy budget row) and *Design Notes* (the 2026-08-24 weigh-in row). That's workable while the
+> docs are short, but both are explicitly living/running documents that will keep growing as real
+> FEA loads and measured weights land — at some point a reader in Notion will want the full worked
+> math, not just a link out. Same choice as the `journal/` gap: either give them Notion pages now,
+> or make the link-out-only scope a deliberate, written decision instead of an accumulating
+> default. Not fixed here — flagging so it doesn't silently repeat on the next mechanical PR.
 
 ---
 
@@ -217,6 +229,7 @@ mirrored rather than silently emptying.
 
 | Entry | Mirrored on | By |
 |---|---|---|
+| **Canonical Facts** — Flotation row rewritten in place (325.83 g/wedge shell, slicer-measured 2026-08-24, replacing the stale ~300 g 2026-08-18 estimate; unresolved 474.58 g vs 325.83 g discrepancy noted per Standing Rule 1). New **Mass & buoyancy budget** row added to the settled Mechanical & deployment table (previously missing entirely) — ~5.49 kg / ~38.9 L / ~337.6 N net reserve buoyancy, positioned after Flotation and before Print structure, matching the repo table order. **Project Status** — mechanical design row's `~300 g/wedge weight logged` sentence replaced with the five-part real-weigh-in summary and a link to the budget doc; "As of" date bumped to 2026-08-24. **Design Notes** — new top-of-log row, `2026-08-24 \| mechanical \| Floatation weigh-in — all five parts now measured`, inserted above the existing 2026-08-21 print-structure row (the page had no 2026-08-24 row yet despite the queue's entry 6 assuming one might). **Root S.C.O.U.T. page** — checked; its mechanical status line is already generic (no wedge weight or buoyancy figure cited), so left unchanged. `mass-and-buoyancy-budget.md` and `force-budget.md` links written as GitHub blob URLs (including the anchored `#2-calibration-...` link) — confirmed via `notion-search` that neither doc has a Notion page; see the new structural-gap note above | 2026-08-24 | Claude session, direct connector write |
 | **Decision Log** — two new rows for the biofouling decision (approach chosen, then Sea Hawk Smart Solution picked as the specific product, reef-safety over Home Depot convenience). **Canonical Facts** — new Biofouling mitigation row in the settled Mechanical & deployment table | 2026-08-18 | Claude session, direct connector write |
 | **Decision Log** — new corrected row for the bolted-wedge floatation + bottom-cap decision, inserted above the incomplete SCOUT Weekly row it corrects. **Canonical Facts** — Flotation row rewritten in place (bottom caps, SF≥4 caveat); two new Open facts rows (print material, mooring attachment hardware). **Project Status** — Mechanical design row updated (O-ring/mooring now shown Done, floatation family chosen, SCO-68/69 added to Blocked-on), "As of" date bumped to 2026-08-17 to match the source. **Root S.C.O.U.T. page** — Mechanical design status line rewritten to match the current `README.md` line (was still listing O-ring/mooring as open; both are Done) | 2026-08-18 | Claude session, direct connector write |
 | Root **S.C.O.U.T.** page — status table (telemetry, dashboard, firmware, shore, mechanical), platform reframing to a nearshore monitoring platform, packet size 82 → 30 bytes in the architecture diagram, three new Known-inconsistency rows | 2026-08-15 | Claude session, direct connector write |
