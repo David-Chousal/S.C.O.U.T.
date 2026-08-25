@@ -153,3 +153,99 @@ a two-minute call next week.
 | Diagnose the large lab printer; document bed sizes across all available machines | John Ryan |
 | Add mechanical and systems tasks to Linear as they come up | John Ryan |
 | Website design pass; hardware testing blocked until back on campus | David |
+
+---
+
+## 2026-08-24 — SCOUT Weekly
+
+**Attendees:** John Ryan Myrdal (GENG) · David Chousal Cantu (CSEN) · Isabella Rodriguez (ECEN)
+· Navid Shaghaghi (advisor)
+
+Raw transcript's speaker labels were an anonymized "Me"/"Them" throughout (Granola/Zoom
+diarization gap, not a name issue on our end) — attribution below is inferred from content and
+should be corrected if wrong.
+
+### Decisions
+
+- **Staged sensor power control**: V1 ships with sensors always-on (simplest path to a working
+  end-to-end system); per-sensor transistor switching is a deliberate **V2** step, not a blocker
+  for initial bring-up. Isabella and David agreed explicitly ("the switch is like V2" / "yeah, I
+  agree") ([SCO-87](https://linear.app/scout1/issue/SCO-87)).
+- **Buy, don't build, for now**: Rev A bring-up uses an off-the-shelf Feather M0, not a custom
+  board — reaffirms [ADR-0001](../decisions/0001-mcu-and-radio-selection.md), doesn't change it.
+  A custom board remains a possible future-phase goal, explicitly not now.
+- **Team intends to form an LLC** around SCOUT for IP protection, independent of whether
+  anything commercial ever comes of it — protects the IP even once the capstone report is
+  public via the school library. Strong verbal agreement ("I think we should do it, definitely");
+  John will send state-comparison info and handle incorporation
+  ([SCO-90](https://linear.app/scout1/issue/SCO-90)). **Not yet executed** — no state chosen, no
+  paperwork filed.
+
+### Reported
+
+- **Isabella — Rev A schematic**: KiCad schematic done for the Feather M0, battery, and the two
+  currently-schematic'd sensors (DS18B20 temperature, SEN0189 turbidity) — reviewed against
+  datasheets, not yet physically tested. Deliberately left out the solar panel and hydrophone
+  (both still open — power budget and part choice, respectively). Changed the battery/charging
+  approach from what the EDD originally specified, matching the LiPo + external bq25185 charger
+  path already documented in [ADR-0002's counterpart PR](https://github.com/David-Chousal/S.C.O.U.T./pull/102).
+- **Isabella/David — base station**: still deciding the shore-station node architecture — open
+  question is whether it needs concurrent LoRa+WiFi (would need an ESP32-S3 class part) or can
+  do it sequentially (M0 + a separate WiFi module is enough)
+  ([SCO-86](https://linear.app/scout1/issue/SCO-86)).
+- **John — mass/buoyancy model**: confirmed live on the call that the printed shell alone (not
+  counting foam) already exceeds the buoyancy needed — matches the
+  [2026-08-24 weigh-in work](../hub/design-notes.md) landing the same day. Plan is to shrink the
+  floatation design rather than keep the current oversized margin
+  ([SCO-48](https://linear.app/scout1/issue/SCO-48) comment).
+- **John — waterproofing tests**: reported the same two bench tests written up in
+  [`mechanical/test/waterproofing-submersion-test-2026-08-24.md`](../../mechanical/test/waterproofing-submersion-test-2026-08-24.md) —
+  electronics housing water-resistant, not waterproof (expected); sensor pod passed with "a
+  really horrible" printed O-ring. Isabella/Navid asked the right follow-up — *at what
+  pressure?* — this was an ambient bench test, not a pressure test. John committed to a pool
+  drop test (targeting the ~5 m equivalent) before returning to campus.
+- **John — CAD**: building a tentative electronics mounting plate to size required housing
+  volume, pending Isabella's confirmed component list (battery + boards) — Isabella asked to
+  verify that list directly with her rather than trust an AI-summarized version, citing past
+  incorrect merges ([SCO-70](https://linear.app/scout1/issue/SCO-70) comment). Also mentioned
+  switching primary CAD modeling work to **Fusion 360** ("because it's just better") — not yet
+  reconciled against [`mechanical/cad/README.md`](../../mechanical/cad/README.md)'s stated single
+  shared Onshape document as the native source; flagged in `facts.md`, not resolved here.
+  Getting a third 3D printer; may print the full chassis as a single large print.
+
+### Raised
+
+- **Base-station architecture** — see Reported above; genuinely undecided, not just unstated
+  ([SCO-86](https://linear.app/scout1/issue/SCO-86)).
+- **CAD native-source tool** — Onshape (documented) vs. Fusion 360 (what John described using
+  live on the call) — not reconciled.
+- **Funding mechanics** — confirmed workable: buy through Navid's lab now (parts become lab
+  property until reimbursed), re-request once official Senior Design funding opens. Depends on
+  Navid's lab absorbing the interim cost.
+
+### Flagged — unresolved
+
+**The printed-O-ring-vs-SCO-55-decision tension from the 2026-08-17 meeting is still open —
+two weeks running.** That entry flagged a printed O-ring passing a water test against the
+recorded off-the-shelf-only decision and said it "needs a two-minute call next week." That call
+didn't happen; instead, John ran a related (not the same) bench test this week, again with
+printed O-rings, again for practical reasons (speed, not a deliberate comparison — see
+[`facts.md`](../hub/facts.md#mechanical--deployment)). The underlying question — does the
+off-the-shelf-O-ring decision hold up, or should it be revisited given two now-passing printed
+O-ring results — still hasn't gotten its own conversation.
+
+### Next steps
+
+| Action | Owner |
+|---|---|
+| Assemble Rev A bring-up order cart (M0, sensors, wiring), share total cost | Isabella |
+| Order Rev A parts through lab funding | Isabella ([SCO-88](https://linear.app/scout1/issue/SCO-88)) |
+| Continue base-station architecture research (S3 vs M0+M0+WiFi) | David |
+| Confirm exact component list (battery, boards) with John directly | Isabella |
+| Build electronics mounting plate once component list confirmed | John Ryan |
+| Pressure-test the sensor housing (pool drop, ~5 m target) before returning to campus | John Ryan |
+| McMaster order for heat-set inserts/fasteners — check campus garage stock first | John Ryan ([SCO-89](https://linear.app/scout1/issue/SCO-89)) |
+| Have the still-open printed-O-ring vs. SCO-55 conversation — second week flagged | Team |
+| Reconcile CAD native-source documentation (Onshape vs. Fusion 360) | John Ryan |
+| Talk to advisor (Maria, per John's referral) about overall project guidance | Isabella |
+| Send LLC state-comparison info to the team | John Ryan ([SCO-90](https://linear.app/scout1/issue/SCO-90)) |
