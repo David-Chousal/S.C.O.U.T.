@@ -331,6 +331,14 @@ depends on cavity volume, not shell weight.
 
 ## 10. What this doesn't unlock yet
 
+> **See also** — [Buoy Mass, Displacement, and Freeboard Model](buoy-mass-displacement-and-freeboard-model.md)
+> *consumes* this doc (the five shell weights, the per-part cavity/displacement volumes) and
+> extends it to the **whole deployed buoy**: the full as-deployed mass budget (electronics,
+> battery, solar, stem, pod, mooring hardware, fasteners, coating — estimated pending
+> [SCO-70](https://linear.app/scout1/issue/SCO-70)), the assembled-buoy displacement, and the
+> floating-equilibrium **freeboard model** (nominal draft ~2.69 in, ~7.31 in freeboard to the
+> wedge top, buoy substantially over-floated). This doc stays the printed-shell sub-budget.
+
 This gives the [Buoy Structural Load Framework](structural-load-framework.md) its `m_b`
 and `V_disp` inputs (tagged `[M]` there, "not yet available until parts finalized" — no longer
 true for the shell, though electronics/battery/mooring-hardware mass still needs
