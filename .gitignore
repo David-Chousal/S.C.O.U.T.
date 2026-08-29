@@ -86,4 +86,4 @@ desktop.ini
 credentials.json
 
 # Claude Code local session settings (not shared)
-.claude/settings.local.json
+.claude/
