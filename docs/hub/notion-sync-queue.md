@@ -252,10 +252,15 @@ sections under matching headings and keep the file names visible so the mapping 
     nominal, ~309 N reserve, nominal draft ~2.69 in / ~7.31 in freeboard, buoy **substantially
     over-floated**; LC2 +322 N, LC5 ~440 N, LC8 50.3 kPa, LC9 ~810 N. New **Open fact** row for
     the environmental design set (proposed, not signed off).
-  - *Decision Log → Pending decisions*: new row, `2026-08-29 | geng | Environmental design set
-    for the structural FEA`.
+  - *Decision Log*: new **Log** row `2026-08-29 | geng | Mooring attachment hardware type:
+    through-bolted 316 stainless pad-eye` (chosen over U-bolt / cable loop / bonded eye /
+    cross-pin), **and** a new *Pending decisions* row `2026-08-29 | geng | Environmental design
+    set for the structural FEA`.
+  - *Canonical Facts → Open facts*: "Mooring/sensor-string attachment hardware" row updated —
+    type chosen (pad-eye), part/sizing still open.
   - *Project Status → Mechanical design*: appended the 2026-08-29 paragraph; "As of" → 2026-08-29.
-  - *Design Notes*: new top row, `2026-08-29 | mechanical | Whole-buoy mass / freeboard model +
+  - *Design Notes*: two new top rows — `2026-08-29 | mechanical | Mooring attachment — pad-eye
+    chosen (trade study)` and `2026-08-29 | mechanical | Whole-buoy mass / freeboard model +
     FEA design loads`.
 - **The point that must survive the mirror** — the FEA loads LC3–LC9 are computed at a
   **proposed** environmental design set that the team has **not** signed off (that sign-off is
