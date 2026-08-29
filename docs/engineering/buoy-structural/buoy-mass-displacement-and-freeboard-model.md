@@ -685,3 +685,44 @@ chassis stub above `z = 10` is compressed). Waterline drawn at the computed nomi
 | Vertical stack / taper-zone height (2.0 vs 1.0 in) | v4 assembly elevation | ±0.4 in on nominal draft; conclusion unchanged |
 | CG / CB / GM / righting, one-wedge-loss list angle | [SCO-80](https://linear.app/scout1/issue/SCO-80) | separate deliverable; this doc feeds it `m_total`, `V_disp`, `T` |
 | Environmental design set + FEA load values | [SCO-73](https://linear.app/scout1/issue/SCO-73) | this doc supplies the geometry (`D`, `h_s`, `A_wp`) and mass; the FEA loads themselves are in [Force Budget](force-budget.md) |
+
+---
+
+## 13. Method — reproducing or re-running this analysis
+
+Written down so the next pass is hours, not a day. The first build's time went to (a) pulling
+inputs out of ~15 scattered files — now all listed here — and (b) deriving the geometry from
+scratch — now the formulas are all in §§4–7. A routine re-run (one weight changed, SCO-70 lands,
+a new foam product) only needs to re-evaluate the affected steps.
+
+### Inputs and where they live
+
+| Input | Source |
+|---|---|
+| Printed-part weights (5 parts) | [`mass-and-buoyancy-budget.md`](mass-and-buoyancy-budget.md) §§3–9 — real slicer weigh-in |
+| Wedge / wedge-bottom / chassis geometry | `mechanical/cad/floatation/current/chassis-floatation-bolted-v4-*.pdf` (the 5 dimensioned drawings) |
+| Cavity volumes (foam) | [`mass-and-buoyancy-budget.md`](mass-and-buoyancy-budget.md) §6 (4.185 L wedge + 0.452 L bottom = 4.637 L/module) |
+| Rev A component masses (Tier I/II) | [`../electronics-housing-packing-budget.md`](../electronics-housing-packing-budget.md) §1 |
+| Fastener counts | [panel review §3](../reviews/buoy-preliminary-design-panel-review-2026-08.md) (6 bolts/wedge + 3/bottom-cap) |
+| Densities, constants | §2 of this doc |
+| Environmental design set (for the FEA loads) | [`force-budget.md`](force-budget.md) — proposed, SCO-73 |
+
+### The 6 steps
+
+1. **Printed shell mass** — sum the 5 measured weights × qty (`712.82 + 89.79 + 6·325.83 + 6·181.21 + 6·126.86 = 4606 g`). Carry the 325.83 vs 474.58 g wedge discrepancy as a `+0.89 kg` sensitivity line, don't pick one.
+2. **Foam** — `cavity = envelope − wall` for the wedge and the wedge bottom (§4.1); `× 6 modules × ρ_foam`. Full-fill is the standing assumption. Also compute the shell-gone failure number (`ρ_sw·g·V_cavity − m_foam·g`).
+3. **Everything else** — tiered low/nominal/high (§3). Tier I/II from the packing budget; Tier III (battery, solar panel+mount, stem, pod, mooring hardware) stays `[A]` until SCO-70. Keep foam constant across the mass columns.
+4. **Displacement** — foam-filled wedges + wedge bottoms + sealed chassis + caps each displace their **full envelope**; sum → `V_disp,total`; `F_B,max = ρ_sw·g·V_disp,total`; reserve `= F_B,max − W`.
+5. **Freeboard** — waterplane `A_wp = π·R_outer²` in the parallel section; piecewise `V_disp(T)` (taper zone `0–2 in`, parallel zone `2–10 in` at `A_wp` per inch); **submerged appendages enter as `(weight − own displacement)` net-down, never in the hull displacement**; solve `ρ_sw·V_disp(T) = m_eff` for `T`; freeboard `= 10 in − T` (to wedge top) or `12 in − T` (to buoy top).
+6. **Sensitivity sweep** — `T` and freeboard vs `m_total` over 6–14 kg (§8). Then the two failure cases (§9).
+
+Key conversions: `1 L = 61.0237 in³`, `1 in = 0.0254 m`, `1 in² = 6.4516 cm²`, `1 kgf = 9.81 N`, `1 lbf = 4.448 N`.
+
+### Verification depth — match it to the change
+
+- **Full rebuild / first time / a conclusion flips:** 3 independent derivations (different starting angles) → reconcile the divergences → 2 adversarial math+physics checks → 2 audits (math, house-style). This is what the 2026-08-29 build used.
+- **Routine update** (one weight moved, SCO-70 lands, new foam product, env-set revised): one careful pass re-evaluating only the affected steps, plus **one** independent agent re-deriving the changed headline numbers. Full multi-agent is overkill.
+
+### What triggers a re-run
+
+New slicer weight · SCO-70 lands · foam product chosen · vertical-stack alignment confirmed against the v4 assembly · environmental design set signed off (FEA loads in `force-budget.md`).
