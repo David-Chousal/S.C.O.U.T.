@@ -93,21 +93,56 @@ multi-depth in a future revision, the pod itself won't be the blocker.
 
 | File | Role | Status |
 |---|---|---|
-| [`sensor-housing-body-current.step`](sensor-housing-body-current.step) | Pod body, no port | **Current** |
-| [`sensor-housing-top-cap-current.step`](sensor-housing-top-cap-current.step) | Top cap | **Current** |
+| [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) | Pod body, no port — **face-seal remodel, 2026-08-29** (see [below](#face-seal-remodel--2026-08-29)) | **Current** |
+| [`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) | Sealed cap — mates to the body across the AS568-137 static face-seal O-ring | **Current** |
 | [`sensor-housing-flood-chamber-cap.step`](sensor-housing-flood-chamber-cap.step) | Flood chamber cap — where the light-blocking geometry lives | Current (single version provided) |
+| [`sensor-housing-o-ring.step`](sensor-housing-o-ring.step) | O-ring seal, modeled directly | Current |
+| [`sensor-housing-body-current.step`](sensor-housing-body-current.step) | Pod body, no port — **superseded 2026-08-29** by the face-seal remodel | Iteration |
+| [`sensor-housing-top-cap-current.step`](sensor-housing-top-cap-current.step) | Top cap — **superseded 2026-08-29** by `sensor-housing-sealed-cap.step` | Iteration |
 | [`sensor-housing-body-no-port-threaded.step`](sensor-housing-body-no-port-threaded.step) | Pod body, no port, threaded variant | Iteration |
 | [`sensor-housing-body-v1.step`](sensor-housing-body-v1.step) | Pod body, earlier revision (AS568-137 O-ring seal, ported) | Iteration |
 | [`sensor-housing-top-cap-v1.step`](sensor-housing-top-cap-v1.step) | Top cap, earliest revision | Iteration |
 | [`sensor-housing-top-cap-v2.step`](sensor-housing-top-cap-v2.step) | Top cap, second revision | Iteration |
 | [`sensor-housing-top-cap-no-port.step`](sensor-housing-top-cap-no-port.step) | Top cap, no-port variant | Iteration |
-| [`sensor-housing-o-ring.step`](sensor-housing-o-ring.step) | O-ring seal, modeled directly | Current |
 
-Body sealing uses an **AS568-137 O-ring**. The current iteration also uses **heat-set inserts
-on the inside diameter of the body cylinder** for the top-cap fastening. File naming here is
-John Ryan's own designation ("current" vs. prior iterations) from the source folder — not
-inferred, since (as with the [floatation iterations](../floatation/README.md)) bulk Onshape
-re-export timestamps aren't a reliable ordering signal.
+Body sealing uses an **AS568-137 O-ring** (3/32" ≈ 2.62 mm cross-section). The design uses
+**heat-set inserts on the inside diameter of the body cylinder** for the cap fastening. File
+naming here is John Ryan's own designation ("current" vs. prior iterations) from the source
+folder — not inferred, since (as with the [floatation iterations](../floatation/README.md))
+bulk Onshape re-export timestamps aren't a reliable ordering signal.
+
+## Face-seal remodel — 2026-08-29
+
+**Change (John Ryan).** The body↔cap joint was reworked from the earlier arrangement into a
+proper **static face seal**:
+
+- **Uniform face-seal O-ring groove** — the AS568-137 O-ring now sits in a single continuous
+  face groove with the mating faces designed to **fully touch** (metal-to-metal, or rather
+  PETG-to-PETG, hard stop) at full assembly. The faces bottoming out sets the O-ring squeeze to
+  a fixed, designed compression % rather than leaving it to fastener torque.
+- **Reinforced flange faces** — the bolt flanges were stiffened so that **bolt-flange
+  bowing/bending between the bolts does not locally reduce the O-ring compression**. On the
+  prior design, tightening the 3 bolts could dish the flange inward at the bolts and lift it
+  between them, so the seal squeeze varied around the circumference and dropped toward the
+  minimum-compression points. The stiffer flange holds the groove face flat, keeping the
+  compression % uniform all the way around.
+
+**Geometry (read from the STEP, confirm against the drawing):** 3-bolt flange on a **Ø44.45 mm
+(1.75") bolt circle**, ~Ø5.6 mm clearance holes; body ~57 mm tall, flange ~Ø54 mm; sealed cap
+~12.7 mm thick with the matching 3-bolt pattern and the face groove (modelled as a torus,
+~Ø31.75 mm centreline). ⚠️ The CAD groove torus reads a ~3.18 mm minor radius — larger than the
+2.62 mm AS568-137 cross-section — so **confirm the groove width/depth against a face-seal groove
+table for AS568-137** (typical: ~3.4 mm wide × ~2.0 mm deep for ~20–25 % squeeze) before print.
+
+**FEA.** John built a **custom PETG material profile** in Fusion for the structural work (E
+2240 MPa, ν 0.38, yield 35 MPa, UTS 45 MPa — see
+[`../../../docs/engineering/buoy-structural/force-budget.md`](../../../docs/engineering/buoy-structural/force-budget.md)
+for the profile and the density caveat). A face-seal / flange-bowing study on this housing is
+the natural next FEA once the buoy mooring load cases (LC3–LC9) are done.
+
+**Still open:** the exact AS568-137 face-groove dimensions (above); a submersion re-test of the
+remodelled housing (the [2026-08-24 test](../../test/waterproofing-submersion-test-2026-08-24.md)
+was on the prior design); heat-set insert size/depth for the 3 cap bolts.
 
 Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
 
