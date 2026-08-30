@@ -81,7 +81,7 @@ numbers. LC1 remains fully blocked on mooring hardware.
 | Case | Load | Status | Design result (survival) |
 |---|---|---|---|
 | LC1 | Slack-mooring calm-water catenary tension | **Blocked** — needs scope `S`, line unit weight `w_m` ([SCO-69](https://linear.app/scout1/issue/SCO-69)) | — |
-| LC2 | Upper-bound taut-line vertical tension `F_B,max − W` | **Computed** | **+322 N** vertical uplift at the U-bolt (light build; 309 N nominal) |
+| LC2 | Upper-bound taut-line vertical tension `F_B,max − W` | **Computed + FEA run 2026-08-29** | **+322 N** vertical uplift (light build; 309 N nominal). FEA: min SF 7.53, 0.012 mm displacement — [`fea-mooring-lc2-vertical-uplift-2026-08-29.md`](../../../mechanical/test/fea-mooring-lc2-vertical-uplift-2026-08-29.md) |
 | LC3 | Current-only lateral load | **Computed (proposed `U_c`)** | **~14 N** horizontal on the submerged band |
 | LC4 | Wave drag + inertia, phase-swept | **Computed (proposed `H`,`T`,`d`)** — linear-theory validity flagged (Ursell ≈ 98) | **~185 N** horizontal on the wetted float band |
 | LC5 | Wave + current, aligned, phase-swept | **Computed (proposed)** | **~440 N** horizontal (crest engulfment) |
@@ -274,10 +274,16 @@ theta     = atan(490 / 644) = 37.3 deg from vertical
 ## FEA load application — Fusion Static Stress setup
 
 Axes: **Z** = buoy vertical axis (up +), **X** = the aligned environmental direction, **Y** =
-transverse horizontal. Enable **gravity** in every case. Assign **PETG** (`ρ` = 1.27e-6 kg/mm³,
-`E` ≈ 2.0 GPa, yield ≈ 50 MPa) as the primary run, then repeat the governing cases for ABS and
+transverse horizontal. Enable **gravity** in every case. Repeat the governing cases for ABS and
 ASA per [SCO-64](https://linear.app/scout1/issue/SCO-64). The 2026-08-17 pass used ABS — not a
 build-material decision.
+
+**Custom PETG profile in use (John Ryan, Fusion, 2026-08-29):** `E` = 2240 MPa, `ν` = 0.38,
+yield **35 MPa**, UTS **45 MPa**, `ρ` = **1.06e-6 kg/mm³**. ⚠️ The density is carried over from
+the old ABS profile — PETG is ~1.27e-6; immaterial for static cases (gravity ≪ the applied
+loads) but reconcile before any mass-relevant study, and note the [mass budget](mass-and-buoyancy-budget.md)
+uses 1.27. The yield/UTS are conservative vs. published PETG (~50 MPa) — confirm against a
+datasheet or a printed-coupon tensile test. Run status per case: [`mechanical/test/fea-mooring-load-cases.md`](../../../mechanical/test/fea-mooring-load-cases.md).
 
 | FEA case | Load (vector / pressure) | Applied to | Constraint |
 |---|---|---|---|
