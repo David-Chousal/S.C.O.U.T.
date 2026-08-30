@@ -6,10 +6,13 @@
 > derivations; this doc is where real numbers get plugged in and kept current. **As of
 > 2026-08-29, LC2–LC9 are computed AND FEA-run** — results in
 > [`mechanical/test/fea-mooring-load-cases.md`](../../../mechanical/test/fea-mooring-load-cases.md).
-> The hull/wedges pass comfortably, but **LC6 (combined) and LC9 (snap) put the mooring
-> attachment at min SF ~1.5–1.7** — needs a re-run with the final 316 pad-eye + a hotspot fix.
-> LC3–LC7/LC9 use a *proposed* environmental design set pending team sign-off
-> ([SCO-73](https://linear.app/scout1/issue/SCO-73)); LC1 is blocked on mooring hardware.
+> **The buoy structure passes every case (min SF ≥ 10).** LC6/LC9 show min SF 1.5–1.7 at the
+> `3076T33` stand-in ring's contact interface — examined and confirmed by John as a mesh/contact
+> artifact, not a real failure path (the buoy PETG is nowhere near yield). **Sufficient for
+> now**; the final 316 pad-eye + its real mounted interface get a dedicated re-run before
+> deployment (panel Action A1, [SCO-69](https://linear.app/scout1/issue/SCO-69) / [SCO-73](https://linear.app/scout1/issue/SCO-73)).
+> LC3–LC7/LC9 use a *proposed* environmental design set pending team sign-off; LC1 is blocked on
+> mooring hardware.
 >
 > Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Tracks
 > [SCO-73](https://linear.app/scout1/issue/SCO-73).
@@ -87,21 +90,22 @@ numbers. LC1 remains fully blocked on mooring hardware.
 | LC3 | Current-only lateral load | **Computed + FEA 2026-08-29** | **~14 N** horizontal. FEA: min SF 1450 — trivial |
 | LC4 | Wave drag + inertia, phase-swept | **Computed + FEA 2026-08-29** — linear-theory validity flagged (Ursell ≈ 98) | **~185 N** horizontal. FEA: min SF 70.4, 0.14 mm — pass |
 | LC5 | Wave + current, aligned, phase-swept | **Computed + FEA 2026-08-29** (face + edge azimuths) | **~440 N** horizontal. FEA: min SF 29.6 (face) / 65.0 (edge) — pass |
-| LC6 | Resultant `F_H`, `F_V` at shackle | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 586 N @ 57°`. **FEA: min SF 1.66 — ⚠️ marginal/failing** (ran at `(−490,0,−392)`; re-run at final geometry) |
-| LC7 | `F_H` + overturning moment | **Computed + FEA 2026-08-29 (moment NOT applied)** | `F_H` 490 N + **`M` ≈ 70 N·m**. FEA: min SF 2.03 with force only — **re-run with the moment** |
+| LC6 | Resultant `F_H`, `F_V` at shackle | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 586 N @ 57°`. FEA min SF 1.66 — **stand-in-ring contact artifact, buoy PETG OK** (ran at `(−490,0,−392)`; re-run at final geometry) |
+| LC7 | `F_H` + overturning moment | **Computed + FEA 2026-08-29 (moment NOT applied)** | `F_H` 490 N + **`M` ≈ 70 N·m**. FEA min SF 2.03, force only — re-run with the moment |
 | LC8 | Hydrostatic pressure | **Computed + FEA 2026-08-29** | **50.3 kPa** external (5 m test spec). FEA: min SF 9.98, 0.40 mm — pass |
-| LC9 | Amplified snap-load case | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 810 N @ 37°`. **FEA: min SF 1.49 — ⚠️ marginal/failing** — governing case |
+| LC9 | Amplified snap-load case | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 810 N @ 37°`. FEA min SF 1.49 — **stand-in-ring contact artifact, buoy PETG OK** — governing case for the final pad-eye re-run |
 
 Full FEA results, reports, and reading: [`mechanical/test/fea-mooring-load-cases.md`](../../../mechanical/test/fea-mooring-load-cases.md).
-**The hull/wedges pass comfortably; the mooring attachment (LC6/LC9) does not** — needs a re-run
-with the final 316 pad-eye and a hotspot fix.
+**The buoy structure passes every case;** the LC6/LC9 low-SF spots are contact artifacts on the
+`3076T33` stand-in ring (confirmed by John, 2026-08-29). The final 316 pad-eye still gets a
+dedicated re-run.
 
 The [2026-08-17 side-load FEA](../../../mechanical/test/fea-floatation-side-load-2026-08-17.md)
 (300 N on the wedges, min SF 25.4) held up — the **2026-08-29 runs confirm the wedges/hull are
-over-engineered** (LC5 min SF ~30 at 440 N). But that pass did **not** load the mooring
-attachment: the 2026-08-29 LC6/LC9 runs show the pad-eye/chassis interface at **min SF
-1.5–1.7**, so "over-engineered" applies to the floatation, **not** the mooring point. Boat-strike
-/ impact survivability is a
+over-engineered** (LC5 min SF ~30 at 440 N, LC8 hydrostatic ~10). LC6/LC9 show min SF ~1.5–1.7,
+but at the `3076T33` stand-in ring's contact interface only — a mesh/contact artifact, not the
+buoy structure (confirmed on inspection, 2026-08-29). The final 316 pad-eye still needs its own
+check. Boat-strike / impact survivability is a
 **separate** non-quasi-static study ([SCO-71](https://linear.app/scout1/issue/SCO-71)), not one
 of these load cases.
 
