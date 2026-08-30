@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-24.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-08-29.**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -237,6 +237,36 @@ sections under matching headings and keep the file names visible so the mapping 
 - **Links to rewrite on paste** — the `0002-lifepo4-charging-path.md`, `0001-...`, and `facts.md`
   links become Notion URLs; `hardware/**` paths have no Notion counterpart, so leave them as
   text or point at GitHub.
+
+### 9 · Whole-buoy mass / freeboard model + FEA loads · ⏳ not yet in Notion
+
+- **Notion pages** — Hub → *Canonical Facts* (Mechanical & deployment table + Open facts),
+  Hub → *Decision Log* (Pending decisions), Hub → *Project Status* (Mechanical design row),
+  Hub → *Design Notes* (new top row). Engineering has **no page** for the new doc or for
+  `force-budget.md` (see the structural-gap note under entry 3).
+- **Source** — [`buoy-mass-displacement-and-freeboard-model.md`](../engineering/buoy-structural/buoy-mass-displacement-and-freeboard-model.md)
+  (new), [`force-budget.md`](../engineering/buoy-structural/force-budget.md) (LC2–LC9 now computed).
+- **What changed** —
+  - *Canonical Facts*: the "Mass & buoyancy budget" row was renamed to "…printed shell
+    (measured)" and a **new row** added — "Whole-buoy mass, freeboard & FEA loads": ~8.40 kg
+    nominal, ~309 N reserve, nominal draft ~2.69 in / ~7.31 in freeboard, buoy **substantially
+    over-floated**; LC2 +322 N, LC5 ~440 N, LC8 50.3 kPa, LC9 ~810 N. New **Open fact** row for
+    the environmental design set (proposed, not signed off).
+  - *Decision Log*: new **Log** row `2026-08-29 | geng | Mooring attachment hardware type:
+    through-bolted 316 stainless pad-eye` (chosen over U-bolt / cable loop / bonded eye /
+    cross-pin), **and** a new *Pending decisions* row `2026-08-29 | geng | Environmental design
+    set for the structural FEA`.
+  - *Canonical Facts → Open facts*: "Mooring/sensor-string attachment hardware" row updated —
+    type chosen (pad-eye), part/sizing still open.
+  - *Project Status → Mechanical design*: appended the 2026-08-29 paragraph; "As of" → 2026-08-29.
+  - *Design Notes*: two new top rows — `2026-08-29 | mechanical | Mooring attachment — pad-eye
+    chosen (trade study)` and `2026-08-29 | mechanical | Whole-buoy mass / freeboard model +
+    FEA design loads`.
+- **The point that must survive the mirror** — the FEA loads LC3–LC9 are computed at a
+  **proposed** environmental design set that the team has **not** signed off (that sign-off is
+  SCO-73). A reader who takes "the FEA loads are settled" has read it wrong.
+- Paste the *Design Notes* and *Canonical Facts* rows straight from the source files. Links to
+  the two `buoy-structural/` docs become GitHub blob URLs (neither has a Notion page).
 
 ### 8 · Project Status — Electrical design row is stale · ⏳ not fixed here
 

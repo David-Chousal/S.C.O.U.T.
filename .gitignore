@@ -84,3 +84,6 @@ desktop.ini
 *.pem
 *.key
 credentials.json
+
+# Claude Code local session settings (not shared)
+.claude/
