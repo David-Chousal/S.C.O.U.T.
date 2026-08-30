@@ -4,10 +4,12 @@
 > defined in the [Buoy Structural Load Framework](structural-load-framework.md), as the
 > inputs each one needs become available. The framework holds the equations and their
 > derivations; this doc is where real numbers get plugged in and kept current. **As of
-> 2026-08-29, LC2–LC9 are computed** — LC2/LC8 from geometry+mass, LC3–LC7/LC9 at a *proposed*
-> environmental design set that still needs team sign-off ([SCO-73](https://linear.app/scout1/issue/SCO-73)).
-> LC1 (catenary baseline) remains blocked on mooring hardware. A ready-to-use Fusion load table
-> is in [§ FEA load application](#fea-load-application--fusion-static-stress-setup).
+> 2026-08-29, LC2–LC9 are computed AND FEA-run** — results in
+> [`mechanical/test/fea-mooring-load-cases.md`](../../../mechanical/test/fea-mooring-load-cases.md).
+> The hull/wedges pass comfortably, but **LC6 (combined) and LC9 (snap) put the mooring
+> attachment at min SF ~1.5–1.7** — needs a re-run with the final 316 pad-eye + a hotspot fix.
+> LC3–LC7/LC9 use a *proposed* environmental design set pending team sign-off
+> ([SCO-73](https://linear.app/scout1/issue/SCO-73)); LC1 is blocked on mooring hardware.
 >
 > Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Tracks
 > [SCO-73](https://linear.app/scout1/issue/SCO-73).
@@ -82,18 +84,24 @@ numbers. LC1 remains fully blocked on mooring hardware.
 |---|---|---|---|
 | LC1 | Slack-mooring calm-water catenary tension | **Blocked** — needs scope `S`, line unit weight `w_m` ([SCO-69](https://linear.app/scout1/issue/SCO-69)) | — |
 | LC2 | Upper-bound taut-line vertical tension `F_B,max − W` | **Computed + FEA run 2026-08-29** | **+322 N** vertical uplift (light build; 309 N nominal). FEA: min SF 7.53, 0.012 mm displacement — [`fea-mooring-lc2-vertical-uplift-2026-08-29.md`](../../../mechanical/test/fea-mooring-lc2-vertical-uplift-2026-08-29.md) |
-| LC3 | Current-only lateral load | **Computed (proposed `U_c`)** | **~14 N** horizontal on the submerged band |
-| LC4 | Wave drag + inertia, phase-swept | **Computed (proposed `H`,`T`,`d`)** — linear-theory validity flagged (Ursell ≈ 98) | **~185 N** horizontal on the wetted float band |
-| LC5 | Wave + current, aligned, phase-swept | **Computed (proposed)** | **~440 N** horizontal (crest engulfment) |
-| LC6 | Resultant `F_H`, `F_V` at shackle | **Computed (proposed)** | `F_H` 490 N, `F_V` 322 N → **‖T‖ ≈ 586 N at 57° from vertical** |
-| LC7 | `F_H` + overturning moment, per-component lever arms | **Computed (proposed)** | `F_H` 490 N + **`M` ≈ 70 N·m** about the U-bolt |
-| LC8 | Hydrostatic pressure | **Computed** | **50.3 kPa** external (5 m water-equivalent test spec); 0.69 kPa as-floating (non-governing) |
-| LC9 | Amplified snap-load case | **Computed (proposed, ×2.0 dynamic)** | `F` (490, 0, 644) N → **‖T‖ ≈ 810 N at 37° from vertical** |
+| LC3 | Current-only lateral load | **Computed + FEA 2026-08-29** | **~14 N** horizontal. FEA: min SF 1450 — trivial |
+| LC4 | Wave drag + inertia, phase-swept | **Computed + FEA 2026-08-29** — linear-theory validity flagged (Ursell ≈ 98) | **~185 N** horizontal. FEA: min SF 70.4, 0.14 mm — pass |
+| LC5 | Wave + current, aligned, phase-swept | **Computed + FEA 2026-08-29** (face + edge azimuths) | **~440 N** horizontal. FEA: min SF 29.6 (face) / 65.0 (edge) — pass |
+| LC6 | Resultant `F_H`, `F_V` at shackle | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 586 N @ 57°`. **FEA: min SF 1.66 — ⚠️ marginal/failing** (ran at `(−490,0,−392)`; re-run at final geometry) |
+| LC7 | `F_H` + overturning moment | **Computed + FEA 2026-08-29 (moment NOT applied)** | `F_H` 490 N + **`M` ≈ 70 N·m**. FEA: min SF 2.03 with force only — **re-run with the moment** |
+| LC8 | Hydrostatic pressure | **Computed + FEA 2026-08-29** | **50.3 kPa** external (5 m test spec). FEA: min SF 9.98, 0.40 mm — pass |
+| LC9 | Amplified snap-load case | **Computed + FEA 2026-08-29** | `‖T‖ ≈ 810 N @ 37°`. **FEA: min SF 1.49 — ⚠️ marginal/failing** — governing case |
 
-Cross-check against the [2026-08-17 side-load FEA](../../../mechanical/test/fea-floatation-side-load-2026-08-17.md):
-that study used a **300 N** side load and found min SF 25.4. LC5/LC6 here (440–490 N) are ~1.5×
-that, implying a re-run min SF of roughly ~16 — still far above any credible target, consistent
-with the "over-engineered for the cost target" finding. Boat-strike / impact survivability is a
+Full FEA results, reports, and reading: [`mechanical/test/fea-mooring-load-cases.md`](../../../mechanical/test/fea-mooring-load-cases.md).
+**The hull/wedges pass comfortably; the mooring attachment (LC6/LC9) does not** — needs a re-run
+with the final 316 pad-eye and a hotspot fix.
+
+The [2026-08-17 side-load FEA](../../../mechanical/test/fea-floatation-side-load-2026-08-17.md)
+(300 N on the wedges, min SF 25.4) held up — the **2026-08-29 runs confirm the wedges/hull are
+over-engineered** (LC5 min SF ~30 at 440 N). But that pass did **not** load the mooring
+attachment: the 2026-08-29 LC6/LC9 runs show the pad-eye/chassis interface at **min SF
+1.5–1.7**, so "over-engineered" applies to the floatation, **not** the mooring point. Boat-strike
+/ impact survivability is a
 **separate** non-quasi-static study ([SCO-71](https://linear.app/scout1/issue/SCO-71)), not one
 of these load cases.
 
