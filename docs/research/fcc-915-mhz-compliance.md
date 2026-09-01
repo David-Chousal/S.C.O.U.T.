@@ -128,7 +128,14 @@ Compliant, and requires no protocol change, but the field-strength limit is roug
 +14 dBm. That trades away most of the link budget on a project whose entire premise is a
 low-power long-range link. **Not viable.**
 
-## 4. Recommendation
+## 4. Recommendation — adopted 2026-09-01
+
+> **Status: implemented, not yet verified on hardware.** `firmware/src/config.h` and
+> `firmware/src/drivers/lora_link.h` now ship `ModemConfig {0x98, 0xC4, 0x04}` = BW500 / SF12 /
+> CR4-8. The register values are computed from the SX1276 map and the sensitivity figures below
+> are modelled — **neither has been measured.** [SCO-98](https://linear.app/scout1/issue/SCO-98)
+> tracks bench verification once Rev A parts arrive; SF11 (`0x1E = 0xB4`) is the documented
+> fallback if SF12 misbehaves, and still clears compliance.
 
 **Adopt Option B: BW500 with the spreading factor raised to SF11 or SF12.**
 

@@ -39,9 +39,19 @@ extern "C" {
 #define SCOUT_LINK_REPEATS_NORMAL 3
 #define SCOUT_LINK_REPEATS_CONSERVE 1
 #define SCOUT_LINK_REPEAT_BASE_DELAY_MS 2000u
-/* Worst-case time for one send, matching LoraLink::send's waitPacketSent timeout. Real
- * airtime at BW125/SF7/CR4-8 for a 30-byte frame is ~102 ms; this is the blocking budget. */
+/* Worst-case time for one send, matching LoraLink::send's waitPacketSent timeout. This is
+ * the blocking budget, not the airtime — see SCOUT_LINK_AIRTIME_MS for the real figure. */
 #define SCOUT_LINK_TX_BUDGET_MS 2000u
+
+/* Actual time on air for one 30-byte frame at the shipped modem config (BW500/SF12/CR4-8,
+ * plus RadioHead's 4-byte header), per Semtech AN1200.13. Reproduce with
+ * scripts/lora_airtime.py. Kept here so the budget above can be asserted against something
+ * real: a modem-config change that pushed airtime past the budget would otherwise only show
+ * up as a mid-transmit watchdog reboot in the water. Rounded up from 559 ms.
+ *
+ * Was 111 ms at the previous BW125/SF7 config; raised 2026-09-01 for FCC compliance
+ * (SCO-19 / SCO-98). Modelled, not yet measured on hardware. */
+#define SCOUT_LINK_AIRTIME_MS 560u
 
 /* How many copies of the daily packet to send in this power mode. CRITICAL returns 0. */
 uint8_t scout_link_repeat_count(scout_power_mode_t mode, uint8_t normal_repeats,

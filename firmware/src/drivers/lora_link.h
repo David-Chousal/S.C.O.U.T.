@@ -26,9 +26,10 @@ public:
         }
         rf95_.setTxPower(LORA_TX_POWER_DBM, false);
         // setModemRegisters writes the values straight to the chip and keeps no pointer,
-        // so a local is safe. See the note below for why these three bytes.
-        const RH_RF95::ModemConfig bw125_cr48_sf7 = {0x78, 0x74, 0x04};
-        rf95_.setModemRegisters(&bw125_cr48_sf7);
+        // so a local is safe. The three bytes are derived in config.h.
+        const RH_RF95::ModemConfig bw500_cr48_sf12 = {
+            LORA_MODEM_CONFIG1, LORA_MODEM_CONFIG2, LORA_MODEM_CONFIG3};
+        rf95_.setModemRegisters(&bw500_cr48_sf12);
         return true;
     }
 
@@ -44,21 +45,26 @@ public:
     void sleep() { rf95_.sleep(); }
 
 private:
-    /* BW 125 kHz · CR 4/8 · SF7 — explicit header, CRC on, AGC auto, no low-data-rate opt.
+    /* BW 500 kHz · CR 4/8 · SF12 — explicit header, CRC on, AGC auto, no low-data-rate opt.
+     * Byte-level derivation and the full rationale live in config.h; the short version:
      *
-     * RadioHead's stock choice is Bw125Cr45Sf128 = {0x72, 0x74, 0x04}. The only byte that
-     * differs here is MODEM_CONFIG1, 0x72 → 0x78, which moves the coding rate from 4/5 to 4/8
-     * and changes nothing else. CR 4/8 is the strongest FEC the SX1276 offers and is the cheap
-     * half of the delivery-reliability strategy (ali-2024): it buys frame recovery for airtime
-     * rather than for energy per useful bit.
+     * This was BW125/SF7 until 2026-09-01. That configuration was chosen when it was still an
+     * open question whether S.C.O.U.T. falls under FCC 15.247's hopping rules — the previous
+     * note here said as much and deliberately left SF alone. SCO-19 answered it: a 125 kHz
+     * single-channel carrier at +14 dBm satisfies NEITHER §15.247 route, so BW125 was never
+     * the safe default it looked like. Widening to 500 kHz takes the digital-modulation route
+     * (a)(2), which has no dwell limit — so the SF cap that constrained the old note is gone.
      *
-     * Spreading factor is deliberately left at 7. RadioHead's only stock CR 4/8 presets force
-     * SF12 (Bw125Cr48Sf4096) or BW 31.25 kHz, and SF12/BW125 puts a 30-byte frame at ~2.2 s of
-     * airtime — which would overrun send()'s 2 s waitPacketSent budget above and blow past the
-     * 400 ms per-channel dwell limit in FCC 15.247's frequency-hopping rules. Whether
-     * S.C.O.U.T. operates under those rules is still an open question (SCO-19), so raising SF
-     * is not this change's call to make. At SF7 the frame is ~102 ms, which is safe either way
-     * and leaves the range-vs-SF tradeoff to SCO-14's real over-water measurement. */
+     * CR 4/8 is unchanged: the strongest FEC the SX1276 offers, and the cheap half of the
+     * delivery-reliability strategy (ali-2024).
+     *
+     * Airtime for a 30-byte frame goes from ~111 ms to ~559 ms (both including RadioHead's
+     * 4-byte header). That is still comfortably inside send()'s 2 s waitPacketSent budget and
+     * SCOUT_LINK_TX_BUDGET_MS, and at one packet per day the duty cycle is 0.0019%.
+     *
+     * ⚠️ NOT YET VERIFIED ON HARDWARE — the register values are computed from the SX1276
+     * map and the sensitivity figures are modelled, not measured. SCO-98 tracks bench
+     * verification; SCO-14's over-water range test is what will confirm the predicted gain. */
     RH_RF95 rf95_{PIN_RFM95_CS, PIN_RFM95_INT};
 };
 
