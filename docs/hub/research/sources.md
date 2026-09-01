@@ -106,6 +106,18 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | library/adelantado-2017.pdf | Duty-cycle / airtime / SF trade — the theory under the 1×/day 82-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
 | `bouguera-2018` | Bouguera et al. (2018). "Energy consumption model for sensor nodes based on LoRa and LoRaWAN." *Sensors* 18(7):2104. [doi](https://doi.org/10.3390/s18072104) | 🔓 | library/bouguera-2018.pdf | Energy-per-packet model (SF × power × payload) → feeds the open battery/solar sizing — [notes](notes/bouguera-2018-lora-energy.md) |
 
+## Regulatory / RF compliance
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `cfr-15-247` | 47 CFR §15.247 — "Operation within the bands 902–928 MHz, 2400–2483.5 MHz, and 5725–5850 MHz." [eCFR](https://www.ecfr.gov/current/title-47/chapter-I/subchapter-A/part-15/subpart-C/subject-group-ECFR2f2e5828339709e/section-15.247) · [Cornell LII](https://www.law.cornell.edu/cfr/text/47/15.247) | 🔓 | — | **The governing rule.** (a)(1)(i) ≥50 hopping channels + ≤0.4 s occupancy per 20 s; (a)(2) ≥500 kHz minimum 6 dB bandwidth; (b)(2) power caps; (e) 8 dBm/3 kHz PSD; (f) hybrid systems — [FCC 915 MHz Compliance](../../research/fcc-915-mhz-compliance.md) |
+| `cfr-15-23` | 47 CFR §15.23 — "Home-built devices." [eCFR](https://www.ecfr.gov/current/title-47/chapter-I/subchapter-A/part-15/subpart-A/section-15.23) | 🔓 | — | Exempts ≤5 non-marketed units from equipment **authorization**, not from the technical standards — why the capstone prototype needs no lab report but a sold product would |
+| `sunfire-lora-fcc` | Sunfire Testing. "LoRa FCC Certification Guide." [link](https://www.sunfiretesting.com/LoRa-FCC-Certification-Guide/) | 🔓 | — | Compliance lab's position: a 125 kHz LoRa signal does not meet the digital-modulation route; narrowband LoRa must hop |
+| `semtech-an1200-62` | Semtech (2021). AN1200.62, "Best Practices for FCC Pre-Compliance Testing." [pdf](https://www.mouser.com/pdfDocs/AN120062_BestPracticesforFCC_Rev_1_0_FINAL.pdf) | 🔓 | — | Semtech's own FCC guidance for LoRa parts — digital modulation vs hopping, dwell-limited payload sizing |
+| `ttn-us915` | The Things Network. "US902-928 MHz Band" regional parameters. [link](https://www.thethingsnetwork.org/docs/lorawan/regional-parameters/us915/) | 🔓 | — | Why LoRaWAN US915 defines 64 × 125 kHz channels (hopping route) **and** 8 × 500 kHz channels (digital-modulation route) — the industry precedent for both options |
+| `hi-dlnr-sap` | Hawaii DLNR Division of Aquatic Resources. "Special Activity Permit." [link](https://dlnr.hawaii.gov/dar/licenses-and-permits/special-activity-permit/) | 🔓 | — | State permit for research activity in Hawaii marine waters; refers in-water structures to OCCL |
+| `usace-nwp-10` | US Army Corps of Engineers. Nationwide Permit 10 — Mooring Buoys (eff. 2022-02-25). [pdf](https://www.nab.usace.army.mil/Portals/63/NWP%2010%20with%20General%20Conditions.pdf) | 🔓 | — | Federal Section 10 authorization pathway for mooring buoys in navigable waters |
+
 ## Link reliability & FEC
 
 | Key | Work | Access | Local | Relevance / used in |
