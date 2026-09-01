@@ -307,7 +307,7 @@ per-discipline work and exit criteria.
 
 | Project | Window | State |
 |---|---|---|
-| Phase 0 — Kickoff | Aug 14 – Sep 4, 2026 | In Progress |
+| Phase 0 — Kickoff | Aug 14 – Sep 20, 2026 | In Progress |
 | Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | Planned |
 | Phase 2 — System Integration | Oct 19 – Nov 25, 2026 | Planned |
 | Phase 3 — Enclosure & Waterproofing | Nov 30, 2026 – Jan 15, 2027 | Planned |
