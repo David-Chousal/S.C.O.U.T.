@@ -249,3 +249,141 @@ O-ring results — still hasn't gotten its own conversation.
 | Reconcile CAD native-source documentation (Onshape vs. Fusion 360) | John Ryan |
 | Talk to advisor (Maria, per John's referral) about overall project guidance | Isabella |
 | Send LLC state-comparison info to the team | John Ryan ([SCO-90](https://linear.app/scout1/issue/SCO-90)) |
+
+---
+
+## 2026-08-31 — SCOUT Weekly
+
+**Attendees:** John Ryan Myrdal (GENG) · David Chousal Cantu (CSEN) · Navid Shaghaghi (advisor)
+
+**Absent:** Isabella Rodriguez (ECEN) — her open hardware decisions were the meeting's main
+unblocked-work topic, discussed without her.
+
+Raw transcript's speaker labels were an anonymized "Me"/"Them" throughout (Granola/Zoom
+diarization gap) — attribution below is inferred from content and should be corrected if wrong.
+
+### Decisions
+
+- **Meeting cadence**: next week (Labor Day) skipped; team reconvenes **2026-09-14**. That is
+  the last meeting before the quarter starts, and is meant to set the standing meeting schedule
+  and finalize what John Ryan brings to campus. The two-week gap was chosen deliberately to give
+  Isabella time to make her hardware decisions and get parts ordered and tested.
+- **Patent the system as a whole**, not individual components. David's market research had
+  concluded there was little patent potential; Navid reframed it — the filing target is the
+  integrated system ("nobody else has made a floating buoy that monitors coral… you just need
+  one thing that's different"), not any subsystem
+  ([SCO-95](https://linear.app/scout1/issue/SCO-95)).
+- **Not pursuing defense/military applications.** The hydrophone capability was noted as
+  attractive to that market and the team explicitly declined the angle ("we'll leave that to
+  you"). Recorded because it constrains the commercialization path, not because anything was
+  built differently.
+- **Business model direction**: a public **paid** API for raw data access, plus a dashboard
+  aggregating all deployed buoys. "Public" here means anyone can buy access, not free. LLC and
+  IP to be established before next summer, ahead of applying to the BBA startup program.
+- **Anchor plan reaffirmed**: tie to pre-existing piles; do not drill into the sea floor
+  ([ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) holds).
+
+### Reported
+
+- **John Ryan — mechanical design essentially complete.** A full-panel FEA run covered every
+  critical force scenario the team could construct, including anchor strike, whale impact, and
+  low-probability twist cases. Headline result: **the metal shackle fails before the buoy
+  does** — the structure is significantly overbuilt. Flotation foam is polyurethane-based and
+  fully waterproof; expectation is it absorbs a projectile rather than allowing a clean
+  puncture, though that is unverified
+  ([SCO-73](https://linear.app/scout1/issue/SCO-73), [SCO-71](https://linear.app/scout1/issue/SCO-71)).
+- **John Ryan — turbidity pod housing redesigned from scratch** after the earlier leak, using
+  industrial marine standards throughout. Now standardized to O-ring sizes with a proper static
+  face seal, and engraved with team initials, "SCOUT", "Electronics Housing", and the rated
+  depth. Seal quality by eye is good; **face groove depth is not yet confirmed** and the O-ring
+  squeeze still needs to be validated into the 15–30% window
+  ([SCO-91](https://linear.app/scout1/issue/SCO-91)).
+- **John Ryan — printing and travel plan**: flotation wedges printed before travel and carried
+  in luggage; bamboo printer staying home, large filament supply travelling instead. The chassis
+  is a single ~35-hour print he may run on an industrial printer at work over Labor Day — if it
+  succeeds, buoy assembly drops to roughly ten minutes
+  ([SCO-93](https://linear.app/scout1/issue/SCO-93)). STEP files can be sent to David to print
+  locally if extra capacity is needed. **Target: hardware assembled and buoy ready by October.**
+- **David — software track functionally complete for Phase 1 and now parts-limited.** Analytics
+  and pipeline work is done and tested against dummy data; firmware drivers
+  ([SCO-25](https://linear.app/scout1/issue/SCO-25)) and the real LoRa receiver
+  ([SCO-24](https://linear.app/scout1/issue/SCO-24)) are written and waiting on hardware. Only
+  two open items are not hardware-blocked: measurement units
+  ([SCO-13](https://linear.app/scout1/issue/SCO-13)) and the "Fred" rename
+  ([SCO-65](https://linear.app/scout1/issue/SCO-65)).
+- **Navid — senior design lab expectations**: the lab runs as weekly milestones (hazards form,
+  budget, writing sections). An Overleaf LaTeX template will be shared with the three team
+  members, Navid, and the lab TA. Writing starts early and sections will evolve — the point is
+  to force steady progress rather than a final-week scramble. John Ryan will handle GE-specific
+  extras such as lifecycle analysis. Consensus that the team is significantly ahead of a typical
+  senior design team at this stage.
+
+### Raised
+
+- **Corrosion strategy** — Navid raised that salt will attack every exposed fastener over a
+  year-long deployment; worst case the buoy has to be drilled apart to service it. Agreed
+  approach: all-stainless hardware, plus an epoxy / polyurethane / silicone plug poured over
+  exposed bolt heads, with 3D-printed containment walls to hold the pour. Dig out the plug to
+  service. Purpose is **salt exclusion**, explicitly not biofouling
+  ([SCO-92](https://linear.app/scout1/issue/SCO-92)).
+- **Threaded-insert technique** — Navid suggested pausing the print, dropping the insert in, and
+  resuming, so the plastic encloses the insert rather than being remelted around it. Avoids the
+  off-axis heat-set failure mode; he has lab samples to show. John Ryan interested but wary
+  ([SCO-94](https://linear.app/scout1/issue/SCO-94)).
+- **LoRa range and the candidate test site** — the ~2 km line-of-sight figure is spec, not
+  measured ([SCO-14](https://linear.app/scout1/issue/SCO-14)). A likely test site is well off
+  shore; John Ryan took the action to measure the actual distance
+  ([SCO-96](https://linear.app/scout1/issue/SCO-96)). Fallback if out of range: **hop the signal
+  through a large pre-existing buoy already moored on-site**, which conveniently also solves
+  mooring at that site. Failing that, more onboard memory and physical retrieval.
+- **Sharp-impact and projectile cases were not modelled** in the FEA panel. Worth computing the
+  puncture threshold as a report statistic ([SCO-71](https://linear.app/scout1/issue/SCO-71)).
+- **Hawaii deployment timing** confirmed as **spring break**, matching Phase 6.
+
+### Flagged — unresolved
+
+**The biofouling mitigation decision appears to have been reversed, and the reversal has not
+been ratified.** [SCO-15](https://linear.app/scout1/issue/SCO-15) is `Done` and
+[`status.md`](../hub/status.md) records the outcome as the **Sea Hawk Smart Solution
+antifouling coating**, chosen 2026-08-18. On this call the team reached the opposite position:
+anti-barnacle paint ruled out, because a coating effective enough to stop growth would harm the
+reef — "if it's super resistant, it's going to kill the reef, which is super counterproductive."
+The stated preference is now to let natural growth occur, with John Ryan citing prior work on
+3D-printed surfaces that actively attract coral growth and interest in making the buoy part of
+the reef ecosystem.
+
+Three readings are possible and nobody picked one: the coating decision stands and this was
+informal musing; the decision is genuinely reversed and needs a decision-log row plus
+corrections to `status.md`; or both hold at different scopes (coating on sensor optics, natural
+growth on the hull). **The coating is on the purchase list, so this should not sit.** Flagged on
+[SCO-15](https://linear.app/scout1/issue/SCO-15) rather than silently reconciled.
+
+**Phase 0's end date drifted without a decision.** David noticed the Linear project now runs to
+2026-09-20 rather than Sep 4 and asked John Ryan directly whether he had extended it; John Ryan
+said it was unintentional and he had not touched the phase dates. Nobody chose the new date. It
+was shrugged off on the call ("we're still at phase zero anyway") but it means the mirrored
+correction in [PR #116](https://github.com/David-Chousal/S.C.O.U.T./pull/116) is codifying an
+accident — resetting Linear back to Sep 4 is equally defensible. Also note Sep 20 now overlaps
+Phase 1, which starts Sep 7.
+
+**The printed-O-ring vs. [SCO-55](https://linear.app/scout1/issue/SCO-55) tension has aged out
+rather than been resolved.** Flagged in both the 2026-08-17 and 2026-08-24 entries as needing a
+short call that never happened. The housing has since been remodelled around off-the-shelf
+O-ring sizes ([SCO-91](https://linear.app/scout1/issue/SCO-91)), which arguably settles it in
+practice — but no one said so explicitly, and the record still shows an open question.
+
+### Next steps
+
+| Action | Owner |
+|---|---|
+| Communicate the two-week window to Isabella over chat — decisions + parts list needed | David · Navid |
+| Deliver the final electronics component list and dimensions by 2026-09-14 | Isabella ([SCO-70](https://linear.app/scout1/issue/SCO-70)) |
+| Close the open hardware decisions — charging path, hydrophone part, base-station node | Isabella ([SCO-10](https://linear.app/scout1/issue/SCO-10), [SCO-8](https://linear.app/scout1/issue/SCO-8), [SCO-86](https://linear.app/scout1/issue/SCO-86)) |
+| Buy Rev A parts against lab funding once the list arrives | Navid ([SCO-88](https://linear.app/scout1/issue/SCO-88)) |
+| Attempt the chassis print on the work industrial printer over Labor Day | John Ryan ([SCO-93](https://linear.app/scout1/issue/SCO-93)) |
+| Confirm or replace the "Fred" name before the next meeting | John Ryan ([SCO-65](https://linear.app/scout1/issue/SCO-65)) |
+| Decide on-board measurement units | David ([SCO-13](https://linear.app/scout1/issue/SCO-13)) |
+| Confirm face groove depth and validate O-ring squeeze on the remodelled housing | John Ryan ([SCO-91](https://linear.app/scout1/issue/SCO-91)) |
+| Measure shore-to-site distance for the candidate Hawaii test location | John Ryan ([SCO-96](https://linear.app/scout1/issue/SCO-96)) |
+| Resolve the biofouling coating reversal — ratify or revert | Team ([SCO-15](https://linear.app/scout1/issue/SCO-15)) |
+| Settle whether Phase 0 ends Sep 4 or Sep 20 | Team ([PR #116](https://github.com/David-Chousal/S.C.O.U.T./pull/116)) |
