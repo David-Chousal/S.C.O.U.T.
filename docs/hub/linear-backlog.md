@@ -40,7 +40,7 @@ From [CLAUDE.md → Linear conventions](../../CLAUDE.md) and [CONVENTIONS.md](..
 
 - **Type label (one):** `Feature` · `Bug` · `Improvement`.
 - **Priority:** `Urgent` only if blocking someone *right now*; `High` for the current phase; most are `Medium`.
-- **Project:** every issue belongs to exactly one phase project (Phase 0–6). Phase 0 (Kickoff, Aug 14 – Sep 4) holds the open design-alignment decisions.
+- **Project:** every issue belongs to exactly one phase project (Phase 0–6). Phase 0 (Kickoff, Aug 14 – Sep 20) holds the open design-alignment decisions.
 - **Body template:** `Context` (1–2 sentences) · `Acceptance criteria` (checkboxes) · `Blocked by` (issue ID or "nothing") · `Source` (meeting/doc/ADR/PR).
 - **On filing:** also add a row to [`decision-log.md`](decision-log.md) when the issue *records a decision*, and mirror any resolved open fact back into [`facts.md`](facts.md).
 
