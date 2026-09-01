@@ -5,6 +5,27 @@ the buoy side calls :meth:`transmit`, the shore side calls :meth:`receive`. It c
 packet loss and bit corruption to exercise the receiver's error handling. When real
 hardware arrives, swap this for an ``adafruit-rfm9x`` backend exposing the same two methods.
 
+**Radio settings the real backend must use** (SCO-24). These are not free choices — the
+buoy's modem configuration is set by FCC 15.247 compliance, and the receiver has to match
+it exactly or it will hear nothing:
+
+===========================  =========================================================
+Setting                      Value
+===========================  =========================================================
+Frequency                    915.0 MHz
+Bandwidth                    **500 kHz** — the compliance-driven setting; see
+                             ``docs/research/fcc-915-mhz-compliance.md``
+Spreading factor             **12**
+Coding rate                  4/8
+Preamble                     8 symbols (RadioHead default on the buoy side)
+CRC                          enabled
+===========================  =========================================================
+
+The receiver additionally needs the SX1276 500 kHz sensitivity erratum applied — register
+``0x36 = 0x02`` and ``0x3A = 0x64``. This is a *receive-side* optimization, which is why the
+transmit-only buoy does not set it; skipping it here would quietly cost sensitivity on the
+one side that needs it most.
+
 :class:`Receiver` pulls payloads, decodes + validates them, stores good ones, and tracks
 loss/error counts.
 """
