@@ -46,8 +46,8 @@ a 125 kHz signal alone does not satisfy the digital-modulation route
 
 S.C.O.U.T. uses **one** frequency. Not 50.
 
-A third route, §15.249, permits narrowband operation without those constraints but at field
-strengths far below +14 dBm — it is not a viable option at the range this project needs.
+A third route, [§15.249](../hub/research/sources.md#regulatory--rf-compliance), permits narrowband
+operation without those constraints but at field strengths far below +14 dBm — it is not a viable option at the range this project needs.
 
 **§15.247(f)** allows *hybrid* systems combining hopping and digital modulation, with the same
 0.4 s occupancy limit. It does not create a single-channel exemption.
@@ -69,7 +69,7 @@ under the digital-modulation route instead.
 
 ## 3. The three ways out
 
-Airtime computed per Semtech AN1200.13; sensitivity modelled as
+Airtime computed per [`semtech-an1200-13`](../hub/research/sources.md#lora-phy--radio-engineering); sensitivity modelled as
 `-174 + 10·log₁₀(BW) + NF(6 dB) + SNR_limit(SF)`. Payload 34 B (30 B packet + RadioHead's 4-byte
 header).
 
@@ -119,8 +119,9 @@ and the energy cost is under 20 mAh **per year**.
 
 **Cost:** one modem-configuration change at both ends. For BW500 / SF12 / CR4-8 the registers
 compute to `ModemConfig {0x98, 0xC4, 0x04}` — *this must be verified on the bench against the
-SX1276 datasheet before being trusted.* The SX1276 also has a documented sensitivity-optimization
-erratum for 500 kHz operation that should be applied.
+[SX1276 datasheet](../hub/research/sources.md#lora-phy--radio-engineering) before being trusted.* The
+SX1276 also has a documented [500 kHz sensitivity erratum](../hub/research/notes/sx1276-errata-500khz.md)
+that the receiver must apply.
 
 ### Option C — reduce power under §15.249
 

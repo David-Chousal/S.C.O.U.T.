@@ -10,7 +10,7 @@ obstructed at 434 MHz with high-gain antennas. The authors conclude that propaga
 "does not impose any problem" for LoRa — i.e. the sea surface is not the limiting factor.
 
 **Why it matters to S.C.O.U.T.** Direct evidence that S.C.O.U.T.'s ~2 km design target is *conservative and very
-achievable* in principle, which de-risks the shore-link concept and supports the once-a-day 82-byte
+achievable* in principle, which de-risks the shore-link concept and supports the once-a-day 30-byte
 packet plan. It reframes the real range constraint: not seawater absorption, but **antenna height and
 Fresnel-zone clearance** — which is precisely where a low buoy antenna is disadvantaged (see
 [`gutierrez-gomez-2021`](gutierrez-gomez-2021-lora-near-surface.md)).
