@@ -46,7 +46,25 @@ static const uint32_t TRANSMIT_CONSERVE_FACTOR = 3;                // conserve: 
 
 /* ── Radio ────────────────────────────────────────────────────────────────── */
 static const float LORA_FREQUENCY_MHZ = 915.0f;  // US ISM (902–928 MHz)
-static const int8_t LORA_TX_POWER_DBM = 14;      // +14 dBm (EDD §2)
+/* +11 dBm, NOT the +14 dBm the EDD §2 assumed.
+ *
+ * The RFM95 module on the Feather M0 (PID 3178) carries a Single Modular Approval,
+ * FCC ID 2ASEORFM95C (Shenzhen HOPE Microelectronics), and that grant certifies a
+ * conducted output power of 0.0145 W = 11.6 dBm. FCC modular-approval rules require the
+ * integrator to keep RF output power and transmission parameters within the certified
+ * limits; exceeding them invalidates the grant and pushes the end product into full
+ * intentional-radiator certification. +14 dBm was ~2.4 dB over. 11 leaves margin.
+ *
+ * Cost is 3 dB of link budget, against the 6.5 dB the BW500/SF12 change gained — so the
+ * radio is still ~3.5 dB better off than the +14 dBm BW125/SF7 configuration it replaced,
+ * and now inside the grant rather than outside it on two counts.
+ *
+ * ANTENNA CONSTRAINT, recorded here because it is easy to violate by accident: the grant
+ * was tested with a 2.15 dBi whip, and permits "only those antennas tested with the device
+ * or similar antennas with equal or lesser gain". A higher-gain antenna to chase range —
+ * the obvious lever if SCO-14's over-water test disappoints — VOIDS the modular approval.
+ * The same applies to the shore station if it uses this module. */
+static const int8_t LORA_TX_POWER_DBM = 11;
 
 /* Modem configuration: BW 500 kHz · SF12 · CR 4/8, explicit header, CRC on.
  *

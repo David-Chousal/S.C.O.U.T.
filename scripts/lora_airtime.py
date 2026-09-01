@@ -51,13 +51,24 @@ def main():
     print(f"S.C.O.U.T. daily packet: {SCOUT_PACKET_BYTES} B "
           f"(+{RH_HEADER_BYTES} B RadioHead header = {on_air} B on air), 1x/day, 3 blind repeats\n")
 
-    print("Current configuration — ModemConfig {0x78, 0x74, 0x04}: BW125 / SF7 / CR4-8")
+    shipped = sensitivity_dbm(12, 500_000)
+    print("SHIPPED — ModemConfig {0x98, 0xC4, 0x04}: BW500 / SF12 / CR4-8 @ +11 dBm")
+    print(f"  airtime {airtime_ms(on_air, 12, 500_000):.0f} ms   "
+          f"sensitivity {shipped:.1f} dBm (modelled)")
+    print("  Compliant via 15.247(a)(2) digital modulation, and the mode the module's")
+    print("  modular grant (FCC ID 2ASEORFM95C) is certified in: equipment class DTS.\n")
+
+    print("WAS, until 2026-09-01 — {0x78, 0x74, 0x04}: BW125 / SF7 / CR4-8 @ +14 dBm")
     print(f"  airtime {airtime_ms(on_air, 7, 125_000):.0f} ms   "
           f"sensitivity {baseline:.1f} dBm (modelled)")
-    print("  NOT compliant: 125 kHz is below the 500 kHz digital-modulation minimum,")
-    print("  and a single fixed channel does not meet the >=50-channel hopping route.\n")
+    print("  NOT compliant: 125 kHz is below the 500 kHz digital-modulation minimum, a")
+    print("  single fixed channel is not the >=50-channel hopping route, and +14 dBm")
+    print("  exceeded the grant's certified 11.6 dBm.")
+    print(f"  Net change in link budget: {baseline - shipped - 3:+.1f} dB "
+          f"({shipped - baseline:+.1f} dB sensitivity, -3 dB power to stay inside the grant)\n")
 
-    print("Option A — keep BW125, add frequency hopping (>=50 ch, <=400 ms dwell / 20 s):")
+    print("Option A (REJECTED) — keep BW125, add hopping. Also outside the modular grant,")
+    print("which is certified DTS, not FHSS: adopting it would need new certification.")
     for sf in (7, 8, 9, 10, 11, 12):
         t = airtime_ms(on_air, sf, 125_000)
         cap = max_payload_within_dwell(sf, 125_000)

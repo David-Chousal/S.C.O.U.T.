@@ -136,7 +136,10 @@ low-power long-range link. **Not viable.**
 > CR4-8. The register values are computed from the SX1276 map and the sensitivity figures below
 > are modelled — **neither has been measured.** [SCO-98](https://linear.app/scout1/issue/SCO-98)
 > tracks bench verification once Rev A parts arrive; SF11 (`0x1E = 0xB4`) is the documented
-> fallback if SF12 misbehaves, and still clears compliance.
+> fallback if SF12 misbehaves, and still clears compliance. **TX power was additionally reduced
+> from +14 dBm to +11 dBm on 2026-09-01** to stay inside the module's modular grant — see §5.
+> Net link budget is ~3.5 dB better than the old configuration (+6.5 dB sensitivity, −3 dB
+> power), not the 6.5 dB quoted in the table below.
 
 **Adopt Option B: BW500 with the spreading factor raised to SF11 or SF12.**
 
@@ -170,11 +173,32 @@ API on the roadmap ([SCO-90](https://linear.app/scout1/issue/SCO-90),
 [SCO-95](https://linear.app/scout1/issue/SCO-95)), the exemption stops applying and full
 equipment authorization is required. Designing to the rule now avoids a redesign then.
 
-**Open:** Adafruit indicated the Feather M0 RFM95 (PID 3178) ships with an FCC-certified LoRa
-module as of August 2019, but no FCC ID appears in the product's published documentation. If the
-module carries a modular grant, **the grant's conditions constrain which configurations may be
-used** and must be read before settling on Option B. This needs confirming with Adafruit
-directly.
+### Resolved 2026-09-01 — the module does carry a modular grant, and it validates Option B
+
+The Feather M0 RFM95 (PID 3178) uses a shielded RFM95C module holding a **Single Modular
+Approval under FCC ID `2ASEORFM95C`** (Shenzhen HOPE Microelectronics), added when Adafruit
+revised the board in August 2019. The grant answers the open question above — and answers it in
+favour of the change already made:
+
+| Grant fact | Consequence for S.C.O.U.T. |
+|---|---|
+| **Equipment class: DTS** (Digital Transmission System), Part 15C | The module is certified in the **§15.247(a)(2) digital-modulation** mode — which requires ≥500 kHz. **BW500 is the certified configuration; BW125 was outside it.** |
+| Certified conducted power **0.0145 W = 11.6 dBm** | The firmware set **+14 dBm**, ~2.4 dB over. Reduced to **+11 dBm**. |
+| Tested antenna: whip at **2.15 dBi**; grant permits "only those antennas tested with the device or similar antennas with equal or lesser gain" | **A higher-gain antenna voids the grant** — including the obvious response to a disappointing range test. |
+| "must not be co-located or operating in conjunction with any other antenna or transmitter" | Fine today (one transmitter). Constrains any future GPS/cellular addition — note against [SCO-62](https://linear.app/scout1/issue/SCO-62). |
+| Minimum separation **20 cm from all persons** | Trivially satisfied by a moored buoy. |
+| End product must be labelled **"Contains FCC ID: 2ASEORFM95C"** | Actionable now — [SCO-103](https://linear.app/scout1/issue/SCO-103). |
+
+**This retroactively strengthens the Option B recommendation and rules Option A out entirely.**
+The grant is DTS, not FHSS. Adding frequency hopping would have operated the module in a mode it
+is not certified for, voiding the modular approval and requiring full intentional-radiator
+certification of the end product. Option A was not merely the worse engineering trade described
+in §3 — it was the more expensive *regulatory* choice too, and that was not visible until the
+grant was found.
+
+FCC modular-approval rules require the integrator to keep output power and transmission
+parameters within the certified limits; failing to do so invalidates the approval. The old
+configuration missed on **two** counts — bandwidth mode and power — not one.
 
 ## 6. Marine deployment permitting — Hawaii
 
