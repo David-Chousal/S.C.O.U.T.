@@ -48,7 +48,7 @@ Each daily CSV starts with the header row below.
 | 5 | `temp_c` | float | °C | `26.42` | DS18B20 water temperature, 2 dp (sensor is ±0.5 °C — see [sensor-selection](sensor-selection.md)). |
 | 6 | `turbidity_adc` | uint16 | counts | `3300` | Raw SEN0189 ADC reading, **not inverted**. Always logged — it is the ground truth. **A higher count is clearer water** (see the polarity note below). |
 | 7 | `turbidity_v` | float | V | `1.65` | Derived sensor voltage (ADC × Vref ÷ full-scale). |
-| 8 | `turbidity_ntu` | float | NTU | `` | Only if a calibration curve is applied; otherwise empty. See open questions. |
+| 8 | `turbidity_ntu` | float | NTU | `` | **Computed downstream, never on the buoy** ([SCO-13](https://linear.app/scout1/issue/SCO-13)). Populated by the analytics pipeline only once a calibration curve exists ([SCO-12](https://linear.app/scout1/issue/SCO-12)); empty until then. |
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
 | 10 | `uptime_s` | uint32 | s | `172800` | Seconds since boot (State-of-Health). |
 | 11 | `audio_file` | string | — | `SCOUT-01_20260814T003000Z.wav` | Filename in `/AUDIO/` if a recording was taken this cycle, else empty. |
@@ -116,16 +116,48 @@ schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v
 
 ## Relationship to the LoRa daily packet
 
-The 82-byte daily packet ([EDD §10, §14](engineering-design-document.md)) is a **summary**, not
-a row dump. Per the [Team Timeline](../planning/team-timeline.md) Phase 2, it carries at least
-`timestamp_utc`, `record_seq` (as the packet counter), a temperature summary, a turbidity
-summary, and `battery_v`. The CSV is the full local record; the packet is what fits over radio.
-Raw audio is **never** transmitted — it stays in `/AUDIO/` on the card.
+The daily packet is a **summary**, not a row dump. Per the
+[Team Timeline](../planning/team-timeline.md) Phase 2, it carries at least `timestamp_utc`,
+`record_seq` (as the packet counter), a temperature summary, a turbidity summary, and
+`battery_v`. The CSV is the full local record; the packet is what fits over radio. Raw audio is
+**never** transmitted — it stays in `/AUDIO/` on the card.
+
+**Two numbers, two meanings — do not use them interchangeably:**
+
+| Number | What it is | Where it lives |
+|---|---|---|
+| **30 bytes** | The **actual** encoded packet today — 28-byte body + 2-byte CRC | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
+| **82 bytes** | The **budget ceiling** — the most a daily packet may grow to | `LORA_PAYLOAD_BUDGET_BYTES`, [EDD §10, §14](engineering-design-document.md) |
+
+The packet therefore has ~52 bytes of headroom for future signals. Earlier revisions of this
+doc and `facts.md` quoted 82 B as though it were the packet size, which is what
+[SCO-40](https://linear.app/scout1/issue/SCO-40) corrected.
+
+**Where 82 actually comes from, and why it is not simply "the same packet, bigger."** EDD §10's
+82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a
+timestamp, **18 temperature values, 18 turbidity values**, battery voltage, status flags,
+firmware version, and a CRC. That is a multi-sample packet built for the ESP32-C3 production
+target. The as-built 30-byte packet is a different design: **one** summary reading per day, on
+the Feather M0 build platform ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)), plus
+fields the EDD layout never had (`record_seq`, `uptime_s`, `soh`, `audio_present`).
+
+Treating 82 B as a growth ceiling — which is what `LORA_PAYLOAD_BUDGET_BYTES` does — is a
+reasonable reinterpretation, and it is the one the code and this doc use. But the two numbers
+are not the same packet at two sizes, and the headroom figure should not be read as "we could
+add 52 bytes to today's layout and match the EDD." Consistent with
+[CLAUDE.md standing rule 3](../../CLAUDE.md#standing-rules), the EDD's figure is
+production-target analysis, not a spec for the Feather build.
 
 ## Open questions
 
-- **Turbidity units.** Ship raw ADC + volts for v1 (uncalibrated), or invest in an NTU
-  calibration curve? SEN0189 is not factory-calibrated; NTU needs reference standards.
+- ~~**Turbidity units.**~~ ✅ Resolved by [SCO-13](https://linear.app/scout1/issue/SCO-13)
+  (2026-08-31): the buoy ships **raw ADC counts**. `turbidity_adc` is canonical and is what the
+  packet carries; `turbidity_v` is derived from it. `turbidity_ntu` stays an optional column
+  computed **downstream in the analytics pipeline**, and only once a calibration curve exists
+  ([SCO-12](https://linear.app/scout1/issue/SCO-12)) — until then it is empty. Rationale: raw
+  counts are lossless, so a calibration can be revised and re-applied to historical data,
+  whereas one baked in on-board cannot be undone. The SEN0189 is not factory-calibrated and NTU
+  needs formazin reference standards the team does not yet have.
 - **ADC full-scale.** SAMD21 ADC is 12-bit (0–4095) but SEN0189 outputs up to ~4.5 V — the
   divider/front end (see [hardware/README](../../hardware/README.md)) sets how `turbidity_v` is
   computed. Lock this once the analog input is designed.
