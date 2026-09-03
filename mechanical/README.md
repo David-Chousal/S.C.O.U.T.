@@ -28,7 +28,9 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > ring (22.9 % squeeze, 75 % fill); closes the design panel review's lid-seal finding
 > ([SCO-68](https://linear.app/scout1/issue/SCO-68),
 > [`cad/electronics-housing/README.md`](cad/electronics-housing/README.md#static-face-seal-clamp--2026-09-02)).
-> Printed, slight O-ring tolerance trouble, **reprint pending**.
+> Printed, slight O-ring tolerance trouble, **reprint pending**
+> ([SCO-105](https://linear.app/scout1/issue/SCO-105)). **Declared the housing baseline the same
+> day**, superseding the end-cap-into-cylinder scheme.
 > Print-structure spec (walls/infill per part) now lives in its own
 > [Print Settings](../docs/engineering/buoy-structural/print-settings.md) doc; the actual FEA load values will
 > land in [Force Budget](../docs/engineering/buoy-structural/force-budget.md) as their inputs arrive. Still
@@ -48,8 +50,8 @@ Specified in
 
 | Element | Current design |
 |---|---|
-| Main housing (electronics) | **TBD** — built around an approximate 4" Schedule 40 PVC reference, not finalized |
-| Sealing | O-ring sealed removable end caps |
+| Main housing (electronics) | **Face-seal clamp + lid** (baseline 2026-09-02) — Ø114.3 mm OD × 118.11 mm, at the ~4" Schedule 40 PVC reference. Internal sizing still open ([SCO-49](https://linear.app/scout1/issue/SCO-49)) |
+| Sealing | **Static face seal, fasteners outside the O-ring boundary** — AS568-043 on the electronics housing, AS568-137 on the sensor pod. Supersedes the end-cap-into-cylinder scheme |
 | Cable entry | IP68 cable glands, marine epoxy |
 | Assembly | Heat-set inserts (replaced embedded nuts) |
 | Geometry | Cylindrical at waterline, tapered to mooring below and antenna above |
