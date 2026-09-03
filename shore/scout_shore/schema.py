@@ -60,7 +60,8 @@ def turbidity_volts(adc: int) -> float:
 def reading_to_row(reading: Reading) -> dict[str, str]:
     """Render a :class:`Reading` as a schema-conformant CSV row (all values as strings).
 
-    ``turbidity_ntu`` is left empty (no calibration yet — data-schema.md open question).
+    ``turbidity_ntu`` is left empty by design: the buoy ships raw ADC only (SCO-13), and
+    NTU is computed downstream once a calibration curve exists (SCO-12).
     """
     return {
         "schema_version": str(reading.schema_version),

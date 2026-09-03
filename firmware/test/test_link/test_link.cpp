@@ -34,6 +34,20 @@ void test_shipped_policy_leaves_watchdog_headroom(void) {
                                               SCOUT_LINK_TX_BUDGET_MS, 16384));
 }
 
+void test_shipped_airtime_fits_the_transmit_budget(void) {
+    // The modem config sets airtime; the budget bounds how long send() may block. If a
+    // bandwidth or spreading-factor change ever pushes airtime past the budget, the failure
+    // mode is a watchdog reboot mid-transmit, in the water, on a buoy nobody can reach.
+    // Catch it here instead. Raised from 111 ms to 560 ms on 2026-09-01 when the modem moved
+    // to BW500/SF12 for FCC compliance (SCO-19) — that change had ~3.6x of headroom.
+    TEST_ASSERT_LESS_THAN_UINT32(SCOUT_LINK_TX_BUDGET_MS, SCOUT_LINK_AIRTIME_MS);
+
+    // And the real airtime, not just the budget, must still leave watchdog headroom.
+    TEST_ASSERT_TRUE(scout_link_fits_watchdog(SCOUT_LINK_REPEATS_NORMAL,
+                                              SCOUT_LINK_REPEAT_BASE_DELAY_MS,
+                                              SCOUT_LINK_AIRTIME_MS, 16384));
+}
+
 void test_an_overreaching_policy_is_rejected(void) {
     // This is the guard's whole purpose: a policy that would hang past the watchdog and
     // reboot the buoy mid-transmit must be caught here, not in the water.
@@ -47,6 +61,7 @@ static void run_all() {
     RUN_TEST(test_gaps_widen_between_copies);
     RUN_TEST(test_longest_unpetted_stretch);
     RUN_TEST(test_shipped_policy_leaves_watchdog_headroom);
+    RUN_TEST(test_shipped_airtime_fits_the_transmit_budget);
     RUN_TEST(test_an_overreaching_policy_is_rejected);
     UNITY_END();
 }

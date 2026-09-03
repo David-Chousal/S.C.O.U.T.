@@ -8,7 +8,7 @@ By sending copies of a message (spread across resources), the measured **failure
 2.5%, from more than 78%** in a single-transmission baseline — a large resilience gain for the exact case
 of an infrequent packet that must land.
 
-**Why it matters to S.C.O.U.T.** S.C.O.U.T.'s daily 82-byte packet *is* a sporadic message you want delivered, and
+**Why it matters to S.C.O.U.T.** S.C.O.U.T.'s daily 30-byte packet *is* a sporadic message you want delivered, and
 this is the highest-leverage reliability lever for it. Because the duty budget at one packet per day is
 almost entirely unused, S.C.O.U.T. can afford **blind repetition** — send the day's packet two or three times
 at spaced intervals (optionally on different SFs) — and collapse the loss probability without any

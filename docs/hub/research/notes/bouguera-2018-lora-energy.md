@@ -9,7 +9,7 @@ duty structure. The headline dependency: airtime — and therefore energy per pa
 spreading factor, so a higher SF buys range at a real battery cost.
 
 **Why it matters to S.C.O.U.T.** This turns S.C.O.U.T.'s radio choices into numbers the power budget can use. It lets
-the team estimate the energy cost of the daily 82-byte packet at a chosen SF *before* hardware exists, and
+the team estimate the energy cost of the daily 30-byte packet at a chosen SF *before* hardware exists, and
 feeds the still-open **battery and solar sizing** in the EDD. It also quantifies the SF trade the firmware
 faces when link margin is poor over saltwater: pushing SF up to reach shore is not free, and the model says
 how much it costs.

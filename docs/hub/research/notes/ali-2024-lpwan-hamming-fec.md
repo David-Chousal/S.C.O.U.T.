@@ -10,7 +10,7 @@ applies through its **coding rate (CR 4/5 … 4/8)** — turning CR up trades a 
 of link margin.
 
 **Why it matters to S.C.O.U.T.** S.C.O.U.T.'s radio (RadioHead `RH_RF95`) exposes the LoRa coding rate directly, so
-this is a nearly free reliability dial. Because S.C.O.U.T. transmits **one 82-byte packet per day**, airtime is
+this is a nearly free reliability dial. Because S.C.O.U.T. transmits **one 30-byte packet per day**, airtime is
 abundant and the usual CR-vs-throughput objection doesn't apply — the buoy can run the **strongest coding
 rate (4/8)** and simply buy robustness. It's the cheapest reliability lever available and it stacks on top
 of the SF choice.

@@ -26,7 +26,7 @@ every member completes before the next phase begins.
 
 ## PHASE 0
 
-**Window:** Aug 14 – Sep 4, 2026 (3 weeks)
+**Window:** Aug 14 – Sep 20, 2026 (5 weeks)
 
 **Goal:** Kickoff: Order Parts · Set Up Tools · Align on Design
 

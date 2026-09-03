@@ -18,7 +18,7 @@ radio is on, so both sleep as much as possible without missing the daily packet 
 ## Why it matters to S.C.O.U.T.
 
 The buoy's power budget depends on the radio being off almost all the time
-([facts.md](../facts.md): 82-byte packet, 1×/day). This paper is the reference design for the
+([facts.md](../facts.md): 30-byte packet, 1×/day). This paper is the reference design for the
 duty-cycled, energy-aware link that makes a 1+ year unattended deployment feasible. It directly
 informs the firmware TX state machine and the shore-station receive window.
 
