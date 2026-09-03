@@ -94,7 +94,8 @@ multi-depth in a future revision, the pod itself won't be the blocker.
 | File | Role | Status |
 |---|---|---|
 | [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) | Pod body, no port — **face-seal remodel, 2026-08-29** (see [below](#face-seal-remodel--2026-08-29)) | **Current** |
-| [`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) | Sealed cap — mates to the body across the AS568-137 static face-seal O-ring | **Current** |
+| [`sensor-housing-sealed-cap-v2.step`](sensor-housing-sealed-cap-v2.step) | Sealed cap — mates to the body across the AS568-137 static face-seal O-ring. **Spigot re-cut 2026-09-02** (see [below](#sealed-cap-spigot-tolerance-tweak--2026-09-02)) | **Current** |
+| [`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) | Sealed cap, first face-seal revision — **superseded 2026-09-02** by `-v2` | Iteration |
 | [`sensor-housing-flood-chamber-cap.step`](sensor-housing-flood-chamber-cap.step) | Flood chamber cap — where the light-blocking geometry lives | Current (single version provided) |
 | [`sensor-housing-o-ring.step`](sensor-housing-o-ring.step) | O-ring seal, modeled directly | Current |
 | [`sensor-housing-body-current.step`](sensor-housing-body-current.step) | Pod body, no port — **superseded 2026-08-29** by the face-seal remodel | Iteration |
@@ -148,6 +149,28 @@ Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
+
+## Sealed cap spigot tolerance tweak — 2026-09-02
+
+The cap's **pilot spigot** — the short cylindrical land, 7.62 mm long, that locates the cap
+inside the body bore — was reduced from **Ø31.75 mm (1.250") to Ø31.496 mm (1.240")**, a
+0.254 mm (0.010") diameter cut. That is the **only** difference between
+[`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) and
+[`sensor-housing-sealed-cap-v2.step`](sensor-housing-sealed-cap-v2.step) — every other surface,
+the 3-bolt pattern, and the face groove are byte-identical between the two exports. The new
+diameter matches the body's own Ø31.496 mm bore surface exactly, so the two now nominally
+line-to-line rather than interfering.
+
+⚠️ **Not narrated by John Ryan** — this was found by diffing the STEP exports, not reported. It
+is consistent with the print-fit trouble reported the same day on the
+[electronics housing clamp](../electronics-housing/README.md#static-face-seal-clamp--2026-09-02),
+but whether it was a deliberate response to a sensor-pod fit problem, or an incidental change,
+is unconfirmed. Confirm the intent — and whether 0.010" is enough clearance for a printed fit —
+before the next pod print.
+
+The **body** was re-exported on the same day and is **geometrically unchanged** from the
+committed [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) (identical
+STEP `DATA` section), so no new body file was added.
 
 ## Waterproofing bench test — 2026-08-24
 
