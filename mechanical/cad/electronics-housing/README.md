@@ -2,7 +2,34 @@
 
 CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger).
 
+> ✅ **Baseline declared 2026-09-02 (John Ryan): the face-seal clamp is the current electronics
+> housing.** [`electronics-housing-clamp-v2-body.step`](electronics-housing-clamp-v2-body.step)
+> + [`electronics-housing-clamp-v2-lid.step`](electronics-housing-clamp-v2-lid.step) supersede the
+> end-cap-slides-into-cylinder arrangement below. Everything else in this folder is now
+> **iteration history**, including [`electronics-housing-body.step`](electronics-housing-body.step)
+> — which is dimensioned for the old scheme and does not mate to the clamp. See
+> [Static face-seal clamp](#static-face-seal-clamp--2026-09-02), and
+> [SCO-68](https://linear.app/scout1/issue/SCO-68) for reconciling the body/end-cap CAD to it.
+
 ## Current components
+
+| File | Role | Status |
+|---|---|---|
+| [`electronics-housing-clamp-v2-body.step`](electronics-housing-clamp-v2-body.step) | Sealing clamp body ("Clamp 2 AS568-043") — carries the AS568-043 static face-seal groove and the 6-bolt pattern, bolts **outside** the seal boundary | **Current** |
+| [`electronics-housing-clamp-v2-lid.step`](electronics-housing-clamp-v2-lid.step) | Mating lid, with the engraved identifying marking on its top face. ⚠️ No bolt clearance holes as exported ([SCO-107](https://linear.app/scout1/issue/SCO-107)) | **Current** |
+| [`electronics-housing-o-ring.step`](electronics-housing-o-ring.step) | O-ring seal, modeled directly | Reference |
+| [`electronics-housing-body.step`](electronics-housing-body.step) | Chassis cylinder body ("Full Print Body Upper") — **superseded 2026-09-02**, dimensioned for the end-cap scheme | Iteration |
+| [`electronics-housing-endcap-no-port.step`](electronics-housing-endcap-no-port.step) | End cap that slides into and seals the chassis cylinder ("Top-Bottom No Port") — **superseded 2026-09-02** | Iteration |
+| [`electronics-housing-top-fitting.step`](electronics-housing-top-fitting.step) | Waterproof top fitting ("Body Upper") — **printed and physically tested**, validated heat-set insert M4 fastening and lid fit. **Superseded 2026-09-02** as the sealing design, but its heat-set-insert result still stands | Iteration |
+| [`electronics-housing-tpu-ring.step`](electronics-housing-tpu-ring.step) | TPU-printed O-ring experiment — closed out by the [2026-08-17 O-ring decision](../../../docs/hub/decision-log.md) (off-the-shelf rings) | Iteration |
+
+John Ryan has also considered **printed injection molds** to batch-cast O-rings in-house rather
+than sourcing off-the-shelf — not pursued, and the
+[2026-08-17 decision](../../../docs/hub/decision-log.md) went the other way, but it stays a live
+option consistent with the project's in-house-additive approach (see
+[floatation → Manufacturing approach](../floatation/README.md#manufacturing-approach)).
+
+## Superseded assembly — end cap into cylinder
 
 - [`electronics-housing-body.step`](electronics-housing-body.step) — 3D-printed chassis
   cylinder body ("Full Print Body Upper")
@@ -28,8 +55,11 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
 
 ## Assembly
 
-The end cap slides into the printed chassis cylinder and is secured with **heat-set insert M4
-bolts and washers**. Waterproofing is via **rubber sealing washers** at the bolt joints.
+**Superseded 2026-09-02** by the face-seal clamp, and kept here as the record of what was
+actually built and tested. The end cap slid into the printed chassis cylinder and was secured with
+**heat-set insert M4 bolts and washers**, waterproofed by **rubber sealing washers** at the bolt
+joints — every fastener passing through the sealed boundary, which is exactly the arrangement
+the design panel review flagged and the clamp replaces.
 
 **Not yet built to this spec.** The [2026-08-24 submersion test](../../test/waterproofing-submersion-test-2026-08-24.md)
 tested a physical electronics housing with **no rubber sealing washers at the bolt joints** —
@@ -73,7 +103,7 @@ things changed together:
   potential leak path" — tracked on
   [SCO-68](https://linear.app/scout1/issue/SCO-68). It also means the bolt joints no longer
   need the rubber sealing washers that the older
-  [bolt-through design](#assembly) depends on, and whose absence is what the
+  [bolt-through design](#superseded-assembly--end-cap-into-cylinder) depends on, and whose absence is what the
   [2026-08-24 submersion test](../../test/waterproofing-submersion-test-2026-08-24.md)
   article failed on.
 - **Groove dimensions aligned to a standard O-ring.** The groove is cut for an **AS568-043**
@@ -109,29 +139,35 @@ things changed together:
 So "aligned dimensions with standard o ring" checks out on the two numbers that matter. What is
 **not** yet confirmed is the ring's *diameter* fit: the groove ID is Ø86.87 mm, and the
 AS568-043 free ID needs to sit between that and the groove OD (Ø91.69 mm) so internal pressure
-seats the ring against the outer groove wall. Verify against a supplier table before ordering.
+seats the ring against the outer groove wall. Verify against a supplier table before ordering,
+and pick the elastomer while you're there — [SCO-106](https://linear.app/scout1/issue/SCO-106).
 
 **Printed, and it needs a reprint.** John printed this revision and found **slight O-ring
 tolerance issues** — reprint pending. The specific dimension at fault is not yet recorded here;
-capture it on the reprint so the groove numbers above can be corrected rather than re-guessed.
+capture it on the reprint so the groove numbers above can be corrected rather than re-guessed
+— [SCO-105](https://linear.app/scout1/issue/SCO-105).
 
 **Identifying marking.** The lid's top face carries engraved identifying language (four lines,
 1.27 mm deep). The STEP stores it as tessellated glyph geometry, not as a text string, so the
 exact wording is **not recoverable from the file** — ⚠️ confirm the wording with John Ryan and
-record it here, so a future print can be reproduced from the repo alone.
+record it here, so a future print can be reproduced from the repo alone
+([SCO-107](https://linear.app/scout1/issue/SCO-107)).
 
 **Still open on this part:**
 
 - **The lid has no clearance holes** for the clamp's 6-bolt pattern as exported. Either the
   pattern has not been cut through it yet, or the lid is meant to be retained some other way —
-  confirm before printing the pair together.
-- **Which of the two housing sealing concepts is now the baseline** — this clamp, or the
-  older [end-cap-slides-into-cylinder](#assembly) arrangement above. They are not compatible,
-  and [`electronics-housing-body.step`](electronics-housing-body.step) is dimensioned for the
-  older one.
+  confirm before printing the pair together ([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+- **Reconciling the rest of the folder to this baseline.** The clamp is now the declared
+  sealing design, but [`electronics-housing-body.step`](electronics-housing-body.step) is still
+  dimensioned for the superseded end-cap scheme and does not mate to it. Tracked as an
+  acceptance criterion on [SCO-68](https://linear.app/scout1/issue/SCO-68).
 - **Bolt/insert spec** for the 6 blind Ø5.588 × 7.62 mm holes — those dimensions read as
   heat-set-insert bores rather than tapped or clearance holes, but the insert size is not
-  recorded.
+  recorded ([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+- **No submersion data on this design yet** — the only test on record is the 2026-08-24 run on
+  the superseded end-cap article. Re-test tracked on
+  [SCO-108](https://linear.app/scout1/issue/SCO-108).
 - The housing's overall internal sizing is still governed by
   [SCO-49](https://linear.app/scout1/issue/SCO-49) and the
   [packing budget](../../../docs/engineering/electronics-housing-packing-budget.md); this clamp
