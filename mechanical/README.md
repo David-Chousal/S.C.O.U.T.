@@ -23,6 +23,12 @@ CAD models, hull design, enclosure drawings, mooring specifications, and field t
 > Isabella's Rev A datasheets, three candidate cylindrical layouts computed, recommended
 > ~⌀100 mm × 110–130 mm (fits the existing ~4" PVC reference); see
 > [Electronics Housing Packing Budget](../docs/engineering/electronics-housing-packing-budget.md).
+> **Electronics housing static face-seal clamp, 2026-09-02** — new clamp + lid pair moving the
+> 6 fasteners **outside** the AS568-043 O-ring boundary and sizing the groove to the standard
+> ring (22.9 % squeeze, 75 % fill); closes the design panel review's lid-seal finding
+> ([SCO-68](https://linear.app/scout1/issue/SCO-68),
+> [`cad/electronics-housing/README.md`](cad/electronics-housing/README.md#static-face-seal-clamp--2026-09-02)).
+> Printed, slight O-ring tolerance trouble, **reprint pending**.
 > Print-structure spec (walls/infill per part) now lives in its own
 > [Print Settings](../docs/engineering/buoy-structural/print-settings.md) doc; the actual FEA load values will
 > land in [Force Budget](../docs/engineering/buoy-structural/force-budget.md) as their inputs arrive. Still
