@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-08-29.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-01 — queue is EMPTY.**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -36,14 +36,18 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
-> **Entries 1–4 cleared 2026-08-17**, including the Decision Log gap entry 3 left open (all
-> 17 missing rows, 2026-08-15 through 2026-08-17, now mirrored). Payloads are retained below
-> only as a record of what was mirrored; delete them on the next pass.
-> **Entries 5 and 6 are not mirrored.** Both carry paste-ready payloads and both add sibling
-> sections to the same Notion page (Engineering → *Live Dashboard*), so clear them in one visit:
-> a paste each, not a derivation.
+> ## ✅ Nothing is pending. Entries 1–9 are all mirrored.
+>
+> **Entries 5–9 were cleared 2026-09-01** by a session with a working connector, alongside the
+> Phase 0 / FCC / meeting-notes sync. Payloads below are retained only as a record of what was
+> mirrored — delete them on the next pass.
+>
+> They had accumulated because several sessions in a row had a Notion connector authenticating
+> to the wrong workspace and could only queue rather than push. **If a session can reach the
+> S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
+> queue becomes a backlog that a later session has to discover rather than a handoff.
 
-### 5 · Live Dashboard — multi-page site restructure · ⏳ not yet in Notion
+### 5 · Live Dashboard — multi-page site restructure · ✅ mirrored 2026-09-01
 
 - **Notion page** — Engineering → *Live Dashboard*
 - **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
@@ -77,7 +81,7 @@ six rows, so the Fleet row should already be there. If it is missing, the table 
 `Fleet · fleet/ · Network overview — a tile per buoy, drilling into each buoy's dashboard`
 before this section will make sense to a reader.
 
-### 6 · Live Dashboard — three sections become sticky splits · ⏳ not yet in Notion
+### 6 · Live Dashboard — three sections become sticky splits · ✅ mirrored 2026-09-01
 
 - **Notion page** — Engineering → *Live Dashboard*
 - **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md)
@@ -222,7 +226,7 @@ sections under matching headings and keep the file names visible so the mapping 
 
 ---
 
-### 7 · ADR-0006 — Rev A battery chemistry · ⏳ not yet in Notion
+### 7 · ADR-0006 — Rev A battery chemistry · ✅ mirrored 2026-09-01
 
 - **Notion page** — Decisions → *ADR index* (and a new ADR-0006 page if each ADR is mirrored individually)
 - **Source** — [`docs/decisions/0006-rev-a-battery-chemistry.md`](../decisions/0006-rev-a-battery-chemistry.md)
@@ -238,7 +242,7 @@ sections under matching headings and keep the file names visible so the mapping 
   links become Notion URLs; `hardware/**` paths have no Notion counterpart, so leave them as
   text or point at GitHub.
 
-### 9 · Whole-buoy mass / freeboard model + FEA loads · ⏳ not yet in Notion
+### 9 · Whole-buoy mass / freeboard model + FEA loads · ✅ mirrored 2026-09-01
 
 - **Notion pages** — Hub → *Canonical Facts* (Mechanical & deployment table + Open facts),
   Hub → *Decision Log* (Pending decisions), Hub → *Project Status* (Mechanical design row),
@@ -268,7 +272,7 @@ sections under matching headings and keep the file names visible so the mapping 
 - Paste the *Design Notes* and *Canonical Facts* rows straight from the source files. Links to
   the two `buoy-structural/` docs become GitHub blob URLs (neither has a Notion page).
 
-### 8 · Project Status — Electrical design row is stale · ⏳ not fixed here
+### 8 · Project Status — Electrical design row is stale · ✅ fixed 2026-09-01
 
 - **Notion page** — Hub → *Project Status*
 - **Found while** doing the electronics-housing packing-budget sync below (2026-08-25) — the
@@ -280,6 +284,27 @@ sections under matching headings and keep the file names visible so the mapping 
 - **Scoped out of today's sync** — only the Mechanical design row's packing-analysis sentence and
   the page's "As of" date were touched this pass. A full Electrical design row resync is a
   separate, deliberate pass, not a byproduct of an unrelated PR.
+
+---
+
+## Still unmirrored — structural gaps, not queue entries
+
+These are **not** pending pastes. They are `docs/` files with **no Notion counterpart at all**,
+which means the queue can never clear them — someone has to decide whether the page should exist.
+Recorded here so the gap stays visible instead of being rediscovered every few weeks.
+
+| Repo file(s) | Situation |
+|---|---|
+| [`journal/`](journal/) | No Notion page. Dated status snapshots reach Notion only as the current `status.md` state |
+| [`research/open-questions.md`](research/open-questions.md) | No Notion page |
+| [`research/sources.md`](research/sources.md) + [`research/notes/`](research/notes/) | No Notion page. The whole research library — 13 sources, 9 reading notes — is repo-only |
+| [`linear-backlog.md`](linear-backlog.md) | No Notion page |
+| [`buoy-structural/`](../engineering/buoy-structural/) docs | No Notion pages. Content reaches Notion secondhand as GitHub links from Canonical Facts and Design Notes |
+
+**The choice is the same for all of them:** create the Notion pages, or write down that the
+mirror is deliberately scoped to the surfaces that exist. Either is fine; the accumulating
+default is not, because it makes "Notion is up to date" ambiguous — which is exactly how it was
+claimed and then contradicted on 2026-09-01.
 
 ---
 
