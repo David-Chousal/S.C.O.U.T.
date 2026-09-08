@@ -262,26 +262,28 @@ the bed, and brace the geometry rather than fight the process.
 
 - **Outer wall 0.095 in — accepted as the floor.** SF 7.3 on yield under the 50.3 kPa (5 m)
   hydrostatic case; buckling suppressed by foam backing + the web + caps. Do not thin further.
-- **Side walls 0.063 in — acceptable if the radial seam faces bear against the neighbouring
-  wedge.** Each side wall is paired face-to-face with its neighbour (the six 60° wedges tile
-  the annulus), so it sees no through-thickness service pressure and the paired 3.2 mm seam
-  forms a closed compression ring + a stiffer stringer. Specify **0.080 in** only if wedges are
-  foamed individually before assembly, or if the v5 CAD has a designed seam gap. Web stays
-  mandatory either way.
-- **The foam is now structural backing, not just buoyancy redundancy** — bare, the thin outer
-  wall is marginal on external-pressure buckling. Foam must be in before any submersion; foam
-  fill + adhesion becomes a structural sign-off item.
+- **Side walls 0.063 in — accepted.** John confirmed the assembly: the six wedges are **exactly
+  60°**, the **radial seams are epoxied**, and **foam is poured after the wedges are bolted
+  into the ring**. That makes them an epoxied closed monocoque ring — each side wall sees no
+  through-thickness service pressure, the bonded 3.2 mm seam is a compression-ring path and a
+  stiff composite stringer, and the foam-fill pressure is reacted by the bonded neighbour. Web
+  stays mandatory (it fixed the print).
+- **The epoxied 6-wedge ring is the primary structure; foam is required backing** against
+  local/asymmetric loads (a single bare panel is marginal on external-pressure buckling — the
+  bonded ring is much stiffer, but that needs an assembly-level buckling FEA to confirm). Foam
+  must be in before any submersion until that FEA is run.
 - **Bolt loads stay on the ~0.69 in inner flange**, never the thin walls — confirm the flange
   survived the v5 redesign once the STEP is exported.
 - **Impact ([SCO-71](https://linear.app/scout1/issue/SCO-71)) is now more wall-thickness
   sensitive** and must be re-checked before the spec is frozen.
 
-**Still to do:** export `floatation-v5-*` STEP + a dimensioned PDF, rotate `current/`, re-slice
-for real weights, run the [SCO-110](https://linear.app/scout1/issue/SCO-110) mass / freeboard
-recompute, and **confirm the seam design** — whether the radial faces tile in contact (each
-wedge exactly 60°), whether they're epoxied, and whether foam goes in before or after the
-wedges are bolted into the ring. Those three settle the side-wall thickness
-([check §5.5](../../test/wedge-wall-thickness-structural-check-2026-09-07.md#55-what-the-v5-step-must-confirm)).
+**Still to do:** export `floatation-v5-*` STEP + a dimensioned PDF (confirming the ~0.69 in
+inner bolt flange survived), rotate `current/`, re-slice for real weights, run the
+[SCO-110](https://linear.app/scout1/issue/SCO-110) mass / freeboard recompute, and add an
+**assembly-level buckling FEA of the epoxied 6-wedge ring** to
+[SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73)
+scope. Check the first six-wedge dry-fit seats on the chassis without forcing (6 × exactly 60°
+has no designed clearance).
 
 ## Outer Octagon — a separate, distinct design
 

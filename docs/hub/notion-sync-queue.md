@@ -56,15 +56,16 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   [`facts.md`](facts.md), [`status.md`](status.md), [`journal/2026-09-07.md`](journal/2026-09-07.md).
 - **What changed** — wedge resized to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110))
   and walls thinned to outer 0.095 in / sides 0.063 in with a mandatory internal bracing web.
-  Closed-form check: outer wall accepted as the floor; side walls 0.063 in accepted given the
-  paired face-to-face seam (0.080 in only if foamed pre-assembly / seam gap). Copy the new
-  `2026-09-07` rows straight from `design-notes.md` and `decision-log.md`; update the
-  `facts.md` Flotation + Print-structure rows in place; append the v5 paragraph to the Project
-  Status Mechanical row and bump "As of" to 2026-09-07.
-- **The point that must survive the mirror** — **the foam fill is now required structural
-  backing, not just buoyancy redundancy.** A reader who takes away "the walls got thinner, fine"
-  has missed it: bare, the thin outer wall is marginal on external-pressure buckling, so foam
-  must be in before any submersion.
+  Closed-form check: **both wall thicknesses accepted** — the six wedges assemble as an epoxied
+  closed monocoque ring (exactly 60° each, epoxied seams, foamed after ring assembly, confirmed
+  by John). Copy the new `2026-09-07` rows straight from `design-notes.md` and
+  `decision-log.md`; update the `facts.md` Flotation + Print-structure rows in place; append the
+  v5 paragraph to the Project Status Mechanical row and bump "As of" to 2026-09-07.
+- **The point that must survive the mirror** — **the epoxied wedge ring is the primary
+  structure; the foam is required backing against local/asymmetric loads and stays mandatory
+  before submersion** (pending an assembly-level ring-buckling FEA). A reader who takes away
+  "the walls got thinner, fine" has missed the foam dependency; one who takes away "the shell
+  can't support itself" has over-read it (that was the Rev 1 framing, since revised).
 - Links to `mechanical/**` and `buoy-structural/**` become GitHub blob URLs (no Notion pages).
 - **Queued, not pushed** — this session's Notion connector is not confirmed against the
   S.C.O.U.T. workspace. If yours is, push directly and move this to Done.
