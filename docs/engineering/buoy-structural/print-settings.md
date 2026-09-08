@@ -26,9 +26,10 @@
 
 | Part | Walls | Infill | Effective wall thickness | Rationale |
 |---|---|---|---|---|
-| Wedge (shell) | 3–4 | ~15% gyroid | ~1.2–1.6 mm (perimeters only, at 0.25 in CAD wall) | Non-primary, foam-backed — panel-review endorsed. Foam supplies redundant buoyancy if the shell is breached |
-| Wedge bottom cap | 3–4 | ~15% gyroid | Same as wedge | Same family, same reasoning |
-| Wedge cap | 3–4 | ~15% gyroid | Same as wedge | Same family, same reasoning |
+| Wedge (shell) — **v5, 2026-09-07** | perimeters only | 0% (solid perimeters) | **outer curved wall 0.095 in / 2.41 mm (~6 passes); radial side walls + internal web 0.063 in / 1.60 mm (~4 passes) — both accepted** | Non-primary. The six wedges form an **epoxied closed monocoque ring** (exactly 60° each, bonded seams, foamed after ring assembly) — the radial walls see no through-thickness service pressure and the bonded 3.2 mm seam is a compression-ring path + composite stringer. See [wedge wall-thickness check, 2026-09-07](../../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md). Internal bracing web is **mandatory** (DFM: thin open walls flexed on the bed; also halves every panel span). Foam must be in before any submersion (pending an assembly-level ring-buckling FEA). Bolt loads on the ~0.69 in inner flange only |
+| Wedge (shell) — v4 (superseded) | 3–4 | ~15% gyroid | ~1.2–1.6 mm (perimeters only, at 0.25 in CAD wall) | Non-primary, foam-backed — panel-review endorsed. Foam supplied redundant buoyancy if the shell was breached. Superseded by the v5 thin-wall row above |
+| Wedge bottom cap | 3–4 | ~15% gyroid | Same as v4 wedge (not yet re-specced for v5) | Same family; carries the primary grounding/waterline impact role, so kept thicker than the v5 shell pending [SCO-71](https://linear.app/scout1/issue/SCO-71) |
+| Wedge cap | 3–4 | ~15% gyroid | Same as v4 wedge | Same family, same reasoning; **vent during the foam pour** so fill pressure can't bow the thin v5 walls |
 | **Any heat-set insert boss, on any part** | **Locally solid — no infill gaps** | **0% (fully solid locally)** | Boss OD ≥ 2× insert diameter | Insert pull-out strength depends on solid perimeters around the hole, not bulk infill density — infill contributes almost nothing to retention |
 | Chassis (general body) | 6 | 25–30% gyroid | ~2.4–2.7 mm | Primary mooring-load structure — walls dominate FDM structural strength over infill; today's spec roughly doubles perimeter count vs. the wedge family |
 | Chassis at the U-bolt/mooring boss | 8–10+ | Locally 100% solid | Full local thickness | Critical single-point-failure region (panel review) — bearing/pull-out load needs solid material, not infill |
@@ -61,8 +62,16 @@ Full worked application per part: [Buoy Mass and Buoyancy Budget §1](mass-and-b
 
 ## Status
 
-**Provisional — not yet FEA-verified.** [SCO-75](https://linear.app/scout1/issue/SCO-75)
-(chassis print structure) and [SCO-77](https://linear.app/scout1/issue/SCO-77) (fastener/insert
-strategy) are the tracking issues; both are blocked or queued pending
-[SCO-73](https://linear.app/scout1/issue/SCO-73)'s FEA load cases. Update this file the moment
-real load data changes any of the above.
+**Provisional.** The chassis family is not yet FEA-verified —
+[SCO-75](https://linear.app/scout1/issue/SCO-75) (chassis print structure) and
+[SCO-77](https://linear.app/scout1/issue/SCO-77) (fastener/insert strategy) track it, both
+queued pending [SCO-73](https://linear.app/scout1/issue/SCO-73)'s FEA load cases.
+
+**The v5 wedge wall spec** (2026-09-07) has a closed-form structural check —
+[`wedge-wall-thickness-structural-check-2026-09-07.md`](../../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md):
+outer wall 0.095 in and side walls 0.063 in are both accepted, on the confirmed assembly (60°
+wedges, epoxied seams, foamed after ring assembly). **Not yet FEA-verified, and not frozen**
+until the v5 STEP is exported, an assembly-level ring-buckling FEA is run, the
+[SCO-110](https://linear.app/scout1/issue/SCO-110) mass recompute is done, and
+[SCO-71](https://linear.app/scout1/issue/SCO-71) impact results exist. Update this file the
+moment real load data changes any of the above.
