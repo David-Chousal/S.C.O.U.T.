@@ -31,6 +31,13 @@ name at the top level of this folder (matching the `-v3`/`-v9` pattern already u
 then move the new design's files into a fresh `current/`. Don't let `current/` silently become
 stale — the whole point of the name is that it's always trustworthy.
 
+> **⚠️ A v5 revision is in progress and not yet in `current/` (2026-09-07).** John Ryan has
+> reduced the wedge to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110)), thinned the
+> walls to 0.095 in (outer) / 0.063 in (sides), and added an internal bracing web — see
+> [Thin-wall + DFM bracing-web iteration (v5)](#thin-wall--dfm-bracing-web-iteration-v5--2026-09-07)
+> below. **The STEP + dimensioned PDF for v5 have not been exported yet;** `current/` still
+> holds v4. Rotate `current/` per the paragraph above once v5 is exported.
+
 ## Drawings (historical)
 
 2D drawing exports of the three-part flotation body (v1–v9 concept, superseded — kept as
@@ -223,6 +230,53 @@ slight clearance spacers between the buoy top and the solar panel. Not yet model
 pass at the cable-gland cap revision that issue tracks, but the cable-routing and OD questions
 above are still open, and the acceptance criteria (gland count fixed against the final sensor
 set, sealing approach, submersion test) aren't addressed yet.
+
+### Thin-wall + DFM bracing-web iteration (v5) — 2026-09-07
+
+**Narrated by John Ryan.** Following the 5.5-in wedge / 8.5-in chassis resize
+([SCO-110](https://linear.app/scout1/issue/SCO-110), decided 2026-09-03), John ran a series of
+slicing passes to take mass out of the wedge shell — *"light and not to waste filament."*
+
+**What changed:**
+
+- **Height** — wedge and chassis both cut by the same amount until the wedge reached **5.5 in**.
+- **Walls thinned iteratively**, re-sliced each pass (model weights ~168 g to ~273 g across the
+  passes, vs. 325.83 g for v4). Went past "too thin," walked it back. **Landed at: outer curved
+  wall 0.095 in (2.41 mm), radial side walls 0.063 in (1.60 mm).** At a 0.42 mm line width both
+  are now **fully-dense perimeter shells with no infill core** — a change from v4's "3–4 walls +
+  15 % gyroid."
+- **Closed the previously-open cavity and added an internal bracing web** with lightening
+  cutouts ("cavities / pod holes").
+
+**Why the web — DFM, and it matters.** As an open shell, the thin side walls stood as tall,
+unsupported fins joined only along the outer curved wall. At 1.6 mm and 5.5 in tall they
+**flexed during printing** under the toolhead's own acceleration forces, which **broke
+first-layer bed adhesion** and left surface artifacts on the prints. Connecting the walls with
+an internal web braces the part stiff enough that the first layer stays down. The same web also
+does structural work — it halves the free span of every wall panel and adds a third shear web
+to the wedge-to-chassis load path — so **the DFM fix and the structural fix are the same
+change**. This is the model DFM outcome: recognise the limit of what FDM can hold flat against
+the bed, and brace the geometry rather than fight the process.
+
+**Structural check — [`mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md`](../../test/wedge-wall-thickness-structural-check-2026-09-07.md):**
+
+- **Outer wall 0.095 in — accepted as the floor.** SF 7.3 on yield under the 50.3 kPa (5 m)
+  hydrostatic case; buckling suppressed by foam backing + the web + caps. Do not thin further.
+- **Side walls 0.063 in — marginal; specified up to 0.080 in (2.00 mm).** 1.60 mm is SF ≈ 2 on
+  the foam-fill manufacturing transient and single-wedge shear buckling; 2.00 mm restores
+  SF ≥ 3 for ~+2 % wedge mass. 1.60 mm acceptable only with the web retained, foam QC'd, cap
+  vented during pour, and [SCO-71](https://linear.app/scout1/issue/SCO-71) impact passed.
+- **The foam is now structural backing, not just buoyancy redundancy** — bare, the thin outer
+  wall is marginal on external-pressure buckling. Foam must be in before any submersion; foam
+  fill + adhesion becomes a structural sign-off item.
+- **Bolt loads stay on the ~0.69 in inner flange**, never the thin walls — confirm the flange
+  survived the v5 redesign once the STEP is exported.
+- **Impact ([SCO-71](https://linear.app/scout1/issue/SCO-71)) is now more wall-thickness
+  sensitive** and must be re-checked before the spec is frozen.
+
+**Still to do:** export `floatation-v5-*` STEP + a dimensioned PDF, rotate `current/`, re-slice
+for real weights, and run the [SCO-110](https://linear.app/scout1/issue/SCO-110) mass /
+freeboard recompute.
 
 ## Outer Octagon — a separate, distinct design
 

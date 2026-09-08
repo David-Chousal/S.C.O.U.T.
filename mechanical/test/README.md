@@ -9,6 +9,7 @@ structure. First category populated 2026-08-17 with the initial floatation FEA p
 
 | Record | Date | Summary |
 |---|---|---|
+| [`wedge-wall-thickness-structural-check-2026-09-07.md`](wedge-wall-thickness-structural-check-2026-09-07.md) | 2026-09-07 | Closed-form check of the v5 thinned wedge walls (outer 0.095 in / sides 0.063 in, 5.5 in height). **Outer wall accepted as the floor** (SF 7.3 on yield under LC8); **side walls marginal — specified up to 0.080 in**. Internal bracing web mandatory (DFM); **foam reclassified as required structural backing**. Impact ([SCO-71](https://linear.app/scout1/issue/SCO-71)) still to check |
 | [`fea-mooring-load-cases.md`](fea-mooring-load-cases.md) | 2026-08-29 | **Tracker + results for LC2–LC9 + service** (all run 2026-08-29). Load, min SF, displacement, verdict per case + report links. **Buoy structure passes every case** (SF 10–1450); LC6/LC9 low-SF spots confirmed as stand-in-ring contact artifacts. Final 316 pad-eye re-run deferred |
 | [`fea-mooring-lc2-vertical-uplift-2026-08-29.md`](fea-mooring-lc2-vertical-uplift-2026-08-29.md) | 2026-08-29 | LC2 detailed summary — 322 N vertical uplift, min SF 7.53, 0.012 mm. The LC3–LC9 reports are HTML-only; their results are in the tracker |
 | [`waterproofing-submersion-test-2026-08-24.md`](waterproofing-submersion-test-2026-08-24.md) | 2026-08-24 | Bench submersion test, 3 articles: PLA sensor housing + TPU O-ring passed (~30 hr, dry); PETG print (low quality) and the electronics housing both failed |

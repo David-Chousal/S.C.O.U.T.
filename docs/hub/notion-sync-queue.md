@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-01 — queue is EMPTY.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-07 — one entry pending (10, wedge v5).**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -36,8 +36,6 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ## Pending
 
-> ## ✅ Nothing is pending. Entries 1–9 are all mirrored.
->
 > **Entries 5–9 were cleared 2026-09-01** by a session with a working connector, alongside the
 > Phase 0 / FCC / meeting-notes sync. Payloads below are retained only as a record of what was
 > mirrored — delete them on the next pass.
@@ -46,6 +44,29 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > to the wrong workspace and could only queue rather than push. **If a session can reach the
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
+
+### 10 · Flotation wedge v5 — thin walls + DFM bracing web · queued 2026-09-07
+
+- **Notion pages** — Hub → *Canonical Facts* (Flotation row + Print structure row), Hub →
+  *Decision Log* (new Log row), Hub → *Project Status* (Mechanical design row + "As of" date),
+  Hub → *Design Notes* (new top row). Engineering has **no page** for
+  `mechanical/test/` or `print-settings.md` (structural gap, entry 3).
+- **Source** — [`mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md`](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)
+  (new), [`design-notes.md`](design-notes.md), [`decision-log.md`](decision-log.md),
+  [`facts.md`](facts.md), [`status.md`](status.md), [`journal/2026-09-07.md`](journal/2026-09-07.md).
+- **What changed** — wedge resized to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110))
+  and walls thinned to outer 0.095 in / sides 0.063 in with a mandatory internal bracing web.
+  Closed-form check: outer wall accepted as the floor, side walls specified up to 0.080 in.
+  Copy the new `2026-09-07` rows straight from `design-notes.md` and `decision-log.md`; update
+  the `facts.md` Flotation + Print-structure rows in place; append the v5 paragraph to the
+  Project Status Mechanical row and bump "As of" to 2026-09-07.
+- **The point that must survive the mirror** — **the foam fill is now required structural
+  backing, not just buoyancy redundancy.** A reader who takes away "the walls got thinner, fine"
+  has missed it: bare, the thin outer wall is marginal on external-pressure buckling, so foam
+  must be in before any submersion.
+- Links to `mechanical/**` and `buoy-structural/**` become GitHub blob URLs (no Notion pages).
+- **Queued, not pushed** — this session's Notion connector is not confirmed against the
+  S.C.O.U.T. workspace. If yours is, push directly and move this to Done.
 
 ### 5 · Live Dashboard — multi-page site restructure · ✅ mirrored 2026-09-01
 
