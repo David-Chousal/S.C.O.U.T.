@@ -56,10 +56,11 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   [`facts.md`](facts.md), [`status.md`](status.md), [`journal/2026-09-07.md`](journal/2026-09-07.md).
 - **What changed** — wedge resized to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110))
   and walls thinned to outer 0.095 in / sides 0.063 in with a mandatory internal bracing web.
-  Closed-form check: outer wall accepted as the floor, side walls specified up to 0.080 in.
-  Copy the new `2026-09-07` rows straight from `design-notes.md` and `decision-log.md`; update
-  the `facts.md` Flotation + Print-structure rows in place; append the v5 paragraph to the
-  Project Status Mechanical row and bump "As of" to 2026-09-07.
+  Closed-form check: outer wall accepted as the floor; side walls 0.063 in accepted given the
+  paired face-to-face seam (0.080 in only if foamed pre-assembly / seam gap). Copy the new
+  `2026-09-07` rows straight from `design-notes.md` and `decision-log.md`; update the
+  `facts.md` Flotation + Print-structure rows in place; append the v5 paragraph to the Project
+  Status Mechanical row and bump "As of" to 2026-09-07.
 - **The point that must survive the mirror** — **the foam fill is now required structural
   backing, not just buoyancy redundancy.** A reader who takes away "the walls got thinner, fine"
   has missed it: bare, the thin outer wall is marginal on external-pressure buckling, so foam

@@ -9,11 +9,17 @@
 > and **print/handling flex** — as closed-form hand calculations.
 >
 > **Verdict:** the **outer wall at 0.095 in is acceptable and is the floor** — do not thin it
-> further. The **side walls at 0.063 in are marginal**; the doc recommends **0.080 in / 2.00 mm**.
-> The internal bracing web John added is **load-bearing and mandatory, not just a print aid**,
-> and the foam fill is now **structurally required backing**, not just buoyancy redundancy — a
-> real change from the prior "walls are primary structure, foam is the backup" framing that must
-> propagate to the failure philosophy.
+> further. The **side walls at 0.063 in are acceptable *if* the radial seam faces bear against
+> the neighbouring wedge** (each wall is paired face-to-face with its neighbour — [§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels));
+> specify **0.080 in** only if wedges are foamed individually before assembly, or if there's a
+> designed seam gap. The internal bracing web John added is **load-bearing and mandatory, not
+> just a print aid**, and the foam fill is now **structurally required backing** for the outer
+> wall, not just buoyancy redundancy — a real change from the prior "walls are primary
+> structure, foam is the backup" framing that must propagate to the failure philosophy.
+>
+> **[Rev 2, 2026-09-07]** — the side-wall recommendation was made conditional after John Ryan
+> pointed out the radial faces are paired; see [§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)
+> and [§5.5](#55-what-the-v5-step-must-confirm).
 >
 > **Not a substitute for FEA or the [SCO-71](https://linear.app/scout1/issue/SCO-71) impact
 > test.** These are conservative closed-form bounds to answer "is this wall spec sane before
@@ -202,10 +208,15 @@ proportion buckles at ~1/65 of the load. Three things save it:
   the foam's own compressive strength (~100–170 kPa) exceeds 50 kPa, so the foam simply carries
   the external pressure as a bearing block. **Foam-backed, buckling is not a concern.**
 - The 5.5-in height (down from 8.0) shortens the panel, raising every buckling coefficient.
+- **Closed compression ring.** If the six wedges tile in contact
+  ([§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)), external
+  pressure is carried circumferentially around a closed segmented ring, not by six independent
+  panels — a materially stiffer path against external-pressure buckling. Credit this only once
+  the v5 STEP confirms the seam faces bear ([§5.5](#55-what-the-v5-step-must-confirm)).
 
 **Conclusion:** the outer wall is fine **foam-backed** (SF 7.3 strength, buckling suppressed).
 **Bare — unfoamed, or foam degraded/detached — it is marginal** (buckling SF ≈ 2–6, leaning on
-curvature + web + caps). See [§9](#9-the-foam-is-now-structural).
+curvature + web + caps + the closed ring). See [§8](#8-the-foam-is-now-structural--update-the-failure-philosophy).
 
 ### 4.3 Recommendation — **keep 0.095 in (2.41 mm), do not thin further**
 
@@ -215,7 +226,44 @@ Five-to-six fully-dense perimeters, curvature-stabilised, foam-backed. It is the
 
 ## 5. Radial side walls (and the internal web)
 
-### 5.1 Out-of-plane bending as a plate — bare, full span — **FAIL**
+### 5.0 The radial faces are paired — the side walls are not isolated panels
+
+**Each wedge's radial side wall sits face-to-face against the neighbouring wedge's side wall.**
+The six 60° wedges tile the R2.875–R9.000 annulus
+([`buoy-mass-displacement-and-freeboard-model.md` §7.1](../../docs/engineering/buoy-structural/buoy-mass-displacement-and-freeboard-model.md#71-waterplane-area-parallel-zone)),
+so at every wedge-to-wedge seam there are **two 1.60 mm walls back-to-back = 3.20 mm of PETG**,
+and the assembled ring is the "surfboard stringer" the
+[floatation README](../cad/floatation/README.md#bolted-variant-chosen--2026-08-17) describes.
+This changes the side-wall picture in three ways — **how much depends on the seam design, which
+the v5 STEP must confirm** (see [§5.5](#55-what-the-v5-step-must-confirm)):
+
+1. **No net out-of-plane service pressure.** A side wall's outboard face is pressed against the
+   neighbour's wall, **not exposed to water**. In service the only differential across it is
+   (foam cavity) − (whatever is in the seam) ≈ 0. The [§5.1](#51-out-of-plane-bending-as-a-plate--bare-full-span--fail)
+   "115 MPa fail at 50 kPa" was already a non-physical worst case; face-to-face pairing means
+   it is not even a hypothetical to design against. **Through-thickness pressure bending is not
+   a side-wall load case.**
+2. **A closed compression ring, if the faces bear.** If the wedges tile in contact (each
+   exactly 60°, or epoxied at the seam), external pressure on the outer walls is reacted
+   **circumferentially**, passed wedge → seam → wedge around the full ring until it closes on
+   itself. Seam bearing stress `≈ hoop force / (t_s · h) = 11 500 N/m · 0.1397 m / (0.00160 ·
+   0.1397) = 7.2 MPa` — trivial for PETG in compression. A closed segmented ring is **far
+   stiffer against external-pressure buckling than six independent curved panels**, which also
+   softens the outer-wall caveat in [§4.2](#42-buckling-under-external-pressure--the-wall-is-thin-rt--947)
+   and [§8](#8-the-foam-is-now-structural--update-the-failure-philosophy) — *provided the ring
+   actually closes*.
+3. **A stiffer stringer.** The paired 3.20 mm double wall resists the ring ovalising under a
+   side load (LC5). Just in contact: ≈ 2× one wall's bending stiffness. Epoxied at the seam:
+   a true composite, ≈ 8× (stiffness ∝ t³). Either beats the isolated-wall assumption in
+   [§5.3](#53-in-plane-shear-web-stringer-action-under-lc5--pass-with-load-sharing).
+
+**The one case pairing does *not* automatically fix is the foam-fill transient**
+([§5.2](#52-with-the-web-halving-the-span--pass-for-the-manufacturing-transient-sf--2)): whether
+the neighbour wall is a reaction then depends on **assembly order** — wedges bolted into the
+ring *before* foaming get the neighbour's support; wedges foamed *individually before* assembly
+span alone.
+
+### 5.1 Out-of-plane bending as a plate — bare, full span — **FAIL (worst case, not a service load — see [§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels))**
 
 Free span without the web: 155.6 mm radial × 139.7 mm tall, all 4 edges supported. Uniform
 pressure `q`, max stress `σ = β q b² / t²`, short side `b = 139.7 mm`, `β ≈ 0.30` (SS,
@@ -235,9 +283,11 @@ Web at ~mid-radius → sub-panel `b ≈ 78 mm`:
 foam-fill, q = 25 kPa:  σ = 0.30 × 25 000 × 0.078² / 0.00160² = 17.8 MPa   → SF 2.0 on yield
 ```
 Acceptable for a **one-time, pre-cure** manufacturing transient, and further mitigated by
-**venting the wedge cap during the foam pour** so pressure never builds. In service (foam
-cured, solid), the side walls see no net out-of-plane pressure — a radial plane has water at
-equal depth on both faces, and foam bears on the cavity side.
+**venting the wedge cap during the foam pour** so pressure never builds — and, if wedges are
+bolted into the ring before foaming, by the neighbouring wall acting as a reaction
+([§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)). In service
+(foam cured, solid), the side walls see **no net out-of-plane pressure** — the outboard face is
+against the neighbour wall, not water ([§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)).
 
 ### 5.3 In-plane shear web (stringer action) under LC5 — **PASS with load sharing**
 
@@ -257,21 +307,41 @@ shear buckling: τ_cr = k · π²E / (12(1−ν²)) · (t_s/h)²,  k ≈ 5.3,  h
 ```
 But 440 N never drives one wedge alone — the flow hits ~2–3 wedge faces, so per-wedge
 `V ≈ 150–220 N` → `τ ≈ 0.7–1.0 MPa < τ_cr`. Foam fill stabilises the web against buckling
-(elastic foundation again), and the internal web adds a third shear panel. **With realistic
-load sharing + foam: pass. The bare, single-wedge-takes-all case is marginal** — another reason
-to prefer 2.0 mm.
+(elastic foundation), the internal web adds a third shear panel, **and the paired seam wall
+gives a stiffer stringer** ([§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)).
+**With realistic load sharing: pass.** The bare, single-wedge-takes-all, unpaired case is
+marginal — but all three of those qualifiers have to be true at once.
 
-### 5.4 Recommendation — **specify 0.080 in (2.00 mm)** for the side walls and the web
+### 5.4 Recommendation — **0.063 in (1.60 mm) is acceptable if the seam faces bear; specify 0.080 in only if you foam wedges individually before assembly**
 
-1.60 mm passes **in service, foam-filled, web present**, but sits at SF ≈ 2 on both the
-foam-fill manufacturing transient (§5.2) and the single-wedge shear-buckling case (§5.3), and
-was the dimension that flexed on the bed. Going to **2.00 mm**:
-```
-side-wall area per wedge ≈ 2 × (155.6 × 139.7) = 43 470 mm²
-Δt = 0.40 mm → ΔV ≈ 17.4 cm³ → Δm ≈ 17.4 × 1.27 = 22 g per wedge  ≈ 132 g per buoy  (~+2% wedge shell mass)
-```
-restores SF ≥ 3 on both marginal cases and adds print-robustness margin, for ~2 % of the wedge
-shell mass. **Recommended.**
+Corrected from the first draft of this doc, which recommended 0.080 in unconditionally. The two
+cases that drove that — the foam-fill transient (§5.2) and single-wedge shear buckling (§5.3) —
+are both **largely retired by the face-to-face pairing** ([§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels)):
+the side walls see no through-thickness service pressure, and the paired 3.20 mm seam is a
+closed ring + a stiffer stringer.
+
+| Condition | Side-wall spec |
+|---|---|
+| Radial faces tile in contact (or epoxied) **and** wedges are bolted into the ring before foaming | **0.063 in is adequate.** Keep the web for print robustness |
+| Wedges are **foamed individually before assembly** (wall spans alone under fill pressure) | **0.080 in** — restores SF ≥ 3 on the fill transient, for `2 × (155.6 × 139.7) mm² × 0.40 mm × 1.27 g/cm³ ≈ 22 g/wedge (~+2 %)` |
+| Designed seam **gap** (each wedge < 60°, faces don't bear) | Treat as isolated panels → **0.080 in**, and the closed-ring credit in §5.0 / §4.2 does **not** apply |
+
+The internal bracing web stays **mandatory** in every case — it fixed the print (§2) and it
+does structural work regardless of the seam design.
+
+### 5.5 What the v5 STEP must confirm
+
+- **Do the radial faces contact?** Each wedge exactly 60° → they tile; < 60° → designed gap.
+  Check the sector angle and any relief on the radial faces.
+- **Are the seams epoxied?** Contact = paired (≈2× stringer stiffness); bonded = composite
+  (≈8×). The assembly notes mention adhesive "plus mechanical fasteners" but not seam-to-seam
+  bonding specifically.
+- **Assembly order** — foam before or after the wedges are bolted into the ring. This is the
+  hinge for §5.2.
+- **Tolerance** — 6 × ±0.5° FDM angular error on a 155 mm face is ~±3° round the ring; if the
+  faces are the locating feature, the chassis bolt holes likely need slots. If there's a
+  deliberate undersize to guarantee assembly, the ring does **not** close and §5.0 credit (2)
+  is void.
 
 **If John holds 0.063 in on the sides:** acceptable **only** with all of — (a) web retained,
 (b) foam fill quality-controlled on every unit, (c) wedge cap vented during the foam pour,
@@ -317,7 +387,10 @@ wedge doesn't lose flotation.
 
 At 0.095 in / 0.063 in that is **no longer true for the outer wall against external pressure**
 (§4.2): bare, it is marginal on buckling. The foam has moved from *"buoyancy redundancy"* to
-*"required structural backing."*
+*"required structural backing."* (A closed wedge-to-wedge compression ring —
+[§5.0](#50-the-radial-faces-are-paired--the-side-walls-are-not-isolated-panels) — would soften
+this, but only if the v5 STEP confirms the seam faces bear; the foam-dependency holds until
+then.)
 
 - **Still true:** a *cracked but foam-filled* wedge keeps its buoyancy (closed-cell foam
   doesn't flood) — the [`mass-and-buoyancy-budget.md` §6](../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md#6-foam-fill-wedge--wedge-bottom-cavities)
@@ -353,7 +426,7 @@ and [`buoy-mass-displacement-and-freeboard-model.md`](../../docs/engineering/buo
 | Wall | John's current | This check | Basis |
 |---|---|---|---|
 | **Outer curved wall** | 0.095 in (2.41 mm) | **Accept as the floor — 0.095 in.** Do not thin further. | SF 7.3 on yield under LC8 50.3 kPa (§4.1); buckling suppressed by foam + web + caps (§4.2); ~6 fully-dense perimeters |
-| **Radial side walls + internal web** | 0.063 in (1.60 mm) | **Marginal. Specify 0.080 in (2.00 mm).** | 1.60 mm is SF ≈ 2 on the foam-fill transient (§5.2) and single-wedge shear buckling (§5.3), and flexed on the bed; 2.00 mm → SF ≥ 3 for ~+2 % wedge mass (§5.4). 1.60 mm acceptable only under the four documented conditions in §5.4 |
+| **Radial side walls + internal web** | 0.063 in (1.60 mm) | **Acceptable if the radial seam faces bear against the neighbour wedge (§5.0); specify 0.080 in only if wedges are foamed individually before assembly, or there's a designed seam gap.** | Each side wall is paired face-to-face with its neighbour (§5.0) → no through-thickness service pressure, a paired 3.2 mm seam, a closed compression ring. The cases that would have needed 0.080 in (§5.2 fill transient, §5.3 shear buckling) are largely retired by the pairing. Decision table in §5.4; STEP checklist in §5.5 |
 | **Inner bolt flange** | ~0.69 in (17.5 mm), from v4 | **Keep ≥ 0.60 in (15 mm) local solid.** Confirm it survived the v5 redesign (§6) | M4 heat-set insert boss rule |
 | **Internal bracing web** | added | **Mandatory** — load-bearing (halves every panel span, adds a shear web), not just a print aid | §2, §4.2, §5.2 |
 
