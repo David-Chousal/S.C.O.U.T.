@@ -11,8 +11,10 @@
 > artifact, not a real failure path (the buoy PETG is nowhere near yield). **Sufficient for
 > now**; the final 316 pad-eye + its real mounted interface get a dedicated re-run before
 > deployment (panel Action A1, [SCO-69](https://linear.app/scout1/issue/SCO-69) / [SCO-73](https://linear.app/scout1/issue/SCO-73)).
-> LC3–LC7/LC9 use a *proposed* environmental design set pending team sign-off; LC1 is blocked on
-> mooring hardware.
+> LC3–LC7/LC9 use the environmental design set **signed off 2026-09-08** (John, GENG lead — see
+> [§ Recommended environmental design values](#recommended-environmental-design-values)); the
+> proposed values were accepted verbatim, so no re-run is triggered. LC1 is blocked on mooring
+> hardware.
 >
 > Part of the [Knowledge Hub](../../hub/README.md)'s supporting engineering docs. Tracks
 > [SCO-73](https://linear.app/scout1/issue/SCO-73).
@@ -68,10 +70,10 @@ floating equilibrium. This unblocks the geometry/statics inputs the FEA needs:
 The reserve-buoyancy figure **is** the LC2 result (below): the vertical load the mooring / U-bolt
 sees if the buoy is pulled fully under on a taut line. `h_s` is the LC8 draft. What is still an
 `[E]` team decision — not unblocked by this — is the **environmental design set** (`H`, `T`,
-`U_c`, `U_wind`); a *recommended* set and the loads it produces are in
-[§ Recommended environmental design values](#recommended-environmental-design-values--proposed-needs-team-sign-off) below,
-flagged **proposed** until the team signs off (that sign-off is the core of
-[SCO-73](https://linear.app/scout1/issue/SCO-73)).
+`U_c`, `U_wind`); the set and the loads it produces are in
+[§ Recommended environmental design values](#recommended-environmental-design-values) below,
+**signed off 2026-09-08** (John, GENG lead; to be noted at the 2026-09-14 meeting — the sign-off
+was the core of [SCO-73](https://linear.app/scout1/issue/SCO-73)).
 
 ## Load case status
 
@@ -80,8 +82,8 @@ table exactly — same case numbering, same primary checks.
 
 **Two tiers of readiness.** LC2 and LC8 need only geometry + mass and are **computed** below.
 LC3–LC7, LC9 additionally need the `[E]` environmental design set — computed here at the
-**proposed** survival values (see the next section), to be re-run if the team picks different
-numbers. LC1 remains fully blocked on mooring hardware.
+survival values **signed off 2026-09-08** (see the next section). LC1 remains fully blocked on
+mooring hardware.
 
 | Case | Load | Status | Design result (survival) |
 |---|---|---|---|
@@ -109,11 +111,13 @@ check. Boat-strike / impact survivability is a
 **separate** non-quasi-static study ([SCO-71](https://linear.app/scout1/issue/SCO-71)), not one
 of these load cases.
 
-## Recommended environmental design values (proposed — needs team sign-off)
+## Recommended environmental design values
 
-These are `[E]` choices, not measurements. They are **proposed** here so the FEA can run now;
-the team must confirm or revise them, and that confirmation is the substance of
-[SCO-73](https://linear.app/scout1/issue/SCO-73). Site basis: nearshore Hawaii reef, 2–8 m
+**Signed off 2026-09-08** (John, GENG lead; to be noted at the 2026-09-14 meeting). These are
+`[E]` choices, not measurements — the proposed set below was accepted verbatim, so LC3–LC9 as
+computed stand with no re-run. This sign-off was the substance of
+[SCO-73](https://linear.app/scout1/issue/SCO-73), which now stays open only for the final
+Cd/Cm/Ca DNV-RP-C205 table pull and the Ursell-number wave-theory recheck. Site basis: nearshore Hawaii reef, 2–8 m
 (commonly 2–3 m per the [panel review §3](../reviews/buoy-preliminary-design-panel-review-2026-08.md)),
 moderate-to-low wave climate, trade-wind exposed, slack catenary mooring
 ([ADR-0004](../../decisions/0004-reef-safe-anchoring-and-mooring.md)), deployment window
@@ -320,17 +324,19 @@ load on one wedge outer face at the waterline (`z` ≈ 0.07 m) is a reasonable e
 real boat-strike survivability needs the dynamic/impact study, cross-checked against bench
 impact tests.
 
-**What is still `[E]`-blocked:** every LC3–LC9 number moves if the team picks a different
-environmental design set. LC1 (catenary baseline) stays fully blocked on mooring scope `S` and
-line unit weight `w_m` ([SCO-69](https://linear.app/scout1/issue/SCO-69)).
+**What is still open:** the environmental design set is signed off (2026-09-08), so LC3–LC9 as
+computed stand. LC1 (catenary baseline) stays fully blocked on mooring scope `S`; the line unit
+weight `w_m` is now pinned by the 2026-09-08 line choice (3/8 in 3-strand nylon)
+([SCO-69](https://linear.app/scout1/issue/SCO-69), [SCO-17](https://linear.app/scout1/issue/SCO-17)).
 
 ## Open items (mirrors the framework's §12)
 
-1. **Mooring scope `S` and line unit weight `w_m`** — blocks LC1 only — [SCO-69](https://linear.app/scout1/issue/SCO-69).
-2. **Environmental design set sign-off** (`d`, `H`, `T_w`, `U_c`, `U_wind`) — a *proposed* set is
-   in [§ Recommended environmental design values](#recommended-environmental-design-values--proposed-needs-team-sign-off);
-   LC3–LC9 are computed at it and must be re-run if the team revises it. This sign-off is
-   [SCO-73](https://linear.app/scout1/issue/SCO-73)'s core deliverable.
+1. **Mooring scope `S`** — blocks LC1 only ([SCO-17](https://linear.app/scout1/issue/SCO-17)). Line
+   unit weight `w_m` is now pinned by the 2026-09-08 line choice (3/8 in 3-strand nylon).
+2. **Environmental design set sign-off** — ✅ **done 2026-09-08** (John, GENG lead). The set in
+   [§ Recommended environmental design values](#recommended-environmental-design-values) was
+   accepted verbatim; LC3–LC9 stand. [SCO-73](https://linear.app/scout1/issue/SCO-73) now covers
+   only the final Cd/Cm/Ca table pull and the wave-theory recheck.
 3. **Complete deployed mass `m_b`** — Tier III of the [freeboard model](buoy-mass-displacement-and-freeboard-model.md#3-full-mass-budget)
    is still `[A]` pending [SCO-70](https://linear.app/scout1/issue/SCO-70); the LC2/LC6/LC9
    vertical component and the LC8 draft shift when it lands (light-build 322 N is the current

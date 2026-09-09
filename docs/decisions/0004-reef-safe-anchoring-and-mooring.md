@@ -48,6 +48,11 @@ mooring line cannot drag across or agitate the reef through the tide/current cyc
 - **Chain** is used instead in higher-turbulence, higher-wave-energy locations, where rope
   chafe/abrasion risk outweighs its lower weight and cost.
 
+> **Update 2026-09-08 (SCO-72):** the default rope is specified as **3-strand twisted nylon,
+> 3/8 in (9.5 mm)** — twisted construction so a boat crossing the line fouls its propeller
+> rather than cleanly cutting the line and setting the buoy adrift, and nylon for shock
+> compliance in the slack catenary. Scope length still pending [SCO-17](https://linear.app/scout1/issue/SCO-17).
+
 ## Consequences
 
 - Mechanical design work on `mooring/` hardware (not yet started in CAD) now has a concrete
