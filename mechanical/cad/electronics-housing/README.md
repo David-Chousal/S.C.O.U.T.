@@ -16,7 +16,7 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
 | File | Role | Status |
 |---|---|---|
 | [`electronics-housing-clamp-v2-body.step`](electronics-housing-clamp-v2-body.step) | Sealing clamp body ("Clamp 2 AS568-043") — carries the AS568-043 static face-seal groove and the 6-bolt pattern, bolts **outside** the seal boundary | **Current** |
-| [`electronics-housing-clamp-v2-lid.step`](electronics-housing-clamp-v2-lid.step) | Mating lid, with the engraved identifying marking on its top face. ⚠️ No bolt clearance holes as exported ([SCO-107](https://linear.app/scout1/issue/SCO-107)) | **Current** |
+| [`electronics-housing-clamp-v2-lid.step`](electronics-housing-clamp-v2-lid.step) | Mating lid, with the engraved identifying marking on its top face (wording recorded below, decided 2026-09-08). ⚠️ No bolt clearance holes as exported ([SCO-107](https://linear.app/scout1/issue/SCO-107)) | **Current** |
 | [`electronics-housing-o-ring.step`](electronics-housing-o-ring.step) | O-ring seal, modeled directly | Reference |
 | [`electronics-housing-body.step`](electronics-housing-body.step) | Chassis cylinder body ("Full Print Body Upper") — **superseded 2026-09-02**, dimensioned for the end-cap scheme | Iteration |
 | [`electronics-housing-endcap-no-port.step`](electronics-housing-endcap-no-port.step) | End cap that slides into and seals the chassis cylinder ("Top-Bottom No Port") — **superseded 2026-09-02** | Iteration |
@@ -149,9 +149,19 @@ capture it on the reprint so the groove numbers above can be corrected rather th
 
 **Identifying marking.** The lid's top face carries engraved identifying language (four lines,
 1.27 mm deep). The STEP stores it as tessellated glyph geometry, not as a text string, so the
-exact wording is **not recoverable from the file** — ⚠️ confirm the wording with John Ryan and
-record it here, so a future print can be reproduced from the repo alone
-([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+exact wording is not recoverable from the file — **recorded here so a future print can be
+reproduced from the repo alone** (decided 2026-09-08, [SCO-107](https://linear.app/scout1/issue/SCO-107)):
+
+```
+S.C.O.U.T.
+SCU Senior Design 2026–2027
++1 808-745-0769
+IR · JRM · DCC
+```
+
+(project name · program + academic year · a contact phone number · the three team members'
+initials — Isabella Rodriguez, John Ryan Myrdal, David Chousal Cantu). Re-cut the glyphs to
+match if the exported geometry differs.
 
 **Still open on this part:**
 

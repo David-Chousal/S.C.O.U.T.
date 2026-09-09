@@ -70,32 +70,35 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 - **Queued, not pushed** — this session's Notion connector is not confirmed against the
   S.C.O.U.T. workspace. If yours is, push directly and move this to Done.
 
-### 11 · Session decision sweep 2026-09-08 — 6 GENG calls · queued 2026-09-08
+### 11 · Session decision sweep 2026-09-08 — 7 GENG calls · queued 2026-09-08
 
 - **Notion pages** — Hub → *Canonical Facts* (Mechanical & deployment table + Open facts),
-  Hub → *Decision Log* (6 new Log rows), Hub → *Project Status* (Mechanical design row + "As of"
-  date), Hub → *Open Research Questions* (3 rows Open → Answered), Research → *Systems Decision
-  Matrix* (Marine materials + Biofouling rows), Decisions → *ADR-0004* (line-spec update note),
-  Research → *Biofouling Antifouling Coatings*, Planning → *Meeting Notes* (2026-08-31 flag
-  resolved).
+  Hub → *Decision Log* (7 new Log rows), Hub → *Project Status* (Mechanical design row + "As of"
+  date), Hub → *Open Research Questions* (3 rows Open → Answered + 3 updated), Research →
+  *Systems Decision Matrix* (Marine materials + Biofouling rows), Decisions → *ADR-0004*
+  (line-spec update note), Research → *Biofouling Antifouling Coatings*, Planning →
+  *Meeting Notes* (2026-08-31 flag resolved). `mechanical/**` has no Notion page.
 - **Source** — [`decision-log.md`](decision-log.md), [`facts.md`](facts.md), [`status.md`](status.md),
   [`journal/2026-09-08.md`](journal/2026-09-08.md), [`research/open-questions.md`](research/open-questions.md),
   [`force-budget.md`](../engineering/buoy-structural/force-budget.md),
   [`0004-reef-safe-anchoring-and-mooring.md`](../decisions/0004-reef-safe-anchoring-and-mooring.md),
   [`biofouling-antifouling-coatings.md`](../research/biofouling-antifouling-coatings.md),
   [`systems-decision-matrix.md`](../research/systems-decision-matrix.md),
-  [`meeting-notes.md`](../planning/meeting-notes.md).
+  [`meeting-notes.md`](../planning/meeting-notes.md),
+  [`mechanical/cad/electronics-housing/README.md`](../../mechanical/cad/electronics-housing/README.md).
 - **What changed** — six decisions recorded, none requiring new analysis:
   1. Biofouling: antifouling coating **stands**, 2026-08-31 natural-growth alternative rejected ([SCO-15](https://linear.app/scout1/issue/SCO-15)).
   2. Environmental design set for the structural FEA **signed off** — d 2 m, H 1.2 m, T_w 6 s, U_c 0.8 m/s, U_wind 22 m/s; LC3–LC9 stand ([SCO-73](https://linear.app/scout1/issue/SCO-73)).
   3. Structural print material: **PETG** for the build, ASA as the documented scale-up material ([SCO-64](https://linear.app/scout1/issue/SCO-64)).
   4. Housing seal elastomer: **silicone** ([SCO-106](https://linear.app/scout1/issue/SCO-106)).
   5. Mooring/tether line: **3-strand twisted nylon, 3/8 in** ([SCO-72](https://linear.app/scout1/issue/SCO-72)).
-  6. Lid engraving content decided (name + year + phone + initials; digits TBD) ([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+  6. Lid engraving wording set — `S.C.O.U.T.` / `SCU Senior Design 2026–2027` / `+1 808-745-0769` / `IR · JRM · DCC`, recorded in the electronics-housing CAD README ([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+  7. Flotation-wedge fill foam: **US Composites #0204 2 lb/ft³ closed-cell rigid PU pour foam** ([SCO-76](https://linear.app/scout1/issue/SCO-76)).
 - **The point that must survive the mirror** — the environmental design set is now **signed
   off**, not proposed; entry 9's "the FEA loads are NOT settled" caveat is superseded. The
   biofouling decision is **coating, not natural growth** — the 2026-08-31 meeting's lean was
-  considered and rejected.
+  considered and rejected. The wedge-fill foam now has a real product, so the ring-buckling FEA
+  can use datasheet values.
 - Links to `mechanical/**` and `buoy-structural/**` become GitHub blob URLs (no Notion pages).
 - **Queued, not pushed** — this session has no confirmed S.C.O.U.T. Notion connector. If yours
   is, push directly and move this to Done.
