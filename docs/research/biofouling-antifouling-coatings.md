@@ -65,6 +65,12 @@ and quart-only sizing — a closer match to a small buoy's actual coverage need 
 Ryan's cost-effective/low-quantity criteria. Not available at a general retailer; order from
 Hamilton Marine, Fisheries Supply, West Marine, or Defender (see Sources).
 
+**Re-ratified 2026-09-08.** The 2026-08-31 meeting had leaned toward abandoning a coating
+entirely and letting natural growth occur (an anti-barnacle coating strong enough to work being
+seen as reef-hostile; interest in printed surfaces that attract coral). John's call: **keep an
+antifouling coating, do not revert.** This product choice is unchanged. See
+[decision-log.md](../hub/decision-log.md) and [meeting-notes 2026-08-31](../planning/meeting-notes.md).
+
 ## Sources
 
 - [Rust-Oleum Marine 1 qt. Flat Blue Boat Bottom Antifouling Paint — The Home Depot](https://www.homedepot.com/p/Rust-Oleum-Marine-1-qt-Flat-Blue-Boat-Bottom-Antifouling-Paint-396968/100184819)

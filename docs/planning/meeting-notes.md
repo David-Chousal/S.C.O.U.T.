@@ -358,6 +358,10 @@ corrections to `status.md`; or both hold at different scopes (coating on sensor 
 growth on the hull). **The coating is on the purchase list, so this should not sit.** Flagged on
 [SCO-15](https://linear.app/scout1/issue/SCO-15) rather than silently reconciled.
 
+> **Resolved 2026-09-08** (John): the coating decision stands — first reading. Stay with an
+> antifouling coating, do not revert to natural growth. Recorded in
+> [decision-log.md](../hub/decision-log.md) and [facts.md](../hub/facts.md#mechanical--deployment).
+
 **Phase 0's end date drifted without a decision.** David noticed the Linear project now runs to
 2026-09-20 rather than Sep 4 and asked John Ryan directly whether he had extended it; John Ryan
 said it was unintentional and he had not touched the phase dates. Nobody chose the new date. It
@@ -385,5 +389,5 @@ practice — but no one said so explicitly, and the record still shows an open q
 | Decide on-board measurement units | David ([SCO-13](https://linear.app/scout1/issue/SCO-13)) |
 | Confirm face groove depth and validate O-ring squeeze on the remodelled housing | John Ryan ([SCO-91](https://linear.app/scout1/issue/SCO-91)) |
 | Measure shore-to-site distance for the candidate Hawaii test location | John Ryan ([SCO-96](https://linear.app/scout1/issue/SCO-96)) |
-| Resolve the biofouling coating reversal — ratify or revert | Team ([SCO-15](https://linear.app/scout1/issue/SCO-15)) |
+| ~~Resolve the biofouling coating reversal — ratify or revert~~ ✅ 2026-09-08: coating stands, no revert | Team ([SCO-15](https://linear.app/scout1/issue/SCO-15)) |
 | Settle whether Phase 0 ends Sep 4 or Sep 20 | Team ([PR #116](https://github.com/David-Chousal/S.C.O.U.T./pull/116)) |

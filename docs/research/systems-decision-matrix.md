@@ -51,9 +51,9 @@ When a decision is significant and hard to reverse, record it as an
 |---|---|---|---|---|
 | Buoy geometry & industrial design | | | In progress | Cylindrical waterline, tapered top and bottom |
 | Waterproofing / enclosure system | | | In progress | Dimensions TBD — built around an approximate 4" Schedule 40 PVC reference, O-ring sealed end caps (O-rings purchased off-the-shelf, [SCO-55](https://linear.app/scout1/issue/SCO-55)) |
-| Marine materials | | | Not started | |
+| Marine materials | | geng | In progress | **Structural print material: PETG for the build, ASA as the documented scale-up material** (2026-09-08, [SCO-64](https://linear.app/scout1/issue/SCO-64)). Fasteners all 316 stainless; mooring line 3-strand nylon 3/8 in ([SCO-72](https://linear.app/scout1/issue/SCO-72)) |
 | Mooring & anchoring | | | Completed | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — marked sites connect to existing infrastructure; unmarked sites use a single mushroom anchor |
-| Biofouling mitigation | | geng | Completed | **Sea Hawk Smart Solution antifouling coating, 1 pint** (copper-free) — chosen over copper mesh, mechanical wipers, and copper-based coatings on reef-safety grounds. See [Biofouling Antifouling Coatings](biofouling-antifouling-coatings.md), [SCO-15](https://linear.app/scout1/issue/SCO-15) |
+| Biofouling mitigation | | geng | Completed | **Sea Hawk Smart Solution antifouling coating, 1 pint** (copper-free) — chosen over copper mesh, mechanical wipers, and copper-based coatings on reef-safety grounds. **Re-ratified 2026-09-08** against the 2026-08-31 natural-growth alternative. See [Biofouling Antifouling Coatings](biofouling-antifouling-coatings.md), [SCO-15](https://linear.app/scout1/issue/SCO-15) |
 | Sensor selection | | | In progress | See [Sensor Selection](../engineering/sensor-selection.md) |
 | Sensor placement & mechanical integration | | | In progress | See [Sensor String Architecture](../engineering/sensor-string-architecture.md) |
 | Manufacturing & scalability | | | Not started | |
