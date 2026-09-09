@@ -112,6 +112,15 @@ naming here is John Ryan's own designation ("current" vs. prior iterations) from
 folder — not inferred, since (as with the [floatation iterations](../floatation/README.md))
 bulk Onshape re-export timestamps aren't a reliable ordering signal.
 
+> **Re-confirmed current, 2026-09-08.** John re-exported and sent the cap and body
+> ("Sealed Cap2", "Body (No Port) — AS568-137 O-ring"). Both are **geometrically byte-identical**
+> (normalised, entity-renumber-tolerant diff) to the committed
+> [`sensor-housing-sealed-cap-v2.step`](sensor-housing-sealed-cap-v2.step) and
+> [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) — only the export
+> timestamp differs, so no new file was added. This is John treating the v2 cap (with the
+> Ø31.496 mm spigot) and the face-seal body as his current parts. **The flood chamber is
+> deliberately not in this set — John is re-speccing it** (see [below](#flood-chamber--being-re-specced-2026-09-08)).
+
 ## Face-seal remodel — 2026-08-29
 
 **Change (John Ryan).** The body↔cap joint was reworked from the earlier arrangement into a
@@ -161,12 +170,10 @@ the 3-bolt pattern, and the face groove are byte-identical between the two expor
 diameter matches the body's own Ø31.496 mm bore surface exactly, so the two now nominally
 line-to-line rather than interfering.
 
-⚠️ **Not narrated by John Ryan** — this was found by diffing the STEP exports, not reported. It
-is consistent with the print-fit trouble reported the same day on the
-[electronics housing clamp](../electronics-housing/README.md#static-face-seal-clamp--2026-09-02),
-but whether it was a deliberate response to a sensor-pod fit problem, or an incidental change,
-is unconfirmed. Confirm the intent — and whether 0.010" is enough clearance for a printed fit —
-before the next pod print.
+Originally found by diffing the STEP exports rather than reported. **John re-sent this exact
+cap as his current part on 2026-09-08**, so the Ø31.496 mm spigot is confirmed as intended.
+Still open: whether 0.010" diametral clearance is enough for a clean printed fit — verify on
+the next pod print.
 
 The **body** was re-exported on the same day and is **geometrically unchanged** from the
 committed [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) (identical
@@ -187,3 +194,23 @@ articles differ in both variables at once). Full record:
 porous/unreliable) — informal evidence in the same direction as reopening it, but this test
 wasn't controlled to actually evaluate that question, so it doesn't resolve it either way. See
 [`facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
+
+## Flood chamber — being re-specced (2026-09-08)
+
+`sensor-housing-flood-chamber-cap.step` in this folder dates to **2026-08-15**, the original
+dry/flood design — it has **not** been re-exported since the 2026-08-29 body face-seal remodel,
+so it is not guaranteed to mate to the current body. **John is re-speccing the flood chamber**
+and will export a new part. Until then, treat the committed flood-chamber cap as historical,
+not current. Tracked with the housing seal work on
+[SCO-91](https://linear.app/scout1/issue/SCO-91).
+
+## Verify the housing against Isabella's turbidity sensor (2026-09-08)
+
+**Task (John Ryan).** Examine the specific turbidity sensor Isabella has selected for the Rev A
+build and confirm it physically fits this housing — probe diameter, body length, cable/connector
+exit, and the depth it needs to sit into the flood chamber to stay in the light-blocked zone.
+**Adapt the flood chamber and body around the real sensor** rather than the generic SEN0189
+assumption the pod was first drawn to. This feeds the flood-chamber re-spec above and should be
+resolved before the next full pod print. Needs a Linear issue (canonical fact: turbidity =
+DFRobot SEN0189 ×1 per [`facts.md`](../../../docs/hub/facts.md#sensing-single-point-per-modality--see-adr-0003)
+— confirm that is still the pick).

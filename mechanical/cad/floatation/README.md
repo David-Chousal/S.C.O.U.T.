@@ -31,12 +31,18 @@ name at the top level of this folder (matching the `-v3`/`-v9` pattern already u
 then move the new design's files into a fresh `current/`. Don't let `current/` silently become
 stale — the whole point of the name is that it's always trustworthy.
 
-> **⚠️ A v5 revision is in progress and not yet in `current/` (2026-09-07).** John Ryan has
-> reduced the wedge to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110)), thinned the
-> walls to 0.095 in (outer) / 0.063 in (sides), and added an internal bracing web — see
+> **⚠️ A v5 revision is in progress and not yet in `current/` (updated 2026-09-08).** John Ryan
+> has reduced the wedge to 5.5 in ([SCO-110](https://linear.app/scout1/issue/SCO-110)), thinned
+> the walls to 0.095 in (outer) / 0.063 in (sides), and added an internal bracing web — see
 > [Thin-wall + DFM bracing-web iteration (v5)](#thin-wall--dfm-bracing-web-iteration-v5--2026-09-07)
-> below. **The STEP + dimensioned PDF for v5 have not been exported yet;** `current/` still
-> holds v4. Rotate `current/` per the paragraph above once v5 is exported.
+> below.
+>
+> **The v5 wedge STEP is now committed** at
+> [`chassis-floatation-bolted-v5-wedge.step`](chassis-floatation-bolted-v5-wedge.step) (top
+> level, matching the `-v3` in-progress pattern — **not** in `current/` yet). Still pending
+> before `current/` rotates: the **v5 chassis and cap re-exports**, a **dimensioned PDF** for
+> the wedge (confirming the ~0.69 in inner bolt flange survived), and a real re-slice for
+> weights. `current/` still holds the complete v4 set until then.
 
 ## Drawings (historical)
 
@@ -277,8 +283,32 @@ the bed, and brace the geometry rather than fight the process.
 - **Impact ([SCO-71](https://linear.app/scout1/issue/SCO-71)) is now more wall-thickness
   sensitive** and must be re-checked before the spec is frozen.
 
-**Still to do:** export `floatation-v5-*` STEP + a dimensioned PDF (confirming the ~0.69 in
-inner bolt flange survived), rotate `current/`, re-slice for real weights, run the
+#### STEP exported — 2026-09-08
+
+`chassis-floatation-bolted-v5-wedge.step` was exported and committed. Geometry read from the
+STEP against the v4 wedge it supersedes:
+
+| | v4 (`current/`) | v5 (new) |
+|---|---|---|
+| Height (Z) | 203.2 mm (8.00 in) | **139.7 mm (5.50 in)** — the SCO-110 resize |
+| Outer radius extent (X) | 228.6 mm (R9.000 in) | 228.6 mm — **unchanged** (18 in buoy OD) |
+| Wedge chord (Y) | 198.0 mm | 199.2 mm — unchanged |
+| B-rep faces / circles | 20 / 14 | **36 / 26** — the added internal web + lightening holes |
+
+**John's narration (2026-09-08):** *"shorter, thinner, with filled area between flanges with
+holes for material saving and flexion around chassis and chassis access."* The web that closed
+the open cavity (2026-09-07) is now also shaped as a **compliant, perforated panel spanning
+between the bolt flanges** — the holes let it (a) save filament and (b) **flex to seat around
+the chassis** and give **service access to the chassis** without a rigid interference fit. This
+is a functional addition on top of the 2026-09-07 DFM/structural web.
+
+⚠️ **Wall thicknesses (0.095 in / 0.063 in) and the ~0.69 in inner bolt flange are per John's
+narration and the [2026-09-07 check](../../test/wedge-wall-thickness-structural-check-2026-09-07.md)
+— not independently confirmed from this tessellated STEP.** A dimensioned PDF is still needed to
+verify them and to close [SCO-110](https://linear.app/scout1/issue/SCO-110).
+
+**Still to do:** v5 chassis + cap re-exports and a dimensioned wedge PDF (then rotate
+`current/`), re-slice for real weights, run the
 [SCO-110](https://linear.app/scout1/issue/SCO-110) mass / freeboard recompute, and add an
 **assembly-level buckling FEA of the epoxied 6-wedge ring** to
 [SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73)

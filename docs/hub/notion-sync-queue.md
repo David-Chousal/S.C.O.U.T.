@@ -7,7 +7,7 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-08 — two entries pending (10 wedge v5, 11 decision sweep).**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-08 — three entries pending (10 wedge v5, 11 decision sweep, 12 CAD updates).**
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -102,6 +102,30 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 - Links to `mechanical/**` and `buoy-structural/**` become GitHub blob URLs (no Notion pages).
 - **Queued, not pushed** — this session has no confirmed S.C.O.U.T. Notion connector. If yours
   is, push directly and move this to Done.
+
+### 12 · CAD updates 2026-09-08 — v5 wedge STEP + turbidity housing · queued 2026-09-08
+
+- **Notion pages** — Hub → *Canonical Facts* (Flotation row), Hub → *Project Status* (Mechanical
+  design row), Hub → *Design Notes* (two new top rows). `mechanical/**` has no Notion page.
+- **Source** — [`mechanical/cad/floatation/README.md`](../../mechanical/cad/floatation/README.md),
+  [`mechanical/cad/sensor-housing/README.md`](../../mechanical/cad/sensor-housing/README.md),
+  [`facts.md`](facts.md), [`status.md`](status.md), [`design-notes.md`](design-notes.md),
+  [`journal/2026-09-08.md`](journal/2026-09-08.md).
+- **What changed** —
+  1. **v5 wedge STEP committed** (`chassis-floatation-bolted-v5-wedge.step`, top level, not
+     `current/`). STEP confirms 8.00 → 5.50 in height, unchanged R9 outer, ~2× the face count
+     from the added web + holes. The internal web is now also a **perforated compliant panel
+     between the bolt flanges** for chassis-fit flex + service access. Wall thicknesses + bolt
+     flange still need a dimensioned PDF; v5 chassis + caps not re-exported yet.
+  2. **Turbidity sensor housing** — John re-sent cap + body; both byte-identical to the
+     committed `-v2` cap / face-seal body, so no new files. Confirms them as current. **Flood
+     chamber being re-specced**; new task for John to fit the housing to Isabella's actual Rev A
+     turbidity sensor.
+- **The point that must survive the mirror** — the v5 wedge STEP exists but the design is **not
+  frozen**: no dimensioned PDF, chassis + caps not re-exported, `current/` still v4. The
+  turbidity cap/body are unchanged, only re-confirmed.
+- Links to `mechanical/**` become GitHub blob URLs (no Notion pages).
+- **Queued, not pushed** — no confirmed S.C.O.U.T. Notion connector this session.
 
 ### 5 · Live Dashboard — multi-page site restructure · ✅ mirrored 2026-09-01
 
