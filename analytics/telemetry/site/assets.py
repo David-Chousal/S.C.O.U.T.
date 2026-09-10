@@ -295,7 +295,7 @@ def datapath_svg() -> str:
     )
     return (
         '<svg viewBox="0 0 620 96" class="flow" role="img" '
-        'aria-label="Data path: buoy transmits an 82-byte daily LoRa packet to the shore '
+        'aria-label="Data path: buoy transmits a 30-byte daily LoRa packet to the shore '
         'Raspberry Pi, which runs the pipeline and publishes this dashboard." fill="none">'
         + node(64, "Buoy", "sense · log · sleep")
         + arrow(116, "82 B · 1×/day")

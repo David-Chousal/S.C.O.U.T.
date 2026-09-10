@@ -17,7 +17,7 @@ combining both techniques, still under the 0.4 s occupancy limit.
 
 **Why it matters to S.C.O.U.T.** The buoy transmitted on a **single fixed 915.0 MHz channel at
 125 kHz and +14 dBm**, which satisfies neither route — 125 kHz is below the digital-modulation
-minimum, and one channel is not fifty. This was found in the [SCO-19 investigation](../../research/fcc-915-mhz-compliance.md)
+minimum, and one channel is not fifty. This was found in the [SCO-19 investigation](../../../research/fcc-915-mhz-compliance.md)
 and fixed by widening to BW500, which takes route (a)(2). PSD was never the binding constraint:
 +14 dBm across 500 kHz computes to −8.2 dBm/3 kHz, far under the 8 dBm cap.
 

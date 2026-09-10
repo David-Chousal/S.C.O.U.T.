@@ -240,7 +240,7 @@ in the order sticky split → Fleet, so doing them together is one visit instead
   legend now states the polarity. **Extended 2026-08-16**: also carries why `insufficient data`
   is deliberately unstyled, and a *"Design iteration"* sub-subsection on the panel-head wrapping
   that only a browser pass caught.
-- **Link to rewrite on paste** — `[Data Schema → Turbidity polarity](data-schema.md)` →
+- **Link to rewrite on paste** — `[Data Schema → Turbidity polarity](../engineering/data-schema.md)` →
   `(→ Notion: On-Board CSV Data Schema)`. The `drift.py` link is a repo path with no Notion
   counterpart; leave it as plain text or point it at GitHub.
 

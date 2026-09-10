@@ -120,11 +120,11 @@ strictly more margin — no full FEA re-run is needed to re-establish load adequ
 **But three v5-specific checks are still required** and are *not* covered by the v4 runs:
 
 1. **Wedge wall stress at the thinned v5 spec** (0.250 → 0.095/0.063 in). The loads dropped but
-   the wall is much thinner; the [2026-09-07 wall check](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)
+   the wall is much thinner; the [2026-09-07 wall check](../../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)
    was closed-form only. A v5 wedge-stress FEA at LC5/LC8 confirms it.
 2. **Assembly-level ring buckling** of the epoxied 6-wedge ring — a *new* failure mode
    introduced by the thin walls, quantified closed-form in the
-   [ring-buckling check](../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)
+   [ring-buckling check](../../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)
    (`SF` ≈ 3–5 foam-backed) but needing the FEA to close.
 3. **The final 316 pad-eye interface** at LC9 (governing) + LC7's moment — already an owed
    re-run regardless of the resize.

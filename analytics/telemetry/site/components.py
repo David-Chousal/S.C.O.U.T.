@@ -177,7 +177,7 @@ def data_path() -> str:
         ("Store", "Each wake appends one row to an on-board CSV log, timestamped in UTC. Raw data "
                   "never leaves the buoy: the full archive, audio included, stays in on-board "
                   "storage and is retrieved by hand."),
-        ("Transmit", "Once a day the buoy sends a single 82-byte summary to shore over a 915 MHz "
+        ("Transmit", "Once a day the buoy sends a single 30-byte summary to shore over a 915 MHz "
                      "LoRa link, roughly 2 km line of sight. No cellular service or internet is "
                      "used at the buoy."),
         ("Publish", "The shore Raspberry Pi validates each packet, runs quality control and NOAA "

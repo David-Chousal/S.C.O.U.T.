@@ -4,7 +4,7 @@
 > project, listed once, with DOI, access status, where the PDF lives, and what we took from it.
 > This page is the answer to *"have we already researched X?"* and *"what backs this claim?"*
 >
-> Part of the [Knowledge Hub](README.md). Reading notes for key papers live in
+> Part of the [Knowledge Hub](../README.md). Reading notes for key papers live in
 > [`notes/`](notes/); the PDFs live in [`library/`](library/) (open-access) or the private
 > `library-restricted/` submodule (copyrighted). Open research questions are in
 > [`open-questions.md`](open-questions.md).
@@ -28,7 +28,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `pieretti-2011` | Pieretti et al. (2011). "A new methodology to infer the singing activity of an avian community: The Acoustic Complexity Index (ACI)." *Ecological Indicators* 11(3):868–873. [doi](https://doi.org/10.1016/j.ecolind.2010.11.005) | 🔒 | — | ACI definition — [methodology](../analysis/coral-bioacoustic-methodology.md) |
+| `pieretti-2011` | Pieretti et al. (2011). "A new methodology to infer the singing activity of an avian community: The Acoustic Complexity Index (ACI)." *Ecological Indicators* 11(3):868–873. [doi](https://doi.org/10.1016/j.ecolind.2010.11.005) | 🔒 | — | ACI definition — [methodology](../../analysis/coral-bioacoustic-methodology.md) |
 | `boelman-2007` | Boelman et al. (2007). "Multi-trophic invasion resistance in Hawaii: bioacoustics, field surveys, and airborne remote sensing." *Ecological Applications* 17(8):2137–2144. [doi](https://doi.org/10.1890/07-0004.1) | 🔒 | — | Bioacoustic Index (BI) basis |
 | `kasten-2012` | Kasten et al. (2012). "The REAL acoustic library: an archive for studying soundscape ecology." *Ecological Informatics* 12:50–67. [doi](https://doi.org/10.1016/j.ecoinf.2012.01.003) | 🔒 | — | NDSI origin |
 | `sueur-2008` | Sueur et al. (2008). "Rapid acoustic survey for biodiversity appraisal." *PLOS ONE* 3(12):e4065. [doi](https://doi.org/10.1371/journal.pone.0004065) | 🔓 | library/sueur-2008.pdf | Acoustic entropy (H) index |
@@ -47,7 +47,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `staaterman-2014` | Staaterman et al. (2014). "Celestial patterns in marine soundscapes." *Marine Ecology Progress Series* 508:17–32. [doi](https://doi.org/10.3354/meps10911) | 🔒 | — | Diel/seasonal chorus patterns → Chorus Ratio (future index) |
 | `kennedy-2010` | Kennedy et al. (2010). "Acoustic monitoring of habitat disturbance and recovery in coral reefs." *Proc. R. Soc. B* 277:969–977. [doi](https://doi.org/10.1098/rspb.2009.1969) | 🔒 | — | Acoustic detection of reef disturbance/recovery |
 | `merchant-2015` | Merchant et al. (2015). "Measuring acoustic habitats." *Methods in Ecology and Evolution* 6(3):257–265. [doi](https://doi.org/10.1111/2041-210X.12330) | 🔒 | — | −2.0σ anomaly threshold basis |
-| `lin-2021` | Lin, Akamatsu, Sinniger & Harii (2021). "Exploring coral reef biodiversity via underwater soundscapes." *Biological Conservation* 253:108901. [doi](https://doi.org/10.1016/j.biocon.2020.108901) | 🔒 | — | **Validation dataset paper** (Sesoko Island) — [methodology §data-sources](../analysis/coral-bioacoustic-methodology.md#data-sources) |
+| `lin-2021` | Lin, Akamatsu, Sinniger & Harii (2021). "Exploring coral reef biodiversity via underwater soundscapes." *Biological Conservation* 253:108901. [doi](https://doi.org/10.1016/j.biocon.2020.108901) | 🔒 | — | **Validation dataset paper** (Sesoko Island) — [methodology §data-sources](../../analysis/coral-bioacoustic-methodology.md#data-sources) |
 
 ## Thermal stress & coral bleaching (DHW)
 
@@ -94,7 +94,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
-| `shaghaghi-2020` | Shaghaghi et al. (2020). ÂB / EACP — energy-aware comm protocol (sleep-wake synchronization). ❓ venue/DOI to confirm | ❓ | — | **The comms protocol S.C.O.U.T. is adapting.** By advisor Navid Shaghaghi — obtain directly. Assigned reading in [Team Timeline](../planning/team-timeline.md) — [notes](notes/shaghaghi-2020-eacp.md) |
+| `shaghaghi-2020` | Shaghaghi et al. (2020). ÂB / EACP — energy-aware comm protocol (sleep-wake synchronization). ❓ venue/DOI to confirm | ❓ | — | **The comms protocol S.C.O.U.T. is adapting.** By advisor Navid Shaghaghi — obtain directly. Assigned reading in [Team Timeline](../../planning/team-timeline.md) — [notes](notes/shaghaghi-2020-eacp.md) |
 
 ## LoRa / LPWAN over seawater
 
@@ -103,7 +103,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `jovalekic-2018` | Jovalekić et al. (2018). "Experimental study of LoRa transmission over seawater." *Sensors* 18(9):2853. [doi](https://doi.org/10.3390/s18092853) | 🔓 | library/jovalekic-2018.pdf | **Upper bound:** clear-LOS LoRa feasible to ~22 km over seawater (868/434 MHz); sea surface not the limiter — [notes](notes/jovalekic-2018-lora-seawater.md) |
 | `gutierrez-gomez-2021` | Gutiérrez-Gómez et al. (2021). "Analysis of LoRa P2P near-surface links over water." *Sensors* 21(20):6872. [doi](https://doi.org/10.3390/s21206872) | 🔓 | library/gutierrez-gomez-2021.pdf | **Lower bound:** near-surface antenna height dominates path loss — the buoy's real constraint — [notes](notes/gutierrez-gomez-2021-lora-near-surface.md) |
 | `parri-2019` | Parri et al. (2019). "Offshore LoRaWAN networking: … buoy-height antennas at sea." *Sensors* 19(14):3239. [doi](https://doi.org/10.3390/s19143239) | 🔓 | library/parri-2019.pdf | **Closest analog:** LoRaWAN measured at 2.1 m / 3.5 m buoy-height antennas offshore — the Phase 4 prior — [notes](notes/parri-2019-lpwan-at-sea.md) |
-| `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | library/adelantado-2017.pdf | Duty-cycle / airtime / SF trade — the theory under the 1×/day 82-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
+| `adelantado-2017` | Adelantado et al. (2017). "Understanding the limits of LoRaWAN." *IEEE Communications Magazine* 55(9):34–40. [doi](https://doi.org/10.1109/MCOM.2017.1600613) · preprint [arXiv:1607.08011](https://arxiv.org/abs/1607.08011) | 🔒 (preprint 🔓) | library/adelantado-2017.pdf | Duty-cycle / airtime / SF trade — the theory under the 1×/day 30-byte packet — [notes](notes/adelantado-2017-lorawan-limits.md) |
 | `bouguera-2018` | Bouguera et al. (2018). "Energy consumption model for sensor nodes based on LoRa and LoRaWAN." *Sensors* 18(7):2104. [doi](https://doi.org/10.3390/s18072104) | 🔓 | library/bouguera-2018.pdf | Energy-per-packet model (SF × power × payload) → feeds the open battery/solar sizing — [notes](notes/bouguera-2018-lora-energy.md) |
 
 ## Regulatory / RF compliance
@@ -249,4 +249,4 @@ depends on them.
 - **Access ❓ rows** need their license confirmed before any PDF is committed. When in doubt,
   leave the file out of the public repo and keep the DOI link.
 - Strip tracking parameters (`?utm_source=…`) from every URL per
-  [CONVENTIONS.md → Citing sources](../CONVENTIONS.md#citing-sources).
+  [CONVENTIONS.md → Citing sources](../../CONVENTIONS.md#citing-sources).

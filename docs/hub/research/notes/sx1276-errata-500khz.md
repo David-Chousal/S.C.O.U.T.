@@ -15,7 +15,7 @@ sensitivity —
 Semtech's reference driver applies exactly this branch, which is the strongest corroboration
 available given the errata PDF itself was not retrievable.
 
-**Why it matters to S.C.O.U.T.** The [modem change to BW500](../../research/fcc-915-mhz-compliance.md)
+**Why it matters to S.C.O.U.T.** The [modem change to BW500](../../../research/fcc-915-mhz-compliance.md)
 puts the link squarely in the band this erratum applies to. **It is a receive-side optimization**, and
 that asymmetry is the whole point of this note:
 

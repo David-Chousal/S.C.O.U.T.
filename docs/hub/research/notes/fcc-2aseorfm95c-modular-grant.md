@@ -33,7 +33,7 @@ bandwidth of at least 500 kHz. Three things follow:
 2. **The old BW125 single-channel config was outside the grant**, independently of whether it
    satisfied §15.247 on its own terms.
 3. **Frequency hopping would have voided the grant.** The module is not certified FHSS. Option A
-   in the [compliance analysis](../../research/fcc-915-mhz-compliance.md) was the more expensive
+   in the [compliance analysis](../../../research/fcc-915-mhz-compliance.md) was the more expensive
    regulatory choice as well as the worse engineering one — which was invisible until the grant
    was located.
 

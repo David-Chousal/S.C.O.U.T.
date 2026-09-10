@@ -17,7 +17,7 @@ This is the basis for S.C.O.U.T.'s **three-zone spectrum model**: anthropogenic 
 below ~200 Hz, so S.C.O.U.T. restricts the NDSI anthropogenic band (α) to 0–200 Hz instead of the
 original 0–1000 Hz. That change stops a healthy reef-fish chorus (100–800 Hz) from being
 misclassified as pollution and falsely suppressing NDSI. See
-[Coral Bioacoustic Methodology](../../analysis/coral-bioacoustic-methodology.md).
+[Coral Bioacoustic Methodology](../../../analysis/coral-bioacoustic-methodology.md).
 
 ## Follow-ups
 

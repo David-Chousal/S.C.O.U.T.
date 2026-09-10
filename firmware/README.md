@@ -37,7 +37,7 @@ Per [Engineering Design Document §12](../docs/engineering/engineering-design-do
 - Deep sleep scheduling and RTC alarm wake
 - Battery voltage monitoring, with transmission skipped below threshold
 - Local logging to microSD (Adalogger FeatherWing)
-- LoRa packet assembly and transmission (82-byte daily payload)
+- LoRa packet assembly and transmission (30-byte daily payload; 82 B is the EDD budget ceiling)
 - Watchdog timer and error recovery
 - State of Health telemetry — battery voltage, internal temperature, humidity
 
@@ -101,8 +101,10 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     buy little and risks an avalanche across a multi-buoy deployment. Repeat count degrades
     with the power mode like everything else (3 in NORMAL, 1 in CONSERVE, 0 in CRITICAL).
     The shore station deduplicates on `(buoy_id, record_seq)`, so copies collapse to one row.
-    Spreading factor stays at SF7 pending the FCC dwell-time question (SCO-19) — see the note
-    in `drivers/lora_link.h`. Policy is pure logic in `scout_link`, unit-tested, including a
+    The modem runs **BW 500 kHz · SF12 · CR 4/8 · +11 dBm** — widened from BW125/SF7 on
+    2026-09-01 because 47 CFR §15.247 requires either a ≥500 kHz bandwidth or ≥50-channel
+    hopping, and the old single-channel BW125 config met neither (SCO-19). See the note in
+    `drivers/lora_link.h` and [`facts.md`](../docs/hub/facts.md). Policy is pure logic in `scout_link`, unit-tested, including a
     guard that the repeat schedule cannot outrun the watchdog. Needs a real range test
     (SCO-14) to confirm the delivery gain over the air.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need

@@ -94,7 +94,7 @@ they said. It is not a defensible market position.
 | Option available to our stated customer today | Unit cost | What they get |
 |---|---|---|
 | [OLB open-source LoRa buoy](https://arxiv.org/html/2601.05615v1) (Univ. of Oslo, Norwegian Met Institute, NTNU — Jan 2026) | **$100–115** in bulk (5–50 units); base station ~$213 | GPS, thermometer(s), SD logging, I²C/SPI/serial/analog expansion, LoRa 1.2–5.3 km over water. Open source, free to copy |
-| **S.C.O.U.T.** | target < $5,000 | Temperature, turbidity, hydrophone, 82-byte daily packet, own analysis pipeline |
+| **S.C.O.U.T.** | target < $5,000 | Temperature, turbidity, hydrophone, 30-byte daily packet, own analysis pipeline |
 | [Sofar Spotter (2nd gen)](https://maritime-executive.com/article/small-cheap-metocean-buoys-expand-coverage-of-high-res-wave-data) | **under $5,000**, volume discounts | Shipping product, 1,000+ deployed, dashboard + API, Smart Mooring modules for temperature, currents, water quality, and an [AI-enabled hydrophone](https://www.sofarocean.com/sem/underwater-sound-acoustics) |
 | [Aqualink](https://www.sofarocean.com/posts/how-aqualink-uses-smart-mooring-to-monitor-ocean-climate-change) | **free** | Philanthropically funded; **donates** Sofar Smart Mooring buoys to volunteers, tour operators, researchers, and citizen scientists specifically for coral reef heat-stress monitoring |
 
@@ -198,7 +198,7 @@ An honest inventory.
 |---|---|---|
 | Buoy electronics (Feather M0 + RFM95 + DS18B20 + SEN0189) | **No** | Well-trodden hobbyist stack; [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) chose it for availability, correctly, and availability is the opposite of scarcity |
 | Printed PETG wedge hull | **No** | Good engineering, reproducible by anyone with a printer and the drawings |
-| 82-byte daily packet + duty-cycled scheduler | **No** | Disciplined, but standard practice for LPWAN telemetry |
+| 30-byte daily packet + duty-cycled scheduler | **No** | Disciplined, but standard practice for LPWAN telemetry |
 | **Reef bioacoustic pipeline** | **Plausibly yes** | See below |
 
 The [bioacoustic methodology](../analysis/coral-bioacoustic-methodology.md) contains real domain
