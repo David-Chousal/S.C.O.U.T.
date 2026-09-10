@@ -138,10 +138,23 @@ content still cannot be trapped invisible, and that is guarded three independent
 
 The hero parallax additionally sits behind `@supports (animation-timeline: scroll())`, and its
 `from` state is a valid resting composition, so a browser without scroll timelines gets the
-static design rather than a broken one. The hero's load-time settle animates **scale only, never
-opacity**, for the same reason the reveals fail open: that animation is not gated on the JS flag,
-so an `opacity:0` start would be a resting state that hides the photograph outright if it never
-ran. Only `transform` and `opacity` are animated, so the work stays on the compositor.
+static design rather than a broken one. Only `transform` and `opacity` are animated, so the work
+stays on the compositor.
+
+**The hero photograph itself is static — deliberately, and this is the interesting constraint.**
+It originally settled out of an overscale over 1900 ms. That was fine on a cold load and wrong on
+every other arrival, because most readers reach Home by clicking a nav link, and page-to-page
+moves use the cross-document View Transitions API whose `page-in` is **400 ms**. During that
+window the browser displays a *frozen snapshot* of the incoming page — so the reader saw the hero
+held at `scale(1.16)`, then the live DOM took over only 21% through the zoom and carried on
+moving for another 1.5 s. The hand-off read as the image snapping into place.
+
+The general rule worth keeping: **a load-time animation must not outlast the navigation
+transition that precedes it**, or the two compose into a visible discontinuity. The photograph
+now rests at a fixed `scale(1.06)` — composition, not motion, so it sits outside the
+reduced-motion query and every reader gets the same crop, which is also the crop the scrim's
+contrast was measured against. The hero type still rises, but its last element lands at 630 ms
+rather than 1520 ms, inside the same window.
 
 The reveal itself is an `IntersectionObserver`, not a scroll handler — including the one that
 makes the header float transparent over the hero, which watches a 1px sentinel at the top of the

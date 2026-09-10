@@ -811,26 +811,32 @@ html.js-reveal .reveal:nth-child(n+5){transition-delay:180ms}
     opacity:1;transform:none;transition:none;transition-delay:0ms}
 }
 
-/* Hero entrance — the one piece of load-time motion, and the reason the first screen lands
-   rather than simply appearing. The photograph settles out of an overscale while the type
-   rises through it in sequence. */
+/* The hero photograph is STATIC. It used to settle out of an overscale over 1900ms, which was
+   wrong for the only way most readers reach this page: a same-site navigation. Page-to-page
+   moves use a cross-document view transition whose `page-in` is 400ms, and the browser shows a
+   frozen snapshot of the incoming page for that whole window — so the reader saw the hero held
+   at scale(1.16), then the live DOM took over only 21% through the zoom and kept moving for
+   another 1.5s. That hand-off read as the image snapping into place. A long load-time animation
+   cannot coexist with a short navigation transition; the photograph simply rests.
+
+   The 1.06 is a fixed framing, not an animation end-state, and it sits outside the
+   reduced-motion query on purpose: it is composition, not motion, so every reader gets the same
+   crop — and therefore the same contrast the hero scrim was measured against. */
+.hero .hero-figure img,.hero .hero-figure .atmos{transform:scale(1.06)}
+
+/* The type still rises, but inside the transition's window rather than long after it. The last
+   element now lands at 630ms against a 400ms transition; it used to land at 1520ms, which is
+   the same defect the photograph had. */
 @media (prefers-reduced-motion:no-preference){
-  .hero .hero-figure img,.hero .hero-figure .atmos{animation:hero-settle 1900ms var(--ease) both}
   /* `both` fill means the resting state before the animation runs is `from` — opacity 0. That
      is a content trap if the animation never starts, so it is gated on the same flag as the
      reveals: no JavaScript, no hiding. */
-  html.js-reveal .hero-body>*{animation:hero-rise 1000ms var(--ease) both}
-  html.js-reveal .hero-body>*:nth-child(1){animation-delay:180ms}
-  html.js-reveal .hero-body>*:nth-child(2){animation-delay:300ms}
-  html.js-reveal .hero-body>*:nth-child(3){animation-delay:400ms}
-  html.js-reveal .hero-body>*:nth-child(4){animation-delay:520ms}
-  html.js-reveal .hero-body>*:nth-child(5){animation-delay:640ms}
-  /* Scale only, no opacity. This animation is not gated on the JS flag (it needs no
-     observer), so an `opacity:0` start would be a resting state that hides the
-     photograph outright if the animation never ran. A scale that never runs is just an
-     unscaled photograph. */
-  @keyframes hero-settle{from{transform:scale(1.16)}to{transform:scale(1.06)}}
-  @keyframes hero-rise{from{opacity:0;transform:translate3d(0,26px,0)}to{opacity:1;transform:none}}
+  html.js-reveal .hero-body>*{animation:hero-rise 420ms var(--ease) both}
+  html.js-reveal .hero-body>*:nth-child(1){animation-delay:0ms}
+  html.js-reveal .hero-body>*:nth-child(2){animation-delay:70ms}
+  html.js-reveal .hero-body>*:nth-child(3){animation-delay:140ms}
+  html.js-reveal .hero-body>*:nth-child(n+4){animation-delay:210ms}
+  @keyframes hero-rise{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
 }
 
 /* Scroll-driven layers. `animation-timeline` runs on the compositor and needs no JavaScript;
