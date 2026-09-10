@@ -136,8 +136,9 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   [`design-notes.md`](design-notes.md).
 - **What changed** — the public site's first impression was rebuilt: Home opens on a
   full-viewport photographic hero with the type over the reef photograph (previously a text
-  screen above a banner), every other page opens on a tinted wash behind oversized display type,
-  and scroll-driven motion was added across all pages.
+  screen above a banner), inner pages open on oversized display type, and restrained
+  scroll-driven motion was added across all pages. The hero photograph's credit moved to the
+  footer so nothing is laid over the frame.
 - **The point that must survive the mirror** — **this reverses the design system's own stated
   rule** that "motion is never scroll-dependent, so content is always visible." A reader who
   takes away only "they added animations" has missed why it was allowed: three independent

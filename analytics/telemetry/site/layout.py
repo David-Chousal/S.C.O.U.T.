@@ -10,7 +10,7 @@ header GitHub icon) are user navigations, not loaded resources, so they appear o
 
 from __future__ import annotations
 
-from . import assets, theme
+from . import assets, imagery, theme
 
 REPO_URL = "https://github.com/David-Chousal/S.C.O.U.T."
 SCU_URL = "https://www.scu.edu/engineering/"
@@ -173,6 +173,14 @@ def footer(base: str, *, external: bool = True) -> str:
             "</ul></div>"
         )
     )
+    # The Home hero photograph's attribution lives here rather than on the image itself, so the
+    # frame stays clean. Gated with the other external links: the strict Analytics and per-buoy
+    # pages do not show that photograph, and keep their minimal footer.
+    hero_credit = (
+        f'<span>Hero photograph: {imagery.HERO.photographer} / '
+        f'<a href="{imagery.HERO.source_url}">{imagery.HERO.source}</a></span>'
+        if external and imagery.HERO.photographer else ""
+    )
     seaweed = _footer_seaweed(base)  # on every page, including Analytics
     # Ambient critters drifting around the footer — one each, spread for good spacing.
     critters = (
@@ -194,6 +202,7 @@ def footer(base: str, *, external: bool = True) -> str:
         '<div class="wrap footer-base" style="padding-inline:0">'
         "<span>© 2026 D. Chousal Cantu · I. Rodriguez · J. R. Myrdal · MIT License</span>"
         "<span>Thermal-stress metrics via NOAA Coral Reef Watch</span>"
+        f"{hero_credit}"
         "</div></div></footer>"
     )
 

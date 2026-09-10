@@ -18,21 +18,20 @@ _ARROW = ('<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-wid
 
 def _hero(ctx: SiteContext) -> str:
     live = ctx.live
-    hero_media, hero_credit = imagery.hero(ctx.base, ctx.img_dir)
+    # The credit is deliberately discarded here: the hero photograph's attribution moved to the
+    # footer (``layout.footer``) so nothing overlays the frame. The Ocean Image Bank licence is
+    # still satisfied — the credit is on the page, just not on the image.
+    hero_media, _ = imagery.hero(ctx.base, ctx.img_dir)
     # The photograph is the stage, not a banner under it: `.hero-figure` is absolutely
-    # positioned across the whole first screen and the type sits over it. The figure keeps its
-    # figcaption and photographer credit — the caption is information about where S.C.O.U.T.
-    # works, so it survives the move (it is the cue that gets dropped on narrow screens, not
-    # the words). `.hero-scrim` replaces the generic `.pill-scrim` because this one has to
-    # carry text contrast through the middle of the frame, not just darken a card's lower edge.
+    # positioned across the whole first screen and the type sits over it. `.hero-scrim` replaces
+    # the generic `.pill-scrim` because this one has to carry text contrast through the middle
+    # of the frame, not just darken a card's lower edge. Nothing else sits on the photograph.
     return (
         '<section class="hero">'
         # Watched by reveal.js: while this 1px marker is on screen the header is over the
         # photograph and goes transparent. An observer, not a scroll handler — no per-frame work.
         '<span class="hero-sentinel" aria-hidden="true"></span>'
-        f'<figure class="hero-figure">{hero_media}<div class="hero-scrim"></div>{hero_credit}'
-        '<figcaption>Shallow nearshore water, where S.C.O.U.T. operates and where satellite data is '
-        "least accurate.</figcaption></figure>"
+        f'<figure class="hero-figure">{hero_media}<div class="hero-scrim"></div></figure>'
         '<div class="wrap hero-body">'
         '<p class="eyebrow">Nearshore reef monitoring · Santa Clara University</p>'
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
@@ -41,15 +40,7 @@ def _hero(ctx: SiteContext) -> str:
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
         "</div>"
-        '<div class="signals">'
-        '<span class="signal">Temperature</span>'
-        '<span class="signal">Turbidity</span>'
-        '<span class="signal">Battery &amp; health</span>'
-        '<span class="signal soon">Dissolved oxygen</span>'
-        '<span class="signal">Reef soundscape</span>'
         "</div>"
-        "</div>"
-        '<a class="hero-cue" href="#mission"><i></i>Scroll</a>'
         "</section>"
     )
 

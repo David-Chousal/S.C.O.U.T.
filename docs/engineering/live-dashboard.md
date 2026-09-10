@@ -112,9 +112,19 @@ constraint here.
 The site opened on a text screen with the reef photograph as a banner *below* it. It now opens
 on the photograph: `.hero-figure` is absolutely positioned across the whole first viewport and
 the type sits over it, with the hero pulled up under the sticky header so the frame runs to the
-very top of the page. Every other page opens on a tinted atmospheric wash behind oversized
-display type. Sections fade and rise as they enter view, the hero photograph parallaxes as the
-first screen leaves, and a progress line is drawn on the header's bottom edge.
+very top of the page. Nothing else is laid over the frame — the eyebrow, wordmark, expansion and
+two buttons, and no more. Every other page opens on oversized display type. Sections fade and
+rise as they enter view, and the hero photograph parallaxes as the first screen leaves.
+
+**The hero deliberately carries no caption, signal list, scroll cue, or on-image credit.** Each
+was tried and cut: they competed with the photograph rather than adding to it. The photographer's
+attribution moved to the footer, which satisfies the Ocean Image Bank licence without putting
+type on the frame — so the credit is a footer concern now, not an imagery one, and it is emitted
+by `layout.footer` from `imagery.HERO`.
+
+The reveal motion is deliberately restrained: 14px over 520ms with the sibling stagger capped at
+180ms. An earlier pass used 26px over 900ms stepping to 350ms, which read as the page assembling
+itself in front of the reader rather than simply arriving.
 
 **This reverses a rule the design system had held since it was written:** *"motion is never
 scroll-dependent, so content is always visible."* The reversal is only defensible because
@@ -126,10 +136,12 @@ content still cannot be trapped invisible, and that is guarded three independent
 | `reveal.js` fails to load | A 4-second watchdog in the inline head script clears the flag | Same — the hiding CSS stops matching |
 | `prefers-reduced-motion: reduce` | `.reveal` is pinned to `opacity:1;transform:none` | Motion is removed, not accelerated |
 
-Scroll-driven layers (hero parallax, the progress line) additionally sit behind
-`@supports (animation-timeline: scroll())`, and every one of their `from` states is a valid
-resting composition, so a browser without scroll timelines gets the static design rather than a
-broken one. Only `transform` and `opacity` are animated, so the work stays on the compositor.
+The hero parallax additionally sits behind `@supports (animation-timeline: scroll())`, and its
+`from` state is a valid resting composition, so a browser without scroll timelines gets the
+static design rather than a broken one. The hero's load-time settle animates **scale only, never
+opacity**, for the same reason the reveals fail open: that animation is not gated on the JS flag,
+so an `opacity:0` start would be a resting state that hides the photograph outright if it never
+ran. Only `transform` and `opacity` are animated, so the work stays on the compositor.
 
 The reveal itself is an `IntersectionObserver`, not a scroll handler — including the one that
 makes the header float transparent over the hero, which watches a 1px sentinel at the top of the

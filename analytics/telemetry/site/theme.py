@@ -218,6 +218,11 @@ html.at-top .page-home .site-header{background:transparent;backdrop-filter:none;
   -webkit-backdrop-filter:none}
 html.at-top .page-home .site-header .brand,
 html.at-top .page-home .site-header .nav-links a[aria-current=page]{color:#fbf8f4}
+/* The brand mark is black raster artwork, so `color` cannot reach it — it stayed dark against
+   the photograph while every other header element inverted. Same whitening filter the chat
+   avatar uses on the same asset. Transitioned so it changes with the header, not after it. */
+.brand .mark{transition:filter var(--dur) var(--ease)}
+html.at-top .page-home .site-header .brand .mark{filter:brightness(0) invert(1)}
 html.at-top .page-home .site-header .nav-links a,
 html.at-top .page-home .site-header .nav-social a,
 html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.82)}
@@ -392,34 +397,6 @@ html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
   margin:0;text-shadow:0 2px 30px rgba(4,10,14,0.55)}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
-.hero .hero-figure figcaption{right:auto;background:none;
-  padding:1.4rem clamp(1.4rem,4vw,3rem) clamp(1.5rem,3.4vh,2.4rem);
-  max-width:52ch;line-height:1.5}
-.hero .pill-credit{z-index:2}
-/* Scroll cue — a thin line that drains downward, inviting the first scroll. */
-.hero-cue{position:absolute;left:50%;bottom:clamp(1.6rem,4vh,2.8rem);z-index:3;
-  transform:translateX(-50%);display:grid;justify-items:center;gap:0.7rem;
-  color:rgba(251,248,244,0.78);font-size:var(--text-micro);letter-spacing:var(--track);
-  text-transform:uppercase;font-weight:500}
-.hero-cue:hover{opacity:1;color:#fbf8f4}
-.hero-cue i{display:block;width:1px;height:clamp(34px,5vh,52px);
-  background:linear-gradient(180deg,rgba(251,248,244,0.85),rgba(251,248,244,0))}
-/* On narrow screens the caption and the cue want the same space. The caption carries
-   information, so the cue is what goes — never the words. */
-@media(max-width:720px){
-  .hero-cue{display:none}
-  /* Right padding clears the floating chat launcher (56px + its inset), which is fixed over
-     this exact corner on small screens — without it the last words run under the button. */
-  .hero .hero-figure figcaption{font-size:0.78rem;line-height:1.45;
-    padding:1rem clamp(5rem,20vw,6.5rem) 1.1rem 1.2rem}
-}
-
-/* ── Signals strip ────────────────────────────────────────────────────────── */
-.signals{display:flex;flex-wrap:wrap;justify-content:center;gap:0.6rem 2rem;align-items:baseline;
-  margin-top:2.6rem}
-.signal{font-size:0.98rem;color:var(--ink);font-weight:500}
-.signal.soon{color:var(--faint);font-weight:400}
-.signal.soon::after{content:" · soon";color:var(--faint);font-weight:400}
 
 /* ── Section heading block ────────────────────────────────────────────────── */
 .head-block{max-width:56ch}
@@ -718,22 +695,6 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .page-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
   pointer-events:none;
   background:linear-gradient(90deg,transparent,var(--line-2) 20%,var(--line-2) 80%,transparent)}
-/* The header's atmospheric wash is painted on the BODY, not on `.page-head`.
-   Technology/Science/About put the header inside the `.doc` grid's offset content column, so a
-   full-bleed pseudo-element anchored to the section cannot know where the viewport edges are —
-   `left:50%;width:100vw` overflowed by ~90px there, because the column is not viewport-centred.
-   Anchoring to the body sidesteps the arithmetic entirely and uses `width:100%`, which (unlike
-   `100vw`) already excludes the scrollbar. Height is generous and the gradient fades out, so it
-   does not need to match the header's exact box. */
-body{position:relative}
-body:not(.page-home)::before{content:"";position:absolute;top:0;left:0;width:100%;
-  height:clamp(20rem,16rem + 14vw,34rem);z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(58% 66% at 14% -12%,color-mix(in srgb,var(--accent) 20%,transparent) 0%,
-      transparent 64%),
-    radial-gradient(44% 56% at 88% 0%,color-mix(in srgb,var(--coral) 15%,transparent) 0%,
-      transparent 66%),
-    linear-gradient(180deg,color-mix(in srgb,var(--bg-2) 85%,transparent) 0%,transparent 100%)}
 .page-head h1{font-size:clamp(2.4rem,1.4rem + 4.2vw,4.6rem);max-width:16ch;
   letter-spacing:-0.035em;line-height:1.02}
 .page-head .lead{max-width:56ch;margin-top:1.2rem}
@@ -827,21 +788,23 @@ body:not(.page-home)::before{content:"";position:absolute;top:0;left:0;width:100
    hidden. Reduced motion is honoured by keeping `.reveal` fully visible rather than by
    speeding the animation up. Only transform and opacity animate, so the work stays off the
    main thread. */
-html.js-reveal .reveal{opacity:0;transform:translate3d(0,26px,0);
-  transition:opacity 900ms var(--ease),transform 900ms var(--ease);will-change:transform,opacity}
+/* Deliberately restrained: a short, small settle rather than a long travel. Earlier values
+   (26px over 900ms, stepping to 350ms) read as the page assembling itself in front of the
+   reader; at this distance and speed the motion registers without asking to be watched. */
+html.js-reveal .reveal{opacity:0;transform:translate3d(0,14px,0);
+  transition:opacity 520ms var(--ease),transform 520ms var(--ease);will-change:transform,opacity}
 html.js-reveal .reveal.is-in{opacity:1;transform:none;will-change:auto}
 /* Direction variants, for sections that read better arriving from the side or scaling in. */
-html.js-reveal .rv-left{transform:translate3d(-38px,0,0)}
-html.js-reveal .rv-right{transform:translate3d(38px,0,0)}
-html.js-reveal .rv-scale{transform:scale(1.05)}
-html.js-reveal .rv-rise{transform:translate3d(0,62px,0)}
+html.js-reveal .rv-left{transform:translate3d(-20px,0,0)}
+html.js-reveal .rv-right{transform:translate3d(20px,0,0)}
+html.js-reveal .rv-scale{transform:scale(1.03)}
+html.js-reveal .rv-rise{transform:translate3d(0,26px,0)}
 /* Siblings step in rather than landing together. Needs no extra markup: any run of `.reveal`
    elements sharing a parent (a bento, a card grid, a carousel) staggers naturally. */
-html.js-reveal .reveal:nth-child(2){transition-delay:70ms}
-html.js-reveal .reveal:nth-child(3){transition-delay:140ms}
-html.js-reveal .reveal:nth-child(4){transition-delay:210ms}
-html.js-reveal .reveal:nth-child(5){transition-delay:280ms}
-html.js-reveal .reveal:nth-child(n+6){transition-delay:350ms}
+html.js-reveal .reveal:nth-child(2){transition-delay:45ms}
+html.js-reveal .reveal:nth-child(3){transition-delay:90ms}
+html.js-reveal .reveal:nth-child(4){transition-delay:135ms}
+html.js-reveal .reveal:nth-child(n+5){transition-delay:180ms}
 @media (prefers-reduced-motion:reduce){
   html.js-reveal .reveal,html.js-reveal .rv-left,html.js-reveal .rv-right,
   html.js-reveal .rv-scale,html.js-reveal .rv-rise{
@@ -862,8 +825,11 @@ html.js-reveal .reveal:nth-child(n+6){transition-delay:350ms}
   html.js-reveal .hero-body>*:nth-child(3){animation-delay:400ms}
   html.js-reveal .hero-body>*:nth-child(4){animation-delay:520ms}
   html.js-reveal .hero-body>*:nth-child(5){animation-delay:640ms}
-  html.js-reveal .hero-cue{animation:hero-rise 1000ms var(--ease) 900ms both}
-  @keyframes hero-settle{from{transform:scale(1.16);opacity:0}to{transform:scale(1.06);opacity:1}}
+  /* Scale only, no opacity. This animation is not gated on the JS flag (it needs no
+     observer), so an `opacity:0` start would be a resting state that hides the
+     photograph outright if the animation never ran. A scale that never runs is just an
+     unscaled photograph. */
+  @keyframes hero-settle{from{transform:scale(1.16)}to{transform:scale(1.06)}}
   @keyframes hero-rise{from{opacity:0;transform:translate3d(0,26px,0)}to{opacity:1;transform:none}}
 }
 
@@ -879,15 +845,9 @@ html.js-reveal .reveal:nth-child(n+6){transition-delay:350ms}
     @keyframes hero-parallax{to{transform:translate3d(0,12%,0) scale(1.10)}}
     /* The type and scrim fade as they pass, so the hand-off to the sand page is a dissolve
        rather than a cut. */
-    .hero-body,.hero-cue{animation:hero-depart linear both;
+    .hero-body{animation:hero-depart linear both;
       animation-timeline:scroll(root);animation-range:10vh 78vh}
     @keyframes hero-depart{to{opacity:0;transform:translate3d(0,-40px,0)}}
-    /* Reading progress, drawn on the header's own bottom edge — no extra element. */
-    .site-header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
-      background:linear-gradient(90deg,var(--accent),var(--coral));
-      transform:scaleX(0);transform-origin:0 50%;
-      animation:scroll-progress linear both;animation-timeline:scroll(root)}
-    @keyframes scroll-progress{to{transform:scaleX(1)}}
   }
 }
 
@@ -916,15 +876,23 @@ html.js-reveal .reveal:nth-child(n+6){transition-delay:350ms}
 .chat-panel{position:fixed;left:50%;bottom:clamp(1rem,2vw,1.4rem);z-index:60;pointer-events:none;
   width:min(442px,calc(100vw - 2rem));max-height:calc(100dvh - 2.5rem);
   display:flex;flex-direction:column;gap:0.7rem;
-  transform:translateX(-50%) translateY(14px);opacity:0;visibility:hidden;
-  transition:opacity .26s ease,transform .3s var(--ease),visibility 0s .3s}
-.chat.chat-open .chat-panel{opacity:1;visibility:visible;transform:translateX(-50%);
-  transition:opacity .26s ease,transform .32s var(--ease),visibility 0s}
+  transform:translateX(-50%) translateY(14px);visibility:hidden;
+  transition:transform .3s var(--ease),visibility 0s .3s}
+.chat.chat-open .chat-panel{visibility:visible;transform:translateX(-50%);
+  transition:transform .32s var(--ease),visibility 0s}
+/* Opacity lives on the leaves, never on their shared ancestor: `backdrop-filter` samples the
+   backdrop *behind* its element, and an ancestor mid-fade is a composited group with nothing
+   in it, so the blur read as absent until the fade landed and then snapped into focus. */
+.chat-panel>*{opacity:0;transition:opacity .24s ease}
+.chat.chat-open .chat-panel>*{opacity:1;transition:opacity .28s ease .04s}
+.chat.chat-open .chat-glass{backdrop-filter:blur(22px) saturate(1.2);
+  -webkit-backdrop-filter:blur(22px) saturate(1.2)}
 /* Frosted conversation card — smoked deep-ocean glass; the page shows through, blurred. */
 .chat-glass{pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;
   height:min(364px,calc(100dvh - 9rem));border-radius:22px;color:#fff;
   background:linear-gradient(155deg,rgba(38,64,68,.62),rgba(15,32,36,.74));
-  backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);
+  backdrop-filter:blur(4px) saturate(1.05);-webkit-backdrop-filter:blur(4px) saturate(1.05);
+  transition:backdrop-filter .34s var(--ease),-webkit-backdrop-filter .34s var(--ease);
   border:1px solid rgba(255,255,255,.14);box-shadow:0 34px 90px -34px rgba(8,22,26,.65)}
 /* Header on the glass. */
 .chat-head{display:flex;align-items:center;gap:0.7rem;padding:0.95rem 1.1rem;
