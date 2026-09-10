@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-08.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-10.**
 
 ---
 
@@ -57,6 +57,11 @@ decisions; nothing downstream starts until those land. Full plan:
    invert every downstream turbidity interpretation with no error anywhere. The Rev A divider
    has been verified on paper ([SCO-85](https://linear.app/scout1/issue/SCO-85)); the front-end
    design itself is still open. [SCO-47](https://linear.app/scout1/issue/SCO-47)
+6. **Rev A pin map contradicts the firmware** — the schematic wires the DS18B20 to
+   `D5`; the firmware polls `D12` and needs `D5` for the RTC wake interrupt, whose wire is
+   absent from the schematic entirely. Flashed as-is, temperature never reads and the buoy
+   cannot wake from standby. Blocks all bench bring-up.
+   [Integration Runbook §2](../engineering/integration-runbook.md)
 
 The dissolved-oxygen scope call ([SCO-11](https://linear.app/scout1/issue/SCO-11)) is closed —
 deferred past V1.5 — and no longer blocks the V1 sensor list.
