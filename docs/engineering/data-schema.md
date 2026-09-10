@@ -92,6 +92,22 @@ treat a falling count as worsening water quality.
 > stage would flip this convention and silently invert every downstream interpretation. If the
 > design ends up inverting for another reason, say so here first and the analytics follow.
 
+### `RTC_LOST` rows are excluded from time-based analysis
+
+When the PCF8523 is unset or unreadable the firmware sets `RTC_LOST`, stamps the row
+`1970-01-01T00:00:00Z`, and **keeps logging** — the sensor readings are still real, only the
+time is not. The analytics side treats such a row accordingly
+([`model.has_valid_clock`](../../analytics/telemetry/model.py)):
+
+- **Counted, never dropped.** It appears in `n_records` and in the flag tallies, and QC reports
+  it separately as `clock_invalid`.
+- **Excluded from anything derived from timestamps** — span, expected records, completeness,
+  gaps, daily aggregation, DHW, trends, turbidity events, and the drift screen.
+
+Both signals condemn a row: the `RTC_LOST` flag, and any timestamp before 2020 (which catches an
+unset clock whose flag was lost). Without this, one such row moved the deployment span to
+fifty-six years — completeness collapsed to 0% and a phantom 1970 day entered the daily series.
+
 ### `soh` vocabulary (v1)
 
 Device State-of-Health, set at boot and carried in every row/packet (distinct from the
