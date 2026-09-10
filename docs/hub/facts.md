@@ -124,6 +124,7 @@ as settled. Each should have a Linear issue and, when resolved, become a row abo
 
 | Open fact | Why it's open | Owner | Linear |
 |---|---|---|---|
+| Rev A temperature pin + RTC wake interrupt | **The schematic and the firmware disagree, and the wake interrupt has no wire.** Schematic annotates `TEMP_DATA = Feather D5`; `config.h` has `PIN_ONEWIRE 12` and `PIN_RTC_INT 5`. Flashed as-is the DS18B20 never reads and the buoy cannot wake from standby. The Adalogger's PCF8523 `INT1` also needs a solder jumper, which no assembly step currently calls for. Same class as the `PIN_TURBIDITY` A0→A1 error fixed in [SCO-85](https://linear.app/scout1/issue/SCO-85) | Isabella (ECE) | [Integration Runbook §2](../engineering/integration-runbook.md) |
 | Hydrophone part number | H2a-XLR (diagram) vs H2dM (BOM) | Isabella (ECE) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
 | LiFePO₄ charging path | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) not yet decided | Isabella (ECE) | [SCO-10](https://linear.app/scout1/issue/SCO-10) |
 | Measured sleep current | Analytical estimate only; `< 5 mA` is a target, not a measurement | Isabella (ECE) | [SCO-23](https://linear.app/scout1/issue/SCO-23) |

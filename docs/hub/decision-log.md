@@ -130,6 +130,7 @@ reader sees settled and unsettled in one place. When one resolves, move it into 
 
 | Raised | Area | Decision needed | Where it's tracked |
 |---|---|---|---|
+| 2026-09-10 | hardware | **Rev A pin map: does the firmware move to `D5`, or the schematic to `D12`?** Either resolves it; both also require the Adalogger `INT1` solder jumper, which no assembly step currently calls for. Owner: Isabella (ECE) | [Integration Runbook §2](../engineering/integration-runbook.md), [facts.md](facts.md) |
 | 2026-08-14 | hardware | LiFePO₄ charging path on the Feather M0 | [ADR-0002](../decisions/0002-lifepo4-charging-path.md) 🟡 Open, [SCO-10](https://linear.app/scout1/issue/SCO-10) |
 | 2026-08-14 | hardware | Hydrophone part number (H2a-XLR vs H2dM) | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
 | 2026-08-31 | geng | **Biofouling mitigation — contested.** [SCO-15](https://linear.app/scout1/issue/SCO-15) is closed with the Sea Hawk Smart Solution coating chosen (2026-08-18), but the 2026-08-31 meeting ruled out anti-barnacle paint as reef-hostile and favoured letting natural growth occur. Needs ratifying one way or the other — the coating is on the purchase list | [SCO-15](https://linear.app/scout1/issue/SCO-15), [meeting-notes 2026-08-31](../planning/meeting-notes.md) |
