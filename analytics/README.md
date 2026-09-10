@@ -14,6 +14,24 @@ This README covers running the code. The telemetry pipeline's scientific core is
 standard library** (no install needed; runs on a bare Raspberry Pi); the bioacoustic pipeline
 needs the dependencies below.
 
+> ### ⚠️ On a Raspberry Pi, use the **64-bit** OS
+>
+> The bioacoustic stack installs cleanly on **aarch64** (Raspberry Pi OS 64-bit) — every pinned
+> package and its compiled transitive dependencies publish an ARM wheel. On **armv7l** (the
+> 32-bit image, still the default in some Imager presets) **nine** of them have no wheel at all,
+> so `pip install` falls back to building from source: numpy, scipy, pandas, matplotlib,
+> scikit-image, pywavelets, contourpy, kiwisolver and pillow. Building SciPy on a Pi needs a
+> Fortran toolchain and routinely exhausts the board's RAM.
+>
+> Verify before provisioning — it queries PyPI, so it reports what is actually published rather
+> than what we assume:
+>
+> ```bash
+> python3 scripts/check_arm_wheels.py
+> ```
+>
+> The telemetry pipeline is unaffected either way; it has no dependencies at all.
+
 ---
 
 ## What it does

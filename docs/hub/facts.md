@@ -89,6 +89,7 @@
 | Frequency model | **Three-zone** (0–200 Hz anthropogenic · 200–1000 Hz mixed · biophony above) | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) |
 | Validation dataset | Sesoko Island, Okinawa, Japan — 8 monthly sessions, Aug 2017 – Jul 2018, 1.5 m depth | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md#data-sources) |
 | Trend test | Modified Mann-Kendall (Hamed & Rao 1998) via `pyMannKendall` | [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md) |
+| Where it can run | **A 64-bit host — Raspberry Pi OS aarch64, or a laptop.** Every pinned package and compiled transitive dependency publishes an ARM wheel for aarch64; on 32-bit **armv7l** nine have none (numpy, scipy, pandas, matplotlib, scikit-image, pywavelets, contourpy, kiwisolver, pillow) and pip builds from source — SciPy needs a Fortran toolchain and routinely exhausts the Pi's RAM. Re-checkable against PyPI with `scripts/check_arm_wheels.py`. The **telemetry** pipeline is stdlib-only and runs anywhere | [analytics/README](../../analytics/README.md), `scripts/check_arm_wheels.py` |
 
 ## Analytics (environmental telemetry)
 
