@@ -20,6 +20,14 @@
 > in [`mechanical/cad/floatation/current/`](../../../mechanical/cad/floatation/current/) — the
 > subfolder holding only the design actually being built right now.
 >
+> ⚠️ **v5 revision (2026-09-09) — see [§12](#12-v5-revision--sco-110-resize--thin-walls).** The
+> [SCO-110](https://linear.app/scout1/issue/SCO-110) resize (wedge 8.0 → 5.5 in, chassis
+> 11.0 → 8.5 in) + the 2026-09-07 wall thinning (0.250 → 0.095/0.063 in) changed the wedge shell
+> and chassis. §§3–9 below remain the **v4 measured record** (still valid for the wedge-bottom,
+> wedge-cap, and chassis-cap, which are unchanged). §12 carries the v5 geometric estimates and
+> the revised aggregate. The whole-buoy freeboard consequences are in
+> [`buoy-mass-displacement-and-freeboard-model.md`](buoy-mass-displacement-and-freeboard-model.md).
+>
 > **Source weigh-in** — real slicer weights for all five parts, 2026-08-24: see
 > [`mechanical/test/print-weight-verification-2026-08-24.md`](../../../mechanical/test/print-weight-verification-2026-08-24.md).
 >
@@ -336,8 +344,9 @@ depends on cavity volume, not shell weight.
 > extends it to the **whole deployed buoy**: the full as-deployed mass budget (electronics,
 > battery, solar, stem, pod, mooring hardware, fasteners, coating — estimated pending
 > [SCO-70](https://linear.app/scout1/issue/SCO-70)), the assembled-buoy displacement, and the
-> floating-equilibrium **freeboard model** (nominal draft ~2.69 in, ~7.31 in freeboard to the
-> wedge top, buoy substantially over-floated). This doc stays the printed-shell sub-budget.
+> floating-equilibrium **freeboard model** (v5: nominal draft ~2.50 in, ~5.0 in freeboard to the
+> wedge top, buoy substantially over-floated at a ~3.84:1 margin). This doc stays the
+> printed-shell sub-budget; see [§12](#12-v5-revision--sco-110-resize--thin-walls) for the v5 shell.
 
 This gives the [Buoy Structural Load Framework](structural-load-framework.md) its `m_b`
 and `V_disp` inputs (tagged `[M]` there, "not yet available until parts finalized" — no longer
@@ -370,3 +379,81 @@ mooring scope/line weight, independent of anything in this doc.
 
 **Closed by this update:** the shared 1.178× calibration factor is retired — all five parts now
 carry their own real slicer weight (see [§2](#2-calibration-against-the-one-real-data-point--retired-2026-08-24)).
+
+---
+
+## 12. v5 revision — SCO-110 resize + thin walls
+
+**2026-09-09.** [SCO-110](https://linear.app/scout1/issue/SCO-110) (decided 2026-09-03, wedge
+STEP exported 2026-09-08) resized the wedge shell to **5.500 in** (was 8.000) and the chassis to
+**8.500 in** (was 11.000), and the 2026-09-07 pass thinned the wedge walls from **0.250 in
+uniform** to **0.095 in outer curved / 0.063 in radial sides + a mandatory internal bracing web**
+(fully-dense perimeter shells, no infill core). Outer radius R9.000 in and the wedge-bottom,
+wedge-cap, and chassis-cap parts are **unchanged**.
+
+⚠️ **No v5 re-slice exists yet** (SCO-110's one open acceptance box). The wedge shell and chassis
+masses below are **geometric estimates** `[A geom]`, not measured. Replace with real slicer
+weights when available, then re-run this section and the freeboard model.
+
+### 12.1 v5 wedge shell — geometry (exact) + mass estimate
+
+```
+Outer envelope (annular sector, h = 5.500):
+  V = 0.5 · (π/3) · (9.000² − 2.875²) · 5.500 = 209.460 in³ = 3.432 L   [X from M]
+  (exactly 5.5/8.0 = 0.6875 × the v4 envelope of 304.67 in³)
+
+Wall material (thin-shell, outer wall t=0.095, inner+sides+web t=0.063):
+  outer curved  (9.000·π/3)·5.5·0.095            = 4.924 in³
+  inner curved  (2.875·π/3)·5.5·0.063            = 1.043 in³
+  2 radial faces 2·(6.125·5.5)·0.063             = 4.245 in³
+  internal web  (6.125·5.5)·0.063·0.60 (~40% open) = 1.273 in³
+  wall total = 11.486 in³ = 188.2 cm³            [A geom]
+
+Printed mass estimate = 188.2 cm³ × 1.27 g/cm³ (fully dense) = 239 g each   [A geom]
+  — brackets the 168–273 g v5 slicing-pass range in the floatation README.
+Cavity (for foam) = 209.460 − 11.486 = 197.974 in³ = 3.244 L               [A]
+```
+
+### 12.2 v5 chassis — mass estimate
+
+```
+Displacement envelope = π · 2.875² · 8.500 = 220.72 in³ = 3.617 L          [X from M]
+Mass estimate: v4 measured 712.82 g scaled to 8.5 in, ~70% height-proportional:
+  712.82 × (0.30 + 0.70 · 8.5/11.0) = 712.82 × 0.8409 = 599 g              [A geom]
+```
+
+### 12.3 v5 foam fill
+
+```
+Cavity per module = wedge 3.244 L + wedge-bottom 0.452 L (unchanged) = 3.696 L
+Foam per module   = 3696 cm³ × 0.032 g/cm³ = 118 g
+All 6 modules     = 710 g ≈ 0.71 kg   (v4 was 890 g — thinner walls give cavity back,
+                    but the shorter shell removes more)
+Foam alone, shell gone (per module) = 1025·9.81·0.003696 − 0.118·9.81 = 36.0 N
+All 6, foam alone = 216 N (≈ 22.0 kgf)   (v4 was 271 N)
+```
+
+### 12.4 v5 aggregate — printed shell system
+
+| | Weight | Displacement | Buoyant force | Net (buoyancy − weight) |
+|---|---|---|---|---|
+| One wedge module (wedge + cap + bottom + foam) | 239 + 126.86 + 181.21 + 118 = **665 g** | 3.432 + 0.686 = **4.118 L** | 41.4 N | **+34.9 N** |
+| **All 6 wedge modules** | 3.99 kg | 24.71 L | 248.4 N | **+209.3 N** |
+| Chassis + chassis cap | 599 + 89.79 = **689 g** | 3.777 L | 37.97 N | **+31.2 N** |
+| **Whole shell system (v5)** | **~4.68 kg** | **28.49 L** | **286.4 N** | **+240.5 N (≈24.5 kgf)** |
+
+(v4 was 5.494 kg / 38.93 L / 391.5 N / +337.6 N.) The whole-buoy freeboard, reserve, and
+failure-case consequences — nominal mass ~7.59 kg, net reserve ~212 N, 3.84:1 margin, draft
+2.50 in, ~5.0 in freeboard to the wedge top — are worked in
+[`buoy-mass-displacement-and-freeboard-model.md`](buoy-mass-displacement-and-freeboard-model.md),
+independently re-derived 2026-09-09.
+
+### 12.5 v5 open items
+
+- **Real v5 slicer weights for the wedge shell and chassis** — SCO-110. Everything in §12 above
+  is `[A geom]` until then.
+- **Dimensioned v5 wedge PDF** — confirms the 0.095/0.063 in walls and the ~0.69 in bolt flange;
+  tightens §12.1.
+- **v5 chassis + cap STEP re-exports** — then rotate `mechanical/cad/floatation/current/`.
+- All the v4 open items in §11 that are not part-geometry (foam datasheet density, electronics
+  mass on SCO-70) still apply unchanged.
