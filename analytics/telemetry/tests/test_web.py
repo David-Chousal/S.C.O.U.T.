@@ -9,6 +9,7 @@ from telemetry import analyze
 from telemetry.model import TelemetryRecord
 from telemetry.site import theme
 from telemetry.site.layout import CHAT_ENDPOINT
+from telemetry.site import build_site
 from telemetry.web import render_html, write_site
 
 _T0 = datetime(2027, 3, 1, tzinfo=timezone.utc)
@@ -193,3 +194,32 @@ class WebDashboardTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SampleVsLivePresentationTests(unittest.TestCase):
+    """The banner is not decoration — `build.py` sets `is_sample=bool(banner)`, and that flag
+    is what makes the home page say "Sample data, simulated until the buoy is deployed" rather
+    than "Latest publish."
+
+    That makes the banner load-bearing across the whole site, and it is chosen upstream by
+    ``shore/scout_shore/publish.py``. If a change there ever passed a banner alongside real
+    telemetry, a live reef deployment would present itself as a demo on every page. These pin
+    the coupling from both ends.
+    """
+
+    def _home(self, banner):
+        records = _records(days=10)
+        report = analyze(records, mmm=28.0)
+        with tempfile.TemporaryDirectory() as tmp:
+            build_site(report, Path(tmp), banner=banner, records=records)
+            return (Path(tmp) / "index.html").read_text()
+
+    def test_real_data_presents_as_a_live_publish(self):
+        home = self._home(None)
+        self.assertIn("Latest publish.", home)
+        self.assertNotIn("simulated until the buoy is deployed", home)
+
+    def test_sample_data_says_so_on_the_home_page(self):
+        home = self._home("Sample data: simulated telemetry for demonstration.")
+        self.assertIn("simulated until the buoy is deployed", home)
+        self.assertNotIn("Latest publish.", home)

@@ -3,7 +3,8 @@
 :class:`MockLoRaLink` stands in for the radio so the full path runs with no hardware —
 the buoy side calls :meth:`transmit`, the shore side calls :meth:`receive`. It can inject
 packet loss and bit corruption to exercise the receiver's error handling. When real
-hardware arrives, swap this for an ``adafruit-rfm9x`` backend exposing the same two methods.
+hardware arrives, swap this for :class:`~scout_shore.radio.Rfm9xLink`, which implements the
+same :class:`~scout_shore.link.LoRaLink` protocol.
 
 **Radio settings the real backend must use** (SCO-24). These are not free choices — the
 buoy's modem configuration is set by FCC 15.247 compliance, and the receiver has to match
@@ -36,6 +37,7 @@ import random
 from collections import deque
 from dataclasses import dataclass
 
+from .link import LoRaLink
 from .packet import PacketError, Reading, decode
 from .schema import SchemaError, validate_row, reading_to_row
 from .store import CsvStore
@@ -95,7 +97,7 @@ class ReceiverStats:
 class Receiver:
     """Decodes payloads off a link, validates, and appends good readings to the store."""
 
-    def __init__(self, link: MockLoRaLink, store: CsvStore) -> None:
+    def __init__(self, link: LoRaLink, store: CsvStore) -> None:
         self._link = link
         self._store = store
         self.stats = ReceiverStats()

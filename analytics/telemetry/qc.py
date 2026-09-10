@@ -27,7 +27,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from .model import EXPECTED_INTERVAL_S, TelemetryRecord
+from .model import EXPECTED_INTERVAL_S, TelemetryRecord, has_valid_clock
 
 # Physical-plausibility bounds (sensor sanity, NOT science thresholds). A reading outside
 # these is almost certainly a fault, air exposure, or wiring issue, not real water.
@@ -109,6 +109,7 @@ class QCReport:
     temp_out_of_range: int = 0
     turbidity_out_of_range: int = 0
     battery_missing: int = 0
+    clock_invalid: int = 0  # rows whose timestamp cannot be trusted (RTC_LOST / unset clock)
     flag_counts: dict[str, int] = field(default_factory=dict)
     soh_counts: dict[str, int] = field(default_factory=dict)
     channels: dict[str, ChannelQC] = field(default_factory=dict)
@@ -127,7 +128,30 @@ def run_qc(
     if not records:
         return QCReport()
 
-    ordered = sorted(records, key=lambda r: r.timestamp)
+    # Rows with an untrustworthy clock are counted and reported, never silently dropped —
+    # but they are excluded from every figure derived from timestamps. One 1970 row against
+    # a day of real ones moves the span to fifty-six years, which collapses completeness to
+    # zero and invents a phantom day. The readings on those rows are still real; only the
+    # time is not, so they still count toward n_records and the flag/SoH tallies.
+    clock_invalid = [r for r in records if not has_valid_clock(r)]
+    timed = [r for r in records if has_valid_clock(r)]
+    if not timed:
+        # Every row is clock-invalid: report what we have rather than crash or invent a span.
+        flags: Counter[str] = Counter()
+        soh: Counter[str] = Counter()
+        for r in records:
+            flags.update(r.flags)
+            soh.update(r.soh)
+        return QCReport(
+            n_records=len(records),
+            clock_invalid=len(clock_invalid),
+            temp_missing=sum(1 for r in records if r.temp_c is None),
+            battery_missing=sum(1 for r in records if r.battery_v is None),
+            flag_counts=dict(flags),
+            soh_counts=dict(soh),
+        )
+
+    ordered = sorted(timed, key=lambda r: r.timestamp)
     first, last = ordered[0].timestamp, ordered[-1].timestamp
     interval = timedelta(seconds=interval_s)
 
@@ -184,7 +208,8 @@ def run_qc(
 
     completeness = 100.0 * len(ordered) / expected if expected else 0.0
     return QCReport(
-        n_records=len(ordered),
+        n_records=len(records),
+        clock_invalid=len(clock_invalid),
         first=first,
         last=last,
         expected_records=expected,

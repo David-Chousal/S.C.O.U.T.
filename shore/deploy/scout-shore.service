@@ -1,0 +1,53 @@
+# S.C.O.U.T. shore station — receives LoRa telemetry and writes daily CSVs.
+#
+# Install on the Raspberry Pi:
+#   sudo cp shore/deploy/scout-shore.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now scout-shore
+#   journalctl -u scout-shore -f
+#
+# Assumes the repo is cloned at /home/pi/S.C.O.U.T. and runs as the `pi` user. Adjust both
+# below if yours differs. See shore/README.md for the full bring-up.
+
+[Unit]
+Description=S.C.O.U.T. shore station (LoRa receiver)
+Documentation=https://github.com/David-Chousal/S.C.O.U.T./blob/main/shore/README.md
+# Only ordering, not a dependency: the receiver writes to a local disk and does not need the
+# network. Losing the uplink must never stop us recording what the buoy sent.
+After=network.target
+
+# Never give up restarting. Must live in [Unit]: systemd moved this out of [Service] in v230
+# and silently ignores it there, which would leave the unit dead after 5 restarts in 10s —
+# exactly what happens if the SPI bus is not ready yet at boot.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/S.C.O.U.T./shore
+ExecStart=/usr/bin/python3 scripts/run_receiver.py --link rfm9x --out data-live
+
+# Always come back. An unattended station on a coastline is not going to be restarted by hand,
+# and the buoy transmits blind — if nothing is listening, neither end raises an alarm.
+Restart=always
+RestartSec=10
+
+# SIGTERM is what the service turns into a clean stop; give it room to finish the write.
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Unbuffered, so `journalctl -f` shows lines as they happen rather than in 8 KB blocks.
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=journal
+
+# Modest hardening. Not a sandbox — the process needs /dev/spidev and /dev/gpiomem for the
+# radio, and write access to the repo's data-live/ directory.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+
+[Install]
+WantedBy=multi-user.target
