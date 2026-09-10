@@ -15,11 +15,13 @@
 > record rather than deleted; new backlog items go straight into Linear from here on, not into
 > this file.
 >
-> ⏳ **One exception, staged 2026-08-15.** [Section D](#d-staged-not-yet-in-linear) holds items
-> raised by a session that could not reach the `scout1` workspace. They are **not in Linear yet**
-> and will not be picked up unless someone files them. File them, add the `SCO-##` link to the
-> heading, and move the entry up into the record above. Use this section only when Linear is
-> genuinely unreachable — otherwise file directly, as the note above says.
+> ✅ **Section D closed 2026-08-17.** [Section D](#d-staged--now-all-filed) was a staging area for
+> items raised by sessions that could not reach the `scout1` workspace. **It is now empty of
+> pending work** — D1 was resolved before it was ever filed, D2 is
+> [SCO-57](https://linear.app/scout1/issue/SCO-57) and D3 is
+> [SCO-58](https://linear.app/scout1/issue/SCO-58). It is kept as the derivation record, not as a
+> queue. Use it again only when Linear is genuinely unreachable — otherwise file directly, as the
+> note above says.
 
 ---
 

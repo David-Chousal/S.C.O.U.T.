@@ -50,19 +50,19 @@
 
 1. **The v5 re-slice lands** (real wedge + chassis weights) → replace the `[A]` estimates in
    [§3](#3-full-mass-budget) Tier I with `[M]` values, re-run every total below, re-solve
-   [§7](#7-freeboard-model), regenerate the [§8](#8-sensitivity-table) sweep.
+   [§7](#7-freeboard-model), regenerate the [§8](#8-sensitivity-table--draft-and-freeboard-vs-total-mass-v5) sweep.
 2. **A printed part is re-weighed** → update [`mass-and-buoyancy-budget.md`](mass-and-buoyancy-budget.md)
    first (it is the living sub-budget), then re-run [§3](#3-full-mass-budget) Tier I and every
    total below it.
 3. **SCO-70 lands** (real electronics list, real housing spec, real solar panel/mount, real
    stem/pod) → move those line items from Tier III / Tier II into Tier I with `[M]` tags and
-   real masses, then re-solve [§7](#7-freeboard-model) and re-generate the [§8](#8-sensitivity-table)
+   real masses, then re-solve [§7](#7-freeboard-model) and re-generate the [§8](#8-sensitivity-table--draft-and-freeboard-vs-total-mass-v5)
    sweep. The nominal total mass is the input the freeboard model is most sensitive to.
 4. **A foam product is chosen** → replace the `0.032 g/cm³` placeholder in [§2](#2-constants),
    re-run [§4](#4-foam-fill), update [`facts.md`](../../hub/facts.md).
 5. **The vertical stack assumption ([§1](#1-scope-datum-and-the-single-biggest-geometric-assumption))
    is confirmed or corrected against the v5 assembly** (taper-zone height, wedge-top elevation)
-   → re-derive the piecewise `V_disp(T)` in [§7.2](#72-displaced-volume-as-a-function-of-draft).
+   → re-derive the piecewise `V_disp(T)` in [§7.2](#72-displaced-volume-as-a-function-of-draft-v5).
 6. If any change moves the reserve-buoyancy or "over-floated" conclusion, log it in
    [`design-notes.md`](../../hub/design-notes.md) and update [`facts.md`](../../hub/facts.md).
 
@@ -122,7 +122,7 @@ assumption in the whole model**; the taper-zone height is carried from v4 at low
 
 Alternative alignments (wedge top flush with chassis top, taper zone 1.0 in rather than 2.0 in)
 are still defensible and would shift the draft solution by up to ~0.4 in — **the over-floated
-conclusion does not change** in any of these variants (see [§8](#8-sensitivity-table)).
+conclusion does not change** in any of these variants (see [§8](#8-sensitivity-table--draft-and-freeboard-vs-total-mass-v5)).
 
 ---
 
@@ -470,7 +470,7 @@ Zero-credit variant: `V_req = 7.594 / 1.025 = 7.409 L → T = 2.0 + (7.409 − 4
 
 ### 7.4 Freeboard results (nominal, all from the keel datum `z = 0`)
 
-Every value here, in [§8](#8-sensitivity-table), and in [§9](#9-failure-mode-freeboard-panel-review-action-a3)
+Every value here, in [§8](#8-sensitivity-table--draft-and-freeboard-vs-total-mass-v5), and in [§9](#9-failure-mode-freeboard-panel-review-action-a3)
 is a derived output tagged **[X from M+A]** — exact given the geometry, the [§1](#1-scope-datum-and-the-single-biggest-geometric-assumption)
 vertical-stack assumption, and the [§6](#6-submerged-appendages) 0.372 kg appendage credit.
 

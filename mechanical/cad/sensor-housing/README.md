@@ -59,7 +59,7 @@ adding depths later is a manufacturing problem, not a redesign problem.
 throw it away, and redesign a "real" multi-depth pod later if the team decides to pursue it —
 wastes the iteration work this pod already represents (see the component table below: two full
 top-cap and body revision lines, a threading pass, a flood-chamber redesign). Since
-[manufacturing is in-house additive only](../floatation/README.md#manufacturing-approach) — the
+[manufacturing is in-house additive only](../floatation/README.md) — the
 same constraint driving the floatation build — the *marginal* cost of producing a second or
 third pod is low: it's more prints, not new tooling or a new mold. That only pays off, though,
 if the pod design itself doesn't have to change to go from one instance to many. So the

@@ -251,7 +251,7 @@ the v5 STEP must confirm** (see [§5.5](#55-confirmed-by-john-2026-09-07)):
 
 1. **No net out-of-plane service pressure.** A side wall's outboard face is pressed against the
    neighbour's wall, **not exposed to water**. In service the only differential across it is
-   (foam cavity) − (whatever is in the seam) ≈ 0. The [§5.1](#51-out-of-plane-bending-as-a-plate--bare-full-span--fail)
+   (foam cavity) − (whatever is in the seam) ≈ 0. The [§5.1](#51-out-of-plane-bending-as-a-plate--bare-full-span--fail-worst-case-not-a-service-load--see-50)
    "115 MPa fail at 50 kPa" was already a non-physical worst case; face-to-face pairing means
    it is not even a hypothetical to design against. **Through-thickness pressure bending is not
    a side-wall load case.**
