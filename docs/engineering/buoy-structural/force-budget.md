@@ -75,10 +75,74 @@ sees if the buoy is pulled fully under on a taut line. `h_s` is the LC8 draft. W
 **signed off 2026-09-08** (John, GENG lead; to be noted at the 2026-09-14 meeting — the sign-off
 was the core of [SCO-73](https://linear.app/scout1/issue/SCO-73)).
 
+## v5 geometry reassessment (2026-09-09)
+
+The loads below were computed on the **v4 geometry** (wedge 8.0 in, chassis 11.0 in, draft
+2.69 in, exposed float 7.31 in). [SCO-110](https://linear.app/scout1/issue/SCO-110) resized the
+buoy: wedge 5.5 in, chassis 8.5 in, draft **2.50 in**, exposed float section **5.0 in**, solar
+deck **2.5 in lower**. Buoy diameter `D` = 0.4572 m is **unchanged**. This section recomputes the
+geometry-dependent loads at v5 and states whether the 2026-08-29 FEA runs still bound them.
+
+### Geometry inputs — v4 → v5
+
+| Input | v4 | **v5** | Δ |
+|---|---:|---:|---:|
+| Draft `h_s` | 0.0683 m | **0.0635 m** | −7% |
+| Exposed float height above SWL | 0.1857 m (7.31 in) | **0.1270 m** (5.00 in) | −32% |
+| Still-water submerged frontal area `A_p,sw = D·h_s` | 0.0312 m² | **0.0290 m²** | −7% |
+| Wave-crest engulfment area `A_p,crest = D·(h_s + FB_wedge)` | 0.116 m² | **0.0871 m²** | −25% |
+| Submerged volume at crest `V_sub,crest` | 0.040 m³ | **0.0313 m³** | −22% |
+| Above-water frontal area `A_air,total` | 0.135 m² | **0.116 m²** | −14% |
+| Net reserve buoyancy `F_B,max − W` (light build) | 322 N | **225 N** | −30% |
+
+### Recomputed loads at v5 (survival design set unchanged)
+
+| Case | v4 | **v5** | Note |
+|---|---:|---:|---|
+| **LC2** taut-line vertical uplift | +322 N | **+225 N** | = light-build net reserve; the v5 buoy displaces less, so it pulls the mooring up with less force |
+| **LC3** current drag | ~14 N | **~11 N** | `∝ A_p,sw` |
+| **LC4** wave load (phase-swept) | ~185 N | **~138 N** | `∝ A_p,crest` (drag term governs) |
+| **LC5** wave + current (governing horizontal) | ~440 N | **~330 N** | `∝ A_p,crest`; drag at `(U_c + u_m)` |
+| **Wind** | ~50 N @ `M` 11.75 N·m | **~41 N @ `M` 7.94 N·m** | `∝ A_air`; and the solar patch dropped 0.064 m, cutting its moment arm |
+| **LC6** resultant at the shackle | 586 N @ 57° | **~434 N @ 59°** | `√(F_H² + F_V²)`, `F_H` = 330 + 41, `F_V` = 225 |
+| **LC7** overturning moment about the pad-eye | ~70 N·m | **~42 N·m** | lower drag **and** a shorter lever arm (wetted-band resultant `z` ≈ 0.10 m vs 0.13 m) |
+| **LC8** hydrostatic | 50.3 kPa | **50.3 kPa** | unchanged — a test spec (5 m), not geometry |
+| **LC9** snap load (×2.0 on `F_V`) | 810 N @ 37° | **~583 N @ 40°** | `F_V,snap` = 225·2, `F_H` = 371 |
+
+### Conclusion — do the v4 FEA runs still cover v5?
+
+**Yes, for load adequacy.** Every v5 environmental and mooring load is **10–30% lower** than its
+v4 value; the single unchanged load (LC8, hydrostatic) is a fixed test spec. The 2026-08-29 FEA
+passed every case on v4 at the higher loads (min SF 10–1450, LC6/LC9 low spots confirmed as
+stand-in-ring contact artifacts). **The buoy structure therefore passes at v5's lower loads with
+strictly more margin — no full FEA re-run is needed to re-establish load adequacy.**
+
+**But three v5-specific checks are still required** and are *not* covered by the v4 runs:
+
+1. **Wedge wall stress at the thinned v5 spec** (0.250 → 0.095/0.063 in). The loads dropped but
+   the wall is much thinner; the [2026-09-07 wall check](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)
+   was closed-form only. A v5 wedge-stress FEA at LC5/LC8 confirms it.
+2. **Assembly-level ring buckling** of the epoxied 6-wedge ring — a *new* failure mode
+   introduced by the thin walls, quantified closed-form in the
+   [ring-buckling check](../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)
+   (`SF` ≈ 3–5 foam-backed) but needing the FEA to close.
+3. **The final 316 pad-eye interface** at LC9 (governing) + LC7's moment — already an owed
+   re-run regardless of the resize.
+
+These fold into [SCO-73](https://linear.app/scout1/issue/SCO-73) (structural FEA) and
+[SCO-71](https://linear.app/scout1/issue/SCO-71) (impact + ring buckling). The scheduling
+takeaway: **the resize did not create an urgent full-model FEA re-run** — it lowered every load
+— but the thin-wall wedge and the ring-buckling mode still need their own analyses before the
+structure is signed off.
+
+---
+
 ## Load case status
 
 Mirrors the [Buoy Structural Load Framework §10](structural-load-framework.md#10-corrected-fea-load-cases)
-table exactly — same case numbering, same primary checks.
+table exactly — same case numbering, same primary checks. **The design-result column below is
+the v4 computation** — see [§ v5 geometry reassessment](#v5-geometry-reassessment-2026-09-09)
+for the (lower) v5 values.
 
 **Two tiers of readiness.** LC2 and LC8 need only geometry + mass and are **computed** below.
 LC3–LC7, LC9 additionally need the `[E]` environmental design set — computed here at the
