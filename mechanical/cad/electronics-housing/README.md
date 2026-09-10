@@ -27,7 +27,7 @@ John Ryan has also considered **printed injection molds** to batch-cast O-rings 
 than sourcing off-the-shelf — not pursued, and the
 [2026-08-17 decision](../../../docs/hub/decision-log.md) went the other way, but it stays a live
 option consistent with the project's in-house-additive approach (see
-[floatation → Manufacturing approach](../floatation/README.md#manufacturing-approach)).
+[floatation → Manufacturing approach](../floatation/README.md)).
 
 ## Superseded assembly — end cap into cylinder
 
@@ -42,7 +42,7 @@ option consistent with the project's in-house-additive approach (see
   O-ring experiment**. John Ryan has also considered **printed injection molds** to batch-cast
   his own O-rings in-house, rather than sourcing off-the-shelf — not yet pursued, but a live
   option consistent with the project's in-house-additive manufacturing approach (see
-  [floatation → Manufacturing approach](../floatation/README.md#manufacturing-approach)).
+  [floatation → Manufacturing approach](../floatation/README.md)).
 - [`electronics-housing-o-ring.step`](electronics-housing-o-ring.step) — the housing's O-ring
   seal, modeled directly (as opposed to the TPU-print experiment above).
 - [`electronics-housing-clamp-v2-body.step`](electronics-housing-clamp-v2-body.step) — **the

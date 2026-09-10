@@ -413,13 +413,13 @@ Consistency here prevents the kind of contradiction that cost us an audit.
 | Quantity | Unit | Write it as |
 |---|---|---|
 | Temperature | °C | `26.4 °C` |
-| Depth, length | m | `5–8 m` |
+| Depth, length | m | `2–8 m` |
 | Current | mA / µA | `4.6 mA`, `300 µA` |
 | Voltage | V | `3.3 V` |
 | Frequency | Hz / kHz / MHz | `915 MHz`, `22.05 kHz` |
 | Power | mW / W | `120 mW` |
 | Energy | mWh / Wh | `2400 mWh` |
-| Data size | bytes / KB / MB | `82 bytes` |
+| Data size | bytes / KB / MB | `30 bytes` |
 | Mass | g / kg | `5.8 g` |
 
 **Space between number and unit.** `5 m`, not `5m`. Exception: `°` and `%` attach directly —
@@ -428,7 +428,7 @@ Consistency here prevents the kind of contradiction that cost us an audit.
 **Dates are ISO 8601:** `2026-08-14`. Never `08/14/26` — that reads as August 14 in the US and
 14 August elsewhere, and we deploy in Hawaii with a dataset from Japan.
 
-**Ranges use an en-dash:** `5–8 m`, `2026-08-14 – 2027-05-28`.
+**Ranges use an en-dash:** `2–8 m`, `2026-08-14 – 2027-05-28`.
 
 **Don't invent precision.** If the datasheet says ±0.5 °C, don't report 26.437 °C. Round to
 what you actually measured.

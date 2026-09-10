@@ -3,7 +3,7 @@
 > **Summary** — Dated snapshot of where S.C.O.U.T. stood on this day. Snapshots are append-only
 > history; the always-current view is [`status.md`](../status.md).
 >
-> Part of the [Knowledge Hub](README.md).
+> Part of the [Knowledge Hub](../README.md).
 
 ---
 

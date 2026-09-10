@@ -21,7 +21,7 @@
    manufacturer drawing), replace its **[A]** assumed value with a **[M]** measured one in
    [§1](#1-component-manifest) and re-run whichever packing method(s) use it.
 2. If a packing method's governing dimension changes meaningfully, update
-   [§5](#5-recommendation) and check whether the recommendation still holds.
+   [§5](#6-recommendation) and check whether the recommendation still holds.
 3. If the team commits to a specific layout in CAD, log that in
    [`design-notes.md`](../hub/design-notes.md) and update
    [`facts.md`](../hub/facts.md#build-platform-settled--see-adr-0001)'s Enclosure dimensions row
@@ -120,7 +120,7 @@ Shortest tube of the three, but **needs a bigger diameter than the ~4″ Schedul
 already assumed in [`mechanical/README.md`](../../mechanical/README.md)** — and pays heavily for
 it, since volume scales with the *square* of radius but only linearly with length. A tighter,
 non-grid nesting of the four boards could shrink this diameter, but that needs real CAD placement,
-not hand geometry — flagged as an open item in [§6](#6-open-items).
+not hand geometry — flagged as an open item in [§6](#7-open-items).
 
 ## 5. Method 3 — Two-zone hybrid
 
@@ -147,7 +147,7 @@ Zone 2: width = 28 + 30 + 6 = 64 mm, height = 38 mm
 
 Drawn to scale from the numbers above — the `~51×25mm` label on PID 6106 keeps that assumption
 visible in the diagram itself, since it's still waiting on a caliper (see
-[§6](#6-open-items)):
+[§6](#7-open-items)):
 
 ![Electronics housing packing diagram — two-zone hybrid layout](../../assets/diagrams/electronics-housing-packing-diagram.svg)
 

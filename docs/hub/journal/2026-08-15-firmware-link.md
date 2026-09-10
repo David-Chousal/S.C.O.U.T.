@@ -4,7 +4,7 @@
 > history; the always-current view is [`status.md`](../status.md). Second entry for 2026-08-15;
 > the first covers the telemetry drift work.
 >
-> Part of the [Knowledge Hub](README.md).
+> Part of the [Knowledge Hub](../README.md).
 
 ---
 

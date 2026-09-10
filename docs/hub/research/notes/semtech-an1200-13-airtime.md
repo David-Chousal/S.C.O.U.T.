@@ -27,7 +27,7 @@ to be an airtime question in disguise, and airtime is cheap to compute and expen
   asserted against the transmit budget in `firmware/test/test_link`, so the answer is checked in CI
   rather than discovered in the water.
 
-Implemented in [`scripts/lora_airtime.py`](../../../scripts/lora_airtime.py) — run it rather than
+Implemented in [`scripts/lora_airtime.py`](../../../../scripts/lora_airtime.py) — run it rather than
 quoting numbers from this note.
 
 **Caveat / how to use it.** Two easy mistakes, both of which cost real accuracy:

@@ -5,7 +5,7 @@
 > [meeting-notes.md](../../planning/meeting-notes.md). Snapshots are append-only history; the
 > always-current view is [`status.md`](../status.md).
 >
-> Part of the [Knowledge Hub](README.md).
+> Part of the [Knowledge Hub](../README.md).
 
 ---
 

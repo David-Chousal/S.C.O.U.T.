@@ -89,7 +89,7 @@ The buoy is **light relative to any boat**, so the strike mostly just shoves the
 `E_def` is 1–2% of `KE`, tens of joules. The mooring line then absorbs the shove: 3/8 in nylon
 stretches ~15–30% at working loads, so a 400 N line tension over a 1 m stretch absorbs ~200–400 J
 elastically — comfortably more than the shove energy of Cases A/B nominal. (This is also why
-[ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) puts the shock compliance in
+[ADR-0004](../../decisions/0004-reef-safe-anchoring-and-mooring.md) puts the shock compliance in
 the line, not the buoy penetration.)
 
 **For Scenario C (drop)** the buoy IS the mass, so `E_def` ≈ full `KE` ≈ 112 J, minus what the
@@ -151,14 +151,14 @@ worse (~3.5 kN) — which is why the drop must land on the impact cap.
 
 ## 5. Why the design accepts wedge cracking
 
-The [2026-08-18 validation-target pivot](../hub/design-notes.md) set the goal as **"impact
+The [2026-08-18 validation-target pivot](../../hub/design-notes.md) set the goal as **"impact
 survivability at controlled cost"** — *not* "no damage." A cracked wedge shell is an acceptable
 outcome because every consequence of it is bounded and benign:
 
 | Consequence of a cracked wedge | Why it's survivable |
 |---|---|
 | Loss of that wedge's shell buoyancy | The **closed-cell foam does not flood** — the wedge still displaces its full envelope. Even with the shell *entirely gone*, the six foam cores alone lift ~216 N ≈ 2.9× the 74 N all-up weight ([mass model §4.3](buoy-mass-displacement-and-freeboard-model.md#43-failure-mode-number--buoyancy-of-the-foam-alone-printed-shell-entirely-gone)). |
-| Structural collapse of the ring | One cracked panel out of six bonded 60° segments — the epoxied ring redistributes; it does not unzip ([ring-buckling check](../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)). |
+| Structural collapse of the ring | One cracked panel out of six bonded 60° segments — the epoxied ring redistributes; it does not unzip ([ring-buckling check](../../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)). |
 | Water ingress to the electronics | The wedges are **outside** the sealed chassis — a cracked wedge is not a leak path to the PCB. |
 | Permanent loss of function | Wedges are **field-replaceable** — swapped on the next service visit without disturbing the rest. |
 | Stability | Losing a whole wedge module gives only a ~3° list ([stability §7](stability-analysis.md#7-damaged-stability--one-flotation-wedge-lost)); a cracked-but-present wedge is far less. |
@@ -183,5 +183,5 @@ the cracks propagate into the bonded seams or the chassis.
   sidewall or the sensor stem.
 - Lift by the chassis or a dedicated lifting point, not by the solar mast or the stem.
 - Transport the wedges foam-filled where possible; a foam-empty wedge shell is fragile
-  (§4, and it must not be submerged — [ring-buckling check](../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)).
+  (§4, and it must not be submerged — [ring-buckling check](../../../mechanical/test/wedge-ring-buckling-check-2026-09-09.md)).
 - Carry 1–2 spare wedge modules to the deployment site for field replacement.

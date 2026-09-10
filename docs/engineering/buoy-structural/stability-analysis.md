@@ -110,7 +110,7 @@ Two reference values worth carrying:
 **Sensitivity.** `KG` is most sensitive to the solar-panel mass and height and to the pod/stem
 depth. A ±50% swing on the solar panel (0.35–1.05 kg) moves `KG` by ∓0.4 in; doubling the pod
 mass to 0.4 kg moves `KG` down 0.35 in. None of these threatens the stability margin
-([§4](#4-metacentric-height-gm)) — `GM` stays above 8 in across the whole plausible range.
+([§4](#4-metacentric-height--gm)) — `GM` stays above 8 in across the whole plausible range.
 
 ---
 
@@ -118,7 +118,7 @@ mass to 0.4 kg moves `KG` down 0.35 in. None of these threatens the stability ma
 
 `KB` is the centroid of the **submerged volume** at the nominal draft `T` = 2.50 in. The
 submerged shape is the piecewise `V_disp(T)` from the
-[freeboard model §7.2](buoy-mass-displacement-and-freeboard-model.md#72-displaced-volume-as-a-function-of-draft):
+[freeboard model §7.2](buoy-mass-displacement-and-freeboard-model.md#72-displaced-volume-as-a-function-of-draft-v5):
 
 | Sub-volume | Volume (L) | Centroid `z` (in) | Basis |
 |---|---:|---:|---|

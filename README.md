@@ -158,7 +158,7 @@ full options, and the [live telemetry dashboard](docs/engineering/live-dashboard
    │                                        ▼                   │
    │                                   LoRa radio               │
    └────────────────────────────────────────┼───────────────────┘
-                                            │  82-byte packet, 1×/day
+                                            │  30-byte packet, 1×/day
                                             ▼
                         ┌─────────── SHORE STATION ───────────┐
                         │  Raspberry Pi receiver              │
@@ -179,7 +179,7 @@ periodically transmit. Under sustained cloud cover it degrades gracefully: trans
 frequency drops first, local logging continues, and nonessential sensing pauses before core
 operation is compromised.
 
-**Communications.** A single summarized 82-byte packet per day. Raw audio is **stored onboard
+**Communications.** A single summarized 30-byte packet per day (82 B is the EDD budget ceiling). Raw audio is **stored onboard
 and never transmitted** — moving waveform data over LoRa is not bandwidth-feasible, and this
 constraint is baked into the design.
 

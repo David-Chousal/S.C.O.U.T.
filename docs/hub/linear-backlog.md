@@ -15,11 +15,13 @@
 > record rather than deleted; new backlog items go straight into Linear from here on, not into
 > this file.
 >
-> ⏳ **One exception, staged 2026-08-15.** [Section D](#d-staged-not-yet-in-linear) holds items
-> raised by a session that could not reach the `scout1` workspace. They are **not in Linear yet**
-> and will not be picked up unless someone files them. File them, add the `SCO-##` link to the
-> heading, and move the entry up into the record above. Use this section only when Linear is
-> genuinely unreachable — otherwise file directly, as the note above says.
+> ✅ **Section D closed 2026-08-17.** [Section D](#d-staged--now-all-filed) was a staging area for
+> items raised by sessions that could not reach the `scout1` workspace. **It is now empty of
+> pending work** — D1 was resolved before it was ever filed, D2 is
+> [SCO-57](https://linear.app/scout1/issue/SCO-57) and D3 is
+> [SCO-58](https://linear.app/scout1/issue/SCO-58). It is kept as the derivation record, not as a
+> queue. Use it again only when Linear is genuinely unreachable — otherwise file directly, as the
+> note above says.
 
 ---
 
@@ -61,13 +63,13 @@ explicitly mark "Needs a Linear issue."
 ### A1 · `hardware: decide the LiFePO₄ charging path on the Feather M0` — [SCO-10](https://linear.app/scout1/issue/SCO-10)
 - **Label** `ece` · **Owner** Isabella · **Type** `Feature` · **Priority** `High` · **Project** Phase 0
 - **Context** — Battery chemistry (LiFePO₄) and charge controller (BQ25570 MPPT) are chosen, but the actual charging path is undecided. `status.md` lists this as **blocker #1**.
-- **Acceptance** — [ ] Charging topology decided and written into [ADR-0002](decisions/0002-lifepo4-charging-path.md) (status → Accepted); [ ] `facts.md` charge-controller row updated; [ ] unblocks battery/solar sizing + firmware battery thresholds.
-- **Blocked by** — nothing · **Source** — [ADR-0002](decisions/0002-lifepo4-charging-path.md), `status.md` blocker #1
+- **Acceptance** — [ ] Charging topology decided and written into [ADR-0002](../decisions/0002-lifepo4-charging-path.md) (status → Accepted); [ ] `facts.md` charge-controller row updated; [ ] unblocks battery/solar sizing + firmware battery thresholds.
+- **Blocked by** — nothing · **Source** — [ADR-0002](../decisions/0002-lifepo4-charging-path.md), `status.md` blocker #1
 
 ### A2 · `hardware: resolve the hydrophone part number (H2a-XLR vs H2dM)` — matches [SCO-8](https://linear.app/scout1/issue/SCO-8) (pre-existing, not re-filed)
 - **Label** `ece` · **Owner** Isabella · **Type** `Bug` (spec conflict) · **Priority** `High` · **Project** Phase 0
 - **Context** — Diagram cites Aquarian **H2a-XLR**, EDD BOM specifies **H2dM**. `status.md` **blocker #2** — blocks the audio front-end design and the BOM order.
-- **Acceptance** — [ ] One part chosen; [ ] BOM + diagram + [`facts.md`](facts.md) hydrophone row reconciled to it; [ ] [ADR-0003 related gaps](decisions/0003-single-point-sensing.md) updated.
+- **Acceptance** — [ ] One part chosen; [ ] BOM + diagram + [`facts.md`](facts.md) hydrophone row reconciled to it; [ ] [ADR-0003 related gaps](../decisions/0003-single-point-sensing.md) updated.
 - **Blocked by** — nothing · **Source** — `facts.md` open facts, `status.md` blocker #2, [README known-inconsistencies](../../README.md#known-inconsistencies)
 
 ### A3 · `hardware: decide dissolved-oxygen inclusion (V1.5 vs future)` — [SCO-11](https://linear.app/scout1/issue/SCO-11)
@@ -340,7 +342,7 @@ projects and now have them.
 
 Context so the filing session doesn't re-open closed calls (full ledger: [`decision-log.md`](decision-log.md)):
 
-- **Build platform** = Feather M0 + RFM95 ([ADR-0001](decisions/0001-mcu-and-radio-selection.md)) — settled.
-- **Single-point sensing** per modality; multi-depth string deferred ([ADR-0003](decisions/0003-single-point-sensing.md)) — settled.
-- **Battery chemistry** = LiFePO₄ ([ADR-0002](decisions/0002-lifepo4-charging-path.md)) — settled; *only the charging path* is open (**A1**).
+- **Build platform** = Feather M0 + RFM95 ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)) — settled.
+- **Single-point sensing** per modality; multi-depth string deferred ([ADR-0003](../decisions/0003-single-point-sensing.md)) — settled.
+- **Battery chemistry** = LiFePO₄ ([ADR-0002](../decisions/0002-lifepo4-charging-path.md)) — settled; *only the charging path* is open (**A1**).
 - **CSV schema v1**, **PR-review workflow**, **timeline re-baseline**, **platform reframing** — all settled via PRs #1–#8.

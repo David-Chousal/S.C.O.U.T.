@@ -17,7 +17,7 @@ standards to the greatest extent practicable."*
 | Must the buoy be *certified* by a test lab? | **No, for the capstone.** One or two non-marketed buoys fit the exemption. |
 
 So the prototype needs no lab report — but it should still be built to the standard, which is exactly
-what the [BW500 modem change](../../research/fcc-915-mhz-compliance.md#4-recommendation--adopted-2026-09-01)
+what the [BW500 modem change](../../../research/fcc-915-mhz-compliance.md#4-recommendation--adopted-2026-09-01)
 does. The exemption removes the paperwork, not the engineering.
 
 **Caveat / how to use it.** **The exemption ends the moment SCOUT is marketed or sold.** With an LLC

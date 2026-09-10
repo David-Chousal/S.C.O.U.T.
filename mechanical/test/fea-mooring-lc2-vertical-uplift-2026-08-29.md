@@ -19,7 +19,7 @@
 |---|---|
 | Tool | Autodesk Fusion (2704.1.53), Static Stress study "LC2" (Fusion report title "L2 / Studies") |
 | Model | Heat-set attachment Part 1:1, Part 2:1–6, Part 3:1–6 (the chassis / wedge heat-set region) + `3076T33_Tie-Down Ring:1` |
-| Load case | **LC2** — `Force2` = **322.00 N**, vector **X 0 / Y ~0 / Z −322.00 N** (straight down) — matches [`force-budget.md` LC2](../../docs/engineering/buoy-structural/force-budget.md#lc2--taut-line-vertical-uplift--322-n-vertical-at-the-u-bolt) (the net reserve buoyancy at the light build) |
+| Load case | **LC2** — `Force2` = **322.00 N**, vector **X 0 / Y ~0 / Z −322.00 N** (straight down) — matches [`force-budget.md` LC2](../../docs/engineering/buoy-structural/force-budget.md#lc2--taut-line-vertical-uplift----322-n-vertical-at-the-u-bolt) (the net reserve buoyancy at the light build) |
 | Constraint | `Fixed2` — Ux/Uy/Uz fixed at the chassis heat-set reference |
 | Contacts | 33 bonded sets across the heat-set parts and the tie-down ring |
 | Mesh | Parabolic solids, **114,564 nodes / 62,994 elements**, 10 % element size, curved elements, 60° max turn angle |
