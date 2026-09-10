@@ -218,14 +218,27 @@ sub-daily, interactive, or multi-user-write use cases — out of scope for a dai
 
 ```
 buoy ──LoRa──► shore Pi
-                 │  1. shore receiver writes daily CSVs   (shore/, data-schema.md)
-                 │  2. telemetry pipeline regenerates the static site
-                 │       python analytics/run_telemetry.py \
-                 │           --source <shore-csv-dir> --mmm <site MMM> --web site/
-                 │  3. git add site/ && git commit && git push
+                 │  1. scout-shore.service writes daily CSVs to shore/data-live/
+                 │        (data-schema.md; runs under systemd, restarts on reboot)
+                 │  2. the Pi commits and pushes ONLY those CSVs — not a built site
                  ▼
-        GitHub Pages serves site/  ──►  https://david-chousal.github.io/S.C.O.U.T./
+        GitHub Actions (pages.yml) on push to main / hourly cron
+                 │  3. publish.py picks the source: real CSVs if data-live/ has any,
+                 │        the simulator otherwise — real data is never banner-labelled
+                 │  4. run_telemetry.py builds the site; deploy-pages publishes it
+                 ▼
+        GitHub Pages serves it  ──►  https://david-chousal.github.io/S.C.O.U.T./
 ```
+
+> **The Pi publishes data, not HTML.** Two things make that the only workable split, and both
+> were found the hard way:
+>
+> - **Pages is configured `build_type: workflow`.** It serves *only* what the Actions workflow
+>   uploads, so a `site/` directory pushed to git is never served, no matter how correct it is.
+> - **`shore/data/` is gitignored scratch** that the workflow regenerates from the simulator on
+>   every build. Anything the Pi writes there is both uncommittable and destroyed within the
+>   hour. Received data belongs in [`shore/data-live/`](../../shore/data-live/README.md), which
+>   is tracked.
 
 The receiver ([`shore/`](../../shore)) and the telemetry pipeline
 ([`analytics/telemetry/`](../../analytics/telemetry)) connect through the shared
@@ -236,17 +249,23 @@ Analytics page at `analytics/index.html` alongside the raw `telemetry_daily.csv`
 
 ### Scheduling on the Pi
 
-A cron entry regenerates and publishes on whatever cadence you want (hourly shown):
+Reception itself is **not** a cron job — it is a long-running service
+([`scout-shore.service`](../../shore/deploy/scout-shore.service)) so a reboot or power cut does
+not silently end it. Cron only pushes what the service has already written:
 
 ```cron
-0 * * * *  cd /home/pi/scout && python analytics/run_telemetry.py \
-             --source shore/data --mmm 27.6 --web site && \
-             git -C site add -A && git -C site commit -m "data: refresh dashboard" && \
-             git -C site push
+0 * * * *  cd /home/pi/S.C.O.U.T. && git add shore/data-live && \
+             git diff --cached --quiet || \
+             (git commit -m "data: telemetry through $(date -u +\%FT\%TZ)" && git push)
 ```
 
-(Point `--mmm` at the site's NOAA CRW Maximum Monthly Mean — see
-[telemetry methodology](../analysis/telemetry-methodology.md).)
+`git diff --cached --quiet ||` keeps it from producing an empty commit every hour when the buoy
+sent nothing — at one packet per day, most hours have nothing new.
+
+The push triggers `pages.yml`, which rebuilds and deploys. **The Pi never runs
+`run_telemetry.py` and never builds the site**; doing so would produce HTML that Pages does not
+serve. `--mmm` lives in the workflow, not here (point it at the site's NOAA CRW Maximum Monthly
+Mean — see [telemetry methodology](../analysis/telemetry-methodology.md)).
 
 ## Enabling GitHub Pages (one-time, repo admin)
 

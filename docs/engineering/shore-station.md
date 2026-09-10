@@ -49,14 +49,34 @@ The shore station is the ground end of the LoRa link. Per
 
 ## Software
 
+All of this is **written and tested against a mock radio**; none of it has run on a Pi.
+
+- **OS: Raspberry Pi OS 64-bit (aarch64)** — required. The acoustic pipeline's dependencies have
+  no ARM wheels on 32-bit armv7l and would build from source
+  ([facts](../hub/facts.md), `scripts/check_arm_wheels.py`).
 - **Language: Python**, matching [`analytics/`](../../analytics) so the receiver, storage, and
-  analysis share one runtime.
-- **LoRa driver:** an RFM9x library such as `adafruit-circuitpython-rfm9x` or `pyLoRa`.
+  analysis share one runtime. **Standard library only**, with a single deliberate exception:
+  the real radio backend needs `adafruit-circuitpython-rfm9x`, imported lazily so everything
+  else still runs on a bare Pi.
+- **LoRa driver:** [`radio.Rfm9xLink`](../../shore/scout_shore/radio.py), behind the
+  [`LoRaLink`](../../shore/scout_shore/link.py) protocol that `MockLoRaLink` also satisfies —
+  so switching between them is a `--link` flag, not a code change. It mirrors the buoy's modem
+  configuration exactly (915.0 MHz · BW 500 kHz · SF12 · CR 4/8, all compliance-driven) and
+  applies the SX1276 §2.1 500 kHz errata, which is receive-side only.
 - **Packet decoder:** must **mirror the firmware's packet encoder** — same field order, units,
-  and byte layout. This is a contract; define it once and keep the two in sync (see
+  and byte layout. This is a contract, enforced across languages by
+  `scripts/check_packet_contract.py` in CI (see
   [`firmware/README.md`](../../firmware/README.md)).
 - **Store:** decoded readings → CSV per [data-schema.md](data-schema.md). Same schema as the
-  buoy's on-board log, so both feed the same analytics.
+  buoy's on-board log, so both feed the same analytics. Received data lands in
+  [`shore/data-live/`](../../shore/data-live/README.md), which is what the public dashboard
+  publishes from.
+- **Runs as a service:** [`scout-shore.service`](../../shore/deploy/scout-shore.service),
+  restarting unconditionally — the buoy transmits blind, so if nothing is listening neither end
+  raises an alarm.
+- **Recovery:** a retrieved SD card merges back in with
+  [`scripts/import_sd_card.py`](../../shore/scripts/import_sd_card.py), recovering readings the
+  radio never delivered and the columns a 30-byte packet could not carry.
 
 ## Data flow
 

@@ -56,9 +56,12 @@ password (sudo, GitHub sudo-mode) · physically siting the shore antenna · depl
 | Firmware drivers (sensors, SD, RTC, radio) | ⚠️ Written, never run on hardware | [`firmware/README.md`](../../firmware/README.md) "What's real vs. scaffold" |
 | Rev A schematic | ⚠️ ERC-clean, never built | [`hardware/README.md`](../../hardware/README.md) — "schematic-level verification, not physical validation" |
 | Physical buoy electronics | 🔴 Does not exist | [SCO-88](https://linear.app/scout1/issue/SCO-88) parts not arrived |
-| Shore station code | ✅ Simulated path works, 22 tests pass | [`shore/`](../../shore/) |
+| Shore station code | ✅ Simulated path works, **64 tests pass** | [`shore/`](../../shore/) |
+| Shore radio driver | ⚠️ Written, never run on hardware — `radio.Rfm9xLink`, mirrors the buoy's modem config, applies the 500 kHz errata | [`shore/scout_shore/radio.py`](../../shore/scout_shore/radio.py) |
+| Shore service (systemd) | ⚠️ Written, never loaded by systemd — restarts unconditionally, clean SIGTERM, capped backoff | [`scout-shore.service`](../../shore/deploy/scout-shore.service) |
+| SD-card recovery | ✅ Merges a retrieved card into the shore record, tested | [`sd_import.py`](../../shore/scout_shore/sd_import.py) |
 | Shore station hardware | 🔴 No Raspberry Pi | [Shore Station](shore-station.md) |
-| Analytics pipeline | ✅ Working end to end on simulated data | 76 tests; site builds |
+| Analytics pipeline | ✅ Working end to end on simulated data | **86 tests**; site builds |
 | Public site + dashboard | ✅ Deployed | [Live Dashboard](live-dashboard.md) |
 
 **Read this honestly:** every line of software is verified against *simulated* data. Not one line
@@ -134,10 +137,37 @@ library only, deliberately, so they run on a bare Raspberry Pi. `analytics/requi
 (numpy/pandas/scipy/scikit-maad/matplotlib) is for the **acoustic** pipeline only; the telemetry
 pipeline does not need it.
 
+### 🔴 The acoustic pipeline needs a 64-bit host
+
+Verified against PyPI on 2026-09-10, not assumed:
+
+| Architecture | Result |
+|---|---|
+| **aarch64** — Raspberry Pi OS **64-bit**, and any modern laptop | ✅ every pinned package and compiled transitive dependency has a wheel |
+| **armv7l** — Raspberry Pi OS **32-bit** | ⚠️ **nine** have no wheel: numpy, scipy, pandas, matplotlib, scikit-image, pywavelets, contourpy, kiwisolver, pillow |
+
+Without a wheel `pip` builds from source, and SciPy on a Pi needs a Fortran toolchain and routinely
+exhausts the board's RAM. **Flash the 64-bit image.** Getting it wrong means reimaging the card
+after the fact.
+
+Re-check whenever `analytics/requirements.txt` changes — the answer is version-specific:
+
+```bash
+python3 scripts/check_arm_wheels.py
+```
+
+It queries PyPI, so it needs network and is deliberately **not** in CI. The shore station and the
+telemetry pipeline are unaffected by any of this; they have no dependencies.
+
 ### Deliberate constraints — do not "fix" these
 
 - **`analytics/telemetry/` and `shore/` are standard-library only.** This is a hard design
   constraint so the pipeline runs on a bare Pi. Adding a dependency breaks the shore station.
+  **The one exception is the real radio backend**
+  ([`radio.py`](../../shore/scout_shore/radio.py)), which needs `adafruit-circuitpython-rfm9x`.
+  It imports lazily *inside* `Rfm9xLink.__init__` precisely so the module, the package, and the
+  whole test suite still import on a machine with nothing installed. Keep it that way: a
+  top-level import there would break `python3 -m unittest` on a bare Pi.
 - **`--audio_dir` uses an underscore** while other flags use hyphens. Known, documented, and must
   not be changed without an issue ([CLAUDE.md → Before committing](../../CLAUDE.md)).
 - **The `Arduino Low Power` registry ID contains spaces.** `arduino-libraries/ArduinoLowPower`
@@ -167,7 +197,7 @@ python3 scripts/check_packet_contract.py
 cd firmware && ~/.scout-venv/bin/pio test -e native && ~/.scout-venv/bin/pio run -e feather_m0
 ```
 
-Expected: 76 telemetry tests OK · 22 shore tests OK · `packet contract OK — 30 bytes` ·
+Expected: **86** telemetry tests OK · **64** shore tests OK · `packet contract OK — 30 bytes` ·
 16 native test cases · `SUCCESS`, RAM 18.8%, Flash 22.6%.
 
 **If any of these fail, stop.** The problem is the environment, not the hardware, and every later
@@ -183,7 +213,7 @@ one source of truth.** Ambiguity here is what produces the drift this project ke
 | Target | What runs on it | Language | Toolchain | Source of truth | Programmed by |
 |---|---|---|---|---|---|
 | **Feather M0 (SAMD21)** — the buoy | `firmware/src/` + `firmware/lib/` | C++ (Arduino SAMD core) | PlatformIO → BOSSA over USB | `firmware/src/config.h` for pins/cadence | `pio run -t upload`, double-tap RESET |
-| **Raspberry Pi** — shore station | `shore/scout_shore/` | Python 3, stdlib only | none — copy and run | `shore/scout_shore/packet.py` for the wire format | `git pull` + systemd/cron |
+| **Raspberry Pi** — shore station | `shore/scout_shore/` | Python 3, stdlib **+ `adafruit-circuitpython-rfm9x` for the real radio only** | Pi OS **64-bit** (see §3) | `shore/scout_shore/packet.py` for the wire format | `git pull` + [`scout-shore.service`](../../shore/deploy/scout-shore.service) |
 | **Any machine** — analytics | `analytics/telemetry/` | Python 3, stdlib only | none | `docs/engineering/data-schema.md` | `python3 run_telemetry.py` |
 | **GitHub Pages** — public site | generated HTML | Python → static HTML | `.github/workflows/pages.yml` | `analytics/telemetry/site/` | CI on push to `main` |
 | **Cloudflare Worker** — "Fred" chat | `chatbot/worker.js` | JavaScript | Wrangler | `chatbot/wrangler.toml` | `wrangler deploy` (separate from the buoy chain) |
@@ -325,7 +355,8 @@ number in `facts.md` whatever it is** — this feeds the entire power budget.
 **4e — Watchdog.** **PASS:** an induced hang resets the buoy and the next boot reports
 `watchdog_reset=yes`.
 
-**4f — Retained state.** **PASS:** after a reset, `resume_seq` continues rather than restarting at 0.
+**4f — Retained state.** **PASS:** after a reset, `resume_seq` continues rather than restarting
+at 0.
 
 ---
 
@@ -351,19 +382,43 @@ budget risks a mid-transmit watchdog reboot.
 **Hardware:** Raspberry Pi (4 or Zero 2 W) · **RFM95/SX1276 915 MHz** radio, matching the buoy ·
 915 MHz antenna · SD card ([Shore Station](shore-station.md)).
 
+> 🔴 **Flash the 64-bit Raspberry Pi OS (aarch64), not the 32-bit image.** This is a constraint,
+> not a preference. On aarch64 every pinned analytics package and compiled transitive dependency
+> has an ARM wheel; on 32-bit **armv7l** nine of them have none, so `pip` builds from source —
+> and SciPy needs a Fortran toolchain and routinely exhausts a Pi's RAM. Re-checkable any time
+> with `python3 scripts/check_arm_wheels.py`. The shore station itself is unaffected (stdlib), but
+> getting this wrong means reimaging the card later.
+
 ```bash
 git clone git@github.com:David-Chousal/S.C.O.U.T..git && cd S.C.O.U.T.
 cd shore && python3 -m unittest discover -s tests     # stdlib only — must pass on a bare Pi
 pip install adafruit-circuitpython-rfm9x               # the ONE runtime dep, for real radio
+
+# Receive with the real radio, into the directory the dashboard publishes from:
+python3 scripts/run_receiver.py --link rfm9x --out data-live
 ```
 
-> ⚠️ **SX1276 errata §2.1 — the receiver will underperform without this.** At BW ≥ 500 kHz, two
+> ⚠️ **SX1276 errata §2.1 — the receiver underperforms without it.** At BW ≥ 500 kHz two
 > undocumented registers must be written to reach datasheet sensitivity: `0x36` ← `0x02` and
 > `0x3A` ← `0x64` ([reading note](../hub/research/notes/sx1276-errata-500khz.md)). It is a
-> **receive-side** fix, so it belongs on the Pi. Miss it and the link looks weak for no visible
-> reason — the exact failure that gets misdiagnosed as antenna or range.
+> **receive-side** fix, which is why the transmit-only buoy does not set it. Miss it and the link
+> looks weak for no visible reason — the exact failure that gets misdiagnosed as antenna or range.
+>
+> [`Rfm9xLink`](../../shore/scout_shore/radio.py) **already writes both registers**, and a test
+> pins the values. What is unverified is the code path itself, which has never executed against a
+> real SX1276 — so confirm the radio initialises rather than assuming the errata is handled.
 
-**PASS:** shore tests pass on the Pi; the radio is detected; the erratum registers are applied.
+**Then install it as a service**, so a reboot or power cut does not silently end reception:
+
+```bash
+sudo cp shore/deploy/scout-shore.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now scout-shore
+journalctl -u scout-shore -f
+```
+
+**PASS:** shore tests pass on the Pi · `--link rfm9x` constructs without error (a missing package
+prints what to install, not a traceback) · `systemctl status scout-shore` shows **active
+(running)** · `systemctl restart` recovers within ~10 s · the service survives a full reboot.
 
 ---
 
@@ -377,14 +432,25 @@ gaps and never listens for an ACK. The shore station deduplicates on `(buoy_id, 
 **PASS:** three copies → exactly **one** CSV row. If you get three rows, dedupe is broken and QC
 completeness will read 100% while masking real gaps.
 
+**And the other half: what happens when all three copies are missed.** Blind repetition has no
+retry — that reading then exists only on the buoy's SD card. Shore CSVs are therefore expected to
+be gappy, and a gap is **not** a fault to chase here; it is recovered when the card comes back
+(Stage 10). Do not tune anything to make completeness look like 100% at this stage.
+
 ---
 
 ### Stage 8 — Pipeline and publish ⚠️ UNVERIFIED with real data (✅ verified with simulated)
 
 ```bash
 cd analytics
-python3 run_telemetry.py --source ../shore/data --mmm <site MMM> --out data/processed --web ../site
+python3 run_telemetry.py --source ../shore/data-live --mmm <site MMM> --out data/processed --web ../site
 ```
+
+> 🔴 **`--source ../shore/data-live`, never `../shore/data`.** `shore/data/` is gitignored scratch
+> that CI regenerates from the simulator on every Pages build — point real analysis at it and you
+> are reading simulated numbers, and anything written there is destroyed within the hour.
+> `data-live/` is the tracked directory received telemetry lands in
+> ([README](../../shore/data-live/README.md)).
 
 `--mmm` is the site's NOAA CRW Maximum Monthly Mean. Without it, DHW is skipped — it is undefined
 without a climatology.
@@ -392,7 +458,14 @@ without a climatology.
 **PASS:** `telemetry_daily.csv` + `telemetry_summary.json` written; site builds; QC completeness
 matches the transmissions actually sent.
 
-Publishing is automatic: `.github/workflows/pages.yml` regenerates and deploys on push to `main`.
+**Publishing is automatic and picks its own source.** `.github/workflows/pages.yml` deploys on push
+to `main` and on an hourly cron; [`publish.py`](../../shore/scout_shore/publish.py) decides what it
+builds from — real CSVs in `shore/data-live/` if any exist, the simulator otherwise. Real data is
+never labelled as a sample.
+
+**PASS (publish):** with real CSVs committed, the deployed dashboard carries **no** sample-data
+banner and the home page reads "Latest publish." rather than "Sample data, simulated until the
+buoy is deployed."
 
 ---
 
@@ -427,6 +500,27 @@ Pre-deployment: full duty cycle for ≥ 72 h on battery+solar · shore link at t
 
 **PASS:** the buoy transmits on schedule from the water and the dashboard updates unattended.
 
+### On every retrieval — merge the SD card back in
+
+The card is the **complete** record and the radio's is not. Every reading shore missed exists only
+here, and even the readings that did arrive came through a 30-byte packet that could not carry
+`turbidity_v`, `turbidity_ntu`, or the audio filename.
+
+```bash
+cd shore
+python3 scripts/import_sd_card.py --card /Volumes/<card> --into data-live --dry-run   # inspect
+python3 scripts/import_sd_card.py --card /Volumes/<card> --into data-live             # merge
+```
+
+Keyed on `(buoy_id, record_seq)`, so running it twice is a no-op and a partial card never deletes
+history. **PASS:** the dry run reports the readings it would recover; after the merge, QC
+completeness rises and gaps fall. Rows it could not read are printed on stderr with a non-zero
+exit — investigate those rather than ignoring them, since they are card data being left behind.
+
+**Also copy `/AUDIO/` off the card before reusing it.** Raw audio is never transmitted and exists
+nowhere else ([EDD §10](engineering-design-document.md)); the acoustic pipeline runs on it later,
+on a 64-bit host (§3).
+
 ---
 
 ## 7. Failure playbook
@@ -437,17 +531,24 @@ Pre-deployment: full duty cycle for ≥ 72 h on battery+solar · shore link at t
 | Buoy sleeps and never wakes | **§2 missing INT1 jumper** | No wake source exists on Rev A |
 | SD and radio work alone, not together | Shared SPI CS | Only one of CS 10 / CS 8 may be active |
 | Turbidity rises in dirty water | Polarity inverted | Higher ADC = clearer; check the divider is non-inverting (SCO-47) |
-| Link weak, antenna fine | SX1276 500 kHz erratum | `0x36`/`0x3A` not written on the Pi |
+| Link weak, antenna fine | SX1276 500 kHz erratum | `Rfm9xLink` writes `0x36`/`0x3A`, but that path has never run — confirm it actually executed |
 | Three CSV rows per transmission | Shore dedupe broken | Blind repetition sends 3 copies |
 | Battery voltage implausible | Known — SCO-83 | A7 reads the unused Feather `BAT` pin |
 | Reboot mid-transmit | Airtime over budget | Compare against `SCOUT_LINK_AIRTIME_MS` (560 ms) |
 | Completeness 100% but data missing | Duplicates inflating the count | `n_records/expected` caps at 100% |
+| Completeness 0%, expected records absurd | A clock-failed row | An `RTC_LOST`/1970 row is excluded from timing and reported as `clock_invalid` — if you see this, the guard is not in the build |
+| Dashboard shows sample data after the buoy is live | Publishing from the wrong directory | Real CSVs must be in `shore/data-live/`; `shore/data/` is gitignored scratch CI regenerates hourly |
+| Dashboard says "simulated" over real readings | A banner was passed alongside real data | `is_sample=bool(banner)` drives every page; `publish.py` passes none for real data |
+| Shore stops receiving after a reboot | Service not enabled | `systemctl enable --now scout-shore`; check `journalctl -u scout-shore` |
+| Shore station pinning the CPU | Radio throwing every poll | Expected under a fault — the loop backs off to 60 s; read `link_errors` in the stats line |
+| `pip install` on the Pi compiling for hours | 32-bit OS | armv7l has no wheels for nine packages (§3) — reimage with the 64-bit OS |
 
 ## 8. What Claude cannot do
 
 Solder, assemble, plug in, or power anything · measure current or continuity · put a sensor in
 water · type a password ([CLAUDE.md](../../CLAUDE.md)) · reach Linear from a session whose
-connector resolves elsewhere · confirm any ⚠️ claim without hardware.
+connector resolves elsewhere · flash a Raspberry Pi SD card · mount a retrieved card · confirm any
+⚠️ claim without hardware.
 
 **Claude can:** run every Stage 0 command · build and flash a board a human has connected · read
 serial output · drive the analytics chain · diagnose from real output · and update this runbook as
