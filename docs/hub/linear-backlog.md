@@ -22,6 +22,13 @@
 > [SCO-58](https://linear.app/scout1/issue/SCO-58). It is kept as the derivation record, not as a
 > queue. Use it again only when Linear is genuinely unreachable — otherwise file directly, as the
 > note above says.
+>
+> ⏳ **Five items added 2026-09-10 and NOT yet filed** — **A5** (the Rev A pin map conflict) and
+> **C5–C8** (the runbook's hardware-verification gates). They are here rather than in Linear
+> because this session's Linear connector resolves to a different workspace, not because the
+> "file directly" rule was ignored. **Someone with `scout1` access should file these five**;
+> A5 is `Urgent` and blocks all bring-up. Each carries its full title, labels, owner, priority,
+> project, acceptance criteria and source, so filing is transcription, not authorship.
 
 ---
 
@@ -83,6 +90,17 @@ explicitly mark "Needs a Linear issue."
 - **Context** — The CSV schema needs to know whether the buoy ships raw SEN0189 ADC/volts or calibrated NTU. Decision depends on the calibration research in **B7**.
 - **Acceptance** — [ ] Units decided and fixed in [Data Schema](../engineering/data-schema.md); [ ] `facts.md` turbidity-units row resolved.
 - **Blocked by** — **B7** (calibration research) · **Source** — [Data Schema open questions](../engineering/data-schema.md), `facts.md` open facts
+
+---
+
+### A5 · `hardware: resolve the Rev A pin map conflict with the firmware` — 🔴 **not yet filed · blocks all bring-up**
+- **Label** `ece` · **Owner** Isabella · **Type** `Bug` · **Priority** `Urgent` · **Project** Phase 1
+- **Context** — Two independent faults, both fatal to bring-up, found while writing the [Integration Runbook](../engineering/integration-runbook.md) (§2 holds a blocking gate on them):
+  1. **The DS18B20 is on a different pin in each source.** The schematic annotates `TEMP_DATA → Feather D5` ([hardware/README](../../hardware/README.md), `scout-reva-system-interconnect.svg`); `firmware/src/config.h` has `PIN_ONEWIRE 12`. Flashed as-is against the built board, temperature never reads.
+  2. **The RTC wake interrupt has no wire, and its pin is already taken.** `config.h` needs `PIN_RTC_INT 5` to wake the MCU from standby, which is the same `D5` the schematic gives the DS18B20 — and the PCF8523 `INT1` net is absent from the schematic entirely. The Adalogger requires a solder jumper for it that no assembly step calls for. Without it the buoy sleeps and never wakes.
+  - Same class as the `PIN_TURBIDITY` A0→A1 error caught in [SCO-85](https://linear.app/scout1/issue/SCO-85) — that one was found before build, this one was not.
+- **Acceptance** — [ ] Decide the direction: firmware moves `PIN_ONEWIRE` to a free pin, **or** the schematic moves `TEMP_DATA` off `D5`; [ ] the `INT1` solder jumper is added to the assembly steps either way; [ ] `config.h`, the schematic, and [Integration Runbook §2](../engineering/integration-runbook.md) all agree; [ ] the runbook's blocking gate is lifted.
+- **Blocked by** — nothing; this is a decision, not work · **Source** — [Integration Runbook §2](../engineering/integration-runbook.md), [`facts.md`](facts.md) open facts, [`decision-log.md`](decision-log.md) pending row
 
 ---
 
@@ -192,6 +210,38 @@ Derived from the 17 merged PRs — natural next steps, not yet tracked. File the
 - **Acceptance** — [ ] File re-downloaded via `utils/download_sesoko.py`, or gap documented as permanent.
 - **Blocked by** — nothing · **Source** — [README → Data](../../README.md#data)
 - **⏭️ Next up (2026-08-16)** — paired with **C3** as the remaining unblocked CSEN work. Add the **`On Deck`** label in Linear. Note the acceptance criterion allows *documenting the gap as permanent* — if the source no longer serves the file, closing it that way is a real outcome, not a failure.
+
+---
+
+### C5 · `csen: verify the shore radio driver against a real SX1276` — 🔴 **not yet filed** · Runbook Stage 6
+- **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `High` · **Project** Phase 1 → 2
+- **Context** — `radio.Rfm9xLink` is written from the SX1276 datasheet, the errata sheet, and RadioHead's framing, and has **never executed against hardware**. It mirrors the buoy's modem config exactly (915.0 MHz · BW 500 kHz · SF12 · CR 4/8 — compliance-driven, not preferences) and writes the §2.1 errata registers `0x36` ← `0x02` and `0x3A` ← `0x64`. Every one of those is an unverified claim about a real radio. A mismatch means the receiver hears nothing and there is no error to read; a missed erratum costs sensitivity silently and gets misdiagnosed as antenna or range.
+- **Acceptance** — [ ] `--link rfm9x` constructs against a real HAT; [ ] the errata registers read back as written; [ ] a buoy transmission decodes and CRC-validates; [ ] three blind copies collapse to **one** CSV row; [ ] RSSI recorded for the Phase 4 range test.
+- **Blocked by** — [SCO-88](https://linear.app/scout1/issue/SCO-88) (parts), no shore Pi · **Source** — [Integration Runbook Stage 6](../engineering/integration-runbook.md), [SCO-24](https://linear.app/scout1/issue/SCO-24)
+
+---
+
+### C6 · `csen: stand up the shore station as a service on the Pi` — 🔴 **not yet filed** · Runbook Stage 6
+- **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `High` · **Project** Phase 2
+- **Context** — `scout-shore.service` exists and is tested against a mock link and a fault-injecting fake, but has **never been loaded by systemd**. The behaviours that matter are precisely the ones a mock cannot prove: that it comes back after a reboot, that `Restart=always` survives a radio that fails at boot before SPI is ready, and that `StartLimitIntervalSec` in `[Unit]` actually disables the 5-in-10s limit on the Pi's systemd 252.
+- **Acceptance** — [ ] Flashed with **64-bit** Pi OS (see **C7**); [ ] `systemctl enable --now scout-shore` → active (running); [ ] survives a full reboot unattended; [ ] `systemctl restart` recovers within ~10 s; [ ] a pulled antenna produces backoff and `link_errors` in the journal rather than a dead unit; [ ] received CSVs land in `shore/data-live/` and reach the public dashboard.
+- **Blocked by** — **C5**, [SCO-88](https://linear.app/scout1/issue/SCO-88) · **Source** — [Integration Runbook Stage 6](../engineering/integration-runbook.md)
+
+---
+
+### C7 · `csen: confirm the acoustic stack actually runs on the Pi` — 🔴 **not yet filed** · Runbook §3
+- **Label** `csen` · **Owner** David (me) · **Type** `Improvement` · **Priority** `Medium` · **Project** Phase 2
+- **Context** — `scripts/check_arm_wheels.py` proves a **wheel exists** for every pinned package and compiled transitive dependency on aarch64, and that nine have none on 32-bit armv7l. That is PyPI metadata, not an install: it does not prove `scikit-maad` imports, that the indices compute correctly on ARM, or that a Pi has the RAM for the FFTs over a real recording. Ten minutes on real hardware closes it.
+- **Acceptance** — [ ] Pi imaged with **64-bit** Pi OS; [ ] `pip install -r analytics/requirements.txt` completes without a source build; [ ] `run_pipeline.py` produces indices for one real recording; [ ] runtime and peak memory recorded, so the "Pi or a laptop" claim in [shore-station](../engineering/shore-station.md) is either confirmed or corrected.
+- **Blocked by** — no shore Pi · **Source** — [Integration Runbook §3](../engineering/integration-runbook.md), [`facts.md`](facts.md) "Where it can run"
+
+---
+
+### C8 · `csen: confirm real telemetry publishes without the sample banner` — 🔴 **not yet filed** · Runbook Stage 8
+- **Label** `csen` · **Owner** David (me) · **Type** `Feature` · **Priority** `Medium` · **Project** Phase 2
+- **Context** — `publish.py` chooses real data over the simulator and is unit-tested both ways, and the site was built both ways locally. What is unproven is the live path: that the Pi's commit of `shore/data-live/` triggers `pages.yml`, that the deployed page drops the sample banner, and that the hourly cron then leaves it alone instead of regenerating over it. This is the failure the whole publish-path change exists to prevent, so it is worth watching once rather than assuming.
+- **Acceptance** — [ ] The Pi commits real CSVs to `shore/data-live/`; [ ] the deployed dashboard carries **no** sample-data banner and reads "Latest publish."; [ ] it still reads real data after at least two hourly cron runs; [ ] a retrieved SD card merged with `import_sd_card.py` raises completeness on the live site.
+- **Blocked by** — **C6** · **Source** — [Integration Runbook Stage 8](../engineering/integration-runbook.md)
 
 ---
 
