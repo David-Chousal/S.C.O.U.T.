@@ -83,9 +83,11 @@ The shared rules, in `.sticky-split` / `.sticky-split-head` / `.sticky-split-bod
 - `position:sticky` on the heading **only above 880 px**. Below that the two columns collapse
   into an ordinary stack, heading first, and the heading is no longer sticky.
 - The sticky offset clears the site header (`.nav` is 68 px) plus breathing room.
-- **No scroll-driven motion at all** — no IntersectionObserver, no scroll listener, no
-  JavaScript. This is layout, so every entry is present and readable on first paint, which is
-  the constraint the rest of the site already holds to.
+- **The split itself uses no scroll-driven motion** — no IntersectionObserver, no scroll
+  listener, no JavaScript. It is `position:sticky`, i.e. layout, so the columns hold their
+  shape on first paint. (Its *entries* do now fade in on scroll like the rest of the site —
+  see [the dramatic pass](#the-dramatic-pass-a-photographic-hero-and-scroll-driven-motion) —
+  but that is the reveal layer on top, and it fails open.)
 - The heading releases when the section's own bottom edge reaches it, because `position:sticky`
   is bounded by its containing block. The heading rides out with the end of its list rather than
   following the reader into the next section.
@@ -104,6 +106,51 @@ One CSS trap worth recording: a `max-width` in `ch` units on the heading wrapper
 *that element's* font size, not the `h2` inside it, so a cap that looks generous on paper
 collapsed the heading to roughly a third of its column. The column width itself is the right
 constraint here.
+
+### The dramatic pass: a photographic hero and scroll-driven motion
+
+The site opened on a text screen with the reef photograph as a banner *below* it. It now opens
+on the photograph: `.hero-figure` is absolutely positioned across the whole first viewport and
+the type sits over it, with the hero pulled up under the sticky header so the frame runs to the
+very top of the page. Every other page opens on a tinted atmospheric wash behind oversized
+display type. Sections fade and rise as they enter view, the hero photograph parallaxes as the
+first screen leaves, and a progress line is drawn on the header's bottom edge.
+
+**This reverses a rule the design system had held since it was written:** *"motion is never
+scroll-dependent, so content is always visible."* The reversal is only defensible because
+content still cannot be trapped invisible, and that is guarded three independent ways:
+
+| Failure | What happens | Why content still shows |
+|---|---|---|
+| JavaScript disabled | `html.js-reveal` is never set | The hiding CSS is scoped entirely to that class |
+| `reveal.js` fails to load | A 4-second watchdog in the inline head script clears the flag | Same — the hiding CSS stops matching |
+| `prefers-reduced-motion: reduce` | `.reveal` is pinned to `opacity:1;transform:none` | Motion is removed, not accelerated |
+
+Scroll-driven layers (hero parallax, the progress line) additionally sit behind
+`@supports (animation-timeline: scroll())`, and every one of their `from` states is a valid
+resting composition, so a browser without scroll timelines gets the static design rather than a
+broken one. Only `transform` and `opacity` are animated, so the work stays on the compositor.
+
+The reveal itself is an `IntersectionObserver`, not a scroll handler — including the one that
+makes the header float transparent over the hero, which watches a 1px sentinel at the top of the
+hero rather than sampling scroll position every frame.
+
+#### Two things that were nearly shipped broken
+
+**`.hero-figure` is not hero-only.** Science's "Bleaching alert levels" section reuses the class
+for its bleaching photograph. The first version of this pass redefined `.hero-figure` to
+`position:absolute; inset:0`, which tore that figure out of the document flow and scaled it by
+1.16. The generic rules now stay generic and every hero change is scoped to `.hero .hero-figure`.
+A content-level check could not see this — the HTML never changed, only the CSS — so it was
+caught by measuring rendered geometry against the pre-redesign build.
+
+**Contrast over a photograph cannot be eyeballed.** The hero scrim's stops were set by sampling
+the actual photograph behind the actual glyph boxes and computing WCAG ratios. The first attempt
+measured each element's *block* box and read far too dark; the hero type is centred, so the
+block box covers bright water the letters never touch. Measured on glyph boxes, the first scrim
+failed AA on three elements (eyebrow 3.06, signals 4.08, sub-title 4.48). The shipped scrim
+measures 5.21–9.63 across every hero text element. **If the hero photograph is ever replaced,
+these must be re-measured** — a brighter frame moves all of them.
 
 ### The Fleet page
 

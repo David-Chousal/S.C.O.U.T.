@@ -114,6 +114,23 @@ def _lottie_scripts(base: str) -> str:
     )
 
 
+# Set synchronously in <head>, before the body paints, so revealed content never flashes in
+# and back out. The CSS that hides `.reveal` is gated entirely on this class, which means a
+# reader with JavaScript off sees every element normally. The watchdog is the third safety
+# net: if reveal.js somehow never runs, the flag clears itself and the page un-hides.
+_REVEAL_FLAG = (
+    "<script>"
+    "document.documentElement.classList.add('js-reveal');"
+    "window.__scoutRevealWatchdog=setTimeout(function(){"
+    "document.documentElement.classList.remove('js-reveal')},4000);"
+    "</script>"
+)
+
+
+def _reveal_script(base: str) -> str:
+    return f'<script defer src="{base}assets/js/reveal.js"></script>'
+
+
 def _footer_seaweed(base: str) -> str:
     src = f"{base}assets/lottie/seaweed.json"
     return (
@@ -255,7 +272,8 @@ def document(
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"
-        f'</head>\n<body data-lottie-base="{base}assets/lottie/">\n'
+        f"{_REVEAL_FLAG}\n"
+        f'</head>\n<body class="page-{active}" data-lottie-base="{base}assets/lottie/">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
         # Header social icons appear on every page (they are hyperlinks, not loaded resources).
@@ -267,6 +285,9 @@ def document(
         # Self-hosted Lottie runtime for the ambient animations, on every page (including
         # Analytics). Same-origin only; the page still makes no cross-origin request.
         f"{_lottie_scripts(base)}"
+        # Scroll reveals, on every page for the same reason: same-origin, and the CSS that
+        # hides anything is gated on a class only this script's head flag sets.
+        f"{_reveal_script(base)}"
         f"{chat_widget(base)}\n"
         "</body>\n</html>\n"
     )

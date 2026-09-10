@@ -6,12 +6,28 @@ with wide tracking. Chrome stays quiet and warm-neutral; colour comes from the r
 the data. Cards are softly rounded and lifted by a soft, eased-back shadow — no outline
 (only the buoy render-slot keeps a hairline ring).
 
+The Home page opens on a **full-viewport photographic hero**: the reef photograph is the stage
+and the type sits over it, on a scrim whose stops were set by measuring worst-case contrast on
+the real glyph boxes rather than by eye. The hero re-points the palette tokens to dark-ground
+values so its children invert through the cascade. Every other page opens on a tinted
+atmospheric wash behind oversized display type.
+
 Everything is emitted as a string into each page. There are **no external requests**: the fonts
 are self-hosted (same-origin, with a graceful system fallback), colours are warm tokens, and
 every graphic is inline SVG. The site is deliberately **light-only** (one sandy, beige canvas
 regardless of the OS colour-scheme). Navigation between pages uses the CSS cross-document View
 Transitions API for a left-to-right slide-and-fade, with no JavaScript; browsers without it
-navigate normally. Motion is never scroll-dependent, so content is always visible.
+navigate normally.
+
+**Motion is scroll-dependent as of 2026-09-10** — this reverses the rule that held until then,
+and the safety work is what earns the reversal. Sections fade and rise into view on scroll, the
+hero photograph parallaxes, and a progress line tracks reading. Content is still never trapped
+invisible, guarded three ways: the hiding CSS is gated on `html.js-reveal`, which only an
+inline head script sets (no JavaScript -> nothing hides); a 4s watchdog clears that flag if
+`reveal.js` never runs; and `prefers-reduced-motion: reduce` keeps every `.reveal` fully
+visible. Scroll-driven layers additionally sit behind `@supports (animation-timeline: scroll())`
+and degrade to a static composition. Only `transform` and `opacity` animate, so the work stays
+off the main thread.
 """
 
 from __future__ import annotations
@@ -116,6 +132,7 @@ _CSS = """
   --radius:16px;
   --radius-lg:0;      /* card surfaces are square (cards, team cards, panels, reef photos, render slot) */
   --radius-pill:999px;
+  --nav-h:68px;       /* .nav min-height; the hero pulls up by exactly this */
   --track:0.18em;
   --ease:cubic-bezier(0.22,1,0.36,1);
   --dur:600ms;
@@ -190,6 +207,28 @@ main figure{margin:0}
 .site-header{position:sticky;top:0;z-index:50;
   background:color-mix(in srgb,var(--bg) 67%,transparent);
   backdrop-filter:saturate(1.3) blur(16px);-webkit-backdrop-filter:saturate(1.3) blur(16px)}
+/* Over the home hero the header floats on the photograph: no sand bar cutting the top of the
+   frame. `html.at-top` is set by reveal.js from a sentinel at the top of the hero and dropped
+   the moment it scrolls away, so the header fades to its normal sand as soon as the reader
+   leaves the first screen. Scoped to `.page-home` — every other page has a light ground under
+   the header and must keep its dark type. */
+.page-home .site-header{transition:background var(--dur) var(--ease),
+  backdrop-filter var(--dur) var(--ease)}
+html.at-top .page-home .site-header{background:transparent;backdrop-filter:none;
+  -webkit-backdrop-filter:none}
+html.at-top .page-home .site-header .brand,
+html.at-top .page-home .site-header .nav-links a[aria-current=page]{color:#fbf8f4}
+html.at-top .page-home .site-header .nav-links a,
+html.at-top .page-home .site-header .nav-social a,
+html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.82)}
+html.at-top .page-home .site-header .nav-links a:hover,
+html.at-top .page-home .site-header .nav-social a:hover,
+html.at-top .page-home .site-header .nav-chat:hover{color:#fff}
+html.at-top .page-home .site-header .nav-burger span,
+html.at-top .page-home .site-header .nav-burger span::before,
+html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
+/* The sentinel is a zero-height marker, never a visible element. */
+.hero-sentinel{position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none}
 /* Three-column header: brand left, nav menu centred, social icons right. */
 .nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:68px}
 .brand{display:inline-flex;align-items:center;gap:0.7rem;color:var(--ink);justify-self:start}
@@ -299,27 +338,81 @@ main figure{margin:0}
 .textlink:hover svg{transform:translateX(3px)}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
-.hero{position:relative;isolation:isolate;padding-block:0;text-align:center}
-/* The hero text fills the first screen so the full-bleed banner below always starts under the
-   fold — no image peeking at the very top of the page. */
-.hero>.wrap{position:relative;z-index:1;min-height:calc(100vh - 56px);
-  min-height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:center;
-  padding-block:clamp(2.5rem,6vh,5rem)}
+/* A full-viewport cinematic stage: the photograph is the backdrop and the type sits over it,
+   rather than a text screen stacked above a banner. The whole hero re-points the palette
+   tokens to their dark-ground equivalents, so every child (buttons, eyebrow, signals) inverts
+   through the cascade instead of needing its own override. */
+.hero{
+  --ink:#fbf8f4;            /* h1, .btn text, .btn-primary ground, .textlink */
+  --text:#fbf8f4;
+  --bg:#101d24;             /* .btn-primary label, read against the cream ground */
+  --muted:rgba(251,248,244,0.80);   /* eyebrow, hero-expand */
+  --faint:rgba(251,248,244,0.74);   /* .signal.soon — kept above AA, not decorative grey */
+  --line-2:rgba(251,248,244,0.42);  /* .btn border */
+  position:relative;isolation:isolate;padding-block:0;text-align:center;overflow:hidden;
+  /* Pulled up under the sticky header so the photograph runs to the very top of the page and
+     the first screen is a true full viewport, not a viewport minus the nav. `.hero-body`
+     carries the header's height back as padding so the type still optically centres. */
+  margin-top:calc(var(--nav-h) * -1);padding-top:var(--nav-h);
+  min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+  justify-content:center;background:#0d171d}
+/* GENERIC media figure. `.hero-figure` is NOT hero-only — Science's "Bleaching alert levels"
+   section reuses the class for its bleaching photograph, so this block must keep describing a
+   normal-flow, fixed-height, cover-cropped figure. Every hero-specific change below is scoped
+   to `.hero .hero-figure`. Scoping this wrong tears the Science figure out of the document
+   flow, which is exactly what happened the first time. */
+.hero-figure{margin-top:0;overflow:hidden;height:clamp(420px,66vh,820px);position:relative;
+  background:var(--surface-2)}
+.hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover}
+.hero-figure figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:1.4rem 1.6rem;text-align:left;color:#f6f2ec;font-size:var(--text-small);
+  background:linear-gradient(180deg,transparent,rgba(20,16,12,0.5))}
+/* HERO ONLY: the figure stops being a banner and becomes the full-screen backdrop. */
+.hero .hero-figure{position:absolute;inset:0;height:auto;z-index:0;margin:0}
+/* Layered scrim: darkest through the middle where the title sits (so contrast is carried by
+   the gradient, not by luck about how bright the photo is there) and at the very bottom for
+   the caption, while the corners stay open so the reef is still legible as a reef. */
+/* The radial is sized and stepped to the *type column*, not to taste: each stop was set by
+   measuring the worst-case contrast on the real glyph boxes over the real photograph, since
+   the hero text is centred and its block boxes run far wider than its letters. Corners stay
+   near 0.45 alpha so the reef still reads as a reef. Re-measure if the photo is ever
+   replaced — a brighter frame moves every one of these numbers. */
+.hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(105% 88% at 50% 47%,rgba(4,10,14,0.72) 0%,rgba(4,10,14,0.58) 40%,
+      rgba(4,10,14,0.34) 66%,rgba(4,10,14,0.10) 85%,rgba(4,10,14,0) 100%),
+    linear-gradient(180deg,rgba(8,16,21,0.56) 0%,rgba(8,16,21,0.44) 38%,
+      rgba(8,16,21,0.54) 72%,rgba(6,12,16,0.88) 100%)}
+.hero-body{position:relative;z-index:3;width:100%;
+  padding-block:clamp(5rem,12vh,9rem) clamp(7rem,16vh,11rem)}
 .hero .eyebrow{margin-bottom:2rem}
 .hero .btn-row{justify-content:center;margin-top:clamp(2rem,1.4rem + 1.6vw,2.6rem)}
 .hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--ink);
-  margin:0}
+  margin:0;text-shadow:0 2px 30px rgba(4,10,14,0.55)}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
-/* Home hero image is a full-bleed banner: it lives outside .wrap, so it spans the whole
-   page width and sits flush against the next section. */
-.hero-figure{margin-top:0;overflow:hidden;
-  height:clamp(420px,66vh,820px);position:relative;background:var(--surface-2)}
-.hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover}
-.hero-figure figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.4rem 1.6rem;
-  text-align:left;color:#f6f2ec;font-size:var(--text-small);
-  background:linear-gradient(180deg,transparent,rgba(20,16,12,0.5))}
+.hero .hero-figure figcaption{right:auto;background:none;
+  padding:1.4rem clamp(1.4rem,4vw,3rem) clamp(1.5rem,3.4vh,2.4rem);
+  max-width:52ch;line-height:1.5}
+.hero .pill-credit{z-index:2}
+/* Scroll cue — a thin line that drains downward, inviting the first scroll. */
+.hero-cue{position:absolute;left:50%;bottom:clamp(1.6rem,4vh,2.8rem);z-index:3;
+  transform:translateX(-50%);display:grid;justify-items:center;gap:0.7rem;
+  color:rgba(251,248,244,0.78);font-size:var(--text-micro);letter-spacing:var(--track);
+  text-transform:uppercase;font-weight:500}
+.hero-cue:hover{opacity:1;color:#fbf8f4}
+.hero-cue i{display:block;width:1px;height:clamp(34px,5vh,52px);
+  background:linear-gradient(180deg,rgba(251,248,244,0.85),rgba(251,248,244,0))}
+/* On narrow screens the caption and the cue want the same space. The caption carries
+   information, so the cue is what goes — never the words. */
+@media(max-width:720px){
+  .hero-cue{display:none}
+  /* Right padding clears the floating chat launcher (56px + its inset), which is fixed over
+     this exact corner on small screens — without it the last words run under the button. */
+  .hero .hero-figure figcaption{font-size:0.78rem;line-height:1.45;
+    padding:1rem clamp(5rem,20vw,6.5rem) 1.1rem 1.2rem}
+}
 
 /* ── Signals strip ────────────────────────────────────────────────────────── */
 .signals{display:flex;flex-wrap:wrap;justify-content:center;gap:0.6rem 2rem;align-items:baseline;
@@ -612,10 +705,48 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .banner b{color:var(--coral)}
 
 /* ── Page header (inner pages) ────────────────────────────────────────────── */
-.page-head{padding-block:clamp(4rem,2.6rem + 5vw,7rem) clamp(1rem,0.5rem + 1vw,2rem)}
-.page-head h1{font-size:var(--text-display);max-width:16ch}
+/* Inner-page headers get their own arrival: a deep, tinted wash behind oversized display type,
+   so Technology/Science/About/Analytics/Fleet all open on a moment rather than straight into
+   body copy. Purely CSS, so the pages whose markup lives outside `pages/` (Analytics, Fleet)
+   inherit it without changing. */
+/* Deliberately NOT `isolation:isolate`: the wash below is a `z-index:-1` child, and it has to
+   fall behind the doc sidebar too, which lives outside this element. Isolating would trap it in
+   `.page-head`'s own stacking context and paint it over the sidebar. */
+.page-head{position:relative;
+  padding-block:clamp(5.5rem,3.4rem + 8vw,10rem) clamp(1.6rem,0.8rem + 2vw,3rem)}
+/* A hairline closing the header off from the body copy below it. */
+.page-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--line-2) 20%,var(--line-2) 80%,transparent)}
+/* The header's atmospheric wash is painted on the BODY, not on `.page-head`.
+   Technology/Science/About put the header inside the `.doc` grid's offset content column, so a
+   full-bleed pseudo-element anchored to the section cannot know where the viewport edges are —
+   `left:50%;width:100vw` overflowed by ~90px there, because the column is not viewport-centred.
+   Anchoring to the body sidesteps the arithmetic entirely and uses `width:100%`, which (unlike
+   `100vw`) already excludes the scrollbar. Height is generous and the gradient fades out, so it
+   does not need to match the header's exact box. */
+body{position:relative}
+body:not(.page-home)::before{content:"";position:absolute;top:0;left:0;width:100%;
+  height:clamp(20rem,16rem + 14vw,34rem);z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(58% 66% at 14% -12%,color-mix(in srgb,var(--accent) 20%,transparent) 0%,
+      transparent 64%),
+    radial-gradient(44% 56% at 88% 0%,color-mix(in srgb,var(--coral) 15%,transparent) 0%,
+      transparent 66%),
+    linear-gradient(180deg,color-mix(in srgb,var(--bg-2) 85%,transparent) 0%,transparent 100%)}
+.page-head h1{font-size:clamp(2.4rem,1.4rem + 4.2vw,4.6rem);max-width:16ch;
+  letter-spacing:-0.035em;line-height:1.02}
 .page-head .lead{max-width:56ch;margin-top:1.2rem}
 .page-head .dash-meta{margin-top:1.6rem}
+/* Above-the-fold content animates on load, never on scroll: an IntersectionObserver would
+   leave the first paint blank for a frame. */
+@media (prefers-reduced-motion:no-preference){
+  html.js-reveal .page-head .wrap>*{animation:hero-rise 900ms var(--ease) both}
+  html.js-reveal .page-head .wrap>*:nth-child(1){animation-delay:80ms}
+  html.js-reveal .page-head .wrap>*:nth-child(2){animation-delay:190ms}
+  html.js-reveal .page-head .wrap>*:nth-child(3){animation-delay:300ms}
+  html.js-reveal .page-head .wrap>*:nth-child(n+4){animation-delay:400ms}
+}
 
 /* ── Figures / diagrams ───────────────────────────────────────────────────── */
 .flow{width:100%;height:auto;display:block;overflow:visible}
@@ -689,6 +820,76 @@ table.data .lvl{font-weight:560;color:var(--ink)}
 .tile-stats dd{margin:0;color:var(--ink);font-weight:560;font-size:0.98rem}
 .tile-more{margin-top:auto;color:var(--accent);font-size:var(--text-small);font-weight:500}
 .buoy-tile:hover .tile-more{color:var(--accent)}
+
+/* ── Motion: scroll reveals and scroll-driven drama ───────────────────────── */
+/* Everything here is opt-in and fails open. The hiding rules are scoped to `html.js-reveal`,
+   a class only the inline head script sets, so: no JavaScript -> no class -> nothing is ever
+   hidden. Reduced motion is honoured by keeping `.reveal` fully visible rather than by
+   speeding the animation up. Only transform and opacity animate, so the work stays off the
+   main thread. */
+html.js-reveal .reveal{opacity:0;transform:translate3d(0,26px,0);
+  transition:opacity 900ms var(--ease),transform 900ms var(--ease);will-change:transform,opacity}
+html.js-reveal .reveal.is-in{opacity:1;transform:none;will-change:auto}
+/* Direction variants, for sections that read better arriving from the side or scaling in. */
+html.js-reveal .rv-left{transform:translate3d(-38px,0,0)}
+html.js-reveal .rv-right{transform:translate3d(38px,0,0)}
+html.js-reveal .rv-scale{transform:scale(1.05)}
+html.js-reveal .rv-rise{transform:translate3d(0,62px,0)}
+/* Siblings step in rather than landing together. Needs no extra markup: any run of `.reveal`
+   elements sharing a parent (a bento, a card grid, a carousel) staggers naturally. */
+html.js-reveal .reveal:nth-child(2){transition-delay:70ms}
+html.js-reveal .reveal:nth-child(3){transition-delay:140ms}
+html.js-reveal .reveal:nth-child(4){transition-delay:210ms}
+html.js-reveal .reveal:nth-child(5){transition-delay:280ms}
+html.js-reveal .reveal:nth-child(n+6){transition-delay:350ms}
+@media (prefers-reduced-motion:reduce){
+  html.js-reveal .reveal,html.js-reveal .rv-left,html.js-reveal .rv-right,
+  html.js-reveal .rv-scale,html.js-reveal .rv-rise{
+    opacity:1;transform:none;transition:none;transition-delay:0ms}
+}
+
+/* Hero entrance — the one piece of load-time motion, and the reason the first screen lands
+   rather than simply appearing. The photograph settles out of an overscale while the type
+   rises through it in sequence. */
+@media (prefers-reduced-motion:no-preference){
+  .hero .hero-figure img,.hero .hero-figure .atmos{animation:hero-settle 1900ms var(--ease) both}
+  /* `both` fill means the resting state before the animation runs is `from` — opacity 0. That
+     is a content trap if the animation never starts, so it is gated on the same flag as the
+     reveals: no JavaScript, no hiding. */
+  html.js-reveal .hero-body>*{animation:hero-rise 1000ms var(--ease) both}
+  html.js-reveal .hero-body>*:nth-child(1){animation-delay:180ms}
+  html.js-reveal .hero-body>*:nth-child(2){animation-delay:300ms}
+  html.js-reveal .hero-body>*:nth-child(3){animation-delay:400ms}
+  html.js-reveal .hero-body>*:nth-child(4){animation-delay:520ms}
+  html.js-reveal .hero-body>*:nth-child(5){animation-delay:640ms}
+  html.js-reveal .hero-cue{animation:hero-rise 1000ms var(--ease) 900ms both}
+  @keyframes hero-settle{from{transform:scale(1.16);opacity:0}to{transform:scale(1.06);opacity:1}}
+  @keyframes hero-rise{from{opacity:0;transform:translate3d(0,26px,0)}to{opacity:1;transform:none}}
+}
+
+/* Scroll-driven layers. `animation-timeline` runs on the compositor and needs no JavaScript;
+   browsers without it simply get the static composition, which is why every `from` state here
+   is also a perfectly good resting state. */
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    /* The hero photograph drifts and deepens as the first screen leaves — the parallax that
+       makes the type feel like it is in front of the water rather than on top of it. */
+    .hero .hero-figure{animation:hero-parallax linear both;
+      animation-timeline:scroll(root);animation-range:0 100vh}
+    @keyframes hero-parallax{to{transform:translate3d(0,12%,0) scale(1.10)}}
+    /* The type and scrim fade as they pass, so the hand-off to the sand page is a dissolve
+       rather than a cut. */
+    .hero-body,.hero-cue{animation:hero-depart linear both;
+      animation-timeline:scroll(root);animation-range:10vh 78vh}
+    @keyframes hero-depart{to{opacity:0;transform:translate3d(0,-40px,0)}}
+    /* Reading progress, drawn on the header's own bottom edge — no extra element. */
+    .site-header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+      background:linear-gradient(90deg,var(--accent),var(--coral));
+      transform:scaleX(0);transform-origin:0 50%;
+      animation:scroll-progress linear both;animation-timeline:scroll(root)}
+    @keyframes scroll-progress{to{transform:scaleX(1)}}
+  }
+}
 
 @media print{.site-header,.site-footer{display:none}}
 
