@@ -122,9 +122,12 @@ attribution moved to the footer, which satisfies the Ocean Image Bank licence wi
 type on the frame — so the credit is a footer concern now, not an imagery one, and it is emitted
 by `layout.footer` from `imagery.HERO`.
 
-The reveal motion is deliberately restrained: 14px over 520ms with the sibling stagger capped at
-180ms. An earlier pass used 26px over 900ms stepping to 350ms, which read as the page assembling
-itself in front of the reader rather than simply arriving.
+**The reveal is a plain opacity fade — 400ms, no movement, no stagger.** It took three passes to
+get there: 26px over 900ms stepping to 350ms, then 14px over 520ms stepping to 180ms, then no
+travel and no stagger at all. The two things that made it feel like an *effect* rather than the
+page settling were the distance (the eye tracks movement) and the stagger (which draws attention
+to the sequence itself). Reducing the numbers did not fix that; removing both did. Worth
+remembering the next time a reveal feels heavy — shortening it is usually not the answer.
 
 **This reverses a rule the design system had held since it was written:** *"motion is never
 scroll-dependent, so content is always visible."* The reversal is only defensible because

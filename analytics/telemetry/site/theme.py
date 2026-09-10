@@ -788,27 +788,16 @@ table.data .lvl{font-weight:560;color:var(--ink)}
    hidden. Reduced motion is honoured by keeping `.reveal` fully visible rather than by
    speeding the animation up. Only transform and opacity animate, so the work stays off the
    main thread. */
-/* Deliberately restrained: a short, small settle rather than a long travel. Earlier values
-   (26px over 900ms, stepping to 350ms) read as the page assembling itself in front of the
-   reader; at this distance and speed the motion registers without asking to be watched. */
-html.js-reveal .reveal{opacity:0;transform:translate3d(0,14px,0);
-  transition:opacity 520ms var(--ease),transform 520ms var(--ease);will-change:transform,opacity}
-html.js-reveal .reveal.is-in{opacity:1;transform:none;will-change:auto}
-/* Direction variants, for sections that read better arriving from the side or scaling in. */
-html.js-reveal .rv-left{transform:translate3d(-20px,0,0)}
-html.js-reveal .rv-right{transform:translate3d(20px,0,0)}
-html.js-reveal .rv-scale{transform:scale(1.03)}
-html.js-reveal .rv-rise{transform:translate3d(0,26px,0)}
-/* Siblings step in rather than landing together. Needs no extra markup: any run of `.reveal`
-   elements sharing a parent (a bento, a card grid, a carousel) staggers naturally. */
-html.js-reveal .reveal:nth-child(2){transition-delay:45ms}
-html.js-reveal .reveal:nth-child(3){transition-delay:90ms}
-html.js-reveal .reveal:nth-child(4){transition-delay:135ms}
-html.js-reveal .reveal:nth-child(n+5){transition-delay:180ms}
+/* A plain fade, and nothing else. Three passes got here: 26px over 900ms stepping to 350ms,
+   then 14px over 520ms stepping to 180ms, now no movement and no stagger at all. The travel and
+   the stagger were what made the page feel like it was assembling itself in front of the
+   reader — distance is what the eye tracks, and a stagger draws attention to the sequence. What
+   is left is content arriving at full opacity a beat after it enters view, which reads as the
+   page settling rather than as an effect. */
+html.js-reveal .reveal{opacity:0;transition:opacity 400ms var(--ease);will-change:opacity}
+html.js-reveal .reveal.is-in{opacity:1;will-change:auto}
 @media (prefers-reduced-motion:reduce){
-  html.js-reveal .reveal,html.js-reveal .rv-left,html.js-reveal .rv-right,
-  html.js-reveal .rv-scale,html.js-reveal .rv-rise{
-    opacity:1;transform:none;transition:none;transition-delay:0ms}
+  html.js-reveal .reveal{opacity:1;transition:none}
 }
 
 /* The hero photograph is STATIC. It used to settle out of an overscale over 1900ms, which was
