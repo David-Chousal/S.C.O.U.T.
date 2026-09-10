@@ -19,7 +19,7 @@ decisions; nothing downstream starts until those land. Full plan:
 | Subsystem | Status | Detail | Blocked on |
 |---|---|---|---|
 | Stakeholder research | ✅ Complete | 3 NOAA researchers interviewed | — |
-| System architecture | ✅ Complete | [EDD v0.2](../engineering/engineering-design-document.md) | — |
+| System architecture | 🟡 Reconciling | [EDD v0.3](../engineering/engineering-design-document.md) — **mechanical architecture (§4) fully reconciled 2026-09-09** against the detailed design/analysis work (six-wedge flotation v5, buoyancy/freeboard model, mooring load path, structural framework + FEA, sealing, materials). §§5–17, 20 (electrical/power/sensor/audio/comms/firmware/storage/energy) still on the earlier baseline — ECE/CSEN owners | Electrical/firmware EDD pass |
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
 | Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)). SEN0189 polarity corrected pipeline-wide ([SCO-41](https://linear.app/scout1/issue/SCO-41)) | — |
 | Live dashboard | 🟢 Deployed | Public multi-page GitHub Pages site + telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md), [SCO-44](https://linear.app/scout1/issue/SCO-44)). Biofouling drift verdict surfaced as a status card + a rationale note under the turbidity chart ([SCO-51](https://linear.app/scout1/issue/SCO-51)) | — |
