@@ -224,6 +224,10 @@ def render_html(
               cls=_DRIFT_CLASS.get(report.turbidity_drift.verdict, ""),
               sub=f"biofouling screen · {report.turbidity_drift.n_days} d"),
         _stat("Data completeness", f"{report.qc.completeness_pct:g}%"),
+        # Only shown when it happens. A row whose clock the buoy could not trust is excluded
+        # from every time-based figure above, so the reader needs to know it existed.
+        (_stat("Clock-invalid rows", str(report.qc.clock_invalid), cls="a-warning",
+               sub="excluded from timing") if report.qc.clock_invalid else ""),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
     ])
 

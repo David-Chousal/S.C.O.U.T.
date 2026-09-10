@@ -17,7 +17,7 @@ from . import bleaching, turbidity
 from .aggregate import DailyAggregate, aggregate_daily, daily_temperature_series
 from .drift import DriftAssessment, assess_drift
 from .io import load_csv, load_dir
-from .model import TelemetryRecord
+from .model import TelemetryRecord, has_valid_clock
 from .qc import QCReport, run_qc
 from .trends import TrendResult, mann_kendall
 
@@ -57,7 +57,15 @@ class TelemetryReport:
 def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> TelemetryReport:
     """Run the full analysis on already-loaded records."""
     qc = run_qc(records)
-    daily = aggregate_daily(records)
+
+    # QC sees every row so it can report the clock-invalid ones. Everything downstream is
+    # keyed on time — daily aggregation, DHW, trends, the drift screen, turbidity events —
+    # so it gets only the rows whose timestamps mean something. A row the buoy stamped
+    # 1970-01-01 because the RTC was unreadable would otherwise invent a phantom day fifty-six
+    # years before the deployment and drag every series with it.
+    timed = [r for r in records if has_valid_clock(r)]
+
+    daily = aggregate_daily(timed)
 
     temp_series = daily_temperature_series(daily)
     temp_trend = mann_kendall(temp_series)
@@ -66,12 +74,12 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
     # per-sample series so short sub-daily runoff spikes aren't smoothed away by the median.
     turb_daily = [(d.day, d.turbidity_median_adc) for d in daily if d.turbidity_median_adc is not None]
     turbidity_trend = mann_kendall(turb_daily)
-    turb_raw = [(r.timestamp, r.turbidity_adc) for r in records if r.turbidity_adc is not None]
+    turb_raw = [(r.timestamp, r.turbidity_adc) for r in timed if r.turbidity_adc is not None]
     turbidity_anomalies = turbidity.detect_events(turb_raw)
 
     # The turbidity trend above cannot tell creeping water from a fouling sensor — both are
     # monotonic. This screens the daily clean-water floor against the non-optical channel.
-    turbidity_drift = assess_drift(records, reference_series=temp_series)
+    turbidity_drift = assess_drift(timed, reference_series=temp_series)
 
     thermal: list[bleaching.DailyThermal] = []
     thermal_summary: bleaching.ThermalStressSummary | None = None
@@ -134,6 +142,7 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
             "expected_records": qc.expected_records,
             "gaps": len(qc.gaps),
             "missing_samples": qc.total_missing,
+            "clock_invalid": qc.clock_invalid,
             "temp_missing": qc.temp_missing,
             "temp_out_of_range": qc.temp_out_of_range,
             "flags": qc.flag_counts,
