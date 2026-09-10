@@ -1,10 +1,21 @@
-# S.C.O.U.T. Engineering Design Document (v0.2)
+# S.C.O.U.T. Engineering Design Document (v0.3)
 
 > **Summary** — The authoritative technical baseline: system requirements, mechanical/electrical/firmware architecture, component selection, power and energy budget, verification plan, and full BOM.
 >
 > **Source document** — `JR Energy Budget.docx`
 >
 > **Note** — the source file was named `JR Energy Budget.docx`, but its contents are the complete engineering design document. Renamed here to reflect actual content.
+
+> ⚠️ **Reconciliation status (2026-09-09).** The **mechanical architecture (§4)** and its
+> mechanical touchpoints in §§1–3, 18, 19, 21, 22 were reconciled against the detailed design
+> and analysis work of 2026-08-14 → 2026-09-09. The **electrical, power, sensor, audio,
+> communications, firmware, storage, and energy-budget sections (§§5–17, 20) have not yet had
+> the same pass** and still reflect the earlier baseline — several decisions since (FCC-compliant
+> LoRa config, daily packet size, on-board turbidity units, Rev A battery chemistry
+> [ADR-0006](../decisions/0006-rev-a-battery-chemistry.md), V1 sensing payload
+> [ADR-0005](../decisions/0005-v1-sensing-payload.md)) are captured in the
+> [Knowledge Hub](../hub/README.md) but not yet folded in here. Owners: ECE (Isabella) and CSEN
+> (David).
 
 > ⚠️ **Platform note (2026-08-14).** This document describes the **ESP32-C3 + SX1262 custom
 > PCB**, which — per [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) — is now the
@@ -74,17 +85,23 @@ All raw data is stored locally while summarized environmental data is transmitte
 
 ### Current Design Status
 
-- Mechanical architecture complete.
+- Mechanical architecture **detailed and analyzed** — buoy architecture confirmed by design
+  panel review; flotation, mooring load path, sealing method, materials, and buoyancy/freeboard
+  model all resolved. Remaining items (housing final dimensions, stability analysis, impact
+  testing, v5 FEA re-check, mooring hardware detailing) are tracked — see [§4.13](#413-open-mechanical-items).
 
-- Electrical architecture complete.
+- Electrical architecture baseline complete; Rev A bring-up in progress.
 
-- Firmware architecture complete.
+- Firmware architecture complete (SAMD21 / Feather M0 build target per
+  [ADR-0001](../decisions/0001-mcu-and-radio-selection.md)).
 
-- Hardware selection complete.
+- Hardware selection complete for the capstone build; production-PCB parts documented as the
+  future target.
 
 - Major assumptions documented.
 
-- Daily power budget in progress.
+- Daily power budget in progress; a Feather-specific budget will be produced empirically during
+  Phase 1–4 testing.
 
 - Battery and solar sizing pending final verified power budget.
 
@@ -190,13 +207,22 @@ The S.C.O.U.T. buoy shall:
 
 - Low cost
 
-- Marine environment
+- Marine environment — 5 m water-equivalent pressure target, saltwater, biofouling, UV, corrosion
 
-- Dimensions TBD — built around an approximate 4-inch Schedule 40 PVC electronics housing as a working reference, not a finalized spec
+- Buoy outer diameter 18 in; electronics-housing internal envelope pending the final component
+  list ([SCO-70](https://linear.app/scout1/issue/SCO-70) → [SCO-49](https://linear.app/scout1/issue/SCO-49)),
+  designed around a ~Ø100 mm reference
+
+- In-house fused-deposition 3D printing only (no outsourced molding/CNC)
+
+- Positive, fault-tolerant buoyancy with reasonable freeboard
 
 - Low average power
 
-- Modular construction
+- Modular, field-serviceable construction
+
+Full mechanical performance targets and constraints are in [§4](#4-mechanical-architecture) and
+[§19](#19-design-constraints).
 
 ## 3. Overall System Architecture
 
@@ -270,15 +296,15 @@ LoRa Flash
 
 #### Mechanical
 
-- Supports all electronics.
+- Supports all electronics in a sealed, serviceable chassis.
 
-- Provides waterproof enclosure.
+- Provides positive, fault-tolerant buoyancy (six foam-filled flotation wedges).
 
-- Supports solar panel.
+- Supports the solar panel mast.
 
-- Supports mooring.
+- Carries the mooring load through a through-bolted 316 pad-eye.
 
-- Positions sensors at required depths.
+- Positions the single sensor pod beneath the buoy (single-point sensing, ADR-0003).
 
 #### Power
 
@@ -370,137 +396,311 @@ Shore Station
 
 ## 4. Mechanical Architecture
 
-### Design Goals
-
-The mechanical system was designed to:
-
-- Protect electronics from seawater.
-
-- Support long-term deployment.
-
-- Simplify manufacturing.
-
-- Simplify maintenance.
-
-- Reduce part count.
-
-- Allow modular replacement of subsystems.
-
-### Main Housing
-
-Electronics are contained inside a vertical enclosure. Final dimensions are **TBD**; design work
-is being built around an approximate 4-inch Schedule 40 PVC tube as a working reference, not a
-locked spec.
-
-The housing contains:
-
-- Main PCB
-
-- Battery
-
-- Voltage regulators
-
-- LoRa antenna
-
-- Flash memory
-
-- Internal wiring
-
-### Sensor Mount
-
-Per [ADR-0003](../decisions/0003-single-point-sensing.md), sensors are sited together at a single point beneath the buoy (not a multi-depth string):
-
-- One DS18B20 temperature sensor (+2 field spares)
-
-- One turbidity sensor (+2 field spares)
-
-- One Aquarian hydrophone
-
-A future revision may distribute sensors vertically to sample multiple depths — see [Sensor String Architecture](sensor-string-architecture.md).
-
-### Float Assembly
-
-The float assembly provides:
-
-- Positive buoyancy
-
-- Solar panel mounting
-
-- Electronics enclosure support
-
-- Mooring attachment
-
-### Mooring System
-
-The buoy is anchored using a fixed mooring.
-
-The sensor string is attached to the mooring structure so sensor positions remain repeatable.
-
-### Waterproofing Strategy
-
-Waterproofing is achieved through:
-
-- O-ring face seals
-
-- Cable glands
-
-- Waterproof connectors where required
-
-- Passive sealing methods where practical
-
-No electronics are intentionally exposed to seawater.
-
-### Mechanical Design Philosophy
-
-- Standard components whenever possible.
-
-- Minimize custom machining.
-
-- Serviceable construction.
-
-- Modular replacement of failed subsystems.
-
-- Compact packaging.
-
-- Low mass.
-
-- Low drag.
-
-- Long-term corrosion resistance.
-
-### Interfaces
-
-#### Mechanical → Electrical
-
-- PCB mounting
-
-- Battery mounting
-
-- Cable routing
-
-- Connector access
-
-#### Mechanical → Sensor System
-
-- Sensor mounting
-
-- Hydrophone mounting
-
-- Depth spacing
-
-- Strain relief
-
-#### Mechanical → Power System
-
-- Solar panel mounting
-
-- Cable protection
-
-- Battery restraint
-
-The mechanical architecture is designed so that electrical and firmware revisions can occur with minimal changes to the enclosure.
-
-For the next revision, we’ll add **Section 5: Electrical Architecture** and **Section 6: Component Selection**, which will include every selected component, why it was chosen, what alternatives were rejected, and how each component interfaces with the rest of the system.
+> **Status (2026-09-09).** This section was reconciled against the detailed mechanical design
+> work of 2026-08-14 → 2026-09-09. The authoritative working documents are the
+> [Knowledge Hub](../hub/README.md) and [`docs/engineering/buoy-structural/`](buoy-structural/);
+> this section is the summary and points to them for full derivations, drawings, and test
+> records. Provisional items and their blocking issues are listed in
+> [§4.13](#413-open-mechanical-items).
+
+### 4.1 Design goals and philosophy
+
+The mechanical system:
+
+- Protects the electronics and battery from seawater at the deployment pressure (5 m water
+  equivalent target).
+- Provides positive, fault-tolerant buoyancy with reasonable freeboard.
+- Survives long-duration nearshore deployment — wave loading, corrosion, biofouling, UV, and
+  incidental impact (grounding, handling, boat strike at the waterline).
+- Keeps electrical and firmware revisions independent of the enclosure.
+- Is **manufacturable in-house by fused-deposition 3D printing** — no outsourced molding or CNC,
+  which is not cost-effective at capstone quantities.
+- Is **modular and field-serviceable** — individual flotation wedges, the sensor pod, and the
+  lid can each be replaced without disturbing the rest.
+- Minimizes custom machining, part count, mass, and drag; uses standard fasteners and O-rings.
+
+### 4.2 Buoy architecture overview
+
+The buoy is a **central sealed chassis cylinder with six 60° flotation wedges bolted around it**,
+forming an 18-inch-diameter disc. A static face-sealed lid closes the chassis at the top and
+carries the solar-panel mast; a printed sensor stem and sensor pod hang below the chassis; the
+mooring attaches through the chassis bottom.
+
+This architecture was confirmed by a simulated multidisciplinary design panel review
+(2026-08-21, 12 reviewer personas): **"proceed to detailed design, no redesign"** (8.0/10). The
+review is committed at
+[`reviews/buoy-preliminary-design-panel-review-2026-08.md`](reviews/buoy-preliminary-design-panel-review-2026-08.md)
+and generated 14 tracked design actions.
+
+| Element | Summary | Detail |
+|---|---|---|
+| Flotation | 6 foam-filled 60° wedges, bolted to the chassis, epoxied into a closed ring | [§4.3](#43-flotation-system) |
+| Buoyancy / freeboard | ~7.6 kg as-deployed, ~3.8:1 reserve margin, ~2.5 in draft | [§4.4](#44-buoyancy-and-freeboard) |
+| Electronics chassis | Sealed PETG cylinder, Ø5.75 in × 8.5 in, static face-seal lid | [§4.5](#45-electronics-chassis-and-lid) |
+| Sensor mount | Printed stem + sensor pod below the hull; single-point sensing (ADR-0003) | [§4.6](#46-sensor-mount-stem-and-pod) |
+| Mooring | Reef-safe mushroom anchor + twisted nylon line; through-bolted 316 pad-eye on the buoy | [§4.7](#47-mooring-attachment) |
+| Structural analysis | LC1–LC9 load framework; FEA passes every case (v4 geometry) | [§4.8](#48-structural-analysis) |
+| Waterproofing | Static face seals, fasteners outside the O-ring boundary, off-the-shelf O-rings | [§4.9](#49-waterproofing-strategy) |
+| Materials / manufacturing | PETG build (ASA for scale-up), in-house FDM only | [§4.10](#410-materials-and-manufacturing) |
+| Biofouling / coatings | Sea Hawk Smart Solution (copper-free) antifouling | [§4.11](#411-biofouling-and-coatings) |
+
+### 4.3 Flotation system
+
+**Design family (chosen 2026-08-17):** a bolted wedge assembly — heat-set brass inserts in the
+chassis, M4 stainless bolts, no snap/keyhole locking — selected over a snap-keyhole "Master V3"
+concept and a separate "Outer Octagon" shell. Full iteration history (CNC foam ring →
+surfboard-style composite → single-print sections → snap-fit → bolted wedge, v1–v9 preserved as
+history) is in
+[`mechanical/cad/floatation/README.md`](../../mechanical/cad/floatation/README.md) and
+[`design-notes.md`](../hub/design-notes.md).
+
+**Geometry (v5, 2026-09-09):**
+
+| Parameter | Value |
+|---|---|
+| Buoy outer diameter | 18.000 in (R9.000 in) |
+| Flotation wedge height | 5.500 in (reduced from 8.000, [SCO-110](https://linear.app/scout1/issue/SCO-110)) |
+| Chassis height | 8.500 in (reduced from 11.000 by the same amount, 1 in stub above the wedge top) |
+| Wedge count / sector | 6 × exactly 60° |
+| Wedge shell walls | outer curved 0.095 in, radial sides + internal web 0.063 in (fully-dense perimeter shells, no infill core) |
+
+**Foam fill.** Each wedge module is filled after assembly with **US Composites #0204 2 lb/ft³
+closed-cell rigid polyurethane pour foam** ([SCO-76](https://linear.app/scout1/issue/SCO-76)).
+The foam does three jobs at once: buoyancy, structure, and waterproofing-by-redundancy — a
+punctured wedge shell does not flood, and even with every printed shell gone the six foam cores
+alone provide ~216 N of net lift (≈2.9× the whole-buoy nominal weight).
+
+**Structural concept.** The six wedges are epoxied at their radial seams and foam-poured *after*
+being bolted into the ring, forming an **epoxied closed monocoque ring**. In this configuration
+each radial wall sees no through-thickness service pressure, the bonded 3.2 mm seam acts as a
+compression-ring path and a stiff composite stringer (borrowing the surfboard-stringer
+principle), and foam-fill pressure is reacted by the bonded neighbour. **The epoxied ring is the
+primary structure; the foam is required backing** against local and asymmetric loads — a single
+bare panel is marginal on external-pressure buckling, so foam must be in place before any
+submersion until an assembly-level ring-buckling FEA confirms the bonded ring. A closed-form
+check (2026-09-07,
+[`mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md`](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md))
+accepted the wall thicknesses: outer wall SF 7.3 on yield under the 50.3 kPa (5 m) hydrostatic
+case.
+
+**Internal bracing web.** A perforated web spans between the wedge's bolt flanges. It began as a
+design-for-manufacturing fix — the thin open side walls flexed during printing and broke
+first-layer bed adhesion — and also does structural work (halves every wall panel's free span,
+adds a shear web). In v5 the web's lightening holes additionally let it flex to seat around the
+chassis and give service access without a rigid interference fit.
+
+**Field replaceability.** Each wedge can be swapped on-site without disturbing the others.
+
+### 4.4 Buoyancy and freeboard
+
+The whole-buoy mass, displacement, and freeboard model — full worked derivation, sensitivity
+sweep, and failure cases — is
+[`buoy-mass-displacement-and-freeboard-model.md`](buoy-structural/buoy-mass-displacement-and-freeboard-model.md),
+built 2026-08-29 and re-solved for the v5 geometry 2026-09-09 with an independent re-derivation.
+
+| Quantity | v5 nominal | Note |
+|---|---|---|
+| As-deployed mass | ~7.59 kg (6.25 low / 9.69 high) | Tier III (battery, solar, stem, pod, mooring hardware) still estimated pending [SCO-70](https://linear.app/scout1/issue/SCO-70) |
+| Max buoyant force (fully submerged) | ~286 N | |
+| Net reserve buoyancy | ~212 N (≈21.6 kgf), **~3.84:1 margin** | v4 was 4.75:1; the SCO-110 resize traded margin for ~0.8 kg less mass and a lower solar deck |
+| Nominal draft | ~2.50 in (63 mm) | |
+| Freeboard to the wedge top | ~5.0 in (of a 5.5-in float section) | ~7.0 in to the top of the chassis lid |
+| Float section wetted | ~9% | The buoy is **substantially over-floated** |
+
+**Failure cases** (both stay afloat): a fully flooded chassis rises to ~3.1 in draft / ~4.4 in
+freeboard; losing one entire wedge module rises to ~2.6 in draft but introduces an asymmetric
+60° flotation gap and therefore a static list — quantifying that heel is stability work
+([§4.8](#48-structural-analysis), [SCO-80](https://linear.app/scout1/issue/SCO-80)).
+
+The model is **provisional** on two inputs: the real v5 print weights (shell masses are
+currently geometric estimates) and the final Tier III component masses from
+[SCO-70](https://linear.app/scout1/issue/SCO-70).
+
+### 4.5 Electronics chassis and lid
+
+A sealed PETG cylinder, **Ø5.750 in OD × 8.500 in tall** (v5), houses the main PCB, battery,
+charge/regulation board, LoRa antenna, flash, internal temp/humidity sensor, and wiring. The
+final internal envelope and wall thickness are **not yet fixed** — they depend on Isabella's
+final electronics component list and dimensions ([SCO-70](https://linear.app/scout1/issue/SCO-70)),
+which gates [SCO-49](https://linear.app/scout1/issue/SCO-49). A packing analysis
+([`electronics-housing-packing-budget.md`](electronics-housing-packing-budget.md)) against the
+real Rev A component sizes recommends a ~Ø100 mm × 110–130 mm internal envelope, which fits the
+historical ~4-inch PVC reference form factor with margin. (The earlier "4-inch Schedule 40 PVC"
+language in this document is a reference form factor only, not a spec —
+[SCO-46](https://linear.app/scout1/issue/SCO-46).)
+
+**Lid — static face seal.** The chassis closes with a **clamp + lid pair carrying a static face
+seal**, declared the electronics-housing baseline 2026-09-02 (superseding an end-cap-into-cylinder
+scheme). Key features:
+
+- All 6 fasteners sit **outside the O-ring boundary** — Ø104.14 mm bolt circle vs. a Ø91.69 mm
+  groove OD — so no fastener pierces the seal (closes a design-panel-review finding on
+  [SCO-68](https://linear.app/scout1/issue/SCO-68)).
+- Groove sized to a standard **AS568-043** ring: 22.9% squeeze, 75% gland fill.
+- Seal faces bottom out land-to-land, so squeeze is set by geometry, not bolt torque; the flange
+  is stiffened against bolt-to-bolt bowing.
+- **Seal elastomer: silicone** (seawater + UV service, low compression set).
+- A cable gland in the lid passes the sensor-string / antenna cable run.
+- The lid carries an engraved identification label (four lines).
+
+**Provisional:** the first clamp print (2026-09-02) showed slight O-ring tolerance trouble —
+reprint pending ([SCO-105](https://linear.app/scout1/issue/SCO-105)); the AS568-043 free-diameter
+fit against the groove ID is unverified ([SCO-106](https://linear.app/scout1/issue/SCO-106)); no
+submersion test has been run to this design ([SCO-108](https://linear.app/scout1/issue/SCO-108)).
+
+### 4.6 Sensor mount (stem and pod)
+
+Per [ADR-0003](../decisions/0003-single-point-sensing.md), all sensing is at a **single point
+beneath the buoy**, not a multi-depth string:
+
+- One DS18B20 temperature sensor (pre-waterproofed; +2 field spares)
+- One SEN0189 turbidity sensor (+2 field spares)
+- One Aquarian hydrophone (pre-waterproofed)
+
+A printed PETG **stem** (hex-socket top connector, perforated/free-flooding lower body) hangs
+below the chassis; a **sensor pod** at its lower end carries the sensors. The pod splits into a
+**dry chamber** (the turbidity adapter board / electronics) and a **flood chamber** (the
+turbidity probe itself — light-blocked but water-permeable), epoxied watertight between them,
+because the turbidity probe — unlike the thermometer and hydrophone — is not itself
+waterproofed. The pod uses an **AS568-137** face-seal groove and a 3-bolt pattern.
+
+The pod design is deliberately built to *enable* future multi-depth scaling (design-once,
+cheap-to-repeat in-house additive) without activating it now — see
+[`sensor-string-architecture.md`](sensor-string-architecture.md). The flood chamber is currently
+being re-specced around Isabella's actual Rev A turbidity sensor rather than the generic SEN0189
+assumption ([SCO-91](https://linear.app/scout1/issue/SCO-91)).
+
+### 4.7 Mooring attachment
+
+**Approach ([ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md)).** Reef-safe by
+principle: at **marked sites** (existing pile or mooring) the buoy connects directly by line; at
+**unmarked sites** a single **mushroom anchor** is sited *adjacent to, never on,* coral, with
+enough swing clearance that the line cannot drag or agitate the reef.
+
+**Line spec (2026-09-08):** 3-strand **twisted nylon, 3/8 in (9.5 mm)** — twisted construction
+so a crossing propeller **fouls rather than cuts** it (a cut line loses the buoy adrift; a
+fouled prop just stops the boat), nylon for catenary shock compliance. Scope length is a routine
+sizing item still open on [SCO-17](https://linear.app/scout1/issue/SCO-17).
+
+**Buoy attachment point.** A **through-bolted 316 stainless pad-eye** at the chassis bottom,
+chosen from a six-option trade study (rigid U-bolt + backing plate, clamped cable loop, bonded
+flanged eye, folding pad-eye, tapped block + eye bolt, transverse cross-pin clevis). The pad-eye
+spreads load over 4 points (vs. the U-bolt's 2), is fully external — inspectable and
+field-replaceable — and uses standard hardware. A **cross-pin clevis is kept as the fallback**
+(printed plastic takes bearing and shear far better than pull-out). Shock compliance lives in
+the mooring line (snubber / catenary), **not** the buoy penetration. The design panel review
+rated this load path the project's single most consequential single-point failure; the specific
+part, sizing, threaded-insert scheme, chassis-bottom boss, and proof test remain open on
+[SCO-69](https://linear.app/scout1/issue/SCO-69).
+
+The sensor string / pod is attached to the mooring so sensor positions stay repeatable.
+
+### 4.8 Structural analysis
+
+**Load framework.** Environmental loads are derived in
+[`structural-load-framework.md`](buoy-structural/structural-load-framework.md) and
+[`force-budget.md`](buoy-structural/force-budget.md) as nine load cases (LC1–LC9) using the
+Morison equation, linear wave theory, and DNV-RP-C205 / USACE CEM conventions, each value
+provenance-tagged. The **environmental design set was signed off 2026-09-08**
+([SCO-73](https://linear.app/scout1/issue/SCO-73)): water depth `d` 2.0 m, wave height `H`
+1.2 m, wave period `T_w` 6 s, current `U_c` 0.8 m/s, wind `U_wind` 22 m/s (survival condition).
+Governing loads: **LC9 mooring snap ≈ 810 N**, LC6 combined resultant 586 N, LC8 hydrostatic
+50.3 kPa (5 m).
+
+**FEA (Autodesk Fusion, custom PETG material profile).** LC2–LC9 plus a service case were run
+2026-08-29 to 2026-08-30 — **the buoy structure passes every case** (min SF 10–1450); results
+tracker at [`mechanical/test/fea-mooring-load-cases.md`](../../mechanical/test/fea-mooring-load-cases.md).
+LC6 and LC9 show local min SF 1.5–1.7 at the contact interface of a generic-steel stand-in ring,
+examined and confirmed as a mesh/contact singularity artifact, not the buoy PETG.
+
+**Analyses still owed** (all tracked): assembly-level ring-buckling FEA of the epoxied 6-wedge
+ring; impact / boat-strike survivability, FEA + bench ([SCO-71](https://linear.app/scout1/issue/SCO-71)
+— the design's stated validation target, since the first side-load study returned SF 25.4 and
+was judged over-engineered for the cost target); **CG / CB / metacentric height / righting-arm
+stability** ([SCO-80](https://linear.app/scout1/issue/SCO-80)); a dedicated re-run of the final
+316 pad-eye interface with LC7's 70 N·m moment; and an **FEA re-check of the v5 geometry** (the
+2026-08-29 runs were on v4 — buoy OD is unchanged and draft moved only ~0.2 in, so the loads are
+approximately still valid, but the resize and the lower solar deck need a re-run before
+deployment).
+
+### 4.9 Waterproofing strategy
+
+- **Static face seals** on both the electronics chassis lid and the sensor pod — fasteners
+  outside the O-ring boundary, seal faces bottoming land-to-land ([§4.5](#45-electronics-chassis-and-lid)).
+- **Off-the-shelf standard AS568 O-rings**, not 3D-printed or batch-cast — printed parts are
+  porous along layer lines, a waterproofing-critical risk at the 5 m pressure target
+  ([SCO-55](https://linear.app/scout1/issue/SCO-55)). Provisional; revisit if standard sizes do
+  not fit.
+- **Cable glands** for every conductor leaving a sealed volume; epoxied pod modules.
+- **Foam-fill redundancy** on the flotation wedges.
+- No electronics are intentionally exposed to seawater.
+
+**First bench evidence (2026-08-24,
+[`waterproofing-submersion-test-2026-08-24.md`](../../mechanical/test/waterproofing-submersion-test-2026-08-24.md)):**
+a PLA sensor housing with a TPU-printed O-ring passed ~30 hr submerged bone-dry; a low-quality
+PETG print of the same part and the electronics housing (the tested article had no bolt-joint
+sealing washers, contrary to spec) both failed. Reprint and re-test are pending
+([SCO-105](https://linear.app/scout1/issue/SCO-105), [SCO-108](https://linear.app/scout1/issue/SCO-108)).
+
+### 4.10 Materials and manufacturing
+
+- **Build material: PETG** for the wedges, chassis, and housings. **ASA is documented as the
+  production scale-up material** for UV/marine durability; the ABS / SLA / nylon comparison was
+  dropped ([SCO-64](https://linear.app/scout1/issue/SCO-64)).
+- **In-house fused-deposition printing only.** Outsourced molding / CNC is not cost-effective at
+  capstone quantities. Fit is validated with PLA scale prints (1/4, 1/2, 1:1) before committing
+  full-scale PETG.
+- **Print structure** ([`print-settings.md`](buoy-structural/print-settings.md)): wall count
+  dominates infill for FDM structural strength. Chassis: 6 walls / 25–30% gyroid generally,
+  8–10+ walls / 100% solid locally at the mooring boss. Wedge family: v5 thin-wall spec per
+  [§4.3](#43-flotation-system). Heat-set-insert pull-out depends on solid perimeters around the
+  hole, not bulk infill. Provisional pending the FEA sign-off on [SCO-73](https://linear.app/scout1/issue/SCO-73).
+- **Fasteners:** M4 316 stainless bolts into brass heat-set inserts. The corrosion strategy —
+  stainless hardware plus sealed bolt heads — is open on [SCO-92](https://linear.app/scout1/issue/SCO-92).
+- **Flotation foam:** US Composites #0204 2 lb/ft³ closed-cell rigid PU pour foam.
+- **Adhesive:** marine epoxy for the wedge radial seams, wedge-cap bonds, and insert potting.
+
+### 4.11 Biofouling and coatings
+
+**Sea Hawk Smart Solution antifouling coating** (copper-free, Econea biocide), chosen over
+copper-based products — copper is toxic to coral at low concentration and conflicts with the
+reef-safe principle in [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — and
+over a pricier copper-free alternative
+([`biofouling-antifouling-coatings.md`](../research/biofouling-antifouling-coatings.md),
+[SCO-15](https://linear.app/scout1/issue/SCO-15)). Re-ratified 2026-09-08 over a
+"let it grow naturally" alternative. Coating adhesion and UV/water durability validation is open
+on [SCO-78](https://linear.app/scout1/issue/SCO-78).
+
+### 4.12 Interfaces
+
+| Interface | Provisions |
+|---|---|
+| Mechanical → Electrical | PCB mounting inside the chassis, battery restraint, internal cable routing, lid cable gland, connector access through the serviceable lid |
+| Mechanical → Sensor system | Stem-to-chassis connection, pod mounting on the stem, hydrophone mounting, flood/dry chamber sealing, strain relief on the sensor cable |
+| Mechanical → Power system | Solar-panel mast on the chassis lid, cable protection down the stem/chassis, battery restraint inside the chassis |
+| Mechanical → Mooring | Through-bolted 316 pad-eye at the chassis bottom; sensor string tied to the mooring |
+
+Electrical and firmware revisions are intended to occur with minimal change to the enclosure.
+
+### 4.13 Open mechanical items
+
+| Item | Blocked on / tracked by |
+|---|---|
+| Electronics housing final internal envelope, wall thickness, gland count | [SCO-70](https://linear.app/scout1/issue/SCO-70) → [SCO-49](https://linear.app/scout1/issue/SCO-49) |
+| Real v5 print weights (wedge, chassis) — model currently on geometric estimates | [SCO-110](https://linear.app/scout1/issue/SCO-110) re-slice |
+| v5 chassis + cap STEP re-exports and a dimensioned wedge PDF | [SCO-110](https://linear.app/scout1/issue/SCO-110) |
+| Assembly-level ring-buckling FEA (epoxied 6-wedge ring) | [SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73) |
+| Impact / boat-strike survivability (FEA + bench) | [SCO-71](https://linear.app/scout1/issue/SCO-71) |
+| Stability — CG / CB / GM / righting, one-wedge-loss list angle | [SCO-80](https://linear.app/scout1/issue/SCO-80) |
+| v5-geometry FEA re-check | [SCO-73](https://linear.app/scout1/issue/SCO-73) |
+| Mooring pad-eye — part, sizing, boss, proof test | [SCO-69](https://linear.app/scout1/issue/SCO-69) |
+| Corrosion strategy — sealed bolt heads | [SCO-92](https://linear.app/scout1/issue/SCO-92) |
+| Electronics-housing clamp reprint + submersion re-test | [SCO-105](https://linear.app/scout1/issue/SCO-105), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
+| Turbidity flood-chamber re-spec to the real Rev A sensor | [SCO-91](https://linear.app/scout1/issue/SCO-91) |
+| Coating adhesion / UV durability validation | [SCO-78](https://linear.app/scout1/issue/SCO-78) |
+| Cap cable-gland revision (routing, OD, sealing) | [SCO-53](https://linear.app/scout1/issue/SCO-53) |
+| Chassis top section — sealing + service-access port | [SCO-68](https://linear.app/scout1/issue/SCO-68) |
+| Stem + solar-mount refinement into current iterations | [SCO-54](https://linear.app/scout1/issue/SCO-54) |
 
 ## 5. Electrical Architecture
 
@@ -2699,6 +2899,27 @@ This section documents all engineering assumptions used throughout the S.C.O.U.T
 
 Manufacturer specifications and engineering assumptions are intentionally separated to maintain traceability and simplify future design revisions.
 
+### Mechanical Assumptions
+
+| **Item** | **Assumption** |
+|---|---|
+| Buoy outer diameter | 18.000 in (R9.000 in) — dimensioned drawings |
+| Flotation wedge height (v5) | 5.500 in; chassis 8.500 in |
+| Wedge count | 6 × exactly 60°, epoxied into a closed ring |
+| Flotation foam | US Composites #0204, 2 lb/ft³ (0.032 g/cm³); full-fill of all 6 wedge modules |
+| Build material | PETG (ρ 1.27 g/cm³); ASA for production scale-up |
+| As-deployed mass (v5) | ~7.59 kg nominal — Tier III (battery, solar, stem, pod, mooring hardware) still estimated pending [SCO-70](https://linear.app/scout1/issue/SCO-70); v5 shell masses are geometric estimates pending re-slice |
+| Net reserve buoyancy | ~212 N (~3.8:1 margin); nominal draft ~2.5 in |
+| Pressure target | 5 m water equivalent (50.3 kPa) |
+| Environmental design set (structural) | `d` 2.0 m, `H` 1.2 m, `T_w` 6 s, `U_c` 0.8 m/s, `U_wind` 22 m/s (survival) — signed off 2026-09-08 |
+| Governing structural load | LC9 mooring snap ≈ 810 N |
+| Seawater density | 1.025 g/cm³ |
+| Appendage displacement credit (freeboard model) | 0.372 kg |
+
+These values will be updated as the v5 re-slice, [SCO-70](https://linear.app/scout1/issue/SCO-70),
+the stability analysis, and the impact / ring-buckling / v5 FEA runs complete. Full derivations
+in [`docs/engineering/buoy-structural/`](buoy-structural/).
+
 ### Firmware Assumptions
 
 | **Item**               | **Assumption**                                     |
@@ -2817,10 +3038,29 @@ This section documents the engineering constraints that influenced the S.C.O.U.T
 
 ### Mechanical Constraints
 
+#### Buoy Structure
+
+- Buoy outer diameter is **18 in**; the design is manufactured entirely by in-house
+  fused-deposition 3D printing in PETG.
+
+- The six flotation wedges shall be foam-filled and epoxied into a closed monocoque ring; foam
+  shall be in place before any submersion until the assembly-level ring-buckling FEA confirms
+  the bonded ring unaided.
+
+- The structure shall pass the LC1–LC9 load framework at the signed-off environmental design
+  set (governing case LC9, mooring snap ≈ 810 N) and the 5 m (50.3 kPa) hydrostatic case.
+
+- Buoyancy shall remain positive with a fully flooded chassis and with any one wedge module
+  lost.
+
 #### Electronics Housing
 
-- Enclosure dimensions are **TBD**; design is being built around an approximate 4-inch Schedule
-  40 PVC reference, not a finalized spec.
+- Enclosure internal envelope and wall thickness are **pending the final electronics component
+  list** ([SCO-70](https://linear.app/scout1/issue/SCO-70) → [SCO-49](https://linear.app/scout1/issue/SCO-49));
+  the packing analysis targets ~Ø100 mm × 110–130 mm, within the historical ~4-inch PVC
+  reference form factor.
+
+- The lid shall use a static face seal with all fasteners outside the O-ring boundary.
 
 - Internal layout shall remain modular to simplify maintenance and future revisions.
 
@@ -2832,17 +3072,24 @@ The buoy is intended for long-term deployment in a marine environment.
 
 The design shall account for:
 
-- Saltwater exposure
+- Saltwater exposure — sealed volumes, 316 stainless fasteners, corrosion strategy on
+  [SCO-92](https://linear.app/scout1/issue/SCO-92)
 
-- Humidity
+- Humidity — internal temp/humidity sensor for state-of-health
 
 - Corrosion
 
-- Biofouling
+- Biofouling — Sea Hawk Smart Solution copper-free antifouling coating
 
-- UV exposure
+- UV exposure — PETG for the build, ASA documented for production
 
 - Temperature variation
+
+#### Reef Safety
+
+Per [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md): anchoring shall not place
+hardware on coral; the mooring line shall have swing clearance that prevents it dragging on the
+reef; no copper-based antifouling (toxic to coral).
 
 ### Electrical Constraints
 
@@ -3054,7 +3301,12 @@ Each additional sensor shall undergo independent review for:
 
 Potential future revisions include:
 
-- Injection-molded enclosure components
+- **Multi-depth sensor string** — distributing sensor pods vertically to sample stratification,
+  deferred from v1 per [ADR-0003](../decisions/0003-single-point-sensing.md). The v1 pod is
+  deliberately designed to make this cheap to add later — see
+  [`sensor-string-architecture.md`](sensor-string-architecture.md).
+
+- ASA (or injection-molded) enclosure components for a production run
 
 - Improved modular sensor pods
 
@@ -3284,33 +3536,32 @@ These measurements will replace the analytical estimates used in the preliminary
 
 ### Phase 6 — Mechanical Validation
 
-Verify:
+Full test records are in [`mechanical/test/`](../../mechanical/test/README.md).
 
-- Waterproof enclosure.
+**Completed:**
 
-- O-ring sealing.
+- LC2–LC9 + service-case FEA (Fusion, custom PETG profile) — buoy structure passes every case,
+  min SF 10–1450 (2026-08-29/30, on the v4 geometry).
+- First bench submersion test (2026-08-24) — PLA + TPU O-ring passed ~30 hr; a low-quality PETG
+  print and the electronics housing (no bolt-joint sealing washers on the article) failed.
+- Closed-form wedge wall-thickness check (2026-09-07) — outer 0.095 in / sides 0.063 in accepted.
+- Full slicer weigh-in of the v4 flotation parts (2026-08-24).
 
-- Cable gland sealing.
+**Owed (tracked):**
 
-- Structural integrity.
+| Test | Purpose | Issue |
+|---|---|---|
+| Assembly-level ring-buckling FEA | Confirm the epoxied 6-wedge ring unaided by foam | [SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73) |
+| Impact / boat-strike — FEA + bench on printed samples | The design's stated validation target (impact survivability at controlled cost) | [SCO-71](https://linear.app/scout1/issue/SCO-71) |
+| Stability — CG/CB/GM, righting arm, one-wedge-loss list | Confirm the buoy self-rights and the resize lowered CG | [SCO-80](https://linear.app/scout1/issue/SCO-80) |
+| v5-geometry FEA re-run | The 2026-08-29 runs were on v4 | [SCO-73](https://linear.app/scout1/issue/SCO-73) |
+| Final 316 pad-eye interface FEA (with LC7 moment) | Sign off the mooring load path | [SCO-69](https://linear.app/scout1/issue/SCO-69) |
+| Electronics-housing clamp reprint + submersion re-test | Validate the static face seal to the current design | [SCO-105](https://linear.app/scout1/issue/SCO-105), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
+| Integrated waterproof + proof-load + tilt test | System-level mechanical validation | [SCO-82](https://linear.app/scout1/issue/SCO-82) |
+| Foam-fill manufacturing trials on sacrificial wedges | De-risk the pour process | [SCO-76](https://linear.app/scout1/issue/SCO-76) |
 
-- Sensor mounting.
-
-- Mooring attachment.
-
-- Ease of assembly and service.
-
-Environmental Tests:
-
-- Splash testing.
-
-- Submersion testing.
-
-- Vibration.
-
-- UV exposure.
-
-- Saltwater exposure.
+**Environmental tests:** splash, submersion, vibration, UV exposure, saltwater exposure, coating
+adhesion / durability ([SCO-78](https://linear.app/scout1/issue/SCO-78)).
 
 ### Phase 7 — Integrated System Testing
 
@@ -3384,15 +3635,32 @@ This Bill of Materials identifies the primary hardware required to construct one
 
 ### Mechanical Components
 
-| **Qty**  | **Component**                  | **Purpose**            |
-|----------|--------------------------------|------------------------|
-| 1        | Electronics Housing (dimensions TBD — built around ~4-inch Schedule 40 PVC reference) | Electronics enclosure  |
-| 2        | End Caps                       | Waterproof sealing     |
-| Multiple | O-rings                        | Face seals             |
-| Multiple | Cable Glands                   | Waterproof cable entry |
-| 1        | Float Assembly                 | Buoyancy               |
-| 1        | Mooring Assembly               | Station keeping        |
-| 1        | Sensor String                  | Sensor mounting        |
+Printed parts are in-house PETG unless noted. Quantities are per buoy.
+
+| **Qty** | **Component** | **Material / part** | **Purpose** |
+|---|---|---|---|
+| 1 | Electronics chassis (Ø5.75 in × 8.5 in, v5) | Printed PETG | Sealed electronics enclosure |
+| 1 | Chassis lid + face-seal clamp | Printed PETG | Serviceable top closure, static face seal |
+| 6 | Flotation wedge shell (5.5 in, v5) | Printed PETG | Buoyancy / structural ring |
+| 6 | Wedge bottom (impact cap) | Printed PETG | Waterline impact protection |
+| 6 | Wedge cap | Printed PETG | Seals the foam cavity |
+| 1 | Chassis cap | Printed PETG | Covers the chassis stub, foam overflow trim |
+| 1 | Sensor stem | Printed PETG | Suspends the sensor pod below the hull |
+| 1 | Sensor pod (dry + flood chamber) | Printed PETG | Turbidity sensor housing |
+| 1 | Solar-panel mount (4-arm bracket + ring) | Printed PETG | Solar panel mast |
+| ~2 kits | Flotation foam | US Composites #0204, 2 lb/ft³ closed-cell rigid PU pour foam | Buoyancy + structural backing + flood redundancy |
+| 1 | O-ring, chassis lid | AS568-043, silicone | Lid face seal |
+| 1 | O-ring, sensor pod | AS568-137, silicone | Pod face seal |
+| ~2–3 | Cable glands | Marine, sized to the sensor/antenna cable | Waterproof cable entry |
+| ~60 | Heat-set inserts | Brass, M4 | Fastener anchors in printed parts |
+| ~75 | Bolts + washers + nuts | 316 stainless, M4 | Wedge/lid/pad-eye fastening |
+| 1 | Mooring pad-eye | 316 stainless, through-bolted (part TBD — [SCO-69](https://linear.app/scout1/issue/SCO-69)) | Buoy mooring attachment |
+| 1 | Mushroom anchor | Cast iron (unmarked sites only) | Station keeping — sited off-coral (ADR-0004) |
+| — | Mooring line | 3-strand twisted nylon, 3/8 in; scope length TBD ([SCO-17](https://linear.app/scout1/issue/SCO-17)) | Compliant mooring; fouls a propeller rather than being cut |
+| ~1 pint | Antifouling coating | Sea Hawk Smart Solution (copper-free, Econea) | Biofouling mitigation |
+| — | Marine epoxy | 2-part | Wedge radial seams, cap bonds, insert potting |
+
+Wedge and chassis wall/infill spec: [`print-settings.md`](buoy-structural/print-settings.md).
 
 ### Passive Components
 
@@ -3439,6 +3707,8 @@ Whenever practical:
 | **Version** | **Description** |
 |----|----|
 | v0.1 | Initial engineering design document generated from architecture development and design review. |
+| v0.2 | Wordmark standardization, PR-governance/conventions alignment, ADR-0001 platform note (Feather M0 build target vs. ESP32-C3 production target), electronics-housing dimensions marked TBD. |
+| v0.3 (2026-09-09) | **Mechanical architecture (§4) fully reconciled** against the 2026-08-14 → 2026-09-09 detailed design and analysis: six-wedge bolted flotation (v5 geometry), foam-filled epoxied monocoque ring, buoyancy/freeboard model, static face-seal lid, reef-safe mooring + 316 pad-eye, LC1–LC9 structural framework + FEA results, waterproofing strategy, materials/manufacturing, biofouling. Mechanical touchpoints updated in §§1–3, 18, 19, 21, 22. Electrical/power/sensor/audio/comms/firmware/storage sections (§§5–17, 20) still pending the same pass — owners ECE/CSEN. |
 | v1.0 (Planned) | Updated after prototype construction, laboratory validation, measured power budget, battery sizing, and field testing. |
 
 ### Document Conclusion
