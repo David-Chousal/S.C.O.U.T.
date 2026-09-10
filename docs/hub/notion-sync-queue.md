@@ -7,7 +7,8 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-08 — three entries pending (10 wedge v5, 11 decision sweep, 12 CAD updates).**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-10 — four entries pending**
+> (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass).
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -126,6 +127,41 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   turbidity cap/body are unchanged, only re-confirmed.
 - Links to `mechanical/**` become GitHub blob URLs (no Notion pages).
 - **Queued, not pushed** — no confirmed S.C.O.U.T. Notion connector this session.
+
+### 13 · Live Dashboard — the dramatic site pass · queued 2026-09-10
+
+- **Notion pages** — Engineering → *Live Dashboard* (new section), Hub → *Design Notes*
+  (new top row). No other surface changed: no canonical value, decision, or state moved.
+- **Source** — [`docs/engineering/live-dashboard.md`](../engineering/live-dashboard.md),
+  [`design-notes.md`](design-notes.md).
+- **What changed** — the public site's first impression was rebuilt: Home opens on a
+  full-viewport photographic hero with the type over the reef photograph (previously a text
+  screen above a banner), inner pages open on oversized display type, and restrained
+  scroll-driven motion was added across all pages. The hero photograph's credit moved to the
+  footer so nothing is laid over the frame.
+- **The point that must survive the mirror** — **this reverses the design system's own stated
+  rule** that "motion is never scroll-dependent, so content is always visible." A reader who
+  takes away only "they added animations" has missed why it was allowed: three independent
+  fail-open guards mean content is still never trapped invisible (no JavaScript → nothing hides;
+  a 4s watchdog if the script never runs; `prefers-reduced-motion` keeps everything visible).
+  The old sentence is quoted in the new section precisely so the reversal is legible rather than
+  looking like drift.
+
+**Where it goes:** as a new `### The dramatic pass: a photographic hero and scroll-driven motion`
+section on the Notion page, immediately after *"The sticky split"* and **before** *"The Fleet
+page"*. Sibling of the sticky-split section, not a child.
+
+> **Paste from the source file** rather than a duplicate that can drift. The section contains one
+> Markdown pipe table (the three-guard failure table) — leave it as pipes, Notion's importer
+> converts it. Its one internal link (`#the-dramatic-pass-…`) is a same-page anchor and can be
+> dropped on paste.
+
+- **Also check while you are on the page:** the *"The sticky split"* section above it had one
+  clause corrected in the same change — it used to claim the whole site had no scroll-driven
+  motion, which is no longer true. If the Notion copy still says that, replace the bullet.
+- **Queued, not pushed** — this session's Notion connector authenticates to the Ekho workspace
+  (re-tested with `notion-fetch id="self"`). If yours reaches S.C.O.U.T., push directly and move
+  this to Done.
 
 ### 5 · Live Dashboard — multi-page site restructure · ✅ mirrored 2026-09-01
 

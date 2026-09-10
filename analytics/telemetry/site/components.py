@@ -130,7 +130,7 @@ def steps(items: list[tuple[str, str]]) -> str:
 
 def spec(pairs: list[tuple[str, str]]) -> str:
     rows = "".join(
-        f'<div class="spec-row"><dt>{dt}</dt><dd>{dd}</dd></div>' for dt, dd in pairs
+        f'<div class="spec-row reveal"><dt>{dt}</dt><dd>{dd}</dd></div>' for dt, dd in pairs
     )
     return f'<dl class="spec">{rows}</dl>'
 
@@ -162,7 +162,7 @@ def data_table(caption: str, headers: list[str], rows: list[list[str]], *, num_c
         )
         body_rows.append(f"<tr>{cells}</tr>")
     return (
-        '<div class="table-scroll"><table class="data">'
+        '<div class="table-scroll reveal"><table class="data">'
         f"<caption>{html.escape(caption)}</caption>"
         f"<thead><tr>{head}</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>"
     )

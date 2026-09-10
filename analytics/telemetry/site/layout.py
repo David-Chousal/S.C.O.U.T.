@@ -10,7 +10,7 @@ header GitHub icon) are user navigations, not loaded resources, so they appear o
 
 from __future__ import annotations
 
-from . import assets, theme
+from . import assets, imagery, theme
 
 REPO_URL = "https://github.com/David-Chousal/S.C.O.U.T."
 SCU_URL = "https://www.scu.edu/engineering/"
@@ -114,6 +114,23 @@ def _lottie_scripts(base: str) -> str:
     )
 
 
+# Set synchronously in <head>, before the body paints, so revealed content never flashes in
+# and back out. The CSS that hides `.reveal` is gated entirely on this class, which means a
+# reader with JavaScript off sees every element normally. The watchdog is the third safety
+# net: if reveal.js somehow never runs, the flag clears itself and the page un-hides.
+_REVEAL_FLAG = (
+    "<script>"
+    "document.documentElement.classList.add('js-reveal');"
+    "window.__scoutRevealWatchdog=setTimeout(function(){"
+    "document.documentElement.classList.remove('js-reveal')},4000);"
+    "</script>"
+)
+
+
+def _reveal_script(base: str) -> str:
+    return f'<script defer src="{base}assets/js/reveal.js"></script>'
+
+
 def _footer_seaweed(base: str) -> str:
     src = f"{base}assets/lottie/seaweed.json"
     return (
@@ -156,6 +173,14 @@ def footer(base: str, *, external: bool = True) -> str:
             "</ul></div>"
         )
     )
+    # The Home hero photograph's attribution lives here rather than on the image itself, so the
+    # frame stays clean. Gated with the other external links: the strict Analytics and per-buoy
+    # pages do not show that photograph, and keep their minimal footer.
+    hero_credit = (
+        f'<span>Hero photograph: {imagery.HERO.photographer} / '
+        f'<a href="{imagery.HERO.source_url}">{imagery.HERO.source}</a></span>'
+        if external and imagery.HERO.photographer else ""
+    )
     seaweed = _footer_seaweed(base)  # on every page, including Analytics
     # Ambient critters drifting around the footer — one each, spread for good spacing.
     critters = (
@@ -177,6 +202,7 @@ def footer(base: str, *, external: bool = True) -> str:
         '<div class="wrap footer-base" style="padding-inline:0">'
         "<span>© 2026 D. Chousal Cantu · I. Rodriguez · J. R. Myrdal · MIT License</span>"
         "<span>Thermal-stress metrics via NOAA Coral Reef Watch</span>"
+        f"{hero_credit}"
         "</div></div></footer>"
     )
 
@@ -255,7 +281,8 @@ def document(
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"
-        f'</head>\n<body data-lottie-base="{base}assets/lottie/">\n'
+        f"{_REVEAL_FLAG}\n"
+        f'</head>\n<body class="page-{active}" data-lottie-base="{base}assets/lottie/">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
         # Header social icons appear on every page (they are hyperlinks, not loaded resources).
@@ -267,6 +294,9 @@ def document(
         # Self-hosted Lottie runtime for the ambient animations, on every page (including
         # Analytics). Same-origin only; the page still makes no cross-origin request.
         f"{_lottie_scripts(base)}"
+        # Scroll reveals, on every page for the same reason: same-origin, and the CSS that
+        # hides anything is gated on a class only this script's head flag sets.
+        f"{_reveal_script(base)}"
         f"{chat_widget(base)}\n"
         "</body>\n</html>\n"
     )
