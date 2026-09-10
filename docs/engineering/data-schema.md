@@ -58,8 +58,13 @@ Each daily CSV starts with the header row below.
 
 ### Optional / future columns (append at the end when the hardware lands)
 
-- `internal_temp_c`, `internal_humidity_pct` — enclosure State-of-Health. **Not in the v1 BOM**
-  (needs an added SoH sensor; the SAMD21 and PCF8523 provide neither reliably). Add when fitted.
+- `internal_temp_c`, `internal_humidity_pct` — enclosure State-of-Health.
+  [ADR-0005](../decisions/0005-v1-sensing-payload.md) **decided to add** the SoH temp/humidity
+  sensor these columns depend on, but it is **not yet on the BOM, has no part number, and has
+  no firmware** (the SAMD21 and PCF8523 provide neither reading reliably). So the columns stay
+  optional and unpopulated. Promoting them is not a schema edit on its own — per ADR-0005 it
+  means a `schema_version` bump plus matching firmware and shore changes. Tracked as
+  [SCO-60](https://linear.app/scout1/issue/SCO-60).
 - `temp_c_01`, `temp_c_02`, … — multi-depth temperature **only if** the vertical sensor string
   ([sensor-string-architecture](sensor-string-architecture.md)) is ever populated. Per
   [ADR-0003](../decisions/0003-single-point-sensing.md) the build is single-point, so v1 logs
@@ -179,5 +184,8 @@ production-target analysis, not a spec for the Feather build.
   computed. Lock this once the analog input is designed.
 - ~~**Depth string count.**~~ ✅ Resolved by [ADR-0003](../decisions/0003-single-point-sensing.md):
   single-point sensing, so no `temp_c_NN` columns.
-- **SoH sensor.** Is an enclosure temp/humidity sensor being added? If not, drop those
-  optional columns from the plan.
+- **SoH sensor — which part, and does it make Rev A?** *Whether* to add one is settled
+  ([ADR-0005](../decisions/0005-v1-sensing-payload.md): yes). What is open is the part number,
+  whether it lands on the Rev A board or waits for Rev B, and the firmware driver plus
+  `schema_version` bump that promoting the columns requires.
+  [SCO-60](https://linear.app/scout1/issue/SCO-60)
