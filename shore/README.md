@@ -96,6 +96,33 @@ with no error anywhere. The choice between the two is made in
 [`scout_shore/publish.py`](scout_shore/publish.py), which is tested; real data always wins and
 is never labelled as a simulation.
 
+## Recovering a retrieved SD card
+
+The buoy transmits each daily packet a few times and never waits for an acknowledgement. If
+shore misses every copy — a power cut, a storm, the station down for maintenance — that reading
+exists **only** on the buoy's SD card. And even the readings that did arrive are lossy: a
+30-byte packet cannot carry `turbidity_v`, `turbidity_ntu` or the audio filename, so those cells
+are empty in the shore CSV while the card has them.
+
+```bash
+# Inspect a card before touching anything:
+python scripts/import_sd_card.py --card /Volumes/SCOUT --into data-live --dry-run
+
+# Merge it in:
+python scripts/import_sd_card.py --card /Volumes/SCOUT --into data-live
+```
+
+Merging is on `(buoy_id, record_seq)` — the same idempotency key the receiver uses for blind
+repeats — so **running it twice is a no-op**. The card wins cell by cell where it holds more,
+but a blank cell on the card never overwrites a value shore received: a row half-written at the
+moment of power loss must not erase a reading that arrived intact over the radio. Existing shore
+rows the card lacks are kept, because a card pulled mid-deployment is a partial record and
+treating it as authoritative for *absence* would delete history.
+
+Rows that cannot be keyed are reported on stderr and the command exits non-zero. They are never
+silently skipped — a row on the card we failed to import is exactly the loss this tool exists to
+prevent.
+
 ## Contract note
 
 `packet.py` is the **verified wire format** (30 bytes, well under the 82-byte daily budget
