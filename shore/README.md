@@ -10,8 +10,9 @@ Feather M0; **this code runs on the Raspberry Pi** (see
 
 > **Status:** simulated end-to-end path working with **no hardware**, plus a real SX1276
 > backend (`radio.Rfm9xLink`) and a systemd service — both ⚠️ **written but never run against
-> hardware**. Both sides implement the `LoRaLink` protocol in [`scout_shore/link.py`](scout_shore/link.py),
-> so switching is a `--link` flag, not a code change.
+> hardware**. Both sides implement the `LoRaLink` protocol in
+> [`scout_shore/link.py`](scout_shore/link.py), so switching is a `--link` flag, not a code
+> change.
 
 ## The path
 
