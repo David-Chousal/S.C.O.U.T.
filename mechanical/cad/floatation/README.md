@@ -39,10 +39,14 @@ stale — the whole point of the name is that it's always trustworthy.
 >
 > **The v5 wedge STEP is now committed** at
 > [`chassis-floatation-bolted-v5-wedge.step`](chassis-floatation-bolted-v5-wedge.step) (top
-> level, matching the `-v3` in-progress pattern — **not** in `current/` yet). Still pending
+> level, matching the `-v3` in-progress pattern — **not** in `current/` yet). A **lean v5 wedge
+> bottom** drawing is also committed at
+> [`chassis-floatation-bolted-v5-wedge-bottom.pdf`](chassis-floatation-bolted-v5-wedge-bottom.pdf)
+> (2026-09-10 — see [Lean wedge bottom (v5)](#lean-wedge-bottom-v5--2026-09-10)). Still pending
 > before `current/` rotates: the **v5 chassis and cap re-exports**, a **dimensioned PDF** for
-> the wedge (confirming the ~0.69 in inner bolt flange survived), and a real re-slice for
-> weights. `current/` still holds the complete v4 set until then.
+> the wedge (confirming the ~0.69 in inner bolt flange survived), the **wedge-bottom STEP
+> export**, and a real re-slice for weights (wedge **and** the lean wedge bottom). `current/`
+> still holds the complete v4 set until then.
 
 ## Drawings (historical)
 
@@ -314,6 +318,58 @@ verify them and to close [SCO-110](https://linear.app/scout1/issue/SCO-110).
 [SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73)
 scope. Check the first six-wedge dry-fit seats on the chassis without forcing (6 × exactly 60°
 has no designed clearance).
+
+### Lean wedge bottom (v5) — 2026-09-10
+
+**Narrated by John Ryan.** The first wedge bottom was printed today off the existing (v4-era)
+geometry. It was on track to consume far more filament than the part needs — the wedge bottom
+is a non-structural impact/waterline cap, not a solid block — so John stopped it, re-modelled a
+**lean** version in Onshape (Part Studio / drawing titled *"Lean Wedge Bottom"*), and set the
+smaller part printing. **It is printing successfully as of this entry.**
+
+**What changed, and why:**
+
+- **Much less material.** The deep v4 trough was cut back to a shallow 60° segment tray — the
+  cavity floor moved outward to **~R6.13 in inner wall / R6.25 in cavity arc** (inner fillet
+  R2.881 in), against the unchanged **R9.000 in** outer radius (18 in buoy OD). Walls are
+  **0.120 in** outer curved, **0.077 in** radial sides, floor ~**0.114 in**. Explicitly a
+  "waste significantly less filament" pass, continuing the same intent as the 2026-09-07
+  thin-wall wedge iteration.
+- **Registration tabs on the top rim.** Several small tabs stand proud of the top edge so the
+  wedge shell **seats firmly over the wedge bottom** rather than floating on a flat butt joint —
+  positive location during the bolt-up + epoxy assembly.
+- **Two bolt holes** carried through the outer face (into the chassis heat-set pattern / wedge,
+  consistent with the bolted variant).
+
+**Drawing:** [`chassis-floatation-bolted-v5-wedge-bottom.pdf`](chassis-floatation-bolted-v5-wedge-bottom.pdf)
+(John Ryan, 2026-09-10, scale 1:3, inches). Committed at the top level of this folder, matching
+the `-v5` in-progress pattern — **not** in `current/` yet.
+
+**Height is unchanged from the v4 wedge bottom** (confirmed by John, 2026-09-10) — the lean
+pass trims the trough's radial cross-section and wall material, not the vertical envelope, so
+the part's **displacement envelope and its `z`-position in the stack are the same as v4**. Only
+the **printed mass** and the **foam cavity volume** change.
+
+**Still owed** (⚠️ the STEP export and a dimensioned view — the committed PDF is plan +
+isometric, no mass and no explicit height callout):
+
+- **STEP export** paired with the PDF, per
+  [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats).
+- **Re-slice for real weight.** The v4 wedge bottom was 181.21 g (slicer, 2026-08-24); the lean
+  part is materially lighter and its foam cavity is smaller. Until the re-slice lands, the mass
+  and displacement figures in
+  [Mass and Buoyancy Budget](../../../docs/engineering/buoy-structural/mass-and-buoyancy-budget.md)
+  §§3–9 and §12, the
+  [Freeboard Model](../../../docs/engineering/buoy-structural/buoy-mass-displacement-and-freeboard-model.md),
+  the [Stability Analysis](../../../docs/engineering/buoy-structural/stability-analysis.md), and
+  the [Impact Survivability Analysis](../../../docs/engineering/buoy-structural/impact-survivability-analysis.md)
+  still carry the **v4 wedge bottom** (181.21 g, 0.452 L cavity, gyroid-filled thick cap) and
+  are superseded on that part pending the slice.
+- **Re-spec its print settings** in [Print Settings](../../../docs/engineering/buoy-structural/print-settings.md)
+  (currently "same as v4 wedge, not yet re-specced for v5") and **re-check the handling-drop
+  case** ([SCO-71](https://linear.app/scout1/issue/SCO-71)) — Scenario C in the impact analysis
+  leans on this cap being the thick part of the shell.
+- **Confirm the tabs seat** the wedge on the first dry stack-up.
 
 ## Outer Octagon — a separate, distinct design
 

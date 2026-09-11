@@ -23,8 +23,18 @@
 > ⚠️ **v5 revision (2026-09-09) — see [§12](#12-v5-revision--sco-110-resize--thin-walls).** The
 > [SCO-110](https://linear.app/scout1/issue/SCO-110) resize (wedge 8.0 → 5.5 in, chassis
 > 11.0 → 8.5 in) + the 2026-09-07 wall thinning (0.250 → 0.095/0.063 in) changed the wedge shell
-> and chassis. §§3–9 below remain the **v4 measured record** (still valid for the wedge-bottom,
-> wedge-cap, and chassis-cap, which are unchanged). §12 carries the v5 geometric estimates and
+> and chassis. §§3–9 below remain the **v4 measured record** (still valid for the
+> wedge-cap and chassis-cap, which are unchanged).
+>
+> ⚠️ **The wedge bottom was re-modelled "lean" on 2026-09-10** (shallow impact-cap tray,
+> registration tabs on the rim — [floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
+> [SCO-111](https://linear.app/scout1/issue/SCO-111)). **Height is unchanged from v4** (John,
+> 2026-09-10) — the lean pass trims the radial section and wall material, not the vertical
+> envelope, so the wedge bottom's **displacement envelope and `z`-position are the same**. Only
+> the **printed mass** (181.21 g) and the **foam cavity volume** (0.452 L) change — both
+> over-stated for v5, pending a re-slice (§§5–9, §12, §14). The foam-filled module's
+> displacement is essentially unchanged; the buoy is substantially over-floated regardless, so
+> no conclusion is at risk. §12 carries the v5 geometric estimates and
 > the revised aggregate. The whole-buoy freeboard consequences are in
 > [`buoy-mass-displacement-and-freeboard-model.md`](buoy-mass-displacement-and-freeboard-model.md).
 >

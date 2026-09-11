@@ -19,6 +19,14 @@
 > wedge-bottom impact caps are survivable; drops onto the thin sidewall are not — the handling
 > procedure must specify setting the buoy down on its base.
 >
+> ⚠️ **Re-check Scenario C.** This analysis treats the wedge bottom as the thick, gyroid-filled
+> part of the shell. It was re-modelled "lean" on 2026-09-10 — a shallow tray with 0.120 in /
+> 0.077 in / ~0.114 in walls
+> ([floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
+> [SCO-111](https://linear.app/scout1/issue/SCO-111)). The drop-onto-the-base case (Scenario C)
+> must be re-run against the lean wall section before the impact spec is frozen; the foam
+> backing behind the cap is unchanged and still carries most of a drop.
+>
 > **Proposed path** — `docs/engineering/buoy-structural/impact-survivability-analysis.md`
 
 ## 0. Provenance
