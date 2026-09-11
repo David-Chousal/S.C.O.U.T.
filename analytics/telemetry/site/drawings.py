@@ -3,20 +3,31 @@
 Two sources, kept visually consistent but structurally separate so attribution never blurs:
 
 - John Ryan Myrdal's mechanical CAD drawings — PNGs live in ``static/img/mechanical/``
-  (rendered from ``mechanical/cad/*.pdf``). Filenames keep the drawings' own ``floatation``
-  spelling; the captions use the correct ``Flotation``.
+  (rendered from ``mechanical/cad/*.pdf``, grayscale, 150 DPI, via PyMuPDF). Filenames keep the
+  drawings' own ``floatation`` spelling; the captions use the correct ``Flotation``.
 - The Rev A electrical schematic — PNG lives in ``static/img/electrical/`` (rendered from the
   authoritative ``hardware/schematics/scout-reva-schematic.pdf`` export of
   ``scout-reva.kicad_sch``, unedited).
+
+**Current design, 2026-09-10.** These five parts are the bolted-wedge flotation system actually
+being built — see ``mechanical/cad/floatation/README.md``. They replace the three-part
+top/shell/bottom concept (v1–v9), which was superseded 2026-08-17 and never should have stayed
+live on the public site this long. The wedge bottom is the "lean" v5 re-model
+([SCO-111](https://linear.app/scout1/issue/SCO-111)); the other four are still the v4 drawings
+(``current/`` in the CAD folder) — the v5 wedge thinning changed wall thickness, not anything
+visible at this drawing's dimensioned callouts, so re-render when the v5 wedge gets its own
+dimensioned PDF.
 """
 
 from __future__ import annotations
 
-# (file, caption). Order: the three flotation-collar parts, then the sensor housing.
+# (file, caption). Order: the five bolted-wedge flotation parts, then the sensor housing.
 DRAWINGS = (
-    ("floatation-top.png", "Flotation top"),
-    ("floatation-shell.png", "Flotation shell"),
-    ("floatation-bottom.png", "Flotation bottom"),
+    ("floatation-wedge.png", "Flotation wedge"),
+    ("floatation-wedge-cap.png", "Flotation wedge cap"),
+    ("floatation-wedge-bottom.png", "Flotation wedge bottom"),
+    ("floatation-chassis.png", "Flotation chassis"),
+    ("floatation-chassis-cap.png", "Flotation chassis cap"),
     ("turbidity-sensor.png", "Turbidity sensor housing"),
 )
 
