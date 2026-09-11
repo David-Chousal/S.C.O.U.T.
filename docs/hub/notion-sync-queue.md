@@ -7,8 +7,8 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-10 — four entries pending**
-> (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass).
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-10 — five entries pending**
+> (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom).
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -339,6 +339,28 @@ sections under matching headings and keep the file names visible so the mapping 
 > math, not just a link out. Same choice as the `journal/` gap: either give them Notion pages now,
 > or make the link-out-only scope a deliberate, written decision instead of an accumulating
 > default. Not fixed here — flagging so it doesn't silently repeat on the next mechanical PR.
+
+### 14 · Lean wedge bottom (v5) · queued 2026-09-10
+
+- **Notion pages** — Hub → *Canonical Facts* (Flotation row + Mass & buoyancy budget row),
+  Hub → *Decision Log* (new Log row, `2026-09-10 | geng`), Hub → *Project Status* (Mechanical
+  design row + "As of" date), Hub → *Design Notes* (new top row). `mechanical/**` and
+  `buoy-structural/**` have no Notion page — links become GitHub blob URLs.
+- **Source** — [`mechanical/cad/floatation/README.md § Lean wedge bottom (v5)`](../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
+  [`design-notes.md`](design-notes.md), [`decision-log.md`](decision-log.md), [`facts.md`](facts.md),
+  [`status.md`](status.md), [`journal/2026-09-10.md`](journal/2026-09-10.md).
+- **What changed** — the wedge bottom (impact/waterline cap) was re-modelled **lean**: first
+  print off the v4 geometry was wasting filament, so it is now a shallow 60° tray (cavity floor
+  out to ~R6.13/R6.25 in, walls 0.120 in outer / 0.077 in sides, floor ~0.114 in, R9.000 in
+  outer unchanged) with **registration tabs on the top rim** so the wedge shell seats firmly
+  over it. Printing OK. Drawing committed. STEP export + re-slice weight + print-settings
+  re-spec + impact Scenario-C re-check still owed ([SCO-111](https://linear.app/scout1/issue/SCO-111)).
+- **The point that must survive the mirror** — the v4 wedge-bottom mass (181.21 g) and cavity
+  (0.452 L) are now an **over-estimate**; the mass/freeboard/stability/impact docs carry a note
+  but still use the v4 figure until the re-slice. The buoy is substantially over-floated, so
+  the conclusion is not at risk — but the number is provisional.
+- **Queued, not pushed** — this session has no confirmed S.C.O.U.T. Notion connector. If yours
+  does, push directly and move this to Done.
 
 ---
 

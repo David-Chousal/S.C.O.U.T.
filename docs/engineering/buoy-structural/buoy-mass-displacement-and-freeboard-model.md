@@ -33,6 +33,13 @@
 > **Source geometry** — `chassis-floatation-bolted-v5-wedge.step` (John Ryan, 2026-09-08) in
 > [`mechanical/cad/floatation/`](../../../mechanical/cad/floatation/) for the wedge; the v4
 > `current/` chassis/cap drawings for parts not yet re-exported, scaled to the v5 heights.
+>
+> ⚠️ **The wedge bottom is still the v4 part here** (181.21 g, 0.452 L cavity). It was
+> re-modelled "lean" on 2026-09-10 — lighter, smaller cavity
+> ([floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
+> [SCO-111](https://linear.app/scout1/issue/SCO-111)) — but no re-slice exists yet, so §3 and
+> below still carry the v4 figure. Re-run when that slice lands; the shift is small (a lighter
+> cap slightly lowers mass and draft) and does not touch the over-floated conclusion.
 > **Source weigh-in (v4 parts carried forward)** — full five-part slicer weigh-in, 2026-08-24, in
 > [`mechanical/test/print-weight-verification-2026-08-24.md`](../../../mechanical/test/print-weight-verification-2026-08-24.md).
 > **Design basis** — [`../reviews/buoy-preliminary-design-panel-review-2026-08.md`](../reviews/buoy-preliminary-design-panel-review-2026-08.md).

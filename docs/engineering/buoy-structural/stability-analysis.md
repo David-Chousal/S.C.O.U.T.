@@ -25,7 +25,10 @@
 >
 > ⚠️ **Provisional** on the same inputs as the freeboard model: the v5 shell masses are
 > geometric estimates pending the re-slice, and the Tier III component masses (battery, solar
-> panel, stem, pod) are estimates pending [SCO-70](https://linear.app/scout1/issue/SCO-70).
+> panel, stem, pod) are estimates pending [SCO-70](https://linear.app/scout1/issue/SCO-70). The
+> **wedge bottoms** are also still the v4 part here (181.21 g each, low in the stack); the lean
+> re-model of 2026-09-10 ([SCO-111](https://linear.app/scout1/issue/SCO-111)) lightens them,
+> which raises `KG` slightly — a small adverse shift on an already very stiff `GM` ≈ 9.7 in.
 > Component vertical positions (`z_i`) below are first-pass estimates from the CAD layout — they
 > tighten once real component placement is in the model.
 >
