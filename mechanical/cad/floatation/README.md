@@ -345,8 +345,13 @@ smaller part printing. **It is printing successfully as of this entry.**
 (John Ryan, 2026-09-10, scale 1:3, inches). Committed at the top level of this folder, matching
 the `-v5` in-progress pattern — **not** in `current/` yet.
 
-**Still owed** (⚠️ the STEP export and a full dimensioned view — the PDF is a partial drawing,
-plan + isometric, with **no height dimensioned and no mass**):
+**Height is unchanged from the v4 wedge bottom** (confirmed by John, 2026-09-10) — the lean
+pass trims the trough's radial cross-section and wall material, not the vertical envelope, so
+the part's **displacement envelope and its `z`-position in the stack are the same as v4**. Only
+the **printed mass** and the **foam cavity volume** change.
+
+**Still owed** (⚠️ the STEP export and a dimensioned view — the committed PDF is plan +
+isometric, no mass and no explicit height callout):
 
 - **STEP export** paired with the PDF, per
   [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats).

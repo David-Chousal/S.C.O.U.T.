@@ -35,11 +35,13 @@
 > `current/` chassis/cap drawings for parts not yet re-exported, scaled to the v5 heights.
 >
 > ⚠️ **The wedge bottom is still the v4 part here** (181.21 g, 0.452 L cavity). It was
-> re-modelled "lean" on 2026-09-10 — lighter, smaller cavity
+> re-modelled "lean" on 2026-09-10 — lighter print, smaller foam cavity, **height and outer
+> radius unchanged from v4**
 > ([floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
 > [SCO-111](https://linear.app/scout1/issue/SCO-111)) — but no re-slice exists yet, so §3 and
-> below still carry the v4 figure. Re-run when that slice lands; the shift is small (a lighter
-> cap slightly lowers mass and draft) and does not touch the over-floated conclusion.
+> below still carry the v4 figure. Because the envelope is unchanged, the foam-filled module's
+> displacement is essentially the same; the only shift is a lighter printed mass slightly
+> lowering total mass and draft. Does not touch the over-floated conclusion.
 > **Source weigh-in (v4 parts carried forward)** — full five-part slicer weigh-in, 2026-08-24, in
 > [`mechanical/test/print-weight-verification-2026-08-24.md`](../../../mechanical/test/print-weight-verification-2026-08-24.md).
 > **Design basis** — [`../reviews/buoy-preliminary-design-panel-review-2026-08.md`](../reviews/buoy-preliminary-design-panel-review-2026-08.md).
