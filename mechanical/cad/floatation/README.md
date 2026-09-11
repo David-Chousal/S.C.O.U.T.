@@ -40,13 +40,14 @@ stale — the whole point of the name is that it's always trustworthy.
 > **The v5 wedge STEP is now committed** at
 > [`chassis-floatation-bolted-v5-wedge.step`](chassis-floatation-bolted-v5-wedge.step) (top
 > level, matching the `-v3` in-progress pattern — **not** in `current/` yet). A **lean v5 wedge
-> bottom** drawing is also committed at
-> [`chassis-floatation-bolted-v5-wedge-bottom.pdf`](chassis-floatation-bolted-v5-wedge-bottom.pdf)
+> bottom** drawing + STEP is also committed, at
+> [`chassis-floatation-bolted-v5-wedge-bottom.pdf`](chassis-floatation-bolted-v5-wedge-bottom.pdf) /
+> [`.step`](chassis-floatation-bolted-v5-wedge-bottom.step)
 > (2026-09-10 — see [Lean wedge bottom (v5)](#lean-wedge-bottom-v5--2026-09-10)). Still pending
 > before `current/` rotates: the **v5 chassis and cap re-exports**, a **dimensioned PDF** for
-> the wedge (confirming the ~0.69 in inner bolt flange survived), the **wedge-bottom STEP
-> export**, and a real re-slice for weights (wedge **and** the lean wedge bottom). `current/`
-> still holds the complete v4 set until then.
+> the wedge (confirming the ~0.69 in inner bolt flange survived), and a real re-slice for
+> weights (wedge **and** the lean wedge bottom). `current/` still holds the complete v4 set
+> until then.
 
 ## Drawings (historical)
 
@@ -342,19 +343,20 @@ smaller part printing. **It is printing successfully as of this entry.**
   consistent with the bolted variant).
 
 **Drawing:** [`chassis-floatation-bolted-v5-wedge-bottom.pdf`](chassis-floatation-bolted-v5-wedge-bottom.pdf)
-(John Ryan, 2026-09-10, scale 1:3, inches). Committed at the top level of this folder, matching
-the `-v5` in-progress pattern — **not** in `current/` yet.
+(John Ryan, 2026-09-10, scale 1:3, inches), paired with its
+[`chassis-floatation-bolted-v5-wedge-bottom.step`](chassis-floatation-bolted-v5-wedge-bottom.step)
+(committed 2026-09-10 — max radial extent from the STEP geometry checks out at 9.000 in,
+matching R9.000 outer). Both committed at the top level of this folder, matching the `-v5`
+in-progress pattern — **not** in `current/` yet.
 
 **Height is unchanged from the v4 wedge bottom** (confirmed by John, 2026-09-10) — the lean
 pass trims the trough's radial cross-section and wall material, not the vertical envelope, so
 the part's **displacement envelope and its `z`-position in the stack are the same as v4**. Only
 the **printed mass** and the **foam cavity volume** change.
 
-**Still owed** (⚠️ the STEP export and a dimensioned view — the committed PDF is plan +
-isometric, no mass and no explicit height callout):
+**Still owed** (⚠️ the dimensioned PDF is plan + isometric only — no mass and no explicit
+height callout):
 
-- **STEP export** paired with the PDF, per
-  [CONVENTIONS.md → File formats](../../../docs/CONVENTIONS.md#file-formats).
 - **Re-slice for real weight.** The v4 wedge bottom was 181.21 g (slicer, 2026-08-24); the lean
   part is materially lighter and its foam cavity is smaller. Until the re-slice lands, the mass
   and displacement figures in
