@@ -195,6 +195,18 @@ porous/unreliable) — informal evidence in the same direction as reopening it, 
 wasn't controlled to actually evaluate that question, so it doesn't resolve it either way. See
 [`facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
 
+## Extended submersion failure — TPU O-ring, 2026-09-12
+
+The housing was left submerged for roughly a week with a **TPU-printed O-ring** (a shortcut,
+not the specified AS568-137 ring) and, on opening, **was not waterproof**. The ring — by John's
+own assessment very poor quality — still kept out most water for most of that week before
+failing meaningfully, so this reads as a slow leak from an inconsistent seal rather than an
+immediate blow-out. **Decision: no further housing submersion testing until a real, purchased
+O-ring is sourced** ([SCO-106](https://linear.app/scout1/issue/SCO-106)) — this test doesn't
+validate or invalidate the face-seal design itself, since the ring under test wasn't the
+specified one. Full record:
+[`sensor-housing-tpu-oring-failure-2026-09-12.md`](../../test/sensor-housing-tpu-oring-failure-2026-09-12.md).
+
 ## Flood chamber — being re-specced (2026-09-08)
 
 `sensor-housing-flood-chamber-cap.step` in this folder dates to **2026-08-15**, the original
