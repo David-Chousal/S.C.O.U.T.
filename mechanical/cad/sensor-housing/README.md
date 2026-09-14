@@ -286,6 +286,21 @@ conclusion.
 to the full Ø52 mm) or against an internal bulkhead face instead — a CAD layout decision, not a
 packing-math one. See the packing budget's own open items for the rest.
 
+### Top-cap face-seal resized to match, 2026-09-13
+
+John's layout for the dry chamber's top: a static face O-ring seal on a flange flared beyond the
+tube's own OD — same "fasteners outside the O-ring boundary" topology as the
+[electronics housing clamp](../electronics-housing/README.md#static-face-seal-clamp--2026-09-02),
+scaled up. **The originally-specified AS568-137 ring no longer fits** — its own ID (52.07 mm) is
+smaller than the new 56 mm tube OD it would need to wrap around. New candidate:
+**AS568-142** (ID 59.99 mm / 2.362 in, same 2.62 mm cross-section family as AS568-137 — no new
+elastomer sourcing surprise, just a bigger dash number), groove Ø60.83–64.39 mm, Ø74.4 mm
+(2.93 in) bolt circle, ~Ø91 mm (3.58 in) flange OD. Full derivation, same squeeze/fill method
+the electronics housing clamp used:
+[Sensor Pod Packing Budget §8](../../../docs/engineering/sensor-pod-packing-budget.md#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13).
+⚠️ AS568-142 sourced from a third-party size chart, not a datasheet on file — confirm against a
+supplier table before ordering.
+
 ## Flood chamber — being re-specced (2026-09-08)
 
 `sensor-housing-flood-chamber-cap.step` in this folder dates to **2026-08-15**, the original

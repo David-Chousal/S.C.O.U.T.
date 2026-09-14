@@ -90,7 +90,7 @@ remodel) — **the current CAD is undersized against the actual probe hardware**
 meant to bolt down inside the dry chamber. (An alternative that avoids growing the bore: mount
 the probe's ears against the *outside* face of an internal bulkhead rather than free-floating
 inside the cavity, with only the shaft entering the chamber proper. That changes what "diameter"
-means here and is a CAD layout decision, not a packing-math one — flagged in §8.)
+means here and is a CAD layout decision, not a packing-math one — flagged in §9.)
 
 **Length.** Board (38 mm) + probe collar height above its shaft (~10–14 mm, reading the
 drawing's 5.6 mm and remaining step dimensions together, **[A]**) + axial clearances (5 mm ×
@@ -229,7 +229,64 @@ diameter** against the probe's own mounting-ear span, not just tight against the
 as flagged on 2026-09-13. Length (57 mm vs. a 60 mm recommendation) is close enough to be a
 rounding/margin question, not a redesign.
 
-## 8. Open items
+## 8. Top-cap face-seal — resized for the new chamber OD, 2026-09-13
+
+John's chosen layout for the top of the dry chamber (the probe-shaft penetration is at the
+bottom, per §4): a **static face O-ring seal**, groove on a flange that flares out **radially
+beyond the chamber tube's own OD** — the same "fasteners outside the O-ring boundary" topology
+already used on this pod's 2026-08-29 remodel and the electronics housing clamp
+([`electronics-housing/README.md`](../../mechanical/cad/electronics-housing/README.md#static-face-seal-clamp--2026-09-02)),
+just scaled to the new, bigger tube.
+
+**The originally-specified AS568-137 ring no longer fits this geometry.** AS568-137's own ID is
+**52.07 mm** — smaller than the new **56 mm** tube OD it would need to wrap around. This is the
+same conclusion [§7](#7-recommendation) already flagged for the flange itself; the O-ring has to
+follow.
+
+**New candidate ring: AS568-142** (ID 59.99 mm / 2.362 in, CS 2.62 mm / 0.103 in — same
+cross-section family as AS568-137, so no new elastomer sourcing surprises, just a bigger dash
+number). ⚠️ Sourced from a third-party AS568 size chart (`o-ringseal.com`), not an authoritative
+datasheet on file in this repo — **confirm against a supplier table before ordering**, same
+caveat [SCO-106](https://linear.app/scout1/issue/SCO-106) already carries for AS568-043.
+
+**Groove, sized with the same method the electronics housing clamp used** (target 22.9% squeeze,
+75% gland fill — reused here for consistency, not re-derived):
+
+```
+Groove depth  = CS × (1 − 0.229) = 2.62 × 0.771 = 2.02 mm (0.080 in)
+Ring CS area  = π(CS/2)² = π(1.31)² = 5.39 mm²
+Groove area (75% fill) = 5.39 / 0.75 = 7.19 mm²
+Groove width  = area / depth = 7.19 / 2.02 = 3.56 mm (0.140 in)
+
+Groove mean Ø = ring ID + CS = 59.99 + 2.62 = 62.61 mm (2.465 in)
+Groove ID     = mean − width/2 = 60.83 mm (2.395 in)
+Groove OD     = mean + width/2 = 64.39 mm (2.535 in)
+```
+
+**Standoff from the tube:** groove ID (60.83 mm) − tube OD (56 mm) = 4.83 mm (0.190 in) total,
+~2.4 mm (0.095 in) radial clearance each side — enough that the groove doesn't cut into the
+tube wall itself.
+
+**Bolt circle:** groove OD (64.39 mm) + ~5 mm (0.2 in) standoff each side ≈ **Ø74.4 mm
+(2.93 in)**, keeping the existing 3-bolt pattern and ~Ø5.6 mm (0.22 in) clearance holes rather
+than resizing the fasteners too.
+
+**Flange OD:** bolt circle + clearance-hole radius + edge margin (~5 mm/0.2 in each) ≈
+**Ø91 mm (3.58 in)** — enough solid material around each bolt hole, not a precision figure.
+
+| Feature | mm | in |
+|---|---|---|
+| O-ring | **AS568-142** (ID 59.99, CS 2.62) | ID 2.362, CS 0.103 |
+| Groove width × depth | 3.56 × 2.02 mm | 0.140 × 0.080 in |
+| Groove ID / OD | Ø60.83 / Ø64.39 mm | Ø2.395 / Ø2.535 in |
+| Bolt circle | Ø74.4 mm | Ø2.93 in |
+| Flange OD | ~Ø91 mm | ~Ø3.58 in |
+
+⚠️ **First-pass, not FEA or a bench fit-check** — same rigor level as the rest of this document.
+Confirm the O-ring against a real supplier table, and check the flange doesn't collide with
+whatever sits atop the pod (stem attachment, cable routing) before committing to CAD.
+
+## 9. Open items
 
 - **Mounting-ear layout is the real open question, not a packing number.** Whether the probe's
   ears bolt inside the dry-chamber cavity (driving the chamber to ~Ø52 mm) or against an internal
@@ -248,6 +305,8 @@ rounding/margin question, not a redesign.
 - **Dry-chamber wall thickness (§6.1) is a hand calc, not FEA** — same caveat the wedge check
   carries. In particular, the Ø24 mm penetration cutout's local effect on buckling isn't bounded
   by the bare-tube formula used. Treat 2.0 mm as plausible, not validated, until checked.
-- **The existing 3-bolt end-cap flange (~Ø54 mm) is now narrower than the recommended dry-chamber
-  tube OD (56 mm).** Growing the bore forces the flange and its Ø44.45 mm bolt circle to grow
-  too — not sized here, but it means this isn't a bore-only edit in CAD.
+- ~~The existing 3-bolt end-cap flange (~Ø54 mm) is now narrower than the recommended
+  dry-chamber tube OD (56 mm)~~ — **resolved in [§8](#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13)**:
+  new flange Ø91 mm, Ø74.4 mm bolt circle, AS568-142 replacing AS568-137.
+- **AS568-142 needs confirming against a real supplier table** — sourced from a third-party
+  chart, not an authoritative datasheet on file (see [§8](#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13)).
