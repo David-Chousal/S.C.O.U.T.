@@ -12,6 +12,7 @@ Local manufacturer documentation for components in the Rev A prototype schematic
 | `adafruit-adalogger-featherwing-reference-schematic.png` | Adafruit's own reference schematic for the Adalogger FeatherWing — confirms the PCF8523 RTC and SD chip-select on `D10` |
 | `maxim-ds18b20-digital-thermometer.pdf` | DS18B20 temperature probe |
 | `dfrobot-sen0189-turbidity-sensor.pdf` | SEN0189 turbidity sensor — includes the manufacturer's polarity statement referenced by [`facts.md`](../../docs/hub/facts.md#sensing-single-point-per-modality--see-adr-0003) and [SCO-47](https://linear.app/scout1/issue/SCO-47) |
+| `dfrobot-sen0189-probe-dimension.png` | SEN0189 **probe body** mechanical drawing (as opposed to the adapter board covered by the datasheet above) — manufacturer drawing, saved 2026-09-13 from [DFRobot's official wiki](https://wiki.dfrobot.com/Turbidity_sensor_SKU__SEN0189) → `Probe_Dimension` link (hosted at `github.com/Arduinolibrary/DFRobot_Turbidity_sensor`). Feeds [Sensor Pod Packing Budget](../../docs/engineering/sensor-pod-packing-budget.md) |
 | `ti-bq25185-battery-charger.pdf` | BQ25185 charger IC used on the Rev A schematic's external charger board — bare chip datasheet only; see gap below |
 | `pkcell-lp503035-lipo-battery.pdf` | PKCELL LiPo battery used in the Rev A prototype |
 

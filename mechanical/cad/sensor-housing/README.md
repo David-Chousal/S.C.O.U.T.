@@ -154,7 +154,11 @@ the natural next FEA once the buoy mooring load cases (LC3–LC9) are done.
 remodelled housing (the [2026-08-24 test](../../test/waterproofing-submersion-test-2026-08-24.md)
 was on the prior design); heat-set insert size/depth for the 3 cap bolts.
 
-Dimensions are TBD — see [`docs/hub/facts.md`](../../../docs/hub/facts.md).
+Dimensions are TBD in CAD — a first-pass **formal packing analysis is now available**:
+[Sensor Pod Packing Budget](../../../docs/engineering/sensor-pod-packing-budget.md). Headline:
+the current committed body (~57 mm tall, ~Ø31.5 mm bore) is **undersized on diameter** against
+the SEN0189 probe's own mounting-ear span — recommends growing the dry chamber to ≥Ø52 mm.
+See [`docs/hub/facts.md`](../../../docs/hub/facts.md#mechanical--deployment).
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
@@ -241,6 +245,44 @@ buoy's main cable exit is already specified as "IP68 cable glands, **marine epox
 **Trade-off accepted:** the potted lead cannot be serviced without destroying the pot. Consistent
 with the pod's own design intent — the **pod**, not the individual wire, is the field-replaceable
 unit (see [Why build for scale now](#why-build-for-scale-now)).
+
+## Formal dry/flood chamber packing analysis, 2026-09-13
+
+Full analysis: [Sensor Pod Packing Budget](../../../docs/engineering/sensor-pod-packing-budget.md).
+First real component-level packing pass for this pod, in the same spirit as the
+[Electronics Housing Packing Budget](../../../docs/engineering/electronics-housing-packing-budget.md) —
+sourced from the SEN0189's own manufacturer drawings (adapter board datasheet, and a probe-body
+mechanical drawing pulled from DFRobot's official wiki and saved to
+[`hardware/datasheets/dfrobot-sen0189-probe-dimension.png`](../../../hardware/datasheets/dfrobot-sen0189-probe-dimension.png)).
+
+**Resolved a real contradiction in the process:** the
+[Electronics Housing Packing Budget](../../../docs/engineering/electronics-housing-packing-budget.md)
+had the SEN0189 adapter board listed as occupying volume in the *main* housing — silently
+disagreeing with this README's own "dry chamber holds the small board" description since
+2026-08-25. Confirmed with John: **the board lives here, in the pod.** The electronics housing
+document is corrected (Methods 1–3 recomputed without it).
+
+**Headline result: the current committed dry-chamber body is undersized on diameter.** The
+probe's own mounting ears span 44 mm diagonally — bigger than the adapter board itself — and
+that, not the board, governs the dry chamber's minimum diameter at **≥Ø52 mm**, against the
+~Ø31.5 mm bore committed in the 2026-08-29 face-seal remodel. Full recommended set:
+
+| Dimension | Recommended minimum |
+|---|---|
+| Dry chamber interior | Ø52 mm × 60 mm |
+| Probe-shaft penetration (through the dry/flood wall) | Ø24 mm |
+| Flood chamber interior | Ø24 mm × 30 mm, before the light-blocking baffle adds to it |
+
+**One design choice surfaced, not resolved, by this analysis:** unlike the flexible lead
+penetration above, the probe's own shaft *is* round and dimensionally consistent — so an O-ring
+is mechanically viable there, and would let the probe be pulled for cleaning (its optical window
+fouls) without destroying a potted joint. The analysis recommends epoxy anyway for consistency
+with the pod-as-the-serviceable-unit design intent, but flags it as John's call, not a foregone
+conclusion.
+
+**Still open:** whether the probe's mounting ears bolt inside the dry-chamber cavity (driving it
+to the full Ø52 mm) or against an internal bulkhead face instead — a CAD layout decision, not a
+packing-math one. See the packing budget's own open items for the rest.
 
 ## Flood chamber — being re-specced (2026-09-08)
 
