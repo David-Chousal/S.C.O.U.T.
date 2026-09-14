@@ -207,6 +207,41 @@ validate or invalidate the face-seal design itself, since the ring under test wa
 specified one. Full record:
 [`sensor-housing-tpu-oring-failure-2026-09-12.md`](../../test/sensor-housing-tpu-oring-failure-2026-09-12.md).
 
+## Sensor-lead dry-chamber penetration — epoxy potting decided, 2026-09-13
+
+**Decision (John Ryan):** where the turbidity sensor's leads cross from the flood chamber into
+the dry chamber, seal that penetration with **epoxy potting**, not an O-ring. This is a
+previously-undocumented gap — the dry/flood split above and the [O-ring manufacturing
+decision](../../../docs/hub/decision-log.md) both predate a specific answer for this joint.
+
+**Why epoxy, not an O-ring, for this specific joint:** an O-ring needs a smooth, round,
+dimensionally-precise mating surface (shaft-in-bore or a machined groove) to get uniform
+squeeze. A sensor lead is none of that — non-round, jacket/strand-dependent cross-section,
+compressible — so squeeze would never be consistent, which is the same inconsistency that just
+failed the [printed O-ring test above](#extended-submersion-failure--tpu-o-ring-2026-09-12),
+just on a joint geometry where an O-ring was never going to work well regardless of print
+quality. Epoxy potting is already the trusted method elsewhere in this build — the dry/flood
+chamber halves are epoxied together, the flotation wedge ring seams are epoxied, and the
+buoy's main cable exit is already specified as "IP68 cable glands, **marine epoxy**"
+([`mechanical/README.md`](../README.md)).
+
+**Execution requirements, not left as "just epoxy it":**
+
+- **Anti-wicking geometry.** Pot inside a short boss/sleeve (~5–10 mm) around the penetration,
+  not a flush pour through a thin wall — the dominant failure mode for a potted cable is water
+  **wicking along the jacket/strands** past an intact plug, and bonded contact length is what
+  stops that, not epoxy volume.
+- **Surface prep on the cable jacket**, not just the PETG — lightly abrade and clean with
+  isopropyl before potting. Epoxy-to-jacket adhesion is the actual weak point.
+- **Strain relief outside the pour** (a tie-down or small printed clamp) so cable tension or
+  flex loads the anchor, not the epoxy plug.
+- **Marine-grade 2-part epoxy** (the family already spec'd for the cable entry above), not a
+  fast 5-minute epoxy — more shrinkage, more brittle.
+
+**Trade-off accepted:** the potted lead cannot be serviced without destroying the pot. Consistent
+with the pod's own design intent — the **pod**, not the individual wire, is the field-replaceable
+unit (see [Why build for scale now](#why-build-for-scale-now)).
+
 ## Flood chamber — being re-specced (2026-09-08)
 
 `sensor-housing-flood-chamber-cap.step` in this folder dates to **2026-08-15**, the original
