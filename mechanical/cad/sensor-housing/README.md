@@ -302,6 +302,83 @@ bolt circle, ~Ø91 mm (3.58 in) flange OD. Full derivation:
 ⚠️ AS568-142 sourced from a third-party size chart, not a datasheet on file — confirm against a
 supplier table before ordering.
 
+## Dry-chamber body + lid modeled and printing — 2026-09-13
+
+**The first real part built off today's numbers.** Same day the packing analysis, wall
+thickness, and top-cap resize above were worked out, John modeled the dry-chamber body and lid
+in Onshape and started a print. **Flood chamber not modeled yet** — this covers the dry chamber
+only.
+
+### How today's chain of reasoning led here
+
+Worth walking through in order, since each step fed the next and none of it was decided in
+isolation:
+
+1. **Asked whether the sensor-lead penetration needed an O-ring or epoxy.** Decided epoxy — a
+   cable has no round, dimensionally-consistent surface for a ring to seal against (see
+   [Sensor-lead dry-chamber penetration](#sensor-lead-dry-chamber-penetration--epoxy-potting-decided-2026-09-13)
+   above).
+2. **That prompted the real question underneath it: nobody had ever sized this chamber against
+   the actual SEN0189 hardware.** Pulled the manufacturer's own drawings (adapter board +
+   probe body) and ran a formal packing analysis — the probe's **mounting ears**, not the
+   adapter board, turned out to govern the minimum diameter (≥Ø52 mm), which also caught and
+   fixed a stale contradiction in the electronics housing's own packing document (§7 of the
+   [Sensor Pod Packing Budget](../../../docs/engineering/sensor-pod-packing-budget.md)).
+3. **A real chamber needs a real wall, not just an interior clearance number** — ran a
+   closed-form external-pressure buckling check (this chamber has no foam backing to lean on,
+   unlike the flotation wedge) and landed on 2.0 mm walls, `SF`≈4.7 at the 50.3 kPa / 5 m test
+   pressure ([§6](../../../docs/engineering/sensor-pod-packing-budget.md#6-wall-thickness)).
+4. **Growing the chamber meant the old top-cap flange (Ø54 mm) no longer covered the new tube
+   OD (56 mm).** Had to resize the O-ring seal too — AS568-137 replaced with a candidate
+   AS568-142, groove re-derived against Parker's and Apple Rubber's published squeeze/fill
+   standards rather than just copied from the electronics housing clamp
+   ([§8](../../../docs/engineering/sensor-pod-packing-budget.md#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13)).
+5. **John asked about the raised alignment spigot** visible between the body and lid (shown in
+   the renders below) — confirmed as intentional (this pod's own 2026-08-29 design already used
+   one), with two conditions: loose diametral clearance and, more importantly, **axial
+   clearance so the spigot never bottoms out before the flat sealing land does** — otherwise it
+   would rob the O-ring of its designed squeeze.
+6. **Modeled and printed** the body + lid off all of the above.
+
+### What's in the renders
+
+Two Onshape shaded views of the printing article: an isometric view showing the lid's top face
+(3 bolt holes visible, spaced around the flange) and the body tube descending from it, and a
+bottom-up view showing the underside of the flange and the stepped boss at the far end — the
+probe-shaft penetration point, matching the [Ø24 mm hole](#4-penetration--probe-shaft-through-the-dry/flood-wall)
+called out today. **Photos shared in chat, not yet saved as files in the repo** — same gap the
+2026-08-18 wedge cross-section fit-test photo and the 2026-09-12 O-ring failure photo had; add
+them here once available as actual image files rather than described secondhand.
+
+### First real weight: ~60 g
+
+Body + lid, printing now. This is the **first measured data point** for this assembly at the
+new (post-2026-09-13) geometry — no prior weight exists to compare against, since the whole
+part is new at this size. Worth capturing precisely once the print finishes and is weighed on a
+scale, rather than relying on an in-progress slicer estimate.
+
+### What this print does and doesn't confirm
+
+**Confirms:** the body and lid exist in CAD at roughly the right topology (flange, 3-bolt
+pattern, alignment spigot, tube, penetration boss) and are printable at ~60 g.
+
+**Doesn't yet confirm:**
+- **Exact dimensions against today's recommendation** — a plain shaded render has no dimension
+  callouts. Whether the chamber actually landed at ≥Ø52 mm / 60 mm, the wall at 2.0 mm, the
+  groove at the resized AS568-142 numbers, and the penetration at Ø24 mm all still want a
+  dimensioned drawing or a direct STEP check before being treated as verified — same "read off
+  the render, not yet confirmed against a drawing" caveat this project applies everywhere else.
+- **The mounting-ear layout** — [SCO-112](https://linear.app/scout1/issue/SCO-112)'s open
+  question (ears inside the cavity vs. against a bulkhead face) isn't visible from these
+  exterior views and isn't stated as resolved here.
+- **The O-ring, seal, or pressure performance** — nothing has been tested wet yet. This is a
+  dry fit/print milestone, not a validation.
+- **The flood chamber** — explicitly not modeled this pass.
+
+**Next:** flood chamber (light-blocking baffle geometry is John's own DFM work, not sized by the
+packing budget), a dimensioned check against today's numbers, and eventually a submersion
+re-test once the real AS568-142 ring is sourced ([SCO-106](https://linear.app/scout1/issue/SCO-106)).
+
 ## Flood chamber — being re-specced (2026-09-08)
 
 `sensor-housing-flood-chamber-cap.step` in this folder dates to **2026-08-15**, the original
