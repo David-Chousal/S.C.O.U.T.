@@ -272,6 +272,8 @@ that, not the board, governs the dry chamber's minimum diameter at **≥Ø52 mm*
 | Dry chamber interior | Ø52 mm × 60 mm |
 | Probe-shaft penetration (through the dry/flood wall) | Ø24 mm |
 | Flood chamber interior | Ø24 mm × 30 mm, before the light-blocking baffle adds to it |
+| Dry chamber wall thickness | 2.0 mm (0.079 in) — a real closed-form check: unlike the foam-backed wedge, this chamber has no backing, so buckling (not yield) governs; `SF` ≈4.7 at the 50.3 kPa / 5 m test pressure |
+| Flood chamber wall thickness | 1.2–1.6 mm (0.05–0.06 in), print-integrity only — no net external pressure, water-filled both sides |
 
 **One design choice surfaced, not resolved, by this analysis:** unlike the flexible lead
 penetration above, the probe's own shaft *is* round and dimensionally consistent — so an O-ring

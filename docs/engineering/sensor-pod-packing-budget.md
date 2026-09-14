@@ -5,7 +5,10 @@
 > that the probe's own body passes through. Same method and rigor as the
 > [Electronics Housing Packing Budget](electronics-housing-packing-budget.md) — real component
 > dimensions where a manufacturer source exists, every assumption tagged, every calculation shown
-> in full. **This is a packing estimate, not a structural or pressure-rating analysis.**
+> in full. **Interior packing is a geometric estimate; [§6](#6-wall-thickness) adds a first-pass
+> closed-form pressure/buckling check for the dry chamber wall, in the same spirit as the
+> [wedge wall-thickness check](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)
+> — not FEA, not a validated sign-off.**
 >
 > Feeds [`facts.md`](../hub/facts.md#mechanical--deployment)'s TBD dry/flood chamber dimensions
 > and [`mechanical/cad/sensor-housing/README.md`](../../mechanical/cad/sensor-housing/README.md).
@@ -87,7 +90,7 @@ remodel) — **the current CAD is undersized against the actual probe hardware**
 meant to bolt down inside the dry chamber. (An alternative that avoids growing the bore: mount
 the probe's ears against the *outside* face of an internal bulkhead rather than free-floating
 inside the cavity, with only the shaft entering the chamber proper. That changes what "diameter"
-means here and is a CAD layout decision, not a packing-math one — flagged in §7.)
+means here and is a CAD layout decision, not a packing-math one — flagged in §8.)
 
 **Length.** Board (38 mm) + probe collar height above its shaft (~10–14 mm, reading the
 drawing's 5.6 mm and remaining step dimensions together, **[A]**) + axial clearances (5 mm ×
@@ -139,7 +142,59 @@ it — recommend the same ~Ø24 mm minimum as the penetration itself, growing to
 light-blocking baffle geometry needs on top of that (not computed here; that geometry is
 John's own DFM work, not a packing question).
 
-## 6. Recommendation
+## 6. Wall thickness
+
+**This is the one place the dry and flood chambers are genuinely different problems, not just
+different sizes.** The dry chamber holds air against full external hydrostatic pressure — a real
+net differential, same as every other sealed housing in this build. The flood chamber is
+water-filled **inside and out by design** — pressure is balanced across its wall, so it never
+sees a net external load. Sized very differently as a result.
+
+### 6.1 Dry chamber — a real pressure-vessel check
+
+Same design pressure and material profile as the [wedge wall-thickness
+check](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md): **50.3 kPa**
+external (the project's standard 5 m hydrostatic test target, LC8) against the custom PETG
+profile (`E` = 2240 MPa, `ν` = 0.38, yield 35 MPa). Using the dry chamber's own (much smaller)
+radius — mean radius ≈ 27 mm for a candidate 2.0 mm wall on a ~52 mm-ID chamber:
+
+```
+Membrane hoop stress:  σ_θ = p·R/t = 50 300 × 0.027 / 0.002 = 0.68 MPa
+                        SF on yield = 35 / 0.68 ≈ 51   → stress is not the limit here
+
+External-pressure buckling (unstiffened long cylinder):
+p_cr = [E / (4(1 − ν²))] · (t/R_o)³,  R_o ≈ 0.028 m
+     = [2240e6 / (4 × 0.8556)] · (0.002/0.028)³
+     = 654.5 MPa × 3.64e-4 = 238.5 kPa
+SF = 238.5 / 50.3 ≈ 4.7
+```
+
+**Unlike the wedge, this chamber has no foam backing to suppress buckling — it has to stand on
+its own**, so this check (not the membrane-stress one) is the one that actually governs, same
+conclusion the wedge check reached for its own outer wall.
+
+**Recommendation: 2.0 mm (0.079 in) wall, solid perimeters, no infill** — ~5 perimeter passes at
+the project's standard 0.42 mm line width. Gives `SF` ≈ 4.7 on buckling, in the same ballpark as
+the provisional `SF` ≥ 4 bar this project has used elsewhere as a sanity check before moving to
+physical/impact validation. Because buckling resistance scales with `(t/R)³`, this small a
+chamber gets comfortable margin from a thin wall — going to 1.5 mm drops `SF` to ≈2.1 (thinner
+than recommended here); 2.5 mm would push `SF` to ≈9.2 for not much more material. 2.0 mm is the
+reasonable middle, not a knife-edge minimum.
+
+⚠️ **Not covered by this hand calc:** the Ø24 mm penetration hole is a large cutout relative to
+this chamber's own diameter, and local stress/buckling behavior right at a cutout isn't
+captured by the bare-tube formulas above — same category of gap the wedge check left for its own
+impact case. Worth an FEA pass before this is treated as validated, not just plausible.
+
+### 6.2 Flood chamber — no net pressure, print-integrity minimum only
+
+No structural pressure case applies — recommend a plain FDM print-integrity minimum, the same
+spec already used for other non-primary, non-pressure-bearing parts in this build (e.g. the
+[wedge cap](../../mechanical/test/wedge-wall-thickness-structural-check-2026-09-07.md)):
+**3–4 perimeters, ~1.2–1.6 mm (0.05–0.06 in)**, no infill needed. Sized for handling and
+assembly robustness, not load.
+
+## 7. Recommendation
 
 | Dimension | Value (mm) | Value (in) | Basis |
 |---|---|---|---|
@@ -148,6 +203,8 @@ John's own DFM work, not a packing question).
 | **Penetration hole diameter** | **Ø24 mm** | **Ø0.945 in** (~15/16 in) | §4 |
 | **Flood chamber — interior depth** | **≥ 30 mm** | **≥ 1.18 in** | §5 |
 | **Flood chamber — interior diameter** | **≥ Ø24 mm**, plus whatever the light-blocking baffle adds | **≥ Ø0.945 in** | §5 |
+| **Dry chamber wall thickness** | **2.0 mm** (SF ≈4.7 on buckling, no foam backing) | **0.079 in** | §6.1 |
+| **Flood chamber wall thickness** | **1.2–1.6 mm** (print-integrity only — no net external pressure) | **0.05–0.06 in** | §6.2 |
 
 mm is this document's working unit (the manufacturer drawings this is sourced from are metric);
 in is given for CAD entry since the rest of this pod's own drawings are dimensioned in inches.
@@ -158,7 +215,7 @@ diameter** against the probe's own mounting-ear span, not just tight against the
 as flagged on 2026-09-13. Length (57 mm vs. a 60 mm recommendation) is close enough to be a
 rounding/margin question, not a redesign.
 
-## 7. Open items
+## 8. Open items
 
 - **Mounting-ear layout is the real open question, not a packing number.** Whether the probe's
   ears bolt inside the dry-chamber cavity (driving the chamber to ~Ø52 mm) or against an internal
@@ -174,3 +231,6 @@ rounding/margin question, not a redesign.
   John's call, not this document's.
 - **Light-blocking baffle geometry** inside the flood chamber isn't modeled here — it's a DFM
   design question, not a packing-math one, and will add to the §5 diameter/depth floor.
+- **Dry-chamber wall thickness (§6.1) is a hand calc, not FEA** — same caveat the wedge check
+  carries. In particular, the Ø24 mm penetration cutout's local effect on buckling isn't bounded
+  by the bare-tube formula used. Treat 2.0 mm as plausible, not validated, until checked.
