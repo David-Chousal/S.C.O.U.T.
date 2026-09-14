@@ -36,11 +36,11 @@ and the [Electronics Housing Packing Budget](electronics-housing-packing-budget.
 | Component | Dimensions | Tag | Source |
 |---|---|---|---|
 | SEN0189 adapter/driver board | 38 × 28 × 10 mm | **[M]** | `hardware/datasheets/dfrobot-sen0189-turbidity-sensor.pdf` p.2 |
-| SEN0189 probe body — overall height | 34.1 ± 1 mm | **[M]** | `hardware/datasheets/dfrobot-sen0189-probe-dimension.png` (DFRobot's own mechanical drawing) |
-| SEN0189 probe body — main collar OD (plan view) | Ø30.4 ± 0.4 mm (2 × R15.2 ± 0.2) | **[M]** | same |
-| SEN0189 probe body — upper shaft OD | Ø27.8 ± 0.2 mm | **[M]** | same |
-| SEN0189 probe body — lower shaft OD | Ø22.1 ± 0.2 mm | **[M]** | same |
-| SEN0189 probe body — mounting-ear span | 44.0 ± 0.5 mm (diagonal, ear hole to ear hole) | **[M]** | same |
+| SEN0189 probe body — overall height | 34.1 ± 1 mm (1.343 ± 0.039 in) | **[M]** | `hardware/datasheets/dfrobot-sen0189-probe-dimension.png` (DFRobot's own mechanical drawing) |
+| SEN0189 probe body — main collar OD (plan view) | Ø30.4 ± 0.4 mm (2 × R15.2 ± 0.2), Ø1.197 ± 0.016 in | **[M]** | same |
+| SEN0189 probe body — upper shaft OD | Ø27.8 ± 0.2 mm (Ø1.094 ± 0.008 in) | **[M]** | same |
+| SEN0189 probe body — lower shaft OD | Ø22.1 ± 0.2 mm (Ø0.870 ± 0.008 in) | **[M]** | same |
+| SEN0189 probe body — mounting-ear span | 44.0 ± 0.5 mm (diagonal, ear hole to ear hole), 1.732 ± 0.020 in | **[M]** | same |
 | SEN0189 probe + adapter, combined weight | 30 g | **[M]** | `hardware/datasheets/dfrobot-sen0189-turbidity-sensor.pdf` p.2 |
 | Probe-to-adapter-board cable length | Not specified anywhere on file | **[A]** — assumed short (a few cm), since the drawing shows the adapter board's connector mounted directly at the probe's top face, not on a long flying lead | — |
 
@@ -141,13 +141,16 @@ John's own DFM work, not a packing question).
 
 ## 6. Recommendation
 
-| Dimension | Value | Basis |
-|---|---|---|
-| **Dry chamber — interior diameter** | **≥ 52 mm** (governed by the probe's mounting ears, not the adapter board) | §3 |
-| **Dry chamber — interior length** | **≥ 60 mm** | §3 |
-| **Penetration hole diameter** | **Ø24 mm** | §4 |
-| **Flood chamber — interior depth** | **≥ 30 mm** | §5 |
-| **Flood chamber — interior diameter** | **≥ Ø24 mm**, plus whatever the light-blocking baffle adds | §5 |
+| Dimension | Value (mm) | Value (in) | Basis |
+|---|---|---|---|
+| **Dry chamber — interior diameter** | **≥ 52 mm** (governed by the probe's mounting ears, not the adapter board) | **≥ 2.05 in** | §3 |
+| **Dry chamber — interior length** | **≥ 60 mm** | **≥ 2.36 in** | §3 |
+| **Penetration hole diameter** | **Ø24 mm** | **Ø0.945 in** (~15/16 in) | §4 |
+| **Flood chamber — interior depth** | **≥ 30 mm** | **≥ 1.18 in** | §5 |
+| **Flood chamber — interior diameter** | **≥ Ø24 mm**, plus whatever the light-blocking baffle adds | **≥ Ø0.945 in** | §5 |
+
+mm is this document's working unit (the manufacturer drawings this is sourced from are metric);
+in is given for CAD entry since the rest of this pod's own drawings are dimensioned in inches.
 
 **This is a floor, not a target** — same caveat as the electronics housing document. It also
 means **the current committed dry-chamber body (~57 mm tall, ~Ø31.5 mm bore) is undersized on
