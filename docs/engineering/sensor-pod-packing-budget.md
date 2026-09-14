@@ -209,6 +209,20 @@ assembly robustness, not load.
 mm is this document's working unit (the manufacturer drawings this is sourced from are metric);
 in is given for CAD entry since the rest of this pod's own drawings are dimensioned in inches.
 
+**Outer (tube) diameters, ID + 2×wall:**
+
+| Dimension | Value (mm) | Value (in) |
+|---|---|---|
+| Dry chamber — outer diameter | 52 + 2×2.0 = **56 mm** | **2.205 in** |
+| Flood chamber — outer diameter | 24 + 2×(1.2–1.6) = **26.4–27.2 mm** | **1.04–1.07 in** |
+
+⚠️ **New finding: the dry chamber's tube OD (56 mm) is now bigger than the existing 3-bolt
+flange (~Ø54 mm)** documented in the [face-seal remodel](../../mechanical/cad/sensor-housing/README.md#face-seal-remodel--2026-08-29).
+Growing the bore isn't just a bore edit — **the end cap and its Ø44.45 mm bolt circle need to
+grow too**, or the flange ends up narrower than the tube it's capping. Not sized here (the bolt
+circle and O-ring groove are [SCO-91](https://linear.app/scout1/issue/SCO-91)'s own open items,
+not a packing question) — flagged so it isn't discovered mid-CAD.
+
 **This is a floor, not a target** — same caveat as the electronics housing document. It also
 means **the current committed dry-chamber body (~57 mm tall, ~Ø31.5 mm bore) is undersized on
 diameter** against the probe's own mounting-ear span, not just tight against the adapter board
@@ -234,3 +248,6 @@ rounding/margin question, not a redesign.
 - **Dry-chamber wall thickness (§6.1) is a hand calc, not FEA** — same caveat the wedge check
   carries. In particular, the Ø24 mm penetration cutout's local effect on buckling isn't bounded
   by the bare-tube formula used. Treat 2.0 mm as plausible, not validated, until checked.
+- **The existing 3-bolt end-cap flange (~Ø54 mm) is now narrower than the recommended dry-chamber
+  tube OD (56 mm).** Growing the bore forces the flange and its Ø44.45 mm bolt circle to grow
+  too — not sized here, but it means this isn't a bore-only edit in CAD.
