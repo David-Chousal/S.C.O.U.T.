@@ -249,25 +249,36 @@ number). ⚠️ Sourced from a third-party AS568 size chart (`o-ringseal.com`), 
 datasheet on file in this repo — **confirm against a supplier table before ordering**, same
 caveat [SCO-106](https://linear.app/scout1/issue/SCO-106) already carries for AS568-043.
 
-**Groove, sized with the same method the electronics housing clamp used** (target 22.9% squeeze,
-75% gland fill — reused here for consistency, not re-derived):
+**Groove depth, checked against real static-face-seal design standards, not just reused from the
+electronics housing clamp.** Two independent sources agree on the target: Parker's own published
+static O-ring seal design guidance gives a **10–40% squeeze range with 25% as the nominal design
+target**, and 60–90% gland fill (Parker O-Ring Handbook, static seal design section — accessed
+via search summary, Parker's site returned 403 to direct fetch); Apple Rubber's engineering
+guidance independently states the same **25% squeeze target and 60–85% fill**, with a worked
+example landing at 74% fill. **Target: 25% squeeze, 75% fill** — dead-center on both.
 
 ```
-Groove depth  = CS × (1 − 0.229) = 2.62 × 0.771 = 2.02 mm (0.080 in)
+Groove depth  = CS × (1 − 0.25) = 2.62 × 0.75 = 1.965 mm (0.0774 in)
 Ring CS area  = π(CS/2)² = π(1.31)² = 5.39 mm²
 Groove area (75% fill) = 5.39 / 0.75 = 7.19 mm²
-Groove width  = area / depth = 7.19 / 2.02 = 3.56 mm (0.140 in)
+Groove width  = area / depth = 7.19 / 1.965 = 3.66 mm (0.144 in)
 
 Groove mean Ø = ring ID + CS = 59.99 + 2.62 = 62.61 mm (2.465 in)
-Groove ID     = mean − width/2 = 60.83 mm (2.395 in)
-Groove OD     = mean + width/2 = 64.39 mm (2.535 in)
+Groove ID     = mean − width/2 = 60.78 mm (2.393 in)
+Groove OD     = mean + width/2 = 64.44 mm (2.537 in)
 ```
 
-**Standoff from the tube:** groove ID (60.83 mm) − tube OD (56 mm) = 4.83 mm (0.190 in) total,
-~2.4 mm (0.095 in) radial clearance each side — enough that the groove doesn't cut into the
+(The electronics housing clamp's own AS568-043 groove — 22.9% squeeze, 75% fill — turns out to
+already sit inside this same optimal band, just not dead-center on the 25% target. Not revised
+here: that part is already printed and physically tested, and its issue was O-ring tolerance
+fit, not squeeze — see [SCO-105](https://linear.app/scout1/issue/SCO-105). Worth knowing for the
+next clamp iteration, not a reason to touch a already-validated print.)
+
+**Standoff from the tube:** groove ID (60.78 mm) − tube OD (56 mm) = 4.78 mm (0.188 in) total,
+~2.4 mm (0.094 in) radial clearance each side — enough that the groove doesn't cut into the
 tube wall itself.
 
-**Bolt circle:** groove OD (64.39 mm) + ~5 mm (0.2 in) standoff each side ≈ **Ø74.4 mm
+**Bolt circle:** groove OD (64.44 mm) + ~5 mm (0.2 in) standoff each side ≈ **Ø74.4 mm
 (2.93 in)**, keeping the existing 3-bolt pattern and ~Ø5.6 mm (0.22 in) clearance holes rather
 than resizing the fasteners too.
 
@@ -277,8 +288,9 @@ than resizing the fasteners too.
 | Feature | mm | in |
 |---|---|---|
 | O-ring | **AS568-142** (ID 59.99, CS 2.62) | ID 2.362, CS 0.103 |
-| Groove width × depth | 3.56 × 2.02 mm | 0.140 × 0.080 in |
-| Groove ID / OD | Ø60.83 / Ø64.39 mm | Ø2.395 / Ø2.535 in |
+| Groove width × depth | 3.66 × 1.965 mm | 0.144 × 0.077 in |
+| Groove ID / OD | Ø60.78 / Ø64.44 mm | Ø2.393 / Ø2.537 in |
+| Squeeze / gland fill | **25% / 75%** — on-target per Parker + Apple Rubber static-seal guidance | |
 | Bolt circle | Ø74.4 mm | Ø2.93 in |
 | Flange OD | ~Ø91 mm | ~Ø3.58 in |
 

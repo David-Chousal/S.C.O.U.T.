@@ -294,9 +294,10 @@ tube's own OD — same "fasteners outside the O-ring boundary" topology as the
 scaled up. **The originally-specified AS568-137 ring no longer fits** — its own ID (52.07 mm) is
 smaller than the new 56 mm tube OD it would need to wrap around. New candidate:
 **AS568-142** (ID 59.99 mm / 2.362 in, same 2.62 mm cross-section family as AS568-137 — no new
-elastomer sourcing surprise, just a bigger dash number), groove Ø60.83–64.39 mm, Ø74.4 mm
-(2.93 in) bolt circle, ~Ø91 mm (3.58 in) flange OD. Full derivation, same squeeze/fill method
-the electronics housing clamp used:
+elastomer sourcing surprise, just a bigger dash number), groove Ø60.78–64.44 mm at **25%
+squeeze / 75% gland fill** — checked against Parker's and Apple Rubber's published static-seal
+design guidance, not just carried over from the electronics housing clamp — Ø74.4 mm (2.93 in)
+bolt circle, ~Ø91 mm (3.58 in) flange OD. Full derivation:
 [Sensor Pod Packing Budget §8](../../../docs/engineering/sensor-pod-packing-budget.md#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13).
 ⚠️ AS568-142 sourced from a third-party size chart, not a datasheet on file — confirm against a
 supplier table before ordering.
