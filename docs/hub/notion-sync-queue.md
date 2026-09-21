@@ -7,8 +7,9 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-10 — five entries pending**
-> (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom).
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-21 — six entries pending**
+> (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
+> 15 through-bolted mooring bracket + full assembly).
 >
 > This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
 > payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
@@ -339,6 +340,33 @@ sections under matching headings and keep the file names visible so the mapping 
 > math, not just a link out. Same choice as the `journal/` gap: either give them Notion pages now,
 > or make the link-out-only scope a deliberate, written decision instead of an accumulating
 > default. Not fixed here — flagging so it doesn't silently repeat on the next mechanical PR.
+
+### 15 · Through-bolted mooring bracket + first full-buoy assembly · queued 2026-09-21
+
+- **Notion pages** — Hub → *Decision Log* (new Log row, `2026-09-21 | geng`), Hub → *Canonical
+  Facts* (Mooring/sensor-string attachment hardware row), Hub → *Design Notes* (new top row),
+  Hub → *Project Status* (Mechanical design row + "As of" date). `mechanical/**` has no Notion
+  page, so those links become GitHub blob URLs. The render
+  (`assets/diagrams/buoy-assembly-cable-routing-2026-09-21.png`) should be uploaded to the
+  Design Notes row or linked by its GitHub URL.
+- **Source** — [`decision-log.md`](decision-log.md), [`facts.md`](facts.md),
+  [`design-notes.md`](design-notes.md), [`status.md`](status.md),
+  [`journal/2026-09-21.md`](journal/2026-09-21.md), merged in
+  [PR #144](https://github.com/David-Chousal/S.C.O.U.T./pull/144).
+- **What changed** — the mooring bracket mounts with **through-bolts, nuts and an internal 316
+  backing plate** (2.50 × 2.25 × 0.125 in), not heat-set inserts. The bolt pattern follows the
+  `3076T33` stand-in: 4 × Ø1/4 in holes on a 1.250 × 1.125 in rectangle, with Ø0.276 in chassis
+  through-holes and 1/4"-20 316 hardware. First full-buoy assembly in Fusion, with the bracket
+  attached and a candidate cable route modeled. Copy the new `2026-09-21` rows straight from
+  `decision-log.md` and `design-notes.md`, update the `facts.md` mooring row in place, append
+  the 2026-09-21 sentence to the Project Status Mechanical row and bump "As of" to 2026-09-21.
+- **The point that must survive the mirror** — **the cable route is a concept, not a
+  decision**, and the bolt pattern belongs to the stand-in ring. The final 316 pad-eye may
+  change it.
+- **Queued, not pushed** — the connector *does* reach the S.C.O.U.T. workspace (2026-09-21),
+  but the edit was refused: **the workspace has used all of its free blocks.** A workspace owner
+  has to free blocks (delete unused pages and empty the trash) or upgrade the plan before this
+  entry, or 10–14, can be pushed.
 
 ### 14 · Lean wedge bottom (v5) · queued 2026-09-10
 
