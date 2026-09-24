@@ -98,7 +98,7 @@ first application. Santa Clara University Senior Design Capstone, 2026–2027.
 | John Ryan Myrdal | GENG | Field & mechanical — buoy structure, deployment |
 | David Chousal Cantu | CSEN | Software — firmware, data pipeline, shore station |
 
-**Faculty advisors:** Jes Kuczenski · Navid Shaghaghi
+**Faculty advisors:** Jes Kuczenski · Hoeseok Yang (ECEN) · Navid Shaghaghi
 
 Start with [README.md](README.md) for architecture and status. Full doc index at
 [docs/README.md](docs/README.md).

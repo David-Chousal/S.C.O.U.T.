@@ -373,6 +373,20 @@ height callout):
   leans on this cap being the thick part of the shell.
 - **Confirm the tabs seat** the wedge on the first dry stack-up.
 
+#### Split into two parts for printing — 2026-09-23
+
+A full wedge bottom takes over a day to print, and the EPIC lab's medium Prusa failed. John
+split the lean wedge bottom into two parts and started the first half on a Prusa Mini. The
+bottom layers printed poorly (nozzle drag, filament-feed resistance). The result will be
+checked 2026-09-24. See the
+[print log](../../test/wedge-bottom-split-print-2026-09-23.md).
+
+**The one-piece part stays the baseline.** Whether the split becomes the permanent design is
+not decided. The cut is a single clean radial split down the center of the 60° segment, from the outer
+radius to the inner radius, giving two 30° halves with a flat butt joint. The joint method and
+a STEP export of the halves are not recorded yet. A seam through the waterline impact cap is a new leak path and weak line, so it needs a
+deliberate decision.
+
 ## Outer Octagon — a separate, distinct design
 
 `outer-octagon-shell.step` and `outer-octagon-bottom.step` (Onshape: `With Tolerances > Outer
