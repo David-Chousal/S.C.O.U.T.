@@ -391,3 +391,130 @@ practice — but no one said so explicitly, and the record still shows an open q
 | Measure shore-to-site distance for the candidate Hawaii test location | John Ryan ([SCO-96](https://linear.app/scout1/issue/SCO-96)) |
 | ~~Resolve the biofouling coating reversal — ratify or revert~~ ✅ 2026-09-08: coating stands, no revert | Team ([SCO-15](https://linear.app/scout1/issue/SCO-15)) |
 | Settle whether Phase 0 ends Sep 4 or Sep 20 | Team ([PR #116](https://github.com/David-Chousal/S.C.O.U.T./pull/116)) |
+
+---
+
+## 2026-09-24 — SCOUT Weekly (in the lab, with Navid)
+
+**Attendees:** John Ryan Myrdal (GENG) · Isabella Rodriguez (ECEN) · David Chousal Cantu (CSEN)
+· Navid Shaghaghi (advisor)
+
+Granola listed only David as a participant — an in-person capture artifact, not the real
+attendance. Speaker labels were the usual anonymized "Me"/"Them", so attribution below is
+inferred from content and should be corrected if wrong.
+
+### Decisions
+
+- **Base-station MCU changes from the Feather M0 to a Feather S3 (ESP32-based), with a separate
+  LoRa module.** This resolves [SCO-86](https://linear.app/scout1/issue/SCO-86), which had been
+  open since 2026-08-24. Navid's reasoning, from hitting the same wall on another project: the
+  M0 is Arduino-based and therefore **single-threaded**, so it cannot listen to LoRa and Wi-Fi
+  at the same time — it "goes deaf on every API call." The S3 carries FreeRTOS and is
+  multi-threaded. It is also **cheaper (~\$20 vs ~\$30)** precisely because it ships without a
+  LoRa radio, so a separate LoRa module is added.
+  **The Scout buoys are unchanged and stay on the Feather M0** — single-threaded is fine for a
+  sense-log-transmit duty cycle with no concurrent link.
+- **"Fred" is kept as the chat assistant's name**, closing
+  [SCO-65](https://linear.app/scout1/issue/SCO-65). The original objection was the namesake
+  (Frederick Russell Burnham, a colonial-era scout). The team's conclusion: the name does not
+  need a namesake at all — *"at the end of the day it doesn't have to have a sort of grand
+  meaning to it. Fred is just funny."* The rename is off the table, not deferred.
+- **Parts for the Scout and the shore station are ordered together, as one order.** The staged
+  Rev A bring-up order ([SCO-88](https://linear.app/scout1/issue/SCO-88)) is **cancelled** and
+  replaced by a single order for a complete first prototype. Reason: the Scout cannot be tested
+  without the shore station, because the buoy is transmit-only and there is no cloud path — with
+  only one end built, no data is ever received. Isabella: *"I already missed one deadline"* on
+  the staged approach.
+- **Starlink is explicitly rejected** as a backhaul option, raised as a joke and then recorded
+  deliberately. The principle: the system must not depend on any single commercial technology,
+  and there is a surveillance/privacy dimension worth stating. Navid flagged this as belonging
+  in the report's **social implications** section, not just the design rationale.
+- **Weekly team meeting moves to Fridays 18:00–18:30**, extending to 19:00 when Sammy (a former
+  SCU mechanical engineer, now in biotech) is there and can be consulted. Chosen partly because
+  it sits far from the Tuesday advisor meetings, keeping the two conversations separate.
+- **Cable glands are sourced, not purchased.** Navid produced a bag of 100–200 in the lab with
+  multiple sizes available in the drawer. This closes what David called *"one of my high
+  priority"* items and removes a purchase from the BOM — at \$4–6 each outside bulk, a
+  non-trivial saving.
+- **Sleep/wake scheduling will reuse Navid's existing protocol** from the lab's other deployed
+  projects rather than being written from scratch.
+
+### Reported
+
+- **John Ryan — printing.** A print failed on bed adhesion (*"it's just not sticking to the
+  plate"*); fix is blue painter's tape plus a glue stick. Strategy agreed: **start printing the
+  parts that will not change** — chassis, electronics housing, top — and hold the circuit
+  housing until electronics are final, since it may need resizing. With printer usage optimized
+  the estimate is **one full system per week**.
+- **John Ryan — Prusa XL access.** The garage holds a Prusa XL large enough to print the whole
+  buoy in one piece, but it is in a restricted section needing a grad student to open it (JP or
+  Mac were named). Worth chasing: it collapses a multi-part assembly into a single print.
+- **John Ryan — sensor pod.** The dry chamber has been grown to **52 mm**; the export to the
+  repo is outstanding.
+- **John Ryan — electronics housing.** The first print's face-seal clamp showed **O-ring
+  tolerance issues**. Sequence agreed: buy O-rings first (Home Depot), verify the fit, *then*
+  reprint — not reprint blind.
+- **Isabella — electronics finalization.** Rather than ordering parts piecemeal, she is taking
+  the whole design to **Shoba** next week for a full review (hydrophone, power system, solar
+  efficiency), with **Dr. Yang** after. A calendar invite goes out as optional for the team.
+- **David — budget.** The senior design budget is due next week, roughly **\$500 per person**
+  approved. Approach agreed: submit high, with buffer and backup components (spare boards)
+  included, since the ceiling is approved rather than itemized.
+- **Navid — dashboard.** Catherine has built an agricultural IoT dashboard (React.js front end,
+  SQL back end) that is largely done and worth borrowing from; there is also a Flutter/Dart repo
+  in the lab's GitHub org, readable if you know Java.
+- **Permitting — Dr. Bartley replied.** The team must **handle its own permitting** for the
+  Hawaii deployment. This answers [SCO-99](https://linear.app/scout1/issue/SCO-99) in the
+  direction that costs the most: the site is not covered by an existing authorization the team
+  can join, so the DLNR/DAR, DLNR/OCCL and USACE tracks are all live.
+
+### Raised
+
+- **How many complete units?** Consensus: **two** — enough to demonstrate that two buoys talk to
+  one base station, not just that one works. Ambition beyond that: build extras, and **leave some
+  deployed in Hawaii** over spring break rather than carrying them home.
+- **A smaller reef-specific variant.** The current buoy is deliberately oversized to carry extra
+  payload — that is the "Scout" premise, a platform rather than a single-purpose instrument. A
+  stripped-down reef-only version with less flotation is possible as a second configuration.
+- **Per-unit naming.** Each Scout gets its own name, the way ships do — Star Trek ships were
+  floated. Not decided, and distinct from the (now closed) chat-assistant naming question.
+- **Thursday 11:00 hardware meeting** — open invite to sit in. Same chassis, different
+  application, and that team is restarting its base station off the back of this same S3
+  discovery.
+- **After-21:00 lab access** requires a permission form submitted in advance; card access is
+  disabled otherwise.
+
+### Flagged — unresolved
+
+**The Shoba review could reopen decisions the project has already built on.** Isabella was
+direct about the risk — *"I am shaking in my boots a little bit for her to just be like, wait,
+we're gonna start over"* — and about her intended framing: half the project already depends on
+the parts chosen, so the ask is **efficiency help on the solar/power path**, not a blank-sheet
+redesign. The team's own position, stated on the call, is that the **microcontroller should stay
+the same** and that a marginally better part is not a reason to change a spec everything else
+was built around.
+
+This is worth watching rather than resolving now: if the review does move a settled part, it
+lands against `facts.md` and ADR-0001, and the reasoning needs recording either way.
+
+**Whether the budget can be spent on items not explicitly listed** was asked and answered only
+approximately (*"I think it's like a request to a certain system"*). Worth confirming in lab
+before the submission, since the answer shapes how much detail the submitted list needs.
+
+### Next steps
+
+| Action | Owner |
+|---|---|
+| Take the full electronics design to Shoba; Dr. Yang after | Isabella |
+| Order everything for one complete Scout **and** shore station, in one order | Isabella |
+| Submit the senior design budget (high, with buffer and spares) | David |
+| Start permitting — DAR, OCCL, USACE — now that Dr. Bartley confirmed it is on us | John Ryan |
+| Print the parts that will not change; hold the circuit housing | John Ryan |
+| Get grad-student access to the Prusa XL in the garage | John Ryan |
+| Export the 52 mm sensor-pod dry chamber to the repo | John Ryan |
+| Buy O-rings, verify the face-seal clamp fit, then reprint | John Ryan |
+| Engrave the FCC ID label on the top lid beside the SCOUT marking | John Ryan ([SCO-103](https://linear.app/scout1/issue/SCO-103)) |
+| Add context to the corrosion strategy and push the docs | John Ryan ([SCO-92](https://linear.app/scout1/issue/SCO-92)) |
+| Reslice the lean V5 wedge bottom and propagate the new mass | John Ryan |
+| Talk to Catherine about the dashboard before building one | David |
+| Confirm whether budget money can buy unlisted items | David |
