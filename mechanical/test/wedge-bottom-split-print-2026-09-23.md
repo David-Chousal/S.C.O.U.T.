@@ -26,11 +26,15 @@ lab can't produce the flotation ring at the planned rate.
 John split the [lean v5 wedge bottom](../cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10)
 into two parts so each fits and finishes on a smaller printer.
 
+**Split location (confirmed by John, 2026-09-23):** a single clean radial cut down the center
+of the 60° segment, running from the outer radius to the inner radius. This gives two
+matching 30° halves. The cut is plain, with no overlap, tab, or key, so the halves meet at a
+flat butt joint.
+
 **Not yet recorded:**
 
-- **Split location and joint geometry.** Where the part is cut, and whether the cut has any
-  overlap, tab, or key.
-- **How the halves join.** Epoxy, bolts, or both.
+- **How the halves join.** Epoxy, bolts, or both. A flat butt joint has no mechanical
+  interlock, so the bond carries everything.
 - **STEP export of the halves.** Not committed yet. The committed
   `chassis-floatation-bolted-v5-wedge-bottom.step` is still the one-piece part.
 

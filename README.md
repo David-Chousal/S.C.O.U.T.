@@ -78,7 +78,7 @@ as the future production-PCB target. This unblocks firmware and wiring. See
 | John Ryan Myrdal | GENG | Field & mechanical lead — buoy structure, deployment |
 | David Chousal Cantu | CSEN | Software lead — firmware, data pipeline, shore station |
 
-**Faculty advisors:** Jes Kuczenski · Hoeseok Yang · Navid Shaghaghi
+**Faculty advisors:** Jes Kuczenski · Hoeseok Yang (ECEN) · Navid Shaghaghi
 
 ---
 
