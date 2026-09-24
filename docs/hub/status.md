@@ -10,10 +10,11 @@
 
 ## Phase
 
-**Phase 0 — Kickoff** (2026-08-14 – 2026-09-20). ⚠️ **The window has ended but the phase has not
-been closed:** its open design decisions — hydrophone part ([SCO-8](https://linear.app/scout1/issue/SCO-8)) and charging path
-([SCO-10](https://linear.app/scout1/issue/SCO-10)) — are still undecided, while Phase 1 work (window Sep 7 – Oct 16) is well
-underway. Whether to close Phase 0 and carry those two forward is a team call, not recorded yet. Full plan:
+**Phase 1 — Subsystem Bring-Up** (2026-09-07 – 2026-10-16), In Progress — the active phase since
+2026-09-24. **Phase 0 — Kickoff was closed that day**, with its two unresolved design decisions —
+hydrophone part ([SCO-8](https://linear.app/scout1/issue/SCO-8)) and charging path
+([SCO-10](https://linear.app/scout1/issue/SCO-10)) — carried into Phase 1 along with every other
+open Phase 0 issue. Full plan:
 [Team Timeline](../planning/team-timeline.md).
 
 ## Subsystems

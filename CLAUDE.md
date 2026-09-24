@@ -307,8 +307,8 @@ per-discipline work and exit criteria.
 
 | Project | Window | State |
 |---|---|---|
-| Phase 0 — Kickoff | Aug 14 – Sep 20, 2026 | In Progress |
-| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | Planned |
+| Phase 0 — Kickoff | Aug 14 – Sep 20, 2026 | Completed 2026-09-24 |
+| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | In Progress |
 | Phase 2 — System Integration | Oct 19 – Nov 25, 2026 | Planned |
 | Phase 3 — Enclosure & Waterproofing | Nov 30, 2026 – Jan 15, 2027 | Planned |
 | Phase 4 — Field Prototype Deployment | Jan 18 – Feb 26, 2027 | Planned |
@@ -318,10 +318,11 @@ per-discipline work and exit criteria.
 These dates are mirrored in [docs/planning/team-timeline.md](docs/planning/team-timeline.md).
 If one changes, change both in the same session.
 
-Phase 0 is the only phase currently active — it holds the open design-alignment decisions
-(SCO-5 through SCO-9) that were never closed during the original summer plan. Nothing
-downstream should start until those land, particularly
-[ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md).
+**Phase 1 is the active phase** (since 2026-09-24). Phase 0 was closed that day with two of its
+design decisions still open — the hydrophone part (SCO-8) and the LiFePO₄ charging path (SCO-10,
+[ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) — and every open Phase 0 issue was
+carried into Phase 1 rather than holding the phase open. Its central decision,
+[ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md), landed on 2026-08-14.
 
 ### Status discipline
 
