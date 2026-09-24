@@ -28,6 +28,8 @@ every member completes before the next phase begins.
 
 **Window:** Aug 14 – Sep 20, 2026 (5 weeks)
 
+**Status:** ✅ Completed 2026-09-24. Closed with the hydrophone part (SCO-8) and charging path (SCO-10) still open; both moved to Phase 1 with the other open Phase 0 issues.
+
 **Goal:** Kickoff: Order Parts · Set Up Tools · Align on Design
 
 ### ECE — Hardware Lead
@@ -67,6 +69,8 @@ every member completes before the next phase begins.
 ## PHASE 1
 
 **Window:** Sep 7 – Oct 16, 2026 (6 weeks, Fall Quarter)
+
+**Status:** 🟡 In progress — the active phase since 2026-09-24.
 
 **Goal:** Subsystem Bring-Up — All Three Tracks Running in Parallel
 

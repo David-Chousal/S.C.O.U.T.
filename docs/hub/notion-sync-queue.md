@@ -7,15 +7,15 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-21 — six entries pending**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-24 — seven entries pending**
 > (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
-> 15 through-bolted mooring bracket + full assembly).
+> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting).
 >
-> This is a **queue, not a record.** Once an entry is pasted into Notion, tick it and delete its
-> payload. The `docs/` file is always the source of truth ([CONVENTIONS → Notion
-> mirroring](../CONVENTIONS.md#notion-mirroring)); anything duplicated here is a snapshot that
-> goes stale the moment the source changes. If an entry has been sitting long enough that the
-> source moved on, re-derive it from the source rather than pasting what is below.
+> ⛔ **Notion is currently write-blocked — the workspace has used all of its free-plan blocks.**
+> Confirmed 2026-09-24: every write is refused, including an in-place edit of an existing table
+> cell, so nothing below can be cleared until either the plan is upgraded or blocks are freed.
+> Nothing was half-written — the refused replace left the target page untouched. This is a team
+> decision (a paid plan, or deleting content to free blocks), not something a session can fix.
 
 ---
 
@@ -46,6 +46,23 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > to the wrong workspace and could only queue rather than push. **If a session can reach the
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
+
+### 16 · 2026-09-24 SCOUT Weekly · queued 2026-09-24
+
+- **Notion pages** — Hub → *Canonical Facts*, *Decision Log*, *Project Status*; Planning →
+  *Team Meeting Notes*.
+- **Source** — [`facts.md`](facts.md), [`decision-log.md`](decision-log.md), [`status.md`](status.md),
+  [`../planning/meeting-notes.md`](../planning/meeting-notes.md) (PRs #148, #149).
+- **What changed** — base-station MCU decided (Feather S3 + separate LoRa module; buoys stay on the
+  M0); "Fred" kept; the staged Rev A order cancelled for a single Scout + shore-station order;
+  Starlink rejected; cable glands from lab stock; the Phase 0 window lapsed without being closed.
+- **How to clear it, and the others with it** — regenerate each Hub page from its source file
+  rather than replaying entries 10–16 one by one: the sources are authoritative and the payloads
+  below have drifted. Convert tables to Notion table blocks and relative links to Notion URLs
+  where a page exists (GitHub otherwise). The only Notion-only content to carry over by hand is
+  Project Status's *Ahead of plan* section.
+- **Cost to be aware of** — a full regenerate of the four Hub pages rewrites several hundred
+  blocks, so it needs headroom under whatever block limit applies.
 
 ### 10 · Flotation wedge v5 — thin walls + DFM bracing web · queued 2026-09-07
 
