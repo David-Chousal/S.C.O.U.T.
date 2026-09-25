@@ -17,6 +17,53 @@
 > Loads are at the *proposed* environmental design set (SCO-73 not yet signed off).
 > Axes: **Z** = buoy vertical (up +), **X**/**Y** = horizontal.
 
+## Results — v5 re-check (2026-09-25)
+
+Five runs by John Ryan on the v5 geometry (lean floatation, 3076T33 stand-in ring still in
+place), at the **v5 loads** from [`force-budget.md` § v5 geometry reassessment](../../docs/engineering/buoy-structural/force-budget.md#v5-geometry-reassessment-2026-09-09).
+The 30° LC9 run was not done by choice. The 3076T33 ring's base plate therefore sees the snap
+load only at 0°, and the seam direction is covered only by the LC5 hull load (run 1).
+
+**Setup as run:** Fusion stock **"ABS Plastic"** (E 2240 MPa, ν 0.38, **yield 20 MPa**) — *not*
+the custom PETG profile (yield 35 MPa). Stiffness matches, so stresses and displacements stand;
+every buoy SF below is re-based to PETG as `35 / σ` (×1.75 on Fusion's ABS figure). Density
+1.06 (should be 1.27; immaterial for static). Mesh 10%, parabolic, no refinement. Reports 1–3
+were exported with empty result tables, so values come from the plot legends.
+
+| Run | Case | Load **as run** | Peak (legend) | Buoy PETG stress | Buoy SF (PETG) | Verdict |
+|---|---|---|---:|---:|---:|---|
+| 1 | LC5 wave+current, toward a seam | `(−285.8, 165, 0)` N = 330 N @ 30° | VM 19.4 MPa (local spot) | ≤ ~4 MPa at the load patch | ≥ ~8.8 (1.8 if the spot is PETG) | **pass**; max disp 0.27 mm |
+| 2 | LC5 wave+current | `(−330, 165, 0)` N = 369 N @ 27° (12% over design) | VM 47.3 MPa, in the steel ring | ≤ ~5 MPa | ≥ ~7; steel ring 4.4 | **pass** |
+| 3 | LC8 hydrostatic, 5 m | 0.05 MPa inward, all external faces incl. wedge shells | 1st principal 9,780 MPa — point singularity | **5–10 MPa at mid-panel of each wedge outer wall** (SF plot: green 2–4 on ABS) | **3.5–7** | **pass** — real result: unfoamed thin walls bending between supports |
+| 4 | LC9 snap + LC7 moment | `(−371, 0, −450)` N + moment **42 N·mm** about `(0, 11.5, −40.4)` | table: VM 24,782 MPa, 907 mm disp; plot: VM 116 MPa at the ring | ≤ ~12 MPa | ≥ ~3; steel ring 1.8 | **pass** — artifact confirmed by John (see ¹) |
+| 5 | Ring buckling (Structural Buckling) | 0.05 MPa inward on the wedge ring | load multiplier **1.873** (modes 2–3: 1.885, 1.914) | — | BLF 1.87 | **pass, thin margin** (see ²) |
+
+¹ The 907 mm displacement is a **mechanism, not a stress spike**: the folding 3076T33 ring body
+is bonded to its base plate at one small face and pivots. The buoy PETG around it stays
+low-stress. The **moment was entered as 42 N·mm, not 42 N·m (42,000 N·mm), and mostly about Z**,
+so LC7 was not exercised in FEA. Closed by hand instead: worst bolt of the 4 × 1/4-20 pattern
+(31.75 × 28.6 mm) = 450/4 + 42/0.03175/2 = **774 N** → 38 MPa in the bolt (SF > 5), 3.2 MPa
+washer bearing on PETG (SF ≈ 11), 2.6 MPa pull-through shear at an assumed 5 mm wall (SF ≈ 7.7).
+
+² Linear buckling at 1.873 × 50 kPa = **94 kPa ≈ 9.3 m** with **no foam**. A 0.5 imperfection
+knock-down for printed thin shells gives ~47 kPa ≈ **4.7 m — at the 5 m test spec**. In service the
+float sits 2.5 in deep, so this governs only the pressure test and storm push-under. **Foam fill
+is structurally required** for the 5 m pressure test (closed-form, foam-backed: SF 3–5, per the
+[ring-buckling check](wedge-ring-buckling-check-2026-09-09.md)). Pressure-test with foam installed.
+
+Reports (images stripped):
+[run 1](fea-mooring-lc5-wave-current-seam-v5-2026-09-25.html) ·
+[run 2](fea-mooring-lc5-wave-current-v5-2026-09-25.html) ·
+[run 3](fea-mooring-lc8-hydrostatic-v5-2026-09-25.html) ·
+[run 4](fea-mooring-lc9-snap-v5-2026-09-25.html) ·
+[run 5](fea-ring-buckling-v5-2026-09-25.html)
+
+**Reading (v5):** the v5 structure passes every load case. The lowest *real* buoy SF is ~3.5,
+in the thin wedge walls under LC8 with no foam. These are static and buckling cases. No impact
+or drop case was run. [SCO-71](https://linear.app/scout1/issue/SCO-71) was closed on these
+results plus a single-wedge [drop test](wedge-drop-test-2026-09-25.md). Still owed: the final 316 pad-eye run with LC7's moment applied
+correctly and the ring joined to its base plate, re-run on the custom PETG profile.
+
 ## Results (2026-08-29)
 
 | Case | Load **as run** | Applied to | min SF | max disp | max contact pressure | Fusion verdict |

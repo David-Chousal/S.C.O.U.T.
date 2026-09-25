@@ -10,6 +10,12 @@ Source CAD models and exported STEP/STL, organized by subsystem.
 | [stem/](stem/) | Structural member carrying the sensor pod underwater |
 | [solar-mount/](solar-mount/) | Solar panel mounting bracket |
 
+**Full assembly:** [`full-buoy-assembly-v5.step`](full-buoy-assembly-v5.step) is the whole buoy
+as one STEP (John Ryan, Fusion "DFM Assembly", exported 2026-09-25). It holds the v5 floatation
+ring, chassis and caps, cable routing, and the `3076T33` stand-in mooring ring, and it is the model
+the 2026-09-25 FEA re-check ran on. It lives here rather than in a subsystem folder because it spans
+all of them.
+
 Versioned filenames only for physical artifacts (`part-name-v2.step`) — see
 [CONVENTIONS.md § Versions](../../docs/CONVENTIONS.md#versions).
 

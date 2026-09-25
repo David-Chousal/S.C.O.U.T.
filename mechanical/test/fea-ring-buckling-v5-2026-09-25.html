@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="icon" href="https://damassets.autodesk.net/content/dam/autodesk/logos/favicon.png" type="image/png" />
+  <link href="https://fonts.autodesk.com/ArtifaktElement/css.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Study Report</title>
+  <style>
+    body {
+      font-family: "ArtifaktElement";
+      font-style: normal;
+      min-width: 1080px;
+    }
+
+    .sidebar {
+      width: 215px !important;
+      height: 100vh;
+      padding-right: 25px !important;
+      background: #f4f5f7;
+      position: fixed;
+      max-width: 215px !important;
+    }
+
+    @media print {
+      @page {
+        margin: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        /*Chrome, Safari */
+        print-color-adjust: exact !important;
+        /*Firefox*/
+      }
+    }
+
+    .report_content {
+      top: 0;
+      float: right;
+      align-self: flex-end;
+      padding-right: 2%;
+      padding-left: 260px !important;
+      margin-top: 47px;
+    }
+
+    .report_title {
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 36px;
+    }
+
+    .report_setup {
+      margin-top: 24px;
+      width: 100%;
+    }
+
+    .report_logo {
+      float: right;
+      align-self: flex-end;
+    }
+
+    tr {
+      height: 23px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    table {
+      table-layout: fixed;
+    }
+
+    table,
+    tr,
+    td {
+      border-collapse: collapse;
+      border: 1px solid #3C3C3C40;
+      padding: 4px 8px 4px 8px;
+    }
+
+    .sidebarUL {
+      list-style-type: none;
+    }
+
+    li {
+      margin-top: 4px;
+    }
+
+    li,
+    li>span {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      color: #3C3C3C;
+    }
+
+     li>span:hover,
+    li>div>span:hover,
+    label>span:hover {
+      color: #0696d7 !important;
+      cursor: pointer;
+      text-decoration-line: underline;
+    }
+    
+    label>img {
+      margin-left: -14px;
+    }
+
+    .logo {
+      margin-top: 19px;
+      margin-left: 34px;
+    }
+
+    td image {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section {
+      margin-bottom: 49px;
+    }
+
+    .sectionHeader {
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 36px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .tableHeader {
+      background-color: #CCCCCC66;
+      font-weight: 700;
+    }
+
+    td>span,
+    div>span {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 16px;
+      display: block;
+    }
+
+    td>span>svg {
+      height: 32px;
+      width: 32px;
+      line-height: 49px;
+      padding-top: 7px;
+    }
+
+    .adviceColumn {
+      width: 122px;
+    }
+
+    .collapse {
+      cursor: pointer;
+    }
+
+    :checked+ul {
+      display: none;
+    }
+
+    .collapsibleRow {
+      background-color: #8080801A;
+    }
+
+    .carret {
+      line-height: 16px;
+    }
+
+    .property-label {
+      background-color: #CCCCCC33;
+    }
+
+    td table, td table tr, td table td {
+      border: none;
+    }
+
+    .innerTable {
+      border-collapse: collapse;
+      border-style: hidden;
+      border-left: 1px solid #3C3C3C40;
+    }
+
+    .innerTable td, .innerTable tr {
+      border: 1px solid #3C3C3C40;
+    }
+
+    .resultImage {
+      padding: 0 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="SIDEBAR" class="sidebar">
+    <img src="" class="logo" />
+    <ul class="sidebarUL" style="margin-top: 22px; margin-left: 8px">
+      <li>
+        <span id="HEADER" style="color: #0696d7; font-weight: 700">Header</span>
+      </li>
+      <li><span id="REPORT_PROPERTIES">Report Properties</span></li> 
+      
+      <li><label class="collapse" for="Model31311dcc-1599-4746-bdfc-cddefe670b88" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <span id="31311dcc-1599-4746-bdfc-cddefe670b88" style="margin-left: 2px;">Simulation Model 1</span>
+    <input id="Model31311dcc-1599-4746-bdfc-cddefe670b88" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><label class="collapse" for="Study$$StudyId$" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <div style="display: inline-flex;">
+        <span id="$$StudyId$" style="margin-left: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;" title="Study 7 - Structural Buckling">Study 7 - Structural Buckling</span>
+    </div>
+    <input id="Study$$StudyId$" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><span id="STUDY_PROPERTIES_$$StudyId$">Study Properties</span></li>
+        <li><label class="collapse" for="StudySetup$$StudyId$" onclick="changeImage(this.children[0])"><img
+            src=""></label>
+            <span id="STUDY_SETUP_$$StudyId$" style="margin-left: 2px;">Study Setup</span>
+            <input id="StudySetup$$StudyId$" type="checkbox" style="display: none;">
+            <ul class="sidebarUL" style="margin-left:-27px;">
+                <li><span id="SETTINGS_$$StudyId$">Settings</span></li>
+                <li><span id="MATERIALS_$$StudyId$">Materials</span></li>
+                <li><span id="CONTACT_$$StudyId$">Contacts</span></li>
+                <li><span id="MESH_$$StudyId$">Mesh</span></li>
+                <li><label class="collapse" for="LoadCase121" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <span id="121" style="margin-left: 2px;">Load Case1</span>
+    <input id="LoadCase121" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><span id="CONSTRAINTS_121">Constraints</span></li>
+        <li><span id="LOADS_121">Loads</span></li>
+		
+        <li><label class="collapse" for="Results121" onclick="changeImage(this.children[0])"><img
+            src=""></label>
+            <span id="RESULT_121" style="margin-left: 2px;">Results</span>
+            <input id="Results121" type="checkbox" style="display: none;">
+            <ul class="sidebarUL" style="margin-left:-27px;">
+                <li><span id="RESULT_SUMMARY_121">Result Summary</span>
+            </ul>
+        </li>
+    </ul>
+</li>
+            </ul>
+        </li>
+    </ul>
+</li>
+    </ul>
+</li>
+    </ul>
+  </div>
+
+  <div id="report_content" class="report_content">
+    <div id="HEADER_CONTENT" class="section">
+      <div style="flex-direction: row; display: flex; justify-content: space-between;">
+        <span class="report_title">Study Report</span>
+        <img src="" class="report_logo" />
+      </div>
+      <table class="report_setup">
+        <tr>
+          <td id="ModelImage" style="text-align: center" colspan="4">
+            <img src="" style="width: 100%" />
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Analyzed File</span></td>
+          <td><span>DFM Assembly</span></td>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Version</span></td>
+          <td><span>Autodesk Fusion (2705.1.15)</span></td>
+        </tr>
+        <tr>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Creation Date</span></td>
+          <td><span>2026-09-25, 10:10:44</span></td>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Author</span></td>
+          <td><span>johnryanmyrdal</span></td>
+        </tr>
+        
+      </table>
+    </div>
+
+    
+        <div id="REPORT_PROPERTIES_CONTENT" class="section">
+            <div class="sectionHeader" style="text-decoration-line: underline;">Report Properties</div>
+            <table class="report_setup">
+                <tr>
+                    <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Report Properties</span></td>
+                </tr>
+                <tr><td class="property-label"><span>Title</span></td><td><span>Studies</span></td></tr><tr><td class="property-label"><span>Author</span></td><td><span>johnryanmyrdal</span></td></tr>
+            </table>
+        </div> 
+
+    
+
+        <link rel="icon" href="https://damassets.autodesk.net/content/dam/autodesk/logos/favicon.png" type="image/png"<div>
+    <div id="31311dcc-1599-4746-bdfc-cddefe670b88_CONTENT" class="sectionHeader" style="text-decoration-line: underline;">Simulation Model 1</div>
+    <div>
+        <div>
+    <div id="$$StudyId$_CONTENT" class="sectionHeader" style="margin-top: 24px; text-decoration-line: underline;">Study 7 - Structural Buckling</div>
+    <div id="STUDY_PROPERTIES_$$StudyId$_CONTENT" class="section">
+        <div class="sectionHeader" style="margin-top: 24px;">Study Properties</div>
+        <table class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Study Properties</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Study Type</span></td>
+                <td><span>Structural Buckling</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Last Modification Date</span></td>
+                <td><span>2026-09-25, 09:53:59</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="STUDY_SETUP_$$StudyId$_CONTENT" class="section">
+        <div class="sectionHeader" style="margin-top: 24px;">Study Setup</div>
+        
+        <table id="SETTINGS_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Settings</span></td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">General</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr><td class="property-label"><span>Contact Tolerance</span></td><td><span>0.10 mm</span></td></tr><tr><td class="property-label"><span>Number of Modes</span></td><td><span>3</span></td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">Mesh</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr>
+                                        <td class="property-label"><span>Average Element Size (% of model size) - Solids</span></td>
+                                        <td><span>8</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Scale Mesh Size Per Part</span></td>
+                                        <td><span>No</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Average Element Size (absolute value)</span></td>
+                                        <td><span>-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Element Order</span></td>
+                                        <td><span>Parabolic</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Create Curved Mesh Elements</span></td>
+                                        <td><span>No</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Turn Angle on Curves (Deg.)</span></td>
+                                        <td><span>60</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Adjacent Mesh Size Ratio</span></td>
+                                        <td><span>1.5</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Aspect Ratio</span></td>
+                                        <td><span>10</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Minimum Element Size (% of average size)</span></td>
+                                        <td><span>20</span></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">Adaptive Mesh Refinement</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr>
+                                        <td class="property-label"><span>Number of Refinement Steps</span></td>
+                                        <td><span>0</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Results Convergence Tolerance (%)</span></td>
+                                        <td><span>20</span></td>
+                                    </tr>
+                                    <tr><td class="property-label"><span>Buckling Mode</span></td><td><span>1</span></td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+
+        
+        <table id="MATERIALS_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Materials</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Steel</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Components</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr>
+                            <td class="property-label"><span>Component</span></td>
+                            <td class="property-label"><span>Strength</span></td>
+                        </tr>
+                        <tr><td>Cable Routing:1</td><td>Yield Strength</td></tr><tr><td>Hardware/Fasteners:1/3076T33_Tie-Down Ring:1/Body1</td><td>Yield Strength</td></tr><tr><td>Hardware/Fasteners:1/3076T33_Tie-Down Ring:1/Body2</td><td>Yield Strength</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Properties</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td class="property-label"><span>Density</span></td><td><span>7.850E-06 kg / mm^3</span></td></tr>
+<tr><td class="property-label"><span>Young's Modulus</span></td><td><span>210000.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Poisson's Ratio</span></td><td><span>0.30</span></td></tr>
+<tr><td class="property-label"><span>Yield Strength</span></td><td><span>207.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Ultimate Tensile Strength</span></td><td><span>345.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Thermal Conductivity</span></td><td><span>0.056 W / (mm K)</span></td></tr>
+<tr><td class="property-label"><span>Thermal Expansion Coefficient</span></td><td><span>1.200E-05 / K</span></td></tr>
+<tr><td class="property-label"><span>Specific Heat</span></td><td><span>480.00 J / (kg K)</span></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">ABS Plastic</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Components</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr>
+                            <td class="property-label"><span>Component</span></td>
+                            <td class="property-label"><span>Strength</span></td>
+                        </tr>
+                        <tr><td>Caps :1/LEAN FLOAT - Cap-Chassis:1</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:1</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:2</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:3</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:4</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:5</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:6</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Part 1:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:2</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:3</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:4</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:5</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:6</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:2</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:3</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:4</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:5</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:6</td><td>Yield Strength</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Properties</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td class="property-label"><span>Density</span></td><td><span>1.060E-06 kg / mm^3</span></td></tr>
+<tr><td class="property-label"><span>Young's Modulus</span></td><td><span>2240.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Poisson's Ratio</span></td><td><span>0.38</span></td></tr>
+<tr><td class="property-label"><span>Yield Strength</span></td><td><span>20.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Ultimate Tensile Strength</span></td><td><span>29.60 MPa</span></td></tr>
+<tr><td class="property-label"><span>Thermal Conductivity</span></td><td><span>1.600E-04 W / (mm K)</span></td></tr>
+<tr><td class="property-label"><span>Thermal Expansion Coefficient</span></td><td><span>8.570E-05 / K</span></td></tr>
+<tr><td class="property-label"><span>Specific Heat</span></td><td><span>1500.00 J / (kg K)</span></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+        </table>
+        
+
+        
+        <table id="CONTACT_$$StudyId$_CONTENT" class="report_setup" style="table-layout: auto">
+            <tr>
+                <td class="tableHeader" colspan="5"><span style="font-weight: 700;">Contacts</span></td>
+            </tr>
+            <tr>
+                <td class="property-label" style="width:15%;"><span>Contact Type</span></td>
+                <td class="property-label" style="width:15%;"><span>Contact Set</span></td>
+                <td class="property-label" style="width:15%;"><span>Penetration Type</span></td>
+                <td class="property-label" style="width:35%;"><span>Bodies</span></td>
+                <td class="property-label" style="width:25%;"><span>Entities</span></td>
+            </tr>
+            
+<tr>
+    <td class="collapsibleRow" colspan="5">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Bonded</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td style="width: 15% !important; padding: 0 !important;"></td>
+    <td colspan="4" style="padding: 0 !important;">
+        <table class="innerTable" style="table-layout: auto; width:100%;">
+            <tr><td style="width:15%;">Bonded1</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Cap-Chassis:1||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 7||Face 1]</td></tr><tr><td style="width:15%;">Bonded2</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:5||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded3</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:3||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded4</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:2||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded5</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:2||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded6</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:1||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded7</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded8</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 39||Face 41]</td></tr><tr><td style="width:15%;">Bonded9</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 39||Face 34]</td></tr><tr><td style="width:15%;">Bonded10</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 39||Face 27]</td></tr><tr><td style="width:15%;">Bonded11</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:6||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 8||Face 41]</td></tr><tr><td style="width:15%;">Bonded12</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:5||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 8||Face 41]</td></tr><tr><td style="width:15%;">Bonded13</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:5||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded14</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:3||Body1 LEAN FLOAT - Wedge Bottom:5]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded15</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:2||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 7||Face 5]</td></tr><tr><td style="width:15%;">Bonded16</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:2||Body1 LEAN FLOAT - Wedge Bottom:3]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded17</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:1||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 7||Face 5]</td></tr><tr><td style="width:15%;">Bonded18</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:1||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded19</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded20</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded21</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded22</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded23</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Bottom:3]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded24</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded25</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded26</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded27</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Bottom:2]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded28</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded29</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge:5]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded30</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded31</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded32</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Bottom:5]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded33</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Cap:2]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded34</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge:5]</td><td style="width:20%;">[Face 10||Face 4]</td></tr><tr><td style="width:15%;">Bonded35</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge:6]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded36</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Cap:2]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded37</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded38</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded39</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Cap:1]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded40</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge:4]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded41</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Cap:1]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded42</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded43</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Bottom:1]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded44</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded45</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge:6]</td><td style="width:20%;">[Face 10||Face 4]</td></tr><tr><td style="width:15%;">Bonded46</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge:2]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded47</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded48</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">[M] Bonded49</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 3076T33_Tie-Down Ring:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 3||Face 25]</td></tr>
+        </table>
+    </td>
+</tr>
+
+
+
+
+
+
+
+        </table>
+        
+        
+        <table id="MESH_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Mesh</span></td>
+            </tr>
+            
+            <tr><td class="property-label"><span>Type</span></td><td><span>Solids</span></td></tr><tr><td class="property-label"><span>Nodes</span></td><td><span>451820</span></td></tr><tr><td class="property-label"><span>Elements</span></td><td><span>239222</span></td></tr>
+            
+        </table>
+        
+        <div>
+    <div id="121_CONTENT" class="sectionHeader" style="margin-top: 24px;">Load Case1</div>
+    
+        <table id="CONSTRAINTS_121_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Constraints</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Fixed1</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td id="ModelImage" style="text-align: center" colspan="2">
+        <img src="" style="width: 100%" />
+    </td>
+</tr>
+
+
+    <tr><td class="property-label"><span>Type</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Ux</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Uy</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Uz</span></td><td><span>Fixed</span></td></tr>
+
+        </table>
+    
+    
+        <table id="LOADS_121_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Loads</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Pressure1</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td id="ModelImage" style="text-align: center" colspan="2">
+        <img src="" style="width: 100%" />
+    </td>
+</tr>
+
+
+    <tr><td class="property-label"><span>Type</span></td><td><span>Pressure</span></td></tr>
+<tr><td class="property-label"><span>Magnitude</span></td><td><span>0.05 MPa</span></td></tr>
+
+        </table>
+    
+	
+    
+        <div id="RESULT_121_CONTENT" class="sectionHeader" style="margin-top: 24px;">Load Case1 - Results</div>
+        
+        <table id="RESULT_SUMMARY_121_CONTENT" class="report_setup">
+            
+            
+            
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Result Summary</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Mode</span></td>
+                <td class="property-label"><span>Load Multiplier</span></td>
+            </tr>
+            
+            
+            
+            <tr><td class="property-label"><span>Buckling Mode 1</span></td><td><span>1.873</span></td></tr><tr><td class="property-label"><span>Buckling Mode 2</span></td><td><span>1.885</span></td></tr><tr><td class="property-label"><span>Buckling Mode 3</span></td><td><span>1.914</span></td></tr>
+        </table>
+        
+		  
+        
+        
+    
+	
+</div>
+    </div>
+</div>
+    </div>
+</div>
+  </div>
+
+  
+    <script>
+        const sidebar = document.getElementById("SIDEBAR");
+        sidebar.style.setProperty("width", "auto", "important");
+        sidebar.style.setProperty("paddingRight", "3%", "important");
+
+        sidebar.style.height = screen.height + "px";
+
+        const spans = sidebar.getElementsByTagName("span");
+        for (let i = 0; i < spans.length; i++) {
+            spans[i].addEventListener("click", function () {
+                changeStyle(spans[i]);
+            });
+        }
+
+        resizeContent();
+
+        window.addEventListener('resize', resizeContent);
+
+        function resizeContent() {
+            const sidebar = document.getElementById("SIDEBAR");
+            var sideBarWidth = sidebar.clientWidth;
+
+            const reportContent = document.getElementById("report_content");
+            reportContent.style.setProperty("marginLeft", sideBarWidth + "px", "important");
+        }
+        
+
+        function changeStyle(item) {
+
+            for (let i = 0; i < spans.length; i++) {
+                spans[i].style.color = "black";
+                spans[i].style.fontWeight = 400;
+            };
+
+            item.style.color = "#0696D7";
+            item.style.fontWeight = 700;
+
+            var scrollID = item.id + "_CONTENT";
+
+            var my_element = document.getElementById(scrollID);
+
+            window.scrollTo({
+                left: 0,
+                top: my_element.offsetTop,
+                behavior: "smooth"
+            });
+        }
+
+        function changeImage(image) {
+            if (image.src == "") {
+                image.src = "";
+            } else {
+                image.src = "";
+            }
+            return true;
+        }
+
+    </script>
+    
+</body>
+
+</html>

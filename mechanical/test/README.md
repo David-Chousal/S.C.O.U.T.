@@ -53,7 +53,9 @@ Still to do, per [design-notes.md](../../docs/hub/design-notes.md):
 - FEA across additional planes/directions (top load, torsion, mooring-point pull)
 - Thermal analysis
 - A validated safety-factor target (this pass used **SF ≥ 4 as a pass/fail check for this
-  study only** — not yet an established, derived requirement)
+  study only** — not yet an established, derived requirement). **2026-09-25:** left as a
+  study-only check. SCO-71 was closed on the v5 FEA margins plus a single-wedge
+  [drop test](wedge-drop-test-2026-09-25.md), without deriving a formal target
 
 **2026-08-18 — validation-target pivot.** The SF 25.4 result above, read against the
 project's cost target, was judged over-engineered — see

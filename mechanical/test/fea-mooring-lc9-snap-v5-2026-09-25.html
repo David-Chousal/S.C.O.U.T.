@@ -1,0 +1,1054 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="icon" href="https://damassets.autodesk.net/content/dam/autodesk/logos/favicon.png" type="image/png" />
+  <link href="https://fonts.autodesk.com/ArtifaktElement/css.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Study Report</title>
+  <style>
+    body {
+      font-family: "ArtifaktElement";
+      font-style: normal;
+      min-width: 1080px;
+    }
+
+    .sidebar {
+      width: 215px !important;
+      height: 100vh;
+      padding-right: 25px !important;
+      background: #f4f5f7;
+      position: fixed;
+      max-width: 215px !important;
+    }
+
+    @media print {
+      @page {
+        margin: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        /*Chrome, Safari */
+        print-color-adjust: exact !important;
+        /*Firefox*/
+      }
+    }
+
+    .report_content {
+      top: 0;
+      float: right;
+      align-self: flex-end;
+      padding-right: 2%;
+      padding-left: 260px !important;
+      margin-top: 47px;
+    }
+
+    .report_title {
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 36px;
+    }
+
+    .report_setup {
+      margin-top: 24px;
+      width: 100%;
+    }
+
+    .report_logo {
+      float: right;
+      align-self: flex-end;
+    }
+
+    tr {
+      height: 23px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    table {
+      table-layout: fixed;
+    }
+
+    table,
+    tr,
+    td {
+      border-collapse: collapse;
+      border: 1px solid #3C3C3C40;
+      padding: 4px 8px 4px 8px;
+    }
+
+    .sidebarUL {
+      list-style-type: none;
+    }
+
+    li {
+      margin-top: 4px;
+    }
+
+    li,
+    li>span {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      color: #3C3C3C;
+    }
+
+     li>span:hover,
+    li>div>span:hover,
+    label>span:hover {
+      color: #0696d7 !important;
+      cursor: pointer;
+      text-decoration-line: underline;
+    }
+    
+    label>img {
+      margin-left: -14px;
+    }
+
+    .logo {
+      margin-top: 19px;
+      margin-left: 34px;
+    }
+
+    td image {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section {
+      margin-bottom: 49px;
+    }
+
+    .sectionHeader {
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 36px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .tableHeader {
+      background-color: #CCCCCC66;
+      font-weight: 700;
+    }
+
+    td>span,
+    div>span {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 16px;
+      display: block;
+    }
+
+    td>span>svg {
+      height: 32px;
+      width: 32px;
+      line-height: 49px;
+      padding-top: 7px;
+    }
+
+    .adviceColumn {
+      width: 122px;
+    }
+
+    .collapse {
+      cursor: pointer;
+    }
+
+    :checked+ul {
+      display: none;
+    }
+
+    .collapsibleRow {
+      background-color: #8080801A;
+    }
+
+    .carret {
+      line-height: 16px;
+    }
+
+    .property-label {
+      background-color: #CCCCCC33;
+    }
+
+    td table, td table tr, td table td {
+      border: none;
+    }
+
+    .innerTable {
+      border-collapse: collapse;
+      border-style: hidden;
+      border-left: 1px solid #3C3C3C40;
+    }
+
+    .innerTable td, .innerTable tr {
+      border: 1px solid #3C3C3C40;
+    }
+
+    .resultImage {
+      padding: 0 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="SIDEBAR" class="sidebar">
+    <img src="" class="logo" />
+    <ul class="sidebarUL" style="margin-top: 22px; margin-left: 8px">
+      <li>
+        <span id="HEADER" style="color: #0696d7; font-weight: 700">Header</span>
+      </li>
+      <li><span id="REPORT_PROPERTIES">Report Properties</span></li> 
+      
+      <li><label class="collapse" for="Model31311dcc-1599-4746-bdfc-cddefe670b88" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <span id="31311dcc-1599-4746-bdfc-cddefe670b88" style="margin-left: 2px;">Simulation Model 1</span>
+    <input id="Model31311dcc-1599-4746-bdfc-cddefe670b88" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><label class="collapse" for="Study$$StudyId$" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <div style="display: inline-flex;">
+        <span id="$$StudyId$" style="margin-left: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;" title="Study 5 - Static Stress">Study 5 - Static Stress</span>
+    </div>
+    <input id="Study$$StudyId$" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><span id="STUDY_PROPERTIES_$$StudyId$">Study Properties</span></li>
+        <li><label class="collapse" for="StudySetup$$StudyId$" onclick="changeImage(this.children[0])"><img
+            src=""></label>
+            <span id="STUDY_SETUP_$$StudyId$" style="margin-left: 2px;">Study Setup</span>
+            <input id="StudySetup$$StudyId$" type="checkbox" style="display: none;">
+            <ul class="sidebarUL" style="margin-left:-27px;">
+                <li><span id="SETTINGS_$$StudyId$">Settings</span></li>
+                <li><span id="MATERIALS_$$StudyId$">Materials</span></li>
+                <li><span id="CONTACT_$$StudyId$">Contacts</span></li>
+                <li><span id="MESH_$$StudyId$">Mesh</span></li>
+                <li><label class="collapse" for="LoadCase120" onclick="changeImage(this.children[0])"><img
+                        src=""></label>
+    <span id="120" style="margin-left: 2px;">Load Case1</span>
+    <input id="LoadCase120" type="checkbox" style="display: none;">
+    <ul class="sidebarUL" style="margin-left:-27px;">
+        <li><span id="CONSTRAINTS_120">Constraints</span></li>
+        <li><span id="LOADS_120">Loads</span></li>
+		<li><label class="collapse" for="GuidedResults120" onclick="changeImage(this.children[0])"><img
+            src=""></label>
+            <span id="GUIDED_RESULT_120" style="margin-left: 2px;">Guided Results</span>
+            <input id="GuidedResults120" type="checkbox" style="display: none;">
+            <ul class="sidebarUL" style="margin-left:-27px;">
+                <li><span id="GR_SafetyFactor_120">Safety Factor</span>
+            </ul>
+        </li>
+        <li><label class="collapse" for="Results120" onclick="changeImage(this.children[0])"><img
+            src=""></label>
+            <span id="RESULT_120" style="margin-left: 2px;">Results</span>
+            <input id="Results120" type="checkbox" style="display: none;">
+            <ul class="sidebarUL" style="margin-left:-27px;">
+                <li><span id="RESULT_SUMMARY_120">Result Summary</span><li><span id="SafetyFactor_120">Safety Factor</span><li><span id="Stress_120">Stress</span><li><span id="Displacement_120">Displacement</span>
+            </ul>
+        </li>
+    </ul>
+</li>
+            </ul>
+        </li>
+    </ul>
+</li>
+    </ul>
+</li>
+    </ul>
+  </div>
+
+  <div id="report_content" class="report_content">
+    <div id="HEADER_CONTENT" class="section">
+      <div style="flex-direction: row; display: flex; justify-content: space-between;">
+        <span class="report_title">Study Report</span>
+        <img src="" class="report_logo" />
+      </div>
+      <table class="report_setup">
+        <tr>
+          <td id="ModelImage" style="text-align: center" colspan="4">
+            <img src="" style="width: 100%" />
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Analyzed File</span></td>
+          <td><span>DFM Assembly</span></td>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Version</span></td>
+          <td><span>Autodesk Fusion (2705.1.15)</span></td>
+        </tr>
+        <tr>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Creation Date</span></td>
+          <td><span>2026-09-25, 10:08:49</span></td>
+          <td style="width: 200px; background-color: #CCCCCC33;"><span>Author</span></td>
+          <td><span>johnryanmyrdal</span></td>
+        </tr>
+        
+      </table>
+    </div>
+
+    
+        <div id="REPORT_PROPERTIES_CONTENT" class="section">
+            <div class="sectionHeader" style="text-decoration-line: underline;">Report Properties</div>
+            <table class="report_setup">
+                <tr>
+                    <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Report Properties</span></td>
+                </tr>
+                <tr><td class="property-label"><span>Title</span></td><td><span>Studies</span></td></tr><tr><td class="property-label"><span>Author</span></td><td><span>johnryanmyrdal</span></td></tr>
+            </table>
+        </div> 
+
+    
+
+        <link rel="icon" href="https://damassets.autodesk.net/content/dam/autodesk/logos/favicon.png" type="image/png"<div>
+    <div id="31311dcc-1599-4746-bdfc-cddefe670b88_CONTENT" class="sectionHeader" style="text-decoration-line: underline;">Simulation Model 1</div>
+    <div>
+        <div>
+    <div id="$$StudyId$_CONTENT" class="sectionHeader" style="margin-top: 24px; text-decoration-line: underline;">Study 5 - Static Stress</div>
+    <div id="STUDY_PROPERTIES_$$StudyId$_CONTENT" class="section">
+        <div class="sectionHeader" style="margin-top: 24px;">Study Properties</div>
+        <table class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Study Properties</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Study Type</span></td>
+                <td><span>Static Stress</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Last Modification Date</span></td>
+                <td><span>2026-09-25, 09:50:45</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="STUDY_SETUP_$$StudyId$_CONTENT" class="section">
+        <div class="sectionHeader" style="margin-top: 24px;">Study Setup</div>
+        
+        <table id="SETTINGS_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Settings</span></td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">General</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr><td class="property-label"><span>Contact Tolerance</span></td><td><span>0.10 mm</span></td></tr><tr><td class="property-label"><span>Remove Rigid Body Modes</span></td><td><span>No</span></td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">Mesh</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr>
+                                        <td class="property-label"><span>Average Element Size (% of model size) - Solids</span></td>
+                                        <td><span>10</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Scale Mesh Size Per Part</span></td>
+                                        <td><span>No</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Average Element Size (absolute value)</span></td>
+                                        <td><span>-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Element Order</span></td>
+                                        <td><span>Parabolic</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Create Curved Mesh Elements</span></td>
+                                        <td><span>Yes</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Turn Angle on Curves (Deg.)</span></td>
+                                        <td><span>60</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Adjacent Mesh Size Ratio</span></td>
+                                        <td><span>1.5</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Max. Aspect Ratio</span></td>
+                                        <td><span>10</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Minimum Element Size (% of average size)</span></td>
+                                        <td><span>20</span></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="collapsibleRow" colspan="2">
+                    <div style="flex-direction: row; display: flex;">
+                        <span class="carret"></span>
+                        <span style="font-weight: 700; margin-left: 8px;">Adaptive Mesh Refinement</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+                    <table>
+                        <tr>
+                            <td style="width: 20px !important; padding: 0 !important;"></td>
+                            <td style="padding: 0 !important;">
+                                <table class="innerTable" style="width: 100%;">
+                                    <tr>
+                                        <td class="property-label"><span>Number of Refinement Steps</span></td>
+                                        <td><span>0</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="property-label"><span>Results Convergence Tolerance (%)</span></td>
+                                        <td><span>20</span></td>
+                                    </tr>
+                                    <tr><td class="property-label"><span>Portion of Elements to Refine (%)</span></td><td><span>10</span></td></tr><tr><td class="property-label"><span>Results for Baseline Accuracy</span></td><td><span>von Mises Stress</span></td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+
+        
+        <table id="MATERIALS_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Materials</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Steel</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Components</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr>
+                            <td class="property-label"><span>Component</span></td>
+                            <td class="property-label"><span>Strength</span></td>
+                        </tr>
+                        <tr><td>Cable Routing:1</td><td>Yield Strength</td></tr><tr><td>Hardware/Fasteners:1/3076T33_Tie-Down Ring:1/Body1</td><td>Yield Strength</td></tr><tr><td>Hardware/Fasteners:1/3076T33_Tie-Down Ring:1/Body2</td><td>Yield Strength</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Properties</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td class="property-label"><span>Density</span></td><td><span>7.850E-06 kg / mm^3</span></td></tr>
+<tr><td class="property-label"><span>Young's Modulus</span></td><td><span>210000.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Poisson's Ratio</span></td><td><span>0.30</span></td></tr>
+<tr><td class="property-label"><span>Yield Strength</span></td><td><span>207.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Ultimate Tensile Strength</span></td><td><span>345.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Thermal Conductivity</span></td><td><span>0.056 W / (mm K)</span></td></tr>
+<tr><td class="property-label"><span>Thermal Expansion Coefficient</span></td><td><span>1.200E-05 / K</span></td></tr>
+<tr><td class="property-label"><span>Specific Heat</span></td><td><span>480.00 J / (kg K)</span></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">ABS Plastic</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Components</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr>
+                            <td class="property-label"><span>Component</span></td>
+                            <td class="property-label"><span>Strength</span></td>
+                        </tr>
+                        <tr><td>Caps :1/LEAN FLOAT - Cap-Chassis:1</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:1</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:2</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:3</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:4</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:5</td><td>Yield Strength</td></tr><tr><td>Caps :1/LEAN FLOAT - Wedge Cap:6</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Part 1:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:2</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:3</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:4</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:5</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge Bottom:6</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:1</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:2</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:3</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:4</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:5</td><td>Yield Strength</td></tr><tr><td>LEAN FLOAT - Wedge:6</td><td>Yield Strength</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Properties</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="2" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 20px !important; padding: 0 !important;"></td>
+                <td style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td class="property-label"><span>Density</span></td><td><span>1.060E-06 kg / mm^3</span></td></tr>
+<tr><td class="property-label"><span>Young's Modulus</span></td><td><span>2240.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Poisson's Ratio</span></td><td><span>0.38</span></td></tr>
+<tr><td class="property-label"><span>Yield Strength</span></td><td><span>20.00 MPa</span></td></tr>
+<tr><td class="property-label"><span>Ultimate Tensile Strength</span></td><td><span>29.60 MPa</span></td></tr>
+<tr><td class="property-label"><span>Thermal Conductivity</span></td><td><span>1.600E-04 W / (mm K)</span></td></tr>
+<tr><td class="property-label"><span>Thermal Expansion Coefficient</span></td><td><span>8.570E-05 / K</span></td></tr>
+<tr><td class="property-label"><span>Specific Heat</span></td><td><span>1500.00 J / (kg K)</span></td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+        </table>
+        
+
+        
+        <table id="CONTACT_$$StudyId$_CONTENT" class="report_setup" style="table-layout: auto">
+            <tr>
+                <td class="tableHeader" colspan="5"><span style="font-weight: 700;">Contacts</span></td>
+            </tr>
+            <tr>
+                <td class="property-label" style="width:15%;"><span>Contact Type</span></td>
+                <td class="property-label" style="width:15%;"><span>Contact Set</span></td>
+                <td class="property-label" style="width:15%;"><span>Penetration Type</span></td>
+                <td class="property-label" style="width:35%;"><span>Bodies</span></td>
+                <td class="property-label" style="width:25%;"><span>Entities</span></td>
+            </tr>
+            
+<tr>
+    <td class="collapsibleRow" colspan="5">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Bonded</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td style="width: 15% !important; padding: 0 !important;"></td>
+    <td colspan="4" style="padding: 0 !important;">
+        <table class="innerTable" style="table-layout: auto; width:100%;">
+            <tr><td style="width:15%;">Bonded1</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Cap-Chassis:1||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 7||Face 1]</td></tr><tr><td style="width:15%;">Bonded2</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:5||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded3</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:3||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded4</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:2||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded5</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:2||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded6</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:1||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 12||Face 11]</td></tr><tr><td style="width:15%;">Bonded7</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Cap:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 11||Face 12]</td></tr><tr><td style="width:15%;">Bonded8</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 39||Face 41]</td></tr><tr><td style="width:15%;">Bonded9</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 39||Face 34]</td></tr><tr><td style="width:15%;">Bonded10</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Part 1:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 39||Face 27]</td></tr><tr><td style="width:15%;">Bonded11</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:6||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 8||Face 41]</td></tr><tr><td style="width:15%;">Bonded12</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:5||Body1 Cable Routing:1]</td><td style="width:20%;">[Face 8||Face 41]</td></tr><tr><td style="width:15%;">Bonded13</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:5||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded14</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:3||Body1 LEAN FLOAT - Wedge Bottom:5]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded15</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:2||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 7||Face 5]</td></tr><tr><td style="width:15%;">Bonded16</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:2||Body1 LEAN FLOAT - Wedge Bottom:3]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded17</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:1||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 7||Face 5]</td></tr><tr><td style="width:15%;">Bonded18</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge Bottom:1||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 5||Face 7]</td></tr><tr><td style="width:15%;">Bonded19</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Bottom:6]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded20</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded21</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Wedge Cap:6]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded22</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:6||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded23</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Bottom:3]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded24</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded25</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Wedge Cap:4]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded26</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:5||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded27</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Bottom:2]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded28</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded29</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge:5]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded30</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Wedge Cap:3]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded31</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:4||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded32</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Bottom:5]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded33</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Cap:2]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded34</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge:5]</td><td style="width:20%;">[Face 10||Face 4]</td></tr><tr><td style="width:15%;">Bonded35</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge:6]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded36</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Wedge Cap:2]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded37</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:3||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded38</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Bottom:4]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded39</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Cap:1]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded40</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge:4]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded41</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Wedge Cap:1]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded42</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:2||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">Bonded43</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Bottom:1]</td><td style="width:20%;">[Face 12||Face 1]</td></tr><tr><td style="width:15%;">Bonded44</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 11||Face 10]</td></tr><tr><td style="width:15%;">Bonded45</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge:6]</td><td style="width:20%;">[Face 10||Face 4]</td></tr><tr><td style="width:15%;">Bonded46</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge:2]</td><td style="width:20%;">[Face 4||Face 10]</td></tr><tr><td style="width:15%;">Bonded47</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Wedge Cap:5]</td><td style="width:20%;">[Face 2||Face 3]</td></tr><tr><td style="width:15%;">Bonded48</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 LEAN FLOAT - Wedge:1||Body1 LEAN FLOAT - Part 1:1]</td><td style="width:20%;">[Face 1||Face 35]</td></tr><tr><td style="width:15%;">[M] Bonded49</td><td style="width:15%;">Symmetric</td><td style="width:35%;">[Body1 3076T33_Tie-Down Ring:1||Body2 3076T33_Tie-Down Ring:1]</td><td style="width:20%;">[Face 3||Face 25]</td></tr>
+        </table>
+    </td>
+</tr>
+
+
+
+
+
+
+
+        </table>
+        
+        
+        <table id="MESH_$$StudyId$_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Mesh</span></td>
+            </tr>
+            
+            <tr><td class="property-label"><span>Type</span></td><td><span>Solids</span></td></tr><tr><td class="property-label"><span>Nodes</span></td><td><span>421829</span></td></tr><tr><td class="property-label"><span>Elements</span></td><td><span>223246</span></td></tr>
+            
+        </table>
+        
+        <div>
+    <div id="120_CONTENT" class="sectionHeader" style="margin-top: 24px;">Load Case1</div>
+    
+        <table id="CONSTRAINTS_120_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Constraints</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Fixed3</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td id="ModelImage" style="text-align: center" colspan="2">
+        <img src="" style="width: 100%" />
+    </td>
+</tr>
+
+
+    <tr><td class="property-label"><span>Type</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Ux</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Uy</span></td><td><span>Fixed</span></td></tr>
+<tr><td class="property-label"><span>Uz</span></td><td><span>Fixed</span></td></tr>
+
+        </table>
+    
+    
+        <table id="LOADS_120_CONTENT" class="report_setup">
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Loads</span></td>
+            </tr>
+            <tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Force2</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td id="ModelImage" style="text-align: center" colspan="2">
+        <img src="" style="width: 100%" />
+    </td>
+</tr>
+
+
+    <tr><td class="property-label"><span>Type</span></td><td><span>Force</span></td></tr>
+<tr><td class="property-label"><span>X Value</span></td><td><span>-371.00 N</span></td></tr>
+<tr><td class="property-label"><span>Y Value</span></td><td><span>0.00 N</span></td></tr>
+<tr><td class="property-label"><span>Z Value</span></td><td><span>-450.00 N</span></td></tr><tr><td class="property-label"><span>Force Per Entity</span></td><td><span>No</span></td></tr>
+<tr>
+    <td class="collapsibleRow" colspan="2">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Moment1</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td id="ModelImage" style="text-align: center" colspan="2">
+        <img src="" style="width: 100%" />
+    </td>
+</tr>
+
+
+    <tr><td class="property-label"><span>Type</span></td><td><span>Moment</span></td></tr>
+<tr><td class="property-label"><span>Magnitude</span></td><td><span>42.00 N mm</span></td></tr>
+<tr><td class="property-label"><span>X Value</span></td><td><span>0.00 N mm</span></td></tr>
+<tr><td class="property-label"><span>Y Value</span></td><td><span>11.543 N mm</span></td></tr>
+<tr><td class="property-label"><span>Z Value</span></td><td><span>-40.383 N mm</span></td></tr>
+<tr><td class="property-label"><span>X Angle</span></td><td><span>0.0 deg</span></td></tr>
+<tr><td class="property-label"><span>Y Angle</span></td><td><span>0.0 deg</span></td></tr>
+<tr><td class="property-label"><span>Z Angle</span></td><td><span>0.0 deg</span></td></tr>
+
+        </table>
+    
+	
+        <div id="GUIDED_RESULT_120_CONTENT" class="sectionHeader" style="margin-top: 24px;">Load Case1 - Guided Results</div>
+        <div>
+    <table id="GR_SafetyFactor_120_CONTENT" class="report_setup">
+        <colgroup>
+            <col class="adviceColumn">
+            <col>
+        </colgroup>
+        <tbody>
+            <tr>
+                <td class="tableHeader" colspan="2"><span style="font-weight: 700;">Safety Factor</span></td>
+            </tr>
+            <tr>
+                <td style="text-align: center;" colspan="2">
+                    <img src="" style="width: 100%;"/>
+                </td>
+            </tr>
+            <tr style="height: 45px;">
+                <td colspan="2">
+                    <span style="display: inline-block; width: 16px; height: 16px; background-color: #DD2222; border-radius: 50%; text-align: center; float:left"></span>
+                    <span style="margin-left: 25px;">With the analysis criteria in this study setup, the design is expected to bend permanently or break.</span>
+                </td>
+            </tr>
+            <tr><td colspan="2" id="tableColumn" style="padding: 0 !important; "><table><tbody><tr><td class="adviceColumn" valign="center" style="padding-top:12px;"><span style = "font-weight: 700;">Next Steps</span></td><td style="padding :0 !important;"><table class="innerTable" style="width:100%;"><tbody><tr><td class = "tableHeader"><span style= "display: inline-block; width: 6px; height: 26px; background-color:#DD2222 ; text-align: center; float:right; margin: -5px -9px -10px 0px; "></span><span style="font-weight: 700;">Below Safety Factor Target</span></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Validate your study setup</span><ul style="margin:2px;"><li>Check the loads are not set too high</li><li>Check the mesh refinement and consider increasing it in areas of high stress</li><li>Confirm your Safety Factor requirement</li><li>If the Displacement result shows high displacement, consider running a Nonlinear study to gain more insight</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Check other results</span><ul style="margin:2px;"><li>Examine the Below target Result visualization to see where the weakest areas are</li><li>Check the stress result to see if, and where, the material might yield</li><li>Check the displacement result to see how far from its original alignment the model has moved</li><li>Look at other results, such as reaction forces to check your study set up, or strain to check your material performance</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Strengthen weak areas</span><ul style="margin:2px;"><li>Add more material to weak areas</li><li>Select a material with a higher yield strength</li><li>Stiffen the design</li><li>Modify the shape with a Generative Design study</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Generate alternative designs</span><ul style="margin:2px;"><li>Add more material to weak areas</li><li>Select a material with a higher yield strength</li><li>Stiffen the design</li><li>Modify the shape with a Generative Design study</li></ul></td></tr><tr><td class = "tableHeader"><span style= "display: inline-block; width: 6px; height: 26px; background-color:#87B340 ; text-align: center; float:right; margin: -5px -9px -10px 0px; "></span><span style="font-weight: 700;">Meets Safety Factor Target</span></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Validate your study setup</span><ul style="margin:2px;"><li>Check the loads are not set too high</li><li>Check the mesh refinement and consider increasing it in areas of high stress</li><li>Confirm your Safety Factor requirement</li><li>If the Displacement result shows high displacement, consider running a Nonlinear study to gain more insight</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Check other results</span><ul style="margin:2px;"><li>Examine the Below target Result visualization to see where the weakest areas are</li><li>Check the stress result to see if, and where, the material might yield</li><li>Check the displacement result to see how far from its original alignment the model has moved</li><li>Look at other results, such as reaction forces to check your study set up, or strain to check your material performance</li></ul></td></tr><tr><td class = "tableHeader"><span style= "display: inline-block; width: 6px; height: 26px; background-color:#2048E0 ; text-align: center; float:right; margin: -5px -9px -10px 0px; "></span><span style="font-weight: 700;">Above Safety Factor Limit</span></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Validate your study setup</span><ul style="margin:2px;"><li>Check the loads are not set too high</li><li>Check the mesh refinement and consider increasing it in areas of high stress</li><li>Confirm your Safety Factor requirement</li><li>If the Displacement result shows high displacement, consider running a Nonlinear study to gain more insight</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Check other results</span><ul style="margin:2px;"><li>Examine the Below target Result visualization to see where the weakest areas are</li><li>Check the stress result to see if, and where, the material might yield</li><li>Check the displacement result to see how far from its original alignment the model has moved</li><li>Look at other results, such as reaction forces to check your study set up, or strain to check your material performance</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Lightweight the design</span><ul style="margin:2px;"><li>Set a Safety Factor upper limit to find where material can be removed</li><li>Remove material from areas that exceed the Safety Factor upper limit</li></ul></td></tr><tr><td style="padding-left: 20px !important; "><span style="font-weight: 700;">Generate alternative designs</span><ul style="margin:2px;"><li>In the Generative Design workspace, create design modifications</li><li>Remove unnecessary material using a Shape Optimization study</li></ul></td></tr></tbody></table></td></tr></tbody></table></td></tr>
+        </tbody>
+    </table>
+</div>
+
+    
+    
+        <div id="RESULT_120_CONTENT" class="sectionHeader" style="margin-top: 24px;">Load Case1 - Results</div>
+        
+        <table id="RESULT_SUMMARY_120_CONTENT" class="report_setup">
+            
+            
+            <tr>
+                <td class="tableHeader" colspan="4"><span style="font-weight: 700;">Result Summary</span></td>
+            </tr>
+            <tr>
+                <td class="property-label"><span>Result type</span></td>
+                <td class="property-label"><span>Sub-result</span></td>
+                <td class="property-label"><span>Minimum</span></td>
+                <td class="property-label"><span>Maximum</span></td>
+            </tr>
+            
+            
+            <tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Safety Factor</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Safety Factor</td><td>0.008</td><td>6.226E+06</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Stress</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Von Mises</td><td>0 MPa</td><td>24,782.162 MPa</td></tr><tr><td>1st Principal</td><td>−15,561.664 MPa</td><td>27,665.127 MPa</td></tr><tr><td>3rd Principal</td><td>−29,845.148 MPa</td><td>8,776.036 MPa</td></tr><tr><td>Normal XX</td><td>−22,250.095 MPa</td><td>17,996.167 MPa</td></tr><tr><td>Normal YY</td><td>−22,320.988 MPa</td><td>23,873.563 MPa</td></tr><tr><td>Normal ZZ</td><td>−24,063.832 MPa</td><td>18,692.811 MPa</td></tr><tr><td>Shear XY</td><td>−6,246.904 MPa</td><td>9,056.099 MPa</td></tr><tr><td>Shear YZ</td><td>−8,906.755 MPa</td><td>7,253.825 MPa</td></tr><tr><td>Shear XZ</td><td>−9,182.262 MPa</td><td>10,402.468 MPa</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Displacement</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Total</td><td>0 mm</td><td>907.354 mm</td></tr><tr><td>X</td><td>−669.301 mm</td><td>9.921 mm</td></tr><tr><td>Y</td><td>−0.592 mm</td><td>35.968 mm</td></tr><tr><td>Z</td><td>−675.531 mm</td><td>1.008 mm</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Reaction Force</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Total</td><td>0 N</td><td>3,895.084 N</td></tr><tr><td>X</td><td>−822.833 N</td><td>1,536.012 N</td></tr><tr><td>Y</td><td>−935.351 N</td><td>822.702 N</td></tr><tr><td>Z</td><td>−2,532.529 N</td><td>3,690.493 N</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Strain</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Equivalent</td><td>0</td><td>0.183</td></tr><tr><td>1st Principal</td><td>−0.001</td><td>0.144</td></tr><tr><td>3rd Principal</td><td>−0.193</td><td>1.042E-06</td></tr><tr><td>Normal XX</td><td>−0.079</td><td>0.066</td></tr><tr><td>Normal YY</td><td>−0.044</td><td>0.062</td></tr><tr><td>Normal ZZ</td><td>−0.101</td><td>0.086</td></tr><tr><td>Shear XY</td><td>−0.077</td><td>0.112</td></tr><tr><td>Shear YZ</td><td>−0.11</td><td>0.09</td></tr><tr><td>Shear XZ</td><td>−0.114</td><td>0.129</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Contact Pressure</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Total</td><td>0 MPa</td><td>13,485.739 MPa</td></tr><tr><td>X</td><td>−2,154.812 MPa</td><td>1,038.521 MPa</td></tr><tr><td>Y</td><td>−2,482.484 MPa</td><td>3,235.443 MPa</td></tr><tr><td>Z</td><td>−10,815.892 MPa</td><td>13,091.303 MPa</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><tr>
+    <td class="collapsibleRow" colspan="4">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret" style="margin-left: 20px;"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Contact Force</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td id="tableColumn" colspan="4" style="padding: 0 !important;">
+        <table>
+            <tr>
+                <td style="width: 25% !important; padding: 0 !important;"></td>
+                <td colspan="3" style="padding: 0 !important;">
+                    <table class="innerTable" style="width: 100%;">
+                        <tr><td>Total</td><td>0 N</td><td>7,494.315 N</td></tr><tr><td>X</td><td>−1,415.593 N</td><td>2,081.57 N</td></tr><tr><td>Y</td><td>−1,515.22 N</td><td>1,285.966 N</td></tr><tr><td>Z</td><td>−7,338.032 N</td><td>6,792.21 N</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+            
+            
+        </table>
+        
+		  
+        
+        <table id="SafetyFactor_120_CONTENT" class="report_setup">
+    <tr>
+        <td class="tableHeader"><span style="font-weight: 700;">Safety Factor</span></td>
+    </tr>
+    <tr>
+    <td class="collapsibleRow">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Safety Factor</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="resultImage" style="text-align: center; height: 254px;">
+        <img class="resultImage" src="" style="width: 100%;" alt="$$ImageCompatibilityInfo$" />
+    </td>
+</tr>
+</table><table id="Stress_120_CONTENT" class="report_setup">
+    <tr>
+        <td class="tableHeader"><span style="font-weight: 700;">Stress</span></td>
+    </tr>
+    <tr>
+    <td class="collapsibleRow">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Von Mises</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="resultImage" style="text-align: center; height: 254px;">
+        <img class="resultImage" src="" style="width: 100%;" alt="$$ImageCompatibilityInfo$" />
+    </td>
+</tr><tr>
+    <td class="collapsibleRow">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">1st Principal</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="resultImage" style="text-align: center; height: 254px;">
+        <img class="resultImage" src="" style="width: 100%;" alt="$$ImageCompatibilityInfo$" />
+    </td>
+</tr><tr>
+    <td class="collapsibleRow">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">3rd Principal</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="resultImage" style="text-align: center; height: 254px;">
+        <img class="resultImage" src="" style="width: 100%;" alt="$$ImageCompatibilityInfo$" />
+    </td>
+</tr>
+</table><table id="Displacement_120_CONTENT" class="report_setup">
+    <tr>
+        <td class="tableHeader"><span style="font-weight: 700;">Displacement</span></td>
+    </tr>
+    <tr>
+    <td class="collapsibleRow">
+        <div style="flex-direction: row; display: flex;">
+            <span class="carret"></span>
+            <span style="font-weight: 700; margin-left: 8px;">Total</span>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td class="resultImage" style="text-align: center; height: 254px;">
+        <img class="resultImage" src="" style="width: 100%;" alt="$$ImageCompatibilityInfo$" />
+    </td>
+</tr>
+</table>
+    
+	
+</div>
+    </div>
+</div>
+    </div>
+</div>
+  </div>
+
+  
+    <script>
+        const sidebar = document.getElementById("SIDEBAR");
+        sidebar.style.setProperty("width", "auto", "important");
+        sidebar.style.setProperty("paddingRight", "3%", "important");
+
+        sidebar.style.height = screen.height + "px";
+
+        const spans = sidebar.getElementsByTagName("span");
+        for (let i = 0; i < spans.length; i++) {
+            spans[i].addEventListener("click", function () {
+                changeStyle(spans[i]);
+            });
+        }
+
+        resizeContent();
+
+        window.addEventListener('resize', resizeContent);
+
+        function resizeContent() {
+            const sidebar = document.getElementById("SIDEBAR");
+            var sideBarWidth = sidebar.clientWidth;
+
+            const reportContent = document.getElementById("report_content");
+            reportContent.style.setProperty("marginLeft", sideBarWidth + "px", "important");
+        }
+        
+
+        function changeStyle(item) {
+
+            for (let i = 0; i < spans.length; i++) {
+                spans[i].style.color = "black";
+                spans[i].style.fontWeight = 400;
+            };
+
+            item.style.color = "#0696D7";
+            item.style.fontWeight = 700;
+
+            var scrollID = item.id + "_CONTENT";
+
+            var my_element = document.getElementById(scrollID);
+
+            window.scrollTo({
+                left: 0,
+                top: my_element.offsetTop,
+                behavior: "smooth"
+            });
+        }
+
+        function changeImage(image) {
+            if (image.src == "") {
+                image.src = "";
+            } else {
+                image.src = "";
+            }
+            return true;
+        }
+
+    </script>
+    
+</body>
+
+</html>

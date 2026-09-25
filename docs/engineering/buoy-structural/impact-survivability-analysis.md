@@ -27,6 +27,12 @@
 > must be re-run against the lean wall section before the impact spec is frozen; the foam
 > backing behind the cap is unchanged and still carries most of a drop.
 >
+> **2026-09-25: closed by team decision, not by re-analysis.** A single printed wedge was dropped
+> with no deformation, and John (GENG lead) accepted that plus the v5 FEA as sufficient to close
+> [SCO-71](https://linear.app/scout1/issue/SCO-71). Scenario C was **not** re-run against the lean
+> section; the drop's height and surface were not recorded. See the
+> [drop test](../../../mechanical/test/wedge-drop-test-2026-09-25.md).
+>
 > **Proposed path** — `docs/engineering/buoy-structural/impact-survivability-analysis.md`
 
 ## 0. Provenance

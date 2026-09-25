@@ -130,7 +130,12 @@ strictly more margin — no full FEA re-run is needed to re-establish load adequ
    re-run regardless of the resize.
 
 These fold into [SCO-73](https://linear.app/scout1/issue/SCO-73) (structural FEA) and
-[SCO-71](https://linear.app/scout1/issue/SCO-71) (impact + ring buckling). The scheduling
+[SCO-71](https://linear.app/scout1/issue/SCO-71) (impact + ring buckling).
+
+**Update 2026-09-25:** checks 1 and 2 were run in FEA at the v5 loads and pass (wedge wall min SF
+~3.5 PETG under LC8, unfoamed; ring buckling load factor 1.87 unfoamed, so foam fill is
+structurally required for the 5 m test). Check 3 is still owed, and LC7's moment was mis-entered
+and closed by hand. See [FEA results § v5 re-check](../../../mechanical/test/fea-mooring-load-cases.md#results--v5-re-check-2026-09-25). The scheduling
 takeaway: **the resize did not create an urgent full-model FEA re-run** — it lowered every load
 — but the thin-wall wedge and the ring-buckling mode still need their own analyses before the
 structure is signed off.

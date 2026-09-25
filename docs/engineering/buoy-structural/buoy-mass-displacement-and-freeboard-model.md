@@ -19,9 +19,10 @@
 > wedge walls thinned to **0.095 in outer / 0.063 in sides + web** (was 0.250 in uniform), outer
 > radius R9.000 in unchanged — the [SCO-110](https://linear.app/scout1/issue/SCO-110) resize +
 > the 2026-09-07 thin-wall pass. The prior v4 build (2026-08-29) is preserved verbatim in
-> [§14](#14-prior-revision--v4-2026-08-29-build). **Headline shift: nominal mass 8.40 → ~7.59 kg,
-> max buoyant force 391 → 286 N, net reserve 309 → ~212 N (4.75× → 3.84×), nominal draft
-> 2.69 → 2.50 in, freeboard to the wedge top 7.31 → ~5.0 in.** The "substantially over-floated"
+> [§14](#14-prior-revision--v4-2026-08-29-build). **Headline shift: nominal mass 8.40 → ~7.75 kg,
+> max buoyant force 391 → 286 N, net reserve 309 → ~210 N (4.75× → 3.77×), nominal draft
+> 2.69 → 2.53 in, freeboard to the wedge top 7.31 → ~4.97 in.** (Updated 2026-09-25 with the
+> measured lean wedge bottom, 207.06 g — was 7.59 kg / 212 N / 3.84× / 2.50 in on the v4 part.) The "substantially over-floated"
 > conclusion is unchanged.
 >
 > ⚠️ **Tier I shell masses are geometric estimates.** No v5 re-slice exists yet
@@ -34,14 +35,17 @@
 > [`mechanical/cad/floatation/`](../../../mechanical/cad/floatation/) for the wedge; the v4
 > `current/` chassis/cap drawings for parts not yet re-exported, scaled to the v5 heights.
 >
-> ⚠️ **The wedge bottom is still the v4 part here** (181.21 g, 0.452 L cavity). It was
-> re-modelled "lean" on 2026-09-10 — lighter print, smaller foam cavity, **height and outer
+> **Wedge bottom — lean v5 part, mass measured 2026-09-25** (**207.06 g**, slicer, 4 walls /
+> 0.18 mm layers / 15% gyroid; 67.78 m filament). It is **heavier** than the v4 part (181.21 g,
+> +25.85 g each, +155.1 g for six) despite the "lean" re-model of 2026-09-10 — the settings
+> above, not the geometry, set the mass. §3 and everything below now carry 207.06 g.
+> ⚠️ **The foam cavity (0.452 L) and the 2-in taper height are wrong — see the STEP check
+> below.** **Height and outer
 > radius unchanged from v4**
 > ([floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
-> [SCO-111](https://linear.app/scout1/issue/SCO-111)) — but no re-slice exists yet, so §3 and
-> below still carry the v4 figure. Because the envelope is unchanged, the foam-filled module's
-> displacement is essentially the same; the only shift is a lighter printed mass slightly
-> lowering total mass and draft. Does not touch the over-floated conclusion.
+> [SCO-111](https://linear.app/scout1/issue/SCO-111)). Because the envelope is unchanged, the
+> displacement is the same; the only shift is +155 g of printed mass, raising the nominal draft
+> by 0.03 in. Does not touch the over-floated conclusion.
 > **Source weigh-in (v4 parts carried forward)** — full five-part slicer weigh-in, 2026-08-24, in
 > [`mechanical/test/print-weight-verification-2026-08-24.md`](../../../mechanical/test/print-weight-verification-2026-08-24.md).
 > **Design basis** — [`../reviews/buoy-preliminary-design-panel-review-2026-08.md`](../reviews/buoy-preliminary-design-panel-review-2026-08.md).
@@ -54,6 +58,25 @@
 > out as such and carried as low / nominal / high ranges.
 >
 > **Proposed path** — `docs/engineering/buoy-structural/buoy-mass-displacement-and-freeboard-model.md`
+
+> ⚠️ **STEP geometry check (2026-09-25).** Measured from the committed STEP files (gmsh/OpenCASCADE):
+> the **wedge bottom is 3.00 in (76.2 mm) tall** in both v4 and v5, not the 2.0 in this model's
+> taper zone assumes, and the chassis STEP spans the wedge bottom + wedge exactly (v4: −3 to
+> +8 in), with no 1-in stub above the wedge top. Per wedge bottom:
+> 
+> | | Envelope (displacement) | Plastic (solid) | Foam cavity |
+> |---|---:|---:|---:|
+> | v4 (STEP) | 1.255 L | 435.0 cm³ | 0.820 L |
+> | **v5 lean (STEP)** | **1.348 L** | **263.4 cm³** | **1.084 L** |
+> | Assumed in this model | 0.686 L | 234 cm³ | 0.452 L |
+> 
+> So the taper zone displaces ~8.1 L, not 4.1 L, and the foam fill grows by ~3.8 L (~+120 g at
+> 2 lb/ft³). The buoy has **more** reserve than stated here and floats higher, so the
+> over-floated conclusion strengthens. The draft/freeboard numbers below still use the 2-in stack
+> and are **not yet rebuilt** — see the stack-rebuild ticket linked from
+> [SCO-111](https://linear.app/scout1/issue/SCO-111). Method: envelope = ∫ (π/6)(R(z)² − 73.18²) dz
+> from 0.2 mm slices of the outer profile; the cavity = envelope − solid below the rim. The two bolt
+> holes (~0.2 cm³) are counted as cavity.
 
 ## How to update this document
 
@@ -165,8 +188,9 @@ All masses in grams unless noted. `Total = Tier I + Tier II + Tier III`.
 
 ### Tier I — measured shell (v4 parts) + geometric estimates (v5 parts)
 
-The wedge-bottom, wedge-cap, and chassis-cap are physical slicer-scale measurements from the
-2026-08-24 weigh-in and are **unchanged in v5** (their geometry did not change). The **wedge
+The wedge-cap and chassis-cap are physical slicer-scale measurements from the 2026-08-24
+weigh-in and are **unchanged in v5** (their geometry did not change). The **wedge bottom** is the
+lean v5 part, slicer-measured 2026-09-25. The **wedge
 shell and chassis are v5 geometric estimates** — no re-slice exists yet.
 
 | Item | Unit (g) | Qty | Line (g) | Tag | Basis |
@@ -174,21 +198,21 @@ shell and chassis are v5 geometric estimates** — no re-slice exists yet.
 | Chassis (printed shell, v5) | ~600 | 1 | 600 | **[A geom]** | v4 measured 712.82 g scaled to 8.5 in: `712.82 × (0.30 + 0.70·8.5/11.0) = 599` |
 | Chassis Cap (printed) | 89.79 | 1 | 89.79 | [M] | slicer 2026-08-24, unchanged in v5 |
 | Wedge shell (printed, v5) | ~240 | 6 | 1440 | **[A geom]** | wall material `11.49 in³ = 188 cm³ × 1.27 g/cm³ = 239 g` ([§4.1](#41-cavity-volume-per-module-v5)); brackets the 168–273 g v5 slicing-pass range in [`floatation/README.md`](../../../mechanical/cad/floatation/README.md#thin-wall--dfm-bracing-web-iteration-v5--2026-09-07) |
-| Wedge Bottom (printed) | 181.21 | 6 | 1087.26 | [M] | slicer 2026-08-24, unchanged in v5 |
+| Wedge Bottom (printed, lean v5) | 207.06 | 6 | 1242.36 | [M] | slicer 2026-09-25 — 4 walls, 0.18 mm layers, 15% gyroid, 67.78 m (v4 was 181.21 g) |
 | Wedge Cap (printed) | 126.86 | 6 | 761.16 | [M] | slicer 2026-08-24, unchanged in v5 |
-| **Printed shell subtotal (v5)** | | | **3978.4** | [A geom] | `600 + 89.79 + 6·240 + 6·181.21 + 6·126.86` |
+| **Printed shell subtotal (v5)** | | | **4133.3** | [A geom] | `600 + 89.79 + 6·240 + 6·207.06 + 6·126.86` |
 | Feather M0 + RFM95 (Adafruit 3178) | 5.8 | 1 | 5.8 | [M] | datasheet p.7 |
-| **Tier I TOTAL (v5)** | | | **3984.2** | | ≈ **3.984 kg** (v4 was 4.612 kg) |
+| **Tier I TOTAL (v5)** | | | **4139.1** | | ≈ **4.139 kg** (v4 was 4.612 kg) |
 
 Printed-shell arithmetic, in full:
 ```
 Chassis (v5 est) 600.00 × 1 =  600.00
 Chassis Cap       89.79 × 1 =   89.79
 Wedge (v5 est)   240.00 × 6 = 1440.00
-Wedge Bottom     181.21 × 6 = 1087.26
+Wedge Bottom     207.06 × 6 = 1242.36
 Wedge Cap        126.86 × 6 =  761.16
                               --------
-                              3978.21 g = 3.978 kg   [A geom]
+                              4133.31 g = 4.133 kg   [A geom]
 ```
 
 > **Why the wedge shell drops from 325.83 g to ~240 g.** Two effects compound: the shell is
@@ -232,17 +256,17 @@ Unchanged from v4 — none of these parts were touched by the resize.
 
 | Scenario | Tier I | Tier II | Tier III | **TOTAL mass** | **Weight `W = m·g`** |
 |---|---:|---:|---:|---:|---:|
-| **Low** | 3984.2 | 1377.6 | 890 | **6252 g ≈ 6.25 kg** | **61.3 N** (6.25 kgf / 13.8 lbf) |
-| **Nominal** | 3984.2 | 1839.6 | 1770 | **7594 g ≈ 7.59 kg** | **74.5 N** (7.59 kgf / 16.7 lbf) |
-| **High** | 3984.2 | 2357.6 | 3350 | **9692 g ≈ 9.69 kg** | **95.1 N** (9.69 kgf / 21.4 lbf) |
+| **Low** | 4139.1 | 1377.6 | 890 | **6407 g ≈ 6.41 kg** | **62.9 N** (6.41 kgf / 14.1 lbf) |
+| **Nominal** | 4139.1 | 1839.6 | 1770 | **7749 g ≈ 7.75 kg** | **76.0 N** (7.75 kgf / 17.1 lbf) |
+| **High** | 4139.1 | 2357.6 | 3350 | **9847 g ≈ 9.85 kg** | **96.6 N** (9.85 kgf / 21.7 lbf) |
 
 ```
-Nominal: 3984.2 + 1839.6 + 1770.0 = 7593.8 g  →  7.594 kg
-W_nom = 7.594 kg × 9.81 m/s² = 74.50 N
+Nominal: 4139.1 + 1839.6 + 1770.0 = 7748.7 g  →  7.749 kg
+W_nom = 7.749 kg × 9.81 m/s² = 76.02 N
 ```
 
-Nominal composition: printed shell **3.978 kg (52.4%)**, foam **0.710 kg (9.3%)**, everything
-else **2.906 kg (38.3%)**. The two widest single uncertainty bands are still the **solar panel**
+Nominal composition: printed shell **4.133 kg (53.3%)**, foam **0.710 kg (9.2%)**, everything
+else **2.906 kg (37.5%)**. The two widest single uncertainty bands are still the **solar panel**
 (0.30–1.50 kg) and the **battery** (0.04–0.60 kg), both blocked on decisions not yet made — plus,
 new in v5, the **~±60 g on the estimated wedge-shell mass** (`6 × ~10 g`) and **~±40 g on the
 chassis estimate** until the re-slice.
@@ -251,9 +275,9 @@ chassis estimate** until the re-slice.
 
 | Case | Total mass |
 |---|---:|
-| Nominal | 7.59 kg |
-| Nominal + foam at 4 lb/ft³ | `7.594 + 0.710 = ` **8.30 kg** |
-| Nominal + wedge shell at the 273 g top of the v5 slice range | `7.594 + 6·0.033 = ` **7.79 kg** |
+| Nominal | 7.75 kg |
+| Nominal + foam at 4 lb/ft³ | `7.749 + 0.710 = ` **8.46 kg** |
+| Nominal + wedge shell at the 273 g top of the v5 slice range | `7.749 + 6·0.033 = ` **7.95 kg** |
 | High estimate + foam sensitivity | ≈ 10.4 kg |
 
 ---
@@ -326,8 +350,8 @@ F_B,foam (per module) = ρ_sw · g · V_cavity − (m_foam · g)
 All 6 modules, foam alone = 36.00 × 6 = 216.0 N     (≈ 22.0 kgf / 48.6 lbf) net upward
 ```
 
-With every printed shell gone, the foam alone still lifts **~22 kgf — ~2.9× the entire nominal
-7.59 kg all-up mass** (v4 was ~3.2×). The panel-review "a cracked wedge shell must retain useful
+With every printed shell gone, the foam alone still lifts **~22 kgf — ~2.8× the entire nominal
+7.75 kg all-up mass** (v4 was ~3.2×). The panel-review "a cracked wedge shell must retain useful
 buoyancy" intent ([SCO-81](https://linear.app/scout1/issue/SCO-81)) is still met with margin.
 
 ---
@@ -372,14 +396,14 @@ F_B,max = ρ_sw · g · V_disp,total
 ```
 Net reserve = F_B,max − W_total
 
-Low mass   (6.25 kg):  W = 61.3 N  →  reserve = 286.4 − 61.3  = 225.1 N  (22.9 kgf / 50.6 lbf)
-Nominal    (7.59 kg):  W = 74.5 N  →  reserve = 286.4 − 74.5  = 211.9 N  (21.6 kgf / 47.6 lbf)
-High mass  (9.69 kg):  W = 95.1 N  →  reserve = 286.4 − 95.1  = 191.3 N  (19.5 kgf / 43.0 lbf)
+Low mass   (6.41 kg):  W = 62.9 N  →  reserve = 286.4 − 62.9  = 223.5 N  (22.8 kgf / 50.2 lbf)
+Nominal    (7.75 kg):  W = 76.0 N  →  reserve = 286.4 − 76.0  = 210.4 N  (21.4 kgf / 47.3 lbf)
+High mass  (9.85 kg):  W = 96.6 N  →  reserve = 286.4 − 96.6  = 189.8 N  (19.3 kgf / 42.7 lbf)
 ```
 
-`F_B,max / W_nom = 286.4 / 74.5 = 3.84` — **the fully-submerged hull can support 3.84× the
-entire nominal deployed weight** (v4 was 4.75×). At the high-mass estimate the ratio is
-`286.4 / 95.1 = 3.01`. This matches the SCO-110 decision basis ("~3.9× nominal, ~2.9× high"),
+`F_B,max / W_nom = 286.4 / 76.0 = 3.77` — **the fully-submerged hull can support 3.77× the
+entire nominal deployed weight** (v4 was 4.75×; 3.84× before the 2026-09-25 wedge-bottom
+weigh-in). At the high-mass estimate the ratio is `286.4 / 96.6 = 2.96`. This matches the SCO-110 decision basis ("~3.9× nominal, ~2.9× high"),
 which is what the resize was sized against. ~74% of the hull's displaced volume is still unused
 reserve at nominal mass.
 
@@ -387,10 +411,10 @@ reserve at nominal mass.
 
 | Case | `W` | Reserve = `F_B,max − W` | Note |
 |---|---:|---:|---|
-| Foam-filled shell, no payload | `(3.978 + 0.710)·9.81 = 46.0 N` | **+240.4 N** | printed shell + foam only |
-| True bare shell, cavities air-filled, no foam | `3.978·9.81 = 39.0 N` | **+247.4 N** | |
-| Bare shell, wedges open and flooded, **chassis sealed** | `3.978·9.81 = 39.0 N` | ≈ **+30.5 N** | displacement collapses to chassis+cap envelope (3.777 L) + PETG wall material (`3978 g / 1.27 = 3.13 L`) ≈ 6.91 L → `F_B ≈ 1025·9.81·0.00691 = 69.5 N`. Still positive, thinner than v4's ~+34 N — the foam fill is what turns this into the +240 N case above |
-| Bare shell, wedges **and** chassis flooded | `3.978·9.81 = 39.0 N` | ≈ **−7.5 N** (sinks) | `V_disp = 3978 g / 1.27 = 3.13 L → F_B = 31.5 N < W`. The chassis O-ring seal is the line between "floats on shell alone" and "sinks" once foam is discounted |
+| Foam-filled shell, no payload | `(4.133 + 0.710)·9.81 = 47.5 N` | **+238.9 N** | printed shell + foam only |
+| True bare shell, cavities air-filled, no foam | `4.133·9.81 = 40.5 N` | **+245.9 N** | |
+| Bare shell, wedges open and flooded, **chassis sealed** | `4.133·9.81 = 40.5 N` | ≈ **+30.2 N** | displacement collapses to chassis+cap envelope (3.777 L) + PETG wall material (`4133 g / 1.27 = 3.25 L`) ≈ 7.03 L → `F_B ≈ 1025·9.81·0.00703 = 70.7 N`. Still positive, thinner than v4's ~+34 N — the foam fill is what turns this into the +240 N case above |
+| Bare shell, wedges **and** chassis flooded | `4.133·9.81 = 40.5 N` | ≈ **−7.8 N** (sinks) | `V_disp = 4133 g / 1.27 = 3.25 L → F_B = 32.7 N < W`. The chassis O-ring seal is the line between "floats on shell alone" and "sinks" once foam is discounted |
 
 ---
 
@@ -412,7 +436,7 @@ the hull. Their effect on the floating hull is `(weight − own displacement)`, 
 
 ```
 appendage displacement credit = 880 − 507.7 = 372.3 g ≈ 0.372 kg
-waterplane-supported load (nominal) = m_total − 0.372 kg = 7.594 − 0.372 = 7.222 kg
+waterplane-supported load (nominal) = m_total − 0.372 kg = 7.749 − 0.372 = 7.377 kg
 ```
 
 A **zero-credit** variant is carried alongside every result and shifts the nominal draft by only
@@ -465,17 +489,17 @@ check at T = 7.5:  4.967 + 4.170 · 5.5 = 4.967 + 22.935 = 27.902 L
 ### 7.3 Equilibrium solve at nominal mass
 
 ```
-waterplane-supported load = m_total − appendage displacement credit = 7.594 − 0.372 = 7.222 kg
-required displaced volume  V_req = 7.222 kg / 1.025 kg/L = 7.045 L
+waterplane-supported load = m_total − appendage displacement credit = 7.749 − 0.372 = 7.377 kg
+required displaced volume  V_req = 7.377 kg / 1.025 kg/L = 7.197 L
 
-7.045 L  >  4.967 L (full taper zone)   →   solution lands in the PARALLEL zone
+7.197 L  >  4.967 L (full taper zone)   →   solution lands in the PARALLEL zone
 
-7.045 = 4.967 + 4.170 · (T − 2.0)
-(7.045 − 4.967) / 4.170 = 2.078 / 4.170 = 0.498 in
-T = 2.0 + 0.498 = 2.498 in  ≈  2.50 in  =  63.5 mm
+7.197 = 4.967 + 4.170 · (T − 2.0)
+(7.197 − 4.967) / 4.170 = 2.230 / 4.170 = 0.535 in
+T = 2.0 + 0.535 = 2.535 in  ≈  2.53 in  =  64.4 mm
 ```
-Zero-credit variant: `V_req = 7.594 / 1.025 = 7.409 L → T = 2.0 + (7.409 − 4.967)/4.170 = 2.59 in`
-(+0.09 in). The 2.50 in value is carried forward.
+Zero-credit variant: `V_req = 7.749 / 1.025 = 7.560 L → T = 2.0 + (7.560 − 4.967)/4.170 = 2.62 in`
+(+0.09 in). The 2.53 in value is carried forward.
 
 ### 7.4 Freeboard results (nominal, all from the keel datum `z = 0`)
 
@@ -485,14 +509,14 @@ vertical-stack assumption, and the [§6](#6-submerged-appendages) 0.372 kg appen
 
 | Quantity | Value |
 |---|---|
-| **Draft `T`** | **2.50 in / 63.5 mm** |
-| Waterline elevation | `z = 2.50 in` |
-| Zone the solution lands in | parallel 18-in float section, 0.50 in above the taper break |
-| **Freeboard to top of the 18-in float section** (`z = 7.5`): `7.5 − T` | **5.00 in / 127 mm** |
-| Freeboard to top of the buoy body / chassis cap (`z ≈ 9.5`): `9.5 − T` | **7.00 in / 178 mm** |
-| Parallel 18-in float section (`z = 2→7.5`, 5.5 in tall) — submerged fraction: `(T − 2)/5.5` | **0.091 → 9.1% wetted, 90.9% exposed** |
-| Whole flotation body (`z = 0→7.5`, 7.5 in) — submerged fraction: `T/7.5` | **0.33** |
-| Total buoy body height (`z = 0→9.5`, 9.5 in) — immersed fraction: `T/9.5` | **0.26** |
+| **Draft `T`** | **2.53 in / 64.4 mm** |
+| Waterline elevation | `z = 2.53 in` |
+| Zone the solution lands in | parallel 18-in float section, 0.53 in above the taper break |
+| **Freeboard to top of the 18-in float section** (`z = 7.5`): `7.5 − T` | **4.97 in / 126 mm** |
+| Freeboard to top of the buoy body / chassis cap (`z ≈ 9.5`): `9.5 − T` | **6.97 in / 177 mm** |
+| Parallel 18-in float section (`z = 2→7.5`, 5.5 in tall) — submerged fraction: `(T − 2)/5.5` | **0.097 → 9.7% wetted, 90.3% exposed** |
+| Whole flotation body (`z = 0→7.5`, 7.5 in) — submerged fraction: `T/7.5` | **0.34** |
+| Total buoy body height (`z = 0→9.5`, 9.5 in) — immersed fraction: `T/9.5` | **0.27** |
 
 ---
 
@@ -505,7 +529,7 @@ credit held at 0.372 kg [A]. All solutions land in the parallel zone.
 |---:|---:|---:|---:|---:|---:|---:|---:|
 | 6 | 5.63 | 5.49 | 2.13 / 54.0 | 5.37 / 136 | 7.37 | 2.3% | 22.4% |
 | 7 | 6.63 | 6.47 | 2.36 / 59.9 | 5.14 / 131 | 7.14 | 6.5% | 24.8% |
-| **7.59 (nom)** | **7.22** | **7.05** | **2.50 / 63.5** | **5.00 / 127** | **7.00** | **9.1%** | **26.3%** |
+| **7.75 (nom)** | **7.38** | **7.20** | **2.53 / 64.4** | **4.97 / 126** | **6.97** | **9.7%** | **26.7%** |
 | 8 | 7.63 | 7.44 | 2.59 / 65.8 | 4.91 / 125 | 6.91 | 10.8% | 27.3% |
 | 9 | 8.63 | 8.42 | 2.83 / 71.8 | 4.67 / 119 | 6.67 | 15.1% | 29.8% |
 | 10 | 9.63 | 9.39 | 3.06 / 77.7 | 4.44 / 113 | 6.44 | 19.2% | 32.2% |
@@ -516,45 +540,46 @@ credit held at 0.372 kg [A]. All solutions land in the parallel zone.
 Across the **entire** 6–13 kg range the draft moves only ~1.6 in, the buoy never immerses more
 than a third of its 5.5-in float section, and freeboard to the wedge top never drops below
 ~3.7 in. The v5 buoy rides lower than v4 (5.0 vs 7.3 in freeboard at nominal) but is still
-firmly over-floated across every plausible mass.
+firmly over-floated across every plausible mass. (Nominal row updated 2026-09-25 for the
+measured lean wedge bottom; the other rows are mass-indexed and unchanged.)
 
 ---
 
 ## 9. Failure-mode freeboard (panel review Action A3)
 
 Worked changes in draft and freeboard for the two credible casualties. Both hold the nominal
-7.59 kg build and the 0.372 kg appendage credit.
+7.75 kg build and the 0.372 kg appendage credit.
 
 ### 9.1 Flooded chassis (O-ring seal or gland fails)
 
 ```
 lost hull displacement       = 3.617 L      →  F_B,max drops to 1025·9.81·(0.028487 − 0.003617)
                                              = 1025·9.81·0.024870 = 250.1 N
-reserve still = 250.0 − 74.5 = 175.5 N (17.9 kgf) — buoy still floats with large margin
+reserve still = 250.1 − 76.0 = 174.1 N (17.7 kgf) — buoy still floats with large margin
 
 freeboard solve, chassis giving zero displacement:
   taper-zone full      = 6 wedge bottoms only = 4.116 L   (chassis 0.851 L term removed)
   parallel-zone rate   = (254.47 − 25.97) in³/in = 228.50 in³/in = 3.745 L/in
   entrained water in the chassis up to the waterline (ID ≈ 5.55 in → 24.2 in²; column ≈ 2.7 in)
                        ≈ 65 in³ ≈ 1.06 L ≈ 1.06 kg added weight   [A, soft]
-  m_eff = 7.222 + 1.06 = 8.28 kg  →  V_req = 8.08 L
-  8.08 = 4.116 + 3.745·(T − 2)  →  (3.964)/3.745 = 1.06  →  T ≈ 3.06 in
+  m_eff = 7.377 + 1.06 = 8.44 kg  →  V_req = 8.23 L
+  8.23 = 4.116 + 3.745·(T − 2)  →  (4.115)/3.745 = 1.10  →  T ≈ 3.10 in
 ```
-**Flooded chassis: draft 2.50 → ~3.1 in, freeboard to wedge top 5.00 → ~4.4 in.** The buoy stays
+**Flooded chassis: draft 2.53 → ~3.1 in, freeboard to wedge top 4.97 → ~4.4 in.** The buoy stays
 afloat with ~4.4 in of freeboard; the ~1.1 kg entrained-water figure is a soft estimate.
 
 ### 9.2 One wedge module lost entirely (shell + cap + bottom + its foam)
 
 ```
-mass removed = 240 + 126.86 + 181.21 + 118.3 = 666.4 g
-m_total = 7.594 − 0.666 = 6.928 kg  →  m_eff = 6.928 − 0.372 = 6.556 kg  →  V_req = 6.396 L
+mass removed = 240 + 126.86 + 207.06 + 118.3 = 692.2 g
+m_total = 7.749 − 0.692 = 7.057 kg  →  m_eff = 7.057 − 0.372 = 6.685 kg  →  V_req = 6.522 L
 
 displacement capacity with 5 wedges (spanning 300°):
   taper-zone full    = 5·0.686 + 0.851 = 4.281 L
   parallel-zone rate = (5/6)·(254.47 − 25.97) + 25.97 = 190.4 + 25.97 = 216.4 in³/in = 3.546 L/in
-6.396 = 4.281 + 3.546·(T − 2)  →  (2.115)/3.546 = 0.596  →  T ≈ 2.60 in
+6.522 = 4.281 + 3.546·(T − 2)  →  (2.241)/3.546 = 0.632  →  T ≈ 2.63 in
 ```
-**One wedge lost: draft 2.50 → ~2.60 in, freeboard to wedge top 5.00 → ~4.90 in.** The draft
+**One wedge lost: draft 2.53 → ~2.63 in, freeboard to wedge top 4.97 → ~4.87 in.** The draft
 barely moves, but flotation is now **asymmetric** (a 60° gap) → a static list/trim toward the
 missing wedge. Quantifying that heel angle is CG/CB/GM work
 ([SCO-80](https://linear.app/scout1/issue/SCO-80)), not this model.
@@ -564,18 +589,18 @@ missing wedge. Quantifying that heel angle is CG/CB/GM work
 ## 10. Interpretation
 
 - **Is the "reasonable freeboard" design intent (panel review §3) met?** Yes. At nominal mass
-  the v5 buoy floats a Ø18-in body with **2.50 in of draft**, showing **5.00 in of freeboard to
-  the wedge top** and **7.00 in to the top of the chassis cap**, with the solar deck well clear
+  the v5 buoy floats a Ø18-in body with **2.53 in of draft**, showing **4.97 in of freeboard to
+  the wedge top** and **6.97 in to the top of the chassis cap**, with the solar deck well clear
   of the water. This is less freeboard than v4 (7.31 in) — the deliberate trade in the SCO-110
   resize — but still comfortably positive.
 
-- **Is the buoy over-floated?** **Yes, still substantially.** Only **9.1%** of the 5.5-in
-  parallel float section is wetted (91% rides dry); reserve buoyancy is **~212 N (21.6 kgf)
-  against a 7.59 kg build — a ~3.84:1 flotation margin** (v4 was 4.75:1). Even the high-mass
-  (9.69 kg) estimate leaves ~19.5 kgf of reserve (3.0:1). **The design problem is still not
+- **Is the buoy over-floated?** **Yes, still substantially.** Only **9.7%** of the 5.5-in
+  parallel float section is wetted (90% rides dry); reserve buoyancy is **~210 N (21.4 kgf)
+  against a 7.75 kg build — a ~3.77:1 flotation margin** (v4 was 4.75:1). Even the high-mass
+  (9.85 kg) estimate leaves ~19.3 kgf of reserve (3.0:1). **The design problem is still not
   achieving flotation — it is waterline, freeboard, and (out of scope here) CG given how high
   the buoy rides.** Watch the language, though: the margin has eroded from "huge" to "healthy"
-  (net reserve 309 → 212 N, ratio 4.75 → 3.84, freeboard-to-wedge-top now ~5 in of a 5.5-in
+  (net reserve 309 → 210 N, ratio 4.75 → 3.77, freeboard-to-wedge-top now ~5 in of a 5.5-in
   section). A further wedge-height cut, or landing on the high-mass estimate (~3.2:1), moves this
   toward "comfortably over-floated" rather than "substantially." Nothing crosses that line yet.
 
@@ -590,10 +615,10 @@ missing wedge. Quantifying that heel angle is CG/CB/GM work
   ```
   V_disp(4.75) = 4.967 + 4.170 · (4.75 − 2) = 4.967 + 11.47 = 16.44 L
   required waterplane-supported mass = 16.44 L × 1.025 kg/L = 16.85 kg
-  required total mass ≈ 16.85 + 0.372 ≈ 17.2 kg   →   ~9.6 kg of added ballast/payload over nominal
+  required total mass ≈ 16.85 + 0.372 ≈ 17.2 kg   →   ~9.5 kg of added ballast/payload over nominal
   ```
   Still not reachable with realistic payload growth, though closer than v4's +14 kg. A softer
-  `T = 3.75 in` target needs ≈ +5.5 kg. The realistic levers remain: **don't fill the wedges
+  `T = 3.75 in` target needs ≈ +5.2 kg. The realistic levers remain: **don't fill the wedges
   solid with foam**, **shrink/reduce the wedges further**, and/or **add low chassis ballast**
   (which also lowers CG).
 
@@ -608,7 +633,7 @@ missing wedge. Quantifying that heel angle is CG/CB/GM work
 ## 11. Cross-section elevation (nominal draft, v5)
 
 Vertical scale ≈ 1 row per inch through the float section. Waterline drawn at the computed
-nominal draft `T = 2.50 in`. All `z` dimensions from the keel datum.
+nominal draft `T = 2.53 in`. All `z` dimensions from the keel datum.
 
 ```
                               [====== SOLAR PANEL ======]        z ~= 10 - 11.5 in
@@ -621,12 +646,12 @@ nominal draft `T = 2.50 in`. All `z` dimensions from the keel datum.
    z = 7.5  ------------ +===================================+  <-- TOP OF 18-in FLOAT SECTION
              ^            |####  ####  ####  ####  ####  ####  |          ^
              |            |####   6 foam-filled 60 deg     ####|          | FREEBOARD to wedge top
-   FB to     |            |####      flotation wedges      ####|          |   = 7.50 - 2.50
-   buoy top  |            |####   (Ø18.000 in envelope,    ####|          |   = 5.00 in / 127 mm
-   = 7.00 in |            |####     5.5 in tall in v5)     ####|          v
+   FB to     |            |####      flotation wedges      ####|          |   = 7.50 - 2.53
+   buoy top  |            |####   (Ø18.000 in envelope,    ####|          |   = 4.97 in / 126 mm
+   = 6.97 in |            |####     5.5 in tall in v5)     ####|          v
              |            |####  ####  ####  ####  ####  ####  |
              v    ~~~~~~~~|####~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####|~~~~~~~~~~~~~   S E A W A T E R
-   z = 2.50  ~~ WATERLINE ~~  draft T = 2.50 in / 63.5 mm below keel datum  ~~~~~~~~~~~~~~~~~
+   z = 2.53  ~~ WATERLINE ~~  draft T = 2.53 in / 64.4 mm below keel datum  ~~~~~~~~~~~~~~~~~
                           |####|  (chassis core Ø5.75 runs full height through the wedge ring)
    z = 2.0   ------------ | \####  wedge-bottom taper zone  ####/ |   z = 0.0 - 2.0 in
                           |   \####   6 impact caps,       ####/  |   (18-in dia at top,
@@ -642,8 +667,8 @@ nominal draft `T = 2.50 in`. All `z` dimensions from the keel datum.
                                             [pod]      near-neutral, ~0.20 kg air)
 
    LEFT: vertical dimensions from keel datum z = 0        RIGHT: freeboard callouts
-   Draft T = 2.50 in  -> only the lowest 0.50 in of the 5.5-in parallel wedge section is wetted
-                         (9.1%); the taper zone (z = 0 - 2 in) is fully submerged.
+   Draft T = 2.53 in  -> only the lowest 0.53 in of the 5.5-in parallel wedge section is wetted
+                         (9.7%); the taper zone (z = 0 - 2 in) is fully submerged.
 ```
 
 ---
@@ -777,14 +802,16 @@ Built and verified 2026-08-29 with a full multi-agent pass: 3 independent deriva
 
 | Quantity | v4 | v5 | Δ |
 |---|---:|---:|---:|
-| Nominal all-up mass | 8.40 kg | 7.59 kg | −0.81 kg |
+| Nominal all-up mass | 8.40 kg | 7.75 kg | −0.65 kg |
 | `V_disp,total` | 38.91 L | 28.48 L | −10.43 L |
 | Max buoyant force | 391 N | 286 N | −105 N |
-| Net reserve (nominal) | 309 N | 212 N | −97 N |
-| Reserve ratio | 4.75× | 3.84× | −0.91× |
-| Nominal draft | 2.69 in | 2.50 in | −0.19 in |
-| Freeboard to wedge top | 7.31 in | 5.00 in | −2.31 in |
-| Float section wetted | 8.6% | 9.1% | +0.5 pt |
+| Net reserve (nominal) | 309 N | 210 N | −99 N |
+| Reserve ratio | 4.75× | 3.77× | −0.98× |
+| Nominal draft | 2.69 in | 2.53 in | −0.16 in |
+| Freeboard to wedge top | 7.31 in | 4.97 in | −2.34 in |
+| Float section wetted | 8.6% | 9.7% | +1.1 pt |
+
+v5 column reflects the 2026-09-25 lean wedge-bottom weigh-in (207.06 g).
 
 The conclusion — **substantially over-floated, waterline/CG is the real design problem, not
 flotation** — survives the resize unchanged.
