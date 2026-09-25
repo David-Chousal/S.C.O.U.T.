@@ -31,8 +31,10 @@
 > [SCO-111](https://linear.app/scout1/issue/SCO-111)). **Height is unchanged from v4** (John,
 > 2026-09-10) — the lean pass trims the radial section and wall material, not the vertical
 > envelope, so the wedge bottom's **displacement envelope and `z`-position are the same**. Only
-> the **printed mass** (181.21 g) and the **foam cavity volume** (0.452 L) change — both
-> over-stated for v5, pending a re-slice (§§5–9, §12, §14). The foam-filled module's
+> the **printed mass** and the **foam cavity volume** change. **Mass measured 2026-09-25: 207.06 g**
+> (slicer, 4 walls / 0.18 mm layers / 15% gyroid, 67.78 m) — *heavier* than v4's 181.21 g, carried
+> into §12.4 below. §5 keeps the v4 part as history. The **foam cavity (0.452 L) is still the v4
+> figure** pending a volume from the v5 STEP ([SCO-111](https://linear.app/scout1/issue/SCO-111)). The foam-filled module's
 > displacement is essentially unchanged; the buoy is substantially over-floated regardless, so
 > no conclusion is at risk. §12 carries the v5 geometric estimates and
 > the revised aggregate. The whole-buoy freeboard consequences are in
@@ -447,14 +449,14 @@ All 6, foam alone = 216 N (≈ 22.0 kgf)   (v4 was 271 N)
 
 | | Weight | Displacement | Buoyant force | Net (buoyancy − weight) |
 |---|---|---|---|---|
-| One wedge module (wedge + cap + bottom + foam) | 239 + 126.86 + 181.21 + 118 = **665 g** | 3.432 + 0.686 = **4.118 L** | 41.4 N | **+34.9 N** |
-| **All 6 wedge modules** | 3.99 kg | 24.71 L | 248.4 N | **+209.3 N** |
+| One wedge module (wedge + cap + bottom + foam) | 239 + 126.86 + 207.06 + 118 = **691 g** | 3.432 + 0.686 = **4.118 L** | 41.4 N | **+34.6 N** |
+| **All 6 wedge modules** | 4.15 kg | 24.71 L | 248.4 N | **+207.7 N** |
 | Chassis + chassis cap | 599 + 89.79 = **689 g** | 3.777 L | 37.97 N | **+31.2 N** |
-| **Whole shell system (v5)** | **~4.68 kg** | **28.49 L** | **286.4 N** | **+240.5 N (≈24.5 kgf)** |
+| **Whole shell system (v5)** | **~4.83 kg** | **28.49 L** | **286.4 N** | **+239.0 N (≈24.4 kgf)** |
 
 (v4 was 5.494 kg / 38.93 L / 391.5 N / +337.6 N.) The whole-buoy freeboard, reserve, and
-failure-case consequences — nominal mass ~7.59 kg, net reserve ~212 N, 3.84:1 margin, draft
-2.50 in, ~5.0 in freeboard to the wedge top — are worked in
+failure-case consequences — nominal mass ~7.75 kg, net reserve ~210 N, 3.77:1 margin, draft
+2.53 in, ~4.97 in freeboard to the wedge top (updated 2026-09-25 for the 207.06 g wedge bottom) — are worked in
 [`buoy-mass-displacement-and-freeboard-model.md`](buoy-mass-displacement-and-freeboard-model.md),
 independently re-derived 2026-09-09.
 

@@ -10,7 +10,7 @@
 >
 > **Inputs consumed:** the v5 mass budget and freeboard solution from
 > [`buoy-mass-displacement-and-freeboard-model.md`](buoy-mass-displacement-and-freeboard-model.md)
-> (nominal mass 7.594 kg, draft `T` = 2.50 in, `V_disp` at equilibrium 7.05 L, waterplane a
+> (nominal mass 7.749 kg, draft `T` = 2.53 in, `V_disp` at equilibrium 7.20 L, waterplane a
 > solid Ø18 in circle) and the v5 geometry from
 > [SCO-110](https://linear.app/scout1/issue/SCO-110).
 >
@@ -26,9 +26,10 @@
 > ⚠️ **Provisional** on the same inputs as the freeboard model: the v5 shell masses are
 > geometric estimates pending the re-slice, and the Tier III component masses (battery, solar
 > panel, stem, pod) are estimates pending [SCO-70](https://linear.app/scout1/issue/SCO-70). The
-> **wedge bottoms** are also still the v4 part here (181.21 g each, low in the stack); the lean
-> re-model of 2026-09-10 ([SCO-111](https://linear.app/scout1/issue/SCO-111)) lightens them,
-> which raises `KG` slightly — a small adverse shift on an already very stiff `GM` ≈ 9.7 in.
+> **wedge bottoms** carry the measured lean v5 part (207.06 g each, 2026-09-25 —
+> [SCO-111](https://linear.app/scout1/issue/SCO-111)); it came out *heavier* than v4, and being low
+> in the stack it lowers `KG` slightly. §§1–4 are updated; §§5+ scale with `GM` and `V_disp`,
+> both of which moved < 2% (`GM` 9.73 → 9.56 in), so their conclusions stand unchanged.
 > Component vertical positions (`z_i`) below are first-pass estimates from the CAD layout — they
 > tighten once real component placement is in the model.
 >
@@ -77,7 +78,7 @@ vertical stack (wedge-bottom taper `z` 0–2 in, parallel float section `z` 2–
 | Chassis shell | 600 | 4.10 | Ø5.75 cylinder `z` 0–8.5, near-uniform wall, small extra at the mooring boss | 2460 |
 | Chassis cap | 89.8 | 9.00 | lid + clamp, `z` 8.5–9.5 | 808 |
 | 6 wedge shells | 1440 | 4.75 | `z` 2–7.5, near-uniform | 6840 |
-| 6 wedge bottoms | 1087 | 1.10 | tapered frustums, `z` 0–2, mass toward the wide top | 1196 |
+| 6 wedge bottoms | 1242 | 1.10 | tapered frustums, `z` 0–2, mass toward the wide top | 1367 |
 | 6 wedge caps | 761 | 7.40 | thin lids at the wedge top | 5631 |
 | Feather M0 stack | 5.8 | 4.0 | inside the chassis, mid-height | 23 |
 | Flotation foam | 710 | 4.30 | wedge cavity 3.244 L @ `z` 4.75 + wedge-bottom cavity 0.452 L @ `z` 1.1, per module | 3053 |
@@ -93,19 +94,19 @@ vertical stack (wedge-bottom taper `z` 0–2 in, parallel float section `z` 2–
 | Sensor stem | 400 | −6.0 | perforated PETG tube hanging below the keel, ~12 in long | −2400 |
 | Sensor pod | 200 | −13.5 | at the bottom of the stem | −2700 |
 | Mooring pad-eye + backing plate | 220 | 0.0 | through-bolted at the chassis bottom = the keel | 0 |
-| **Totals** | **7594** | | | **28574** |
+| **Totals** | **7749** | | | **28745** |
 
 ### 1.2 `KG`
 
 ```
-KG = Σ(m·z) / Σm = 28574 / 7594 = 3.76 in = 0.0955 m     [X from M+A]
+KG = Σ(m·z) / Σm = 28745 / 7749 = 3.71 in = 0.0942 m     [X from M+A]
 ```
 
 Two reference values worth carrying:
 
 - **Hull-only `KG`** (excluding the stem, pod, and the external cabling run — i.e. the floating
-  body without its pendant): `KG_hull = (28574 + 2400 + 2700 + 180) / (7594 − 400 − 200 − 60)
-  = 33854 / 6934 = 4.88 in = 0.124 m`. The pendant pulls the composite `KG` down by 1.12 in.
+  body without its pendant): `KG_hull = (28745 + 2400 + 2700 + 180) / (7749 − 400 − 200 − 60)
+  = 34025 / 7089 = 4.80 in = 0.122 m`. The pendant pulls the composite `KG` down by 1.09 in.
 - **The single largest destabilising item is the solar panel + mount** (1020 g at `z` ≈ 10.3 in,
   contributing 10 900 g·in — 38% of the total moment from 13% of the mass). The single largest
   stabilising item is the **sensor pod + stem** (600 g at `z` ≈ −8.5 in, −5100 g·in).
@@ -119,7 +120,7 @@ mass to 0.4 kg moves `KG` down 0.35 in. None of these threatens the stability ma
 
 ## 2. Centre of buoyancy — `KB`
 
-`KB` is the centroid of the **submerged volume** at the nominal draft `T` = 2.50 in. The
+`KB` is the centroid of the **submerged volume** at the nominal draft `T` = 2.53 in. The
 submerged shape is the piecewise `V_disp(T)` from the
 [freeboard model §7.2](buoy-mass-displacement-and-freeboard-model.md#72-displaced-volume-as-a-function-of-draft-v5):
 
@@ -127,17 +128,17 @@ submerged shape is the piecewise `V_disp(T)` from the
 |---|---:|---:|---|
 | Wedge-bottom taper zone, 6 wedge bottoms (`z` 0–2) | 4.116 | 1.25 | frustums narrowing downward → centroid above mid-height |
 | Chassis core, lower 2 in (`z` 0–2) | 0.851 | 1.00 | uniform cylinder segment |
-| Parallel float zone (`z` 2–2.50) | 2.085 | 2.25 | uniform disc slice |
-| **Submerged total** | **7.052** | | |
+| Parallel float zone (`z` 2–2.53) | 2.230 | 2.27 | uniform disc slice |
+| **Submerged total** | **7.197** | | |
 
 ```
-KB = (4.116·1.25 + 0.851·1.00 + 2.085·2.25) / 7.052
-   = (5.145 + 0.851 + 4.691) / 7.052
-   = 10.687 / 7.052
-   = 1.52 in = 0.0385 m     [X from M+A]
+KB = (4.116·1.25 + 0.851·1.00 + 2.230·2.27) / 7.197
+   = (5.145 + 0.851 + 5.062) / 7.197
+   = 11.058 / 7.197
+   = 1.54 in = 0.0390 m     [X from M+A]
 ```
 
-The submerged volume (7.05 L) matches the freeboard model's `V_req` of 7.045 L — a consistency
+The submerged volume (7.20 L) matches the freeboard model's `V_req` of 7.197 L — a consistency
 check on the equilibrium.
 
 ---
@@ -157,10 +158,10 @@ About any diameter (the roll axis):
 I_wp = π D⁴ / 64 = π · (18.000 in)⁴ / 64 = π · 104976 / 64 = 5152.8 in⁴     [X from M]
 ```
 
-**Displaced volume** `V_disp` = 7.052 L = 430.4 in³ (`7052 cm³ / 16.387 cm³·in⁻³`).
+**Displaced volume** `V_disp` = 7.197 L = 439.2 in³ (`7197 cm³ / 16.387 cm³·in⁻³`).
 
 ```
-BM = 5152.8 in⁴ / 430.4 in³ = 11.97 in = 0.304 m     [X from M+A]
+BM = 5152.8 in⁴ / 439.2 in³ = 11.73 in = 0.298 m     [X from M+A]
 ```
 
 This is the dominant term and it is huge — a direct consequence of the wide, shallow-draft disc
@@ -171,18 +172,18 @@ form (`BM ∝ D⁴ / V`, and `V` is small because the buoy barely sits in the wa
 ## 4. Metacentric height — `GM`
 
 ```
-KM = KB + BM = 1.52 + 11.97 = 13.49 in     [X from M+A]
-GM = KM − KG = 13.49 − 3.76 = 9.73 in = 0.247 m     [X from M+A]
+KM = KB + BM = 1.54 + 11.73 = 13.27 in     [X from M+A]
+GM = KM − KG = 13.27 − 3.71 = 9.56 in = 0.243 m     [X from M+A]
 ```
 
 | Quantity | Value |
 |---|---|
-| `KG` | 3.76 in (0.096 m) |
-| `KB` | 1.52 in (0.039 m) |
-| `BM` | 11.97 in (0.304 m) |
-| `KM` | 13.49 in (0.343 m) |
-| **`GM`** | **9.73 in (0.247 m)** |
-| Hull-only `GM` (no pendant) | 13.49 − 4.88 = 8.61 in (0.219 m) |
+| `KG` | 3.71 in (0.094 m) |
+| `KB` | 1.54 in (0.039 m) |
+| `BM` | 11.73 in (0.298 m) |
+| `KM` | 13.27 in (0.337 m) |
+| **`GM`** | **9.56 in (0.243 m)** |
+| Hull-only `GM` (no pendant) | 13.27 − 4.80 = 8.47 in (0.215 m) |
 
 **Interpretation.** Any positive `GM` means the buoy is statically stable in the upright
 position; a typical small craft targets `GM` on the order of a few percent of the beam
@@ -373,10 +374,10 @@ What *can* be said precisely:
 
 | Quantity | Value | Note |
 |---|---|---|
-| `KG` (deployed, nominal) | 3.76 in / 0.096 m | pendant pulls it 1.1 in below the hull-only value |
-| `KB` | 1.52 in / 0.039 m | |
-| `BM` | 11.97 in / 0.304 m | wide shallow disc — `BM ∝ D⁴/V` |
-| **`GM`** | **9.73 in / 0.247 m** | ~10× a typical adequacy target |
+| `KG` (deployed, nominal) | 3.71 in / 0.094 m | pendant pulls it 1.1 in below the hull-only value |
+| `KB` | 1.54 in / 0.039 m | |
+| `BM` | 11.73 in / 0.298 m | wide shallow disc — `BM ∝ D⁴/V` |
+| **`GM`** | **9.56 in / 0.243 m** | ~10× a typical adequacy target |
 | Natural roll period `T_roll` | ~0.6 s | ≪ `T_w` = 6 s → no resonance, but snappy motion |
 | Design-wave slope | 8.5° | followed with full righting margin |
 | Deck-edge immersion / keel emergence | 29° / 15.5° | wall-sided formula valid below these |
