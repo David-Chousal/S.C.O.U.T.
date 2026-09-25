@@ -4,8 +4,10 @@
 > to print. John rigged a filament workaround on the medium Prusa, split the lean v5 wedge
 > bottom CAD into two parts, and started the first half on a Prusa Mini. First layers were
 > poor: some nozzle drag, and filament-feed resistance starved the bottom-layer infill for a
-> stretch. The print was left running. **The result is not yet known** and will be checked
-> 2026-09-24. Tracked on [SCO-111](https://linear.app/scout1/issue/SCO-111).
+> stretch. The print was left running. **Outcome, 2026-09-24: the Prusa Mini prints failed** (see
+> [Outcome](#outcome-2026-09-24)). Wedges printed on the larger printer came out well once
+> PTFE-tube feed resistance was fixed. Tracked on
+> [SCO-111](https://linear.app/scout1/issue/SCO-111).
 
 ---
 
@@ -53,9 +55,38 @@ baseline until the team decides otherwise.
 
 ## To check on 2026-09-24
 
-- [ ] Did the print finish?
-- [ ] Is the bottom skin continuous (no gaps or under-extruded lines)? This face sits below
-      the waterline, so porosity matters.
-- [ ] Printed mass of the half, if it finished. This is part of the re-slice weight still owed
-      on SCO-111.
-- [ ] Record the Mini's settings and print time for the half.
+- [x] Did the print finish? **No. It failed** (see below).
+- [ ] Is the bottom skin continuous? Not applicable, no usable part.
+- [ ] Printed mass of the half. Not available, still owed on SCO-111.
+- [ ] Record the Mini's settings and print time for the half. Not recorded.
+
+## Outcome, 2026-09-24
+
+**Prusa Mini: failed, repeatedly.** John tried several times. Every attempt failed, ending in
+the spaghetti mess in the photo below. Problems John saw:
+
+- **Bed adhesion.** Parts would not stay stuck to the sheet.
+- **Z calibration off.** First-layer height was wrong, which fits the nozzle drag seen on
+  2026-09-23.
+- "Many issues" beyond those two. Not broken down further.
+
+The Mini is **not usable for wedge parts** until it is recalibrated. No usable split half
+exists yet.
+
+![Prusa Mini after a failed wedge-bottom half print, 2026-09-24](prusa-mini-print-failure-2026-09-24.jpg)
+
+**Larger printer: wedges printed pretty well.** John reported that the larger printer turned
+out good wedge prints. Filament met resistance in the PTFE tubes, and John fixed that.
+
+**Not yet recorded:**
+
+- Which larger printer this was. The medium Prusa on its workaround is assumed, since the
+  large lab printer is offline ([SCO-63](https://linear.app/scout1/issue/SCO-63)).
+- Whether it printed full one-piece wedge bottoms, split halves, or wedges.
+- How the PTFE-tube resistance was fixed, and whether that fix closes
+  [SCO-114](https://linear.app/scout1/issue/SCO-114).
+- Print time and printed mass of the parts.
+
+**What this means for the split.** The split existed only to fit the Mini. With the Mini
+failing and the larger printer working, the one-piece wedge bottom stays the baseline. The
+open question on SCO-111 is now weaker, because the split has no working printer.
