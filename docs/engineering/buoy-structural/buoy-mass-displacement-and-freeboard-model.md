@@ -39,9 +39,8 @@
 > 0.18 mm layers / 15% gyroid; 67.78 m filament). It is **heavier** than the v4 part (181.21 g,
 > +25.85 g each, +155.1 g for six) despite the "lean" re-model of 2026-09-10 — the settings
 > above, not the geometry, set the mass. §3 and everything below now carry 207.06 g.
-> ⚠️ **The foam cavity is still the v4 figure (0.452 L)** pending a volume from the v5 STEP;
-> the lean tray's cavity is expected to be smaller, which would cut foam mass by a few grams —
-> immaterial here. **Height and outer
+> ⚠️ **The foam cavity (0.452 L) and the 2-in taper height are wrong — see the STEP check
+> below.** **Height and outer
 > radius unchanged from v4**
 > ([floatation/README.md § Lean wedge bottom (v5)](../../../mechanical/cad/floatation/README.md#lean-wedge-bottom-v5--2026-09-10),
 > [SCO-111](https://linear.app/scout1/issue/SCO-111)). Because the envelope is unchanged, the
@@ -59,6 +58,25 @@
 > out as such and carried as low / nominal / high ranges.
 >
 > **Proposed path** — `docs/engineering/buoy-structural/buoy-mass-displacement-and-freeboard-model.md`
+
+> ⚠️ **STEP geometry check (2026-09-25).** Measured from the committed STEP files (gmsh/OpenCASCADE):
+> the **wedge bottom is 3.00 in (76.2 mm) tall** in both v4 and v5, not the 2.0 in this model's
+> taper zone assumes, and the chassis STEP spans the wedge bottom + wedge exactly (v4: −3 to
+> +8 in), with no 1-in stub above the wedge top. Per wedge bottom:
+> 
+> | | Envelope (displacement) | Plastic (solid) | Foam cavity |
+> |---|---:|---:|---:|
+> | v4 (STEP) | 1.255 L | 435.0 cm³ | 0.820 L |
+> | **v5 lean (STEP)** | **1.348 L** | **263.4 cm³** | **1.084 L** |
+> | Assumed in this model | 0.686 L | 234 cm³ | 0.452 L |
+> 
+> So the taper zone displaces ~8.1 L, not 4.1 L, and the foam fill grows by ~3.8 L (~+120 g at
+> 2 lb/ft³). The buoy has **more** reserve than stated here and floats higher, so the
+> over-floated conclusion strengthens. The draft/freeboard numbers below still use the 2-in stack
+> and are **not yet rebuilt** — see the stack-rebuild ticket linked from
+> [SCO-111](https://linear.app/scout1/issue/SCO-111). Method: envelope = ∫ (π/6)(R(z)² − 73.18²) dz
+> from 0.2 mm slices of the outer profile; the cavity = envelope − solid below the rim. The two bolt
+> holes (~0.2 cm³) are counted as cavity.
 
 ## How to update this document
 

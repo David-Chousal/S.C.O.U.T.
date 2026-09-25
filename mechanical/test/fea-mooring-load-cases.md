@@ -59,9 +59,9 @@ Reports (images stripped):
 [run 5](fea-ring-buckling-v5-2026-09-25.html)
 
 **Reading (v5):** the v5 structure passes every load case. The lowest *real* buoy SF is ~3.5,
-in the thin wedge walls under LC8 with no foam. These are static and buckling cases. **No
-impact or drop case was run**, so [SCO-71](https://linear.app/scout1/issue/SCO-71)'s impact FEA
-and bench tests are still open. Still owed: the final 316 pad-eye run with LC7's moment applied
+in the thin wedge walls under LC8 with no foam. These are static and buckling cases. No impact
+or drop case was run. [SCO-71](https://linear.app/scout1/issue/SCO-71) was closed on these
+results plus a single-wedge [drop test](wedge-drop-test-2026-09-25.md). Still owed: the final 316 pad-eye run with LC7's moment applied
 correctly and the ring joined to its base plate, re-run on the custom PETG profile.
 
 ## Results (2026-08-29)

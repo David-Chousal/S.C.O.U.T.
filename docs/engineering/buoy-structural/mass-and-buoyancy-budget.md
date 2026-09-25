@@ -33,8 +33,11 @@
 > envelope, so the wedge bottom's **displacement envelope and `z`-position are the same**. Only
 > the **printed mass** and the **foam cavity volume** change. **Mass measured 2026-09-25: 207.06 g**
 > (slicer, 4 walls / 0.18 mm layers / 15% gyroid, 67.78 m) — *heavier* than v4's 181.21 g, carried
-> into §12.4 below. §5 keeps the v4 part as history. The **foam cavity (0.452 L) is still the v4
-> figure** pending a volume from the v5 STEP ([SCO-111](https://linear.app/scout1/issue/SCO-111)). The foam-filled module's
+> into §12.4 below. §5 keeps the v4 part as history. **From the STEP (2026-09-25):** the v5 lean wedge
+> bottom is **3.00 in tall** (not the 2 in assumed in §5), with a **1.348 L envelope, 263.4 cm³ of
+> plastic and a 1.084 L foam cavity** (v4 STEP: 1.255 L / 435.0 cm³ / 0.820 L). The 0.452 L and
+> 0.686 L figures below are superseded; the aggregates are not yet rebuilt — see
+> [the freeboard model's STEP check](buoy-mass-displacement-and-freeboard-model.md#how-to-update-this-document). The foam-filled module's
 > displacement is essentially unchanged; the buoy is substantially over-floated regardless, so
 > no conclusion is at risk. §12 carries the v5 geometric estimates and
 > the revised aggregate. The whole-buoy freeboard consequences are in
