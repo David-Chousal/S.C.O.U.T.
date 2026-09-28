@@ -20,7 +20,7 @@
 | Nozzle | 0.4 mm | Existing design basis |
 | Line width per wall | ~0.42 mm | Standard for a 0.4 mm nozzle |
 | Material | PETG | Existing design basis |
-| Print orientation | Chosen deliberately so the mooring load path runs within layers (XY), not across them (Z) — PETG is meaningfully anisotropic; a 90° raster/layer angle can cut flexural strength >40% | [Research Library → PETG mechanical properties](../../hub/research/sources.md#petg-mechanical-properties--print-anisotropy) |
+| Print orientation | Chosen deliberately so the mooring load path runs within layers (XY), not across them (Z) — PETG is meaningfully anisotropic; a 90° raster/layer angle can cut flexural strength >40%. **Exception: the chassis prints upright** (axial load across layers) because it must seal — see [Chassis print orientation](#chassis-print-orientation--2026-09-28) | [Research Library → PETG mechanical properties](../../hub/research/sources.md#petg-mechanical-properties--print-anisotropy) |
 
 ## Per-part spec
 
@@ -60,6 +60,32 @@ effective_fraction  = (solid_thickness + core_thickness * infill%) / t
 ```
 
 Full worked application per part: [Buoy Mass and Buoyancy Budget §1](mass-and-buoyancy-budget.md#1-constants-and-shared-geometry).
+
+## Chassis print orientation — 2026-09-28
+
+**Decision: John prints the chassis upright (circular face on the bed).** This deliberately breaks
+the general orientation rule above, because the chassis has to seal. The reasoning came out of a
+design trade-off worked through on 2026-09-28
+([SCO-75](https://linear.app/scout1/issue/SCO-75)). It is recorded here because the options that
+were rejected will come up again.
+
+The problem: the mooring load runs along the chassis axis. Printed upright, that load pulls
+adjacent layers apart, so the part relies on interlayer bonding. The weakest sections are the
+ones at the heat-set inserts, where an insert pulls on only a few layers.
+
+| Option considered | Mooring load | Seal faces | Why not chosen / chosen |
+|---|---|---|---|
+| **Upright (chosen)** | Across layers — weakest direction | True circles, no supports, layer lines run parallel to the O-ring | Best seal quality; the axial weakness can be designed out (below) |
+| On its side, with supports | Along the beads — strongest | Grooves print as supported overhangs: slightly oval, scarred by supports, layer ridges cross the O-ring contact line as leak paths | Trades a solvable strength problem for a seal problem; hoop and pressure loads also move across the layers |
+| Split lengthwise into two halves, each printed flat face down and rounded side up | Along the beads | Two full-length seams cross every O-ring groove; the halves can warp out of round | Best option for a chassis that only carries structure, but a split tube is a poor sealed volume |
+
+**Consequence — still open:** printing upright means the plastic should not carry the axial
+mooring tension on its own. The recommended approach is a **stainless axial tension member**
+(threaded rod or tie-rods from the mooring point to the top section, preloaded so the shell sits
+in compression), with **no heat-set inserts in the mooring load path**. That is a recommendation
+and is not yet decided. It still needs sizing against the peak axial load from the
+[SCO-73](https://linear.app/scout1/issue/SCO-73) load cases, and it changes the "U-bolt/mooring
+boss" row above if adopted. Tracked on [SCO-75](https://linear.app/scout1/issue/SCO-75).
 
 ## Status
 
