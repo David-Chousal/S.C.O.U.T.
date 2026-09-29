@@ -183,7 +183,7 @@ def make_figures(out, curves, cc, bd, sweep):
 
 
 def make_explorer(out, data, leads):
-    tpl = (HERE / "stability_explorer_template.html").read_text()
+    tpl = (HERE / "stability-explorer-template.html").read_text()
     shapes = {}
     for h, cap in (("3.0", bs.CAP_V5_FULL), ("1.5", bs.CAP_V6), ("0", bs.CAP_NONE)):
         Rz = bs.hull(cap).Rz

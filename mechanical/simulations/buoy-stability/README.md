@@ -29,7 +29,7 @@ ballast on/off.
 |---|---|
 | `buoy_stability.py` | The calculator: STEP geometry → hull, mass budget, hydrostatic solve, GZ curve, self-righting check, minimum lead |
 | `run_studies.py` | Runs every study and writes CSVs, PNG figures, and the explorer to `results/<date>/` |
-| `stability_explorer_template.html` | Template the explorer is generated from (the data is embedded at run time) |
+| `stability-explorer-template.html` | Template the explorer is generated from (the data is embedded at run time) |
 | `results/<date>/` | Dated outputs. **The newest folder is current.** |
 
 ## Presets
