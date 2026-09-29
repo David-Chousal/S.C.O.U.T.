@@ -510,7 +510,7 @@ ballast spine (3/4 in Sch 40 316 pipe, ~52 MPa at 60 N·m) or use an FRP tube; c
 floor between a flange and a backing plate; use a detachable root coupling for handling; and add an
 elastic snubber in the mooring to cut the LC9 spike.
 With half caps this means ~2.6 kg of lead and a ~10.3 kg buoy that self-rights from any angle.
-Cap height and the lead mass are still open.
+**Cap height decided the same day: 1.5 in**, with lead ≈ 2.8 kg (min 2.56 kg at 1.5 in caps + ~10% margin). Cap-height comparison with the 24 in ballast: none 2.91 kg lead / 3.40 in freeboard; 1.0 in 2.66 / 4.22; **1.5 in 2.56 / 4.59**; 2.0 in 2.47 / 4.90; 3.0 in 2.25 / 5.43. At 1.5 in the keel edge emerges at ~17° (~2× the design-wave slope). Re-solve the lead once the 316 arm's own weight (~1.0 kg) replaces the printed-stem assumption; it will lower the lead.
 
 **Open items from this section:** the v5 chassis re-slice (the mass discrepancy above); the
 stem/joint bending check with 2.6 kg at 24 in under design-wave and LC9 loads; the mooring
