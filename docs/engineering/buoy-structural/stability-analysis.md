@@ -498,7 +498,16 @@ recorded 712.82 g. This is carried as the high case (~1.38 kg for v5) until the 
    Lead × depth ≈ 50–60 kg·in throughout. Returns diminish past ~30 in, where the longer stem
    eats the saving. At a 2 m site, depth past ~36 in risks seabed contact at a wave trough.
 
-**Decision (tentative, 2026-09-29): the ballast stem is developed to 24 in below the keel.**
+**Decision (2026-09-29): the ballast stem is developed to 24 in (2 ft) below the keel.** First
+tentative, then confirmed the same day after a root-torque review. Because lead × arm is fixed at
+~60–70 kg·in by the self-righting requirement, the ballast's moment at the stem-to-chassis joint is
+roughly the same at any arm length. Estimated root moments: ~2–3 N·m per wave cycle; ~15 N·m at a
+90° knockdown; ~19 N·m (~40 N·m dynamic) when carried dry and horizontal; **~55–60 N·m at the LC9
+snap**. That rules out a printed PETG stem. The recommended approach, to be designed on
+[SCO-125](https://linear.app/scout1/issue/SCO-125): extend the chassis stainless tie-rod as the
+ballast spine (3/4 in Sch 40 316 pipe, ~52 MPa at 60 N·m) or use an FRP tube; clamp the chassis
+floor between a flange and a backing plate; use a detachable root coupling for handling; and add an
+elastic snubber in the mooring to cut the LC9 spike.
 With half caps this means ~2.6 kg of lead and a ~10.3 kg buoy that self-rights from any angle.
 Cap height and the lead mass are still open.
 
