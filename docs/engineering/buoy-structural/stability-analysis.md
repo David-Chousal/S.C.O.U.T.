@@ -450,9 +450,10 @@ hydrophone, mooring hardware, external cable) enter both the equilibrium and the
 | Projected electronics: audio board 25, sled 40, leak sensor 2, glands 18, antenna 30, hydrophone element 150 | +265 | [A] placeholders |
 | Battery and boards moved into the housing (z ≈ 4.3–5.2 in); SEN0189 board moved to the pod | 0 | Placement |
 
-⚠️ **Unreconciled:** the v4 chassis STEP is 2535 cm³ solid. At the [print-settings](print-settings.md)
-chassis spec (6 walls, 25–30% gyroid) that implies ~1.6 kg, but the 2026-08-24 slicer weigh-in
-recorded 712.82 g. This is carried as the high case (~1.38 kg for v5) until the v5 chassis re-slice.
+✅ **Chassis mass resolved (2026-09-29): the v5 chassis slices at 808 g** (John, 6 walls, 25% gyroid,
+6 top/bottom layers). That replaces the 600 g estimate scaled from the 713 g v4 weigh-in, which was
+evidently sliced at lighter settings. The effect on §12 is negligible: +208 g → ~+0.05 in draft, `GM`
+within a few hundredths of an inch, and the self-righting result unchanged.
 
 **Results (current v5, full 3 in caps):**
 
