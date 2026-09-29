@@ -499,6 +499,13 @@ within a few hundredths of an inch, and the self-righting result unchanged.
    Lead × depth ≈ 50–60 kg·in throughout. Returns diminish past ~30 in, where the longer stem
    eats the saving. At a 2 m site, depth past ~36 in risks seabed contact at a wave trough.
 
+**Decision (2026-09-29): wedge-bottom caps are reduced to 1.5 in.** With the 24 in ballast in place,
+the minimum self-righting lead by cap height is: 0 in → 2.91 kg (freeboard 3.40 in, keel emerges at
+13°); 1.0 in → 2.66 kg (4.22 in, 15°); **1.5 in → 2.56 kg (4.59 in, 17°)**; 2.0 in → 2.47 kg (4.90 in, 20°);
+3.0 in → 2.25 kg (5.43 in, 26°). 1.5 in is the lowest cap that keeps the keel wet to ~2× the 8.5°
+design-wave slope. Adding housing mass barely affects self-righting, because near inverted the
+housing sits at the waterline. Chamfer kept, with corner fillets r = 0.25 in (upper) and 0.125 in (lower).
+
 **Decision (2026-09-29): the ballast stem is developed to 24 in (2 ft) below the keel.** First
 tentative, then confirmed the same day after a root-torque review. Because lead × arm is fixed at
 ~60–70 kg·in by the self-righting requirement, the ballast's moment at the stem-to-chassis joint is
