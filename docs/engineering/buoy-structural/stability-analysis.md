@@ -507,3 +507,8 @@ stem/joint bending check with 2.6 kg at 24 in under design-wave and LC9 loads; t
 attachment point; site depth at low water ([SCO-96](https://linear.app/scout1/issue/SCO-96));
 a buoyant-solar-mount alternative (not modelled); and committing the calculator script so this
 section can be re-run from the repo.
+
+**Sources** ([Research Library](../../hub/research/sources.md#hydrostatics-stability--seals-2026-09-29)):
+`tupper-2013` (stability theory, `GZ`, roll period), `geuzaine-remacle-2009` (STEP geometry),
+`usace-cem` (design-wave slope), `dnv-rp-c205` (added mass), `crc-handbook` (lead density),
+`noaa-1612340` (tidal range, seabed clearance), `harris-2020` (numerical integration).
