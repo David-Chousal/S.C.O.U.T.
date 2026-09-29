@@ -1,0 +1,3 @@
+configuration,mass_kg,draft_in,freeboard_in,KG_in,KB_in,BM_in,GM_in,gz_max_in,gz_max_deg,rm_max_Nm,vanishing_deg,self_rights_from_any_angle
+"current v6: 1.5 in caps, no ballast",7.631,1.906,5.094,3.841,1.014,12.043,9.217,3.021,35,5.41,87.6,False
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,11.403,2.732,4.268,-3.268,1.444,8.077,12.789,7.913,60,21.13,never,True

@@ -499,13 +499,6 @@ within a few hundredths of an inch, and the self-righting result unchanged.
    Lead × depth ≈ 50–60 kg·in throughout. Returns diminish past ~30 in, where the longer stem
    eats the saving. At a 2 m site, depth past ~36 in risks seabed contact at a wave trough.
 
-**Decision (2026-09-29): wedge-bottom caps are reduced to 1.5 in.** With the 24 in ballast in place,
-the minimum self-righting lead by cap height is: 0 in → 2.91 kg (freeboard 3.40 in, keel emerges at
-13°); 1.0 in → 2.66 kg (4.22 in, 15°); **1.5 in → 2.56 kg (4.59 in, 17°)**; 2.0 in → 2.47 kg (4.90 in, 20°);
-3.0 in → 2.25 kg (5.43 in, 26°). 1.5 in is the lowest cap that keeps the keel wet to ~2× the 8.5°
-design-wave slope. Adding housing mass barely affects self-righting, because near inverted the
-housing sits at the waterline. Chamfer kept, with corner fillets r = 0.25 in (upper) and 0.125 in (lower).
-
 **Decision (2026-09-29): the ballast stem is developed to 24 in (2 ft) below the keel.** First
 tentative, then confirmed the same day after a root-torque review. Because lead × arm is fixed at
 ~60–70 kg·in by the self-righting requirement, the ballast's moment at the stem-to-chassis joint is
@@ -529,3 +522,25 @@ section can be re-run from the repo.
 `tupper-2013` (stability theory, `GZ`, roll period), `geuzaine-remacle-2009` (STEP geometry),
 `usace-cem` (design-wave slope), `dnv-rp-c205` (added mass), `crc-handbook` (lead density),
 `noaa-1612340` (tidal range, seabed clearance), `harris-2020` (numerical integration).
+
+### 12.1 Current configuration: v6 assembly (calculator, 2026-09-29)
+
+The numbers above came from the first-pass session inputs. The committed calculator,
+[`mechanical/simulations/buoy-stability/`](../../../mechanical/simulations/buoy-stability/README.md),
+re-runs them (preset `session-2026-09-29`; mass identical, draft/GM within 0.02/0.08 in). Its
+`current` preset uses the **v6 assembly STEP** (1.5 in caps from the real geometry), the **808 g**
+chassis, and the **316 pipe arm + rail mount** ([Ballast Arm and Mount](ballast-arm-and-mount.md)).
+Current results ([`results/2026-09-29/`](../../../mechanical/simulations/buoy-stability/results/2026-09-29/)):
+
+| v6, nominal masses | No ballast | **+ 2.6 kg lead at 24 in (design)** |
+|---|---|---|
+| Mass | 7.63 kg | **11.40 kg** |
+| Draft / freeboard | 1.91 / 5.09 in | **2.73 / 4.27 in** |
+| `GM` | 9.22 in | **12.79 in** |
+| Max righting moment | 5.4 N·m at 35° | **21.1 N·m at 60°** |
+| Vanishing angle | 88° (stable inverted) | **none: self-rights from any angle** |
+
+Minimum lead at 24 in is **2.30 kg**. The design value of 2.6 kg carries ~10% margin. The steel
+pipe (~1.05 kg) itself acts as ballast, so less lead is needed than the 2.56 kg session figure.
+Lead × depth stays ≈ 50 kg·in from 12 to 24 in (see `ballast-depth.csv`). Re-run the calculator
+whenever a mass or the CAD changes; the newest results folder is current.

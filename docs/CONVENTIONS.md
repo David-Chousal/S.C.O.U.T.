@@ -125,6 +125,7 @@ S.C.O.U.T./
 ├── firmware/              Buoy embedded software (SAMD21/PlatformIO) — Phase 1 in progress
 ├── hardware/              Schematics, PCB, wiring — build platform + BOM confirmed, files not started
 ├── mechanical/            CAD, hull, mooring — all five CAD categories documented
+│   └── simulations/       Re-runnable calculators (code + dated results/; newest date = current)
 ├── chatbot/               "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
 ├── assets/
 │   ├── diagrams/          Architecture and block diagrams
