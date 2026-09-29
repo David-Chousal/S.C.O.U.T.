@@ -17,8 +17,9 @@
 | [Mass and Buoyancy Budget](mass-and-buoyancy-budget.md) | **Living doc.** Weight, displacement, and buoyancy per printed part — supplies the framework's `m_b`/`V_disp` inputs. §12 carries the v5 shell revision |
 | [Buoy Mass, Displacement, and Freeboard Model](buoy-mass-displacement-and-freeboard-model.md) | Whole-buoy synthesis: as-deployed mass budget, displacement, reserve buoyancy, and the floating-equilibrium freeboard solve. v5 is the live model; v4 preserved as §14 |
 | [Force Budget](force-budget.md) | **Living doc.** Tracks the framework's actual computed load-case values. Carries the v4 FEA results and the v5 geometry reassessment (every load lower at v5) |
-| [Stability Analysis](stability-analysis.md) | Roll/pitch stability of the deployed buoy — `KG`/`KB`/`BM`/`GM` ≈ 9.7 in, roll period ~0.6 s, one-wedge-lost ~3° list, mooring-load heel. [SCO-80](https://linear.app/scout1/issue/SCO-80) |
+| [Stability Analysis](stability-analysis.md) | Roll/pitch stability of the deployed buoy. **§12 (2026-09-29) is current:** STEP-geometry waterline, full GZ curve, capsize risk (stable inverted), 1.5 in caps + 24 in self-righting ballast. Calculator: [`mechanical/simulations/buoy-stability/`](../../../mechanical/simulations/buoy-stability/README.md). [SCO-80](https://linear.app/scout1/issue/SCO-80) |
 | [Impact / Boat-Strike Survivability](impact-survivability-analysis.md) | Energy-method bound on boat strike and handling drop — analytical half of [SCO-71](https://linear.app/scout1/issue/SCO-71); FEA + bench still owed |
+| [Ballast Arm and Mount](ballast-arm-and-mount.md) | Self-righting ballast hardware: 24 in 316 pipe, slip-on mount + backing plate, root design loads (~60–90 N·m), options compared with McMaster part numbers, mooring-collar recommendation. [SCO-125](https://linear.app/scout1/issue/SCO-125) |
 | [Print Settings](print-settings.md) | Canonical wall-count/infill spec per printed part, with the FDM-literature rationale — feeds the effective-density math in the mass/buoyancy budget |
 
 Closed-form structural checks live under [`mechanical/test/`](../../../mechanical/test/README.md)

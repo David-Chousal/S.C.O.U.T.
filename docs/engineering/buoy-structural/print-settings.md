@@ -32,8 +32,8 @@
 | Wedge bottom cap — v4 (superseded) | 3–4 | ~15% gyroid | Same as v4 wedge | Deep gyroid-filled trough; superseded by the lean v5 row above |
 | Wedge cap | 3–4 | ~15% gyroid | Same as v4 wedge | Same family, same reasoning; **vent during the foam pour** so fill pressure can't bow the thin v5 walls |
 | **Any heat-set insert boss, on any part** | **Locally solid — no infill gaps** | **0% (fully solid locally)** | Boss OD ≥ 2× insert diameter | Insert pull-out strength depends on solid perimeters around the hole, not bulk infill density — infill contributes almost nothing to retention |
-| Chassis (general body) | 6 | 25–30% gyroid | ~2.4–2.7 mm | Primary mooring-load structure — walls dominate FDM structural strength over infill; today's spec roughly doubles perimeter count vs. the wedge family |
-| Chassis at the U-bolt/mooring boss | 8–10+ | Locally 100% solid | Full local thickness | Critical single-point-failure region (panel review) — bearing/pull-out load needs solid material, not infill |
+| Chassis (general body) | 6 | **25% gyroid** (chosen 2026-09-29; 6 top/bottom layers) → **v5 slices at 808 g** | ~2.4–2.7 mm | Primary mooring-load structure — walls dominate FDM structural strength over infill; today's spec roughly doubles perimeter count vs. the wedge family |
+| Chassis at the ballast-arm mount (was U-bolt/mooring boss) | 6 + ~4 extra perimeters around each bolt hole, or 316 compression sleeves | 25% gyroid — **not** 100% (2026-09-29): a 316 backing plate inside spreads the load, so the floor only sees ~0.5–2 MPa compression | Full local thickness | Critical single-point-failure region (panel review) — bearing/pull-out load needs solid material, not infill |
 | Chassis cap | 6 | 25–30% gyroid | ~2.4–2.7 mm (provisional) | Matches the chassis standard until [SCO-68](https://linear.app/scout1/issue/SCO-68) resolves whether it's load-bearing (top O-ring/fastener boundary) |
 
 ## Why walls, not infill

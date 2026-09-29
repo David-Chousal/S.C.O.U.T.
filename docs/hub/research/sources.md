@@ -89,6 +89,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `ulloa-2021` | Ulloa et al. (2021). "scikit-maad: … quantitative analysis of eco-acoustic … " *Methods in Ecology and Evolution*. [doi](https://doi.org/10.1111/2041-210X.13711) | ❓ | — | Acoustic index computation library |
 | `virtanen-2020` | Virtanen et al. (2020). "SciPy 1.0." *Nature Methods* 17:261–272. [doi](https://doi.org/10.1038/s41592-019-0686-2) | 🔓 | library/virtanen-2020.pdf | Signal processing, spectrograms |
 | `harris-2020` | Harris et al. (2020). "Array programming with NumPy." *Nature* 585:357–362. [doi](https://doi.org/10.1038/s41586-020-2649-2) | 🔓 | library/harris-2020.pdf | Numerical computation |
+| `geuzaine-remacle-2009` | Geuzaine & Remacle (2009). "Gmsh: A 3-D finite element mesh generator with built-in pre- and post-processing facilities." *International Journal for Numerical Methods in Engineering* 79(11):1309–1331. [doi](https://doi.org/10.1002/nme.2579) | ❓ | — | STEP import (OpenCASCADE) for solid volumes, centroids, and the wedge-bottom outer profile — [Stability Analysis §12](../../engineering/buoy-structural/stability-analysis.md#12-large-angle-stability-capsize-and-self-righting-ballast--2026-09-29) |
 
 ## Communications protocol
 
@@ -193,6 +194,21 @@ configuration and the airtime calculator are derived from — not secondary expl
 |---|---|---|---|---|
 | `sculpteo-insert-pullout` | Sculpteo. "Pull-out resistance of threaded inserts: Testing and Results" — design guideline. [sculpteo.com](https://www.sculpteo.com/en/3d-learning-hub/design-guidelines/pull-out-resistance-of-threaded-inserts-testing-and-results/) | 🔓 | — | Insert pull-out strength depends primarily on solid perimeters around the hole, not bulk infill — used 2026-08-21 for the insert-boss finding added to [SCO-77](https://linear.app/scout1/issue/SCO-77) |
 | `sovol3d-heat-set-inserts` | Sovol3D. "3D Printing with Heat-Set Inserts: Design Strong Screw Bosses That Last" — blog. [sovol3d.com](https://www.sovol3d.com/blogs/news/3d-printing-with-heat-set-inserts-design-strong-screw-bosses-that-last) | 🔓 | — | Boss diameter ≈2× insert knurl diameter, zero infill gaps inside the boss — used 2026-08-21 for [SCO-77](https://linear.app/scout1/issue/SCO-77) and the U-bolt boss spec on [SCO-75](https://linear.app/scout1/issue/SCO-75) |
+
+## Hydrostatics, stability & seals (2026-09-29)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `tupper-2013` | Tupper, E.C. (2013). *Introduction to Naval Architecture*, 5th ed. Butterworth-Heinemann. No DOI (book) | 🔒 | — | Standard basis for `GM = KB + BM − KG`, `BM = I_wp/V`, the righting-arm (`GZ`) curve and vanishing angle, and the roll period `T = 2πk/√(g·GM)` — [Stability Analysis §12](../../engineering/buoy-structural/stability-analysis.md#12-large-angle-stability-capsize-and-self-righting-ballast--2026-09-29) |
+| `parker-ord5700` | Parker Hannifin. *Parker O-Ring Handbook*, ORD 5700. [parker.com](https://www.parker.com/us/en/divisions/o-ring-and-engineered-seals-division/resources/oring-handbook.html) | 🔓 | — | Static face-seal gland design: 25% squeeze / 75% fill targets, and seating the ring against the groove wall opposite the pressure (external pressure → against the inner wall). Used for the 2026-09-29 flange-style electronics housing sizing (AS568-247 groove). Also the basis of the sensor-pod groove in [Sensor Pod Packing Budget §8](../../engineering/sensor-pod-packing-budget.md#8-top-cap-face-seal--resized-for-the-new-chamber-od-2026-09-13) |
+| `sae-as568` | SAE International. *AS568: Aerospace Size Standard for O-rings*. [sae.org](https://www.sae.org/standards/content/as568/) | 🔒 | — | Dash-number dimensions. AS568-247 (ID 4.609 in × CS 0.139 in) was taken from a secondary size chart. ⚠️ Confirm against a supplier table before ordering, the same caveat [SCO-106](https://linear.app/scout1/issue/SCO-106) carries |
+| `noaa-1612340` | NOAA Tides & Currents. Station 1612340, Honolulu, HI — tidal datums. [tidesandcurrents.noaa.gov](https://tidesandcurrents.noaa.gov/datums.html?id=1612340) | 🔓 | — | Tidal range for the ballast seabed-clearance check ([SCO-125](https://linear.app/scout1/issue/SCO-125)). ⚠️ The ~0.5–0.7 m range quoted on 2026-09-29 has not yet been read off the station page; it also needs the station nearest the chosen site ([SCO-96](https://linear.app/scout1/issue/SCO-96)) |
+| `crc-handbook` | Rumble, J.R. (ed.). *CRC Handbook of Chemistry and Physics*. CRC Press. No DOI (handbook) | 🔒 | — | Lead density (11.34 g/cm³), used for the ballast net-down factor (1 − 1.025/11.34 = 0.91) in [Stability Analysis §12](../../engineering/buoy-structural/stability-analysis.md#12-large-angle-stability-capsize-and-self-righting-ballast--2026-09-29) |
+| `mcmaster-catalog-2026-09` | McMaster-Carr online catalog, listings as viewed 2026-09-29: 4816K51 (316 3/4 Sch 40 pipe, 24 in, $64.74), 4813K51 (304, $44.50), 6040T56 / 6040T57 (316 slip-on rail mounts, $23.03), 44695K12 (316 Class 150 threaded flange 3/4 NPT, $54.09), 44685K12 (304, $43.31), 6696K61 (316 through-wall connector 3/4 NPT, $165.27). [mcmaster.com](https://www.mcmaster.com/) | 🔓 | — | Part dimensions and prices for the ballast arm and mount — [Ballast Arm and Mount](../../engineering/buoy-structural/ballast-arm-and-mount.md). Prices change; re-check before ordering |
+
+Also re-used in this work, already registered above: `usace-cem` (linear wave theory — design-wave
+slope, orbital motion), `dnv-rp-c205` (added mass for the heave period), and `roark-8e` (flat-plate
+floor/lid and external-pressure cylinder checks for the flange-style housing).
 
 ## Market & commercial landscape
 

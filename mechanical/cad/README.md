@@ -10,7 +10,9 @@ Source CAD models and exported STEP/STL, organized by subsystem.
 | [stem/](stem/) | Structural member carrying the sensor pod underwater |
 | [solar-mount/](solar-mount/) | Solar panel mounting bracket |
 
-**Full assembly:** [`full-buoy-assembly-v5.step`](full-buoy-assembly-v5.step) is the whole buoy
+**Full assembly (current): [`full-buoy-assembly-v6.step`](full-buoy-assembly-v6.step)**, Fusion "DFM Assembly 2", exported 2026-09-29. It has **1.5 in wedge-bottom caps**, the 7.0 in chassis, the six v5 wedges, the **24 in 316 ballast pipe (4816K51) in a 6040T56 slip-on mount** at the chassis bottom, and six tentative alignment pegs between caps and wedges. No electronics housing, solar mount, pod, or lead is modelled yet. The stability calculator reads its cap geometry ([`mechanical/simulations/buoy-stability/`](../simulations/buoy-stability/README.md)).
+
+**Previous full assembly:** [`full-buoy-assembly-v5.step`](full-buoy-assembly-v5.step) is the whole buoy
 as one STEP (John Ryan, Fusion "DFM Assembly", exported 2026-09-25). It holds the v5 floatation
 ring, chassis and caps, cable routing, and the `3076T33` stand-in mooring ring, and it is the model
 the 2026-09-25 FEA re-check ran on. It lives here rather than in a subsystem folder because it spans

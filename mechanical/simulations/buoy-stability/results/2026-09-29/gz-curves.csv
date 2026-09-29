@@ -1,0 +1,112 @@
+configuration,heel_deg,gz_in
+"session: v5 full caps, no ballast",0,-0.001
+"session: v5 full caps, no ballast",5,0.581
+"session: v5 full caps, no ballast",10,1.065
+"session: v5 full caps, no ballast",15,1.483
+"session: v5 full caps, no ballast",20,1.846
+"session: v5 full caps, no ballast",25,2.132
+"session: v5 full caps, no ballast",30,2.313
+"session: v5 full caps, no ballast",35,2.416
+"session: v5 full caps, no ballast",40,2.464
+"session: v5 full caps, no ballast",45,2.423
+"session: v5 full caps, no ballast",50,2.350
+"session: v5 full caps, no ballast",55,2.180
+"session: v5 full caps, no ballast",60,1.956
+"session: v5 full caps, no ballast",65,1.688
+"session: v5 full caps, no ballast",70,1.383
+"session: v5 full caps, no ballast",75,1.056
+"session: v5 full caps, no ballast",80,0.709
+"session: v5 full caps, no ballast",85,0.350
+"session: v5 full caps, no ballast",90,-0.020
+"session: v5 full caps, no ballast",95,-0.385
+"session: v5 full caps, no ballast",100,-0.747
+"session: v5 full caps, no ballast",105,-1.098
+"session: v5 full caps, no ballast",110,-1.428
+"session: v5 full caps, no ballast",115,-1.738
+"session: v5 full caps, no ballast",120,-2.021
+"session: v5 full caps, no ballast",125,-2.275
+"session: v5 full caps, no ballast",130,-2.500
+"session: v5 full caps, no ballast",135,-2.688
+"session: v5 full caps, no ballast",140,-2.812
+"session: v5 full caps, no ballast",145,-2.878
+"session: v5 full caps, no ballast",150,-2.859
+"session: v5 full caps, no ballast",155,-2.755
+"session: v5 full caps, no ballast",160,-2.541
+"session: v5 full caps, no ballast",165,-2.142
+"session: v5 full caps, no ballast",170,-1.464
+"session: v5 full caps, no ballast",175,-0.725
+"session: v5 full caps, no ballast",180,-0.052
+"current v6: 1.5 in caps, no ballast",0,-0.000
+"current v6: 1.5 in caps, no ballast",5,0.798
+"current v6: 1.5 in caps, no ballast",10,1.506
+"current v6: 1.5 in caps, no ballast",15,2.129
+"current v6: 1.5 in caps, no ballast",20,2.564
+"current v6: 1.5 in caps, no ballast",25,2.821
+"current v6: 1.5 in caps, no ballast",30,2.959
+"current v6: 1.5 in caps, no ballast",35,3.021
+"current v6: 1.5 in caps, no ballast",40,2.993
+"current v6: 1.5 in caps, no ballast",45,2.863
+"current v6: 1.5 in caps, no ballast",50,2.675
+"current v6: 1.5 in caps, no ballast",55,2.418
+"current v6: 1.5 in caps, no ballast",60,2.118
+"current v6: 1.5 in caps, no ballast",65,1.782
+"current v6: 1.5 in caps, no ballast",70,1.415
+"current v6: 1.5 in caps, no ballast",75,1.031
+"current v6: 1.5 in caps, no ballast",80,0.632
+"current v6: 1.5 in caps, no ballast",85,0.222
+"current v6: 1.5 in caps, no ballast",90,-0.207
+"current v6: 1.5 in caps, no ballast",95,-0.604
+"current v6: 1.5 in caps, no ballast",100,-1.011
+"current v6: 1.5 in caps, no ballast",105,-1.402
+"current v6: 1.5 in caps, no ballast",110,-1.774
+"current v6: 1.5 in caps, no ballast",115,-2.123
+"current v6: 1.5 in caps, no ballast",120,-2.440
+"current v6: 1.5 in caps, no ballast",125,-2.718
+"current v6: 1.5 in caps, no ballast",130,-2.950
+"current v6: 1.5 in caps, no ballast",135,-3.134
+"current v6: 1.5 in caps, no ballast",140,-3.236
+"current v6: 1.5 in caps, no ballast",145,-3.280
+"current v6: 1.5 in caps, no ballast",150,-3.238
+"current v6: 1.5 in caps, no ballast",155,-3.104
+"current v6: 1.5 in caps, no ballast",160,-2.867
+"current v6: 1.5 in caps, no ballast",165,-2.442
+"current v6: 1.5 in caps, no ballast",170,-1.710
+"current v6: 1.5 in caps, no ballast",175,-0.847
+"current v6: 1.5 in caps, no ballast",180,-0.056
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,0,0.000
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,5,1.118
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,10,2.239
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,15,3.321
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,20,4.345
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,25,5.274
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,30,6.059
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,35,6.665
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,40,7.121
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,45,7.446
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,50,7.695
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,55,7.843
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,60,7.913
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,65,7.907
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,70,7.829
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,75,7.687
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,80,7.482
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,85,7.217
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,90,6.894
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,95,6.526
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,100,6.105
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,105,5.642
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,110,5.143
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,115,4.609
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,120,4.054
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,125,3.482
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,130,2.904
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,135,2.325
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,140,1.786
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,145,1.279
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,150,0.832
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,155,0.470
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,160,0.240
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,165,0.181
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,170,0.152
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,175,0.084
+current v6: 1.5 in caps + 2.6 kg lead at 24 in,180,-0.035

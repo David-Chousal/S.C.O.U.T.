@@ -75,6 +75,8 @@ mechanical/
 │   └── solar-mount/            Solar panel mounting bracket
 ├── drawings/                   Dimensioned drawings, hull cross-sections
 ├── mooring/                    Anchor, line, swivel, and shackle specifications
+├── simulations/                Re-runnable calculators — see simulations/README.md
+│   └── buoy-stability/         Waterline, GM, GZ curve, self-righting, ballast sizing (+ interactive explorer)
 └── test/                       Buoyancy, waterline, pressure, and submersion test records
 ```
 

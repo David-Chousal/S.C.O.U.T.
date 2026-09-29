@@ -1,0 +1,34 @@
+item,mass_g,z_in_from_keel,net_down_factor,source
+Chassis shell,808.0,3.38,1.000,[M] slicer 2026-09-29 (current CAD chassis)
+Wedge shells x6,1285.2,4.25,1.000,[X] STEP 168.7 cm3 x 1.27
+Wedge-bottom caps x6,573.7,0.33,1.000,cap v6-step 1.5 in
+Wedge caps x6,761.2,6.90,1.000,[M] slicer 2026-08-24
+Flotation foam,752.1,3.69,1.000,[X] STEP cavities x 0.032 g/cm3
+Electronics housing (flange style),385.0,5.37,1.000,"[A] geometry, 3/16 in walls"
+Feather M0 + RFM95,5.8,3.70,1.000,[M] datasheet
+Adalogger FeatherWing,6.0,3.70,1.000,[A]
+Stacking headers + misc,5.0,3.70,1.000,[A]
+PID 6106 charger/boost,12.0,3.70,1.000,[A]
+"Wiring, divider, connectors",40.0,3.50,1.000,[A]
+Harness / board sled,40.0,3.50,1.000,[A] projected
+Internal T/RH leak sensor,2.0,2.80,1.000,[A] projected
+Hydrophone audio electronics,25.0,3.70,1.000,"[A] projected, Rev B"
+Deployment battery (LiFePO4),250.0,2.80,1.000,[A] ADR-0002 open
+Cable glands x3,18.0,7.40,1.000,[A]
+Antenna,30.0,8.50,1.000,[A]
+Solar mount,320.0,8.50,1.000,[A]
+Solar panel,700.0,9.50,1.000,[A] not specified
+Fasteners + inserts,210.0,3.00,1.000,[A]
+Epoxy / adhesive,130.0,3.70,1.000,[A]
+Antifouling + seal coat,185.0,2.70,1.000,[A]
+Internal cabling,40.0,3.50,1.000,[A]
+External cabling,60.0,-2.00,0.267,[A] freeboard model §6
+Sensor pod (+ SEN0189 board),217.0,-13.50,0.300,[A]
+Hydrophone element,150.0,-13.50,0.600,[A] projected
+Ballast arm: 316 pipe 4816K51,1048.0,-12.00,0.872,[X] 214.9 mm2 x length x 8.0
+Arm mount: 6040T56 rail mount,222.0,-0.90,0.872,[X] STEP 27.8 cm3 x 8.0
+316 backing plate 4x4x1/8 in,262.0,0.20,1.000,[X] 2 in3 x 8.0
+Mount bolts + cross-bolt,40.0,0.00,0.872,[A]
+Mooring collar + swivel,220.0,-2.50,0.871,[A] U-bolt collar on pipe root
+Lead ballast (encapsulated),2600.0,-22.20,0.910,[A] annulus ~3 in OD above the end cap
+TOTAL,11403.0,,,

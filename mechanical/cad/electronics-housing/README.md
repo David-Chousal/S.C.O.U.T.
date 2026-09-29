@@ -183,5 +183,33 @@ match if the exported geometry differs.
   [packing budget](../../../docs/engineering/electronics-housing-packing-budget.md); this clamp
   sits at the Ø101.6 mm (4") reference, consistent with that analysis.
 
+## Flange-style housing: first-pass sizing, 2026-09-28 (not yet in CAD)
+
+**Why:** the static face-seal clamp above has an inward top collar, which narrows the opening to
+Ø78.74 mm (3.10 in). The two-board zone of the harness needs ~Ø83 mm, so a pre-assembled sled
+won't go in. Moving the face seal onto an **outward flange that sits on the chassis top face**
+opens the full bore. The flange and lid also become the **chassis top closure**, so the separate
+chassis cap (89.8 g) is removed. Decided 2026-09-28/29 ([SCO-128](https://linear.app/scout1/issue/SCO-128),
+[SCO-49](https://linear.app/scout1/issue/SCO-49), [SCO-68](https://linear.app/scout1/issue/SCO-68)).
+
+| Feature | in | mm | Basis |
+|---|---|---|---|
+| Tube OD | 4.375 | 111.13 | 0.088 in clearance per side in the Ø4.550 in chassis bore (bore measured from the v4 chassis STEP) |
+| Tube ID = top opening | 4.000 | 101.60 | The harness needs Ø3.27 in |
+| Wall | 0.1875 | 4.76 | External-pressure buckling `p_cr = E/(4(1−ν²))·(t/R)³` = 411 kPa vs 50.3 kPa → SF ≈ 8.2 (chassis assumed flooded) |
+| Body length below flange | 4.625 | 117.48 | Usable interior Ø4.000 × 4.4375 in |
+| Floor | 0.1875 | 4.76 | Clamped flat plate `σ = 0.75·p·(r/t)²` = 4.3 MPa → SF ≈ 8 |
+| Flange and lid | 0.250 thick, Ø5.750 | 6.35, Ø146.05 | Flush with the chassis OD; lid σ 2.4–4.0 MPa |
+| O-ring | **AS568-247** (ID 4.609 × CS 0.139) | 117.07 × 3.53 | ⚠️ Confirm against a supplier table ([SCO-137](https://linear.app/scout1/issue/SCO-137)) |
+| Groove | ID 4.609 / OD 4.803, 0.194 wide × 0.104 deep | 117.07 / 122.00, 4.93 × 2.65 | 25% squeeze / 75% fill (`parker-ord5700`). The groove ID equals the ring ID so external pressure seats the ring on the inner wall |
+| Bolts | 6 × Ø0.220 on a Ø5.250 circle | 6 × Ø5.59 on Ø133.35 | 0.114 in land to the groove, 0.140 in edge margin |
+| Estimated mass (shell only) | ~385 g (330–490) | — | PETG, print-settings effective density |
+
+**Open:** the flange-to-chassis joint needs its own seal (second face groove on the flange
+underside, seating on the 0.600 in chassis top face) if the chassis must stay dry; the bolts can
+run lid → flange → chassis inserts so one bolt set clamps both seals. Final contents come from
+[SCO-70](https://linear.app/scout1/issue/SCO-70). Earlier variant, not chosen: the same seal
+inside a Ø114.30 body (tube OD Ø110) fits within the chassis bore but pushes the flange to ~Ø155 mm.
+
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
