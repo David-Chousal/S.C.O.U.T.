@@ -58,6 +58,12 @@ and moment results. `1 in = 0.0254 m`.
 
 ---
 
+> ⚠️ **Superseded in part by [§12](#12-large-angle-stability-capsize-and-self-righting-ballast--2026-09-29)
+> (2026-09-29).** A STEP-geometry re-run moved the waterline into the wedge-bottom taper, corrected
+> the mass budget, and computed the full `GZ` curve. Main findings: nominal `GM` ≈ 7.0 in (not 9.6),
+> vanishing angle ≈ 90°, and **the buoy is stable upside down.** §8's assumption that form stability
+> balances the LC7 moment does not hold. §§1–9 are kept as the prior revision.
+
 ## 1. Vertical centre of gravity — `KG`
 
 The buoy is treated as a rigid body: the printed PETG sensor stem is stiff, so the sensor pod
@@ -416,3 +422,88 @@ What *can* be said precisely:
 A routine re-run (a mass changed, SCO-70 lands) only needs steps 1, 4, 5. A full re-derivation
 is warranted only if the waterplane stops being a solid disc (e.g. a freeboard change that
 brings the waterline into the taper zone) or the hull form changes.
+
+---
+
+## 12. Large-angle stability, capsize, and self-righting ballast — 2026-09-29
+
+**Method.** The hull is taken from the committed STEP files. The wedge-bottom outer profile was
+meshed (gmsh/OpenCASCADE) and matches the 2026-09-25 envelope measurement within 0.6%. The v5
+wedge measures 168.7 cm³ solid, with its centroid at 5.75 in. The hull runs z 0–3.0 in for the
+wedge-bottom taper (R 6.29 → 9.00 in, 45°), z 3.0–8.5 in for the Ø18 in wedge section, and z 8.5–9.0 in
+for the housing flange and lid.
+`GZ(φ)` is computed at constant displacement by voxel integration (2 mm grid) from 0 to 180°.
+It reproduces `GM·sinφ` at small angles (5°: 0.58 vs 0.62 in). Submerged appendages (stem, pod,
+hydrophone, mooring hardware, external cable) enter both the equilibrium and the moment balance at
+**net-down weight**, i.e. weight minus their own buoyancy. The §1 method used their full mass for
+`KG`, which overstated their ballast effect.
+
+**Mass-budget corrections against [freeboard model §3](buoy-mass-displacement-and-freeboard-model.md#3-full-mass-budget)**
+(nominal 7.749 → **8.19 kg**):
+
+| Change | Δ (g) | Basis |
+|---|---:|---|
+| Flange-style electronics housing added (it had no line) | +385 | Geometry at 3/16 in walls, PETG, print-settings effective density; range 330–490 |
+| Chassis cap and chassis bottom end cap removed | −180 | Housing flange + lid is now the chassis top closure; v4 chassis STEP has an integral floor |
+| Wedge shell 240 → 214 g each | −155 | STEP solid 168.7 cm³ × 1.27 g/cm³ |
+| Foam 710 → 834 g | +124 | STEP cavities 6 × (3.262 + 1.084 L) at 2 lb/ft³ |
+| Projected electronics: audio board 25, sled 40, leak sensor 2, glands 18, antenna 30, hydrophone element 150 | +265 | [A] placeholders |
+| Battery and boards moved into the housing (z ≈ 4.3–5.2 in); SEN0189 board moved to the pod | 0 | Placement |
+
+⚠️ **Unreconciled:** the v4 chassis STEP is 2535 cm³ solid. At the [print-settings](print-settings.md)
+chassis spec (6 walls, 25–30% gyroid) that implies ~1.6 kg, but the 2026-08-24 slicer weigh-in
+recorded 712.82 g. This is carried as the high case (~1.38 kg for v5) until the v5 chassis re-slice.
+
+**Results (current v5, full 3 in caps):**
+
+| | Low | **Nominal** | High |
+|---|---|---|---|
+| Mass | 6.43 kg | **8.19 kg** | 12.61 kg |
+| Draft / freeboard to wedge top | 2.17 / 6.33 in | **2.56 / 5.94 in** | 3.50 / 5.00 in |
+| `KG` / `KB` / `BM` | 4.53 / 1.17 / 10.99 in | **4.74 / 1.41 / 10.44 in** | 4.88 / 1.98 / 7.26 in |
+| **`GM`** | 7.63 in | **7.12 in** | 4.36 in |
+| Max `GZ` / righting moment | 2.70 in / 4.1 N·m | **2.46 in at ~40° / 4.8 N·m** | 2.05 in / 6.1 N·m |
+| **Vanishing angle** | 93° | **~90°** | 86° |
+
+**Findings.**
+
+1. **The buoy is stable inverted.** `GZ` stays negative from ~90° to 180°, and 180° is a stable
+   equilibrium. Righting it from inverted takes ~5.6 J; capsizing it from upright takes ~4.8 J. A
+   capsize should be treated as mission-ending.
+2. **Form stability cannot balance the LC7 moment.** The maximum hydrostatic righting moment is
+   ~4.8 N·m, against the ~42 N·m LC7 static overturning moment. This contradicts §8. Either LC7 is
+   too conservative as a static load (it is oscillatory at 6 s), or the buoy is pulled down at the
+   crest. Resolving it needs [SCO-82](https://linear.app/scout1/issue/SCO-82).
+3. **Wedge-cap height** (with +1 kg electronics and a 1.5 kg panel as the growth case):
+
+   | Caps | Mass | Freeboard | `GM` (growth) | Vanishing | Keel emerges at |
+   |---|---|---|---|---|---|
+   | Full, 3 in | 8.19 kg | 5.96 in | 7.0 (5.4) in | 90° | 22° |
+   | Half, 1.5 in (est. 700 g) | 7.44 kg | 5.20 in | 9.5 (6.6) in | 87° | 13° |
+   | None (flat bottom, chassis −3 in) | 6.57 kg | 4.07 in | 11.9 (8.4) in | 88° | 9° |
+
+   Cap height does not fix capsize. Smaller caps lower everything above them, which improves `GM`
+   and growth margin, at a cost in freeboard and impact/slam protection.
+4. **Keel-level ballast and the keel-attached mooring pull do not self-right.** A load at z ≈ 0
+   has too short a lever. Even 8 kg only moves the vanishing angle to ~120–125°.
+5. **Deep ballast does.** Minimum lead for positive `GZ` from 5° to 178°, with half caps and the
+   stem extended at 30 g/in to reach the lead:
+
+   | Lead depth below keel | 6 in | 13.5 in | 20 in | **24 in** | 30 in | 36 in | 48 in |
+   |---|---|---|---|---|---|---|---|
+   | Lead (kg) | 7.83 | 4.41 | 3.09 | **2.58** | 2.02 | 1.64 | 1.03 |
+   | Buoy total (kg) | 15.2 | 11.9 | 10.7 | **10.3** | 10.0 | 9.8 | 9.5 |
+   | Freeboard (in) | 3.54 | 4.26 | 4.51 | **4.60** | 4.70 | 4.75 | 4.83 |
+
+   Lead × depth ≈ 50–60 kg·in throughout. Returns diminish past ~30 in, where the longer stem
+   eats the saving. At a 2 m site, depth past ~36 in risks seabed contact at a wave trough.
+
+**Decision (tentative, 2026-09-29): the ballast stem is developed to 24 in below the keel.**
+With half caps this means ~2.6 kg of lead and a ~10.3 kg buoy that self-rights from any angle.
+Cap height and the lead mass are still open.
+
+**Open items from this section:** the v5 chassis re-slice (the mass discrepancy above); the
+stem/joint bending check with 2.6 kg at 24 in under design-wave and LC9 loads; the mooring
+attachment point; site depth at low water ([SCO-96](https://linear.app/scout1/issue/SCO-96));
+a buoyant-solar-mount alternative (not modelled); and committing the calculator script so this
+section can be re-run from the repo.
