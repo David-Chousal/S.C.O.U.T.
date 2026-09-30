@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-29.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-09-30.**
 
 ---
 
@@ -48,7 +48,10 @@ open Phase 0 issue. Full plan:
    ([SCO-53](https://linear.app/scout1/issue/SCO-53)).
    [SCO-70](https://linear.app/scout1/issue/SCO-70)
 2. **[ADR-0002](../decisions/0002-lifepo4-charging-path.md)** (LiFePO₄ charging path) — blocks
-   power bench bring-up, battery/solar sizing, and firmware battery thresholds.
+   power bench bring-up, battery/solar sizing, and firmware battery thresholds. **Now also
+   weighing a non-rechargeable multi-year primary lithium cell with no solar** (raised by Shoba
+   and Dr. Wolfe, 2026-09-30), decided on the measured power budget due to Shoba 2026-10-02
+   ([SCO-116](https://linear.app/scout1/issue/SCO-116)).
    [SCO-10](https://linear.app/scout1/issue/SCO-10)
 3. **No parts ordered yet** — firmware driver validation
    ([SCO-25](https://linear.app/scout1/issue/SCO-25)) and shore-station radio bring-up
