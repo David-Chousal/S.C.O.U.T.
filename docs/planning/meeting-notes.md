@@ -518,3 +518,91 @@ before the submission, since the answer shapes how much detail the submitted lis
 | Reslice the lean V5 wedge bottom and propagate the new mass | John Ryan |
 | Talk to Catherine about the dashboard before building one | David |
 | Confirm whether budget money can buy unlisted items | David |
+
+---
+
+## 2026-09-30 — First joint advisor meeting (GENG + ECEN)
+
+**Attendees:** John Ryan Myrdal (GENG) · Isabella Rodriguez (ECEN) · Jes Kuczenski (advisor) ·
+Hoeseok Yang (ECEN advisor). David was absent (class conflict).
+
+Granola listed only John as a participant, and its action-item list attributed Isabella's
+electronics items to John. Attribution below is corrected from the transcript. Speaker labels
+were not reliable, so which advisor said what is inferred from content. John confirmed
+(2026-10-01) that the mechanical, cost and testing points below came from **Jes Kuczenski**.
+Granola's summary also says the structure is "PLA". The build material is **PETG**
+(decision 2026-09-08), and nobody in the transcript names a material.
+
+### Decisions
+
+- **This joint meeting replaces the tentative Tuesday advisor slot.** It is now the one weekly
+  meeting with both advisors. The department manager is arranging a standing room. The Friday
+  meeting with Navid is unchanged.
+
+### Reported
+
+- **Isabella — power.** She met Shoba and Dr. Wolfe that morning. Their first step: get the
+  sensors and measure peak and active current per state, then build the power budget. Both
+  suggested solar **may not be needed**: a multi-year primary lithium cell (the smoke/gas-detector
+  type) could be swapped at each service visit. Open, not decided
+  ([SCO-10](https://linear.app/scout1/issue/SCO-10)). The hydrophone is the largest load and the
+  most expensive sensor ([SCO-8](https://linear.app/scout1/issue/SCO-8)). Numbers go to Shoba on
+  Friday 2026-10-02 ([SCO-116](https://linear.app/scout1/issue/SCO-116)). Parts are to be ordered
+  in the next two weeks, before the end-of-quarter slowdown
+  ([SCO-115](https://linear.app/scout1/issue/SCO-115)).
+- **Shore station.** A previous senior design group of Navid's built a near-identical ESP32 + LoRa
+  station, and its parts list is available ([SCO-24](https://linear.app/scout1/issue/SCO-24)).
+- **John — mechanical.** The v5 chassis was printing during the meeting, so the first full
+  assembly follows. He walked through the self-righting ballast arm and said the ballast "likely
+  will not be lead" ([SCO-136](https://linear.app/scout1/issue/SCO-136)).
+- **Timeline.** Electronics and mechanical prototype by winter break; winter quarter for
+  integrated testing; Hawaii over spring break. The team is considering building 2–3 units for
+  parallel testing.
+
+### Advisor feedback
+
+- **Benchmarks before tests (Jes).** Not "100% waterproof" but "waterproof for X hours at Y depth";
+  temperature "within ±1 °C". Pull the ranges from the ENGR 110 requirements
+  ([SCO-139](https://linear.app/scout1/issue/SCO-139)).
+- **Layered testing (Jes).** Looks-like and works-like prototypes, each with its own protocol, and
+  manufacturing is part of what gets tested ([SCO-140](https://linear.app/scout1/issue/SCO-140)).
+  Start now with cheap tests: printed capsules with a paper-towel moisture indicator, at several
+  wall counts, in salt water at the right salinity and temperature
+  ([SCO-141](https://linear.app/scout1/issue/SCO-141)).
+- **Schedule risk (Yang).** Have a plan B and C. Pool access is likely obtainable, and a local
+  backup site is wanted ([SCO-143](https://linear.app/scout1/issue/SCO-143)).
+- **Exterior cable routing is "a big deal" (Jes).** Also plan for routing down through the rod, or two cables instead of one
+  ([SCO-144](https://linear.app/scout1/issue/SCO-144)).
+- **Reprint only what changes (Jes).** The buoy's size may hold while the electronics layout
+  changes, so design it so only the center section reprints
+  ([SCO-146](https://linear.app/scout1/issue/SCO-146)).
+- **Design for permitting (Jes).** "You could build the best sensor in the world", but it is
+  worthless if it can't be permitted. John's housing-off-a-boat-or-pier idea fits this
+  ([SCO-147](https://linear.app/scout1/issue/SCO-147)).
+- **Alternatives analysis (Jes).** Gather options, decide what fits your goals, move forward.
+  That requires the goals written down first
+  ([SCO-149](https://linear.app/scout1/issue/SCO-149)).
+- **Manufacturability and local sourcing (Jes).** Her other GENG team targets ~100 units a
+  year out of SCU, so if others are to rebuild Scout, manufacturing must be nailed down
+  ([SCO-148](https://linear.app/scout1/issue/SCO-148)). Off-the-shelf where possible; design so a changed
+  electronics layout doesn't mean reprinting the whole buoy; ask what is available in Hawaii or
+  Mexico without McMaster (bamboo was raised). The advisor also suggested a modular multi-depth
+  probe rod, which would reopen
+  [ADR-0003](../decisions/0003-single-point-sensing.md) ([SCO-145](https://linear.app/scout1/issue/SCO-145)).
+- **LoRa (Yang).** A known pain point. He offered help and suggested consulting Maryam. He
+  asked what happens when the link drops (already answered: SD logging plus card merge,
+  decision 2026-09-10).
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Power budget with measured sensor currents, to Shoba 2026-10-02 | Isabella ([SCO-116](https://linear.app/scout1/issue/SCO-116)) |
+| Place the combined parts order within two weeks | Isabella ([SCO-115](https://linear.app/scout1/issue/SCO-115)) |
+| Inventory spare sensors and boards (Yang's lab, other labs) | Isabella ([SCO-142](https://linear.app/scout1/issue/SCO-142)) |
+| Define benchmarked MVP requirements from ENGR 110 | John ([SCO-139](https://linear.app/scout1/issue/SCO-139)) |
+| Map the test protocol and unit counts at the Friday Navid meeting | John ([SCO-140](https://linear.app/scout1/issue/SCO-140)) |
+| Start saltwater capsule leak tests this weekend | John ([SCO-141](https://linear.app/scout1/issue/SCO-141)) |
+| Center-only reprint, float-free config, manufacturability review, alternatives analysis | John ([SCO-146](https://linear.app/scout1/issue/SCO-146)–[SCO-149](https://linear.app/scout1/issue/SCO-149)) |
+| Invite David to the weekly advisor meeting | Isabella / John |
+| Reach out to Maryam about LoRa | Isabella |
