@@ -7,8 +7,13 @@ structure. First category populated 2026-08-17 with the initial floatation FEA p
 
 ## Contents
 
+**Start with the [risk-reduction register](risk-reduction-register.md)**: every prototype and
+risk-reduction test, run and planned, with its benchmark and result in one table.
+
+
 | Record | Date | Summary |
 |---|---|---|
+| [`sensor-housing-oring-coupon-2026-10-01.md`](sensor-housing-oring-coupon-2026-10-01.md) | 2026-10-01 | Short sensor-housing coupon to test the face seal with a purchased 3/16 in plumbing O-ring, groove sized for 25% squeeze. **Not yet run** (RR-12, [SCO-108](https://linear.app/scout1/issue/SCO-108)) |
 | [`wedge-bottom-split-print-2026-09-23.md`](wedge-bottom-split-print-2026-09-23.md) | 2026-09-23 | Medium Prusa failed, running on a filament workaround. Lean v5 wedge bottom split into two parts, and half 1 started on a Prusa Mini. **2026-09-24: Mini prints failed repeatedly** (bed adhesion, Z calibration). The larger printer printed wedges well after a PTFE-tube feed fix ([SCO-111](https://linear.app/scout1/issue/SCO-111)) |
 | [`sensor-housing-tpu-oring-failure-2026-09-12.md`](sensor-housing-tpu-oring-failure-2026-09-12.md) | 2026-09-12 | Extended (~1 week) submersion of the turbidity sensor-housing prototype, sealed with a TPU-printed O-ring (shortcut, not the specified AS568-137). **Fail** — water got in, though the poor ring held out most water for most of the week first. Decision: no further housing submersion tests until a real, purchased O-ring is on hand ([SCO-106](https://linear.app/scout1/issue/SCO-106)) |
 | [`wedge-ring-buckling-check-2026-09-09.md`](wedge-ring-buckling-check-2026-09-09.md) | 2026-09-09 | Closed-form external-pressure buckling of the v5 wedge ring. **Bare** 0.095 in wall: `SF` ≈ 0.2–0.7 (fails). **Foam-backed:** `SF` ≈ 3–5. Confirms and quantifies "foam in before submersion". The epoxied 6-wedge ring is stiffer again — the confirming FEA is [SCO-71](https://linear.app/scout1/issue/SCO-71) / [SCO-73](https://linear.app/scout1/issue/SCO-73) |
