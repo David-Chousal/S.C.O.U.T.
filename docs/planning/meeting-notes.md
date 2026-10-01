@@ -528,7 +528,8 @@ Hoeseok Yang (ECEN advisor). David was absent (class conflict).
 
 Granola listed only John as a participant, and its action-item list attributed Isabella's
 electronics items to John. Attribution below is corrected from the transcript. Speaker labels
-were not reliable, so which advisor said what is inferred and should be corrected if wrong.
+were not reliable, so which advisor said what is inferred from content. John confirmed
+(2026-10-01) that the mechanical, cost and testing points below came from **Jes Kuczenski**.
 Granola's summary also says the structure is "PLA". The build material is **PETG**
 (decision 2026-09-08), and nobody in the transcript names a material.
 
@@ -560,19 +561,30 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 
 ### Advisor feedback
 
-- **Benchmarks before tests.** Not "100% waterproof" but "waterproof for X hours at Y depth";
+- **Benchmarks before tests (Jes).** Not "100% waterproof" but "waterproof for X hours at Y depth";
   temperature "within ±1 °C". Pull the ranges from the ENGR 110 requirements
   ([SCO-139](https://linear.app/scout1/issue/SCO-139)).
-- **Layered testing.** Looks-like and works-like prototypes, each with its own protocol, and
+- **Layered testing (Jes).** Looks-like and works-like prototypes, each with its own protocol, and
   manufacturing is part of what gets tested ([SCO-140](https://linear.app/scout1/issue/SCO-140)).
   Start now with cheap tests: printed capsules with a paper-towel moisture indicator, at several
   wall counts, in salt water at the right salinity and temperature
   ([SCO-141](https://linear.app/scout1/issue/SCO-141)).
 - **Schedule risk (Yang).** Have a plan B and C. Pool access is likely obtainable, and a local
   backup site is wanted ([SCO-143](https://linear.app/scout1/issue/SCO-143)).
-- **Exterior cable routing is "a big deal"**
+- **Exterior cable routing is "a big deal" (Jes).** Also plan for routing down through the rod, or two cables instead of one
   ([SCO-144](https://linear.app/scout1/issue/SCO-144)).
-- **Manufacturability and local sourcing.** Off-the-shelf where possible; design so a changed
+- **Reprint only what changes (Jes).** The buoy's size may hold while the electronics layout
+  changes, so design it so only the center section reprints
+  ([SCO-146](https://linear.app/scout1/issue/SCO-146)).
+- **Design for permitting (Jes).** "You could build the best sensor in the world", but it is
+  worthless if it can't be permitted. John's housing-off-a-boat-or-pier idea fits this
+  ([SCO-147](https://linear.app/scout1/issue/SCO-147)).
+- **Alternatives analysis (Jes).** Gather options, decide what fits your goals, move forward.
+  That requires the goals written down first
+  ([SCO-149](https://linear.app/scout1/issue/SCO-149)).
+- **Manufacturability and local sourcing (Jes).** Her other GENG team targets ~100 units a
+  year out of SCU, so if others are to rebuild Scout, manufacturing must be nailed down
+  ([SCO-148](https://linear.app/scout1/issue/SCO-148)). Off-the-shelf where possible; design so a changed
   electronics layout doesn't mean reprinting the whole buoy; ask what is available in Hawaii or
   Mexico without McMaster (bamboo was raised). The advisor also suggested a modular multi-depth
   probe rod, which would reopen
@@ -591,5 +603,6 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Define benchmarked MVP requirements from ENGR 110 | John ([SCO-139](https://linear.app/scout1/issue/SCO-139)) |
 | Map the test protocol and unit counts at the Friday Navid meeting | John ([SCO-140](https://linear.app/scout1/issue/SCO-140)) |
 | Start saltwater capsule leak tests this weekend | John ([SCO-141](https://linear.app/scout1/issue/SCO-141)) |
+| Center-only reprint, float-free config, manufacturability review, alternatives analysis | John ([SCO-146](https://linear.app/scout1/issue/SCO-146)–[SCO-149](https://linear.app/scout1/issue/SCO-149)) |
 | Invite David to the weekly advisor meeting | Isabella / John |
 | Reach out to Maryam about LoRa | Isabella |
