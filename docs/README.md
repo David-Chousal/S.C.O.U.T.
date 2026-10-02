@@ -15,6 +15,7 @@ imported directly into Notion with formatting intact.
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
 | Find the schedule | [Team Timeline](planning/team-timeline.md) |
+| Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---
@@ -91,6 +92,7 @@ Schedule, meetings, and administrative records.
 | [Team Timeline](planning/team-timeline.md) | Phase 0–6 work plan from kickoff through Hawaii deployment, with parallel per-discipline tracks |
 | [Meeting Notes](planning/meeting-notes.md) | Running team design meeting notes |
 | [Signature Page](planning/signature-page.md) | SCU capstone declaration — team members and faculty advisors |
+| [Thesis Outline](planning/thesis-outline.md) | **Current running outline** of the senior design thesis: every chapter and section, formatting rules, version history |
 
 ## Decisions
 
