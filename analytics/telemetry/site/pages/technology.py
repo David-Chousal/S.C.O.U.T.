@@ -92,9 +92,11 @@ def _cycle() -> str:
 
 def _subsystems() -> str:
     specs = [
-        ("solar", "Power", "Solar and LiFePO₄",
-         "A solar panel and MPPT charger keep a lithium-iron-phosphate battery charged. The "
-         "target is over a year of unattended operation."),
+        ("solar", "Power", "Long-life primary cell (under review)",
+         "The current working plan is a sealed 3.6 V lithium-thionyl-chloride D cell with no "
+         "solar panel, with the electronics fully powered off between wake-ups. Solar with a "
+         "rechargeable battery is the alternative. The target is over a year of unattended "
+         "operation."),
         ("cpu", "Compute", "Duty-cycled state machine",
          "The microcontroller sleeps most of the time and wakes on a timer to sense, log, and "
          "occasionally transmit."),
