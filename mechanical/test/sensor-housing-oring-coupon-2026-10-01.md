@@ -48,4 +48,29 @@ Paper towel **dry at 24 hr**, and dry again at 1 week.
 
 ## Result
 
-_Not yet run._
+**Run 2026-10-06 — FAIL (slightly damp inside at 24 hr; not flooded).**
+
+| Item | Value |
+|---|---|
+| Soak | 24 hr submerged, salt water (salinity and depth not recorded) |
+| Lubricant | None (no grease) |
+| Bolt torque | Not recorded (tightened by hand) |
+| Fasteners | 3 stainless socket-head screws into brass heat-set inserts |
+| Groove measurements | Not recorded |
+| Outcome | Interior **slightly damp**, no standing water. Misses the "dry at 24 hr" benchmark |
+
+**Observation (the cause of the leak, per John):** with the cap bolted down, the two faces
+touched snugly **at each bolt**, but the cap **flexed between the bolts**, leaving a visible gap
+between the faces midway between each pair of bolts. The ring was therefore compressed less, or
+not at all, in those sections. The 3-bolt pattern on a flat cap is not stiff enough to hold the
+face seal closed all the way round. The failure is in the joint stiffness, not in the ring or
+the groove depth.
+
+Not yet tested: whether more bolts, a thicker or ribbed cap, or a stiffer cap material closes
+the gap. Candidates only — none chosen.
+
+Photos (2026-10-06): [assembled](sensor-housing-oring-coupon-2026-10-06-assembled.jpg),
+[side, gap visible between the bolts](sensor-housing-oring-coupon-2026-10-06-side.jpg),
+[top](sensor-housing-oring-coupon-2026-10-06-top.jpg),
+[body with the ring seated in the groove, 3 heat-set inserts](sensor-housing-oring-coupon-2026-10-06-body-groove.jpg).
+
