@@ -74,3 +74,26 @@ Photos (2026-10-06): [assembled](sensor-housing-oring-coupon-2026-10-06-assemble
 [top](sensor-housing-oring-coupon-2026-10-06-top.jpg),
 [body with the ring seated in the groove, 3 heat-set inserts](sensor-housing-oring-coupon-2026-10-06-body-groove.jpg).
 
+
+## Run 2 — 2026-10-06 (in the water, result due ~2026-10-07)
+
+Second coupon, changed in response to the run-1 flexing ([CAD](sensor-housing-oring-coupon-2026-10-06-run2-cad.jpg)).
+
+| Item | Run 1 | Run 2 |
+|---|---|---|
+| Print material | PETG | **PLA** (PETG ran out — a stand-in, and it changes the stiffness) |
+| Groove | ID 2.250 in, OD 2.774 in | Same |
+| O-ring | 3/16 in section, ID 2-1/4 in | Slightly larger ring that still fits the groove (exact size not recorded) |
+| Bolts | 3 | **4** |
+| Cap | Flat | **Radial ribs on top**, 4, midway between the bolts |
+| Lubricant / torque | None / not recorded | Not recorded |
+
+**Early observation (dry, before the soak):** the cap **still flexes and flares between the bolts**,
+though less than run 1. John's read: the ribs need to sit further out for even compression, and an
+outer rim ring is under consideration.
+
+**Confound to remember:** four things changed at once (material, ring size, bolt count, ribs), so
+a pass or fail will not say which one mattered. Photos of run 2 were attached by John but could
+not be read from the Photos library and are not yet in the repo.
+
+_Result: pending (24 hr check)._
