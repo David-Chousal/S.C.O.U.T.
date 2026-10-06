@@ -257,6 +257,15 @@ depends on them.
 | `scu-law-clinic` | Santa Clara Law — Entrepreneurs' Law Clinic. [law.scu.edu](https://law.scu.edu/) | 🔓 | — | Free IP-licensing and startup legal work for SCU companies; the route to negotiating a licence back if SCU claims ownership |
 | `getlatka-sofar` | GetLatka company profile — Sofar Ocean. [getlatka.com](https://getlatka.com/companies/sofarocean.com) | 🔓 | — | ⚠️ **Unreliable.** Source of the ~$18 M revenue / 123-staff estimate, but simultaneously claims Sofar raised $0 and is bootstrapped, which is false. Retained only because it is the sole public revenue estimate; treat as directional and never cite alone |
 
+## Senior design thesis references
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `scu-thesis-guide-2025` | Santa Clara University School of Engineering, *A Guide to Writing a Senior Design Thesis in Engineering*, rev. 11/18/2025 (shared via the ENGR 194 course page). | ❓ | — | Required thesis structure and formatting — [thesis outline](../../planning/thesis-outline.md) |
+| `scu-iris-2026` | C. Friedel, Z. Henderson, C. McCarthy, E. Pedroza, and T. Steele-Maley, "IRIS – Integrated Reef Information System," B.S. thesis, Santa Clara Univ., 2026. [scholarcommons](https://scholarcommons.scu.edu/idp_senior/110/) | 🔓 | — | Reef-sensor buoy; benchmark for thesis structure and requirement-by-requirement validation |
+| `scu-mantaray-2026` | A. Balamurugan *et al.*, "MANTARAY Profiler," B.S. thesis, Santa Clara Univ., 2026. [scholarcommons](https://scholarcommons.scu.edu/idp_senior/111/) | 🔓 | — | Autonomous ocean profiler; ballast/CG scaled-model testing; thesis benchmark |
+| `scu-marine-robot-2022` | V. Chulyukina, N. Villar, K. Blair, M. Singh, and N. Burke, "Marine Robot Sample Retrieving System," B.S. thesis, Santa Clara Univ., 2022. [scholarcommons](https://scholarcommons.scu.edu/mech_senior/124/) | 🔓 | — | ROV sampling arm; cautionary case of PETG parts warping and under-testing; thesis benchmark |
+
 ## Maintenance
 
 - **Adding a source:** add a row to the right topic table, fill DOI + access, and — if you have
