@@ -23,10 +23,10 @@
 | `linear` | Linear issue ID or IDs (`SCO-12`, or `SCO-18 / SCO-84` for a grouped task) |
 | `task`, `owner`, `phase`, `status` | What, who, which project phase, Linear status |
 | `start`, `end` | ISO dates; duration is calculated (calendar days, inclusive) |
-| `depends_on` | Linear IDs this task waits for, space-separated; drawn as arrows on the detail pages |
+| `depends_on` | Linear IDs this task waits for, space-separated. These mirror the issues' Linear "blocked by" relations exactly; drawn as arrows on the detail pages and listed after the arrow symbol in each label |
 | `constraint` | The outside constraint: vendors, printer access, reviewers, SCU deadlines |
 | `milestone` | The milestone the task completes, if any |
-| `date_source` | `Linear` (from the issue), `estimated` (proposed, owner to confirm), or `derived` |
+| `date_source` | `Linear due` (the end date equals the issue's Linear due date; a start is Linear's only if the issue has started), `estimated` (proposed or changed here, owner to confirm), `derived` (set by the assignment), or `Linear` (an external deadline) |
 
 ## Updating it
 
@@ -36,5 +36,6 @@
    writes an HTML file you can print to PDF from any browser.
 3. Open a PR with the CSV and the PDF together.
 
-A task's dates should respect its dependencies: a task should not start before the tasks in
-`depends_on` end, unless the row's constraint says why (work that started early).
+`make_gantt.py` checks the plan before it prints: it stops with an error if a dependency names a
+task that is not in the chart, if a task ends before it starts, or if a task starts before a task it
+depends on ends. A task already `In Progress` is exempt from the start rule and prints a warning.

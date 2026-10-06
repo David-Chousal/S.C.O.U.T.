@@ -45,7 +45,7 @@ OWNER_COLOR = {
     "David Chousal Cantu": "#d9822b",
     "All": "#6b6b6b",
 }
-INITIALS = {"John Ryan Myrdal": "JR", "Isabella Rodriguez": "IR", "David Chousal Cantu": "DC", "All": "All"}
+INITIALS = {"Unassigned": "--", "John Ryan Myrdal": "JR", "Isabella Rodriguez": "IR", "David Chousal Cantu": "DC", "All": "All"}
 CHROME = [
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "google-chrome",
@@ -69,6 +69,45 @@ def load(path: Path) -> list[dict]:
             r["deps"] = r["depends_on"].split()
             rows.append(r)
     return rows
+
+
+def validate(rows: list[dict]) -> list[str]:
+    """Return a list of errors; an empty list means the plan is internally consistent.
+
+    Rules: unique WBS ids, end on or after start, every dependency names a task in the
+    chart, and a task may not start before a task it depends on ends. A task that is
+    already In Progress is exempt from the start rule (it began early) and is reported
+    as a warning on stderr instead.
+    """
+    errors: list[str] = []
+    known: dict[str, dict] = {}
+    seen: set[str] = set()
+    for r in rows:
+        if r["wbs"] in seen:
+            errors.append(f"duplicate WBS id {r['wbs']}")
+        seen.add(r["wbs"])
+        if r["end_d"] < r["start_d"]:
+            errors.append(f"{r['wbs']}: ends before it starts")
+        for field in ("task", "owner", "phase", "date_source"):
+            if not r[field].strip():
+                errors.append(f"{r['wbs']}: empty {field}")
+        if r["date_source"] not in ("Linear due", "Linear", "estimated", "derived"):
+            errors.append(f"{r['wbs']}: unknown date_source {r['date_source']!r}")
+        for sid in ids_of(r):
+            known[sid] = r
+    for r in rows:
+        for dep in r["deps"]:
+            pred = known.get(dep)
+            if pred is None:
+                errors.append(f"{r['wbs']}: depends on {dep}, which is not in the chart")
+            elif pred["end_d"] > r["start_d"]:
+                msg = (f"{r['wbs']} starts {r['start']} before {dep} ({pred['wbs']}) "
+                       f"ends {pred['end']}")
+                if r["status"] == "In Progress":
+                    print(f"warning: {msg} (already in progress)", file=sys.stderr)
+                else:
+                    errors.append(msg)
+    return errors
 
 
 def section_rows(rows: list[dict], key: str) -> list[dict]:
@@ -150,7 +189,10 @@ def gantt_svg(rows: list[dict], t0: date, t1: date, unit: int, label_w: int, row
         label = f'{r["wbs"]}  {short(r["task"], 58 if scale == "day" else 50)}'
         fs = 9 if scale == "day" else 7.4
         out.append(f'<text x="3" y="{y + row_h - 5}" font-size="{fs}" fill="#111">{esc(label)}</text>')
+        after = ", ".join(d.replace("SCO-", "") for d in r["deps"])
         meta = f'{ids}  {INITIALS.get(r["owner"], r["owner"])}'
+        if after:
+            meta += f'  ← {after}'
         out.append(f'<text x="{label_w - 3}" y="{y + row_h - 5}" font-size="{fs - 1}" text-anchor="end" '
                    f'fill="#666">{esc(meta.strip())}</text>')
     # bars
@@ -215,7 +257,7 @@ LEGEND = (
     '<span><i style="background:#d9822b"></i>David Chousal Cantu (CSEN)</span>'
     '<span><i class="est"></i>dashed = estimated dates</span>'
     '<span><i class="blk"></i>red outline = blocked / waiting</span>'
-    '<span><b style="color:#7a1f1f">&rarr;</b> dependency</span>'
+    '<span><b style="color:#7a1f1f">&rarr;</b> dependency (\u2190 lists the Linear issues a task waits for)</span>'
     '<span><b>&#9670;</b> milestone</span>'
     '<span><b style="color:#c0392b">&#9670;</b> external deadline</span>'
     "</div>"
@@ -287,7 +329,7 @@ def build_html(rows: list[dict]) -> str:
     p.append("<li><b>Pages 2&ndash;5:</b> the Oct 6&ndash;18 detail, one block per work area, with dependency arrows. "
              "<b>Then:</b> the fall overview to Jan 15, and the full table with owner, dates, duration, dependencies, "
              "outside constraints and milestones for every task.</li>")
-    p.append("<li><b>Dates:</b> solid bars use Linear dates. Dashed bars are estimates; the table marks the source of every date. "
+    p.append("<li><b>Dates:</b> solid bars end on the issue's Linear due date (a start is Linear's when the issue has started, otherwise proposed). Dashed bars are estimates; the table marks the source of every date. "
              "Parts arrival on Fri Oct 9 is an assumption to confirm.</li></ul>")
     p.append(LEGEND)
     p.append("<div class='note'>Outside constraints that drive the plan: SCU funding request and this chart due Oct 18; "
@@ -322,7 +364,7 @@ def build_html(rows: list[dict]) -> str:
         p.append("<div class='page'>")
         p.append(f"<h2>Detail: Oct 6 &ndash; Oct 18, 2026 &middot; WBS {esc(names)}</h2>")
         p.append(LEGEND)
-        p.append(gantt_svg(grp, DETAIL_START, DETAIL_END, unit=41, label_w=420, row_h=19, scale="day"))
+        p.append(gantt_svg(grp, DETAIL_START, DETAIL_END, unit=41, label_w=470, row_h=19, scale="day"))
         p.append("</div>")
     # overview pages
     ov = []
@@ -355,7 +397,7 @@ def build_html(rows: list[dict]) -> str:
             r["start"], r["end"], str(r["duration"]), r["depends_on"].replace(" ", ", "),
             r["constraint"], r["milestone"], r["date_source"]])) + "</tr>")
     p.append("</table>"
-             "<div class='note'>Date source: <b>Linear</b> = taken from the issue; <b>estimated</b> = proposed from the issue "
+             "<div class='note'>Date source: <b>Linear due</b> = the end date equals the issue's Linear due date; <b>estimated</b> = proposed from the issue "
              "text, parts timing or the phase window and awaiting the owner's confirmation; <b>derived</b> = set by this "
              "assignment. Days are calendar days, inclusive.</div></div>")
     p.append("</body></html>")
@@ -376,6 +418,12 @@ def main() -> int:
     ap.add_argument("--html", help="also write the HTML here (needed if Chrome is missing)")
     args = ap.parse_args()
     rows = load(Path(args.csv))
+    problems = validate(rows)
+    if problems:
+        print("Plan is inconsistent; fix wbs-tasks.csv:", file=sys.stderr)
+        for e in problems:
+            print("  -", e, file=sys.stderr)
+        return 2
     doc = build_html(rows)
     html_path = Path(args.html) if args.html else Path(tempfile.gettempdir()) / "scout-gantt.html"
     html_path.write_text(doc, encoding="utf-8")
