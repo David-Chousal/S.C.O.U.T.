@@ -49,7 +49,7 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 
 ### 18 · Electronics Build and Test Plan + 2026-10-06 decisions · queued 2026-10-06
 
-- **Notion pages** — Engineering → new page *Electronics Build and Test Plan*; Hub → *Decision
+- **Notion pages** — Engineering → new page *Electronics Build and Test Plan*; Planning → new page *ECE Work Plan 2026–27*; Hub → *Decision
   Log*, *Canonical Facts*, *Project Status*; Planning → *Team Timeline* (Phase 1/2 ECE notes);
   Engineering → *Sensor Selection*; ADRs → *ADR-0007* (update section).
 - **Source** — [`../engineering/electronics-build-and-test-plan.md`](../engineering/electronics-build-and-test-plan.md),
