@@ -16,6 +16,18 @@
 
 ---
 
+> **Update 2026-10-06** — this snapshot stays as written; what changed the next day:
+> - **Plan moved to two D cells + firmware standby, no TPL5111 timer.** Standby + two cells
+>   gives ≈ 26 months best case and ≈ 14 months pessimistic with the hydrophone (table below,
+>   "2 D cells" column), with no extra parts.
+> - **Gated floor corrected to ≈ 55 µA, not ≈ 20 µA.** The Feather M0 schematic shows a 100k
+>   pull-up on EN, which draws 36 µA while a timer holds EN low. Power-gated with the hydrophone
+>   is then ≈ 19.7 mAh/day ≈ 20 months on one cell (was ≈ 21). Only matters if gating returns.
+> - **Turbidity sensor moves to the 3.3 V Seeed Grove 101020752**, so the default build has no
+>   5 V boost or divider; the MiniBoost is kept as a backup.
+> - Bench parts ordered 2026-10-06. Full staged plan and benchmarks:
+>   [Electronics Build and Test Plan](electronics-build-and-test-plan.md).
+
 ## Status of this document
 
 | Item | State on 2026-10-05 |

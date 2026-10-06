@@ -65,6 +65,15 @@ hydrophone, solar panel and LiPo/PID 6106 path are **not** ordered. This ADR mov
 only after Dr. Krishnan's review and a bench measurement of the sleep floor
 ([SCO-23](https://linear.app/scout1/issue/SCO-23)).
 
+**Update 2026-10-06 (still working, not final):** the team now leans to **Option C — two D
+cells in a parallel pack — with firmware standby** (the SAMD21 sleeps and wakes on its internal
+RTC), and **no power-off timer** for the prototype. Standby + two cells passes 12 months even on
+the pessimistic budget (≈ 14 months with the hydrophone) and needs no extra parts, wiring, or
+cold-boot firmware. Power-gating (Option B) stays available as a later fallback. A check of the
+Feather M0 schematic also corrected the gated floor from ≈ 20 µA to ≈ 55 µA (EN's 100k pull-up
+adds 36 µA while held low). Bench parts were ordered 2026-10-06 without the TPL5111. See the
+[Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md).
+
 If accepted, this ADR **supersedes ADR-0002** (no charging path is needed) and changes the
 "solar-powered" description across the docs and the website.
 

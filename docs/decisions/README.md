@@ -24,7 +24,7 @@ multiple subsystems.
 | [0004](0004-reef-safe-anchoring-and-mooring.md) | Reef-safe anchoring and mooring approach | 🟢 Accepted |
 | [0005](0005-v1-sensing-payload.md) | V1 sensing payload — temperature, turbidity, hydrophone; DO excluded | 🟢 Accepted |
 | [0006](0006-rev-a-battery-chemistry.md) | Rev A prototype battery chemistry and power path (LiPo + external bq25185) | 🟢 Accepted — Rev A scope only; deployment chemistry still open in 0002 |
-| [0007](0007-primary-cell-power-source.md) | Deployment power source — primary Li-SOCl₂ D cell, no solar | 🟡 Open — working decision 2026-10-05, pending Krishnan review |
+| [0007](0007-primary-cell-power-source.md) | Deployment power source — primary Li-SOCl₂ D cells, no solar | 🟡 Open — working: two D cells + standby (2026-10-06) |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 
