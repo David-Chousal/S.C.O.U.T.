@@ -48,4 +48,65 @@ Paper towel **dry at 24 hr**, and dry again at 1 week.
 
 ## Result
 
-_Not yet run._
+**Run 2026-10-06 — FAIL (slightly damp inside at 24 hr; not flooded).**
+
+| Item | Value |
+|---|---|
+| Soak | 24 hr submerged, salt water (salinity and depth not recorded) |
+| Lubricant | None (no grease) |
+| Bolt torque | Not recorded (tightened by hand) |
+| Fasteners | 3 stainless socket-head screws into brass heat-set inserts |
+| Groove measurements | Not recorded |
+| Outcome | Interior **slightly damp**, no standing water. Misses the "dry at 24 hr" benchmark |
+
+**Observation (the cause of the leak, per John):** with the cap bolted down, the two faces
+touched snugly **at each bolt**, but the cap **flexed between the bolts**, leaving a visible gap
+between the faces midway between each pair of bolts. The ring was therefore compressed less, or
+not at all, in those sections. The 3-bolt pattern on a flat cap is not stiff enough to hold the
+face seal closed all the way round. The failure is in the joint stiffness, not in the ring or
+the groove depth.
+
+Not yet tested: whether more bolts, a thicker or ribbed cap, or a stiffer cap material closes
+the gap. Candidates only — none chosen.
+
+Photos (2026-10-06): [assembled](sensor-housing-oring-coupon-2026-10-06-assembled.jpg),
+[side, gap visible between the bolts](sensor-housing-oring-coupon-2026-10-06-side.jpg),
+[top](sensor-housing-oring-coupon-2026-10-06-top.jpg),
+[body with the ring seated in the groove, 3 heat-set inserts](sensor-housing-oring-coupon-2026-10-06-body-groove.jpg).
+
+
+## Run 2 — 2026-10-06 (in the water, result due ~2026-10-07)
+
+This is the **PLA turbidity test** introduced the morning of 2026-10-06. It is PLA only because the
+PETG ran out (confirmed by John).
+
+Second coupon, changed in response to the run-1 flexing ([CAD](sensor-housing-oring-coupon-2026-10-06-run2-cad.jpg)).
+
+| Item | Run 1 | Run 2 |
+|---|---|---|
+| Print material | PETG | **PLA** (PETG ran out — a stand-in, and it changes the stiffness) |
+| Groove | ID 2.250 in, OD 2.774 in | Same |
+| O-ring | 3/16 in section, ID 2-1/4 in | Slightly larger ring that still fits the groove (exact size not recorded) |
+| Bolts | 3 | **4** |
+| Cap | Flat | **Radial ribs on top**, 4, midway between the bolts |
+| Lubricant / torque | None / not recorded | Not recorded |
+
+**Early observation (dry, before the soak):** the cap **still flexes and flares between the bolts**,
+though less than run 1. John's read: the ribs need to sit further out for even compression, and an
+outer rim ring is under consideration.
+
+**Confound to remember:** four things changed at once (material, ring size, bolt count, ribs), so
+a pass or fail will not say which one mattered.
+
+Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the moisture indicator):
+- Ring seated in the body groove, 4 brass heat-set inserts, towel inside:
+  [view 1](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove.jpg),
+  [view 2](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove-2.jpg),
+  [blurred](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove-blurred.jpg)
+- [Cap top: 4 radial ribs and 4 bolt holes](sensor-housing-oring-coupon-2026-10-06-run2-cap-top-ribs.jpg)
+- [Body with towel beside the cap](sensor-housing-oring-coupon-2026-10-06-run2-body-and-cap.jpg)
+- Assembled, 4 bolts: [side](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side.jpg),
+  [side 2](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side-2.jpg)
+- [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
+
+_Result: pending (24 hr check)._
