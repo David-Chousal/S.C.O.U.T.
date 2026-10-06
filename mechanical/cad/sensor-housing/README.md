@@ -93,13 +93,14 @@ multi-depth in a future revision, the pod itself won't be the blocker.
 
 | File | Role | Status |
 |---|---|---|
+| [`sensor-housing-assembly-v8.step`](sensor-housing-assembly-v8.step) | **Turbidity sensor assembly, Fusion export 2026-10-06** — the revision John called "most up to date", the PLA coupon in the water 2026-10-06 ([RR-14](../../test/risk-reduction-register.md)). Three bodies, all created 2026-09-13 per the file's own part timestamps, so the geometry was edited after creation. See [revision labels](#revision-labels-added-2026-10-06) | **Current** |
 | [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) | Pod body, no port — **face-seal remodel, 2026-08-29** (see [below](#face-seal-remodel--2026-08-29)) | **Current** |
 | [`sensor-housing-sealed-cap-v2.step`](sensor-housing-sealed-cap-v2.step) | Sealed cap — mates to the body across the AS568-137 static face-seal O-ring. **Spigot re-cut 2026-09-02** (see [below](#sealed-cap-spigot-tolerance-tweak--2026-09-02)) | **Current** |
 | [`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) | Sealed cap, first face-seal revision — **superseded 2026-09-02** by `-v2` | Iteration |
 | [`sensor-housing-flood-chamber-cap.step`](sensor-housing-flood-chamber-cap.step) | Flood chamber cap — where the light-blocking geometry lives | Current (single version provided) |
 | [`sensor-housing-o-ring.step`](sensor-housing-o-ring.step) | O-ring seal, modeled directly | Current |
-| [`sensor-housing-body-current.step`](sensor-housing-body-current.step) | Pod body, no port — **superseded 2026-08-29** by the face-seal remodel | Iteration |
-| [`sensor-housing-top-cap-current.step`](sensor-housing-top-cap-current.step) | Top cap — **superseded 2026-08-29** by `sensor-housing-sealed-cap.step` | Iteration |
+| [`sensor-housing-body-no-port-v3.step`](sensor-housing-body-no-port-v3.step) | Pod body, no port — **superseded 2026-08-29** by the face-seal remodel | Iteration |
+| [`sensor-housing-top-cap-v3.step`](sensor-housing-top-cap-v3.step) | Top cap — **superseded 2026-08-29** by `sensor-housing-sealed-cap.step` | Iteration |
 | [`sensor-housing-body-no-port-threaded.step`](sensor-housing-body-no-port-threaded.step) | Pod body, no port, threaded variant | Iteration |
 | [`sensor-housing-body-v1.step`](sensor-housing-body-v1.step) | Pod body, earlier revision (AS568-137 O-ring seal, ported) | Iteration |
 | [`sensor-housing-top-cap-v1.step`](sensor-housing-top-cap-v1.step) | Top cap, earliest revision | Iteration |
@@ -398,3 +399,27 @@ assumption the pod was first drawn to. This feeds the flood-chamber re-spec abov
 resolved before the next full pod print. Needs a Linear issue (canonical fact: turbidity =
 DFRobot SEN0189 ×1 per [`facts.md`](../../../docs/hub/facts.md#sensing-single-point-per-modality--see-adr-0003)
 — confirm that is still the pick).
+
+## Revision labels (added 2026-10-06)
+
+[CONVENTIONS](../../../docs/CONVENTIONS.md#versions) says CAD takes `part-name-vN`, and a name like
+`-current` goes stale the day the next revision lands. The two `-current` files were renamed with
+`git mv` (history kept) to `sensor-housing-body-no-port-v3.step` and
+`sensor-housing-top-cap-v3.step`, and the newest export is `sensor-housing-assembly-v8.step`.
+
+The numbers follow the pod's revision order as best the repo shows it. **They are inferred, not
+confirmed by John**, because the early files carry no dates:
+
+| Rev | Design | Files |
+|---|---|---|
+| 1 | Original ported body and top cap, AS568-137 | `body-v1`, `top-cap-v1` |
+| 2 | Second top cap | `top-cap-v2` |
+| 3 | No-port body and cap, superseded 2026-08-29 | `body-no-port-v3`, `top-cap-v3` (formerly `-current`), `body-no-port-threaded`, `top-cap-no-port` |
+| 4 | Face-seal remodel, 2026-08-29 | `body-face-seal`, `sealed-cap` |
+| 5 | Sealed cap spigot re-cut, 2026-09-02 | `sealed-cap-v2` |
+| 6 | Dry-chamber body and lid, flared flange, 2026-09-13 | not yet in the repo as a separate file |
+| 7 | Short coupon, PETG, 3 bolts, plain cap, 2026-10-01 (RR-12) | not in the repo as a separate file |
+| 8 | PLA coupon, 4 bolts, ribbed cap, in the water 2026-10-06 (RR-14) | `assembly-v8` |
+
+Per-part `-vN` numbers (the `v3` above) count within one part line, so they do not match the
+revision column. Correct the table and the filenames if John numbers them differently.
