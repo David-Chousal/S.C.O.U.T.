@@ -213,3 +213,54 @@ inside a Ø114.30 body (tube OD Ø110) fits within the chassis bore but pushes t
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
+
+## Larger flange housing on the chassis lip — 2026-10-06 (drawing in repo, STEP not yet)
+
+![Housing flange on the chassis, curved cable interface on the lid](electronics-housing-flange-on-chassis-2026-10-06.jpg)
+
+John's description of the updated housing, from his CAD screenshot. The drawing is committed
+(below); the STEP is not yet.
+
+- **Static O-ring face seal goes over the lip of the chassis.** The flange sits on top of the
+  chassis rather than the housing sliding into it.
+- **The whole housing is larger** than the 2026-09-02 clamp. Dimensions: see the drawing below.
+- **Curved cable-penetration interface on top of the lid**, with room for cable glands.
+- **Gland interior radius and orientation point the cables to the side**, which leaves vertical
+  room above the housing for a possible solar panel.
+
+### Drawing — DFM Assembly 2 (drawn 2026-10-06, scale 1:3, size B, inches)
+
+[`electronics-housing-flange-dfm-assembly-2-drawing-2026-10-06.pdf`](electronics-housing-flange-dfm-assembly-2-drawing-2026-10-06.pdf)
+— one sheet, top, front and bottom views plus an isometric. Drawn by John Myrdal. The DWG NO
+and REV fields are blank, so this is **not a released drawing**.
+
+Read directly from the drawing, unambiguous:
+
+| Item | Value |
+|---|---|
+| Flange OD | Ø6 in |
+| Overall height (flange top to tube bottom) | 6.2 in |
+| Tube length below the flange | 5 in |
+| Bolt holes | 8, spaced 45° apart |
+| Hole diameters | Ø0.13 in and Ø0.22 in (bottom view) |
+
+Other labels on the sheet, checked against the cylinder faces in
+[`full-buoy-assembly-v7.step`](../full-buoy-assembly-v7.step) (units are inches; I compared v7 with
+v6 to isolate the new housing). This is a geometry match, not John's statement of what each is:
+
+| Drawing label | In the v7 STEP | What it is |
+|---|---|---|
+| Ø6 | Cylinder, r 3.0 | Flange OD |
+| Ø5 | Cylinder, r 2.5 | A Ø5 cylindrical feature, so **not a bolt circle** (bolt holes are not cylinders at that radius); the feature is not identified |
+| Ø4.5 | Cylinders, r 2.25 and r 2.258 | Tube OD, with a mating bore about 0.016 in larger per side |
+| R2 | Cylinder, r 2.0 | The curved cable-penetration surface on the lid |
+| Ø.22 and Ø.13 | Cylinders, r 0.11 and r 0.067 | The two bolt-hole sizes (0.067 gives Ø0.134, drawn as Ø.13) |
+| Ø5.5, Ø4.75, Ø4.45 | No matching cylinder | Not found; likely arcs, a groove modelled another way, or the chassis lip |
+| 5.5, 5.25, 2.02, 143.13° | Not tested | Linear and angular dimensions; position not assigned |
+
+The drawing is John's complete drawing of this housing, so nothing further is expected from him.
+Where the table says "not identified" or "not found", the repo does not say what the feature is.
+
+Relevance: this is the revision SCO-49 (final dimensions) and SCO-53 (lid for cable glands) wait
+on. Gland count and placement are still to be confirmed against it. Still missing from the drawing:
+wall thickness, internal envelope, ring size and gland count.

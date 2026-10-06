@@ -43,7 +43,8 @@ recovered.
 
 | ID | Started | Test | Risk retired | Type | Benchmark (provisional) | Status | Tracks |
 |---|---|---|---|---|---|---|---|
-| RR-12 | 2026-10-01 | **Short sensor-housing coupon, face seal with a purchased O-ring** | The face-seal groove leaks with a real ring (RR-07 failed with a printed one) | coupon | Dry paper towel inside after **24 hr at ≥ 0.3 m in ~35 ppt salt water**, then 1 week | Printing | [record](sensor-housing-oring-coupon-2026-10-01.md), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
+| RR-12 | 2026-10-01 | **Short sensor-housing coupon, face seal with a purchased O-ring** | The face-seal groove leaks with a real ring (RR-07 failed with a printed one) | coupon | Dry paper towel inside after **24 hr at ≥ 0.3 m in ~35 ppt salt water**, then 1 week | **Fail** 2026-10-06 — slightly damp at 24 hr; cap flexed between the 3 bolts, so the ring lost compression there | [record](sensor-housing-oring-coupon-2026-10-01.md), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
+| RR-14 | 2026-10-06 | **Sensor-housing coupon run 2: PLA, 4 bolts, ribbed cap, slightly larger ring** | Stiffening the cap closes the gap between the bolts that failed RR-12 | coupon | Dry paper towel inside after 24 hr at ≥ 0.3 m in ~35 ppt salt water | In the water, due 2026-10-07 | [record](sensor-housing-oring-coupon-2026-10-01.md#run-2--2026-10-06-in-the-water-result-due-2026-10-07) |
 | RR-13 | 2026-09-30 | v5 chassis print on the dedicated printer | Chassis can't be printed round and flat enough to seal | manufacturing | Seal faces flat and round within ±0.2 mm | Printing | [SCO-93](https://linear.app/scout1/issue/SCO-93) |
 
 ## Tests still to do

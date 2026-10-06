@@ -10,7 +10,7 @@ below, cables routed from the buoy top down to underwater sensors).
 
 | File | Onshape source | Status |
 |---|---|---|
-| [`stem-current.step`](stem-current.step) | `With Tolerances > Sensor Stem Copy 1` | **Current** — hex-socket top connector with rows of drainage/flow holes around the lower cylindrical body |
+| [`stem-v2.step`](stem-v2.step) | `With Tolerances > Sensor Stem Copy 1` | **Current** — hex-socket top connector with rows of drainage/flow holes around the lower cylindrical body |
 | [`stem-initial-concept.step`](stem-initial-concept.step) | `Initial Frame > Sensor Stem` | Early concept — a longer, thinner rod/screw-style stem. `Initial Frame` is an early whole-system concept pass (also holds early Bolt, Top/Bottom, Floatation, Body, and Solar Mount concepts), largely superseded by the per-subsystem work elsewhere in this repo |
 
 The hex socket on the current design suggests a tool-driven mechanical connection (wrench/hex
