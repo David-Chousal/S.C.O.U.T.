@@ -214,21 +214,41 @@ inside a Ø114.30 body (tube OD Ø110) fits within the chassis bore but pushes t
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
 
-## Larger flange housing on the chassis lip — 2026-10-06 (CAD in progress, STEP and drawing not yet in repo)
+## Larger flange housing on the chassis lip — 2026-10-06 (drawing in repo, STEP not yet)
 
 ![Housing flange on the chassis, curved cable interface on the lid](electronics-housing-flange-on-chassis-2026-10-06.jpg)
 
-John's description of the updated housing, from his CAD screenshot. No STEP or dimensions are
-committed yet — he is producing the drawing now, so every size below is still to be recorded.
+John's description of the updated housing, from his CAD screenshot. The drawing is committed
+(below); the STEP is not yet.
 
 - **Static O-ring face seal goes over the lip of the chassis.** The flange sits on top of the
   chassis rather than the housing sliding into it.
-- **The whole housing is larger** than the 2026-09-02 clamp. New dimensions: pending the drawing.
+- **The whole housing is larger** than the 2026-09-02 clamp. Dimensions: see the drawing below.
 - **Curved cable-penetration interface on top of the lid**, with room for cable glands.
 - **Gland interior radius and orientation point the cables to the side**, which leaves vertical
   room above the housing for a possible solar panel.
 
+### Drawing — DFM Assembly 2 (drawn 2026-10-06, scale 1:3, size B, inches)
+
+[`electronics-housing-flange-dfm-assembly-2-drawing-2026-10-06.pdf`](electronics-housing-flange-dfm-assembly-2-drawing-2026-10-06.pdf)
+— one sheet, top, front and bottom views plus an isometric. Drawn by John Myrdal. The DWG NO
+and REV fields are blank, so this is **not a released drawing**.
+
+Read directly from the drawing, unambiguous:
+
+| Item | Value |
+|---|---|
+| Flange OD | Ø6 in |
+| Overall height (flange top to tube bottom) | 6.2 in |
+| Tube length below the flange | 5 in |
+| Bolt holes | 8, spaced 45° apart |
+| Hole diameters | Ø0.13 in and Ø0.22 in (bottom view) |
+
+Dimension labels also on the sheet. I could not tell which feature each one refers to from the
+PDF alone, so **John to confirm each assignment** before these go into `facts.md`:
+Ø5, Ø5.5, Ø4.75, Ø4.45, Ø4.5, 5.5, 5.25, R2, 143.13° and 2.02. The 2.02 in width and the
+R2 / 143.13° pair sit on the curved cable-penetration block on the lid.
+
 Relevance: this is the revision SCO-49 (final dimensions) and SCO-53 (lid for cable glands) wait
-on. Gland count and placement are still to be confirmed against it. Dimensions to record when the
-drawing lands: flange OD, wall, internal envelope, groove ID/OD, ring size, gland count, bolt
-count and circle.
+on. Gland count and placement are still to be confirmed against it. Still missing from the drawing:
+wall thickness, internal envelope, ring size and gland count.
