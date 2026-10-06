@@ -1,0 +1,79 @@
+kind,wbs,linear,task,owner,phase,status,start,end,depends_on,constraint,milestone,date_source
+task,1.1,SCO-117,Submit the senior design budget (SCU funding request),David Chousal Cantu,Phase 1,Todo,2026-10-08,2026-10-16,SCO-116,Lab budget was due the week of 2026-09-28 (overdue); SCU funding request deadline Oct 18; must match the parts order,Funding request submitted,estimated
+task,1.2,SCO-139,Define benchmarked MVP requirements from the ENGR 110 specs,John Ryan Myrdal,Phase 1,Todo,2026-10-06,2026-10-13,,Advisor asked for measurable benchmarks (2026-09-30 meeting),,estimated
+task,1.3,SCO-140,Map the layered test protocol and unit counts per stage,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-17,SCO-139,Advisor asked for a layered test plan (2026-09-30 meeting),Test protocol drafted,estimated
+task,1.4,,Gantt chart and WBS for the course assignment,John Ryan Myrdal,Phase 1,In Progress,2026-10-06,2026-10-18,,Course deadline Oct 18; whole team,Gantt submitted,derived
+task,1.5,SCO-149,Write an alternatives analysis for the main mechanical choices,John Ryan Myrdal,Phase 2,Backlog,2026-10-19,2026-11-06,,,,estimated
+task,1.6,SCO-90 / SCO-95,LLC and patent strategy for SCOUT IP,John Ryan Myrdal,Phase 2,Backlog,2026-10-26,2026-11-25,,Possible advisor or university IP office input,,estimated
+task,1.7,SCO-121,Decide a per-unit naming scheme for Scout prototypes,John Ryan Myrdal,Phase 2,Backlog,2026-10-19,2026-10-30,,Unassigned in Linear; needs team agreement,,estimated
+task,2.1,SCO-70,Deliver the final electronics component list and dimensions,Isabella Rodriguez,Phase 1,Todo,2026-10-06,2026-10-08,,Overdue since 2026-09-04; blocks housing dimensions,Component list final,Linear
+task,2.2,SCO-116,Take the full electronics design to Shoba for a power and solar review,Isabella Rodriguez,Phase 1,Todo,2026-10-06,2026-10-08,,Shoba's availability; Dr. Yang review follows,Design review complete,Linear
+task,2.3,SCO-115,"Bench parts order arrives (Feather M0, Adalogger, sensors, boost, TPL5111)",Isabella Rodriguez,Phase 1,Waiting on Parts,2026-10-08,2026-10-09,SCO-70 SCO-116,Vendor shipping; ordered through Dr. Krishnan 2026-10-05; arrival date assumed,Parts arrive,estimated
+task,2.4,SCO-142,Inventory spare sensors and boards in advisor and team labs,Isabella Rodriguez,Phase 1,Todo,2026-10-07,2026-10-13,,Needs advisor and lab access,,Linear
+task,2.5,SCO-8,Decide the hydrophone part (H2a-XLR vs H2dM),Isabella Rodriguez,Phase 1,Needs Decision,2026-10-12,2026-10-16,,Hydrophone not in the bench order,Decision recorded,Linear
+task,2.6,SCO-10,Re-scope or close the LiFePO4 charging-path decision (ADR-0002),Isabella Rodriguez,Phase 1,Needs Decision,2026-10-14,2026-10-16,SCO-150,Overtaken if ADR-0007 (Li-SOCl2 primary cell) is accepted,Decision recorded,Linear
+task,2.7,SCO-150,Make it impossible to charge or short the primary D cell,Isabella Rodriguez,Phase 1,Todo,2026-10-09,2026-10-14,SCO-115,Fire-safety layers must exist before any real cell; bench uses a current-limited supply,,Linear
+task,2.8,SCO-152,"Bring up the bench breadboard: DS18B20, RTC, microSD, SEN0189 wiring",Isabella Rodriguez,Phase 1,Todo,2026-10-12,2026-10-13,SCO-115,Needs the parts to arrive; bench supply and uA meter reserved,Bench bring-up complete,Linear
+task,2.9,SCO-23,Measure sleep current against the <5 mA target,Isabella Rodriguez,Phase 1,Waiting on Parts,2026-10-13,2026-10-14,SCO-152,uA-range multimeter; 3.6 V current-limited supply,,estimated
+task,2.10,SCO-151,Prove TPL5111 power-gating cuts the sleep floor to ~20 uA,Isabella Rodriguez,Phase 1,Todo,2026-10-14,2026-10-15,SCO-23,Firmware cold-boot support from David (SCO-25),,estimated
+task,2.11,SCO-153,"Measure the SEN0189 chain: current, settle time, boost efficiency, inrush, polarity",Isabella Rodriguez,Phase 1,Todo,2026-10-13,2026-10-15,SCO-152,Oscilloscope for inrush,,Linear
+task,2.12,SCO-154,Measure LoRa transmit current at +11 dBm,Isabella Rodriguez,Phase 1,Todo,2026-10-14,2026-10-15,SCO-152,1 ohm shunt; re-check after SCO-98,,Linear
+task,2.13,SCO-155,Run the RFM95 link test with a second radio,Isabella Rodriguez,Phase 1,Todo,2026-10-14,2026-10-16,SCO-152 SCO-115,Second radio is not in the 10-05 order; lab stock or a new order,Radio link proven,Linear
+task,2.14,SCO-47,Design the SEN0189 analog front end as non-inverting,Isabella Rodriguez,Phase 1,In Progress,2026-09-01,2026-10-16,SCO-115 SCO-153,Polarity must not invert; bench check after parts arrive; Design started 2026-09-01; bench verification follows SCO-115 and SCO-153,,Linear
+task,2.15,SCO-87,Implement per-sensor power switching via transistors,Isabella Rodriguez,Phase 1,Todo,2026-10-15,2026-10-16,SCO-152 SCO-153,V1-required on a primary cell,,Linear
+task,2.16,SCO-60,Add an internal temp/humidity sensor for State-of-Health,Isabella Rodriguez,Phase 1,Todo,2026-10-13,2026-10-16,,,,Linear
+task,2.17,SCO-156,Document the bench wiring: labeled photo and schematic sketch to /hardware,Isabella Rodriguez,Phase 1,Todo,2026-10-15,2026-10-16,SCO-152 SCO-153,Phase 1 exit item,Phase 1 hardware exit,Linear
+task,2.18,SCO-83,Implement battery-voltage telemetry,Isabella Rodriguez,Phase 2,Blocked,2026-10-19,2026-10-23,SCO-10,Depends on the battery chemistry decision,,Linear
+task,2.19,SCO-18 / SCO-84,Chlorophyll fluorometer feasibility and battery connector polarity check,Isabella Rodriguez,Phase 2,Deferred,2026-11-02,2026-11-25,,Deferred in Linear; not this version,,Linear
+task,3.1,SCO-25,Validate the Phase-1 SAMD21 drivers on real hardware,David Chousal Cantu,Phase 1,Todo,2026-10-13,2026-10-16,SCO-115 SCO-152,Needs the Feather M0 from the bench order,Drivers validated on hardware,estimated
+task,3.2,SCO-24,Bring up the real LoRa receiver on the shore station,David Chousal Cantu,Phase 1,Waiting on Parts,2026-10-16,2026-10-30,SCO-115 SCO-155,"Linear due 10-16 moved to 10-30: shore parts (Feather S3, LoRa module) are not ordered yet",,estimated
+task,3.3,SCO-98,Bench-verify the FCC-compliant LoRa modem config,David Chousal Cantu,Phase 1,Blocked,2026-10-16,2026-10-20,SCO-155,Config is merged; only bench verification remains,,estimated
+task,3.4,SCO-12,Calibrate SEN0189 turbidity to NTU,David Chousal Cantu,Phase 1,Blocked,2026-10-15,2026-10-23,SCO-153,Formazin standards and a nephelometer method; Linear due 10-16 moved to 10-23,,estimated
+task,3.5,SCO-104,Faculty or a compliance lab review of the FCC 915 MHz findings,David Chousal Cantu,Phase 1,Todo,2026-10-12,2026-10-23,,Reviewer availability,,estimated
+task,3.6,SCO-26 / SCO-27,Fix the run_pipeline flag inconsistency and recover the missing Sesoko recording,David Chousal Cantu,Phase 2,Backlog,2026-10-19,2026-10-30,,Recording may need the original data source,,estimated
+task,3.7,SCO-119 / SCO-97,Adopt Navid's sleep/wake protocol and re-derive the packet ceiling,David Chousal Cantu,Phase 2,Backlog,2026-10-26,2026-11-13,SCO-98,,,estimated
+task,3.8,SCO-120 / SCO-57 / SCO-58,"Review the IoT dashboard, add biofouling state to the Fleet page, improve the PNG dashboard",David Chousal Cantu,Phase 2,Backlog,2026-11-02,2026-11-25,SCO-24,,Phase 2 software exit,estimated
+task,3.9,SCO-20 / SCO-67,Drift reference and acoustic tamper detection,David Chousal Cantu,Phase 2,Deferred,2026-11-09,2026-11-25,,Deferred in Linear; not this version,,Linear
+task,4.1,SCO-105,Reprint the face-seal clamp and record the failing O-ring tolerance,John Ryan Myrdal,Phase 1,Todo,2026-10-06,2026-10-10,,Printer access,,Linear
+task,4.2,SCO-106,Verify the AS568-043 ring fit and choose the seal elastomer before ordering,John Ryan Myrdal,Phase 1,Todo,2026-10-06,2026-10-10,,Decision: silicone elastomer (2026-09-08),,Linear
+task,4.3,SCO-108,Submersion re-test the face-seal joint on the clamp and sensor pod,John Ryan Myrdal,Phase 1,In Progress,2026-10-01,2026-10-16,SCO-105 SCO-106,"24 hr soaks; RR-14 result 10-07; RR-15 (6 bolts) after; Coupon re-tests (RR-14, RR-15) run now; the clamp re-test follows SCO-105 and SCO-106",Face seal passes a 24 hr soak,Linear
+task,4.4,SCO-109,Confirm the sensor pod sealed-cap spigot change was deliberate,John Ryan Myrdal,Phase 1,Todo,2026-10-06,2026-10-08,,,,estimated
+task,4.5,SCO-112,Grow the sensor pod dry chamber to 52 mm and re-export the penetration and flood chamber,John Ryan Myrdal,Phase 1,In Progress,2026-09-14,2026-10-16,,Epoxy-potted lead penetration,,Linear
+task,4.6,SCO-91,Validate the remodelled turbidity sensor housing face seal,John Ryan Myrdal,Phase 1,Blocked,2026-10-16,2026-10-23,SCO-108 SCO-112,,,estimated
+task,4.7,SCO-141,Start saltwater-bath leak tests on printed test capsules,John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-15,,1 week soak at about 35 ppt,,estimated
+task,4.8,SCO-49,Decide the electronics housing final dimensions,John Ryan Myrdal,Phase 1,In Progress,2026-08-18,2026-10-16,SCO-70,Needs Isabella's component list; drawing DFM Assembly 2 drafted 2026-10-06; Started 2026-08-18; the final decision waits on SCO-70,Housing dimensions final,Linear
+task,4.9,SCO-53,Revise the electronics housing cap for a cable gland,John Ryan Myrdal,Phase 1,In Progress,2026-08-16,2026-10-16,,Gland placement follows the SCO-49 geometry; gland sizing and tolerance tests outstanding,,Linear
+task,4.10,SCO-107,Finish the electronics housing lid: bolt clearance holes and marking wording,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-14,,,,estimated
+task,4.11,SCO-103,Engrave the FCC ID label into the enclosure before printing,John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-16,SCO-107,Must precede the final print,,estimated
+task,4.12,SCO-122,Order the stainless fasteners once the housing is dimensioned,John Ryan Myrdal,Phase 1,Blocked,2026-10-16,2026-10-20,SCO-49 SCO-70,Vendor lead time; ordered after housing dimensions are final,,estimated
+task,4.13,SCO-68,Design the chassis top section: sealing and service-access port,John Ryan Myrdal,Phase 1,In Progress,2026-09-03,2026-10-16,,,,Linear
+task,4.14,SCO-75,Engineer the central chassis print structure for the mooring load path,John Ryan Myrdal,Phase 1,In Progress,2026-08-21,2026-10-16,,,,Linear
+task,4.15,SCO-93,Print the chassis on the industrial printer,John Ryan Myrdal,Phase 1,In Progress,2026-09-30,2026-10-16,,Industrial printer window at work; about 35 hr print of the v5 design (later changes feed a reprint),Chassis printed,Linear
+task,4.16,SCO-118,Get grad-student access to the Prusa XL in the garage,John Ryan Myrdal,Phase 1,Todo,2026-10-06,2026-10-13,,Needs a grad student's permission,,estimated
+task,4.17,SCO-63,Bring the large lab 3D printer back online,John Ryan Myrdal,Phase 1,Backlog,2026-10-06,2026-10-16,,Lab technician or advisor help,,Linear
+task,4.18,SCO-76,Run foam-fill manufacturing trials on sacrificial wedges,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-16,SCO-118,Printer access for sacrificial wedges,,Linear
+task,4.19,SCO-123,Publish up-to-date v5 drawings for the wedge and wedge bottom,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-16,,,,estimated
+task,4.20,SCO-124,Rebuild the freeboard model's vertical stack from the STEP geometry,John Ryan Myrdal,Phase 1,In Progress,2026-09-29,2026-10-12,,v7 STEP committed 2026-10-06,,estimated
+task,4.21,SCO-74,Build a mass budget and displacement/freeboard model,John Ryan Myrdal,Phase 1,Blocked,2026-10-12,2026-10-14,SCO-124 SCO-70,Linear due 10-16; needs component masses from Isabella (SCO-70),Freeboard model complete,estimated
+task,4.22,SCO-80,"Quantify stability: CG/CB, component placement, ballast provision",John Ryan Myrdal,Phase 1,In Progress,2026-08-21,2026-10-16,SCO-74,Started 2026-08-21; final numbers follow the SCO-74 mass budget,,Linear
+task,4.23,SCO-73,Run FEA load cases LC1-LC9,John Ryan Myrdal,Phase 1,Blocked,2026-10-14,2026-10-23,SCO-74 SCO-135,,,estimated
+task,4.24,SCO-135,Re-run LC7 with the mooring moved to the pipe collar,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-14,SCO-124,,,estimated
+task,4.25,SCO-125,Develop the self-righting ballast stem to 24 in below the keel,John Ryan Myrdal,Phase 1,Todo,2026-10-16,2026-10-23,SCO-80,Lead ballast permit question (SCO-136),,estimated
+task,4.26,SCO-136,Check whether lead ballast is acceptable under the reef permit,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-16,,Permit authority answer,,estimated
+task,4.27,SCO-137,"Confirm the swivel, U-bolt and AS568-247 part numbers",John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-14,,,,estimated
+task,4.28,SCO-77,Define the marine fastener and anti-loosening strategy,John Ryan Myrdal,Phase 1,Backlog,2026-10-12,2026-10-16,,,,Linear
+task,4.29,SCO-72,Identify a propeller-resistant mooring/tether line,John Ryan Myrdal,Phase 2,Backlog,2026-10-19,2026-10-30,,,,estimated
+task,4.30,SCO-94 / 144 / 145 / 146 / 147 / 148,"Design improvement studies (inserts, cable routing, modular rod, split chassis, float-free, manufacturability)",John Ryan Myrdal,Phase 2,Backlog,2026-10-26,2026-11-25,,,,estimated
+task,4.31,SCO-54 / SCO-56,Refine the stem and solar mount; audit the Onshape Initial Frame folder,John Ryan Myrdal,Phase 2,Backlog,2026-10-19,2026-11-25,,,Phase 2 mechanical exit,Linear
+task,4.32,SCO-61 / SCO-66,Design the snap-connector sensor string; produce an exploded-view animation,John Ryan Myrdal,Phase 2,Backlog,2026-11-02,2026-11-25,,,,Linear
+task,4.33,SCO-92 / SCO-64 / SCO-78 / SCO-79,"Corrosion strategy, material samples, marine coating, biofouling features",John Ryan Myrdal,Phase 3,Todo,2026-11-30,2027-01-15,SCO-77,Winter break; printer access,Phase 3 exit,Linear
+task,4.34,SCO-81,Verify buoyancy under one-wedge-lost and chassis-flooded cases,John Ryan Myrdal,Phase 3,Blocked,2026-11-30,2027-01-15,SCO-74,,,Linear
+task,5.1,SCO-143,Identify a local backup test site and request pool access,John Ryan Myrdal,Phase 1,Backlog,2026-10-12,2026-10-30,,Site owner's permission,,estimated
+milestone,M1,,Bench parts arrive (assumed Fri),All,Phase 1,,2026-10-09,2026-10-09,,Assumption; confirm with Isabella,Parts arrive,estimated
+milestone,M2,SCO-70,Component list delivered; unblocks housing dimensions,Isabella Rodriguez,Phase 1,,2026-10-08,2026-10-08,,,Component list final,Linear
+milestone,M3,,Phase 1 exit: subsystem bring-up complete,All,Phase 1,,2026-10-16,2026-10-16,,Phase 1 project window,Phase 1 exit,Linear
+deadline,D1,,SCU: Undergraduate Programs Project Funding Request due; Gantt chart due,All,Phase 1,,2026-10-18,2026-10-18,,SCU Senior Design Resources page,Funding request and Gantt submitted,Linear
+milestone,M4,,Phase 2 starts: system integration,All,Phase 2,,2026-10-19,2026-10-19,,,,Linear
+milestone,M5,,Phase 2 exit,All,Phase 2,,2026-11-25,2026-11-25,,,Phase 2 exit,Linear
+milestone,M6,,Phase 3 exit: enclosure and waterproofing,All,Phase 3,,2027-01-15,2027-01-15,,,Phase 3 exit,Linear
+deadline,D2,,SCU: Senior Design Conference registration closes (winter),All,Phase 4,,2027-02-01,2027-02-01,,SCU Senior Design Resources page,,Linear
