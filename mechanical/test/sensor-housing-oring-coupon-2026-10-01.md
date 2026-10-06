@@ -77,6 +77,9 @@ Photos (2026-10-06): [assembled](sensor-housing-oring-coupon-2026-10-06-assemble
 
 ## Run 2 — 2026-10-06 (in the water, result due ~2026-10-07)
 
+This is the **PLA turbidity test** introduced the morning of 2026-10-06. It is PLA only because the
+PETG ran out (confirmed by John).
+
 Second coupon, changed in response to the run-1 flexing ([CAD](sensor-housing-oring-coupon-2026-10-06-run2-cad.jpg)).
 
 | Item | Run 1 | Run 2 |

@@ -407,8 +407,9 @@ DFRobot SEN0189 ×1 per [`facts.md`](../../../docs/hub/facts.md#sensing-single-p
 `git mv` (history kept) to `sensor-housing-body-no-port-v3.step` and
 `sensor-housing-top-cap-v3.step`, and the newest export is `sensor-housing-assembly-v8.step`.
 
-The numbers follow the pod's revision order as best the repo shows it. **They are inferred, not
-confirmed by John**, because the early files carry no dates:
+The numbers follow the pod's revision order as best the repo shows it. **John adopted this
+numbering on 2026-10-06** ("keep your pod revision"). The early files carry no dates, so the order
+of revisions 1 to 3 is still inferred:
 
 | Rev | Design | Files |
 |---|---|---|
@@ -422,4 +423,4 @@ confirmed by John**, because the early files carry no dates:
 | 8 | PLA coupon, 4 bolts, ribbed cap, in the water 2026-10-06 (RR-14) | `assembly-v8` |
 
 Per-part `-vN` numbers (the `v3` above) count within one part line, so they do not match the
-revision column. Correct the table and the filenames if John numbers them differently.
+revision column. Correct the table and the filenames if an early revision turns out to be out of order.
