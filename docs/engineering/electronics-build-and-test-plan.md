@@ -36,7 +36,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 1 — First readings (USB power)
 
-**Goal:** the Feather runs, both sensors give believable readings, data saves to SD.
+**Goal:** the Feather runs, both sensors give believable readings, data saves to SD. Tracked in [SCO-157](https://linear.app/scout1/issue/SCO-157).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -55,7 +55,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 2 — Measure power and confirm the budget
 
-**Goal:** replace the estimates with measurements.
+**Goal:** replace the estimates with measurements. Tracked in [SCO-157](https://linear.app/scout1/issue/SCO-157).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -71,7 +71,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 3 — Sensor switching on and off
 
-**Goal:** the turbidity sensor draws nothing while off.
+**Goal:** the turbidity sensor draws nothing while off. Tracked in [SCO-157](https://linear.app/scout1/issue/SCO-157).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -87,7 +87,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 4 — Data transmission (buoy → shore)
 
-**Goal:** packets travel over LoRa and decode at the shore station.
+**Goal:** packets travel over LoRa and decode at the shore station. Tracked in [SCO-24](https://linear.app/scout1/issue/SCO-24).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -104,7 +104,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 5 — Whole system under firmware control
 
-**Goal:** the standby loop (wake → read → log → send → sleep) runs unattended.
+**Goal:** the standby loop (wake → read → log → send → sleep) runs unattended. Tracked in [SCO-160](https://linear.app/scout1/issue/SCO-160) (David).
 
 **Benchmarks**
 
@@ -115,7 +115,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 6 — Run on the batteries
 
-**Goal:** two D cells, safely, with no possible charge path.
+**Goal:** two D cells, safely, with no possible charge path. Tracked in [SCO-159](https://linear.app/scout1/issue/SCO-159) and [SCO-150](https://linear.app/scout1/issue/SCO-150).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -131,7 +131,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 7 — Hydrophone
 
-**Goal:** record the scheduled clips and confirm their cost.
+**Goal:** record the scheduled clips and confirm their cost. Part choice in [SCO-8](https://linear.app/scout1/issue/SCO-8).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -148,7 +148,7 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 8 — Sealed in the housing for days
 
-**Goal:** the sealed buoy runs for 1–2 weeks.
+**Goal:** the sealed buoy runs for 1–2 weeks. Tracked in [SCO-161](https://linear.app/scout1/issue/SCO-161); lid antenna bulkhead and battery bay in [SCO-162](https://linear.app/scout1/issue/SCO-162) (John Ryan).
 
 | Part | Source | Buy |
 |---|---|---|
@@ -178,6 +178,8 @@ LED, keep off), SDA/SCL (RTC).
 - [ ] No leaks; battery use on track for 12 months
 
 ## Buying schedule
+
+Follow-up orders are tracked in [SCO-158](https://linear.app/scout1/issue/SCO-158).
 
 | When | Order | ≈ Cost |
 |---|---|---|
