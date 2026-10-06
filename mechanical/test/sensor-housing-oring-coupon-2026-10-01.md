@@ -93,7 +93,17 @@ though less than run 1. John's read: the ribs need to sit further out for even c
 outer rim ring is under consideration.
 
 **Confound to remember:** four things changed at once (material, ring size, bolt count, ribs), so
-a pass or fail will not say which one mattered. Photos of run 2 were attached by John but could
-not be read from the Photos library and are not yet in the repo.
+a pass or fail will not say which one mattered.
+
+Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the moisture indicator):
+- Ring seated in the body groove, 4 brass heat-set inserts, towel inside:
+  [view 1](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove.jpg),
+  [view 2](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove-2.jpg),
+  [blurred](sensor-housing-oring-coupon-2026-10-06-run2-ring-in-groove-blurred.jpg)
+- [Cap top: 4 radial ribs and 4 bolt holes](sensor-housing-oring-coupon-2026-10-06-run2-cap-top-ribs.jpg)
+- [Body with towel beside the cap](sensor-housing-oring-coupon-2026-10-06-run2-body-and-cap.jpg)
+- Assembled, 4 bolts: [side](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side.jpg),
+  [side 2](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side-2.jpg)
+- [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
 
 _Result: pending (24 hr check)._
