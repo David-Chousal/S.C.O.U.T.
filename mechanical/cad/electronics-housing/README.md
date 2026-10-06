@@ -213,3 +213,22 @@ inside a Ø114.30 body (tube OD Ø110) fits within the chassis bore but pushes t
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
+
+## Larger flange housing on the chassis lip — 2026-10-06 (CAD in progress, STEP and drawing not yet in repo)
+
+![Housing flange on the chassis, curved cable interface on the lid](electronics-housing-flange-on-chassis-2026-10-06.jpg)
+
+John's description of the updated housing, from his CAD screenshot. No STEP or dimensions are
+committed yet — he is producing the drawing now, so every size below is still to be recorded.
+
+- **Static O-ring face seal goes over the lip of the chassis.** The flange sits on top of the
+  chassis rather than the housing sliding into it.
+- **The whole housing is larger** than the 2026-09-02 clamp. New dimensions: pending the drawing.
+- **Curved cable-penetration interface on top of the lid**, with room for cable glands.
+- **Gland interior radius and orientation point the cables to the side**, which leaves vertical
+  room above the housing for a possible solar panel.
+
+Relevance: this is the revision SCO-49 (final dimensions) and SCO-53 (lid for cable glands) wait
+on. Gland count and placement are still to be confirmed against it. Dimensions to record when the
+drawing lands: flange OD, wall, internal envelope, groove ID/OD, ring size, gland count, bolt
+count and circle.
