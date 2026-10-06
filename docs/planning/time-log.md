@@ -5,7 +5,7 @@
 > meetings); new entries are logged from John's own answer at the end of each session. Lab and
 > bench time is not visible to the evidence and is listed as a gap, not guessed.
 >
-> Part of [`docs/planning/`](README.md). Personal hours kept in the shared repo at John's request (2026-10-06).
+> Part of the [docs index](../README.md). Personal hours kept in the shared repo at John's request (2026-10-06).
 
 ## Totals
 
