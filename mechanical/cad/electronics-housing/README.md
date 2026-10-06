@@ -244,10 +244,22 @@ Read directly from the drawing, unambiguous:
 | Bolt holes | 8, spaced 45° apart |
 | Hole diameters | Ø0.13 in and Ø0.22 in (bottom view) |
 
-Dimension labels also on the sheet. I could not tell which feature each one refers to from the
-PDF alone, so **John to confirm each assignment** before these go into `facts.md`:
-Ø5, Ø5.5, Ø4.75, Ø4.45, Ø4.5, 5.5, 5.25, R2, 143.13° and 2.02. The 2.02 in width and the
-R2 / 143.13° pair sit on the curved cable-penetration block on the lid.
+Other labels on the sheet, checked against the cylinder faces in
+[`full-buoy-assembly-v7.step`](../full-buoy-assembly-v7.step) (units are inches; I compared v7 with
+v6 to isolate the new housing). This is a geometry match, not John's statement of what each is:
+
+| Drawing label | In the v7 STEP | What it is |
+|---|---|---|
+| Ø6 | Cylinder, r 3.0 | Flange OD |
+| Ø5 | Cylinder, r 2.5 | A Ø5 cylindrical feature, so **not a bolt circle** (bolt holes are not cylinders at that radius); the feature is not identified |
+| Ø4.5 | Cylinders, r 2.25 and r 2.258 | Tube OD, with a mating bore about 0.016 in larger per side |
+| R2 | Cylinder, r 2.0 | The curved cable-penetration surface on the lid |
+| Ø.22 and Ø.13 | Cylinders, r 0.11 and r 0.067 | The two bolt-hole sizes (0.067 gives Ø0.134, drawn as Ø.13) |
+| Ø5.5, Ø4.75, Ø4.45 | No matching cylinder | Not found; likely arcs, a groove modelled another way, or the chassis lip |
+| 5.5, 5.25, 2.02, 143.13° | Not tested | Linear and angular dimensions; position not assigned |
+
+The drawing is John's complete drawing of this housing, so nothing further is expected from him.
+Where the table says "not identified" or "not found", the repo does not say what the feature is.
 
 Relevance: this is the revision SCO-49 (final dimensions) and SCO-53 (lid for cable glands) wait
 on. Gland count and placement are still to be confirmed against it. Still missing from the drawing:
