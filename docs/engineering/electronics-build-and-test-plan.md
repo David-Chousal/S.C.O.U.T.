@@ -183,7 +183,7 @@ Follow-up orders are tracked in [SCO-158](https://linear.app/scout1/issue/SCO-15
 
 | When | Order | ≈ Cost |
 |---|---|---|
-| 2026-10-06 | Adafruit: 3178, 2922, 2830 ×3, 381, 4654, 5250, 4269 ×2, 5477, 3231 + early buys for later stages: 1661 uFL connector, 851 SMA-uFL panel cable, 4885 SHT40 + 4209 cable, 261 JST PH ×2 (battery plug), 1063 MAX4466 mic amp (audio-path development before the hydrophone is funded), 2884 FeatherWing Proto | $129.85 |
+| 2026-10-06 | Adafruit: 3178, 2922, 2830 ×3, 381, 4654, 5250, 4269 ×2, 5477, 3231 + early buys for later stages: 1661 uFL connector, 851 SMA-uFL panel cable, 4885 SHT40 + 4209 cable, 261 JST PH ×2 (battery plug), 2884 FeatherWing Proto | $122.90 (+ $7.70 shipping + $11.98 tax = **$142.58**, invoice 3758294) |
 | 2026-10-06 | Mouser: 713-101020752, 713-110990210, 658-CR1220, 621-DMG2305UX-7 ×2 (+ SparkFun BOB-00717 ×2) | ~$28 |
 | After Stage 2 | Later 1: D cells + battery protection | $60–100 |
 | After SCO-8 | Later 2: hydrophone + preamp + larger microSD | $220–270 |

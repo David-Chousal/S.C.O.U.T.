@@ -44,7 +44,8 @@
 
 | Week | Goal | Tasks | Closes |
 |---|---|---|---|
-| **Nov 2–8** | Stage 4–5 | Outdoor range test with spring antennas (RSSI vs distance). 24 h standby loop with David's schedule firmware. Start the audio path on the MAX4466 (22.05 kHz clips to SD) | SCO-24, SCO-160, SCO-165 |
+| **Nov 2–8** | Stage 4–5 | Outdoor range test with spring antennas (RSSI vs distance). 24 h standby loop with David's schedule firmware. | SCO-24, SCO-160, SCO-165 |
+| **Nov 2–15** | Hydrophone (Stage 7) | Hydrophone + preamp + larger microSD ordered (Later 2) once it arrives in ~a month: plug-in-power bias from 3.3 V, preamp, 22.05 kHz 1-min clips to SD, recording current, clips through the pipeline | SCO-8, SCO-158 |
 | **Nov 9–15** | Battery safety | D cells arrive. Remove the charger IC on the deployment Feather; build ideal diodes + fuse + keyed JST plug. Verify 0 µA into the battery with USB on | SCO-150 |
 | **Nov 16–22** | Stage 6 start | Start the 7-day run on two D cells. Move the switch circuit from breadboard to the FeatherWing Proto | SCO-159 |
 | **Nov 23–29** | Stage 6 result (Thanksgiving) | Finish the 7-day run; extrapolate to 12 months; update ADR-0007 | SCO-159, SCO-10 |
@@ -65,8 +66,8 @@
 
 | Week | Goal | Tasks | Closes |
 |---|---|---|---|
-| **Jan 4–10** | Funding opens | Order Later 2 (hydrophone 3.5 mm + larger SD) and Later 3 (whip antenna + bulkhead parts not already bought) with the senior-design budget | SCO-158, SCO-8 |
-| **Jan 11–24** | Stage 7 + into the housing | Swap the MAX4466 mic for the hydrophone; recording current and clip quality. Install electronics in the housing with John Ryan; fit the uFL + SMA bulkhead | SCO-8 |
+| **Jan 4–10** | Housing parts | Order Later 3 (whip antenna, coating, desiccant) with the winter-quarter senior-design budget | SCO-158 |
+| **Jan 11–24** | Stage 7 + into the housing | Install electronics in the housing with John Ryan; fit the uFL + SMA bulkhead | SCO-8 |
 | **Jan 25–Feb 7** | Stage 8 sealed soak | 7–14 days sealed: ≥ 95% packets, humidity flat, no resets | SCO-161 |
 | **Feb 8–26** | Phase 4 water test | 2 weeks at the local site (Monterey dock or pool, SCO-143). Fix what breaks. Order spares | SCO-143, SCO-14 |
 

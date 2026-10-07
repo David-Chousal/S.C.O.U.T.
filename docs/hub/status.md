@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-06.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-07.**
 
 ---
 
@@ -57,7 +57,7 @@ open Phase 0 issue. Full plan:
    [Power Budget Update](../engineering/power-budget-update-2026-10-05.md)). Not final until the
    sleep floor is measured ([SCO-23](https://linear.app/scout1/issue/SCO-23)).
    [SCO-10](https://linear.app/scout1/issue/SCO-10)
-3. **Bench parts ordered 2026-10-06** (Adafruit + Mouser, including the shore-station ESP32-S3 + LoRa FeatherWing; hydrophone, D cells and outdoor antenna are planned follow-up orders — [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md)). Until they arrive, firmware driver validation
+3. **Adafruit bench order placed 2026-10-07** (invoice 3758294, delivery est. 2026-10-13 to 10-16; Mouser order still to place; [Purchase Log](../planning/purchase-log.md)) (Adafruit + Mouser, including the shore-station ESP32-S3 + LoRa FeatherWing; hydrophone, D cells and outdoor antenna are planned follow-up orders — [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md)). Until they arrive, firmware driver validation
    ([SCO-25](https://linear.app/scout1/issue/SCO-25)) and shore-station radio bring-up
    ([SCO-24](https://linear.app/scout1/issue/SCO-24)) are both written and waiting on hardware.
    The staged Rev A order (SCO-88) was cancelled 2026-09-24 in favour of one order covering the
