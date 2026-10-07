@@ -110,3 +110,10 @@ Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the 
 - [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
 
 _Result: pending (24 hr check)._
+
+## Run 3 — planned (decision 2026-10-06)
+
+John decided on **6 evenly spaced bolts** for the next cap, after the gap between the bolts seen in
+run 1 and not closed in run 2. Registered as RR-15. The raised hoop over the groove and a bolt
+circle moved closer to the groove were suggested but are **not decided**, so run 3 is a bolt-count
+change only unless John adds them.
