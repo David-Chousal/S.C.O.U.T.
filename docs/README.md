@@ -90,6 +90,7 @@ Schedule, meetings, and administrative records.
 |---|---|
 | [Team Timeline](planning/team-timeline.md) | Phase 0–6 work plan from kickoff through Hawaii deployment, with parallel per-discipline tracks |
 | [Meeting Notes](planning/meeting-notes.md) | Running team design meeting notes |
+| [Gantt Chart and WBS](planning/gantt-and-wbs.md) | How the CSV, script and PDF task plan fit together |
 | [Senior Design Time Log](planning/time-log.md) | John Ryan Myrdal's hours on S.C.O.U.T., estimated for the past and reported going forward |
 | [Signature Page](planning/signature-page.md) | SCU capstone declaration — team members and faculty advisors |
 
