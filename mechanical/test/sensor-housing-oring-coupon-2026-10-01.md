@@ -109,9 +109,13 @@ Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the 
   [side 2](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side-2.jpg)
 - [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
 
-_Result: pending (24 hr check)._
+_Result (reported by John 2026-10-07): **the PLA pod leaked.** Hours to failure and where the water entered were not given; record them if known._
 
-## Run 3 — planned (decision 2026-10-06)
+## Run 3 — redesigned 2026-10-07, not yet printed
+
+After the run 2 leak John built a new version: **6 bolts, a thicker cap, and thicker ribs** supporting the cap. CAD: [`sensor-housing-assembly-v9.step`](../cad/sensor-housing/sensor-housing-assembly-v9.step). The cap thickness is a second change on top of the bolt count, so a pass will not say which of the two mattered.
+
+### Original decision (2026-10-06)
 
 John decided on **6 evenly spaced bolts** for the next cap, after the gap between the bolts seen in
 run 1 and not closed in run 2. Registered as RR-15. The raised hoop over the groove and a bolt
