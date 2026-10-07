@@ -109,9 +109,30 @@ Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the 
   [side 2](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side-2.jpg)
 - [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
 
+_Result (reported by John 2026-10-07): **the PLA pod leaked.** Hours to failure and where the water entered were not given; record them if known._
+
+## Run 3 — printed and in the water 2026-10-07
+
+After the run 2 leak John built a new version: **6 bolts, a thicker cap, and thicker ribs** supporting the cap. CAD: [`sensor-housing-assembly-v9.step`](../cad/sensor-housing/sensor-housing-assembly-v9.step). The cap thickness is a second change on top of the bolt count, so a pass will not say which of the two mattered.
+
+**What John did on 2026-10-07:** redesigned the pod (about 30 min), then printed it, pressed in the six heat-set inserts, assembled it with six bolts and put it in the water to start the test (about 35 min). The test clock started when it went in; the result is due after the 24 hr check ([RR-15](risk-reduction-register.md)).
+
+| Item | Run 2 | Run 3 |
+|---|---|---|
+| Bolts | 4 | **6**, evenly spaced |
+| Cap | Ribbed, thinner | **Thicker, with thicker ribs** (dimensions not recorded) |
+| Print | Orange PLA | Orange print as in run 2; material not stated |
+| Result | Leaked | **Pending** |
+
+Not recorded: the time it went in the water, the water depth and salinity, the O-ring size and whether it was lubricated, bolt torque.
+
+Photos (2026-10-07):
+- [Body with the six brass heat-set inserts pressed in, before assembly](sensor-housing-oring-coupon-2026-10-07-run3-body-six-inserts.jpg)
+- [Assembled: six bolts and the ribbed cap](sensor-housing-oring-coupon-2026-10-07-run3-assembled-six-bolts.jpg)
+
 _Result: pending (24 hr check)._
 
-## Run 3 — planned (decision 2026-10-06)
+### Original decision (2026-10-06)
 
 John decided on **6 evenly spaced bolts** for the next cap, after the gap between the bolts seen in
 run 1 and not closed in run 2. Registered as RR-15. The raised hoop over the groove and a bolt
