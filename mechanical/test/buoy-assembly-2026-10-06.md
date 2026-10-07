@@ -50,3 +50,11 @@ visible in each photo.
 - [16, taped](buoy-assembly-2026-10-06-16-taped.jpg)
 - [17, taped](buoy-assembly-2026-10-06-17-taped.jpg)
 - [18, taped](buoy-assembly-2026-10-06-18-taped.jpg)
+
+## 2026-10-07 — J-B Weld on the outside seams
+
+John put **J-B Weld two-part epoxy** (from a syringe; the product line is not legible in the photos) across many of the exterior crevices of the assembled buoy. In the photos it is the white bead along the radial seams on top, around the central ring, and down the side seams. **More crevices still need it**; John did not say which ones are left. This is the outside bonding step the entry above says follows the glue cure. No leak or flotation check has been done yet.
+
+Photos: [view 1](buoy-jb-weld-2026-10-07-01.jpg), [view 2](buoy-jb-weld-2026-10-07-02.jpg).
+
+Not recorded: the epoxy's cure time, how long after the Gorilla Glue it went on, and whether this replaces the marine epoxy planned above.
