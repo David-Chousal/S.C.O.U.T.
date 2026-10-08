@@ -611,8 +611,9 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 
 ## 2026-10-07 — Joint advisor meeting (GENG + ECEN)
 
-**Attendees:** Isabella Rodriguez (ECEN) · John Ryan Myrdal (GENG) · David Chousal Cantu (CSEN) ·
-Shoba Krishnan (ECEN advisor) · Jes Kuczenski (GENG advisor).
+**Attendees:** Isabella Rodriguez (ECEN) · John Ryan Myrdal (GENG) · Shoba Krishnan (ECEN advisor) ·
+Jes Kuczenski (GENG advisor). David was on the invite but not present; items for him below were
+discussed in his absence.
 
 Source: Isabella's Granola note ([meeting a9bbd50d](https://notes.granola.ai/d/a9bbd50d-29f5-4c4c-afee-f1f684ca42af);
 team members need it shared from Granola to open it). The summary does not reliably attribute
