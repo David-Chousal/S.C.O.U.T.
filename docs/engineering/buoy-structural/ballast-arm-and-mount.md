@@ -63,6 +63,36 @@ the whole arm in the mooring load path, and line noise next to the hydrophone. P
 confirm: [SCO-137](https://linear.app/scout1/issue/SCO-137). LC7 re-run for the moved attachment:
 [SCO-135](https://linear.app/scout1/issue/SCO-135).
 
+### Mooring attachment, 2026-10-08 (John Ryan, still open on hardware)
+
+**Decided direction:** the rope connects **around the base of the stem, at the top of the arm just
+below the chassis**. The exact hardware is not chosen. A backup path is wanted.
+
+| Concept | Verdict | Why |
+|---|---|---|
+| Attach at the bottom of the stem (lead end) | **Rejected** | Stability study: knocked down by about 34–48 N sustained (heel about 15–20° at 20 N current); the arm becomes a 24 in lever |
+| Cross-bolt / clevis through the pipe | **Rejected by John** | A hole in the highest-stress zone of the arm |
+| Rope straight through a hole in the pipe | **Rejected by John** | Same hole concern, plus chafe |
+| Swivel | **Dropped** | One more part to seize over a year; twist is accepted and will be tested |
+| Printed bracket / printed stop as the main load path | **Dropped** | The existing "No printed bracket" decision stands; a printed part is fine only as a non-load guard |
+| Friction-only clamp or U-bolt | **Doubtful** | The whole mooring would hang on friction; needs a positive stop if used |
+| Rope loop free to rotate around the stem, held by a stop | Considered, not chosen | Chafe and fouling risk; the stop still has to be positive |
+| **Backup path** | **Wanted** | A second, slack line from a through-bolted pad-eye on the chassis bottom, so one failure leaves the buoy moored |
+
+**What the stability check says** ([study](../../../mechanical/simulations/buoy-stability/studies/mooring-attachment-height/README.md)):
+attachment height barely changes the righting moment (about 21–22 N·m) but sets the heeling lever.
+Sustained horizontal force that knocks the buoy down, with drag at the waterline:
+
+| Attachment | Knockdown force | Heel at 20 N |
+|---|---|---|
+| Keel (z = 0) | about 606 N | 1.2° |
+| **Collar 2.5 in below keel** (base of the stem) | **about 215 N** | **3.3°** |
+| Mid-stem (z = -12 in) | about 64 N | 11° |
+| Stem bottom (z = -24 in) | about 34 N | 20° |
+
+Attaching at the base of the stem keeps the heel small. Static hydrostatics only: waves, line
+dynamics and sway are not modelled (rigid roll period about 3.4 s at every height).
+
 ## Assembly notes
 
 - Anti-seize on all stainless threads (galling). Seize shackle pins with wire.
