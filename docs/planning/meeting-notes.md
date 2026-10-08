@@ -677,6 +677,6 @@ remarks to individual advisors, so advice below is credited to "the advisors" un
 | Draft the sensor test protocol (one at a time, then as a packet, with averaging and timestamps) | Isabella | 2026-10-14 |
 | Research sealed marine battery options used in similar deployments (form factor, connector) | Isabella | 2026-10-14 |
 | Submit the budget, including the PCB (~$30–40), marine sealant and remaining sensors | Team | Next week |
-| Email David to request access to rooms 4017–4019 for Isabella and David, plus a locker | Isabella | — |
+| Email David (lab staff, **not** David Chousal Cantu) to request access to rooms 4017–4019 and a parts locker | Isabella | — |
 | Complete lab safety training and send confirmation (required for room access) | Isabella | — |
 | Confirm the data packet encoding/decoding schema is in the repo | David | — |
