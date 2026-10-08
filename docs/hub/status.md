@@ -37,7 +37,7 @@ open Phase 0 issue. Full plan:
 
 ## What's blocking the most
 
-1. **Electronics component list and dimensions** — *largely cleared 2026-10-08:* Isabella's prototype list landed 2026-10-06 and John Ryan set the housing at 4.4 in ID × 5 in tall ([SCO-49](https://linear.app/scout1/issue/SCO-49) Done), which unblocked the FEA final pass ([SCO-73](https://linear.app/scout1/issue/SCO-73), now In Progress). *Original text:* the largest single dependency on the board.
+1. **Electronics component list and dimensions** — *largely cleared 2026-10-08:* Isabella's prototype list landed 2026-10-06 and John Ryan set the housing at 4.4 in ID × 5 in tall ([SCO-49](https://linear.app/scout1/issue/SCO-49) Done), which removed the old blocker on the FEA work. [SCO-73](https://linear.app/scout1/issue/SCO-73) was then re-scoped to FEA of the new ballast stem and waits on [SCO-125](https://linear.app/scout1/issue/SCO-125); the earlier LC1–LC9 runs stand. *Original text:* the largest single dependency on the board.
    Seven mechanical issues sit `Blocked` behind it: it gates housing dimensions
    ([SCO-49](https://linear.app/scout1/issue/SCO-49)), which gate the floatation buoyancy check
    ([SCO-48](https://linear.app/scout1/issue/SCO-48)), the FEA load cases

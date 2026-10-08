@@ -46,7 +46,7 @@ task,4.17,SCO-63,Bring the large lab 3D printer back online,John Ryan Myrdal,Pha
 task,4.18,SCO-76,Run foam-fill manufacturing trials on sacrificial wedges,John Ryan Myrdal,Phase 1,Todo,2026-10-19,2026-10-21,SCO-166,Printer access for sacrificial wedges,,Linear due
 task,4.19,SCO-123,Publish up-to-date v5 drawings for the wedge and wedge bottom,John Ryan Myrdal,Phase 1,Todo,2026-10-15,2026-10-15,,,,Linear due
 task,4.20,SCO-124,Rebuild the freeboard model's vertical stack from the STEP geometry,John Ryan Myrdal,Phase 1,In Progress,2026-09-29,2026-10-12,,v7 STEP committed 2026-10-06,,estimated
-task,4.23,SCO-73,Run FEA load cases LC1-LC9,John Ryan Myrdal,Phase 1,In Progress,2026-10-14,2026-10-21,,Blocked by SCO-49; Linear due unset,,Linear due
+task,4.23,SCO-73,FEA on the ballast stem and its chassis joint (earlier LC1-LC9 runs stand),John Ryan Myrdal,Phase 1,Blocked,2026-10-14,2026-10-21,SCO-125,Blocked by SCO-49; Linear due unset,,Linear due
 task,4.24,SCO-135,Re-run LC7 with the mooring moved to the pipe collar,John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-14,,,,Linear due
 task,4.25,SCO-125,Develop the self-righting ballast stem to 24 in below the keel,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-23,SCO-136,Lead ballast permit question (SCO-136),,Linear due
 task,4.26,SCO-136,Check whether lead ballast is acceptable under the reef permit,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Permit authority answer,,Linear due
