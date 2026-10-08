@@ -109,11 +109,51 @@ Photos (2026-10-06, before the soak; orange PLA, black ring, paper towel as the 
   [side 2](sensor-housing-oring-coupon-2026-10-06-run2-assembled-side-2.jpg)
 - [Assembled, held up: a dark seam line is visible between the cap and body flange](sensor-housing-oring-coupon-2026-10-06-run2-assembled-seam-gap.jpg)
 
-_Result: pending (24 hr check)._
+_Result (reported by John 2026-10-07): **the PLA pod leaked.** Hours to failure and where the water entered were not given; record them if known._
 
-## Run 3 — planned (decision 2026-10-06)
+## Run 3 — printed and in the water 2026-10-07
+
+After the run 2 leak John built a new version: **6 bolts, a thicker cap, and thicker ribs** supporting the cap. CAD: [`sensor-housing-assembly-v9.step`](../cad/sensor-housing/sensor-housing-assembly-v9.step). The cap thickness is a second change on top of the bolt count, so a pass will not say which of the two mattered.
+
+**What John did on 2026-10-07:** redesigned the pod (about 30 min), then printed it, pressed in the six heat-set inserts, assembled it with six bolts and put it in the water to start the test (about 35 min). The test clock started when it went in; the result is due after the 24 hr check ([RR-15](risk-reduction-register.md)).
+
+| Item | Run 2 | Run 3 |
+|---|---|---|
+| Bolts | 4 | **6**, evenly spaced |
+| Cap | Ribbed, thinner | **Thicker, with thicker ribs** (dimensions not recorded) |
+| Print | Orange PLA | Orange print as in run 2; material not stated |
+| Result | Leaked | **Pending** |
+
+Not recorded: the time it went in the water, the water depth and salinity, the O-ring size and whether it was lubricated, bolt torque.
+
+Photos (2026-10-07):
+- [Body with the six brass heat-set inserts pressed in, before assembly](sensor-housing-oring-coupon-2026-10-07-run3-body-six-inserts.jpg)
+- [Assembled: six bolts and the ribbed cap](sensor-housing-oring-coupon-2026-10-07-run3-assembled-six-bolts.jpg)
+
+**Result: failed 2026-10-08. The whole pod flooded, despite six bolts** (per John; where the water got in, the paper-towel state and the ring used were not recorded). Three failures in a row now (3, 4, then 6 bolts) say that more bolts and a stiffer cap were not the main problem. Likely cause: the ring. John later confirmed the ring he uses is **OD 2-5/8 in, ID 2-1/4 in, so 3/16 in (4.76 mm) cross-section**, about double the 2.62 mm of the AS568-137/142 ring the pod groove was sized for. If this ring was in run 3 it could not seat in that groove. That is an inference: the ring in run 3 was not recorded.
+
+### Original decision (2026-10-06)
 
 John decided on **6 evenly spaced bolts** for the next cap, after the gap between the bolts seen in
 run 1 and not closed in run 2. Registered as RR-15. The raised hoop over the groove and a bolt
 circle moved closer to the groove were suggested but are **not decided**, so run 3 is a bolt-count
 change only unless John adds them.
+
+## Run 4 — 2026-10-08 (matched groove, body supplied)
+
+Not yet printed or in the water. John supplied a new, shorter body ([`sensor-housing-body-short-v1.step`](../cad/sensor-housing/sensor-housing-body-short-v1.step), Fusion export 2026-10-08, in inches), shortened to save filament. Registered as [RR-16](risk-reduction-register.md).
+
+**Ring (confirmed by John):** OD 2-5/8 in (66.68 mm), ID 2-1/4 in (57.15 mm), cross-section 3/16 in (4.76 mm). A hardware-store ring (Everbilt Medium O-Ring Assortment, 6 pcs, 2-1/2 to 3-1/2 in OD), not an AS568 standard size. Elastomer unknown.
+
+**Groove, read from the STEP geometry:**
+
+| Feature | Value |
+|---|---|
+| Groove inner / outer diameter | Ø2.20 in (55.9 mm) / Ø2.74 in (69.6 mm) |
+| Groove floor | about 0.135 in (3.4 mm) below the mating face, inferred from vertex heights; about 28% squeeze |
+| Bolts | 6 holes, Ø0.22 in (5.6 mm), on a Ø3.10 in (78.7 mm) circle |
+| Flange / height | Ø3.50 in (88.9 mm) / about 0.6 in (15 mm) |
+
+The groove follows the standard static face-seal guidance (about 25–30% squeeze, about 77% gland fill), recalled from the Parker handbook and not yet checked against it. The cap is not in this file; it must match the body's groove face and bolt circle.
+
+What changes against run 3: the ring and groove now match. The body is also shorter. Pass benchmark is unchanged (dry paper towel after 24 hr at ≥ 0.3 m in ~35 ppt salt water). Result: pending.

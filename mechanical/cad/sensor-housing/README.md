@@ -93,7 +93,9 @@ multi-depth in a future revision, the pod itself won't be the blocker.
 
 | File | Role | Status |
 |---|---|---|
-| [`sensor-housing-assembly-v8.step`](sensor-housing-assembly-v8.step) | **Turbidity sensor assembly, Fusion export 2026-10-06** — the revision John called "most up to date", the PLA coupon in the water 2026-10-06 ([RR-14](../../test/risk-reduction-register.md)). Three bodies, all created 2026-09-13 per the file's own part timestamps, so the geometry was edited after creation. See [revision labels](#revision-labels-added-2026-10-06) | **Current** |
+| [`sensor-housing-assembly-v9.step`](sensor-housing-assembly-v9.step) | **Turbidity sensor assembly, "Ribbed", Fusion export 2026-10-07** — John's redesign after the PLA pod leaked in the water: **6 bolts**, a **thicker cap**, and **thicker ribs** supporting the cap ([RR-15](../../test/risk-reduction-register.md)). Two bodies (`Body`, `Lid`), 6 bolt clearance holes read from the STEP. Thickness and rib dimensions not yet recorded. Filename `v9` is the next number after v8, not John's label | **Current** |
+| [`sensor-housing-body-short-v1.step`](sensor-housing-body-short-v1.step) | **Pod body for the real ring, shortened to save filament, Fusion export 2026-10-08** — groove Ø2.20 × Ø2.74 in, 6 bolts on a Ø3.10 in circle, for the 3/16 in cross-section ring ([RR-16](../../test/risk-reduction-register.md)). Body only; the matching cap is not in the repo yet | **Current** |
+| [`sensor-housing-assembly-v8.step`](sensor-housing-assembly-v8.step) | **Turbidity sensor assembly, Fusion export 2026-10-06** — the revision John called "most up to date", the PLA coupon in the water 2026-10-06 ([RR-14](../../test/risk-reduction-register.md)) — **leaked; superseded 2026-10-07 by `-v9`**. Three bodies, all created 2026-09-13 per the file's own part timestamps, so the geometry was edited after creation. See [revision labels](#revision-labels-added-2026-10-06) | Iteration |
 | [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) | Pod body, no port — **face-seal remodel, 2026-08-29** (see [below](#face-seal-remodel--2026-08-29)) | **Current** |
 | [`sensor-housing-sealed-cap-v2.step`](sensor-housing-sealed-cap-v2.step) | Sealed cap — mates to the body across the AS568-137 static face-seal O-ring. **Spigot re-cut 2026-09-02** (see [below](#sealed-cap-spigot-tolerance-tweak--2026-09-02)) | **Current** |
 | [`sensor-housing-sealed-cap.step`](sensor-housing-sealed-cap.step) | Sealed cap, first face-seal revision — **superseded 2026-09-02** by `-v2` | Iteration |
@@ -176,9 +178,11 @@ diameter matches the body's own Ø31.496 mm bore surface exactly, so the two now
 line-to-line rather than interfering.
 
 Originally found by diffing the STEP exports rather than reported. **John re-sent this exact
-cap as his current part on 2026-09-08**, so the Ø31.496 mm spigot is confirmed as intended.
-Still open: whether 0.010" diametral clearance is enough for a clean printed fit — verify on
-the next pod print.
+cap as his current part on 2026-09-08**, so the Ø31.496 mm spigot was confirmed as intended.
+
+**Superseded 2026-10-08:** John removed the pilot spigot from the cap in the current design
+(ribbed 6-bolt cap, Ø52 mm dry chamber), so the line-to-line fit question no longer applies.
+[SCO-109](https://linear.app/scout1/issue/SCO-109) was closed as moot.
 
 The **body** was re-exported on the same day and is **geometrically unchanged** from the
 committed [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) (identical
@@ -421,6 +425,8 @@ of revisions 1 to 3 is still inferred:
 | 6 | Dry-chamber body and lid, flared flange, 2026-09-13 | not yet in the repo as a separate file |
 | 7 | Short coupon, PETG, 3 bolts, plain cap, 2026-10-01 (RR-12) | not in the repo as a separate file |
 | 8 | PLA coupon, 4 bolts, ribbed cap, in the water 2026-10-06 (RR-14) | `assembly-v8` |
+| 9 | 6 bolts, thicker cap and ribs, in the water 2026-10-07; flooded 2026-10-08 (RR-15) | `assembly-v9` |
+| 10 | Shorter body, groove cut for the 3/16 in ring, 2026-10-08 (RR-16) | `body-short-v1` |
 
 Per-part `-vN` numbers (the `v3` above) count within one part line, so they do not match the
 revision column. Correct the table and the filenames if an early revision turns out to be out of order.

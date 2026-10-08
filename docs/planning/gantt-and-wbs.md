@@ -26,7 +26,7 @@
 | `depends_on` | Linear IDs this task waits for, space-separated. These mirror the issues' Linear "blocked by" relations exactly; drawn as arrows on the detail pages and listed after the arrow symbol in each label |
 | `constraint` | The outside constraint: vendors, printer access, reviewers, SCU deadlines |
 | `milestone` | The milestone the task completes, if any |
-| `date_source` | `Linear due` (the end date equals the issue's Linear due date; a start is Linear's only if the issue has started), `estimated` (proposed or changed here, owner to confirm), `derived` (set by the assignment), or `Linear` (an external deadline) |
+| `date_source` | `Linear due` (the end date equals the issue's Linear due date; a start is Linear's only if the issue has started), `estimated` (proposed or changed here, owner to confirm), `derived` (set by the assignment), `proposed` (John's proposed dates for another owner, shown with a purple dashed outline and **not** in Linear until that owner agrees), or `Linear` (an external deadline) |
 
 ## Updating it
 
@@ -39,3 +39,11 @@
 `make_gantt.py` checks the plan before it prints: it stops with an error if a dependency names a
 task that is not in the chart, if a task ends before it starts, or if a task starts before a task it
 depends on ends. A task already `In Progress` is exempt from the start rule and prints a warning.
+
+## Scheduling rule (set 2026-10-07)
+
+Each task that waits on another starts when the task blocking it ends, so linked tasks read as a staircase.
+No two tasks share an identical start and end date, and tasks that are related by a dependency never sit inside
+each other's range. John's own tasks carry the new dates in Linear (due dates) and in the chart. Isabella's tasks
+show **proposed** dates in the chart only, until she agrees and Linear is updated. David's dates are unchanged.
+The MVP target is **2026-12-04**, with 2026-12-11 as the hard limit before winter break.
