@@ -91,7 +91,7 @@ def validate(rows: list[dict]) -> list[str]:
         for field in ("task", "owner", "phase", "date_source"):
             if not r[field].strip():
                 errors.append(f"{r['wbs']}: empty {field}")
-        if r["date_source"] not in ("Linear due", "Linear", "estimated", "derived"):
+        if r["date_source"] not in ("Linear due", "Linear", "estimated", "derived", "proposed"):
             errors.append(f"{r['wbs']}: unknown date_source {r['date_source']!r}")
         for sid in ids_of(r):
             known[sid] = r
@@ -216,9 +216,13 @@ def gantt_svg(rows: list[dict], t0: date, t1: date, unit: int, label_w: int, row
         bh = row_h - 6
         estimated = r["date_source"] != "Linear"
         extra = ' stroke-dasharray="3,2" fill-opacity="0.55"' if estimated else ' fill-opacity="0.95"'
+        stroke, sw = color, 1
+        if r["date_source"] == "proposed":
+            extra = ' stroke-dasharray="5,2" fill-opacity="0.3"'
+            stroke, sw = "#7b3fa0", 1.8
         status = r["status"]
         out.append(f'<rect x="{x0:.1f}" y="{y + 3}" width="{max(x1 - x0, 2):.1f}" height="{bh}" rx="2" '
-                   f'fill="{color}" stroke="{color}" stroke-width="1"{extra}/>')
+                   f'fill="{color}" stroke="{stroke}" stroke-width="{sw}"{extra}/>')
         if status in ("Blocked", "Waiting on Parts", "Needs Decision"):
             out.append(f'<rect x="{x0:.1f}" y="{y + 3}" width="{max(x1 - x0, 2):.1f}" height="{bh}" rx="2" '
                        f'fill="none" stroke="#c0392b" stroke-width="1.4"/>')
@@ -256,6 +260,7 @@ LEGEND = (
     '<span><i style="background:#2f8f5b"></i>Isabella Rodriguez (ECE)</span>'
     '<span><i style="background:#d9822b"></i>David Chousal Cantu (CSEN)</span>'
     '<span><i class="est"></i>dashed = estimated dates</span>'
+    '<span><i class="prop"></i>purple dashed outline = dates John proposes for the owner to confirm (not yet in Linear)</span>'
     '<span><i class="blk"></i>red outline = blocked / waiting</span>'
     '<span><b style="color:#7a1f1f">&rarr;</b> dependency (\u2190 lists the Linear issues a task waits for)</span>'
     '<span><b>&#9670;</b> milestone</span>'
@@ -274,6 +279,7 @@ h2 { font-size: 11.5pt; margin: 0 0 4pt; }
 .legend { font-size: 7.5pt; margin: 3pt 0 5pt; display: flex; flex-wrap: wrap; gap: 4pt 12pt; }
 .legend i { display: inline-block; width: 10px; height: 8px; margin-right: 3px; border-radius: 1px; vertical-align: middle; }
 .legend i.est { background: #999; opacity: .55; border: 1px dashed #666; }
+.legend i.prop { background: #ccb3e0; border: 1.5px dashed #7b3fa0; }
 .legend i.blk { border: 1.5px solid #c0392b; }
 table { border-collapse: collapse; width: 100%; font-size: 6.6pt; }
 th, td { border: 0.5pt solid #bbb; padding: 1.5pt 3pt; vertical-align: top; }
@@ -399,7 +405,8 @@ def build_html(rows: list[dict]) -> str:
     p.append("</table>"
              "<div class='note'>Date source: <b>Linear due</b> = the end date equals the issue's Linear due date; <b>estimated</b> = proposed from the issue "
              "text, parts timing or the phase window and awaiting the owner's confirmation; <b>derived</b> = set by this "
-             "assignment. Days are calendar days, inclusive.</div></div>")
+             "assignment; <b>proposed</b> = a new date John proposes for the task's owner, shown only until the owner agrees and "
+             "Linear is updated. Days are calendar days, inclusive.</div></div>")
     p.append("</body></html>")
     return "\n".join(p)
 
