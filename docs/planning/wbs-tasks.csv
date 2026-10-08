@@ -1,9 +1,8 @@
 kind,wbs,linear,task,owner,phase,status,start,end,depends_on,constraint,milestone,date_source
 task,1.1,SCO-117,Submit the senior design budget (SCU funding request),David Chousal Cantu,Phase 1,Todo,2026-10-06,2026-10-16,,Lab budget was due the week of 2026-09-28 (overdue); SCU funding request deadline Oct 18; must match the parts order,Funding request submitted,Linear due
-task,1.2,SCO-139,Define benchmarked MVP requirements from the ENGR 110 specs,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-10,,Advisor asked for measurable benchmarks (2026-09-30 meeting),,Linear due
-task,1.3,SCO-140,Map the layered test protocol and unit counts per stage,John Ryan Myrdal,Phase 1,Todo,2026-10-10,2026-10-15,SCO-139,Advisor asked for a layered test plan (2026-09-30 meeting),Test protocol drafted,Linear due
+task,1.3,SCO-140,Map the layered test protocol and unit counts per stage,John Ryan Myrdal,Phase 1,Todo,2026-10-10,2026-10-15,,Advisor asked for a layered test plan (2026-09-30 meeting),Test protocol drafted,Linear due
 task,1.4,,Gantt chart and WBS for the course assignment,John Ryan Myrdal,Phase 1,In Progress,2026-10-06,2026-10-18,,Course deadline Oct 18; whole team,Gantt submitted,derived
-task,1.5,SCO-149,Write an alternatives analysis for the main mechanical choices,John Ryan Myrdal,Phase 1,Backlog,2026-10-19,2026-11-06,SCO-139,,,estimated
+task,1.5,SCO-149,Write an alternatives analysis for the main mechanical choices,John Ryan Myrdal,Phase 1,Backlog,2026-10-19,2026-11-06,,,,estimated
 task,1.6,SCO-90 / SCO-95,LLC and patent strategy for SCOUT IP,John Ryan Myrdal,Phase 1,Backlog,2026-10-26,2026-11-25,,Possible advisor or university IP office input,,estimated
 task,1.7,SCO-121,Decide a per-unit naming scheme for Scout prototypes,Unassigned,Phase 1,Backlog,2026-10-20,2026-10-30,,Unassigned in Linear; needs an owner and a team decision,,estimated
 task,2.1,SCO-70,Deliver the final electronics component list and dimensions,Isabella Rodriguez,Phase 1,Todo,2026-10-06,2026-10-08,,Overdue since 2026-09-04; blocks housing dimensions,Component list final,Linear due
@@ -35,28 +34,19 @@ task,3.7,SCO-119 / SCO-97,Adopt Navid's sleep/wake protocol and re-derive the pa
 task,3.8,SCO-120 / SCO-57 / SCO-58,"Review the IoT dashboard, add biofouling state to the Fleet page, improve the PNG dashboard",David Chousal Cantu,Phase 2,Backlog,2026-11-02,2026-11-25,,,Phase 2 software exit,estimated
 task,3.9,SCO-20 / SCO-67,Drift reference and acoustic tamper detection,David Chousal Cantu,Phase 2,Deferred,2026-11-09,2026-11-25,,Deferred in Linear; not this version,,estimated
 task,4.1,SCO-105,Reprint the face-seal clamp and record the failing O-ring tolerance,John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-12,,Printer access,,Linear due
-task,4.2,SCO-106,Verify the AS568-043 ring fit and choose the seal elastomer before ordering,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-09,,Decision: silicone elastomer (2026-09-08),,Linear due
-task,4.3,SCO-108,Submersion re-test the face-seal joint on the clamp and sensor pod,John Ryan Myrdal,Phase 1,In Progress,2026-10-01,2026-10-16,SCO-105 SCO-106,"24 hr soaks; RR-14 result 10-07; RR-15 (6 bolts) after; Coupon re-tests (RR-14, RR-15) run now; the clamp re-test follows SCO-105 and SCO-106",Face seal passes a 24 hr soak,estimated
-task,4.4,SCO-109,Confirm the sensor pod sealed-cap spigot change was deliberate,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-08,,,,Linear due
+task,4.3,SCO-108,Submersion re-test the face-seal joint on the clamp and sensor pod,John Ryan Myrdal,Phase 1,In Progress,2026-10-01,2026-10-16,SCO-105,"24 hr soaks; RR-14 result 10-07; RR-15 (6 bolts) after; Coupon re-tests (RR-14, RR-15) run now; the clamp re-test follows SCO-105 and SCO-106",Face seal passes a 24 hr soak,estimated
 task,4.5,SCO-112,Grow the sensor pod dry chamber to 52 mm and re-export the penetration and flood chamber,John Ryan Myrdal,Phase 1,In Progress,2026-09-14,2026-10-13,,Epoxy-potted lead penetration,,Linear due
-task,4.6,SCO-91,Validate the remodelled turbidity sensor housing face seal,John Ryan Myrdal,Phase 1,Blocked,2026-10-20,2026-10-23,SCO-106 SCO-108,,,Linear due
+task,4.6,SCO-91,Validate the remodelled turbidity sensor housing face seal,John Ryan Myrdal,Phase 1,Blocked,2026-10-20,2026-10-23,SCO-108,,,Linear due
 task,4.7,SCO-141,Start saltwater-bath leak tests on printed test capsules,John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-15,,1 week soak at about 35 ppt,,Linear due
-task,4.8,SCO-49,Decide the electronics housing final dimensions,John Ryan Myrdal,Phase 1,In Progress,2026-08-18,2026-10-14,SCO-70,Needs Isabella's component list; drawing DFM Assembly 2 drafted 2026-10-06; Started 2026-08-18; the final decision waits on SCO-70,Housing dimensions final,Linear due
-task,4.9,SCO-53,Revise the electronics housing cap for a cable gland,John Ryan Myrdal,Phase 1,In Progress,2026-08-16,2026-10-19,SCO-49,Started 2026-08-16; gland placement follows SCO-49 geometry; gland sizing and tolerance tests outstanding,,Linear due
 task,4.10,SCO-107,Finish the electronics housing lid: bolt clearance holes and marking wording,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-15,,,,Linear due
 task,4.11,SCO-103,Engrave the FCC ID label into the enclosure before printing,John Ryan Myrdal,Phase 1,Todo,2026-10-09,2026-10-12,,"Engraved before the final print (related to SCO-107 and SCO-93, not blocked by them)",,Linear due
-task,4.12,SCO-122,Order the stainless fasteners once the housing is dimensioned,John Ryan Myrdal,Phase 1,Blocked,2026-10-14,2026-10-17,SCO-49,Vendor lead time; ordered only after SCO-49 fixes the housing dimensions,,Linear due
-task,4.13,SCO-68,Design the chassis top section: sealing and service-access port,John Ryan Myrdal,Phase 1,In Progress,2026-09-03,2026-10-21,SCO-107 SCO-106 SCO-105 SCO-49,,,Linear due
-task,4.14,SCO-75,Engineer the central chassis print structure for the mooring load path,John Ryan Myrdal,Phase 1,In Progress,2026-08-21,2026-10-23,SCO-73,"Linear lists SCO-73 as blocking SCO-75, yet SCO-75 is In Progress and ends before SCO-73 does; John to confirm the relation or the dates",,Linear due
-task,4.15,SCO-93,Print the chassis on the industrial printer,John Ryan Myrdal,Phase 1,In Progress,2026-09-30,2026-10-14,,Industrial printer window at work; about 35 hr print of the v5 design (later changes feed a reprint),Chassis printed,Linear due
-task,4.16,SCO-118,Get grad-student access to the Prusa XL in the garage,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-13,,Needs a grad student's permission,,Linear due
+task,4.12,SCO-122,Order the stainless fasteners once the housing is dimensioned,John Ryan Myrdal,Phase 1,Blocked,2026-10-14,2026-10-17,,Vendor lead time; ordered only after SCO-49 fixes the housing dimensions,,Linear due
+task,4.13,SCO-68,Design the chassis top section: sealing and service-access port,John Ryan Myrdal,Phase 1,In Progress,2026-09-03,2026-10-21,SCO-107 SCO-105,,,Linear due
 task,4.17,SCO-63,Bring the large lab 3D printer back online,John Ryan Myrdal,Phase 1,Backlog,2026-10-07,2026-10-16,,Lab technician or advisor help,,Linear due
 task,4.18,SCO-76,Run foam-fill manufacturing trials on sacrificial wedges,John Ryan Myrdal,Phase 1,Todo,2026-10-19,2026-10-21,SCO-166,Printer access for sacrificial wedges,,Linear due
 task,4.19,SCO-123,Publish up-to-date v5 drawings for the wedge and wedge bottom,John Ryan Myrdal,Phase 1,Todo,2026-10-15,2026-10-15,,,,Linear due
 task,4.20,SCO-124,Rebuild the freeboard model's vertical stack from the STEP geometry,John Ryan Myrdal,Phase 1,In Progress,2026-09-29,2026-10-12,,v7 STEP committed 2026-10-06,,estimated
-task,4.21,SCO-74,Build a mass budget and displacement/freeboard model,John Ryan Myrdal,Phase 1,Blocked,2026-10-12,2026-10-14,SCO-70,Linear due moved 10-16 to 10-14 so the stability work (SCO-80) can follow; needs component masses from SCO-70,Freeboard model complete,Linear due
-task,4.22,SCO-80,"Quantify stability: CG/CB, component placement, ballast provision",John Ryan Myrdal,Phase 1,In Progress,2026-08-21,2026-10-19,SCO-74,Started 2026-08-21; final numbers follow the SCO-74 mass budget,,Linear due
-task,4.23,SCO-73,Run FEA load cases LC1-LC9,John Ryan Myrdal,Phase 1,Blocked,2026-10-14,2026-10-21,SCO-49,Blocked by SCO-49; Linear due unset,,Linear due
+task,4.23,SCO-73,FEA on the ballast stem and its chassis joint (earlier LC1-LC9 runs stand),John Ryan Myrdal,Phase 1,Blocked,2026-10-26,2026-11-06,SCO-125,Blocked by SCO-49; Linear due unset,,estimated
 task,4.24,SCO-135,Re-run LC7 with the mooring moved to the pipe collar,John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-14,,,,Linear due
 task,4.25,SCO-125,Develop the self-righting ballast stem to 24 in below the keel,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-23,SCO-136,Lead ballast permit question (SCO-136),,Linear due
 task,4.26,SCO-136,Check whether lead ballast is acceptable under the reef permit,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Permit authority answer,,Linear due
@@ -67,7 +57,6 @@ task,4.30,SCO-94 / 144 / 145 / 146 / 147 / 148,"Design improvement studies (inse
 task,4.31,SCO-54 / SCO-56,Refine the stem and solar mount; audit the Onshape Initial Frame folder,John Ryan Myrdal,Phase 1,Backlog,2026-10-19,2026-11-25,,,Phase 2 mechanical exit,Linear due
 task,4.32,SCO-61 / SCO-66,Design the snap-connector sensor string; produce an exploded-view animation,John Ryan Myrdal,Phase 2,Backlog,2026-11-03,2026-11-25,,,,Linear due
 task,4.33,SCO-92 / SCO-64 / SCO-78 / SCO-79,"Corrosion strategy, material samples, marine coating, biofouling features",John Ryan Myrdal,Phase 3,Todo / Backlog,2026-11-30,2027-01-15,,Winter break; printer access,Phase 3 exit,estimated
-task,4.34,SCO-81,Verify buoyancy under one-wedge-lost and chassis-flooded cases,John Ryan Myrdal,Phase 3,Blocked,2026-12-01,2027-01-15,SCO-74,,,Linear due
 task,5.1,SCO-143,Identify a local backup test site and request pool access,John Ryan Myrdal,Phase 1,Backlog,2026-10-12,2026-10-30,,Site owner's permission,,estimated
 milestone,M2,,Bench parts arrive (assumed Fri),All,Phase 1,,2026-10-09,2026-10-09,,Assumption; confirm with Isabella,Parts arrive,Linear
 milestone,M1,,Component list delivered; unblocks housing dimensions,Isabella Rodriguez,Phase 1,,2026-10-08,2026-10-08,,,Component list final,estimated
@@ -81,15 +70,15 @@ task,4.35,SCO-166,"Source the 2 lb pour foam (US Composites #0204, about 3 kits)
 task,4.36,SCO-167,"Source PETG filament for the second full buoy (about 4 to 5 kg, to confirm)",John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-14,,Vendor shipping time; the second print waits on it,Filament on hand,Linear due
 task,4.37,SCO-168,Source Instant Ocean sea salt and a salinity meter for the 35 ppt tub tests,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Big bin volume to measure first,Salt water ready,Linear due
 task,4.38,SCO-169,Finish J-B Weld on the remaining exterior seams of the assembled buoy,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Epoxy cure time before water,,Linear due
-task,4.39,SCO-170,TEST: dry-float the buoy in a bin; waterline and freeboard vs the 4.27 in model,John Ryan Myrdal,Phase 1,Todo,2026-10-16,2026-10-16,SCO-74 SCO-124 SCO-169,Big plastic bin; benchmark within +-0.5 in (placeholder until SCO-139),First float check,Linear due
+task,4.39,SCO-170,TEST: dry-float the buoy in a bin; waterline and freeboard vs the 4.27 in model,John Ryan Myrdal,Phase 1,Todo,2026-10-16,2026-10-16,SCO-124 SCO-169,Big plastic bin; benchmark within +-0.5 in (placeholder until SCO-139),First float check,Linear due
 task,4.40,SCO-171,TEST: self-righting tilt test from 90 and 180 degrees,John Ryan Myrdal,Phase 2,Todo,2026-10-23,2026-10-27,SCO-125 SCO-170,Needs the ballast stem fitted,Buoy rights itself,Linear due
 task,4.41,SCO-172,TEST: float the whole buoy in 35 ppt salt water; record the waterline shift,John Ryan Myrdal,Phase 2,Todo,2026-10-27,2026-10-30,SCO-171 SCO-168,Salinity verified at 35 ppt first,Saltwater float passed,Linear due
 task,4.42,SCO-173,TEST: drop a sacrificial assembled ring with 1.5 in caps,John Ryan Myrdal,Phase 2,Todo,2026-10-19,2026-10-22,SCO-170,"Spare parts only, not the soak buoy",,Linear due
-task,4.43,SCO-174,TEST: proof-load the mooring attachment and ballast-arm root to 1.5x the LC9 snap,John Ryan Myrdal,Phase 2,Todo,2026-10-23,2026-10-30,SCO-75 SCO-137,Load method to choose; placeholder pass mark 1.2 kN,,Linear due
+task,4.43,SCO-174,TEST: proof-load the mooring attachment and ballast-arm root to 1.5x the LC9 snap,John Ryan Myrdal,Phase 2,Todo,2026-10-23,2026-10-30,SCO-137,Load method to choose; placeholder pass mark 1.2 kN,,Linear due
 task,4.44,SCO-175,"Build the final turbidity pod with the SEN0189 (dry chamber 52 mm, 6 bolts)",John Ryan Myrdal,Phase 1,Todo,2026-10-20,2026-10-20,SCO-112 SCO-108,SEN0189 arrives with the bench order; printer access,Final pod built,Linear due
 task,4.45,SCO-176,TEST: 1-week saltwater soak of the final turbidity pod with the SEN0189 live,John Ryan Myrdal,Phase 2,Todo,2026-10-26,2026-10-30,SCO-175 SCO-91,Mini fish tank at 35 ppt; dry towel at 24 hr and 1 week,Turbidity pod line complete,Linear due
-task,4.46,SCO-177,TEST: pressure-test the sealed housings to 8 m equivalent for 24 hr,John Ryan Myrdal,Phase 2,Todo,2026-10-30,2026-11-09,SCO-176 SCO-49,Pressure method not yet chosen,,Linear due
-task,4.47,SCO-178,Print the second full buoy set (the foam-filled unit),John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-28,SCO-167 SCO-93,Industrial printer or Prusa XL windows; chassis alone is about 35 hr,Second buoy printed,Linear due
+task,4.46,SCO-177,TEST: pressure-test the sealed housings to 8 m equivalent for 24 hr,John Ryan Myrdal,Phase 2,Todo,2026-10-30,2026-11-09,SCO-176,Pressure method not yet chosen,,Linear due
+task,4.47,SCO-178,Print the second full buoy set (the foam-filled unit),John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-28,SCO-167,Industrial printer or Prusa XL windows; chassis alone is about 35 hr,Second buoy printed,Linear due
 task,4.48,SCO-179,"Assemble, seal and foam-fill the second buoy",John Ryan Myrdal,Phase 2,Todo,2026-10-28,2026-11-04,SCO-178 SCO-166 SCO-76,Foam trial results; full cure before water,Foam buoy ready,Linear due
 task,4.49,SCO-180,"TEST: 4-week saltwater float soak, no foam (unit 1)",John Ryan Myrdal,Phase 2,Todo,2026-10-30,2026-11-27,SCO-172,Big bin at 35 ppt; weekly weigh-in; Thanksgiving week,Unit 1 soak complete,Linear due
 task,4.50,SCO-181,"TEST: 4-week saltwater float soak, injected foam (unit 2)",John Ryan Myrdal,Phase 2,Todo,2026-11-04,2026-12-02,SCO-179 SCO-168,Same bin routine as unit 1; must end by Dec 4,Foam vs no-foam comparison,Linear due
