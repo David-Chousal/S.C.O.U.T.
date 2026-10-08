@@ -63,6 +63,7 @@
 | A — power | After Stage 2 (~late Oct) | 2× Saft LS33600 D cell with tabs; 2× ideal-diode IC + adapters; PTC fuse; hazmat shipping | $60–100 | SCO-158 |
 | B — audio | ~early Nov | Aquarian hydrophone, 3.5 mm plug-in-power; 3.3 V preamp parts; 16–32 GB industrial microSD | $210–260 | SCO-8, SCO-158 |
 | C — housing | Dec–Jan | 915 MHz SMA whip ≤ 2.15 dBi; conformal coating; desiccant | $35–55 | SCO-158 |
+| From the 2026-10-07 meeting | Next week (budget) | Custom sensor PCB (~$30–40, US fab); second Feather M0 3178 ($34.95) and second shore station 5477 + 3231 ($37.45) for parallel work; marine sealant | ~$110–125 | — |
 | Optional | Before deployment | Spares: Feather M0, DS18B20, Grove sensor, microSD, antenna | ~$70 | — |
 | Optional | Depends on shore site | Adalogger + CR1220 (no WiFi) or 350 mAh LiPo (unreliable power) | $6–16 | SCO-164 |
 

@@ -606,3 +606,76 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Center-only reprint, float-free config, manufacturability review, alternatives analysis | John ([SCO-146](https://linear.app/scout1/issue/SCO-146)–[SCO-149](https://linear.app/scout1/issue/SCO-149)) |
 | Invite David to the weekly advisor meeting | Isabella / John |
 | Reach out to Maryam about LoRa | Isabella |
+
+---
+
+## 2026-10-07 — Joint advisor meeting (GENG + ECEN)
+
+**Attendees:** Isabella Rodriguez (ECEN) · John Ryan Myrdal (GENG) · David Chousal Cantu (CSEN) ·
+Shoba Krishnan (ECEN advisor) · Jes Kuczenski (GENG advisor).
+
+Source: Isabella's Granola note ([meeting a9bbd50d](https://notes.granola.ai/d/a9bbd50d-29f5-4c4c-afee-f1f684ca42af);
+team members need it shared from Granola to open it). The summary does not reliably attribute
+remarks to individual advisors, so advice below is credited to "the advisors" unless clear.
+
+### Decisions
+
+- **Battery-only, no solar.** Dropping solar removes weight, maintenance and fouling risk (birds,
+  barnacles). The standby power budget gives about 1 year + 3 months on one D cell; **two cells**
+  are planned for margin ([ADR-0007](../decisions/0007-primary-cell-power-source.md),
+  [SCO-10](https://linear.app/scout1/issue/SCO-10)).
+- **All sensors run at one voltage** (3.3 V) to keep the circuit simple.
+- **Direction: a custom PCB** that brings every sensor connection to one board, with swappable
+  headers instead of soldered-in sensors. About $30–40, ordered domestically to avoid delays.
+- **Isabella and David do not share hardware.** Order duplicates (a second Feather M0 and a second
+  shore station) so electronics and firmware work run in parallel. Any borrowed M0 must be the
+  exact same version, since pinouts and power can differ.
+- **Shore station is wall-powered** for now; USB-C charging is a stretch goal for off-grid sites
+  (Hawaii, Mexico).
+
+### Reported
+
+- **Design.** The buoy is intentionally oversized; 8–9 iterations exist and a buoyancy calculator
+  is being built to compare them. It will shrink now that solar is gone. Cavities get expanding
+  flotation foam, so flotation needs no extra waterproofing.
+- **Parts.** The Adafruit order (~$140) ships from New York and arrives in 4–7 business days
+  ([SCO-115](https://linear.app/scout1/issue/SCO-115)).
+- **Hydrophone** (~$200) is held until funding is confirmed ([SCO-8](https://linear.app/scout1/issue/SCO-8)).
+- **Deployment.** Shallow reef, Hawaii in spring; a pier near coral where a team member previously
+  worked is a candidate, Mexico is also considered. Permits via DLNR; University of Hawaii and NOAA
+  research-station contacts are being explored ([SCO-100](https://linear.app/scout1/issue/SCO-100),
+  [SCO-164](https://linear.app/scout1/issue/SCO-164)). NOAA contact: Hannah Barkley.
+- **Maintenance target:** leave it deployed for a year; NOAA considers 3-month maintenance excessive.
+
+### Advisor feedback
+
+- **Every sensor gets its own circuit review** — connectors, pull-ups, capacitors, surge
+  protection. Example: the DS18B20 is 1-Wire and needs a pull-up; it does not just plug into the M0.
+  Read each datasheet and app note before assuming plug-and-play.
+- **Test one sensor at a time, then together.** Send each sensor's data to a receiver, average
+  several readings, add a timestamp, then send all sensors as one packet. Sensors often conflict
+  when combined.
+- **Data packet schema** is David's; confirm it is in the shared repo.
+- **Calibration protocol** needed for the first deployment (zero the baseline readings).
+- **Biofouling.** Barnacle growth adds weight and can sink the buoy. Sharkskin-textured surfaces
+  were raised as a biomimicry option; drop a material sample in the ocean now to watch real fouling.
+
+### Lab access
+
+- Rooms **4017, 4018, 4019**. 4019 has lockers for parts; 4018 has larger cabinets (request one
+  for the buoy enclosure). Power supplies and equipment can be checked out.
+- Find a room for the sensor-test tank; the 4th-floor terrace was suggested as an outdoor test area.
+- 3D-printing filament: request department supply and replace what is used.
+
+### Action items
+
+| Item | Owner | Due |
+|---|---|---|
+| List every sensor and draw a block diagram for each (inputs, outputs, protocol, connection to the M0) | Isabella | 2026-10-14 |
+| Read datasheets and app notes for every ordered sensor (pull-ups, connectors, protocol) | Isabella | 2026-10-14 |
+| Draft the sensor test protocol (one at a time, then as a packet, with averaging and timestamps) | Isabella | 2026-10-14 |
+| Research sealed marine battery options used in similar deployments (form factor, connector) | Isabella | 2026-10-14 |
+| Submit the budget, including the PCB (~$30–40), marine sealant and remaining sensors | Team | Next week |
+| Email David to request access to rooms 4017–4019 for Isabella and David, plus a locker | Isabella | — |
+| Complete lab safety training and send confirmation (required for room access) | Isabella | — |
+| Confirm the data packet encoding/decoding schema is in the repo | David | — |
