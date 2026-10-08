@@ -50,6 +50,7 @@ hull profile, add a cap kind to `buoy_stability.py` and re-run the full `run_stu
 | `iterations.json` | Chronological registry of every iteration (STEP files, date, solver cap). The explorer slider follows its order |
 | `iteration_sections.py` | Cuts each registry entry's STEP files into side-view sections for the explorer |
 | `stability-explorer-template.html` | Template the explorer is generated from (the data is embedded at run time) |
+| `studies/mooring-attachment-height/` | Quasi-static heel versus mooring attachment height (2026-10-08): script, graph, CSV, summary. A one-off study, not a regenerated `results/` folder |
 | `results/<date>/` | Dated outputs. **The newest folder is current.** |
 
 ## Presets
@@ -87,3 +88,4 @@ and the v5 wedge-bottom envelope from the mesh matches the 2026-09-25 STEP measu
 |---|---|
 | 2026-10-07 | Explorer rebuilt with an iteration slider: true STEP cross section of all 17 iterations; solver numbers unchanged (`explorer-data.json` now saved so the explorer can be rebuilt without re-solving). The "no caps" what-if is no longer in the explorer UI; its data is still in `housing-sweep.csv`. |
 | 2026-09-29 | First committed version. Consolidates the scratch calculators used for §12, and adds the `current` preset for the v6 assembly (1.5 in caps from STEP, 808 g chassis, steel pipe arm and rail mount). Regression vs §12: mass identical; draft and GM within 0.02 / 0.08 in, because the original first pass rounded the draft to the voxel grid while this version solves it continuously. |
+| 2026-10-08 | Added `studies/mooring-attachment-height/`: heel and knockdown force versus mooring attachment height, using this solver (no solver changes) |
