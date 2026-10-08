@@ -177,9 +177,11 @@ diameter matches the body's own Ø31.496 mm bore surface exactly, so the two now
 line-to-line rather than interfering.
 
 Originally found by diffing the STEP exports rather than reported. **John re-sent this exact
-cap as his current part on 2026-09-08**, so the Ø31.496 mm spigot is confirmed as intended.
-Still open: whether 0.010" diametral clearance is enough for a clean printed fit — verify on
-the next pod print.
+cap as his current part on 2026-09-08**, so the Ø31.496 mm spigot was confirmed as intended.
+
+**Superseded 2026-10-08:** John removed the pilot spigot from the cap in the current design
+(ribbed 6-bolt cap, Ø52 mm dry chamber), so the line-to-line fit question no longer applies.
+[SCO-109](https://linear.app/scout1/issue/SCO-109) was closed as moot.
 
 The **body** was re-exported on the same day and is **geometrically unchanged** from the
 committed [`sensor-housing-body-face-seal.step`](sensor-housing-body-face-seal.step) (identical

@@ -37,7 +37,6 @@ task,3.9,SCO-20 / SCO-67,Drift reference and acoustic tamper detection,David Cho
 task,4.1,SCO-105,Reprint the face-seal clamp and record the failing O-ring tolerance,John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-12,,Printer access,,Linear due
 task,4.2,SCO-106,Verify the AS568-043 ring fit and choose the seal elastomer before ordering,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-09,,Decision: silicone elastomer (2026-09-08),,Linear due
 task,4.3,SCO-108,Submersion re-test the face-seal joint on the clamp and sensor pod,John Ryan Myrdal,Phase 1,In Progress,2026-10-01,2026-10-16,SCO-105 SCO-106,"24 hr soaks; RR-14 result 10-07; RR-15 (6 bolts) after; Coupon re-tests (RR-14, RR-15) run now; the clamp re-test follows SCO-105 and SCO-106",Face seal passes a 24 hr soak,estimated
-task,4.4,SCO-109,Confirm the sensor pod sealed-cap spigot change was deliberate,John Ryan Myrdal,Phase 1,Todo,2026-10-07,2026-10-08,,,,Linear due
 task,4.5,SCO-112,Grow the sensor pod dry chamber to 52 mm and re-export the penetration and flood chamber,John Ryan Myrdal,Phase 1,In Progress,2026-09-14,2026-10-13,,Epoxy-potted lead penetration,,Linear due
 task,4.6,SCO-91,Validate the remodelled turbidity sensor housing face seal,John Ryan Myrdal,Phase 1,Blocked,2026-10-20,2026-10-23,SCO-106 SCO-108,,,Linear due
 task,4.7,SCO-141,Start saltwater-bath leak tests on printed test capsules,John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-15,,1 week soak at about 35 ppt,,Linear due
