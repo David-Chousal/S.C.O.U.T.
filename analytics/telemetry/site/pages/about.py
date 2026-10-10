@@ -84,7 +84,7 @@ def _overview() -> str:
             ("First mission", "Coral-reef health"),
             ("Target cost", "Under $5,000"),
             ("Autonomy", "1+ year unattended"),
-            ("Power", "Solar"),
+            ("Power", "Primary lithium cell (under review)"),
             ("Deployment depth", "2–8 m"),
             ("Shore link", "915 MHz LoRa · ~2 km"),
             ("First site", "Hawaii · Spring 2027"),

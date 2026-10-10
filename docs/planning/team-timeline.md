@@ -76,6 +76,7 @@ every member completes before the next phase begins.
 
 ### ECE — Hardware Lead
 
+- **Update 2026-10-06:** bench parts ordered (Adafruit + Mouser, incl. the shore station). Phase 1 ECE work is now Stages 1–4 of the [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md): first readings, power measurement, sensor switching, buoy → shore radio link. Turbidity is the 3.3 V Grove 101020752 (not SEN0189); the ping-pong test uses the ESP32-S3 shore station, not a second M0
 - Week 1: Wire DS18B20 temp sensor → confirm °C readings in Serial Monitor
 - Week 1: Wire/enable the PCF8523 RTC (on the Adalogger) → confirm time read and alarm interrupt fires
 - Week 2: Wire MicroSD card → confirm CSV file creates, appends, closes cleanly
@@ -126,7 +127,7 @@ every member completes before the next phase begins.
 - Test LoRa + SD simultaneously (they share MOSI/MISO/SCK — one CS HIGH at all times)
 - Wire P-channel MOSFET sensor power gate (GPIO 26 controls sensor VCC rail)
 - Wire battery voltage divider (100kΩ+100kΩ) to GPIO 35 ADC for monitoring
-- Integrate MPPT charge controller + LiFePO₄ battery + buck converter on bench
+- ~~Integrate MPPT charge controller + LiFePO₄ battery + buck converter on bench~~ — **replaced 2026-10-06:** Stages 5–7 of the [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md): full standby loop for 24 h, then two Li-SOCl₂ D cells with charge protection (7-day battery run), then the hydrophone ([ADR-0007](../decisions/0007-primary-cell-power-source.md))
 - Measure actual sleep current at battery terminals with multimeter
 - Run 48-hour continuous bench test — verify no crashes, SD fills correctly
 - Document all power measurements: sleep current, active current, TX current peak

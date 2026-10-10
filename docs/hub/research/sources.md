@@ -218,6 +218,27 @@ Also re-used in this work, already registered above: `usace-cem` (linear wave th
 slope, orbital motion), `dnv-rp-c205` (added mass for the heave period), and `roark-8e` (flat-plate
 floor/lid and external-pressure cylinder checks for the flange-style housing).
 
+## Power system (2026-10-05)
+
+Sources behind the [Power Budget Update — 2026-10-05](../../engineering/power-budget-update-2026-10-05.md)
+and [ADR-0007](../../decisions/0007-primary-cell-power-source.md). Rows marked ❓ are still to
+pull and check; the update flags every number that depends on them as an estimate.
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `ds18b20-datasheet` | Maxim Integrated. *DS18B20 Programmable Resolution 1-Wire Digital Thermometer*, rev 042208. [pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf) | 🔓 | — | Supply range, active/standby current, 750 ms conversion (p. 19–20) |
+| `adafruit-adalogger-2922` | Adafruit. "Adalogger FeatherWing — RTC + SD Add-on" (PID 2922), schematic | 🔓 | — | SD card VDD tied straight to 3.3 V; PCF8523 RTC + CR1220 |
+| `adafruit-tpl5111-3435` | Adafruit. "TPL5111 Low Power Timer Breakout" (PID 3435), product page + guide | ❓ | — | Proposed power-gating of the Feather EN pin; floor current to verify |
+| `ti-tps61023` | Texas Instruments. *TPS61023* boost converter datasheet | ❓ | — | Boost efficiency (85% assumed) and EN/disconnect behaviour |
+| `ti-slva079` | Texas Instruments. SLVA079, linear regulator application note | ❓ | — | η = Vout/Vin for a linear regulator |
+| `saft-ls33600` | Saft. *LS 33600* Li-SOCl₂ D-cell datasheet; retail ~$22 (TME) to $35 (BatteryGuy) per cell, 2026-10-06 | ❓ | — | Capacity (≈ 17 Ah assumed), pulse limits, derating, passivation |
+| `ul-1642` | UL 1642, Standard for Lithium Batteries | 🔒 | — | Redundant protection against charging a primary lithium cell (wording to verify) |
+| `adafruit-feather-m0-rfm9x-schematic` | Adafruit. *Feather M0 RFMxx* schematic, rev B (2015) | 🔓 | — | AP2112K-3.3 linear regulator from VBAT, EN 100k pull-up (36 µA if held low), VBAT 100k/100k divider on D9/A7, MCP73831 charger at 100 mA, radio on D3/D4/D8 — [Electronics Build and Test Plan](../../engineering/electronics-build-and-test-plan.md) |
+| `seeed-grove-turbidity` | Seeed Studio. "Grove - Turbidity Sensor Meter for Arduino V1.0" (101020752). [wiki](https://wiki.seeedstudio.com/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/) | 🔓 | — | 3.3 V/5 V supply; output decreases as turbidity rises. Current draw and 3.3 V output range not specified |
+| `dmg2305ux-datasheet` | Diodes Inc. *DMG2305UX* P-channel MOSFET datasheet. [Mouser](https://www.mouser.co.uk/ProductDetail/621-DMG2305UX-7) | 🔓 | — | 52 mΩ @ −4.5 V, 100 mΩ @ −2.5 V, V<sub>GS(th)</sub> 0.9 V — switches fully from a 3.3 V pin |
+| `ti-pcm1808` | Texas Instruments. *PCM1808* audio ADC datasheet (SLES177). [pdf](https://www.ti.com/lit/gpn/pcm1808) | 🔓 | — | Analog supply 4.5–5.5 V, why it is not the default 3.3 V audio path |
+| `sandia-sand87-7023` | Sandia National Laboratories. SAND87-7023, *Stand-Alone Photovoltaic Systems: A Handbook of Recommended Design Practices* | ❓ | — | PV sizing and days-of-autonomy formulas (solar comparison only) |
+
 ## Market & commercial landscape
 
 Used 2026-08-24 for the [Market Analysis](../../research/market-analysis.md). These are budget

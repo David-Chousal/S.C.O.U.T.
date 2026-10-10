@@ -29,10 +29,13 @@ Also, the chlorophyll sensor you’re thinking of is almost certainly a **fluoro
 | DS18B20 Waterproof Temp Probe | Coral bleaching, thermal stress | $7 | 1-Wire | ~1.5 mA active | [https://www.adafruit.com/product/381?utm_source=chatgpt.com](https://www.adafruit.com/product/381?utm_source=chatgpt.com) |
 | DFRobot SEN0189 Turbidity | Sediment, runoff, water clarity | $14.90 | Analog | ~40 mA | [https://www.dfrobot.com/product-1394.html?utm_source=chatgpt.com](https://www.dfrobot.com/product-1394.html?utm_source=chatgpt.com) |
 | Hydrophone (Aquarian H2a-XLR) | Fish populations, reef soundscape | ~$180 - $229 | Analog audio | Low while recording | [https://www.aquarianaudio.com/h2d-hydrophone.html](https://www.aquarianaudio.com/h2d-hydrophone.html) |
+| Seeed Grove Turbidity 101020752 (**working choice 2026-10-06**) | Same purpose as SEN0189; runs on 3.3 V, no boost or divider | $20.80 | Analog | not specified (measure in Stage 2) | [Seeed wiki](https://wiki.seeedstudio.com/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/) |
 
 #### Recommendation:
 
 **Temperature + Turbidity + Hydrophone = S.C.O.U.T. V1**
+
+> **2026-10-06:** the prototype turbidity sensor is the 3.3 V Seeed Grove 101020752 (output falls as turbidity rises, the same direction as the SEN0189), and the hydrophone should be the 3.5 mm plug-in-power version rather than the XLR (which needs 12–48 V phantom power). See the [Electronics Build and Test Plan](electronics-build-and-test-plan.md).
 
 ## MEDIUM PRIORITY (V1.5)
 

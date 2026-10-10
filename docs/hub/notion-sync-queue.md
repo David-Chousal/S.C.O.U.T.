@@ -7,9 +7,9 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-24 — seven entries pending**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-06 — nine entries pending**
 > (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
-> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting).
+> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting, 17 the 2026-10-05 power budget, 18 the electronics build plan).
 >
 > ⛔ **Notion is currently write-blocked — the workspace has used all of its free-plan blocks.**
 > Confirmed 2026-09-24: every write is refused, including an in-place edit of an existing table
@@ -46,6 +46,32 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > to the wrong workspace and could only queue rather than push. **If a session can reach the
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
+
+### 18 · Electronics Build and Test Plan + 2026-10-06 decisions · queued 2026-10-06
+
+- **Notion pages** — Engineering → new page *Electronics Build and Test Plan*; Planning → new page *ECE Work Plan 2026–27*; Hub → *Decision
+  Log*, *Canonical Facts*, *Project Status*; Planning → *Team Timeline* (Phase 1/2 ECE notes);
+  Engineering → *Sensor Selection*; ADRs → *ADR-0007* (update section).
+- **Source** — [`../engineering/electronics-build-and-test-plan.md`](../engineering/electronics-build-and-test-plan.md),
+  [`decision-log.md`](decision-log.md), [`facts.md`](facts.md), [`status.md`](status.md),
+  [`../planning/team-timeline.md`](../planning/team-timeline.md).
+- **What changed** — two D cells + standby (no TPL5111), Grove 3.3 V turbidity, all-3.3 V
+  prototype, hydrophone 3.5 mm direction, bench parts ordered. Still write-blocked (free-block
+  limit), same as entries 16–17.
+
+### 17 · Power Budget Update 2026-10-05 + ADR-0007 · queued 2026-10-05
+
+- **Notion pages** — Engineering → new page *Power Budget Update — 2026-10-05 (Draft)*; ADRs →
+  new *ADR-0007*; Hub → *Decision Log*, *Canonical Facts*, *Project Status*.
+- **Source** — [`../engineering/power-budget-update-2026-10-05.md`](../engineering/power-budget-update-2026-10-05.md),
+  [`../decisions/0007-primary-cell-power-source.md`](../decisions/0007-primary-cell-power-source.md),
+  [`decision-log.md`](decision-log.md), [`facts.md`](facts.md), [`status.md`](status.md).
+- **What changed** — working (not final) power decision: a 3.6 V Li-SOCl₂ primary D cell with no
+  solar, TPL5111 power-gating, fallback two D cells; bench parts ordered 2026-10-05 without the
+  hydrophone, solar or LiPo. A direct push was attempted on 2026-10-05 and refused with the same
+  free-block limit as entry 16.
+- **How to clear it** — mirror the two new pages with a summary callout at the top, then regenerate
+  the Hub pages per entry 16.
 
 ### 16 · 2026-09-24 SCOUT Weekly · queued 2026-09-24
 
