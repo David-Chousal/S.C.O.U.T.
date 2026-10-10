@@ -680,3 +680,66 @@ remarks to individual advisors, so advice below is credited to "the advisors" un
 | Email David (lab staff, **not** David Chousal Cantu) to request access to rooms 4017–4019 and a parts locker | Isabella | — |
 | Complete lab safety training and send confirmation (required for room access) | Isabella | — |
 | Confirm the data packet encoding/decoding schema is in the repo | David | — |
+
+---
+
+## 2026-10-09 — SCOUT Weekly (with Navid, on Zoom)
+
+**Attendees:** Isabella Rodriguez (ECEN) · John Ryan Myrdal (GENG) · Navid Shaghaghi (advisor).
+David was absent. Isabella left at 6:30 PM.
+
+Source: two Granola notes from the same call
+([weekly](https://notes.granola.ai/d/7900375a-9907-47a9-bcac-69e1ceb12675),
+[Zoom](https://notes.granola.ai/d/b00fc3ad-8038-4fb0-a9da-403f1924ff3b)). Much of the call
+was spent sorting out two different Zoom links.
+
+### Decisions
+
+- **Dr. Shoba Krishnan is now the ECEN advisor, replacing Dr. Hoeseok Yang.** She is hands-on:
+  she gave Isabella assignments due Wednesday 2026-10-14 and offered lab access.
+- **The budget request asks high.** Each student gets $500 by default. The team will ask for
+  about **$3,500** and expects to settle near $2,500. The draft includes spares (e.g. 5 Feather
+  M0s, 6 temperature probes) and is about $3,200, because the club may receive only ~30% of
+  what it asks. One team member is the finance contact for the submission and for Jes.
+
+### Reported
+
+- **Parts.** Most are ordered; the turbidity sensor is now the 3.3 V version, matching the
+  other sensors. Still missing: batteries and the hydrophone. Lab work starts the weekend after
+  the parts arrive ([SCO-115](https://linear.app/scout1/issue/SCO-115),
+  [Purchase Log](purchase-log.md)).
+- **Funding** is expected in **November**, earlier than the usual January for most groups. Jes
+  is helping to speed things up and already pushed through a $40 filament order.
+- **Hydrophone** purchase waits for funding ([SCO-8](https://linear.app/scout1/issue/SCO-8)).
+- **PCB** is a longer-term goal; Shoba sees it as inevitable once the sensors are proven.
+- **Lab access** is confirmed through Shoba; lockers and roof/terrace space are available.
+- **Mechanical.** The electronics housing is complete and waterproof. The turbidity sensor
+  housing still leaks at the gasket (version 12); a fix is being tested this weekend.
+- **Hardware timeline.** Breadboard prototype around Thanksgiving, then a full team lab review.
+- **Granola sharing.** Wednesday's notes did not show up for the team; the transcript was
+  shared as a document instead.
+
+### Flagged — check before relying on it
+
+- **"Still missing solar panels"** in the Granola note conflicts with the battery-only decision
+  (2026-10-07, [ADR-0007](../decisions/0007-primary-cell-power-source.md)). Treated as a
+  transcription error unless someone confirms solar is back.
+- **Hydrophone voltage.** The note recommends regulating *down* from a larger battery rather than
+  boosting. The current plan is the 3.5 mm plug-in-power hydrophone on the 3.3 V rail
+  ([SCO-8](https://linear.app/scout1/issue/SCO-8)); settle this with Shoba.
+- **Dates.** The note says parts arrive "Thursday" (Adafruit's estimate is 2026-10-13 to
+  2026-10-16) and the budget is due "Monday the 18th", but 2026-10-18 is a Sunday. Confirm the
+  real due date.
+- **Winter deadline.** It is unclear whether Shoba knows the MVP deadline (target 2026-12-04,
+  hard limit 2026-12-11).
+
+### Action items
+
+| Item | Owner | Due |
+|---|---|---|
+| Finish Shoba's assignments (sensor block diagrams, datasheets, test protocol, marine batteries) | Isabella | 2026-10-14 |
+| Tuesday office hours with Shoba: agree a step-by-step timeline against the winter deadline | Isabella | 2026-10-13 |
+| Add component spares to the budget spreadsheet before submission | Isabella | Before the budget deadline |
+| Send the preliminary budget to the team for review | Finance contact | Before the budget deadline |
+| Fix the turbidity sensor housing gasket leak; ask Isabella if still leaking | John Ryan | This weekend |
+| Catch David up on the meeting | Isabella | — |

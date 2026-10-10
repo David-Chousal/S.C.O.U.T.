@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-07.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-09.**
 
 ---
 
