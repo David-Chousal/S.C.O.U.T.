@@ -34,7 +34,7 @@ The drawing set has eight sheets:
 | 2 | Controller stack-up and battery pack |
 | 3 | Pin assignment and cable schedule |
 | 4 | Material takeoff with section subtotals and totals |
-| 5 | Equipment takeoff |
+| 5 | Equipment takeoff: everything borrowed from the lab, $0 expected spend (fallback cost shown only in case an item is missing) |
 | 6 | General notes and sources checked |
 | 7 | Every connection: parts, values, wires, how to join them, and the build order |
 
