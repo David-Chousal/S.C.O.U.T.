@@ -47,6 +47,18 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
 
+### 19 · Electronics Drawing Set + hydrophone decision + purchase log · queued 2026-10-12
+
+- **Notion pages** — Engineering → new page *Electronics Drawing Set and Sensor Interface Review*
+  (attach the two PDFs); Planning → *Purchase Log*; Hub → *Decision Log*, *Canonical Facts*,
+  *Project Status*; Research → *Sources* (new Electronics interfaces section).
+- **Source** — [`../engineering/electronics-drawing-set.md`](../engineering/electronics-drawing-set.md),
+  [`../planning/purchase-log.md`](../planning/purchase-log.md), [`decision-log.md`](decision-log.md),
+  [`facts.md`](facts.md), [`status.md`](status.md), [`research/sources.md`](research/sources.md).
+- **What changed** — Aquarian H2dM with a 6 m cable decided; A3 audio switch and A2 preamp output;
+  sensor gates LOW = on (SCO-186); takeoff totals. Still write-blocked (free-block limit), same as
+  entries 16–18.
+
 ### 18 · Electronics Build and Test Plan + 2026-10-06 decisions · queued 2026-10-06
 
 - **Notion pages** — Engineering → new page *Electronics Build and Test Plan*; Planning → new page *ECE Work Plan 2026–27*; Hub → *Decision

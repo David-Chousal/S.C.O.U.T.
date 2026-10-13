@@ -6,6 +6,8 @@
 > Ryan) until senior-design funding is available. Update this page in the same PR as any new order.
 >
 > Owner: Isabella Rodriguez (ECEN). Why each part exists: [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md).
+> The full material takeoff (every part, resistor and capacitor, with section totals) is Sheet 4 of
+> the [Electronics Drawing Set](../engineering/electronics-drawing-set.md).
 
 ---
 
@@ -15,7 +17,8 @@
 |---|---|
 | Spent so far | **$142.58** |
 | Ordered but not yet charged / logged | Mouser (~$28 + shipping) |
-| Still to buy, electronics (estimate) | ≈ $305–415 |
+| Still to buy, electronics (estimate, 2026-10-12) | ≈ $331–425 planned orders (hydrophone included) + up to ≈ $45 of small parts if the lab doesn't have them |
+| Prototype electronics total, required (spent + Mouser + planned) | ≈ $502–652 |
 | Per person so far (÷ 3) | **$47.53** |
 
 ## Orders
@@ -53,15 +56,16 @@
 | 1 | 713-101020752 | Seeed Grove Turbidity Sensor (3.3 V) | $20.80 | Turbidity |
 | 1 | 713-110990210 | Grove to male jumper cable (5-pack) | $3.19 | Grove → breadboard |
 | 1 | 658-CR1220 | Panasonic CR1220 coin cell | $1.01 | Adalogger RTC backup |
-| 2 | 621-DMG2305UX-7 | P-MOSFET, SOT-23 | ~$0.80 | Turbidity power switch |
-| 2 | SparkFun BOB-00717 | SOT-23 to DIP adapter (SparkFun if not on Mouser) | $2.50 | Breadboard the MOSFET |
+| 2 | 621-DMG2305UX-7 | P-MOSFET, SOT-23 | ~$0.80 | Q1 turbidity and Q2 hydrophone power switches (gate LOW = on). Optional: 2 spares, +$0.80 |
+| 2 | SparkFun BOB-00717 | SOT-23 to DIP adapter (SparkFun if not on Mouser) | $2.50 | Breadboard / perfboard the two MOSFETs |
 
 ## Still to buy
 
 | Order | When | Items | ≈ Cost | Issue |
 |---|---|---|---|---|
-| A — power | After Stage 2 (~late Oct) | 2× Saft LS33600 D cell with tabs; 2× ideal-diode IC + adapters; PTC fuse; hazmat shipping | $60–100 | SCO-158 |
-| B — audio | ~early Nov | Aquarian hydrophone, 3.5 mm plug-in-power; 3.3 V preamp parts; 16–32 GB industrial microSD | $210–260 | SCO-8, SCO-158 |
+| A — power | After Stage 2 (~late Oct) | 2× Saft LS33600 D cell with tabs; 2× TI LM66100 ideal diode + 2× SC-70-6 to DIP adapters; PTC fuse 0.5 A hold (e.g. Bourns MF-R050, to confirm); hazmat shipping | $60–115 | SCO-158 |
+| B — audio | ~early Nov (funding) | **Aquarian H2dM, 6 m cable** ($229 base + cable option, decided 2026-10-12); Adafruit 1699 3.5 mm jack ($0.95); MCP6002-I/P op-amp + DIP-8 socket; 16–32 GB industrial microSD | $243–270 | SCO-8, SCO-158 |
+| Lab stock (no cost expected) | Before Stage 3 | Resistors: 100 kΩ ×3, 10 kΩ ×3, 1 kΩ ×2, 1.1 kΩ, 1.5 kΩ, 20 kΩ, 100 Ω. Capacitors: 100 µF 10 V, 10 µF ×5, 1 µF ceramic, 0.1 µF ×2, 10 nF. Also: 3-pin screw terminal, 22 AWG solid + stranded wire, male header strip, cable glands G1–G3. The 4.7 kΩ comes with the DS18B20 | $0–45 if bought | — |
 | C — housing | Dec–Jan | 915 MHz SMA whip ≤ 2.15 dBi; conformal coating; desiccant | $35–55 | SCO-158 |
 | From the 2026-10-07 meeting | Next week (budget) | Custom sensor PCB (~$30–40, US fab); second Feather M0 3178 ($34.95) and second shore station 5477 + 3231 ($37.45) for parallel work; marine sealant | ~$110–125 | — |
 | Optional | Before deployment | Spares: Feather M0, DS18B20, Grove sensor, microSD, antenna | ~$70 | — |
