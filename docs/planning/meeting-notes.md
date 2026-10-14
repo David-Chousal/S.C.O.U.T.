@@ -606,3 +606,53 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Center-only reprint, float-free config, manufacturability review, alternatives analysis | John ([SCO-146](https://linear.app/scout1/issue/SCO-146)–[SCO-149](https://linear.app/scout1/issue/SCO-149)) |
 | Invite David to the weekly advisor meeting | Isabella / John |
 | Reach out to Maryam about LoRa | Isabella |
+
+---
+
+## 2026-10-14 — Advisor meeting (GENG + ECEN)
+
+**Attendees:** John Myrdal, Isabella Rodriguez, Shoba Krishnan, Jes Kuczenski.
+
+### Decisions and direction
+
+- **Integration documents.** Advisors recommend each person document their component as a black
+  box: what it needs from others, what it provides, in shared units (voltages, pin outs, specs).
+  Specs must be in writing, not left to conversation
+  ([SCO-188](https://linear.app/scout1/issue/SCO-188)).
+- **System block diagram.** The only version dates from the initial package. It should show every
+  inter-block interface and be refreshed regularly; it also feeds the thesis technical chapter
+  ([SCO-187](https://linear.app/scout1/issue/SCO-187)).
+- **Documentation depth.** Data sheets sit about 15 folder levels deep and should be easier to
+  reach ([SCO-188](https://linear.app/scout1/issue/SCO-188)).
+- **Buoy redesign.** With solar dropped, the buoy becomes smaller: one print with separate
+  cavities, cutting several hundred dollars from the budget. PETG order incoming; a packaging
+  harness follows once dimensions are final ([SCO-190](https://linear.app/scout1/issue/SCO-190)).
+- **Turbidity sensor.** The team agreed to order it, plus extras
+  ([SCO-189](https://linear.app/scout1/issue/SCO-189)).
+- **Ballast material (decided the same day, outside the meeting).** Not lead; material open
+  ([SCO-136](https://linear.app/scout1/issue/SCO-136)).
+- **Test site.** Advisors prefer a site reachable in about two hours (Monterey Bay Aquarium reef
+  tank, via an advisor's contact) over Hawaii for a first deployment. Hawaii stays the live target
+  or contingency ([SCO-191](https://linear.app/scout1/issue/SCO-191)).
+
+### Discussion
+
+- **Permitting.** Anchored vs tethered is the key ambiguity. Tethering to a boat or a NOAA buoy
+  is much easier, but a three-month window may count as the more permanent tier. A NOAA buoy
+  contact was consulted. Emails start after the meeting
+  ([SCO-185](https://linear.app/scout1/issue/SCO-185)).
+- **Firmware.** David is pushing code often against the shared pin outs. Advisors urged meeting
+  in person occasionally.
+- **Waterproofing tests.** Leaks continue but the data is useful; electronics integration should
+  improve outcomes.
+- **Lab.** Weekend and Epic Lab access already exist. A possible soldering session Sunday.
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Update and share the system block diagram | Unassigned ([SCO-187](https://linear.app/scout1/issue/SCO-187)) |
+| Email the lab request: a locker and workspace in the makerspace basin, copy Shoba, mention weekend access | John |
+| Email the permitting options list to the team | John ([SCO-185](https://linear.app/scout1/issue/SCO-185)) |
+| Order the turbidity sensor | Unassigned ([SCO-189](https://linear.app/scout1/issue/SCO-189)) |
+| Comment on the Week 3 report that time estimates were omitted and will appear in Week 4 | John |
