@@ -652,10 +652,10 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Item | Owner |
 |---|---|
 | Update and share the system block diagram | Unassigned ([SCO-187](https://linear.app/scout1/issue/SCO-187)) |
-| Email the lab request: a locker and workspace in the makerspace basin, copy Shoba, mention weekend access | John |
+| Email the lab request: a locker and workspace in the makerspace basin, copy Shoba, mention weekend access | John ([SCO-192](https://linear.app/scout1/issue/SCO-192)) |
 | Email the permitting options list to the team | John ([SCO-185](https://linear.app/scout1/issue/SCO-185)) |
 | Order the turbidity sensor | Unassigned ([SCO-189](https://linear.app/scout1/issue/SCO-189)) |
-| Comment on the Week 3 report that time estimates were omitted and will appear in Week 4 | John |
+| Comment on the Week 3 report that time estimates were omitted and will appear in Week 4 | John ([SCO-193](https://linear.app/scout1/issue/SCO-193)) |
 | Possible soldering work session this Sunday (advisor has soldering stations; confirm who can attend) | Isabella / John |
 | Shoba to reply to the lab request and point to the larger cabinet for the buoy enclosure | Shoba |
 | Resolve the decision-log merge with PR #170 (keep both sides) | John / Claude |
