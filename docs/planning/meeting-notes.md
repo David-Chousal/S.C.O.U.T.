@@ -656,3 +656,6 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Email the permitting options list to the team | John ([SCO-185](https://linear.app/scout1/issue/SCO-185)) |
 | Order the turbidity sensor | Unassigned ([SCO-189](https://linear.app/scout1/issue/SCO-189)) |
 | Comment on the Week 3 report that time estimates were omitted and will appear in Week 4 | John |
+| Possible soldering work session this Sunday (advisor has soldering stations; confirm who can attend) | Isabella / John |
+| Shoba to reply to the lab request and point to the larger cabinet for the buoy enclosure | Shoba |
+| Resolve the decision-log merge with PR #170 (keep both sides) | John / Claude |
