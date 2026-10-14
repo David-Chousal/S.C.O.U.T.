@@ -3,7 +3,7 @@
 Hull = outer envelope of printed-float-v8.step as a body of revolution (chambers sealed and dry),
 plus the housing flange above the float top. Masses: float 1154 g (slicer, 5 walls, 5 top/bottom,
 10% honeycomb); electronics from the repo budget, stacked from the housing bottom upward.
-Run:  python run_printed_float.py   (needs gmsh + numpy, see ../../requirements.txt)
+Run:  python run_printed_float.py   (needs gmsh + numpy, see ../requirements.txt)
 """
 import sys
 from pathlib import Path
@@ -12,7 +12,7 @@ import gmsh
 import numpy as np
 
 HERE = Path(__file__).parent
-sys.path.insert(0, str(HERE.parent.parent))
+sys.path.insert(0, str(HERE.parent))
 import buoy_stability as bs                       # noqa: E402
 
 IN = bs.IN

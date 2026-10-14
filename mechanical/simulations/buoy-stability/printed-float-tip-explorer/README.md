@@ -1,4 +1,4 @@
-# Printed-float buoy: stability check, 2026-10-14
+# Printed-float tip explorer and stability study (2026-10-14)
 
 > **Summary** — First stability and freeboard run for the battery-only redesign
 > ([SCO-190](https://linear.app/scout1/issue/SCO-190)): a single printed float around the existing electronics
@@ -12,7 +12,7 @@ floor (25 mm above the keel) with its lid flange above the float top.
 **Float mass:** 1154 g (Bambu, 5 wall loops, 5 top/bottom layers, 10% honeycomb, double-layer infill lines).
 **Run:** `python run_printed_float.py` (uses the repo calculator's solver; needs gmsh and numpy).
 
-**Interactive:** open [`printed-float-explorer.html`](printed-float-explorer.html) in a browser. Drag the heel slider (or press Play) to tilt the buoy and watch G, B and the righting arm; mass sliders recompute it. Figures: [`cross-section.png`](cross-section.png), [`gz-curve.png`](gz-curve.png). Rebuild with `python make_explorer.py`.
+**Interactive:** open [`printed-float-tip-explorer.html`](printed-float-tip-explorer.html) in a browser. Drag the heel slider (or press Play) to tilt the buoy and watch G, B and the righting arm; mass sliders recompute it. Figures: [`cross-section.png`](cross-section.png), [`gz-curve.png`](gz-curve.png). Rebuild with `python make_explorer.py`.
 
 ## Results (pod 4 in below the keel, no ballast)
 
