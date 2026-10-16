@@ -1,0 +1,861 @@
+<meta charset="utf-8">
+<title>S.C.O.U.T. Electronics Drawing Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a drafting sheet set — bordered sheets with zone ticks, a title block, drawings in scrollable frames, schedules as ruled tables. */
+:root {
+  --paper: #fbfbf8;
+  --sheet: #ffffff;
+  --ink: #18202b;
+  --muted: #5b6573;
+  --rule: #c9cdd3;
+  --faint: #eef0f2;
+  --accent: #1f5fa8;          /* drafting blue: borders, emphasis */
+  --pwr: #c2410c;             /* 3.3 V rail */
+  --bat: #9a3412;             /* battery */
+  --gnd: #4b5563;
+  --onew: #0f766e;            /* 1-Wire */
+  --ana: #15803d;             /* analog */
+  --i2c: #1d4ed8;
+  --spi: #b45309;
+  --ctl: #7c3aed;             /* GPIO control */
+  --rf: #be185d;
+  --tint: rgba(31, 95, 168, 0.07);
+  --display: "Archivo Narrow", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f141b; --sheet: #151b24; --ink: #e6e9ee; --muted: #9aa4b2; --rule: #2e3846; --faint: #1c2430;
+    --accent: #6ea8ff; --pwr: #fb923c; --bat: #f97316; --gnd: #9ca3af; --onew: #2dd4bf; --ana: #4ade80;
+    --i2c: #7aa2ff; --spi: #fbbf24; --ctl: #b794f6; --rf: #f472b6; --tint: rgba(110, 168, 255, 0.09); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f141b; --sheet: #151b24; --ink: #e6e9ee; --muted: #9aa4b2; --rule: #2e3846; --faint: #1c2430;
+  --accent: #6ea8ff; --pwr: #fb923c; --bat: #f97316; --gnd: #9ca3af; --onew: #2dd4bf; --ana: #4ade80;
+  --i2c: #7aa2ff; --spi: #fbbf24; --ctl: #b794f6; --rf: #f472b6; --tint: rgba(110, 168, 255, 0.09); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.5; margin: 0; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 48px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); letter-spacing: 0.01em; text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; font-weight: 700; }
+h2 { font-size: 21px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 600; }
+p { margin: 0; max-width: 78ch; }
+.mono { font-family: var(--mono); }
+.eyebrow { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; color: var(--accent); font-weight: 600; }
+
+/* Cover block */
+.cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 420px); gap: 24px; align-items: start; }
+.cover .lead { display: grid; gap: 10px; }
+.titleblock { border: 2px solid var(--ink); background: var(--sheet); font-size: 12.5px; display: grid; grid-template-columns: 1fr 1fr; }
+.titleblock div { padding: 6px 10px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); min-width: 0; }
+.titleblock div:nth-child(2n) { border-right: none; }
+.titleblock .full { grid-column: 1 / -1; border-right: none; }
+.titleblock b { display: block; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.08em; font-size: 10.5px; color: var(--muted); font-weight: 600; }
+.titleblock .big { font-family: var(--display); font-size: 17px; font-weight: 700; }
+.draft { display: inline-block; border: 1.5px solid var(--pwr); color: var(--pwr); font-family: var(--display); font-weight: 700; letter-spacing: 0.1em; padding: 1px 8px; font-size: 12px; }
+
+/* Sheets */
+.sheet { background: var(--sheet); border: 2px solid var(--ink); position: relative; padding: 18px 18px 20px; display: grid; gap: 14px; }
+.sheet::before { content: ""; position: absolute; inset: 6px; border: 1px solid var(--rule); pointer-events: none; }
+.sheethead { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; justify-content: space-between; position: relative; }
+.sheethead .no { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.frame { overflow-x: auto; border: 1px solid var(--rule); background: var(--sheet); position: relative; }
+.frame svg { display: block; min-width: 1100px; width: 100%; height: auto; }
+.frame.narrow svg { min-width: 900px; }
+
+/* SVG drafting styles */
+svg text { font-family: var(--body); fill: var(--ink); }
+svg .t { font-size: 13px; font-weight: 600; }
+svg .s { font-size: 11.5px; fill: var(--muted); }
+svg .m { font-family: var(--mono); font-size: 11.5px; fill: var(--ink); }
+svg .h { font-family: var(--display); font-size: 14px; font-weight: 700; letter-spacing: 0.06em; fill: var(--accent); }
+svg .z { font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; fill: var(--muted); }
+svg .bx { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.3; }
+svg .bxa { fill: var(--tint); stroke: var(--accent); stroke-width: 1.6; }
+svg .grp { fill: none; stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 7 5; }
+svg .hous { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-dasharray: 12 6; }
+svg .w { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+svg .pwr { stroke: var(--pwr); } svg .bat { stroke: var(--bat); } svg .gnd { stroke: var(--gnd); }
+svg .onew { stroke: var(--onew); } svg .ana { stroke: var(--ana); } svg .i2c { stroke: var(--i2c); }
+svg .spi { stroke: var(--spi); } svg .ctl { stroke: var(--ctl); } svg .rf { stroke: var(--rf); }
+svg .link { fill: none; stroke: var(--rf); stroke-width: 1.8; stroke-dasharray: 3 6; }
+svg .dot { fill: var(--ink); }
+svg .gland { fill: var(--faint); stroke: var(--ink); stroke-width: 1.3; }
+svg .pin { fill: var(--sheet); stroke: var(--ink); stroke-width: 1; }
+svg .board { fill: var(--faint); stroke: var(--ink); stroke-width: 1.3; }
+svg .hdr { fill: var(--ink); }
+svg .swatch { stroke-width: 4; }
+
+/* Tables */
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 720px; }
+th, td { border-bottom: 1px solid var(--rule); padding: 6px 9px; text-align: left; vertical-align: top; }
+th { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11.5px; color: var(--muted); background: var(--faint); position: sticky; top: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; font-family: var(--mono); font-size: 12.5px; }
+tr.sec td { background: var(--tint); font-family: var(--display); font-weight: 700; letter-spacing: 0.04em; font-size: 14px; color: var(--accent); }
+tr.sub td { font-weight: 600; border-bottom: 1.5px solid var(--ink); }
+tr.grand td { font-family: var(--display); font-weight: 700; font-size: 15px; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.status { display: inline-block; font-family: var(--display); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 6px; border: 1px solid currentColor; white-space: nowrap; }
+.st-ordered { color: var(--ana); } .st-mouser { color: var(--i2c); } .st-later { color: var(--spi); } .st-lab { color: var(--muted); } .st-opt { color: var(--ctl); } .st-buy { color: var(--pwr); }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px 24px; }
+.cols > * { min-width: 0; }
+ol.notes { margin: 0; padding-left: 22px; display: grid; gap: 6px; max-width: 95ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 3px solid; }
+.small { font-size: 12.5px; color: var(--muted); }
+.check { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.check li::before { content: "\2713  "; color: var(--ana); font-weight: 700; }
+a { color: var(--accent); }
+@media (max-width: 720px) { .cover { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <div class="lead">
+    <div class="eyebrow">S.C.O.U.T. · Electrical · Drawing set</div>
+    <h1>Electronics system: block diagram, stack-up, wiring and takeoffs</h1>
+    <p>Everything that goes inside and around the buoy's electronics housing, how each part connects to the Feather M0, which cable or connector each link uses, and what is still to buy. Prototype design as of 2026-10-12. Values marked † are proposed and get confirmed on the bench.</p>
+    <div><span class="draft">PRELIMINARY · NOT FOR FINAL BUILD</span></div>
+  </div>
+  <div class="titleblock" aria-label="Title block">
+    <div class="full"><b>Project</b><span class="big">S.C.O.U.T. nearshore reef buoy</span></div>
+    <div><b>Drawing no.</b><span class="mono">SCOUT-E-100</span></div>
+    <div><b>Revision</b><span class="mono">B (draft) — audio switch to A3, 6 m cable</span></div>
+    <div><b>Date</b><span class="mono">2026-10-12</span></div>
+    <div><b>Scale</b><span class="mono">NTS</span></div>
+    <div><b>Drawn</b>I. Rodriguez (ECEN)</div>
+    <div><b>Checked</b>— (S. Krishnan to review)</div>
+    <div class="full"><b>Sheets</b>0 Hydrophone · 1 Block diagram · 2 Stack-up · 3 Pins & cables · 4 Material takeoff · 5 Equipment takeoff · 6 Notes & references · 7 Every connection</div>
+  </div>
+</header>
+
+<!-- SHEET 0 -->
+<section class="sheet" aria-labelledby="s0">
+  <div class="sheethead"><h2 id="s0">Sheet 0 — Hydrophone selection: Aquarian H2dM</h2><span class="no">SCOUT-E-100 · SHT 0/7 · Rev B</span></div>
+  <div class="cols">
+    <div>
+      <h3>Why this one</h3>
+      <ul class="check">
+        <li><b>Fits the 3.3 V system:</b> it runs on plug-in power, at least 2 V and 0.7 mA. 3.3 V through 1.1 kΩ gives about 2.5 V. No 5 V or 48 V rail needed.</li>
+        <li><b>Easy to wire:</b> it has a standard 3.5 mm TRS plug. It goes into a jack breakout on the Proto board, so there is nothing to solder on the hydrophone itself.</li>
+        <li><b>Easy to read:</b> the output is a plain analog voltage (1.1 kΩ output impedance). A two-stage MCP6002 preamp feeds the M0's ADC on A2. No codec chip and no I²S.</li>
+        <li><b>Good enough for reef sound:</b> it covers below 10 Hz to above 100 kHz, which includes fish calls (50 Hz–3 kHz) and snapping shrimp (2–20 kHz) up to our 11 kHz sampling limit.</li>
+        <li><b>Rated well past our depth:</b> under 80 m, against a reef depth of about 1–5 m. It weighs 105 g and measures 25 × 46 mm.</li>
+        <li><b>Good price:</b> $229 base, the lowest-cost calibrated hydrophone we found that fits. The cable is 3, 6, 9 or 15 m; <b>we are ordering 6 m</b> (covers 3–6 m water depth).</li>
+      </ul>
+      <p class="small" style="margin-top:8px">Datasheet: H2dM user's guide, saved as <span class="mono">DATASHEETS/aquarian-h2dm-manual.pdf</span>. Order from aquarianaudio.com and confirm the cable-option price at checkout.</p>
+    </div>
+    <div>
+      <h3>Options compared</h3>
+      <div class="tablewrap"><table style="min-width:520px">
+        <thead><tr><th>Option</th><th>Power</th><th>Output</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td><b>Aquarian H2dM</b></td><td>Plug-in, ≥ 2 V, 0.7 mA</td><td>3.5 mm analog</td><td><span class="status st-ordered">Selected</span></td></tr>
+          <tr><td>Aquarian H2dX (XLR)</td><td>Phantom power, up to 48 V</td><td>XLR balanced</td><td>Rejected: needs a high-voltage supply</td></tr>
+          <tr><td>Aquarian H2a</td><td>Plug-in</td><td>3.5 mm</td><td>Discontinued (replaced by the H2d)</td></tr>
+          <tr><td>HydroMoth</td><td>Own battery</td><td>Records to its own SD card</td><td>Not integrated with the M0; can't schedule or summarize (unverified)</td></tr>
+          <tr><td>Aquarian A5 element</td><td>—</td><td>Bare element</td><td>Needs our own potting and preamp (unverified, about €199)</td></tr>
+          <tr><td>DIY piezo disc</td><td>—</td><td>Uncalibrated</td><td>Too cheap: no sensitivity spec, so it gives no scientific numbers</td></tr>
+        </tbody></table></div>
+      <p class="small" style="margin-top:8px">Signal math: −172 dB re 1 V/µPa at a 120 dB re 1 µPa reef gives 10^((120−172)/20) ≈ 2.5 mV. Gain of about 230 (47 dB) brings that to about 0.6 V, centered on 1.65 V, which leaves headroom for loud events †.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SHEET 1 -->
+<section class="sheet" aria-labelledby="s1">
+  <div class="sheethead"><h2 id="s1">Sheet 1 — System block diagram</h2><span class="no">SCOUT-E-100 · SHT 1/7 · Rev B</span></div>
+  <div class="legend" aria-label="Wire legend">
+    <span><i style="border-color:var(--bat)"></i>Battery 3.6 V</span>
+    <span><i style="border-color:var(--pwr)"></i>3.3 V rail</span>
+    <span><i style="border-color:var(--gnd)"></i>Ground</span>
+    <span><i style="border-color:var(--onew)"></i>1-Wire data</span>
+    <span><i style="border-color:var(--ana)"></i>Analog signal</span>
+    <span><i style="border-color:var(--i2c)"></i>I²C</span>
+    <span><i style="border-color:var(--ctl)"></i>GPIO on/off control</span>
+    <span><i style="border-color:var(--rf)"></i>RF / LoRa</span>
+  </div>
+  <div class="frame">
+<svg viewBox="0 0 1800 940" role="img" aria-label="S.C.O.U.T. electronics system block diagram">
+  <!-- zone labels -->
+  <text class="z" x="30" y="52">IN THE WATER (under the buoy)</text>
+  <text class="z" x="400" y="52">SEALED ELECTRONICS HOUSING · 4.4 in ID × 5 in · dry</text>
+  <text class="z" x="1600" y="52">ON SHORE</text>
+
+  <!-- housing -->
+  <rect class="hous" x="370" y="110" width="1080" height="680"/>
+  <text class="s" x="384" y="132">Lid (top) carries the antenna bulkhead · cable glands G1–G3 in the wall</text>
+
+  <!-- ===== Water-side sensors ===== -->
+  <rect class="bx" x="30" y="150" width="270" height="88" rx="6"/>
+  <text class="t" x="44" y="174">DS18B20 temperature probe</text>
+  <text class="s" x="44" y="194">Adafruit 381 · 1-Wire digital</text>
+  <text class="s" x="44" y="212">3.0–5.5 V · 1.5 mA while reading</text>
+  <text class="s" x="44" y="230">red VDD · yellow/white DQ · black/blue GND</text>
+
+  <rect class="bx" x="30" y="300" width="270" height="88" rx="6"/>
+  <text class="t" x="44" y="324">Turbidity probe head</text>
+  <text class="s" x="44" y="344">Seeed Grove 101020752 (optical)</text>
+  <text class="s" x="44" y="362">only the probe tip goes in water</text>
+  <text class="s" x="44" y="380">own cable to its board inside</text>
+
+  <rect class="bx" x="30" y="520" width="270" height="106" rx="6"/>
+  <text class="t" x="44" y="544">Aquarian H2dM hydrophone</text>
+  <text class="s" x="44" y="564">−172 dB re 1 V/µPa · &lt;10 Hz–100 kHz</text>
+  <text class="s" x="44" y="582">plug-in power ≥ 2 V, 0.7 mA</text>
+  <text class="s" x="44" y="600">6 m PU cable, 3.5 mm TRS plug</text>
+  <text class="s" x="44" y="618">tip + ring = signal · sleeve = GND</text>
+
+  <!-- glands -->
+  <rect class="gland" x="362" y="180" width="16" height="22"/><text class="s" x="384" y="176">G1</text>
+  <rect class="gland" x="362" y="330" width="16" height="22"/><text class="s" x="384" y="326">G2</text>
+  <rect class="gland" x="362" y="562" width="16" height="22"/><text class="s" x="384" y="558">G3</text>
+
+  <!-- ===== Field-side boards inside housing ===== -->
+  <rect class="bx" x="410" y="160" width="230" height="64" rx="6"/>
+  <text class="t" x="424" y="184">T1 3-pin screw terminal</text>
+  <text class="s" x="424" y="204">on the Proto board edge</text>
+  <text class="s" x="424" y="218">probe leads clamp in, no solder</text>
+
+  <rect class="bx" x="410" y="296" width="230" height="96" rx="6"/>
+  <text class="t" x="424" y="320">Grove turbidity board</text>
+  <text class="s" x="424" y="340">LMV358 amp · switch on "A"</text>
+  <text class="s" x="424" y="358">Grove 4-pin → male jumper</text>
+  <text class="s" x="424" y="376">cable (713-110990210)</text>
+
+  <rect class="bx" x="410" y="546" width="230" height="64" rx="6"/>
+  <text class="t" x="424" y="570">J1 3.5 mm TRS jack</text>
+  <text class="s" x="424" y="590">breakout on the Proto board</text>
+  <text class="s" x="424" y="604">hydrophone plugs in here</text>
+
+  <!-- ===== Proto board interface circuits (Layer 3) ===== -->
+  <rect class="grp" x="680" y="146" width="282" height="600"/>
+  <text class="h" x="692" y="166">LAYER 3 · FEATHERWING PROTO</text>
+  <text class="s" x="692" y="182">Adafruit 2884 · interface circuits</text>
+
+  <rect class="bx" x="694" y="196" width="254" height="44" rx="6"/>
+  <text class="t" x="706" y="214">R1 4.7 kΩ pull-up</text>
+  <text class="s" x="706" y="231">DQ to 3.3 V (comes with the probe)</text>
+
+  <rect class="bx" x="694" y="268" width="254" height="84" rx="6"/>
+  <text class="t" x="706" y="288">Q1 turbidity power switch</text>
+  <text class="s" x="706" y="306">DMG2305UX P-FET on SOT-23 adapter</text>
+  <text class="s" x="706" y="322">R2 100 kΩ gate pull-up (off by default)</text>
+  <text class="s" x="706" y="338">C1 100 µF + C2 0.1 µF on the output</text>
+
+  <rect class="bx" x="694" y="430" width="254" height="68" rx="6"/>
+  <text class="t" x="706" y="450">Q2 audio power switch</text>
+  <text class="s" x="706" y="468">DMG2305UX + R3 100 kΩ gate pull-up</text>
+  <text class="s" x="706" y="484">makes "AUDIO 3.3 V" only while recording</text>
+
+  <rect class="bxa" x="694" y="530" width="254" height="200" rx="6"/>
+  <text class="t" x="706" y="550">Hydrophone bias + preamp</text>
+  <text class="s" x="706" y="570">R4 1.1 kΩ from AUDIO 3.3 V to J1 tip</text>
+  <text class="s" x="706" y="586">via R9 100 Ω + C10 filter: ≈ 2.46 V at tip</text>
+  <text class="s" x="706" y="602">C3 1 µF coupling cap (min 2 V, 0.7 mA)</text>
+  <text class="s" x="706" y="618">U1 MCP6002 dual op-amp, 2 stages</text>
+  <text class="s" x="706" y="634">gain ≈ 21 × 11 ≈ 230 (47 dB) †</text>
+  <text class="s" x="706" y="650">R5/R6 2 × 10 kΩ → 1.65 V mid-rail</text>
+  <text class="s" x="706" y="666">low-pass 1.5 kΩ + 10 nF ≈ 10.6 kHz †</text>
+  <text class="s" x="706" y="682">≈ 2.5 mV reef sound → ≈ 0.6 V at A2</text>
+  <text class="s" x="706" y="698">(anti-alias before 22.05 kHz sampling)</text>
+
+  <!-- ===== Controller stack ===== -->
+  <rect class="bx" x="1010" y="146" width="230" height="600" rx="6"/>
+  <line x1="1010" y1="214" x2="1240" y2="214" stroke="var(--ink)" stroke-width="1.3"/>
+  <line x1="1010" y1="330" x2="1240" y2="330" stroke="var(--ink)" stroke-width="1.3"/>
+  <text class="h" x="1024" y="166">CONTROLLER STACK</text>
+  <text class="t" x="1024" y="186">L3 Proto (plain male headers)</text>
+  <text class="s" x="1024" y="204">circuits shown at left</text>
+  <text class="t" x="1024" y="236">L2 Adalogger (2922)</text>
+  <text class="s" x="1024" y="254">PCF8523 RTC, I²C 0x68</text>
+  <text class="s" x="1024" y="270">CR1220 keeps time</text>
+  <text class="s" x="1024" y="286">microSD on SPI, CS = D10</text>
+  <text class="s" x="1024" y="302">stacking headers (2830)</text>
+  <text class="s" x="1024" y="318">SD power tied to 3.3 V</text>
+  <text class="t" x="1024" y="352">L1 Feather M0 RFM95 (3178)</text>
+  <text class="s" x="1024" y="370">SAMD21 48 MHz · 12-bit ADC</text>
+  <text class="s" x="1024" y="386">RFM95 LoRa on SPI: CS D8</text>
+  <text class="s" x="1024" y="402">IRQ D3 · RST D4</text>
+  <text class="s" x="1024" y="418">AP2112K 3.3 V regulator</text>
+  <text class="s" x="1024" y="434">battery divider on D9/A7</text>
+  <text class="s" x="1024" y="450">stacking headers (2830)</text>
+  <text class="s" x="1024" y="466">MCP73831 charger removed</text>
+  <text class="s" x="1024" y="482">for primary-cell use</text>
+  <text class="s" x="1024" y="728">stack ≈ 51 × 23 mm footprint</text>
+
+  <!-- pin stubs left edge -->
+  <g>
+    <rect class="pin" x="1002" y="212" width="16" height="12"/><text class="m" x="996" y="208" text-anchor="end">D12</text>
+    <rect class="pin" x="1002" y="250" width="16" height="12"/><text class="m" x="996" y="246" text-anchor="end">3V3</text>
+    <rect class="pin" x="1002" y="306" width="16" height="12"/><text class="m" x="996" y="302" text-anchor="end">D11</text>
+    <rect class="pin" x="1002" y="398" width="16" height="12"/><text class="m" x="996" y="394" text-anchor="end">A1</text>
+    <rect class="pin" x="1002" y="458" width="16" height="12"/><text class="m" x="996" y="454" text-anchor="end">A3</text>
+    <rect class="pin" x="1002" y="642" width="16" height="12"/><text class="m" x="996" y="638" text-anchor="end">A2</text>
+    <rect class="pin" x="1002" y="704" width="16" height="12"/><text class="m" x="996" y="700" text-anchor="end">GND</text>
+  </g>
+  <!-- pin stubs right edge -->
+  <g>
+    <rect class="pin" x="1232" y="196" width="16" height="12"/><text class="m" x="1254" y="192">uFL</text>
+    <rect class="pin" x="1232" y="306" width="16" height="12"/><text class="m" x="1254" y="302">SDA</text>
+    <rect class="pin" x="1232" y="336" width="16" height="12"/><text class="m" x="1254" y="366">SCL</text>
+    <rect class="pin" x="1232" y="604" width="16" height="12"/><text class="m" x="1254" y="600">BAT</text>
+    <rect class="pin" x="1232" y="650" width="16" height="12"/><text class="m" x="1254" y="646">GND</text>
+  </g>
+
+  <!-- ===== Right column inside housing ===== -->
+  <rect class="bx" x="1290" y="290" width="148" height="88" rx="6"/>
+  <text class="t" x="1302" y="312">SHT40 (4885)</text>
+  <text class="s" x="1302" y="330">humidity + temp</text>
+  <text class="s" x="1302" y="346">I²C 0x44 · leak alarm</text>
+  <text class="s" x="1302" y="362">STEMMA QT cable 4209</text>
+
+  <rect class="grp" x="1290" y="430" width="148" height="300"/>
+  <text class="h" x="1300" y="450">BATTERY BAY</text>
+  <rect class="bx" x="1300" y="462" width="128" height="40" rx="5"/>
+  <text class="t" x="1310" y="480">BT1 LS33600</text><text class="s" x="1310" y="496">3.6 V D, 17 Ah</text>
+  <rect class="bx" x="1300" y="510" width="128" height="40" rx="5"/>
+  <text class="t" x="1310" y="528">BT2 LS33600</text><text class="s" x="1310" y="544">3.6 V D, 17 Ah</text>
+  <rect class="bx" x="1300" y="560" width="128" height="40" rx="5"/>
+  <text class="t" x="1310" y="578">D1, D2 ideal diode</text><text class="s" x="1310" y="594">one per cell †</text>
+  <rect class="bx" x="1300" y="610" width="128" height="40" rx="5"/>
+  <text class="t" x="1310" y="628">F1 PTC fuse</text><text class="s" x="1310" y="644">≈ 0.5 A hold †</text>
+  <rect class="bx" x="1300" y="660" width="128" height="58" rx="5"/>
+  <text class="t" x="1310" y="678">P1 JST-PH 2-pin</text><text class="s" x="1310" y="694">Adafruit 261, keyed</text><text class="s" x="1310" y="710">red = + into BAT</text>
+
+  <!-- antenna on lid -->
+  <rect class="gland" x="1302" y="100" width="28" height="20"/>
+  <text class="s" x="1338" y="134">SMA bulkhead in lid</text>
+  <line class="w rf" x1="1316" y1="100" x2="1316" y2="42"/>
+  <circle cx="1316" cy="40" r="4" fill="var(--rf)"/>
+  <text class="t" x="1328" y="54">915 MHz whip</text>
+  <text class="s" x="1328" y="72">SMA male · ≤ 2.15 dBi (FCC)</text>
+  <text class="s" x="1328" y="88">above the waterline</text>
+
+  <!-- ===== Shore station ===== -->
+  <rect class="bx" x="1500" y="260" width="280" height="200" rx="6"/>
+  <text class="h" x="1514" y="282">SHORE STATION</text>
+  <text class="t" x="1514" y="304">ESP32-S3 Feather (5477)</text>
+  <text class="t" x="1514" y="324">+ LoRa FeatherWing (3231)</text>
+  <text class="s" x="1514" y="344">stacked with stacking headers (2830)</text>
+  <text class="s" x="1514" y="362">solder 3 jumpers: CS, RST, IRQ</text>
+  <text class="s" x="1514" y="380">spring antenna 4269 on ANT pad</text>
+  <text class="s" x="1514" y="398">receives, checks CRC, saves, uploads</text>
+  <text class="s" x="1514" y="416">powered by USB-C 5 V wall adapter</text>
+  <text class="s" x="1514" y="434">(USB-C battery = stretch goal)</text>
+  <line class="w rf" x1="1540" y1="260" x2="1540" y2="226"/>
+  <circle cx="1540" cy="224" r="4" fill="var(--rf)"/>
+
+  <rect class="bx" x="1500" y="540" width="280" height="64" rx="6"/>
+  <text class="t" x="1514" y="564">WiFi → data pipeline + dashboard</text>
+  <text class="s" x="1514" y="584">David's shore CSV store, QC, website</text>
+  <line class="w gnd" x1="1640" y1="460" x2="1640" y2="540"/>
+  <text class="s" x="1648" y="506">WiFi</text>
+
+  <path class="link" d="M1320 34 H1540 V222"/>
+  <text class="s" x="1552" y="150">LoRa 915 MHz · SF12 / BW500 / CR4/8</text>
+  <text class="s" x="1552" y="166">30-byte packet · 3 per day · ≈ 0.56 s each</text>
+
+  <!-- ===== Wires ===== -->
+  <!-- DS18B20: probe → G1 → T1 → R1 node → D12 -->
+  <path class="w onew" d="M300 191 H362"/>
+  <path class="w onew" d="M378 191 H410"/>
+  <path class="w onew" d="M640 192 H680 V218 H694"/>
+  <path class="w onew" d="M948 218 H1002"/>
+  <text class="s" x="306" y="182">3-wire</text>
+
+  <!-- 3.3 V bus along x=980 -->
+  <path class="w pwr" d="M1002 256 H962 V500"/>
+  <path class="w pwr" d="M962 230 V256"/>
+  <path class="w pwr" d="M962 230 H948"/>
+  <path class="w pwr" d="M962 290 H948"/>
+  <path class="w pwr" d="M962 446 H948"/>
+  <circle class="dot" cx="962" cy="256" r="3"/>
+
+  <!-- Turbidity: probe → G2 → board; Q1 → VCC; SIG → A1; D11 → Q1 -->
+  <path class="w ana" d="M300 341 H362"/>
+  <path class="w ana" d="M378 341 H410"/>
+  <path class="w pwr" d="M694 322 H640"/>
+  <text class="s" x="648" y="316">VCC</text>
+  <path class="w ana" d="M640 372 H670 V404 H1002"/>
+  <text class="s" x="760" y="398">SIG 0–3.3 V (yellow) → A1, no divider</text>
+  <path class="w ctl" d="M1002 312 H948"/>
+
+  <!-- Audio: Q2 ← A3; Q2 → preamp; hydrophone → G3 → J1 → preamp → A2 -->
+  <path class="w ctl" d="M1002 464 H948"/>
+  <path class="w pwr" d="M820 498 V530"/>
+  <text class="s" x="826" y="520">AUDIO 3.3 V</text>
+  <path class="w ana" d="M300 573 H362"/>
+  <path class="w ana" d="M378 573 H410"/>
+  <path class="w ana" d="M640 578 H694"/>
+  <path class="w ana" d="M948 648 H1002"/>
+
+  <!-- GND -->
+  <path class="w gnd" d="M1002 710 H960 V760 H420 V610"/>
+  <text class="s" x="560" y="778">common ground to every board, sensor and the battery (−)</text>
+
+  <!-- RF: uFL → SMA bulkhead -->
+  <path class="w rf" d="M1248 202 H1316 V120"/>
+  <text class="s" x="1254" y="226">uFL 1661 + cable 851</text>
+
+  <!-- I2C to SHT40 -->
+  <path class="w i2c" d="M1248 312 H1290"/>
+  <path class="w i2c" d="M1248 342 H1290"/>
+
+  <!-- Battery to BAT -->
+  <path class="w bat" d="M1300 689 H1284 V610 H1248"/>
+  <path class="w gnd" d="M1248 656 H1276 V705 H1300"/>
+
+  <!-- bottom notes in-frame -->
+  <text class="s" x="30" y="820">Inside the stack (no wires to add): SPI (SCK/MOSI/MISO) is shared by the LoRa radio (CS D8) and the SD card (CS D10); I²C (SDA/SCL) is shared by the clock (0x68) and the SHT40 (0x44).</text>
+  <text class="s" x="30" y="840">Firmware wakes every 30 min on the SAMD21 internal RTC (standby), switches sensors on with D11/A3 LOW, reads, logs to SD, transmits in fixed slots, switches everything off.</text>
+  <text class="s" x="30" y="860">Pins already used by the board: D3, D4, D8 (radio), D9/A7 (battery), D10 (SD), D13 (red LED, keep off). D5 = PCF8523 INT (firmware). Free spares: A0, A4, A5, D6 (keep free for radio IO1); D0/D1 are Serial1.</text>
+  <text class="s" x="30" y="880">† proposed value; confirm on the bench before soldering. G1–G3: cable glands from lab stock; the 3.5 mm plug (≈ 6 mm) must pass G3 or be fitted after the gland.</text>
+  <text class="z" x="30" y="925">SCOUT-E-100 · SHEET 1 · BLOCK DIAGRAM · NTS</text>
+</svg>
+  </div>
+</section>
+
+<!-- SHEET 2 -->
+<section class="sheet" aria-labelledby="s2">
+  <div class="sheethead"><h2 id="s2">Sheet 2 — Controller stack-up and battery pack</h2><span class="no">SCOUT-E-100 · SHT 2/7 · Rev B</span></div>
+  <p>Three Feather-format boards stack on headers: the Feather M0 at the bottom, the Adalogger in the middle, the FeatherWing Proto on top. Stacking headers (female socket on top, long pins below) let each board pass every pin up to the next. The Proto board takes plain male pins because nothing stacks on it.</p>
+  <div class="frame narrow">
+<svg viewBox="0 0 1100 520" role="img" aria-label="Side view of the three-board stack and the battery pack">
+  <text class="z" x="30" y="34">SIDE VIEW (not to scale)</text>
+  <!-- Layer 3 -->
+  <rect class="board" x="120" y="120" width="560" height="14"/>
+  <rect class="hdr" x="150" y="134" width="500" height="5"/>
+  <line x1="160" y1="139" x2="160" y2="158" stroke="var(--ink)" stroke-width="2"/><line x1="640" y1="139" x2="640" y2="158" stroke="var(--ink)" stroke-width="2"/>
+  <rect class="bx" x="170" y="96" width="44" height="24"/><text class="s" x="178" y="113">Q1</text>
+  <rect class="bx" x="222" y="96" width="44" height="24"/><text class="s" x="230" y="113">Q2</text>
+  <rect class="bx" x="300" y="92" width="60" height="28"/><text class="s" x="308" y="111">U1</text>
+  <rect class="bx" x="390" y="100" width="70" height="20"/><text class="s" x="396" y="114">R, C</text>
+  <rect class="bx" x="490" y="88" width="64" height="32"/><text class="s" x="498" y="109">J1</text>
+  <rect class="bx" x="580" y="94" width="80" height="26"/><text class="s" x="588" y="111">T1</text>
+  <text class="t" x="700" y="122">L3 · FeatherWing Proto (2884)</text>
+  <text class="s" x="700" y="140">plain male headers down into L2 · Q1/Q2 on SOT-23 adapters, U1 MCP6002, J1 3.5 mm jack, T1 terminal</text>
+
+  <!-- Layer 2 -->
+  <rect class="hdr" x="150" y="158" width="500" height="24" opacity="0.85"/>
+  <rect class="board" x="120" y="182" width="560" height="14"/>
+  <line x1="160" y1="196" x2="160" y2="222" stroke="var(--ink)" stroke-width="2"/><line x1="640" y1="196" x2="640" y2="222" stroke="var(--ink)" stroke-width="2"/>
+  <circle cx="250" cy="174" r="14" fill="none" stroke="var(--ink)" stroke-width="1.3"/><text class="s" x="270" y="168">CR1220</text>
+  <rect class="bx" x="470" y="166" width="110" height="16"/><text class="s" x="478" y="178">microSD</text>
+  <text class="t" x="700" y="186">L2 · Adalogger FeatherWing (2922)</text>
+  <text class="s" x="700" y="204">stacking headers (2830): sockets on top for L3, long pins down into L1</text>
+
+  <!-- Layer 1 -->
+  <rect class="hdr" x="150" y="222" width="500" height="24" opacity="0.85"/>
+  <rect class="board" x="120" y="246" width="560" height="14"/>
+  <line x1="160" y1="260" x2="160" y2="300" stroke="var(--ink)" stroke-width="2"/><line x1="640" y1="260" x2="640" y2="300" stroke="var(--ink)" stroke-width="2"/>
+  <rect class="bx" x="96" y="238" width="22" height="12"/><text class="s" x="40" y="236">uFL 1661</text>
+  <rect class="bx" x="300" y="232" width="70" height="14"/><text class="s" x="306" y="243">RFM95</text>
+  <rect class="bx" x="560" y="234" width="60" height="12"/><text class="s" x="566" y="244">JST BAT</text>
+  <text class="t" x="700" y="250">L1 · Feather M0 RFM95 (3178)</text>
+  <text class="s" x="700" y="268">stacking headers (2830): long pins below go into a breadboard on the bench, stay free in the housing</text>
+  <text class="s" x="40" y="320">Antenna: bench = spring 4269 on the ANT pad; deployed = uFL 1661 → cable 851 → SMA bulkhead → whip. Use one, never both.</text>
+  <text class="s" x="40" y="340">Approximate stack height ≈ 30 mm with two stacking-header levels †. Footprint 51 × 23 mm (Feather standard).</text>
+
+  <!-- Battery pack schematic -->
+  <text class="z" x="30" y="392">BATTERY PACK (schematic)</text>
+  <rect class="bx" x="40" y="410" width="120" height="40" rx="5"/><text class="t" x="52" y="428">BT1 LS33600</text><text class="s" x="52" y="444">3.6 V · 17 Ah</text>
+  <rect class="bx" x="40" y="462" width="120" height="40" rx="5"/><text class="t" x="52" y="480">BT2 LS33600</text><text class="s" x="52" y="496">3.6 V · 17 Ah</text>
+  <rect class="bx" x="210" y="410" width="96" height="40" rx="5"/><text class="t" x="222" y="434">D1 ideal ⟶</text>
+  <rect class="bx" x="210" y="462" width="96" height="40" rx="5"/><text class="t" x="222" y="486">D2 ideal ⟶</text>
+  <path class="w bat" d="M160 430 H210"/><path class="w bat" d="M160 482 H210"/>
+  <path class="w bat" d="M306 430 H340 V482 H306"/><circle class="dot" cx="340" cy="456" r="3"/>
+  <path class="w bat" d="M340 456 H380"/>
+  <rect class="bx" x="380" y="436" width="90" height="40" rx="5"/><text class="t" x="392" y="460">F1 PTC</text>
+  <path class="w bat" d="M470 456 H510"/>
+  <rect class="bx" x="510" y="436" width="120" height="40" rx="5"/><text class="t" x="520" y="454">P1 JST-PH 261</text><text class="s" x="520" y="470">keyed plug</text>
+  <path class="w bat" d="M630 456 H690"/>
+  <text class="t" x="698" y="452">→ Feather BAT</text>
+  <text class="s" x="698" y="470">cells in PARALLEL (never series: 7.2 V is too high)</text>
+  <text class="s" x="698" y="488">each cell's ideal diode stops one cell charging the other</text>
+  <text class="s" x="698" y="506">the fuse limits a short; the keyed plug can't go in backwards</text>
+</svg>
+  </div>
+</section>
+
+<!-- SHEET 3 -->
+<section class="sheet" aria-labelledby="s3">
+  <div class="sheethead"><h2 id="s3">Sheet 3 — Pin assignment and cable schedule</h2><span class="no">SCOUT-E-100 · SHT 3/7 · Rev B</span></div>
+  <div class="cols">
+    <div>
+      <h3>Feather M0 pin assignment</h3>
+      <div class="tablewrap"><table style="min-width:420px">
+        <thead><tr><th>Pin</th><th>Used by</th><th>Type</th><th>Source of truth</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">D3 · D4 · D8</td><td>RFM95 radio IRQ · RST · CS</td><td>SPI + GPIO</td><td>Feather M0 schematic</td></tr>
+          <tr><td class="mono">SCK · MOSI · MISO</td><td>Radio + SD card (shared)</td><td>SPI</td><td>Schematic; Adalogger guide p. 7</td></tr>
+          <tr><td class="mono">D10</td><td>SD card chip select</td><td>SPI CS</td><td>Adalogger guide p. 7</td></tr>
+          <tr><td class="mono">SDA · SCL</td><td>PCF8523 (0x68) + SHT40 (0x44)</td><td>I²C</td><td>Adalogger p. 6; SHT40 guide</td></tr>
+          <tr><td class="mono">D9 / A7</td><td>Battery divider (100 k / 100 k)</td><td>Analog</td><td>Schematic R3/R6</td></tr>
+          <tr><td class="mono">D12</td><td>DS18B20 data (DQ)</td><td>1-Wire</td><td>Firmware config.h (decided 2026-10-12; update schematic)</td></tr>
+          <tr><td class="mono">A1</td><td>Turbidity signal</td><td>Analog</td><td>SCO-85</td></tr>
+          <tr><td class="mono">D11</td><td>Q1 gate (turbidity power, LOW = on)</td><td>GPIO</td><td>This drawing</td></tr>
+          <tr><td class="mono">A3</td><td>Q2 gate (audio power, LOW = on)</td><td>GPIO</td><td>This drawing (A3 used as digital out; D5 is taken by RTC INT)</td></tr>
+          <tr><td class="mono">A2</td><td>Hydrophone preamp output</td><td>Analog</td><td>This drawing</td></tr>
+          <tr><td class="mono">D5</td><td>PCF8523 INT1 wake (backup to internal RTC)</td><td>GPIO in</td><td>Firmware config.h</td></tr>
+          <tr><td class="mono">D13</td><td>Red LED (keep off)</td><td>GPIO</td><td>Schematic</td></tr>
+          <tr><td class="mono">BAT · GND</td><td>Battery pack via JST-PH</td><td>Power</td><td>Schematic</td></tr>
+        </tbody></table></div>
+    </div>
+    <div>
+      <h3>Cable and connection schedule</h3>
+      <div class="tablewrap"><table style="min-width:520px">
+        <thead><tr><th>ID</th><th>From → to</th><th>Cable / connector</th><th>How to connect</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">W1</td><td>DS18B20 → T1</td><td>Probe's own 3-core lead through G1</td><td>Strip, lightly tin, clamp in terminal (red 3V, yellow/white D12, black/blue GND); R1 4.7 kΩ DQ→3.3 V on Proto</td></tr>
+          <tr><td class="mono">W2</td><td>Turbidity probe → Grove board</td><td>Probe's own cable through G2</td><td>Plugs into the Grove board; seal the probe top</td></tr>
+          <tr><td class="mono">W3</td><td>Grove board → Proto / M0</td><td>Grove → male jumper 110990210</td><td>Red→Q1 out, black→GND, yellow→A1, white unused</td></tr>
+          <tr><td class="mono">W4</td><td>H2dM → J1</td><td>6 m PU cable, 3.5 mm TRS through G3</td><td>Plug into J1; tip and ring both carry signal, sleeve GND</td></tr>
+          <tr><td class="mono">W5</td><td>SHT40 → stack</td><td>STEMMA QT → male 4209</td><td>Red 3.3 V, black GND, blue SDA, yellow SCL</td></tr>
+          <tr><td class="mono">W6</td><td>Battery pack → BAT</td><td>JST-PH 2-pin 261</td><td>Red +, black −; plug only after the charger is removed</td></tr>
+          <tr><td class="mono">W7</td><td>M0 uFL → lid</td><td>uFL 1661 + SMA cable 851</td><td>Solder 1661 on the M0 uFL pads; 851 bulkhead nut in the lid</td></tr>
+          <tr><td class="mono">W8</td><td>Bulkhead → whip</td><td>SMA male whip, ≤ 2.15 dBi</td><td>Hand-tighten; never transmit with nothing attached</td></tr>
+          <tr><td class="mono">W9</td><td>Shore station power</td><td>USB-C data cable + 5 V adapter</td><td>Wall outlet at the shore site</td></tr>
+        </tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHEET 4 -->
+<section class="sheet" aria-labelledby="s4">
+  <div class="sheethead"><h2 id="s4">Sheet 4 — Material takeoff</h2><span class="no">SCOUT-E-100 · SHT 4/7 · Rev B</span></div>
+  <p>Every part by section. Prices are list prices per unit; ranges are estimates for parts not yet quoted. The Adafruit order (invoice 3758294) has been placed; its shipping and tax are listed once at the end.</p>
+  <div class="tablewrap"><table id="mto" style="min-width:900px">
+    <thead><tr><th>Item</th><th>Part number</th><th>Description</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Extended</th><th>Status</th><th>Source</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="small">Status: <span class="status st-ordered">Ordered</span> on invoice 3758294 · <span class="status st-mouser">Mouser</span> order to place now · <span class="status st-later">Later</span> planned follow-up order · <span class="status st-lab">Lab</span> from lab stock · <span class="status st-opt">Optional</span> not required for the prototype.</p>
+</section>
+
+<!-- SHEET 5 -->
+<section class="sheet" aria-labelledby="s5">
+  <div class="sheethead"><h2 id="s5">Sheet 5 — Equipment takeoff</h2><span class="no">SCOUT-E-100 · SHT 5/7 · Rev B</span></div>
+  <p>Tools and test equipment needed to build and verify the electronics. Everything is borrowed from the lab (rooms 4017–4019, checked out through Dr. Krishnan) or is the team's own, so <b>no equipment purchase is planned</b>. The "cost if not in lab" column is only a fallback estimate in case an item turns out to be missing; "—" means lab-only equipment we would not buy.</p>
+  <div class="tablewrap"><table id="eto" style="min-width:860px">
+    <thead><tr><th>Item</th><th>What it's for</th><th class="num">Qty</th><th class="num">Cost if not in lab</th><th>Source</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</section>
+
+<!-- SHEET 6 -->
+<section class="sheet" aria-labelledby="s6">
+  <div class="sheethead"><h2 id="s6">Sheet 6 — General notes, checks and references</h2><span class="no">SCOUT-E-100 · SHT 6/7 · Rev B</span></div>
+  <div class="cols">
+    <div>
+      <h3>General notes</h3>
+      <ol class="notes">
+        <li>All logic and sensors run at 3.3 V from the Feather's AP2112K regulator. No 5 V rail in the default build (MiniBoost 4654 is a backup only).</li>
+        <li>Remove the Feather's MCP73831 charger before any primary lithium cell is connected. Bench testing uses a current-limited 3.6 V supply instead of the cells.</li>
+        <li>Batteries connect in parallel through one ideal diode each, then the PTC fuse, then the keyed JST-PH plug.</li>
+        <li>Turbidity board and hydrophone circuit are powered only while sampling (Q1 on D11, Q2 on A3, LOW = on; 100 kΩ pull-ups keep them off during sleep and boot).</li>
+        <li>Hydrophone bias: 3.3 V through R9 100 Ω + R4 1.1 kΩ gives ≈ 2.46 V at the plug at 0.7 mA (minimum 2 V), matching Aquarian's test condition (2.5 V compliance, 1.1 kΩ).</li>
+        <li>Expected hydrophone level: −172 dB re 1 V/µPa at a 120 dB re 1 µPa reef soundscape gives ≈ 2.5 mV; preamp gain ≈ 230 brings it to ≈ 0.6 V for the 3.3 V ADC †.</li>
+        <li>Audio is stored on the SD card only; LoRa carries summary numbers (one 1-minute clip would need hours of airtime).</li>
+        <li>Never transmit without an antenna attached. Deployed antenna gain must not exceed 2.15 dBi (RFM95 FCC grant).</li>
+        <li>I²C addresses are unique (0x44 SHT40, 0x68 PCF8523). SPI chip selects: D8 radio, D10 SD; only one LOW at a time.</li>
+        <li>Firmware polarity: config.h says the sensor gate is HIGH = on, but the P-FET switches here are LOW = on. Firmware must drive D11 and A3 LOW to power the sensors.</li>
+        <li>DS18B20 data stays on D12 (firmware). The Rev A schematic label D5 is outdated; D5 stays the PCF8523 interrupt in firmware. D6 is left free in case the radio IO1 pad is ever jumpered for LoRaWAN.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Checked against the sources</h3>
+      <ul class="check">
+        <li>H2dM: −172 dB, 1.1 kΩ output, 0.7 mA, min PIP 2 V, 3.5 mm TRS dual-mono (Aquarian H2dM manual p. 1–2)</li>
+        <li>H2dM price $229 base; 3 / 6 / 9 / 15 m cables (aquarianaudio.com H2d page)</li>
+        <li>DS18B20: 3.0–5.5 V, 4.7 kΩ pull-up, 750 ms (Maxim datasheet p. 6, 8, 19)</li>
+        <li>Grove turbidity: 3.3 V / 5 V, output falls as turbidity rises (Seeed wiki)</li>
+        <li>SHT40: I²C 0x44, 10 kΩ pull-ups on board (Adafruit guide)</li>
+        <li>Adalogger: RTC on I²C, SD CS = GPIO 10 on M0 (Adafruit guide p. 6–7)</li>
+        <li>Feather M0: BAT divider 100 k/100 k to D9 = AIN7; radio D3/D4/D8 (schematic rev B)</li>
+        <li>DMG2305UX: P-channel, −20 V, R<sub>DS(on)</sub> ≤ 100 mΩ at −2.5 V, V<sub>GS(th)</sub> −0.5 to −0.9 V, V<sub>GS</sub> ±8 V max (Diodes DS36196 p. 1–2, saved in DATASHEETS)</li>
+        <li>Adalogger schematic: SD CS on GPIO10 with 100 k pull-up, 10 k I²C pull-ups, RTC INT1 on an unconnected pad (DATASHEETS/feather_schem.png)</li>
+        <li>Adafruit 851 = uFL to panel-mount SMA (not RP-SMA), 15 cm RG178; 1661 = uFL SMT connector, $0.75 (adafruit.com)</li>
+        <li>A1–A5 work as digital I/O; radio uses #8/#3/#4 internally (Adafruit Feather M0 LoRa pinout page)</li>
+        <li>Adafruit prices from invoice 3758294 and adafruit.com (2026-10-06)</li>
+      </ul>
+      <h3 style="margin-top:14px">Not yet verified (marked †)</h3>
+      <p class="small">Preamp resistor and capacitor values, PTC rating, ideal-diode part, stack height, Grove current draw, Saft cell price at the chosen seller, whip antenna part number.</p>
+      <h3 style="margin-top:14px">References</h3>
+      <p class="small">Aquarian Audio <a href="https://www.aquarianaudio.com/h2d-hydrophone.html">H2d hydrophone page</a> and H2dM user's guide (saved in DATASHEETS) · Maxim DS18B20 datasheet rev 042208 · <a href="https://wiki.seeedstudio.com/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/">Seeed Grove turbidity wiki</a> · <a href="https://learn.adafruit.com/adafruit-sht40-temperature-humidity-sensor/pinouts">Adafruit SHT40 guide</a> · Adafruit Adalogger FeatherWing guide · Adafruit Feather M0 RFMxx schematic rev B · Semtech SX1276 datasheet · S.C.O.U.T. Power Budget Update 2026-10-05 and Electronics Build and Test Plan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SHEET 7 -->
+<section class="sheet" aria-labelledby="s7">
+  <div class="sheethead"><h2 id="s7">Sheet 7 — Every connection: parts, values, wires and how to join them</h2><span class="no">SCOUT-E-100 · SHT 7/7 · Rev B</span></div>
+  <p>One table per circuit. Every resistor, capacitor, wire and joint on the build is listed here with its reference (R1, C1 …), value, both ends, and how it is joined. Build each circuit on a breadboard first. Solder it onto the FeatherWing Proto only after it passes its stage in the Electronics Build and Test Plan.</p>
+  <p class="small">Joining methods: <b>Solder</b> means soldered on the Proto board. <b>Terminal</b> means the screw terminal (no solder on the probe wire). <b>Plug</b> means a connector. <b>HS</b> means slide heat-shrink over before soldering, then shrink it.</p>
+
+  <h3>7A · DS18B20 temperature probe → D12 (Stage 1)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part / value</th><th>From</th><th>To</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">W1-red</td><td>Probe VDD wire</td><td>Probe</td><td>T1 pin 1 → 3V rail</td><td>Terminal</td></tr>
+      <tr><td class="mono">W1-yel</td><td>Probe data wire (yellow or white, depending on batch)</td><td>Probe</td><td>T1 pin 2 → <b>D12</b></td><td>Terminal</td></tr>
+      <tr><td class="mono">W1-blk</td><td>Probe GND wire (black or blue, depending on batch)</td><td>Probe</td><td>T1 pin 3 → GND rail</td><td>Terminal</td></tr>
+      <tr><td class="mono">R1</td><td>4.7 kΩ (comes in the probe bag)</td><td>T1 pin 2 (data)</td><td>3V rail</td><td>Solder</td></tr>
+      <tr><td class="mono">T1</td><td>3-pin screw terminal, 3.5 or 5 mm pitch</td><td colspan="2">Proto board edge</td><td>Solder</td></tr>
+    </tbody></table></div>
+  <p class="small">Prep: thread the cable through gland G1 first. Strip 5 mm off each wire, twist the strands, and tin them only lightly so the screw still bites. Check with a meter: about 3.3 V between red and black, and about 3.3 V on data at idle because of the pull-up.</p>
+
+  <h3>7B · Turbidity sensor and its power switch Q1 → A1, D11 (Stage 1 direct, Stage 3 switched)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part / value</th><th>From</th><th>To</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Q1</td><td>DMG2305UX P-MOSFET on SOT-23 adapter</td><td>S = 3V rail · G = <b>D11</b></td><td>D = TURB_3V3 node</td><td>Solder (MOSFET to adapter first)</td></tr>
+      <tr><td class="mono">R2</td><td>100 kΩ</td><td>Q1 gate</td><td>3V rail (keeps it OFF)</td><td>Solder</td></tr>
+      <tr><td class="mono">C1</td><td>100 µF 10 V electrolytic</td><td>TURB_3V3 (+ lead)</td><td>GND (− stripe)</td><td>Solder, watch polarity</td></tr>
+      <tr><td class="mono">C2</td><td>0.1 µF ceramic</td><td>TURB_3V3</td><td>GND, next to Q1</td><td>Solder</td></tr>
+      <tr><td class="mono">W3-red</td><td>Grove cable VCC</td><td>Grove board</td><td>TURB_3V3</td><td>Solder pin to Proto pad</td></tr>
+      <tr><td class="mono">W3-blk</td><td>Grove cable GND</td><td>Grove board</td><td>GND rail</td><td>Solder</td></tr>
+      <tr><td class="mono">W3-yel</td><td>Grove cable SIG</td><td>Grove board</td><td><b>A1</b> (no divider)</td><td>Solder</td></tr>
+      <tr><td class="mono">W3-wht</td><td>Grove cable NC</td><td colspan="2">Not used: cut it short and insulate the end</td><td>HS</td></tr>
+    </tbody></table></div>
+  <p class="small">Set the switch on the Grove board to <b>A</b> (analog). Firmware: D11 LOW = on (SCO-186). At turn-on, check the 3V rail on the scope. If it dips more than about 100 mV, change C1 to 10 µF †.</p>
+
+  <h3>7C · SHT40 humidity / leak sensor → I²C (Stage 1)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part</th><th>Wire colour → Proto pad</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">W5</td><td>STEMMA QT → male cable (Adafruit 4209)</td><td>red → 3V · black → GND · blue → SDA · yellow → SCL</td><td>Plug on the sensor end, solder the pins on the Proto end</td></tr>
+    </tbody></table></div>
+  <p class="small">No extra parts needed: the SHT40 and the Adalogger already have their I²C pull-ups. Mount the SHT40 high in the housing, away from the batteries.</p>
+
+  <h3>7D · Hydrophone front-end → A2, A3 (Stage 7)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part / value</th><th>From</th><th>To</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Q2</td><td>DMG2305UX on SOT-23 adapter</td><td>S = 3V rail · G = <b>A3</b></td><td>D = AUD_3V3</td><td>Audio power only while recording</td></tr>
+      <tr><td class="mono">R3</td><td>100 kΩ</td><td>Q2 gate</td><td>3V rail</td><td>Keeps it OFF while asleep</td></tr>
+      <tr><td class="mono">C8, C9</td><td>0.1 µF ceramic + 10 µF</td><td>AUD_3V3</td><td>GND</td><td>Rail decoupling, C8 at U1 pin 8</td></tr>
+      <tr><td class="mono">R9</td><td>100 Ω</td><td>AUD_3V3</td><td>BIAS_F node</td><td>Filters rail noise out of the bias</td></tr>
+      <tr><td class="mono">C10</td><td>10 µF</td><td>BIAS_F</td><td>GND</td><td>Filters rail noise out of the bias</td></tr>
+      <tr><td class="mono">R4</td><td>1.1 kΩ</td><td>BIAS_F</td><td>J1 <b>L</b> (= tip)</td><td>Plug-in power: tip sits at ≈ 2.46 V, above the 2 V minimum</td></tr>
+      <tr><td class="mono">J1</td><td>3.5 mm jack breakout (Adafruit 1699)</td><td>L pin = tip (signal) · GND pin = sleeve</td><td>R pin (ring): leave unconnected</td><td>Hydrophone plugs in here</td></tr>
+      <tr><td class="mono">C3</td><td>1 µF ceramic (non-polar)</td><td>J1 L (tip)</td><td>U1 pin 3 (IN A+)</td><td>Blocks the 2.46 V DC, passes the sound</td></tr>
+      <tr><td class="mono">R5, R6</td><td>10 kΩ + 10 kΩ</td><td>AUD_3V3 → VMID</td><td>VMID → GND</td><td>Makes 1.65 V mid-rail</td></tr>
+      <tr><td class="mono">C4</td><td>10 µF</td><td>VMID</td><td>GND</td><td>Keeps the mid-rail quiet</td></tr>
+      <tr><td class="mono">R7</td><td>100 kΩ</td><td>VMID</td><td>U1 pin 3</td><td>Biases stage 1 at 1.65 V</td></tr>
+      <tr><td class="mono">R10</td><td>20 kΩ</td><td>U1 pin 1 (OUT A)</td><td>U1 pin 2 (IN A−)</td><td>Stage 1 gain = 1 + 20k/1k = 21</td></tr>
+      <tr><td class="mono">R11 + C5</td><td>1 kΩ in series with 10 µF</td><td>U1 pin 2</td><td>GND</td><td>Sets the AC gain; DC gain stays 1. Low cut ≈ 16 Hz</td></tr>
+      <tr><td class="mono">R8</td><td>1.5 kΩ</td><td>U1 pin 1</td><td>U1 pin 5 (IN B+)</td><td>Low-pass filter ≈ 10.6 kHz (anti-alias)</td></tr>
+      <tr><td class="mono">C6</td><td>10 nF ceramic</td><td>U1 pin 5</td><td>GND</td><td>Low-pass filter ≈ 10.6 kHz (anti-alias)</td></tr>
+      <tr><td class="mono">R12</td><td>10 kΩ</td><td>U1 pin 7 (OUT B)</td><td>U1 pin 6 (IN B−)</td><td>Stage 2 gain = 1 + 10k/1k = 11</td></tr>
+      <tr><td class="mono">R13 + C7</td><td>1 kΩ in series with 10 µF</td><td>U1 pin 6</td><td>GND</td><td>Stage 2 AC gain; DC stays at 1.65 V</td></tr>
+      <tr><td class="mono">U1</td><td>MCP6002 DIP-8 in a socket</td><td>pin 8 → AUD_3V3 · pin 4 → GND</td><td>pin 7 → <b>A2</b></td><td>Total gain ≈ 231 (47 dB)</td></tr>
+    </tbody></table></div>
+  <p class="small">The electrolytic 10 µF caps C4, C5 and C7 sit at 1.65 V, so their + lead goes toward the op-amp/VMID side and the − stripe to GND. 10 µF ceramics avoid the polarity question. Bench check: with the hydrophone in a bucket and tapped, A2 should swing around 1.65 V without clipping at 0 V or 3.3 V. If it clips, lower R10 to 10 kΩ †.</p>
+
+  <h3>7E · Battery pack → Feather BAT (Stage 6; remove the Feather's charger first)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part / value</th><th>From</th><th>To</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">BT1, BT2</td><td>Saft LS33600 with solder tabs</td><td>+ tab</td><td>D1 / D2 VIN</td><td>22 AWG stranded red, solder to the <b>tab only</b>, HS</td></tr>
+      <tr><td class="mono">BT1, BT2</td><td>Cell − tabs</td><td>− tab</td><td>Pack GND bus</td><td>22 AWG stranded black, HS</td></tr>
+      <tr><td class="mono">D1, D2</td><td>LM66100 ideal diode on SC-70-6 adapter †</td><td>VIN ← cell + · GND → pack − · CE → GND (enabled, check datasheet) †</td><td>VOUT → common + node</td><td>Solder</td></tr>
+      <tr><td class="mono">F1</td><td>PTC resettable fuse, 0.5 A hold (e.g. Bourns MF-R050) †</td><td>Common + node</td><td>P1 red</td><td>Solder inline, HS</td></tr>
+      <tr><td class="mono">P1</td><td>JST-PH 2-pin cable with tinned ends (Adafruit 261)</td><td>red ← F1 · black ← pack −</td><td>Plugs into the Feather's battery jack</td><td>Solder + HS, then plug</td></tr>
+    </tbody></table></div>
+  <p class="small">Never solder to the cell body and never short a cell. Before plugging in, measure P1: red should read +3.5 to 3.7 V relative to black. Cable-tie and foam-pad both cells in the bay, and store spares in the fire bag.</p>
+
+  <h3>7F · Antenna and board stack (Stages 1, 4, 8)</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ref</th><th>Part</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">H1, H2</td><td>Stacking headers 2830 (×2)</td><td>Solder onto the M0 and the Adalogger, sockets facing up. Keep the pins straight by plugging them into a breadboard while soldering.</td></tr>
+      <tr><td class="mono">H3</td><td>Male headers, 12 + 16 pin</td><td>Solder on the bottom of the Proto board so it plugs into the Adalogger sockets. Use the board's own headers or lab stock.</td></tr>
+      <tr><td class="mono">CR1</td><td>CR1220 coin cell</td><td>Into the Adalogger holder, + side up.</td></tr>
+      <tr><td class="mono">ANT-b</td><td>Spring antenna 4269 (bench)</td><td>Solder to the M0 ANT pad. Remove it before fitting the uFL path.</td></tr>
+      <tr><td class="mono">ANT-d</td><td>uFL 1661 → cable 851 → whip</td><td>Solder 1661 to the M0 uFL footprint (fine tip, flux). Snap on 851, put its SMA through the lid and tighten the nut, then screw on the whip.</td></tr>
+      <tr><td class="mono">SS</td><td>Shore: ESP32-S3 + LoRa wing</td><td>Stacking headers on the ESP32-S3. On the wing, bridge the CS, RST and IRQ jumpers to the pins in the firmware, and solder the spring antenna.</td></tr>
+    </tbody></table></div>
+
+  <h3>Build order (follows the Electronics Build and Test Plan)</h3>
+  <ol class="notes">
+    <li><b>Stage 1:</b> headers on the M0 and the Adalogger, coin cell in. On a breadboard: DS18B20 + R1, SHT40 via 4209, turbidity straight to 3V and A1. Get first readings over USB.</li>
+    <li><b>Stage 2:</b> measure sleep and active current with the meter in series.</li>
+    <li><b>Stage 3:</b> build Q1 + R2 + C1 + C2 on the breadboard and check that D11 LOW turns the sensor on. Then remove the Feather's charger.</li>
+    <li><b>Stage 4:</b> spring antennas on both radios; shore jumpers bridged. Range test.</li>
+    <li><b>Stage 6:</b> build the battery pack (7E), check its polarity, then the 7-day run.</li>
+    <li><b>Stage 7:</b> breadboard the hydrophone front-end (7D), check A2, record test clips.</li>
+    <li><b>Stage 8:</b> move all circuits onto the Proto board, terminals and jack at the edges. Thread cables through the glands before terminating. Fit the uFL → SMA path. Conformal-coat the boards (keep coating off the connectors and the SD slot), add desiccant, seal.</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(function () {
+  // [section, item, part, description, qty, unitLow, unitHigh, status, source]
+  var mto = [
+    ["1 · Controller stack (buoy)"],
+    ["M0", "Adafruit 3178", "Feather M0 RFM95 LoRa 900 MHz", 1, 34.95, 34.95, "ordered", "Adafruit"],
+    ["AD", "Adafruit 2922", "Adalogger FeatherWing (RTC + microSD)", 1, 8.95, 8.95, "ordered", "Adafruit"],
+    ["PR", "Adafruit 2884", "FeatherWing Proto (interface circuits)", 1, 4.95, 4.95, "ordered", "Adafruit"],
+    ["SH", "Adafruit 2830", "Stacking headers, 12 + 16 pin (M0, Adalogger)", 2, 1.25, 1.25, "ordered", "Adafruit"],
+    ["SD", "Adafruit 5250", "128 MB microSD (bench logging)", 1, 3.95, 3.95, "ordered", "Adafruit"],
+    ["CC", "Mouser 658-CR1220", "CR1220 3 V coin cell (RTC backup)", 1, 1.01, 1.01, "mouser", "Mouser"],
+    ["2 · Sensors"],
+    ["TS", "Adafruit 381", "DS18B20 waterproof probe (incl. 4.7 kΩ)", 1, 9.95, 9.95, "ordered", "Adafruit"],
+    ["TB", "Mouser 713-101020752", "Seeed Grove turbidity sensor (3.3 V)", 1, 20.80, 20.80, "mouser", "Mouser"],
+    ["TC", "Mouser 713-110990210", "Grove → male jumper cable, 5-pack", 1, 3.19, 3.19, "mouser", "Mouser"],
+    ["HS", "Adafruit 4885", "SHT40 humidity + temperature", 1, 5.95, 5.95, "ordered", "Adafruit"],
+    ["HC", "Adafruit 4209", "STEMMA QT → male header cable", 1, 0.95, 0.95, "ordered", "Adafruit"],
+    ["HY", "Aquarian H2dM", "H2dM hydrophone, 3.5 mm PIP, 6 m cable, decided 2026-10-12 (base $229 + cable option)", 1, 229.00, 249.00, "later", "Aquarian Audio"],
+    ["3 · Interface circuits (on the Proto board)"],
+    ["Q1, Q2", "Mouser 621-DMG2305UX-7", "P-MOSFET, SOT-23 (sensor + audio power)", 2, 0.40, 0.40, "mouser", "Mouser"],
+    ["AD1", "SparkFun BOB-00717", "SOT-23 to DIP adapter", 2, 1.25, 1.25, "mouser", "SparkFun / Mouser"],
+    ["U1", "MCP6002-I/P", "Dual rail-to-rail op-amp, DIP-8 (preamp)", 1, 0.40, 0.60, "later", "DigiKey / Mouser"],
+    ["J1", "Adafruit 1699", "3.5 mm stereo jack breakout (L = tip)", 1, 0.95, 0.95, "later", "Adafruit"],
+    ["T1", "3-pin 5 mm screw terminal", "DS18B20 lead terminal", 1, 0.50, 1.00, "lab", "Lab"],
+    ["R1–R13", "¼ W 1 % metal film", "4.7 k (with probe), 100 k ×3, 10 k ×3, 1 k ×2, 1.1 k, 1.5 k, 20 k, 100 Ω", 1, 0, 10, "lab", "Lab or resistor kit"],
+    ["C1–C10", "Capacitors", "100 µF 10 V elec.; 10 µF ×5; 1 µF ceramic; 0.1 µF ×2; 10 nF", 1, 0, 10, "lab", "Lab or cap kit"],
+    ["U1S", "DIP-8 socket", "So the op-amp can be swapped", 1, 0, 0.50, "lab", "Lab"],
+    ["H3", "Male header 12 + 16 pin", "Proto → Adalogger (if the Proto ships without)", 1, 0, 0.50, "lab", "Lab / Adafruit"],
+    ["WR1", "22 AWG solid hookup wire", "Point-to-point wiring on the Proto board", 1, 0, 16, "lab", "Lab / Adafruit"],
+    ["WR2", "22 AWG stranded, red + black", "Battery pack leads", 1, 0, 8, "lab", "Lab"],
+    ["4 · Power"],
+    ["BT", "Saft LS33600 (solder tabs)", "3.6 V Li-SOCl₂ D cell, 17 Ah", 2, 22.00, 35.00, "later", "BatteryGuy / DigiKey"],
+    ["D1, D2", "TI LM66100 (SC-70-6)", "Ideal diode per cell", 2, 0.60, 1.20, "later", "DigiKey / Mouser"],
+    ["AD2", "SC-70-6 to DIP adapter", "Lets the LM66100 go on perfboard", 2, 1.50, 4.00, "later", "DigiKey / Chip Quik"],
+    ["F1", "Bourns MF-R050 PTC (0.5 A hold) †", "Resettable fuse at the pack", 1, 0.50, 1.50, "later", "DigiKey / Mouser"],
+    ["P1", "Adafruit 261", "JST-PH 2-pin cable (pack plug + bench lead)", 2, 0.75, 0.75, "ordered", "Adafruit"],
+    ["BB", "Adafruit 4654", "MiniBoost 5 V (backup only)", 1, 3.95, 3.95, "ordered", "Adafruit"],
+    ["HZ", "Hazmat shipping", "Lithium-metal cells ship ground only", 1, 10.00, 30.00, "later", "Seller"],
+    ["5 · RF / antenna"],
+    ["A1", "Adafruit 4269", "Spring antenna 915 MHz (buoy + shore bench)", 2, 0.95, 0.95, "ordered", "Adafruit"],
+    ["A2", "Adafruit 1661", "uFL SMT connector (on the M0)", 1, 0.75, 0.75, "ordered", "Adafruit"],
+    ["A3", "Adafruit 851", "SMA (panel) to uFL cable", 1, 3.95, 3.95, "ordered", "Adafruit"],
+    ["A4", "915 MHz whip, SMA male, ≤ 2.15 dBi", "Deployed antenna on the lid", 1, 10.00, 15.00, "later", "DigiKey / Mouser"],
+    ["6 · Shore station"],
+    ["SS1", "Adafruit 5477", "ESP32-S3 Feather 4 MB / 2 MB PSRAM", 1, 17.50, 17.50, "ordered", "Adafruit"],
+    ["SS2", "Adafruit 3231", "LoRa Radio FeatherWing RFM95W 900 MHz", 1, 19.95, 19.95, "ordered", "Adafruit"],
+    ["SS3", "Adafruit 2830", "Stacking headers (shore stack)", 1, 1.25, 1.25, "ordered", "Adafruit"],
+    ["SS4", "USB-C data cable + 5 V adapter", "Shore power", 1, 0, 10.00, "lab", "Team / lab"],
+    ["7 · Housing electrical consumables"],
+    ["CG", "Cable glands G1–G3", "From lab stock (decision 2026-09-24)", 3, 0, 0, "lab", "Lab"],
+    ["MS", "industrial microSD 16–32 GB", "Deployment logging incl. audio", 1, 12.00, 18.00, "later", "DigiKey / Mouser"],
+    ["CO", "Silicone conformal coating", "Protects boards from condensation", 1, 15.00, 22.00, "later", "DigiKey / Amazon"],
+    ["DS", "Silica-gel desiccant packs", "Keeps the housing dry", 1, 5.00, 8.00, "later", "Amazon"],
+    ["8 · Optional (recommended)"],
+    ["OP1", "Adafruit 3178", "Second Feather M0 so firmware and hardware work in parallel", 1, 34.95, 34.95, "opt", "Adafruit"],
+    ["OP2", "Spares kit", "DS18B20, turbidity sensor, microSD, antenna", 1, 60.00, 70.00, "opt", "Adafruit / Mouser"],
+    ["9 · Shipping and tax already paid"],
+    ["SH1", "Invoice 3758294", "Adafruit shipping $7.70 + tax $11.98", 1, 19.68, 19.68, "ordered", "Adafruit"]
+  ];
+  var statusLabel = { ordered: "Ordered", mouser: "Mouser", later: "Later", lab: "Lab", opt: "Optional" };
+  function money(v) { return "$" + v.toFixed(2); }
+  function range(lo, hi) { return Math.abs(hi - lo) < 0.005 ? money(lo) : money(lo) + "–" + money(hi).slice(1); }
+  function cell(tag, text, cls) { var c = document.createElement(tag); if (cls) c.className = cls; c.textContent = text; return c; }
+  var tb = document.querySelector("#mto tbody");
+  var secLo = 0, secHi = 0, secName = null;
+  var tot = { lo: 0, hi: 0, req: { lo: 0, hi: 0 }, byStatus: {} };
+  function closeSection() {
+    if (secName === null) return;
+    var tr = document.createElement("tr"); tr.className = "sub";
+    tr.appendChild(cell("td", "Subtotal — " + secName.replace(/^\d+ · /, ""))); var c = cell("td", ""); c.colSpan = 4; tr.appendChild(c);
+    tr.appendChild(cell("td", range(secLo, secHi), "num")); var c2 = cell("td", ""); c2.colSpan = 2; tr.appendChild(c2);
+    tb.appendChild(tr);
+  }
+  mto.forEach(function (r) {
+    if (r.length === 1) {
+      closeSection(); secName = r[0]; secLo = 0; secHi = 0;
+      var tr = document.createElement("tr"); tr.className = "sec"; var td = cell("td", r[0]); td.colSpan = 8; tr.appendChild(td); tb.appendChild(tr); return;
+    }
+    var lo = r[3] * r[4], hi = r[3] * r[5];
+    secLo += lo; secHi += hi; tot.lo += lo; tot.hi += hi;
+    if (r[6] !== "opt") { tot.req.lo += lo; tot.req.hi += hi; }
+    var b = tot.byStatus[r[6]] || (tot.byStatus[r[6]] = { lo: 0, hi: 0 }); b.lo += lo; b.hi += hi;
+    var tr = document.createElement("tr");
+    tr.appendChild(cell("td", r[0], "mono")); tr.appendChild(cell("td", r[1])); tr.appendChild(cell("td", r[2]));
+    tr.appendChild(cell("td", String(r[3]), "num")); tr.appendChild(cell("td", range(r[4], r[5]), "num")); tr.appendChild(cell("td", range(lo, hi), "num"));
+    var st = cell("td", ""); var sp = cell("span", statusLabel[r[6]], "status st-" + r[6]); st.appendChild(sp); tr.appendChild(st);
+    tr.appendChild(cell("td", r[7])); tb.appendChild(tr);
+  });
+  closeSection();
+  function grand(label, lo, hi) {
+    var tr = document.createElement("tr"); tr.className = "grand";
+    var a = cell("td", label); a.colSpan = 5; tr.appendChild(a); tr.appendChild(cell("td", range(lo, hi), "num"));
+    var c = cell("td", ""); c.colSpan = 2; tr.appendChild(c); tb.appendChild(tr);
+  }
+  var s = tot.byStatus;
+  grand("Spent so far (Adafruit, incl. shipping + tax)", s.ordered.lo, s.ordered.hi);
+  grand("To place now (Mouser)", s.mouser.lo, s.mouser.hi);
+  grand("Planned follow-up orders", s.later.lo, s.later.hi);
+  grand("TOTAL — prototype electronics (required)", tot.req.lo, tot.req.hi);
+  grand("TOTAL — including optional items", tot.lo, tot.hi);
+
+  // Equipment: [section] or [item, purpose, qty, lowCost, highCost, source] ; source 'Lab'/'Have' = 0 to buy
+  var eto = [
+    ["A · Soldering and assembly"],
+    ["Temperature-controlled soldering station", "Headers, SOT-23 adapters, uFL connector", 1, 0, 0, "Lab"],
+    ["Fine conical / 1 mm chisel tips", "SOT-23 MOSFETs and the uFL pads", 1, 0, 8, "Lab or buy"],
+    ["Rosin-core solder, 0.5–0.8 mm", "All joints", 1, 8, 12, "Buy"],
+    ["Flux pen", "Small SMD joints (SOT-23, uFL)", 1, 6, 9, "Buy"],
+    ["Desoldering braid", "Removing the MCP73831 charger, fixing bridges", 1, 4, 6, "Buy"],
+    ["ESD-safe fine tweezers", "Placing SOT-23 parts", 1, 5, 8, "Buy"],
+    ["Helping hands / PCB holder", "Holding boards while soldering", 1, 0, 15, "Lab or buy"],
+    ["Flush cutters + wire strippers", "Leads, jumper wires", 1, 0, 18, "Lab or buy"],
+    ["Heat-shrink assortment", "Insulating battery and sensor leads", 1, 6, 9, "Buy"],
+    ["Hot-air / heat gun", "Shrinking heat-shrink, removing the charger chip", 1, 0, 0, "Lab"],
+    ["Fume extractor", "Soldering safety", 1, 0, 0, "Lab"],
+    ["B · Test and measurement"],
+    ["Digital multimeter with µA range", "Sleep current, voltages, continuity", 1, 0, 0, "Lab"],
+    ["Current-limited bench power supply", "3.6 V stand-in for the D cells", 1, 0, 0, "Lab"],
+    ["Oscilloscope", "Inrush, rail dips, preamp signal", 1, 0, 0, "Lab"],
+    ["Power profiler (e.g. Nordic PPK2)", "Logs µA sleep current over a whole wake cycle (optional, strongly recommended)", 1, 0, 100, "Optional buy"],
+    ["Reference thermometer", "Checks DS18B20 ±0.5 °C", 1, 10, 20, "Buy"],
+    ["Micro-USB + USB-C data cables", "Programming the M0 and the ESP32-S3", 2, 0, 10, "Have / buy"],
+    ["Laptop with Arduino IDE / PlatformIO", "Firmware upload, serial monitor", 1, 0, 0, "Have"],
+    ["C · Prototyping"],
+    ["Full-size breadboards", "Bench builds, buoy and shore", 2, 0, 10, "Have / lab"],
+    ["Jumper wire kit + alligator clips", "Bench wiring and probing", 1, 0, 10, "Have / lab"],
+    ["D · Water testing"],
+    ["Test tank or bucket (≈ 20 L)", "Sensor tests in water", 1, 0, 0, "Lab fish tank"],
+    ["Sea salt + hydrometer", "Seawater at the right salinity", 1, 10, 18, "Buy"],
+    ["Kaolin clay (or clean soil)", "Clear vs turbid water check", 1, 0, 8, "Buy / free"],
+    ["Ice + warm water", "Temperature step tests", 1, 0, 0, "Have"],
+    ["E · Safety"],
+    ["Safety glasses", "Soldering, lithium cells", 1, 0, 8, "Lab or buy"],
+    ["Fire-resistant battery bag", "Storing the lithium D cells", 1, 10, 15, "Buy"],
+    ["ESD wrist strap + mat", "Protecting the boards", 1, 0, 20, "Lab or buy"]
+  ];
+  var et = document.querySelector("#eto tbody");
+  var eLo = 0, eHi = 0, eSecLo = 0, eSecHi = 0, eName = null;
+  function eClose() {
+    if (eName === null) return;
+    var tr = document.createElement("tr"); tr.className = "sub";
+    tr.appendChild(cell("td", "Subtotal — " + eName.replace(/^[A-E] · /, ""))); var c = cell("td", ""); c.colSpan = 2; tr.appendChild(c);
+    tr.appendChild(cell("td", "$0 · fallback " + range(eSecLo, eSecHi), "num")); tr.appendChild(cell("td", "")); et.appendChild(tr);
+  }
+  eto.forEach(function (r) {
+    if (r.length === 1) { eClose(); eName = r[0]; eSecLo = 0; eSecHi = 0; var tr = document.createElement("tr"); tr.className = "sec"; var td = cell("td", r[0]); td.colSpan = 5; tr.appendChild(td); et.appendChild(tr); return; }
+    var lo = r[2] * r[3], hi = r[2] * r[4]; eSecLo += lo; eSecHi += hi; eLo += lo; eHi += hi;
+    var tr = document.createElement("tr");
+    tr.appendChild(cell("td", r[0])); tr.appendChild(cell("td", r[1])); tr.appendChild(cell("td", String(r[2]), "num"));
+    tr.appendChild(cell("td", hi === 0 ? "—" : range(lo, hi), "num")); tr.appendChild(cell("td", /^Have/.test(r[5]) ? "Team (own)" : "Lab (borrow)")); et.appendChild(tr);
+  });
+  eClose();
+  function egrand(label, val) {
+    var g = document.createElement("tr"); g.className = "grand";
+    var a = cell("td", label); a.colSpan = 3; g.appendChild(a);
+    g.appendChild(cell("td", val, "num")); g.appendChild(cell("td", "")); et.appendChild(g);
+  }
+  egrand("TOTAL expected equipment spend (all borrowed from the lab)", "$0.00");
+  egrand("Fallback only, if the lab is missing an item", range(eLo, eHi));
+})();
+</script>

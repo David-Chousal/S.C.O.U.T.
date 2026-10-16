@@ -239,6 +239,19 @@ pull and check; the update flags every number that depends on them as an estimat
 | `ti-pcm1808` | Texas Instruments. *PCM1808* audio ADC datasheet (SLES177). [pdf](https://www.ti.com/lit/gpn/pcm1808) | 🔓 | — | Analog supply 4.5–5.5 V, why it is not the default 3.3 V audio path |
 | `sandia-sand87-7023` | Sandia National Laboratories. SAND87-7023, *Stand-Alone Photovoltaic Systems: A Handbook of Recommended Design Practices* | ❓ | — | PV sizing and days-of-autonomy formulas (solar comparison only) |
 
+## Electronics interfaces (2026-10-12)
+
+Sources behind the [Electronics Drawing Set](../../engineering/electronics-drawing-set.md) and the
+Sensor Interface Review. Datasheets listed under Power system above are not repeated.
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `aquarian-h2dm-guide` | Aquarian Audio. *H2dM Hydrophone User's Guide*, and the [H2d product page](https://www.aquarianaudio.com/h2d-hydrophone.html) ($229 base, 2026-10) | 🔓 | — | 3.5 mm TRS dual-mono output; −172 dB re 1 V/µPa; 1.1 kΩ output impedance; minimum plug-in power 2 V, 0.7 mA; under 80 m. Sets the bias circuit and preamp gain |
+| `adafruit-feather-m0-lora-pinouts` | Adafruit. "Feather M0 Radio with LoRa Radio Module", [Pinouts](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/pinouts) | 🔓 | — | A1–A5 work as analog inputs and digital I/O; the radio uses #8, #3 and #4 internally. This is why A3 can be the audio power switch |
+| `adafruit-381` | Adafruit. Waterproof DS18B20 probe (PID 381), [product page](https://www.adafruit.com/product/381) | 🔓 | — | 3-wire colours (red VDD; black or blue GND; yellow or white data); 4.7 kΩ pull-up included; 91 cm cable |
+| `adafruit-261-851-1661-1699` | Adafruit product pages for PIDs [261](https://www.adafruit.com/product/261), [851](https://www.adafruit.com/product/851), [1661](https://www.adafruit.com/product/1661), [1699](https://www.adafruit.com/product/1699) | 🔓 | — | 261: JST-PH female with tinned ends (battery plug). 851: uFL to panel-mount SMA (not RP-SMA), 15 cm RG178. 1661: uFL SMT connector. 1699: 3.5 mm stereo jack breakout |
+| `dmg2305ux-ds36196` | Diodes Inc. *DMG2305UX* datasheet DS36196 rev 8-2 (July 2021) | 🔓 | — | P-channel; V<sub>GS(th)</sub> −0.5 to −0.9 V; R<sub>DS(on)</sub> ≤ 100 mΩ at −2.5 V; I<sub>DSS</sub> ≤ 1 µA. Confirms gate LOW = on from a 3.3 V pin |
+
 ## Market & commercial landscape
 
 Used 2026-08-24 for the [Market Analysis](../../research/market-analysis.md). These are budget

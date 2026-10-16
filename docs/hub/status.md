@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-09.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-12.**
 
 ---
 
@@ -64,7 +64,7 @@ open Phase 0 issue. Full plan:
    Scout and the shore station, placed after the Shoba design review
    ([SCO-116](https://linear.app/scout1/issue/SCO-116)).
    [SCO-115](https://linear.app/scout1/issue/SCO-115)
-4. **Hydrophone part number** (H2a-XLR vs H2dM) — blocks the audio front-end and BOM order.
+4. **Hydrophone** — *decided 2026-10-12:* Aquarian H2dM with a 6 m cable, on the 3.3 V rail through a 1.1 kΩ bias resistor ([Electronics Drawing Set](../engineering/electronics-drawing-set.md)). The purchase now waits only on funding (November).
    [SCO-8](https://linear.app/scout1/issue/SCO-8)
 5. **SEN0189 analog front end must be non-inverting** — an inverting stage would silently
    invert every downstream turbidity interpretation with no error anywhere. The Rev A divider
