@@ -7,9 +7,10 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-09-24 — seven entries pending**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-15 — eight entries pending**
 > (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
-> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting).
+> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting, 17 electronics
+> housing packaging page).
 >
 > ⛔ **Notion is currently write-blocked — the workspace has used all of its free-plan blocks.**
 > Confirmed 2026-09-24: every write is refused, including an in-place edit of an existing table
@@ -46,6 +47,18 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > to the wrong workspace and could only queue rather than push. **If a session can reach the
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
+
+### 17 · Electronics housing packaging page · queued 2026-10-15
+
+- [ ] **Target:** a new page **Electronics Housing Packaging** under Notion → *Engineering*.
+- **Why queued:** a direct push on 2026-10-15 was refused (free-plan blocks used up, same as entry 16).
+- **Payload:** copy
+  [`mechanical/cad/electronics-housing/packaging/README.md`](../../mechanical/cad/electronics-housing/packaging/README.md)
+  whole; paste the Markdown tables as they are (importer converts them). Add the summary callout naming the
+  source file. Point the two repo links (3D explorer, options SVG) at their GitHub blob URLs: the explorer
+  is an HTML file, so it is downloaded from GitHub rather than embedded.
+- **Also update:** Hub → *Decision Log* (2026-10-15 row for option C), Hub → *Design Notes* (new row),
+  Hub → *Open Questions* (turbidity board location), and the 2026-10-15 journal snapshot.
 
 ### 16 · 2026-09-24 SCOUT Weekly · queued 2026-09-24
 
