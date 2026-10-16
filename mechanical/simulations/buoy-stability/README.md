@@ -23,6 +23,13 @@ and the current configuration (~1 min). Open `results/<date>/stability-explorer.
 browser for the interactive version: a housing-mass slider, cap height (3.0 / 1.5 / none), and
 ballast on/off.
 
+## Printed-float tip explorer (added 2026-10-14)
+
+For the battery-only printed-float redesign: [`printed-float-tip-explorer/`](printed-float-tip-explorer/README.md).
+Open **[`printed-float-tip-explorer.html`](printed-float-tip-explorer/printed-float-tip-explorer.html)** in a browser: drag the
+heel slider or press Play to tilt the buoy and see G, B, the righting arm and where it tips, with mass sliders. It has its own
+solver and float STEP, separate from the v5/v6 explorer below.
+
 ## Every iteration, side by side (added 2026-10-07)
 
 The explorer has a slider (◀ ▶ or the arrow keys) that steps through **every floatation/buoy iteration,
