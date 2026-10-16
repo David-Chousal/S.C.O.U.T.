@@ -7,9 +7,10 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-06 — nine entries pending**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-15 — eleven entries pending**
 > (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
-> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting, 17 the 2026-10-05 power budget, 18 the electronics build plan).
+> 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting, 17 electronics
+> housing packaging page, 18 the 2026-10-05 power budget, 19 the electronics build plan, 20 the electronics drawing set).
 >
 > ⛔ **Notion is currently write-blocked — the workspace has used all of its free-plan blocks.**
 > Confirmed 2026-09-24: every write is refused, including an in-place edit of an existing table
@@ -47,7 +48,7 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
 
-### 19 · Electronics Drawing Set + hydrophone decision + purchase log · queued 2026-10-12
+### 20 · Electronics Drawing Set + hydrophone decision + purchase log · queued 2026-10-12
 
 - **Notion pages** — Engineering → new page *Electronics Drawing Set and Sensor Interface Review*
   (attach the two PDFs); Planning → *Purchase Log*; Hub → *Decision Log*, *Canonical Facts*,
@@ -57,9 +58,9 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   [`facts.md`](facts.md), [`status.md`](status.md), [`research/sources.md`](research/sources.md).
 - **What changed** — Aquarian H2dM with a 6 m cable decided; A3 audio switch and A2 preamp output;
   sensor gates LOW = on (SCO-186); takeoff totals. Still write-blocked (free-block limit), same as
-  entries 16–18.
+  entries 16–19.
 
-### 18 · Electronics Build and Test Plan + 2026-10-06 decisions · queued 2026-10-06
+### 19 · Electronics Build and Test Plan + 2026-10-06 decisions · queued 2026-10-06
 
 - **Notion pages** — Engineering → new page *Electronics Build and Test Plan*; Planning → new page *ECE Work Plan 2026–27*; Hub → *Decision
   Log*, *Canonical Facts*, *Project Status*; Planning → *Team Timeline* (Phase 1/2 ECE notes);
@@ -69,9 +70,9 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   [`../planning/team-timeline.md`](../planning/team-timeline.md).
 - **What changed** — two D cells + standby (no TPL5111), Grove 3.3 V turbidity, all-3.3 V
   prototype, hydrophone 3.5 mm direction, bench parts ordered. Still write-blocked (free-block
-  limit), same as entries 16–17.
+  limit), same as entries 16–18.
 
-### 17 · Power Budget Update 2026-10-05 + ADR-0007 · queued 2026-10-05
+### 18 · Power Budget Update 2026-10-05 + ADR-0007 · queued 2026-10-05
 
 - **Notion pages** — Engineering → new page *Power Budget Update — 2026-10-05 (Draft)*; ADRs →
   new *ADR-0007*; Hub → *Decision Log*, *Canonical Facts*, *Project Status*.
@@ -84,6 +85,18 @@ full rule, including why a push through the Notion **API** needs the opposite tr
   free-block limit as entry 16.
 - **How to clear it** — mirror the two new pages with a summary callout at the top, then regenerate
   the Hub pages per entry 16.
+
+### 17 · Electronics housing packaging page · queued 2026-10-15
+
+- [ ] **Target:** a new page **Electronics Housing Packaging** under Notion → *Engineering*.
+- **Why queued:** a direct push on 2026-10-15 was refused (free-plan blocks used up, same as entry 16).
+- **Payload:** copy
+  [`mechanical/cad/electronics-housing/packaging/README.md`](../../mechanical/cad/electronics-housing/packaging/README.md)
+  whole; paste the Markdown tables as they are (importer converts them). Add the summary callout naming the
+  source file. Point the two repo links (3D explorer, options SVG) at their GitHub blob URLs: the explorer
+  is an HTML file, so it is downloaded from GitHub rather than embedded.
+- **Also update:** Hub → *Decision Log* (2026-10-15 row for option C), Hub → *Design Notes* (new row),
+  Hub → *Open Questions* (turbidity board location), and the 2026-10-15 journal snapshot.
 
 ### 16 · 2026-09-24 SCOUT Weekly · queued 2026-09-24
 

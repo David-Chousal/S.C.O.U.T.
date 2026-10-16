@@ -51,8 +51,8 @@ open Phase 0 issue. Full plan:
    power bench bring-up, battery/solar sizing, and firmware battery thresholds. **Now also
    weighing a non-rechargeable multi-year primary lithium cell with no solar** (raised by Shoba
    and Dr. Wolfe, 2026-09-30). **2026-10-05:** the power budget is done and the working
-   decision is a 3.6 V Li-SOCl₂ D cell + TPL5111 power-gating (fallback two D cells), recorded
-   as 🟡 Open in [ADR-0007](../decisions/0007-primary-cell-power-source.md) and reviewed with
+   decision is a 3.6 V Li-SOCl₂ D cell + TPL5111 power-gating (fallback two D cells); **2026-10-06:** now two
+   D cells + firmware standby, TPL5111 dropped. Recorded as 🟡 Open in [ADR-0007](../decisions/0007-primary-cell-power-source.md) and reviewed with
    Shoba that day ([SCO-116](https://linear.app/scout1/issue/SCO-116),
    [Power Budget Update](../engineering/power-budget-update-2026-10-05.md)). Not final until the
    sleep floor is measured ([SCO-23](https://linear.app/scout1/issue/SCO-23)).

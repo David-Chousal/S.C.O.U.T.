@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCOUT Printed-Float Tip Explorer</title>
+<style>
+:root{--bg:#fff;--card:#f4f3ef;--text:#1f1f1d;--muted:#5f5e5a;--border:#d3d1c7;--float:#d9d2c3;--hous:#9db8d2}
+@media (prefers-color-scheme: dark){:root{--bg:#1c1c1a;--card:#2a2a28;--text:#f1efe8;--muted:#b4b2a9;--border:#444441;--float:#5a564b;--hous:#3c5a78}}
+body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:760px}
+h1{font-size:20px;font-weight:500;margin:0 0 4px}
+p.note{font-size:13px;color:var(--muted);margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.card{background:var(--card);border-radius:8px;padding:8px 12px;min-width:92px}
+.card .l{font-size:12px;color:var(--muted)}.card .v{font-size:18px;font-weight:500}
+.ctl{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:14px}
+.ctl label{width:150px;flex:none}.ctl input[type=range]{flex:1;min-width:120px}.ctl .val{width:70px;text-align:right;font-weight:500}
+button{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer}
+#status{font-size:15px;font-weight:500;margin:6px 0 4px;min-height:22px}
+svg text{fill:var(--text);font-size:12px}
+details{margin:10px 0;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h1>Printed-float buoy: tip explorer</h1>
+<p class="note">Drag the heel slider (or press Play) to tilt the buoy. The waterline stays level; G is the center of gravity and B the center of buoyancy. When B swings out past G on the low side the buoy rights itself; if it swings the other way it keeps going over. Hull from the committed float STEP, masses are estimates.</p>
+<div class="ctl"><label for="ang">Heel angle</label><input id="ang" type="range" min="0" max="180" step="1" value="0"><span class="val" id="angv">0°</span><button id="play">Play</button></div>
+<div id="status"></div>
+<div class="row">
+<div class="card"><div class="l">Total mass</div><div class="v" id="rM">–</div></div>
+<div class="card"><div class="l">Draft</div><div class="v" id="rT">–</div></div>
+<div class="card"><div class="l">Freeboard</div><div class="v" id="rF">–</div></div>
+<div class="card"><div class="l">GM</div><div class="v" id="rGM">–</div></div>
+<div class="card"><div class="l">GZ now</div><div class="v" id="rGZ">–</div></div>
+<div class="card"><div class="l">Max GZ</div><div class="v" id="rMx">–</div></div>
+<div class="card"><div class="l">Tips over at</div><div class="v" id="rV">–</div></div>
+</div>
+<svg id="sv" width="100%" viewBox="0 0 700 460" role="img" aria-label="Buoy cross-section tilted by the heel angle"></svg>
+<svg id="cv" width="100%" viewBox="0 0 700 230" role="img" aria-label="Righting arm versus heel angle"></svg>
+<div style="margin-top:8px">
+<div class="ctl"><label for="floatG">Printed float</label><input id="floatG" type="range" min="600" max="2200" step="1" value="1154"><span class="val" id="floatGv"></span></div>
+<div class="ctl"><label for="battG">Battery mass</label><input id="battG" type="range" min="50" max="600" step="10" value="250"><span class="val" id="battGv"></span></div>
+<div class="ctl"><label for="battH">Battery height in housing</label><input id="battH" type="range" min="5" max="120" step="5" value="25"><span class="val" id="battHv"></span></div>
+<div class="ctl"><label for="podG">Turbidity pod</label><input id="podG" type="range" min="0" max="600" step="10" value="217"><span class="val" id="podGv"></span></div>
+<div class="ctl"><label for="podDepth">Pod depth below keel</label><input id="podDepth" type="range" min="0" max="14" step="0.5" value="4"><span class="val" id="podDepthv"></span></div>
+<div class="ctl"><label for="ballG">Bottom ballast</label><input id="ballG" type="range" min="0" max="1500" step="25" value="0"><span class="val" id="ballGv"></span></div>
+<div class="ctl"><label for="epoxyG">Epoxy + coating</label><input id="epoxyG" type="range" min="0" max="800" step="10" value="330"><span class="val" id="epoxyGv"></span></div>
+</div>
+<details><summary>Assumptions</summary>Float chambers sealed and dry; no foam. Electronics masses from the repo budget stacked from the housing bottom up (housing 385 g, boards 176 g, glands 58 g, antenna 30 g). Mooring hardware 220 g at the keel; hydrophone element 150 g beside the pod. Ballast sits just above the keel inside the hull, with no buoyancy credit. Hull is treated as a body of revolution with the housing lid flange above the float top. Not covered: mooring heel, waves, flooding, biofouling.</details>
+<script>
+const D = {"zs": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 36.0, 37.0, 38.0, 39.0, 40.0, 41.0, 42.0, 43.0, 44.0, 45.0, 46.0, 47.0, 48.0, 49.0, 50.0, 51.0, 52.0, 53.0, 54.0, 55.0, 56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0, 63.0, 64.0, 65.0, 66.0, 67.0, 68.0, 69.0, 70.0, 71.0, 72.0, 73.0, 74.0, 75.0, 76.0, 77.0, 78.0, 79.0, 80.0, 81.0, 82.0, 83.0, 84.0, 85.0, 86.0, 87.0, 88.0, 89.0, 90.0, 91.0, 92.0, 93.0, 94.0, 95.0, 96.0, 97.0, 98.0, 99.0, 100.0, 101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0, 110.0, 111.0, 112.0, 113.0, 114.0, 115.0, 116.0, 117.0, 118.0, 119.0, 120.0, 121.0, 122.0, 123.0, 124.0, 125.0, 126.0, 127.0, 128.0, 129.0, 130.0, 131.0, 132.0, 133.0, 134.0, 135.0, 136.0, 137.0, 138.0, 139.0, 140.0, 141.0, 142.0, 143.0, 144.0, 145.0, 146.0, 147.0, 148.0, 149.0, 150.0, 151.0, 152.0, 153.0, 154.0, 155.0, 156.0, 157.0, 158.0, 159.0, 160.0, 161.0, 162.0, 163.0, 164.0, 165.0], "R": [89.9, 90.9, 91.9, 92.9, 93.9, 94.9, 95.9, 96.9, 97.9, 98.9, 99.9, 100.9, 101.9, 102.9, 103.9, 104.9, 105.9, 106.9, 107.9, 108.9, 109.9, 110.9, 111.9, 112.9, 113.6, 114.3, 114.4, 114.5, 114.6, 114.7, 114.8, 114.9, 115.0, 115.1, 115.1, 115.2, 115.3, 115.4, 115.5, 115.6, 115.7, 115.8, 115.8, 115.9, 116.0, 116.1, 116.2, 116.3, 116.4, 116.5, 116.5, 116.6, 116.7, 116.8, 116.9, 117.0, 117.1, 117.2, 117.2, 117.3, 117.4, 117.5, 117.6, 117.7, 117.8, 117.9, 117.9, 118.0, 118.1, 118.2, 118.3, 118.4, 118.5, 118.6, 118.6, 118.7, 118.8, 118.9, 119.0, 119.1, 119.2, 119.3, 119.3, 119.4, 119.5, 119.6, 119.7, 119.8, 119.9, 120.0, 120.0, 120.1, 120.2, 120.3, 120.4, 120.5, 120.6, 120.7, 120.7, 120.8, 120.9, 121.0, 121.1, 121.2, 121.3, 121.4, 121.4, 121.5, 121.6, 121.7, 121.8, 121.9, 122.0, 122.1, 122.1, 122.2, 122.3, 122.4, 122.5, 122.6, 122.7, 122.8, 122.8, 122.9, 123.0, 123.1, 123.2, 123.3, 123.4, 123.5, 123.5, 123.6, 123.7, 123.8, 123.9, 124.0, 124.1, 124.2, 124.2, 124.3, 124.3, 123.7, 123.2, 122.3, 121.4, 120.5, 119.5, 118.6, 117.7, 116.8, 115.9, 115.0, 114.0, 113.1, 112.2, 111.3, 110.4, 109.5, 108.5, 107.6, 106.7, 105.8, 104.9, 103.9, 103.0, 102.1], "floor": 25.4, "top": 165.1, "flangeR": 89.0, "flangeH": 33.0};
+// Pure solver shared by the explorer page and the node check. Units: mm, g.
+const RHO = 1.025, IN = 25.4, VOX = 4;
+function buildHull(D) {
+  const Rz = z => z <= D.top ? interp(D.zs, D.R, z) : D.flangeR;
+  const topF = D.top + D.flangeH, xs = [];
+  for (let x = -128; x <= 128; x += VOX) xs.push(x);
+  const Y = [], Z = [];
+  for (let z = VOX / 2; z < topF; z += VOX) {
+    const R = Rz(z);
+    for (const x of xs) for (const y of xs) if (x * x + y * y <= R * R) { Y.push(y); Z.push(z); }
+  }
+  return { Y: Float32Array.from(Y), Z: Float32Array.from(Z), Rz, dv: VOX ** 3 };
+}
+function interp(xs, ys, x) {
+  if (x <= xs[0]) return ys[0]; const n = xs.length; if (x >= xs[n - 1]) return ys[n - 1];
+  let lo = 0, hi = n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (xs[m] <= x) lo = m; else hi = m; }
+  return ys[lo] + (ys[hi] - ys[lo]) * (x - xs[lo]) / (xs[hi] - xs[lo]);
+}
+// items: [name, grams, z_mm_above_keel, net_factor]
+function items(D, p) {
+  const hb = D.floor, T = D.top, pd = p.podDepth * IN;
+  return [
+    ["Printed float", p.floatG, 0.36 * T, 1],
+    ["Housing body", 385, hb + 68, 1],
+    ["Battery", p.battG, hb + p.battH, 1],
+    ["Boards, wiring, sled", 175.8, hb + 60.8, 1],
+    ["Lid glands + bolts", 58, hb + 135, 1],
+    ["Antenna", 30, hb + 150, 1],
+    ["Epoxy + coating", p.epoxyG, 0.5 * T, 1],
+    ["Mooring hardware", 220, 0, 191.7 / 220],
+    ["External cabling", 60, -0.5 * IN, 16 / 60],
+    ["Sensor pod", p.podG, -pd, 0.30],
+    ["Hydrophone element", p.hydroG, -pd, 0.60],
+    ["Ballast", p.ballG, p.ballH, 1],
+  ];
+}
+function bulk(D, H, p) {
+  const it = items(D, p); let m = 0, w = 0, wz = 0;
+  for (const [, g, z, f] of it) { m += g; w += g * f; wz += g * f * z; }
+  const Vreq = w / 1000 / RHO * 1e6, KG = wz / w;
+  // upright waterline by integrating the revolution profile
+  const N = 3000, top = D.top + D.flangeH; let V = 0, M1 = 0, T = 0, dz = top / N, Vt = [];
+  for (let i = 0; i < N; i++) { const z = (i + .5) * dz, R = H.Rz(z); V += Math.PI * R * R * dz; M1 += Math.PI * R * R * z * dz; Vt.push([V, M1, z + dz / 2]); }
+  if (V < Vreq) return { sinks: true, mass: m / 1000 };
+  let k = 0; while (Vt[k][0] < Vreq) k++;
+  const [Vk, Mk, zk] = Vt[k]; const T2 = zk; const KB = Mk / Vk, BM = Math.PI * Math.pow(H.Rz(T2), 4) / 4 / Vk;
+  return { it, mass: m / 1000, Vreq, KG, draft: T2, KB, BM, GM: KB + BM - KG, freeboard: D.top - T2, n: Math.round(Vreq / H.dv) };
+}
+function atAngle(H, b, deg) {
+  const s = Math.sin(deg * Math.PI / 180), c = Math.cos(deg * Math.PI / 180), N = H.Y.length;
+  const zp = new Float32Array(N); for (let i = 0; i < N; i++) zp[i] = H.Y[i] * s + H.Z[i] * c;
+  const srt = Float32Array.from(zp).sort(), thr = srt[Math.min(N - 1, b.n - 1)];
+  let sy = 0, sz = 0, cnt = 0;
+  for (let i = 0; i < N; i++) if (zp[i] <= thr) { sy += H.Y[i] * c - H.Z[i] * s; sz += zp[i]; cnt++; }
+  const yB = sy / cnt, zB = sz / cnt, yG = -b.KG * s, zG = b.KG * c;
+  return { gz: -(yB - yG), yB, zB, yG, zG, thr, s, c };
+}
+function curve(H, b, step = 5) { const out = []; for (let a = 0; a <= 180; a += step) out.push([a, atAngle(H, b, a).gz]); return out; }
+function summarize(cv) {
+  let van = null, mx = [0, -1e9];
+  for (let k = 1; k < cv.length; k++) {
+    if (cv[k][1] > mx[1]) mx = cv[k];
+    if (cv[k][0] <= 175 && cv[k][1] < 0 && cv[k - 1][1] >= 0 && van === null)
+      van = cv[k - 1][0] + 5 * cv[k - 1][1] / (cv[k - 1][1] - cv[k][1]);
+  }
+  const g178 = cv.filter(a => a[0] >= 170).map(a => a[1]);
+  return { van, gzMax: mx[1], gzMaxDeg: mx[0], minNearInv: Math.min(...g178.slice(0, -1)) };
+}
+if (typeof module !== "undefined") module.exports = { buildHull, bulk, atAngle, curve, summarize, items, IN };
+
+const H = buildHull(D);
+const $ = id => document.getElementById(id), NS = "http://www.w3.org/2000/svg";
+const ids = ["floatG","battG","battH","podG","podDepth","ballG","epoxyG"], unit = {battH:" mm",podDepth:" in"};
+function params() { const p = {hydroG:150, ballH:12}; for (const k of ids) p[k] = +$(k).value; return p; }
+let B, CV, SUM, raf = 0;
+function recompute() {
+  const p = params();
+  for (const k of ids) $(k+"v").textContent = $(k).value + (unit[k] || " g");
+  B = bulk(D, H, p);
+  if (B.sinks) { $("status").textContent = "Too heavy: the buoy sinks."; return; }
+  CV = curve(H, B, 5); SUM = summarize(CV);
+  $("rM").textContent = B.mass.toFixed(2) + " kg"; $("rT").textContent = (B.draft/IN).toFixed(2) + " in";
+  $("rF").textContent = (B.freeboard/IN).toFixed(2) + " in"; $("rGM").textContent = (B.GM/IN).toFixed(2) + " in";
+  $("rMx").textContent = SUM.gzMax.toFixed(0) + " mm @ " + SUM.gzMaxDeg + "°";
+  $("rV").textContent = SUM.van === null ? "never" : SUM.van.toFixed(0) + "°";
+  draw();
+}
+const el = (n, a, par) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); par.appendChild(e); return e; };
+function draw() {
+  if (!B || B.sinks) return;
+  const deg = +$("ang").value; $("angv").textContent = deg + "°";
+  const r = atAngle(H, B, deg), c = r.c, s = r.s, k = 0.78, cx = 350, wy = 250;
+  const P = (x, z) => { const X = x*c - z*s, Z = x*s + z*c; return [cx + k*X, wy - k*(Z - r.thr)]; };
+  const svg = $("sv"); svg.innerHTML = "";
+  el("rect", {x:0, y:wy, width:700, height:460-wy, fill:"#378ADD", "fill-opacity":.14}, svg);
+  el("line", {x1:0, x2:700, y1:wy, y2:wy, stroke:"#185FA5", "stroke-dasharray":"5 3"}, svg);
+  const poly = (pts, fill, stroke) => el("polygon", {points: pts.map(q => P(q[0], q[1]).join(",")).join(" "), fill, stroke: stroke||"none", "stroke-width":1.5}, svg);
+  // float: outline of the revolution profile, socket cut out
+  const prof = []; for (let i = 0; i < D.zs.length; i++) prof.push([D.R[i], D.zs[i]]);
+  const outline = prof.concat(prof.slice().reverse().map(q => [-q[0], q[1]]));
+  poly(outline, "var(--float)", "#555");
+  poly([[-58, D.floor],[58, D.floor],[58, D.top],[-58, D.top]], "var(--bg)");
+  const hb = D.floor;
+  poly([[-56, hb],[56, hb],[56, hb+135],[-56, hb+135]], "var(--hous)", "#1f4e79");
+  poly([[-D.flangeR, D.top],[D.flangeR, D.top],[D.flangeR, D.top+D.flangeH],[-D.flangeR, D.top+D.flangeH]], "var(--hous)", "#1f4e79");
+  const bh = hb + +$("battH").value;
+  poly([[-30, bh],[30, bh],[30, bh+30],[-30, bh+30]], "#e0a458", "#7a4b00");
+  const pd = +$("podDepth").value * IN;
+  if (+$("podG").value > 0) { const l1 = P(0,0), l2 = P(0,-pd+40); el("line", {x1:l1[0], y1:l1[1], x2:l2[0], y2:l2[1], stroke:"#444", "stroke-width":2}, svg);
+    poly([[-20,-pd+40],[20,-pd+40],[20,-pd-40],[-20,-pd-40]], "#b0b0b0", "#222"); }
+  if (+$("ballG").value > 0) poly([[-70,2],[70,2],[70,22],[-70,22]], "#333", "#000");
+  // weight and buoyancy forces from G and B
+  const G = [cx + k*(r.yG*1), wy - k*(r.zG - r.thr)], Bp = [cx + k*r.yB, wy - k*(r.zB - r.thr)];
+  el("line", {x1:G[0], y1:G[1], x2:G[0], y2:G[1]+55, stroke:"#BA7517", "stroke-width":2}, svg);
+  el("line", {x1:Bp[0], y1:Bp[1], x2:Bp[0], y2:Bp[1]-55, stroke:"#1D9E75", "stroke-width":2}, svg);
+  el("circle", {cx:G[0], cy:G[1], r:5, fill:"#BA7517"}, svg); el("circle", {cx:Bp[0], cy:Bp[1], r:5, fill:"#1D9E75"}, svg);
+  const t = (x, y, s2, col) => { const e = el("text", {x, y, fill:col, "font-weight":500, stroke:"var(--bg)", "stroke-width":3, "paint-order":"stroke"}, svg); e.textContent = s2; return e; };
+  t(G[0]+9, G[1]-4, "G weight", "#BA7517"); t(Bp[0]+9, Bp[1]+14, "B buoyancy", "#1D9E75");
+  const gz = r.gz, righting = gz > 0.5, near180 = deg > 177;
+  $("rGZ").textContent = gz.toFixed(0) + " mm";
+  const st = $("status");
+  if (deg === 0) { st.textContent = "Upright. Drag the heel slider to tip it."; st.style.color = ""; }
+  else if (righting) { st.textContent = "Righting: B is on the low side of G, so the couple pushes it back toward upright (GZ " + gz.toFixed(0) + " mm)."; st.style.color = "#1D9E75"; }
+  else { st.textContent = near180 ? "Upside down: balanced on a knife edge, any nudge rolls it back to upright." : "Capsizing: B is past G, so it keeps rolling over."; st.style.color = "#E24B4A"; }
+  // GZ curve
+  const cv = $("cv"); cv.innerHTML = ""; const X0 = 60, X1 = 680, Y0 = 195, ymax = Math.max(20, SUM.gzMax + 6), ymin = Math.min(-8, ...CV.map(q => q[1]) ) - 2;
+  const sx = a => X0 + (X1-X0)*a/180, sy = g => Y0 - (Y0-20)*(g - ymin)/(ymax - ymin) + (Y0 - (Y0-20)*(0 - ymin)/(ymax-ymin) - Y0) * 0;
+  const y0 = sy(0);
+  el("line", {x1:X0, x2:X1, y1:y0, y2:y0, stroke:"#888"}, cv); el("line", {x1:X0, x2:X0, y1:20, y2:Y0, stroke:"#888"}, cv);
+  for (const a of [0,45,90,135,180]) { const tt = el("text", {x:sx(a), y:Y0+16, "text-anchor":"middle"}, cv); tt.textContent = a + "°"; }
+  let d = ""; CV.forEach((q, i) => d += (i ? "L" : "M") + sx(q[0]) + " " + sy(q[1]));
+  el("path", {d: d + "L" + sx(180) + " " + y0 + "L" + sx(0) + " " + y0 + "Z", fill:"#1D9E75", "fill-opacity":.15}, cv);
+  el("path", {d, fill:"none", stroke:"currentColor", "stroke-width":1.6, style:"color:var(--text)"}, cv);
+  el("circle", {cx:sx(deg), cy:sy(gz), r:5, fill: righting ? "#1D9E75" : "#E24B4A"}, cv);
+  const lab = el("text", {x:X0+4, y:14, "font-weight":500}, cv); lab.textContent = "Righting arm GZ (mm) vs heel; above zero it rights itself";
+}
+let timer = null;
+$("play").onclick = () => { if (timer) { clearInterval(timer); timer = null; $("play").textContent = "Play"; return; }
+  $("play").textContent = "Pause"; if (+$("ang").value >= 180) $("ang").value = 0;
+  timer = setInterval(() => { const a = +$("ang").value + 1; $("ang").value = Math.min(a, 180); draw(); if (a >= 180) { clearInterval(timer); timer = null; $("play").textContent = "Play"; } }, 40); };
+$("ang").oninput = () => draw();
+for (const k of ids) $(k).oninput = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(recompute); };
+recompute();
+</script>
+</body>
+</html>
