@@ -6,7 +6,7 @@
 > **self-rights from every angle, but with almost no margin near inverted**. Masses are mostly
 > repo estimates; replace them with weighed values.
 
-**Geometry:** [`printed-float-v8.step`](printed-float-v8.step), treated as a body of revolution with sealed, dry
+**Geometry:** [`printed-float-v9.step`](printed-float-v9.step) (updated 2026-10-16 from Fusion "Floatwhole"; [`printed-float-v8.step`](printed-float-v8.step) is the previous version), treated as a body of revolution with sealed, dry
 chambers (outer envelope 7.0 L, 6.5 in tall, R 90 mm at the keel flaring to 124 mm). The housing sits on the socket
 floor (25 mm above the keel) with its lid flange above the float top.
 **Float mass:** 1154 g (Bambu, 5 wall loops, 5 top/bottom layers, 10% honeycomb, double-layer infill lines).
@@ -38,3 +38,13 @@ floor (25 mm above the keel) with its lid flange above the float top.
 - Epoxy/coating 330 g, mooring hardware 220 g at the keel, pod 217 g plus hydrophone 150 g (4 in below the keel).
 - No foam in the float, no ballast stem. The flange above the float top is modelled as a R 89 mm cylinder.
 - Not covered: mooring heel, wave loads, chamber flooding, biofouling mass.
+
+## v9 update, 2026-10-16
+
+The updated float STEP ([`printed-float-v9.step`](printed-float-v9.step)) was re-run through `run_printed_float.py` and gives
+the **same results as v8** (3.03 kg, 2.70 in draft, 3.80 in freeboard, GM 1.43 in, self-rights from every angle). The study
+uses only the outer envelope as a body of revolution, so interior changes do not show up. The v9 solid is 5436 cm3 against
+5461 cm3 for v8, with the same R 124 mm outer radius and top, and the keel face about 1.6 mm lower (z min 61.9 mm against 63.5 mm).
+Whether the cable guide channel ([SCO-190](https://linear.app/scout1/issue/SCO-190)) is in this STEP was not checked. The script
+now reads v9; the charts and explorer were not regenerated because the numbers did not change.
+

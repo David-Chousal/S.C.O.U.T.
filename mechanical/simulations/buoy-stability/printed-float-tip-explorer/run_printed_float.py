@@ -1,6 +1,6 @@
 """Stability of the printed-float buoy (battery only, no ballast stem) from its STEP.
 
-Hull = outer envelope of printed-float-v8.step as a body of revolution (chambers sealed and dry),
+Hull = outer envelope of printed-float-v9.step as a body of revolution (chambers sealed and dry),
 plus the housing flange above the float top. Masses: float 1154 g (slicer, 5 walls, 5 top/bottom,
 10% honeycomb); electronics from the repo budget, stacked from the housing bottom upward.
 Run:  python run_printed_float.py   (needs gmsh + numpy, see ../requirements.txt)
@@ -16,7 +16,7 @@ sys.path.insert(0, str(HERE.parent))
 import buoy_stability as bs                       # noqa: E402
 
 IN = bs.IN
-STEP = HERE / "printed-float-v8.step"
+STEP = HERE / "printed-float-v9.step"
 FLANGE_R, FLANGE_H = 89.0, 33.0                   # housing lid flange above the float top, mm
 
 
