@@ -11,6 +11,9 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
 > [Static face-seal clamp](#static-face-seal-clamp--2026-09-02), and
 > [SCO-68](https://linear.app/scout1/issue/SCO-68) for reconciling the body/end-cap CAD to it.
 
+> 📦 **Packaging (2026-10-15):** how the electronics are stacked inside the housing, with an interactive 3D
+> explorer of the chosen layout, is in [`packaging/`](packaging/README.md).
+
 ## Current components
 
 | File | Role | Status |
