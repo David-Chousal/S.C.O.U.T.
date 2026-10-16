@@ -20,6 +20,10 @@
 > [SCO-164](https://linear.app/scout1/issue/SCO-164), [SCO-163](https://linear.app/scout1/issue/SCO-163).
 > Researched 2026-10-08.
 
+> **Route chosen 2026-10-16:** option **O6** (connect to an existing authorized mooring, starting with CRIMP2 via HIMB).
+> The agency question emails for the anchored routes (O7 to O9) are on hold until the host answers. See the
+> [decision log](../hub/decision-log.md).
+
 ---
 
 ## 0. How to read this document

@@ -29,5 +29,5 @@ seafloor anchor.
 ## Open items
 
 - Reply to Kacy Cooper naming the structure the buoy would tether to, and ask for the answer in writing.
-- Decide whether a tether-only test at Monterey is the plan, or an anchored one (which needs the application).
+- **Decided 2026-10-16:** tether-only, no anchor of our own (path B). The application is not needed unless that changes.
 - Confirm the harbor areas outside sanctuary jurisdiction if a short-term test is wanted.
