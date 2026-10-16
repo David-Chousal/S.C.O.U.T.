@@ -125,8 +125,12 @@ void setup() {
     // it each cycle and disables it before the long standby sleep.
     Watchdog.enable(WDT_TIMEOUT_MS);
 
+    // Latch OFF before switching to output, so the gate never drives LOW for an instant and
+    // briefly powers the sensors (the output register resets to 0).
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
     pinMode(PIN_SENSOR_GATE, OUTPUT);
-    digitalWrite(PIN_SENSOR_GATE, LOW);
+    digitalWrite(PIN_AUDIO_GATE, SENSOR_OFF);
+    pinMode(PIN_AUDIO_GATE, OUTPUT);
 
     g_battery.begin();
     g_temp.begin();
@@ -179,7 +183,7 @@ void loop() {
     }
 
     // 1. Power the switched sensor rail and let it settle.
-    digitalWrite(PIN_SENSOR_GATE, HIGH);
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_ON);
     delay(SENSOR_WARMUP_MS);
 
     // 2. Sense. Read the battery first so the power mode can gate the rest (graceful
@@ -201,7 +205,7 @@ void loop() {
     }
 
     // 3. Sensors off.
-    digitalWrite(PIN_SENSOR_GATE, LOW);
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
 
     // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
     //    V1 stretch not on the confirmed build; this records the intent.
