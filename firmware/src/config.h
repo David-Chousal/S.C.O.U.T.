@@ -7,6 +7,7 @@
 #ifndef SCOUT_CONFIG_H
 #define SCOUT_CONFIG_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /* ── Identity ─────────────────────────────────────────────────────────────── */
@@ -16,22 +17,25 @@ static const uint16_t BUOY_ID = 1;  // CSV/label renders as SCOUT-01
 #define FW_PATCH 0
 
 /* ── Cadence (seconds) ────────────────────────────────────────────────────── */
-static const uint32_t SAMPLE_INTERVAL_S = 1800;         // 30-minute duty cycle
-static const uint8_t SAMPLE_INTERVAL_MIN = 30;          // for the PCF8523 countdown timer
-static const uint32_t TRANSMIT_PERIOD_S = 86400;        // one LoRa packet per day (EDD §10)
+static const uint32_t SAMPLE_INTERVAL_S = 1800;         // 30-minute duty cycle (:00 and :30)
+/* Fixed LoRa transmit slots, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
+ * decided 2026-10-16). Each sits 10 min after a sample so the radio never overlaps a sensor
+ * read, and the shore station listens on the same table. Change slot times here only. */
+static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
+static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
 static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
 static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a cycle hangs
                                                         // (SAMD21 max; a healthy cycle is a few s)
 
 /* ── Power thresholds (adaptive/graceful-degradation tiers) ───────────────────
- * NORMAL   ≥ CONSERVE_MV            all sensing, transmit each interval
- * CONSERVE CRITICAL_MV..CONSERVE_MV skip audio, transmit every Nth interval
+ * NORMAL   ≥ CONSERVE_MV            all sensing, transmit in every slot
+ * CONSERVE CRITICAL_MV..CONSERVE_MV skip audio, transmit in every Nth slot
  * CRITICAL < CRITICAL_MV           temperature + logging only; no TX, turbidity, or audio
  * Provisional millivolts — depend on the final battery/charging path (ADR-0002). */
 static const uint16_t BATTERY_CONSERVE_MV = 3200;                  // drop into conserve below this
 static const uint16_t BATTERY_CRITICAL_MV = 3100;                  // drop into critical below this
-static const uint32_t TRANSMIT_CONSERVE_FACTOR = 3;                // conserve: transmit ×3 less often
+static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;                 // conserve: every 3rd slot (1/day)
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
@@ -44,7 +48,6 @@ static const uint32_t TRANSMIT_CONSERVE_FACTOR = 3;                // conserve: 
 #define PIN_RFM95_CS 8      // Feather M0 RFM95 defaults
 #define PIN_RFM95_RST 4
 #define PIN_RFM95_INT 3
-#define PIN_RTC_INT 5       // PCF8523 INT1 → wake the MCU from standby (wire on the Adalogger)
 
 /* Both power gates are high-side P-channel MOSFETs, so the logic is inverted: pulling the
  * gate LOW turns the sensor ON. High-side keeps the sensor ground tied to the ADC ground,

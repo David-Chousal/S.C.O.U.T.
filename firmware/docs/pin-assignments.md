@@ -16,7 +16,6 @@
 | LoRa CS | `PIN_RFM95_CS` = 8 | RFM95 | Feather M0 RFM95 default |
 | LoRa RST | `PIN_RFM95_RST` = 4 | RFM95 | Manual reset pulse at boot |
 | LoRa IRQ | `PIN_RFM95_INT` = 3 | RFM95 (G0) | |
-| RTC wake IRQ | `PIN_RTC_INT` = 5 | PCF8523 INT1 | Wire the Adalogger INT to wake from standby |
 
 ## Shared SPI bus
 
@@ -27,9 +26,11 @@ on the bench (EDD/timeline call it out as a risk).
 ## I²C
 
 The PCF8523 RTC is on the Feather's I²C bus (SDA/SCL) via the Adalogger. No pin config needed
-beyond the default Wire pins.
+beyond the default Wire pins. It is the wall clock only: standby wake comes from the SAMD21's
+own RTC, so the PCF8523 `INT1` is not wired and **D5 is free** (2026-10-16,
+[SCO-196](https://linear.app/scout1/issue/SCO-196)).
 
 ## Still to confirm (ECE)
 
 - Whether A7 battery sensing survives the final LiFePO₄ charging topology (ADR-0002).
-- The exact GPIO for the sensor power gate and RTC INT once the harness is drawn.
+- The exact GPIO for the sensor power gate once the harness is drawn.

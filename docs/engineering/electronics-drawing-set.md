@@ -57,7 +57,7 @@ The drawing set has eight sheets:
 | D11 | Turbidity power switch Q1 (LOW = on) |
 | A2 | Hydrophone preamp output |
 | A3 | Hydrophone power switch Q2 (LOW = on), used as a digital output |
-| D5 | PCF8523 INT wake (firmware `PIN_RTC_INT`) |
+| D5 | Free. Was the PCF8523 INT wake; standby wake moved to the SAMD21 RTC on 2026-10-16 ([SCO-196](https://linear.app/scout1/issue/SCO-196)) |
 | D6 | Left free (reserved for the radio IO1 pad) |
 | SDA, SCL | SHT40 (0x44) and PCF8523 (0x68) |
 | D10 | microSD chip select |

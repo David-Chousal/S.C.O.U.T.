@@ -10,11 +10,50 @@ void test_next_wake_aligns_to_grid(void) {
     TEST_ASSERT_EQUAL_UINT32(100, scout_next_wake_epoch(100, 0));  // guard: interval 0
 }
 
-void test_transmit_cycle_is_daily(void) {
-    TEST_ASSERT_TRUE(scout_is_transmit_cycle(1000, 0, 86400));       // never sent → send
-    TEST_ASSERT_FALSE(scout_is_transmit_cycle(90000, 87000, 86400)); // <24h since last
-    TEST_ASSERT_TRUE(scout_is_transmit_cycle(87000 + 86400, 87000, 86400)); // exactly 24h
-    TEST_ASSERT_FALSE(scout_is_transmit_cycle(500, 1000, 86400));    // clock went backwards
+// Isabella's slot table (SCO-165): 00:10, 08:10, 16:10 UTC, as seconds after midnight.
+static const uint32_t SLOTS[] = {600u, 29400u, 58200u};
+static const uint32_t DAY0 = 1803859200u;  // 2027-03-01 00:00:00Z
+
+void test_next_event_is_the_earlier_of_sample_and_slot(void) {
+    // 00:00 → the 00:10 slot comes before the 00:30 sample.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 600u, scout_next_event_epoch(DAY0, 1800, SLOTS, 3));
+    // 00:10 (in the slot) → next is the 00:30 sample, strictly after now.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u, scout_next_event_epoch(DAY0 + 600u, 1800, SLOTS, 3));
+    // 16:30 → next is the 17:00 sample.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 61200u, scout_next_event_epoch(DAY0 + 59400u, 1800, SLOTS, 3));
+}
+
+void test_next_event_wraps_to_tomorrows_first_slot(void) {
+    // 23:59:59 with no sampling grid → tomorrow's 00:10 slot.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 86400u + 600u,
+                             scout_next_event_epoch(DAY0 + 86399u, 0, SLOTS, 3));
+}
+
+void test_next_event_without_slots_is_the_sample_grid(void) {
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u, scout_next_event_epoch(DAY0 + 5u, 1800, SLOTS, 0));
+}
+
+void test_tx_slot_index_matches_exact_slot_times_only(void) {
+    TEST_ASSERT_EQUAL_INT(0, scout_tx_slot_index(DAY0 + 600u, SLOTS, 3));
+    TEST_ASSERT_EQUAL_INT(2, scout_tx_slot_index(DAY0 + 86400u + 58200u, SLOTS, 3));  // next day
+    TEST_ASSERT_EQUAL_INT(-1, scout_tx_slot_index(DAY0 + 601u, SLOTS, 3));
+    TEST_ASSERT_EQUAL_INT(-1, scout_tx_slot_index(DAY0 + 1800u, SLOTS, 3));  // a sample, not a slot
+}
+
+void test_sample_time_is_on_the_grid(void) {
+    TEST_ASSERT_TRUE(scout_is_sample_time(DAY0 + 1800u, 1800));
+    TEST_ASSERT_FALSE(scout_is_sample_time(DAY0 + 600u, 1800));  // the 00:10 slot
+    TEST_ASSERT_FALSE(scout_is_sample_time(DAY0, 0));            // guard: interval 0
+}
+
+void test_slot_transmits_by_power_mode(void) {
+    // NORMAL: every slot. CONSERVE with every-3rd: only slot 0 (3/day → 1/day). CRITICAL: none.
+    TEST_ASSERT_TRUE(scout_slot_transmits(SCOUT_POWER_NORMAL, 2, 3));
+    TEST_ASSERT_TRUE(scout_slot_transmits(SCOUT_POWER_CONSERVE, 0, 3));
+    TEST_ASSERT_FALSE(scout_slot_transmits(SCOUT_POWER_CONSERVE, 1, 3));
+    TEST_ASSERT_FALSE(scout_slot_transmits(SCOUT_POWER_CRITICAL, 0, 3));
+    TEST_ASSERT_FALSE(scout_slot_transmits(SCOUT_POWER_NORMAL, -1, 3));  // not a slot
+    TEST_ASSERT_TRUE(scout_slot_transmits(SCOUT_POWER_CONSERVE, 1, 0));  // guard: factor 0 → every slot
 }
 
 void test_battery_gate(void) {
@@ -41,12 +80,6 @@ void test_power_mode_tiers(void) {
     TEST_ASSERT_EQUAL(SCOUT_POWER_CRITICAL, scout_power_mode(3050, 3200, 3100));
 }
 
-void test_transmit_period_scales_with_mode(void) {
-    TEST_ASSERT_EQUAL_UINT32(86400, scout_transmit_period_s(SCOUT_POWER_NORMAL, 86400, 3));
-    TEST_ASSERT_EQUAL_UINT32(259200, scout_transmit_period_s(SCOUT_POWER_CONSERVE, 86400, 3));
-    TEST_ASSERT_EQUAL_UINT32(UINT32_MAX, scout_transmit_period_s(SCOUT_POWER_CRITICAL, 86400, 3));
-}
-
 void test_sensing_gates_by_mode(void) {
     TEST_ASSERT_TRUE(scout_sense_turbidity(SCOUT_POWER_NORMAL));
     TEST_ASSERT_TRUE(scout_sense_turbidity(SCOUT_POWER_CONSERVE));
@@ -59,11 +92,15 @@ void test_sensing_gates_by_mode(void) {
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_next_wake_aligns_to_grid);
-    RUN_TEST(test_transmit_cycle_is_daily);
+    RUN_TEST(test_next_event_is_the_earlier_of_sample_and_slot);
+    RUN_TEST(test_next_event_wraps_to_tomorrows_first_slot);
+    RUN_TEST(test_next_event_without_slots_is_the_sample_grid);
+    RUN_TEST(test_tx_slot_index_matches_exact_slot_times_only);
+    RUN_TEST(test_sample_time_is_on_the_grid);
+    RUN_TEST(test_slot_transmits_by_power_mode);
     RUN_TEST(test_battery_gate);
     RUN_TEST(test_audio_only_on_scheduled_hours);
     RUN_TEST(test_power_mode_tiers);
-    RUN_TEST(test_transmit_period_scales_with_mode);
     RUN_TEST(test_sensing_gates_by_mode);
     UNITY_END();
 }
