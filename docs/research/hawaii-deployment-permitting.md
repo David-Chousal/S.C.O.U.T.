@@ -20,6 +20,10 @@
 > [SCO-164](https://linear.app/scout1/issue/SCO-164), [SCO-163](https://linear.app/scout1/issue/SCO-163).
 > Researched 2026-10-08.
 
+> **Route chosen 2026-10-16:** option **O6** (connect to an existing authorized mooring, starting with CRIMP2 via HIMB).
+> The agency question emails for the anchored routes (O7 to O9) are on hold until the host answers. See the
+> [decision log](../hub/decision-log.md).
+
 ---
 
 ## 0. How to read this document
@@ -66,7 +70,7 @@ Every regulatory claim is tagged with how well it is established:
 | Attachment | **Marked site:** line to an existing pile or mooring. **Unmarked site:** one mushroom anchor placed next to (never on) coral. 3-strand twisted nylon, 3/8 in | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) |
 | Radio | 915 MHz LoRa, 30 B once a day, no license needed in the band; FCC modular grant | [FCC 915 MHz Compliance](fcc-915-mhz-compliance.md) |
 | Battery | Two lithium D cells (prototype), sealed in the housing | [SCO-70](https://linear.app/scout1/issue/SCO-70), [SCO-163](https://linear.app/scout1/issue/SCO-163) |
-| Ballast | Lead, which the reef permit may restrict | [SCO-136](https://linear.app/scout1/issue/SCO-136) |
+| Ballast | None; no lead as of 2026-10-16 (printed-float buoy, no stem) | [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled |
 | Antifouling | Sea Hawk Smart Solution (copper-free, Econea biocide) | [facts.md](../hub/facts.md) |
 | Dates | Hawaii live deployment 2027-03-22 to 2027-05-28; deployment window and backup site still to lock | [SCO-164](https://linear.app/scout1/issue/SCO-164) |
 
@@ -129,6 +133,8 @@ That matches what the rules say. The rest of this document is the detail behind 
 | **Ahu o Laka sandbar** | Heavily used recreation site; vessels may anchor under 72 hours ✅ | Vessel exception only; high public use and entanglement risk | Avoid |
 | **Moku o Loʻe (Coconut Island) refuge** | HIMB; the reef is a state refuge, and taking aquatic life is unlawful except for HIMB research ✅ ([IOOS](https://data.ioos.us/dataset/hawaii-marine-laboratory-refuge-coconut-island-hawaii)) | Managed area: expect a DAR Special Activity Permit and HIMB's agreement | Only through HIMB |
 | **Heʻeia fishpond / Heʻeia NERR waters** | Heʻeia National Estuarine Research Reserve; NERR already holds DAR Special Activity Permits for its work ✅ ([DLNR exemption list](https://files.hawaii.gov/dbedt/erp/List_Ex_Notice/2023-09-08-SOH-DLNR-List-of-Exemptions-Aug-2023.pdf)) | Reserve rules and community stewardship; strongest path is a partnership | Only by partnership |
+| **Kāneʻohe Yacht Club slip** (our boat's wet slip) | Club piers on state submerged land under **Revocable Permit S-5407** since 1977, now administered by DOBOR; stated use is "recreational boat pier purposes" and live-aboard is not permitted; renewed in one-year terms while the state weighs a long-term easement or lease ✅ ([Environment Hawai‘i](https://environment-hawaii.org/kaneohe-yacht-club-keeps-permit-for-now/), [DLNR board item, 2020](https://dlnr.hawaii.gov/wp-content/uploads/2020/06/J-1-1.pdf)) | The boat is in a permitted facility, so the anchoring limits do not apply to it. Hanging an instrument off the hull is a **club rule question** and possibly a question under the club's permit terms ❓ | Good for a **sensor-only** test ([§5 O5](#o5-hung-from-our-own-boat-at-a-slip-or-legal-mooring)); depth and water are not buoy conditions |
+| **Makai Research Pier, Waimānalo** | Research pier on the open windward coast, **outside Kāneʻohe Bay**. UH has held a lease for it from BLNR, and by 2021 it was used mostly by a sub-lease tenant; 2021 bills would have moved the lease to NELHA ⚠️ ([UH testimony](https://hawaii.edu/govrel/docs/house/2021/hb1280_uoh_02-11-21_wal_support.pdf), [HB1280 committee report](https://data.capitol.hawaii.gov/sessions/session2022/CommReports/HB1280_HD2_HSCR489_.HTM)) | Owner and operator today are ❓ (the lease holder sets terms and holds the state authorization). Kāneʻohe Bay's DOBOR rules do not apply, but the Corps and DLNR still do ([§5 O4](#o4-hung-from-someones-property-house-pier-dock-seawall-piling)) | Possible **sensor-only** test; different waves, bottom and fouling from the bay |
 | **Fringing reef flats** | Coral | Highest coral risk. ADR-0004 anchors next to coral, never on it | Avoid |
 
 ### 4.2 Sites that are not in the bay
@@ -228,6 +234,12 @@ You asked: *"if I hung a system off of someone's house or property, would I need
   differently), and it tests the sensors, not the free-floating buoy.
 - **Verdict.** A strong, cheap way to run a **sensor-only, weeks-long** test, **if** we get a
   Corps and DLNR answer first. Ask the owner whether the structure has an authorization on file.
+- **Makai Research Pier (Waimānalo)** is the specific candidate. It is a research pier, so
+  hanging an instrument is a normal use, and the lease holder may already have power and data
+  access. What we do not know ❓: who holds the lease today, what its terms allow, and whether
+  the pier's authorization covers third-party instruments. It is also a different environment:
+  open-coast, wave-exposed, outside Kāneʻohe Bay, so the data would not stand in for the bay.
+  Treat it as a sensor test and a second site, not the deployment site.
 
 ### O5: hung from our own boat at a slip or legal mooring
 
@@ -253,7 +265,16 @@ You asked: *"…or off of my boat?"*
 - **Cons.** Needs a legal place for the boat for the whole test; a boat with gear in the water
   can still be asked about by DOBOR; the platform moves and swings, so the data differ from a
   fixed buoy.
-- **Verdict.** Good for **days-to-weeks sensor tests** from a slip. Ask DOBOR in writing.
+- **Our slip is at the Kāneʻohe Yacht Club.** The club's piers are on state submerged land under
+  **Revocable Permit S-5407**, for "recreational boat pier purposes" with no live-aboard, which
+  DOBOR now administers ✅ (sources in §4.1). So the
+  boat is legal where it sits; the open items are the **club's slip agreement and rules** on gear
+  hung from a hull, and whether an instrument is an acceptable use under the permit. I found
+  nothing published on member or guest slip rules ❓ (club: 808-247-4121 ⚠️). Water at a slip is
+  shallow, sheltered and often murkier than the 2–8 m bay site, so fouling and turbidity will
+  not match.
+- **Verdict.** Good for **days-to-weeks sensor tests** from a slip. Ask the club first and DOBOR
+  in writing.
 
 ### O6: connect to an existing authorized site
 
@@ -644,7 +665,7 @@ to submit, and the plan of attack. The mark in the heading is the overall confid
   [SCO-103](https://linear.app/scout1/issue/SCO-103)). No license; no filing.
 - **Shipping the lithium cells to Hawaii** ([SCO-163](https://linear.app/scout1/issue/SCO-163)):
   a transport rule, not a deployment permit; handle separately.
-- **Lead ballast** ([SCO-136](https://linear.app/scout1/issue/SCO-136)): whether lead is allowed in
+- **Lead ballast** (no longer applies, 2026-10-16: [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled; the buoy has no lead): whether lead is allowed in
   the reef environment is a state/federal question to put in the same emails; if rejected, the
   ballast design changes, which is why this must be asked **early**.
 
@@ -704,7 +725,7 @@ You asked whether the actual design of the buoy might need to be approved.
   weight, area of bottom covered); the **line** (material, length, scope); **materials** that can
   leach (antifouling, lead, battery); **marking**; **entanglement risk**; and the **removal plan**.
   ADR-0004 and [facts.md](../hub/facts.md) already hold most of this.
-- **What could change the design.** A "no" on **lead ballast** ([SCO-136](https://linear.app/scout1/issue/SCO-136)),
+- **What could change the design.** A "no" on **lead ballast** (moot since 2026-10-16, [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled),
   a rule against **copper** (we already chose copper-free), a line-length or scope limit, or a
   required **marking scheme**. Ask these first, before the design freezes.
 - **One real exception: individual permits.** If we land in O9, drawings need to be detailed and
@@ -721,6 +742,7 @@ field prototype 2027-01-18 to 02-26; Phase 5 Hawaii prep 03-01 to 03-19).
 | When | What | Owner |
 |---|---|---|
 | **2026-10-08 to 10-16** | Email Chris Sabine (CRIMP2 host) and HIMB; send the Corps, DOBOR, OCCL, DAR, USCG D14 the question bank ([§10](#10-question-bank-get-it-in-writing)) | John |
+| **2026-10-08 to 10-16** | Ask the yacht club and the Makai Research Pier operator the questions in [§10](#10-question-bank-get-it-in-writing) | John |
 | **by 2026-10-31** | Read WQC1100 and the final Honolulu NWP regional conditions; read HAR 13-256-73; decide O2/O3 plan | John |
 | **by 2026-11-15** | Host decision (O6) and written determinations back; pick O6 vs O8 | John, host |
 | **2026-11-16 to 12-01** | Assemble the document package ([§7](#7-every-form-and-document-in-one-list)); SHPD HICRIS account | John |
@@ -758,6 +780,8 @@ cells sealed inside; about 2.6 kg lead ballast; removed at the end.*
 | **USCG D14** | CG-2554 needed, or Local Notice to Mariners and marking only? Required marking? |
 | **PIRO** (via the Corps) | Species list for the site; is an EFH consultation needed for a small anchor on sand? |
 | **SHPD** | Is a survey needed for an anchor footprint at [site]? |
+| **Kāneʻohe Yacht Club** | (1) Do the slip agreement or club rules allow a temperature/turbidity sensor on a line from the hull or a pole, for [duration]? (2) Anything required under the club's state permit (RP S-5407)? (3) Insurance or liability terms? (4) Who approves? |
+| **Makai Research Pier operator** | (1) Who holds the BLNR lease and who operates the pier now? (2) May a third-party instrument hang from it, and under what terms? (3) What authorization (Corps, DLNR) covers the pier, and does it cover this? (4) Power, data and access, and any fees or insurance. |
 | **Host (Sabine / HIMB / NERR)** | May we attach to your mooring or site? Under whose authorization? What liability, insurance, data-sharing and timing terms? |
 
 ### Draft emails
@@ -798,9 +822,11 @@ cells sealed inside; about 2.6 kg lead ballast; removed at the end.*
 | Whether a research buoy is a "vessel" under DOBOR ❓ | Decides DOBOR permits | Written DOBOR answer |
 | WQC1100 conditions unread ❓ | Copper, discharges, notification | Read the PDF |
 | Is Kāneʻohe Bay inside the humpback sanctuary? ❓ | Extra consultation and marking | Check the sanctuary map |
-| Lead ballast acceptability ❓ | Could change the ballast design | Ask Corps, DAR, PIRO ([SCO-136](https://linear.app/scout1/issue/SCO-136)) |
+| Lead ballast acceptability | Moot: no lead as of 2026-10-16 | [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled |
 | ROE insurance and liability ❓ | SCU may have to provide cover | Ask SCU risk management |
 | Student status: the SAP applicant must be tied to an institution | SCU is the institution; advisor co-sign may help | Ask Jes Kuczenski / Navid |
+| Yacht club slip rules for hung instruments ❓ | Decides the easiest sensor-only test | Ask the club (above) |
+| Makai Research Pier lease holder and terms ❓ | Decides whether it is a usable second site | Ask the operator (above) |
 | Everything marked ⚠️ in this document | From summaries and precedents | Confirm at filing time |
 
 ---

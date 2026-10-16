@@ -21,6 +21,10 @@
 > (which always said the pod holds this board) went unflagged since 2026-08-25; caught while
 > building the sensor pod's own packing analysis.
 
+> ⚠️ **Layout superseded 2026-10-15.** This analysis still assumes the LiPo and PID 6106. For the current
+> in-housing parts (two D cells, no charger) and the chosen stacked-disc layout, see
+> [Electronics Housing Packaging](../../mechanical/cad/electronics-housing/packaging/README.md).
+
 ---
 
 ## How to update this document
