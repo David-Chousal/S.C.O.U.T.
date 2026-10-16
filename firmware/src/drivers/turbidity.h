@@ -1,6 +1,6 @@
-/* DFRobot SEN0189 analog turbidity sensor. Uncalibrated — reports ADC counts and volts,
- * NOT NTU (see docs/engineering/data-schema.md). The analog front end must keep the input
- * within the 3.3 V ADC range (ADR-0002). */
+/* Seeed Grove 101020752 analog turbidity sensor, powered at 3.3 V so its output is already
+ * within the ADC range. Uncalibrated — reports ADC counts and volts, NOT NTU (see
+ * docs/engineering/data-schema.md). */
 #ifndef SCOUT_DRIVER_TURBIDITY_H
 #define SCOUT_DRIVER_TURBIDITY_H
 
