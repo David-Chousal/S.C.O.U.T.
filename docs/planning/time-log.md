@@ -79,6 +79,7 @@ Physical and offline work leaves no timestamp the evidence can read. Add hours f
 | 2026-09-23 to 2026-09-25 | _?_ | Wedge-bottom prints, drop test, Prusa Mini print failures |
 | 2026-10-01 to 2026-10-06 | _?_ | Coupon prints, RR-12 and RR-14 assembly, buoy bottom-section prints, gluing and taping, photos |
 | 2026-10-07 | 1.08 (*reported*) | Redesigned the turbidity pod, 30 min; printed it, pressed the six heat-set inserts, assembled it and started the soak test, 35 min |
+| 2026-10-15 | 2.0 (*reported*) | Merged six open PRs and resolved their conflicts, Monterey outreach emails and contact research, electronics housing packaging options and the option C layer explorer |
 | Any | _?_ | CAD in Fusion/Onshape outside a Claude session, lab time, shopping and ordering parts |
 
 ## Going forward
