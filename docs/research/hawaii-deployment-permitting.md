@@ -20,6 +20,10 @@
 > [SCO-164](https://linear.app/scout1/issue/SCO-164), [SCO-163](https://linear.app/scout1/issue/SCO-163).
 > Researched 2026-10-08.
 
+> **Route chosen 2026-10-16:** option **O6** (connect to an existing authorized mooring, starting with CRIMP2 via HIMB).
+> The agency question emails for the anchored routes (O7 to O9) are on hold until the host answers. See the
+> [decision log](../hub/decision-log.md).
+
 ---
 
 ## 0. How to read this document
@@ -66,7 +70,7 @@ Every regulatory claim is tagged with how well it is established:
 | Attachment | **Marked site:** line to an existing pile or mooring. **Unmarked site:** one mushroom anchor placed next to (never on) coral. 3-strand twisted nylon, 3/8 in | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) |
 | Radio | 915 MHz LoRa, 30 B once a day, no license needed in the band; FCC modular grant | [FCC 915 MHz Compliance](fcc-915-mhz-compliance.md) |
 | Battery | Two lithium D cells (prototype), sealed in the housing | [SCO-70](https://linear.app/scout1/issue/SCO-70), [SCO-163](https://linear.app/scout1/issue/SCO-163) |
-| Ballast | Lead, which the reef permit may restrict | [SCO-136](https://linear.app/scout1/issue/SCO-136) |
+| Ballast | None; no lead as of 2026-10-16 (printed-float buoy, no stem) | [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled |
 | Antifouling | Sea Hawk Smart Solution (copper-free, Econea biocide) | [facts.md](../hub/facts.md) |
 | Dates | Hawaii live deployment 2027-03-22 to 2027-05-28; deployment window and backup site still to lock | [SCO-164](https://linear.app/scout1/issue/SCO-164) |
 
@@ -661,7 +665,7 @@ to submit, and the plan of attack. The mark in the heading is the overall confid
   [SCO-103](https://linear.app/scout1/issue/SCO-103)). No license; no filing.
 - **Shipping the lithium cells to Hawaii** ([SCO-163](https://linear.app/scout1/issue/SCO-163)):
   a transport rule, not a deployment permit; handle separately.
-- **Lead ballast** ([SCO-136](https://linear.app/scout1/issue/SCO-136)): whether lead is allowed in
+- **Lead ballast** (no longer applies, 2026-10-16: [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled; the buoy has no lead): whether lead is allowed in
   the reef environment is a state/federal question to put in the same emails; if rejected, the
   ballast design changes, which is why this must be asked **early**.
 
@@ -721,7 +725,7 @@ You asked whether the actual design of the buoy might need to be approved.
   weight, area of bottom covered); the **line** (material, length, scope); **materials** that can
   leach (antifouling, lead, battery); **marking**; **entanglement risk**; and the **removal plan**.
   ADR-0004 and [facts.md](../hub/facts.md) already hold most of this.
-- **What could change the design.** A "no" on **lead ballast** ([SCO-136](https://linear.app/scout1/issue/SCO-136)),
+- **What could change the design.** A "no" on **lead ballast** (moot since 2026-10-16, [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled),
   a rule against **copper** (we already chose copper-free), a line-length or scope limit, or a
   required **marking scheme**. Ask these first, before the design freezes.
 - **One real exception: individual permits.** If we land in O9, drawings need to be detailed and
@@ -818,7 +822,7 @@ cells sealed inside; about 2.6 kg lead ballast; removed at the end.*
 | Whether a research buoy is a "vessel" under DOBOR ❓ | Decides DOBOR permits | Written DOBOR answer |
 | WQC1100 conditions unread ❓ | Copper, discharges, notification | Read the PDF |
 | Is Kāneʻohe Bay inside the humpback sanctuary? ❓ | Extra consultation and marking | Check the sanctuary map |
-| Lead ballast acceptability ❓ | Could change the ballast design | Ask Corps, DAR, PIRO ([SCO-136](https://linear.app/scout1/issue/SCO-136)) |
+| Lead ballast acceptability | Moot: no lead as of 2026-10-16 | [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled |
 | ROE insurance and liability ❓ | SCU may have to provide cover | Ask SCU risk management |
 | Student status: the SAP applicant must be tied to an institution | SCU is the institution; advisor co-sign may help | Ask Jes Kuczenski / Navid |
 | Yacht club slip rules for hung instruments ❓ | Decides the easiest sensor-only test | Ask the club (above) |

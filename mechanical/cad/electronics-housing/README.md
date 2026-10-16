@@ -11,6 +11,11 @@ CAD models for the sealed electronics bay enclosure (MCU, battery, radio, logger
 > [Static face-seal clamp](#static-face-seal-clamp--2026-09-02), and
 > [SCO-68](https://linear.app/scout1/issue/SCO-68) for reconciling the body/end-cap CAD to it.
 
+> 🔵 **Current seal, 2026-10-16:** the electronics housing uses the **large AS568-247 O-ring** on the flange-style
+> housing (4.4 in ID x 5 in tall); the lid's bolt clearance holes are cut ([SCO-107](https://linear.app/scout1/issue/SCO-107)).
+> The small AS568-043 ring of the clamp below is no longer the electronics-housing seal. Details:
+> [Current seal](#current-seal--large-as568-247-o-ring-2026-10-16).
+
 > 📦 **Packaging (2026-10-15):** how the electronics are stacked inside the housing, with an interactive 3D
 > explorer of the chosen layout, is in [`packaging/`](packaging/README.md).
 
@@ -32,6 +37,16 @@ than sourcing off-the-shelf — not pursued, and the
 [2026-08-17 decision](../../../docs/hub/decision-log.md) went the other way, but it stays a live
 option consistent with the project's in-house-additive approach (see
 [floatation → Manufacturing approach](../floatation/README.md)).
+
+## Current seal — large AS568-247 O-ring, 2026-10-16
+
+The electronics housing seals with an **AS568-247** O-ring (ID 4.609 in x CS 0.139 in, 117.07 x 3.53 mm) on the
+flange-style housing, now fixed at 4.4 in ID x 5 in tall ([SCO-49](https://linear.app/scout1/issue/SCO-49)). Lid
+bolt clearance holes are cut ([SCO-107](https://linear.app/scout1/issue/SCO-107) Done 2026-10-16). Where the history
+sits: the first-pass flange sizing is in [Flange-style housing](#flange-style-housing-first-pass-sizing-2026-09-28-not-yet-in-cad);
+the AS568-043 clamp ring is in [Static face-seal clamp](#static-face-seal-clamp--2026-09-02) and is superseded for this housing.
+The AS568-247 dimensions came from a secondary size chart; confirm against a supplier table
+([SCO-137](https://linear.app/scout1/issue/SCO-137)). The sensor pod keeps its own, separate ring and groove.
 
 ## Superseded assembly — end cap into cylinder
 
