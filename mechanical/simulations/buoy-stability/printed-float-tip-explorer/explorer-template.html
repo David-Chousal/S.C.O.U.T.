@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCOUT Printed-Float Tip Explorer</title>
+<style>
+:root{--bg:#fff;--card:#f4f3ef;--text:#1f1f1d;--muted:#5f5e5a;--border:#d3d1c7;--float:#d9d2c3;--hous:#9db8d2}
+@media (prefers-color-scheme: dark){:root{--bg:#1c1c1a;--card:#2a2a28;--text:#f1efe8;--muted:#b4b2a9;--border:#444441;--float:#5a564b;--hous:#3c5a78}}
+body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:760px}
+h1{font-size:20px;font-weight:500;margin:0 0 4px}
+p.note{font-size:13px;color:var(--muted);margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.card{background:var(--card);border-radius:8px;padding:8px 12px;min-width:92px}
+.card .l{font-size:12px;color:var(--muted)}.card .v{font-size:18px;font-weight:500}
+.ctl{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:14px}
+.ctl label{width:150px;flex:none}.ctl input[type=range]{flex:1;min-width:120px}.ctl .val{width:70px;text-align:right;font-weight:500}
+button{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer}
+#status{font-size:15px;font-weight:500;margin:6px 0 4px;min-height:22px}
+svg text{fill:var(--text);font-size:12px}
+details{margin:10px 0;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h1>Printed-float buoy: tip explorer</h1>
+<p class="note">Drag the heel slider (or press Play) to tilt the buoy. The waterline stays level; G is the center of gravity and B the center of buoyancy. When B swings out past G on the low side the buoy rights itself; if it swings the other way it keeps going over. Hull from the committed float STEP, masses are estimates.</p>
+<div class="ctl"><label for="ang">Heel angle</label><input id="ang" type="range" min="0" max="180" step="1" value="0"><span class="val" id="angv">0°</span><button id="play">Play</button></div>
+<div id="status"></div>
+<div class="row">
+<div class="card"><div class="l">Total mass</div><div class="v" id="rM">–</div></div>
+<div class="card"><div class="l">Draft</div><div class="v" id="rT">–</div></div>
+<div class="card"><div class="l">Freeboard</div><div class="v" id="rF">–</div></div>
+<div class="card"><div class="l">GM</div><div class="v" id="rGM">–</div></div>
+<div class="card"><div class="l">GZ now</div><div class="v" id="rGZ">–</div></div>
+<div class="card"><div class="l">Max GZ</div><div class="v" id="rMx">–</div></div>
+<div class="card"><div class="l">Tips over at</div><div class="v" id="rV">–</div></div>
+</div>
+<svg id="sv" width="100%" viewBox="0 0 700 460" role="img" aria-label="Buoy cross-section tilted by the heel angle"></svg>
+<svg id="cv" width="100%" viewBox="0 0 700 230" role="img" aria-label="Righting arm versus heel angle"></svg>
+<div style="margin-top:8px">
+<div class="ctl"><label for="floatG">Printed float</label><input id="floatG" type="range" min="600" max="2200" step="1" value="1154"><span class="val" id="floatGv"></span></div>
+<div class="ctl"><label for="battG">Battery mass</label><input id="battG" type="range" min="50" max="600" step="10" value="250"><span class="val" id="battGv"></span></div>
+<div class="ctl"><label for="battH">Battery height in housing</label><input id="battH" type="range" min="5" max="120" step="5" value="25"><span class="val" id="battHv"></span></div>
+<div class="ctl"><label for="podG">Turbidity pod</label><input id="podG" type="range" min="0" max="600" step="10" value="217"><span class="val" id="podGv"></span></div>
+<div class="ctl"><label for="podDepth">Pod depth below keel</label><input id="podDepth" type="range" min="0" max="14" step="0.5" value="4"><span class="val" id="podDepthv"></span></div>
+<div class="ctl"><label for="ballG">Bottom ballast</label><input id="ballG" type="range" min="0" max="1500" step="25" value="0"><span class="val" id="ballGv"></span></div>
+<div class="ctl"><label for="epoxyG">Epoxy + coating</label><input id="epoxyG" type="range" min="0" max="800" step="10" value="330"><span class="val" id="epoxyGv"></span></div>
+</div>
+<details><summary>Assumptions</summary>Float chambers sealed and dry; no foam. Electronics masses from the repo budget stacked from the housing bottom up (housing 385 g, boards 176 g, glands 58 g, antenna 30 g). Mooring hardware 220 g at the keel; hydrophone element 150 g beside the pod. Ballast sits just above the keel inside the hull, with no buoyancy credit. Hull is treated as a body of revolution with the housing lid flange above the float top. Not covered: mooring heel, waves, flooding, biofouling.</details>
+<script>
+const D = __DATA__;
+__CORE__
+const H = buildHull(D);
+const $ = id => document.getElementById(id), NS = "http://www.w3.org/2000/svg";
+const ids = ["floatG","battG","battH","podG","podDepth","ballG","epoxyG"], unit = {battH:" mm",podDepth:" in"};
+function params() { const p = {hydroG:150, ballH:12}; for (const k of ids) p[k] = +$(k).value; return p; }
+let B, CV, SUM, raf = 0;
+function recompute() {
+  const p = params();
+  for (const k of ids) $(k+"v").textContent = $(k).value + (unit[k] || " g");
+  B = bulk(D, H, p);
+  if (B.sinks) { $("status").textContent = "Too heavy: the buoy sinks."; return; }
+  CV = curve(H, B, 5); SUM = summarize(CV);
+  $("rM").textContent = B.mass.toFixed(2) + " kg"; $("rT").textContent = (B.draft/IN).toFixed(2) + " in";
+  $("rF").textContent = (B.freeboard/IN).toFixed(2) + " in"; $("rGM").textContent = (B.GM/IN).toFixed(2) + " in";
+  $("rMx").textContent = SUM.gzMax.toFixed(0) + " mm @ " + SUM.gzMaxDeg + "°";
+  $("rV").textContent = SUM.van === null ? "never" : SUM.van.toFixed(0) + "°";
+  draw();
+}
+const el = (n, a, par) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); par.appendChild(e); return e; };
+function draw() {
+  if (!B || B.sinks) return;
+  const deg = +$("ang").value; $("angv").textContent = deg + "°";
+  const r = atAngle(H, B, deg), c = r.c, s = r.s, k = 0.78, cx = 350, wy = 250;
+  const P = (x, z) => { const X = x*c - z*s, Z = x*s + z*c; return [cx + k*X, wy - k*(Z - r.thr)]; };
+  const svg = $("sv"); svg.innerHTML = "";
+  el("rect", {x:0, y:wy, width:700, height:460-wy, fill:"#378ADD", "fill-opacity":.14}, svg);
+  el("line", {x1:0, x2:700, y1:wy, y2:wy, stroke:"#185FA5", "stroke-dasharray":"5 3"}, svg);
+  const poly = (pts, fill, stroke) => el("polygon", {points: pts.map(q => P(q[0], q[1]).join(",")).join(" "), fill, stroke: stroke||"none", "stroke-width":1.5}, svg);
+  // float: outline of the revolution profile, socket cut out
+  const prof = []; for (let i = 0; i < D.zs.length; i++) prof.push([D.R[i], D.zs[i]]);
+  const outline = prof.concat(prof.slice().reverse().map(q => [-q[0], q[1]]));
+  poly(outline, "var(--float)", "#555");
+  poly([[-58, D.floor],[58, D.floor],[58, D.top],[-58, D.top]], "var(--bg)");
+  const hb = D.floor;
+  poly([[-56, hb],[56, hb],[56, hb+135],[-56, hb+135]], "var(--hous)", "#1f4e79");
+  poly([[-D.flangeR, D.top],[D.flangeR, D.top],[D.flangeR, D.top+D.flangeH],[-D.flangeR, D.top+D.flangeH]], "var(--hous)", "#1f4e79");
+  const bh = hb + +$("battH").value;
+  poly([[-30, bh],[30, bh],[30, bh+30],[-30, bh+30]], "#e0a458", "#7a4b00");
+  const pd = +$("podDepth").value * IN;
+  if (+$("podG").value > 0) { const l1 = P(0,0), l2 = P(0,-pd+40); el("line", {x1:l1[0], y1:l1[1], x2:l2[0], y2:l2[1], stroke:"#444", "stroke-width":2}, svg);
+    poly([[-20,-pd+40],[20,-pd+40],[20,-pd-40],[-20,-pd-40]], "#b0b0b0", "#222"); }
+  if (+$("ballG").value > 0) poly([[-70,2],[70,2],[70,22],[-70,22]], "#333", "#000");
+  // weight and buoyancy forces from G and B
+  const G = [cx + k*(r.yG*1), wy - k*(r.zG - r.thr)], Bp = [cx + k*r.yB, wy - k*(r.zB - r.thr)];
+  el("line", {x1:G[0], y1:G[1], x2:G[0], y2:G[1]+55, stroke:"#BA7517", "stroke-width":2}, svg);
+  el("line", {x1:Bp[0], y1:Bp[1], x2:Bp[0], y2:Bp[1]-55, stroke:"#1D9E75", "stroke-width":2}, svg);
+  el("circle", {cx:G[0], cy:G[1], r:5, fill:"#BA7517"}, svg); el("circle", {cx:Bp[0], cy:Bp[1], r:5, fill:"#1D9E75"}, svg);
+  const t = (x, y, s2, col) => { const e = el("text", {x, y, fill:col, "font-weight":500, stroke:"var(--bg)", "stroke-width":3, "paint-order":"stroke"}, svg); e.textContent = s2; return e; };
+  t(G[0]+9, G[1]-4, "G weight", "#BA7517"); t(Bp[0]+9, Bp[1]+14, "B buoyancy", "#1D9E75");
+  const gz = r.gz, righting = gz > 0.5, near180 = deg > 177;
+  $("rGZ").textContent = gz.toFixed(0) + " mm";
+  const st = $("status");
+  if (deg === 0) { st.textContent = "Upright. Drag the heel slider to tip it."; st.style.color = ""; }
+  else if (righting) { st.textContent = "Righting: B is on the low side of G, so the couple pushes it back toward upright (GZ " + gz.toFixed(0) + " mm)."; st.style.color = "#1D9E75"; }
+  else { st.textContent = near180 ? "Upside down: balanced on a knife edge, any nudge rolls it back to upright." : "Capsizing: B is past G, so it keeps rolling over."; st.style.color = "#E24B4A"; }
+  // GZ curve
+  const cv = $("cv"); cv.innerHTML = ""; const X0 = 60, X1 = 680, Y0 = 195, ymax = Math.max(20, SUM.gzMax + 6), ymin = Math.min(-8, ...CV.map(q => q[1]) ) - 2;
+  const sx = a => X0 + (X1-X0)*a/180, sy = g => Y0 - (Y0-20)*(g - ymin)/(ymax - ymin) + (Y0 - (Y0-20)*(0 - ymin)/(ymax-ymin) - Y0) * 0;
+  const y0 = sy(0);
+  el("line", {x1:X0, x2:X1, y1:y0, y2:y0, stroke:"#888"}, cv); el("line", {x1:X0, x2:X0, y1:20, y2:Y0, stroke:"#888"}, cv);
+  for (const a of [0,45,90,135,180]) { const tt = el("text", {x:sx(a), y:Y0+16, "text-anchor":"middle"}, cv); tt.textContent = a + "°"; }
+  let d = ""; CV.forEach((q, i) => d += (i ? "L" : "M") + sx(q[0]) + " " + sy(q[1]));
+  el("path", {d: d + "L" + sx(180) + " " + y0 + "L" + sx(0) + " " + y0 + "Z", fill:"#1D9E75", "fill-opacity":.15}, cv);
+  el("path", {d, fill:"none", stroke:"currentColor", "stroke-width":1.6, style:"color:var(--text)"}, cv);
+  el("circle", {cx:sx(deg), cy:sy(gz), r:5, fill: righting ? "#1D9E75" : "#E24B4A"}, cv);
+  const lab = el("text", {x:X0+4, y:14, "font-weight":500}, cv); lab.textContent = "Righting arm GZ (mm) vs heel; above zero it rights itself";
+}
+let timer = null;
+$("play").onclick = () => { if (timer) { clearInterval(timer); timer = null; $("play").textContent = "Play"; return; }
+  $("play").textContent = "Pause"; if (+$("ang").value >= 180) $("ang").value = 0;
+  timer = setInterval(() => { const a = +$("ang").value + 1; $("ang").value = Math.min(a, 180); draw(); if (a >= 180) { clearInterval(timer); timer = null; $("play").textContent = "Play"; } }, 40); };
+$("ang").oninput = () => draw();
+for (const k of ids) $(k).oninput = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(recompute); };
+recompute();
+</script>
+</body>
+</html>

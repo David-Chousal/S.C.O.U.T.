@@ -1,0 +1,49 @@
+attachment,drag centre assumed,z_cd_in,arm_in,horizontal_force_N (or 'H to knock down' in the next column),heel_deg / H_knockdown_N,status,rm_max_Nm,rm_max_at_deg
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,20,,KNOCKDOWN,21.0,63
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,50,,KNOCKDOWN,21.0,63
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,100,,KNOCKDOWN,21.0,63
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,200,,KNOCKDOWN,21.0,63
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,330,,KNOCKDOWN,21.0,63
+keel pad-eye (z=0),steady current drag centre,-6.06,-6.06,H to knock down,inf,,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,20,1.2,ok,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,50,2.9,ok,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,100,5.8,ok,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,200,11.4,ok,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,330,18.7,ok,21.0,63
+keel pad-eye (z=0),wave: drag at waterline,1.37,1.37,H to knock down,606.4,,21.0,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,20,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,50,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,100,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,200,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,330,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,steady current drag centre,-6.06,-3.56,H to knock down,inf,,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,20,3.3,ok,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,50,8.1,ok,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,100,16.0,ok,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,200,31.6,ok,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,330,,KNOCKDOWN,21.1,63
+collar 2.5 in below keel,wave: drag at waterline,1.37,3.87,H to knock down,215.3,,21.1,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,20,5.0,ok,21.5,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,50,12.2,ok,21.5,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,100,24.0,ok,21.5,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,200,,KNOCKDOWN,21.5,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,330,,KNOCKDOWN,21.5,63
+mid-stem (z=-12 in),steady current drag centre,-6.06,5.94,H to knock down,142.8,,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,20,11.0,ok,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,50,26.9,ok,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,100,,KNOCKDOWN,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,200,,KNOCKDOWN,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,330,,KNOCKDOWN,21.5,63
+mid-stem (z=-12 in),wave: drag at waterline,1.37,13.37,H to knock down,63.5,,21.5,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,20,14.5,ok,22.1,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,50,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,100,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,200,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,330,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",steady current drag centre,-6.06,17.94,H to knock down,48.4,,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,20,20.3,ok,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,50,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,100,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,200,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,330,,KNOCKDOWN,22.1,63
+"stem bottom, at lead (z=-24 in)",wave: drag at waterline,1.37,25.37,H to knock down,34.2,,22.1,63
