@@ -35,14 +35,22 @@ static const uint32_t TRANSMIT_CONSERVE_FACTOR = 3;                // conserve: 
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
-#define PIN_TURBIDITY A1    // SEN0189 analog out (through level-safe front end — see ADR-0002)
-#define PIN_SENSOR_GATE 11  // MOSFET gate: HIGH powers the switched sensor rail
+#define PIN_TURBIDITY A1    // Seeed Grove 101020752 analog out — runs at 3.3 V, wired direct, no divider
+#define PIN_SENSOR_GATE 11  // Sensor-rail P-FET gate (DMG2305UX, 100k pull-up) — see SENSOR_ON/OFF
+#define PIN_AUDIO_GATE A3   // Hydrophone preamp P-FET gate, digital out, same LOW = on logic
+#define PIN_AUDIO_PREAMP A2 // Hydrophone preamp analog out
 #define PIN_BATTERY A7      // Feather M0 onboard 2:1 battery divider
 #define PIN_SD_CS 10        // Adalogger microSD chip-select
 #define PIN_RFM95_CS 8      // Feather M0 RFM95 defaults
 #define PIN_RFM95_RST 4
 #define PIN_RFM95_INT 3
 #define PIN_RTC_INT 5       // PCF8523 INT1 → wake the MCU from standby (wire on the Adalogger)
+
+/* Both power gates are high-side P-channel MOSFETs, so the logic is inverted: pulling the
+ * gate LOW turns the sensor ON. High-side keeps the sensor ground tied to the ADC ground,
+ * and the 100k pull-up holds the sensors off through boot and reset (SCO-186). */
+#define SENSOR_ON LOW
+#define SENSOR_OFF HIGH
 
 /* ── Radio ────────────────────────────────────────────────────────────────── */
 static const float LORA_FREQUENCY_MHZ = 915.0f;  // US ISM (902–928 MHz)
