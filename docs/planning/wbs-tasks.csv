@@ -45,11 +45,11 @@ task,4.13,SCO-68,Design the chassis top section: sealing and service-access port
 task,4.17,SCO-63,Bring the large lab 3D printer back online,John Ryan Myrdal,Phase 1,Backlog,2026-10-07,2026-10-16,,Lab technician or advisor help,,Linear due
 task,4.18,SCO-76,Run foam-fill manufacturing trials on sacrificial wedges,John Ryan Myrdal,Phase 1,Todo,2026-10-19,2026-10-21,SCO-166,Printer access for sacrificial wedges,,Linear due
 task,4.19,SCO-123,Publish up-to-date v5 drawings for the wedge and wedge bottom,John Ryan Myrdal,Phase 1,Todo,2026-10-15,2026-10-15,,,,Linear due
-task,4.20,SCO-124,Rebuild the freeboard model's vertical stack from the STEP geometry,John Ryan Myrdal,Phase 1,In Progress,2026-09-29,2026-10-12,,v7 STEP committed 2026-10-06,,estimated
+task,4.20,SCO-124,Rebuild the freeboard model's vertical stack from the STEP geometry,John Ryan Myrdal,Phase 1,Done,2026-09-29,2026-10-12,,v7 STEP committed 2026-10-06,,estimated
 task,4.23,SCO-73,FEA on the ballast stem and its chassis joint (earlier LC1-LC9 runs stand),John Ryan Myrdal,Phase 1,Blocked,2026-10-26,2026-11-06,SCO-125,Blocked by SCO-49; Linear due unset,,estimated
 task,4.24,SCO-135,Re-run LC7 with the mooring moved to the pipe collar,John Ryan Myrdal,Phase 1,Todo,2026-10-14,2026-10-14,,,,Linear due
 task,4.25,SCO-125,Develop the self-righting ballast stem to 24 in below the keel,John Ryan Myrdal,Phase 1,Todo,2026-10-13,2026-10-23,SCO-136,Lead ballast permit question (SCO-136),,Linear due
-task,4.26,SCO-136,Check whether lead ballast is acceptable under the reef permit,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Permit authority answer,,Linear due
+task,4.26,SCO-136,Check whether lead ballast is acceptable under the reef permit,John Ryan Myrdal,Phase 1,Canceled,2026-10-12,2026-10-12,,Permit authority answer,,Linear due
 task,4.27,SCO-137,"Confirm the swivel, U-bolt and AS568-247 part numbers",John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,,,Linear due
 task,4.28,SCO-77,Define the marine fastener and anti-loosening strategy,John Ryan Myrdal,Phase 1,Backlog,2026-10-16,2026-10-16,,,,Linear due
 task,4.29,SCO-72,Identify a propeller-resistant mooring/tether line,John Ryan Myrdal,Phase 1,Backlog,2026-10-21,2026-10-30,,,,estimated
@@ -66,11 +66,11 @@ milestone,M4,,Phase 2 starts: system integration,All,Phase 2,,2026-10-19,2026-10
 milestone,M5,,Phase 2 exit,All,Phase 2,,2026-11-25,2026-11-25,,,Phase 2 exit,estimated
 milestone,M6,,Phase 3 exit: enclosure and waterproofing,All,Phase 3,,2027-01-15,2027-01-15,,,Phase 3 exit,estimated
 deadline,D2,,SCU: Senior Design Conference registration closes (winter),All,Phase 4,,2027-02-01,2027-02-01,,SCU Senior Design Resources page,,Linear
-task,4.35,SCO-166,"Source the 2 lb pour foam (US Composites #0204, about 3 kits)",John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-16,,No foam on hand; vendor shipping time; unblocks the foam trials and the foam-filled buoy,Foam on hand,Linear due
+task,4.35,SCO-166,"Source the 2 lb pour foam (US Composites #0204, about 3 kits)",John Ryan Myrdal,Phase 1,Deferred,2026-10-08,2026-10-16,,No foam on hand; vendor shipping time; unblocks the foam trials and the foam-filled buoy,Foam on hand,Linear due
 task,4.36,SCO-167,"Source PETG filament for the second full buoy (about 4 to 5 kg, to confirm)",John Ryan Myrdal,Phase 1,Todo,2026-10-08,2026-10-14,,Vendor shipping time; the second print waits on it,Filament on hand,Linear due
 task,4.37,SCO-168,Source Instant Ocean sea salt and a salinity meter for the 35 ppt tub tests,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Big bin volume to measure first,Salt water ready,Linear due
 task,4.38,SCO-169,Finish J-B Weld on the remaining exterior seams of the assembled buoy,John Ryan Myrdal,Phase 1,Todo,2026-10-12,2026-10-12,,Epoxy cure time before water,,Linear due
-task,4.39,SCO-170,TEST: dry-float the buoy in a bin; waterline and freeboard vs the 4.27 in model,John Ryan Myrdal,Phase 1,Todo,2026-10-16,2026-10-16,SCO-124 SCO-169,Big plastic bin; benchmark within +-0.5 in (placeholder until SCO-139),First float check,Linear due
+task,4.39,SCO-170,TEST: dry-float the buoy in a bin; waterline and freeboard vs the 4.27 in model,John Ryan Myrdal,Phase 1,Done,2026-10-16,2026-10-16,SCO-124 SCO-169,Big plastic bin; benchmark within +-0.5 in (placeholder until SCO-139),First float check,Linear due
 task,4.40,SCO-171,TEST: self-righting tilt test from 90 and 180 degrees,John Ryan Myrdal,Phase 2,Todo,2026-10-23,2026-10-27,SCO-125 SCO-170,Needs the ballast stem fitted,Buoy rights itself,Linear due
 task,4.41,SCO-172,TEST: float the whole buoy in 35 ppt salt water; record the waterline shift,John Ryan Myrdal,Phase 2,Todo,2026-10-27,2026-10-30,SCO-171 SCO-168,Salinity verified at 35 ppt first,Saltwater float passed,Linear due
 task,4.42,SCO-173,TEST: drop a sacrificial assembled ring with 1.5 in caps,John Ryan Myrdal,Phase 2,Todo,2026-10-19,2026-10-22,SCO-170,"Spare parts only, not the soak buoy",,Linear due

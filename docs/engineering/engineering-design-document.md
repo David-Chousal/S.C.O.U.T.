@@ -655,9 +655,9 @@ sealing washers, contrary to spec) both failed. Reprint and re-test are pending
   8–10+ walls / 100% solid locally at the mooring boss. Wedge family: v5 thin-wall spec per
   [§4.3](#43-flotation-system). Heat-set-insert pull-out depends on solid perimeters around the
   hole, not bulk infill. Provisional pending the FEA sign-off on [SCO-73](https://linear.app/scout1/issue/SCO-73).
-- **Fasteners:** M4 316 stainless bolts into brass heat-set inserts. The corrosion strategy —
-  stainless hardware plus sealed bolt heads — is open on [SCO-92](https://linear.app/scout1/issue/SCO-92).
-- **Flotation foam:** US Composites #0204 2 lb/ft³ closed-cell rigid PU pour foam.
+- **Fasteners:** M4 316 stainless bolts into brass heat-set inserts. Corrosion strategy
+  (decided 2026-10-16, [SCO-92](https://linear.app/scout1/issue/SCO-92)): 316 stainless hardware plus marine sealants and coatings over exposed fasteners and joints.
+- **Flotation foam (earlier design; the battery-powered version uses a printed infill float, 2026-10-16):** US Composites #0204 2 lb/ft³ closed-cell rigid PU pour foam.
 - **Adhesive:** marine epoxy for the wedge radial seams, wedge-cap bonds, and insert potting.
 
 ### 4.11 Biofouling and coatings
@@ -694,7 +694,7 @@ Electrical and firmware revisions are intended to occur with minimal change to t
 | Stability — CG / CB / GM / righting, one-wedge-loss list angle | [SCO-80](https://linear.app/scout1/issue/SCO-80) |
 | v5-geometry FEA re-check | [SCO-73](https://linear.app/scout1/issue/SCO-73) |
 | Mooring pad-eye — part, sizing, boss, proof test | [SCO-69](https://linear.app/scout1/issue/SCO-69) |
-| Corrosion strategy — sealed bolt heads | [SCO-92](https://linear.app/scout1/issue/SCO-92) |
+| Corrosion strategy — marine sealants and coatings (decided 2026-10-16) | [SCO-92](https://linear.app/scout1/issue/SCO-92) |
 | Electronics-housing clamp reprint + submersion re-test | [SCO-105](https://linear.app/scout1/issue/SCO-105), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
 | Turbidity flood-chamber re-spec to the real Rev A sensor | [SCO-91](https://linear.app/scout1/issue/SCO-91) |
 | Coating adhesion / UV durability validation | [SCO-78](https://linear.app/scout1/issue/SCO-78) |
@@ -3072,8 +3072,8 @@ The buoy is intended for long-term deployment in a marine environment.
 
 The design shall account for:
 
-- Saltwater exposure — sealed volumes, 316 stainless fasteners, corrosion strategy on
-  [SCO-92](https://linear.app/scout1/issue/SCO-92)
+- Saltwater exposure — sealed volumes, 316 stainless fasteners, marine sealants and coatings
+  ([SCO-92](https://linear.app/scout1/issue/SCO-92), decided 2026-10-16)
 
 - Humidity — internal temp/humidity sensor for state-of-health
 
