@@ -21,6 +21,18 @@
 | Permitting path | B: connect to the CRIMP2 mooring via HIMB (option O6); short tests tethered to an attended boat (O3) | B: tether to or hang from a host's pier, dock or slip |
 | Status | Email to HIMB / Chris Sabine not yet sent ([SCO-185](https://linear.app/scout1/issue/SCO-185)) | Host not yet chosen; sanctuary says a tethered buoy likely needs no permit |
 
+## Hawaii sensor test from the boat in the slip (planned, pending club approval)
+
+A small battery-powered sensor unit hung on a line over the side of John Ryan's boat while it stays in its
+slip at the Kāneʻohe Yacht Club, for several weeks to months, **removed each time the boat goes out**. Corals are
+adjacent to the boat. This is option O5 in [Hawaii permitting](../research/hawaii-deployment-permitting.md#o5-hung-from-our-own-boat-at-a-slip-or-legal-mooring).
+
+- **Gives:** reef-adjacent readings and a long, cheap sensor test well before March.
+- **Does not give:** open-bay data. Slip water is shallower and murkier and the platform moves, so turbidity and fouling will
+  differ; the murk is accepted.
+- **Needs:** a written yes from the club first (slip agreement, permit S-5407, insurance); DOBOR in writing after.
+- **Status:** club email drafted, not sent.
+
 ## Rules
 
 1. **Reef claims come only from Hawaii data.** Monterey or Santa Cruz readings are real seawater readings but are not evidence about coral reefs.
