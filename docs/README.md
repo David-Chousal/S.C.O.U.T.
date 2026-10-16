@@ -15,6 +15,7 @@ imported directly into Notion with formatting intact.
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
 | Find the schedule | [Team Timeline](planning/team-timeline.md) |
+| Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---
@@ -93,6 +94,7 @@ Schedule, meetings, and administrative records.
 | [Gantt Chart and WBS](planning/gantt-and-wbs.md) | How the CSV, script and PDF task plan fit together |
 | [Senior Design Time Log](planning/time-log.md) | John Ryan Myrdal's hours on S.C.O.U.T., estimated for the past and reported going forward |
 | [Signature Page](planning/signature-page.md) | SCU capstone declaration — team members and faculty advisors |
+| [Thesis Outline](planning/thesis-outline.md) | **Current running outline** of the senior design thesis: every chapter and section, formatting rules, version history |
 
 ## Decisions
 
