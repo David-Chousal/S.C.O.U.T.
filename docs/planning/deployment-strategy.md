@@ -40,6 +40,22 @@ adjacent to the boat. This is option O5 in [Hawaii permitting](../research/hawai
    [Hawaii permitting](../research/hawaii-deployment-permitting.md) start then; route decision by 2026-11-15, filings by 2026-12-01.
 3. **A host answers in writing** before each deployment.
 
+
+## Next steps for permitting
+
+In order. Each is a Linear issue; a written answer is filed in the repo before the step is closed.
+
+| # | Step | Issue | Status |
+|---|---|---|---|
+| 1 | Email the Kāneʻohe Yacht Club: may a sensor hang from the boat in its slip for weeks to months, removed each outing? Ask about the slip agreement, permit S-5407, insurance, who approves | [SCO-194](https://linear.app/scout1/issue/SCO-194) | Draft ready, not sent |
+| 2 | Email HIMB / Chris Sabine about hosting the buoy on the CRIMP2 mooring (live deployment, weeks to months, March 22 start) | [SCO-185](https://linear.app/scout1/issue/SCO-185) | Draft ready, not sent |
+| 3 | Pick a Monterey or Santa Cruz host (first choice: UC Santa Cruz Long Marine Laboratory), get their written yes, then answer the sanctuary and ask for written confirmation of no permit | [SCO-195](https://linear.app/scout1/issue/SCO-195) | Not started |
+| 4 | If the club says yes: ask DOBOR in writing whether the hung sensor counts as part of the vessel | [SCO-194](https://linear.app/scout1/issue/SCO-194) | After step 1 |
+| 5 | Confirm with DOBOR and the Coast Guard what a boat-tethered attended test in Hawaii needs | [SCO-185](https://linear.app/scout1/issue/SCO-185) | After step 1 |
+| 6 | **Only if a host says no and we need our own anchor:** send the Corps, OCCL, Land Division, DAR, DOBOR and USCG question emails | [SCO-185](https://linear.app/scout1/issue/SCO-185) | On hold |
+
+Dates that stay fixed: route decision by **2026-11-15**; permit filings by **2026-12-01** if an anchor is needed.
+
 ## Open items
 
 - Pick the Monterey or Santa Cruz host (a marine lab dock, harbor slip or pier) and email them; then answer the sanctuary's question about the structure.
