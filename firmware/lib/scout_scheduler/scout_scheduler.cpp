@@ -11,19 +11,6 @@ scout_power_mode_t scout_power_mode(uint16_t battery_mv, uint16_t conserve_mv,
     return SCOUT_POWER_CRITICAL;
 }
 
-uint32_t scout_transmit_period_s(scout_power_mode_t mode, uint32_t base_period_s,
-                                 uint32_t conserve_factor) {
-    switch (mode) {
-        case SCOUT_POWER_NORMAL:
-            return base_period_s;
-        case SCOUT_POWER_CONSERVE:
-            return base_period_s * conserve_factor;
-        case SCOUT_POWER_CRITICAL:
-        default:
-            return UINT32_MAX;
-    }
-}
-
 bool scout_sense_turbidity(scout_power_mode_t mode) {
     return mode != SCOUT_POWER_CRITICAL;
 }
@@ -39,14 +26,49 @@ uint32_t scout_next_wake_epoch(uint32_t now_epoch, uint32_t interval_s) {
     return ((now_epoch / interval_s) + 1) * interval_s;
 }
 
-bool scout_is_transmit_cycle(uint32_t now_epoch, uint32_t last_tx_epoch, uint32_t period_s) {
-    if (last_tx_epoch == 0) {
-        return true;  // never transmitted yet
+bool scout_is_sample_time(uint32_t epoch, uint32_t interval_s) {
+    return interval_s != 0 && epoch % interval_s == 0;
+}
+
+int scout_tx_slot_index(uint32_t epoch, const uint32_t *slots_sod, size_t n) {
+    uint32_t second_of_day = epoch % SCOUT_SECONDS_PER_DAY;
+    for (size_t i = 0; i < n; i++) {
+        if (slots_sod[i] == second_of_day) {
+            return (int)i;
+        }
     }
-    if (now_epoch < last_tx_epoch) {
-        return false;  // clock moved backwards (RTC reset) — wait for a fresh baseline
+    return -1;
+}
+
+uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
+                                const uint32_t *slots_sod, size_t n) {
+    uint32_t best = (interval_s != 0) ? scout_next_wake_epoch(now_epoch, interval_s) : UINT32_MAX;
+    uint32_t midnight = now_epoch - (now_epoch % SCOUT_SECONDS_PER_DAY);
+    for (size_t i = 0; i < n; i++) {
+        uint32_t slot = midnight + slots_sod[i];
+        if (slot <= now_epoch) {
+            slot += SCOUT_SECONDS_PER_DAY;  // already passed today → tomorrow's
+        }
+        if (slot < best) {
+            best = slot;
+        }
     }
-    return (now_epoch - last_tx_epoch) >= period_s;
+    return best;
+}
+
+bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every) {
+    if (slot_index < 0) {
+        return false;
+    }
+    switch (mode) {
+        case SCOUT_POWER_NORMAL:
+            return true;
+        case SCOUT_POWER_CONSERVE:
+            return conserve_every == 0 || (uint32_t)slot_index % conserve_every == 0;
+        case SCOUT_POWER_CRITICAL:
+        default:
+            return false;
+    }
 }
 
 bool scout_battery_ok(uint16_t battery_mv, uint16_t min_mv) {

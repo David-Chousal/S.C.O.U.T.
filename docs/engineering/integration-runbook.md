@@ -89,6 +89,12 @@ its primary signal.
 
 ### Fault 2 — the RTC wake interrupt has no wire, and its pin is already taken
 
+> **Resolved 2026-10-16 ([SCO-196](https://linear.app/scout1/issue/SCO-196), implemented in
+> [SCO-165](https://linear.app/scout1/issue/SCO-165)).** The firmware no longer uses a wake
+> interrupt: standby wake comes from the SAMD21's own RTC, and `PIN_RTC_INT` is gone. No wire and
+> no `INT1` solder jumper are needed, and D5 is free. Fault 1 (the D5 vs D12 temperature pin) is
+> the only part of this gate left. The text below is kept as the record of the original fault.
+
 The firmware needs `PIN_RTC_INT 5` to wake the SAMD21 from standby. On Rev A:
 
 - The schematic contains **no interrupt net at all** (zero matches for any RTC INT signal).
@@ -241,7 +247,7 @@ documentation of it. `hardware/schematics/scout-reva.kicad_sch` is what is physi
 | Battery sense | `PIN_BATTERY` **A7** | Feather onboard 2:1 divider |
 | microSD CS | `PIN_SD_CS` **10** | Adalogger, shared SPI |
 | LoRa CS / RST / IRQ | **8 / 4 / 3** | RFM95, shared SPI |
-| RTC wake IRQ | `PIN_RTC_INT` **5** 🔴 no wire, collides with D5 | PCF8523 INT1 — needs solder jumper |
+| RTC wake IRQ | none — SAMD21 RTC wakes the board (2026-10-16) | PCF8523 INT1 not wired; no jumper |
 
 **SPI is shared** between the microSD (CS 10) and the RFM95 (CS 8). Only one may be selected at a
 time. A bring-up failure where SD and radio each work alone but not together is almost always this.
@@ -266,8 +272,8 @@ This stage is runnable today and is the only one that is. Re-run it after every 
 **Preconditions:** §2 gate resolved; parts arrived (SCO-88).
 
 1. Stack the Adalogger FeatherWing on the Feather M0.
-2. **Solder the PCF8523 `INT1` jumper** on the Adalogger and run it to the pin chosen in §2. Not
-   optional — without it there is no wake.
+2. ~~Solder the PCF8523 `INT1` jumper.~~ No longer needed: the SAMD21 RTC wakes the board
+   (2026-10-16, [SCO-196](https://linear.app/scout1/issue/SCO-196)).
 3. DS18B20: 3V3 / GND / data to the §2-chosen pin, **4.7 kΩ pull-up between data and 3V3**.
 4. SEN0189: `SYSTEM_5V` supply, output through the **10 kΩ / 20 kΩ divider** to A1. Verify the
    divider before connecting — it is what keeps a 4.5 V sensor off a 3.3 V ADC pin.
@@ -528,7 +534,7 @@ on a 64-bit host (§3).
 | Symptom | First suspicion | Why |
 |---|---|---|
 | Temperature never reads | **§2 pin conflict** | Firmware polls D12; schematic wires D5 |
-| Buoy sleeps and never wakes | **§2 missing INT1 jumper** | No wake source exists on Rev A |
+| Buoy sleeps and never wakes | SAMD21 RTC alarm not firing | Check the 32.768 kHz crystal runs; the wake no longer uses `INT1` |
 | SD and radio work alone, not together | Shared SPI CS | Only one of CS 10 / CS 8 may be active |
 | Turbidity rises in dirty water | Polarity inverted | Higher ADC = clearer; check the divider is non-inverting (SCO-47) |
 | Link weak, antenna fine | SX1276 500 kHz erratum | `Rfm9xLink` writes `0x36`/`0x3A`, but that path has never run — confirm it actually executed |

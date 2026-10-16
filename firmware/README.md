@@ -75,16 +75,20 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
   decoder) and `scout_scheduler` (unit-tested). The state machine and CSV row format
   ([data-schema.md](../docs/engineering/data-schema.md)) are wired end to end.
 - **Implemented, pending bench verification:**
-  - **Standby sleep** — real SAMD21 deep sleep (`ArduinoLowPower`) woken by the PCF8523
-    countdown-timer INT on `PIN_RTC_INT`, with a flag-clear on wake so it re-arms each
-    interval. Needs the INT wired and a current measurement to confirm the low-power draw.
+  - **Standby sleep and fixed schedule** ([SCO-165](https://linear.app/scout1/issue/SCO-165)) —
+    real SAMD21 deep sleep (`ArduinoLowPower`) woken by the SAMD21's own RTC alarm, which runs
+    from the Feather's 32.768 kHz crystal; no wake wire is needed. The PCF8523 is re-read after
+    every wake, so the internal RTC only times one interval and drift never accumulates.
+    Samples at :00 and :30; transmits the latest reading in three fixed slots (`TX_SLOTS_SOD`:
+    00:10, 08:10, 16:10 UTC), so the radio never overlaps a sensor read. A missed slot is
+    skipped, not retried. Needs a current measurement to confirm the low-power draw.
   - **Watchdog** — the SAMD21 WDT (`Adafruit_SleepyDog`, ~16 s) guards each active cycle and
     init; a hang resets the buoy so it recovers on its own. Disabled during standby (its
     timeout is far shorter than the 30-min interval) and re-armed on wake. A watchdog reset is
     detected at boot (`PM->RCAUSE`) and logged.
   - **Adaptive transmission (graceful degradation)** — a power mode derived from battery
-    voltage (`scout_power_mode`): **NORMAL** (all sensing, transmit each interval) →
-    **CONSERVE** (audio off, transmit ×`TRANSMIT_CONSERVE_FACTOR` less often) → **CRITICAL**
+    voltage (`scout_power_mode`): **NORMAL** (all sensing, transmit in every slot) →
+    **CONSERVE** (audio off, transmit in every `TRANSMIT_CONSERVE_EVERY`-th slot) → **CRITICAL**
     (temperature + logging only; no turbidity, audio, or TX). Core temperature always logs.
     The `POWER_CONSERVE` flag marks throttled rows so shore can see it. Pure logic in
     `scout_scheduler`, unit-tested; thresholds in `config.h` (provisional, ADR-0002).
