@@ -4,7 +4,7 @@
 > the [README status table](../../README.md#status) reflects. Updated whenever a subsystem's
 > state changes; a dated history of these snapshots lives in [`journal/`](journal/).
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-12.**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-16.**
 
 ---
 
@@ -47,16 +47,15 @@ open Phase 0 issue. Full plan:
    ([SCO-81](https://linear.app/scout1/issue/SCO-81)), and the cap cable gland
    ([SCO-53](https://linear.app/scout1/issue/SCO-53)).
    [SCO-70](https://linear.app/scout1/issue/SCO-70)
-2. **[ADR-0002](../decisions/0002-lifepo4-charging-path.md)** (LiFePO₄ charging path) — blocks
-   power bench bring-up, battery/solar sizing, and firmware battery thresholds. **Now also
-   weighing a non-rechargeable multi-year primary lithium cell with no solar** (raised by Shoba
-   and Dr. Wolfe, 2026-09-30). **2026-10-05:** the power budget is done and the working
-   decision is a 3.6 V Li-SOCl₂ D cell + TPL5111 power-gating (fallback two D cells); **2026-10-06:** now two
-   D cells + firmware standby, TPL5111 dropped. Recorded as 🟡 Open in [ADR-0007](../decisions/0007-primary-cell-power-source.md) and reviewed with
-   Shoba that day ([SCO-116](https://linear.app/scout1/issue/SCO-116),
-   [Power Budget Update](../engineering/power-budget-update-2026-10-05.md)). Not final until the
-   sleep floor is measured ([SCO-23](https://linear.app/scout1/issue/SCO-23)).
-   [SCO-10](https://linear.app/scout1/issue/SCO-10)
+2. **Power source — [ADR-0007](../decisions/0007-primary-cell-power-source.md)**, two primary lithium
+   D cells with firmware standby, no solar. The direction was confirmed with the advisors on 2026-10-07
+   but is **deliberately not final until the sleep floor is measured**
+   ([SCO-23](https://linear.app/scout1/issue/SCO-23)), because whether two cells last about a year
+   depends on that number. Until it's measured, the battery-bay size, firmware battery thresholds and
+   the formal retirement of the old LiFePO₄ charging path
+   ([ADR-0002](../decisions/0002-lifepo4-charging-path.md),
+   [SCO-10](https://linear.app/scout1/issue/SCO-10), now `Blocked` on SCO-23) all stay open.
+   [Power Budget Update](../engineering/power-budget-update-2026-10-05.md)
 3. **Adafruit bench order placed 2026-10-07** (invoice 3758294, delivery est. 2026-10-13 to 10-16; Mouser order still to place; [Purchase Log](../planning/purchase-log.md)) (Adafruit + Mouser, including the shore-station ESP32-S3 + LoRa FeatherWing; hydrophone, D cells and outdoor antenna are planned follow-up orders — [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md)). Until they arrive, firmware driver validation
    ([SCO-25](https://linear.app/scout1/issue/SCO-25)) and shore-station radio bring-up
    ([SCO-24](https://linear.app/scout1/issue/SCO-24)) are both written and waiting on hardware.
