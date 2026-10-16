@@ -11,10 +11,15 @@
 > Confirm with the university's EE faculty or a compliance lab before the Hawaii deployment.
 >
 > Investigation for [SCO-19](https://linear.app/scout1/issue/SCO-19), 2026-08-31.
+>
+> **Current configuration (2026-10-16):** BW500 / SF12 / CR4-8 at **+11 dBm**, fixed 915.0 MHz,
+> 3 transmit slots a day × 3 blind repeats. Sections 1–3 describe the configuration *before* the
+> 2026-09-01 fix. The open questions for a qualified reviewer are in the
+> [FCC Review Brief](fcc-review-brief.md) ([SCO-104](https://linear.app/scout1/issue/SCO-104)).
 
 ---
 
-## 1. What the firmware does today
+## 1. What the firmware did before 2026-09-01
 
 | Setting | Value | Where |
 |---|---|---|
@@ -23,7 +28,7 @@
 | Coding rate | 4/8 | reg 0x1D bits 3–1 = `100` |
 | Spreading factor | **SF7** | reg 0x1E bits 7–4 = `0111` |
 | TX power | **+14 dBm** (~25 mW) | [`config.h:49`](../../firmware/src/config.h) |
-| Cadence | 1 packet/day, 30 B, ×3 blind repeats | [`scout_link.h`](../../firmware/lib/scout_link/scout_link.h) |
+| Cadence | 1 packet/day, 30 B, ×3 blind repeats (now 3 slots/day, decided 2026-10-16) | [`scout_link.h`](../../firmware/lib/scout_link/scout_link.h) |
 
 ## 2. The rule
 
@@ -125,8 +130,9 @@ that the receiver must apply.
 
 ### Option C — reduce power under §15.249
 
-Compliant, and requires no protocol change, but the field-strength limit is roughly 20 dB below
-+14 dBm. That trades away most of the link budget on a project whose entire premise is a
+Compliant, and requires no protocol change, but the field-strength limit is far below +14 dBm:
+§15.249's 50 mV/m at 3 m works out to an EIRP of about −1.2 dBm, roughly 17 dB under the old
++14 dBm into a 2.15 dBi whip (≈ +16.2 dBm EIRP). *Corrected 2026-10-16 from "roughly 20 dB".* That trades away most of the link budget on a project whose entire premise is a
 low-power long-range link. **Not viable.**
 
 ## 4. Recommendation — adopted 2026-09-01
@@ -199,6 +205,21 @@ grant was found.
 FCC modular-approval rules require the integrator to keep output power and transmission
 parameters within the certified limits; failing to do so invalidates the approval. The old
 configuration missed on **two** counts — bandwidth mode and power — not one.
+
+### Pre-review check — 2026-10-16
+
+A second pass before faculty review ([SCO-104](https://linear.app/scout1/issue/SCO-104)) found no
+reason to reverse the recommendation, and two DTS limits this document had not checked:
+
+- **Power spectral density, §15.247(e)** — at most 8 dBm in any 3 kHz band. +11 dBm spread over
+  500 kHz averages about **−11 dBm per 3 kHz** (11 − 10·log₁₀(500/3)), about 19 dB inside the
+  limit. LoRa's spectrum is not perfectly flat, but the margin is large. *Modelled, not measured.*
+- **The 6 dB bandwidth is a measurement, not a setting.** Route 1 needs the *measured* 6 dB
+  bandwidth to be ≥ 500 kHz. A BW500 LoRa signal sits close to its nominal 500 kHz, so the
+  margin is thin by nature. The modular grant's DTS test report presumably measured this; whether
+  it covers SF12 is one of the reviewer questions.
+- **Band edges** — a 500 kHz signal centred on 915.0 MHz sits far from 902 and 928 MHz.
+- **Antenna gain >6 dBi reduction, §15.247(b)(4)** — moot: the grant's 2.15 dBi cap is stricter.
 
 ## 6. Marine deployment permitting — Hawaii
 
