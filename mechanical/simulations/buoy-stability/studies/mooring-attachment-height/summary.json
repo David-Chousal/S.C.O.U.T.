@@ -1,0 +1,30 @@
+{
+ "draft_in": 2.7316675327672,
+ "H_current_0p8_mps_N": 20.615800526888478,
+ "z_cd_current_in": -6.059913596410554,
+ "z_cd_wave_in": 1.3658337663836,
+ "rm_max": {
+  "keel pad-eye (z=0)": 21.037459799893774,
+  "collar 2.5 in below keel": 21.14386080478492,
+  "mid-stem (z=-12 in)": 21.548184623371288,
+  "stem bottom, at lead (z=-24 in)": 22.058909446848816
+ },
+ "GM_in": {
+  "keel pad-eye (z=0)": 12.74462197815936,
+  "collar 2.5 in below keel": 12.789344879621707,
+  "mid-stem (z=-12 in)": 12.95929190517863,
+  "stem bottom, at lead (z=-24 in)": 13.173961832197897
+ },
+ "roll_period_s": {
+  "keel pad-eye (z=0)": 3.4312716561713605,
+  "collar 2.5 in below keel": 3.422193760345024,
+  "mid-stem (z=-12 in)": 3.4141659694448165,
+  "stem bottom, at lead (z=-24 in)": 3.4618870470102387
+ },
+ "vanishing_deg": {
+  "keel pad-eye (z=0)": null,
+  "collar 2.5 in below keel": null,
+  "mid-stem (z=-12 in)": null,
+  "stem bottom, at lead (z=-24 in)": null
+ }
+}

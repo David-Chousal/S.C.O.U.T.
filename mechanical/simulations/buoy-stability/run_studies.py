@@ -54,7 +54,16 @@ def lead_for(cap, preset="current", depth=24.0):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
     ap.add_argument("--date", default=dt.date.today().isoformat())
+    ap.add_argument("--explorer-only", action="store_true",
+                    help="rebuild stability-explorer.html in the newest results folder from its saved "
+                         "explorer-data.json and the current iterations.json (about 1 min, no re-solve)")
     a = ap.parse_args()
+    if a.explorer_only:
+        out = sorted(p for p in (HERE / "results").iterdir() if p.is_dir())[-1]
+        saved = json.loads((out / "explorer-data.json").read_text())
+        make_explorer(out, saved["series"], saved["leads"])
+        print("explorer rebuilt ->", out / "stability-explorer.html")
+        return
     out = HERE / "results" / a.date; out.mkdir(parents=True, exist_ok=True)
     curves = {}
 
@@ -133,6 +142,7 @@ def main():
         write_csv(out / "ballast-depth.csv", bd, ["arm_length_in", "min_lead_kg", "mass_kg", "freeboard_in",
                                                   "GM_in", "lead_x_depth_kg_in"])
         make_figures(out, curves, cc, bd, sweep)
+        (out / "explorer-data.json").write_text(json.dumps(dict(series=explorer, leads=leads), separators=(",", ":")))
         make_explorer(out, explorer, leads)
 
     write_csv(out / "gz-curves.csv", [[k, a_, f"{g:.3f}"] for k, r in curves.items()
@@ -183,17 +193,13 @@ def make_figures(out, curves, cc, bd, sweep):
 
 
 def make_explorer(out, data, leads):
+    """Embed the solver series (unchanged) and a true STEP cross section of every iteration in iterations.json."""
+    import iteration_sections
     tpl = (HERE / "stability-explorer-template.html").read_text()
-    shapes = {}
-    for h, cap in (("3.0", bs.CAP_V5_FULL), ("1.5", bs.CAP_V6), ("0", bs.CAP_NONE)):
-        Rz = bs.hull(cap).Rz
-        zs = np.linspace(0, cap["h"] * bs.IN, 12) if cap["h"] else np.array([0.0])
-        prof = [[round(float(Rz(np.array(z))) / bs.IN, 3), round(z / bs.IN, 3)] for z in zs]
-        shapes[h] = dict(profile=prof, top=cap["h"] + bs.WEDGE_H)
     lead_by = {"3.0": leads["3.0 in (v5 STEP)"], "1.5": leads["1.5 in (v6 STEP)"], "0": leads["none"]}
     html = (tpl.replace("__DATA__", json.dumps({f"{k.split('_')[0]}_{k.split('_')[1]}": v for k, v in data.items()},
                                                separators=(",", ":")))
-            .replace("__SHAPES__", json.dumps(shapes, separators=(",", ":")))
+            .replace("__ITERS__", json.dumps(iteration_sections.build(), separators=(",", ":")))
             .replace("__LEAD__", json.dumps(lead_by)).replace("__DATE__", out.name))
     (out / "stability-explorer.html").write_text(html)
 
