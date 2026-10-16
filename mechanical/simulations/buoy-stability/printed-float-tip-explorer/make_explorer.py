@@ -1,6 +1,6 @@
 """Writes printed-float-tip-explorer.html: an interactive heel / tip-over explorer for the printed float.
 
-Reads the float profile from printed-float-v8.step (same extraction as run_printed_float.py) and inlines
+Reads the float profile from printed-float-v9.step (same extraction as run_printed_float.py) and inlines
 explorer-core.js. Open the HTML in any browser.   Run: python make_explorer.py
 """
 import json

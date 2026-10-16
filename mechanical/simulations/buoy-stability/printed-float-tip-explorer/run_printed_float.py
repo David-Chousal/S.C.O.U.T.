@@ -1,7 +1,7 @@
 """Stability of the printed-float buoy (battery only, no ballast stem) from its STEP.
 
 Hull = outer envelope of printed-float-v9.step as a body of revolution (chambers sealed and dry),
-plus the housing flange above the float top. Masses: float 1154 g (slicer, 5 walls, 5 top/bottom,
+plus the housing flange above the float top. Masses: float 992 g (slicer, 5 walls, 5 top/bottom,
 10% honeycomb); electronics from the repo budget, stacked from the housing bottom upward.
 Run:  python run_printed_float.py   (needs gmsh + numpy, see ../requirements.txt)
 """
@@ -51,7 +51,7 @@ def budget(pod_below_in=4.0, pod_g=217.0, hydro_g=150.0, ballast_g=0.0, ballast_
     hb = FLOOR                                    # housing bottom sits on the socket floor
     h = lambda mm: (hb + mm) / IN                 # height above the keel, in
     b = [
-        ("Printed float (slicer)", 1154.0, 0.0, 1, ""),
+        ("Printed float (slicer)", 992.0, 0.0, 1, ""),
         ("Housing body (flange style)", 385.0, 0.0, 1, ""),
         ("Deployment battery", battery_g, 0.0, 1, ""),
         ("Feather M0 + RFM95 + Adalogger + headers", 16.8, 0.0, 1, ""),
