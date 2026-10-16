@@ -59,7 +59,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
 | Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
 | Ask S.C.O.U.T. chat | 🟢 Live — "Fred" widget backed by a Cloudflare Worker proxy, answers from the published Hub context ([`chatbot/`](chatbot/README.md)) |
-| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); charging path ([ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) and wiring/PCB pending |
+| Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); power source moving to **two primary lithium D cells, no solar** ([ADR-0007](docs/decisions/0007-primary-cell-power-source.md), open until the sleep floor is measured); bench bring-up and PCB pending |
 | Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Floatation family chosen 2026-08-17 (bolted wedge + bottom caps), first FEA pass complete ([`mechanical/test/`](mechanical/test/)). Open: buoyancy check, housing dimensions, chassis top-section access, mooring attachment hardware |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
 
@@ -147,7 +147,7 @@ full options, and the [live telemetry dashboard](docs/engineering/live-dashboard
 ```
    ┌─────────────────────────── BUOY ───────────────────────────┐
    │                                                            │
-   │  Solar panel ──► MPPT charger ──► LiFePO₄ battery          │
+   │  2× primary Li-SOCl₂ D cells (no solar — ADR-0007, open)   │
    │                                        │                   │
    │                                        ▼                   │
    │  Temperature (DS18B20 ×1) ──┐    Microcontroller           │
