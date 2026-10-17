@@ -45,22 +45,26 @@ grant's 11.6 dBm.
 |---|---|---|---|
 | 1 | Does a single-channel 125 kHz LoRa carrier at +14 dBm satisfy neither §15.247 route? | Yes — neither. A compliance lab says the same ([Sunfire](https://www.sunfiretesting.com/LoRa-FCC-Certification-Guide/)) | High |
 | 2 | Is BW500 / SF12 inside the `2ASEORFM95C` DTS grant, or does the grant only cover the modes the test lab actually measured? | Inside, as a DTS digital-modulation mode. We have not seen which SFs the test report covered | Medium |
-| 3 | The DTS route needs the **measured** 6 dB bandwidth ≥ 500 kHz. A BW500 LoRa signal sits close to its nominal 500 kHz. Is the margin a real concern? | We rely on the grant's test report having measured it | Low — we cannot measure it |
-| 4 | +11 or +12 dBm? The grant is 11.6 dBm; the test report carries ±2.80 dB uncertainty | +11, for margin against part-to-part variation | Medium |
+| 3 | The DTS route needs the **measured** 6 dB bandwidth ≥ 500 kHz. Does a BW500 LoRa signal clear it, at SF12? | Yes. Semtech measured **635.1 kHz** for BW500 LoRa per ANSI C63.10 §11.8.1 (AN1200.62 Fig. 1), 27% over the floor. Their test used an SX126x at SF8; a LoRa chirp sweeps the full bandwidth at every SF, so we expect SF12 on the SX1276 to match | Medium-high — Semtech's measurement, not ours |
+| 4 | +11 or +12 dBm? The grant is 11.6 dBm; the test report carries ±2.80 dB uncertainty | +11. The SX1276 PA_BOOST output steps in **1 dB** increments, so +12 is nominally *over* 11.6 and +11 is the highest setting under it; the output also drifts ±1 dB with supply and ±1 dB with temperature (SX1276 datasheet Table 9) | Medium-high |
 | 5 | Does the certified figure limit **conducted** output, with the antenna cap limiting what's radiated? | Yes: stay ≤ the certified conducted power **and** use an antenna of the tested type at ≤ 2.15 dBi | Medium |
 | 6 | Does the §15.23 home-built exemption apply? Are commercial modules "a kit"? Is a capstone at a research site "personal use"? | Probably applies to the prototype; it ends if S.C.O.U.T. is ever marketed | Low |
 | 7 | The shore station only **receives**. Does the 2.15 dBi cap apply to it, or can it use a high-gain antenna? | Not to a receive-only device: the cap governs emissions, and the shore emits nothing intentionally. It applies again the moment the shore transmits (ACKs, configuration) | Medium |
-| 8 | Is the power spectral density limit (§15.247(e), 8 dBm / 3 kHz) a concern? | No: +11 dBm over 500 kHz averages ≈ −11 dBm / 3 kHz, about 19 dB inside | High (modelled) |
+| 8 | Is the power spectral density limit (§15.247(e), 8 dBm / 3 kHz) a concern? | No. Semtech measured a peak of 0.97 dBm / 3 kHz at 20.99 dBm total (AN1200.62 Fig. 4), i.e. peak PSD ≈ total − 20 dB. At +11 dBm that is ≈ −9 dBm / 3 kHz, about 17 dB inside | High |
 
-## Primary sources we could not read
+## Primary sources
 
-- **Semtech AN1200.26**, "LoRa and FCC Part 15.247: Measurement Guidance" (2019): only
-  secondary summaries.
-- **Semtech AN1200.62**, "Best Practices for FCC" (2021): the Mouser PDF returned a bot-check
-  page.
+- **Read 2026-10-16:** [Semtech AN1200.62](../../hardware/datasheets/semtech-an1200-62-fcc-best-practices.pdf)
+  ("Best Practices for FCC", Rev 1.0) and the [SX1276 datasheet Rev 7](../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf).
+  They answer questions 3, 4 and 8 above and confirm the sensitivity gain: the datasheet gives
+  **−123 dBm for BW125/SF7 and −130 dBm for BW500/SF12** at 915 MHz, a 7 dB improvement (we had
+  modelled 6.5 dB).
+- **Still unread:** Semtech AN1200.26, "LoRa and FCC Part 15.247: Measurement Guidance" (2019).
+  AN1200.62 now covers the same measurements, so it matters less.
 
-If the reviewer has either, they are the most likely source of a correction, especially for
-question 3. Both are registered in [`sources.md`](../hub/research/sources.md#regulatory--rf-compliance).
+Both are registered in [`sources.md`](../hub/research/sources.md#regulatory--rf-compliance).
+What the reviewer's judgement is still needed for: questions 2, 5, 6 and 7, which are about how
+the rules and the grant apply, not about measurements.
 
 ## After the review
 

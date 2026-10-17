@@ -211,13 +211,24 @@ configuration missed on **two** counts — bandwidth mode and power — not one.
 A second pass before faculty review ([SCO-104](https://linear.app/scout1/issue/SCO-104)) found no
 reason to reverse the recommendation, and two DTS limits this document had not checked:
 
-- **Power spectral density, §15.247(e)** — at most 8 dBm in any 3 kHz band. +11 dBm spread over
-  500 kHz averages about **−11 dBm per 3 kHz** (11 − 10·log₁₀(500/3)), about 19 dB inside the
-  limit. LoRa's spectrum is not perfectly flat, but the margin is large. *Modelled, not measured.*
-- **The 6 dB bandwidth is a measurement, not a setting.** Route 1 needs the *measured* 6 dB
-  bandwidth to be ≥ 500 kHz. A BW500 LoRa signal sits close to its nominal 500 kHz, so the
-  margin is thin by nature. The modular grant's DTS test report presumably measured this; whether
-  it covers SF12 is one of the reviewer questions.
+- **Power spectral density, §15.247(e)** — at most 8 dBm in any 3 kHz band. Semtech measured a
+  peak of 0.97 dBm / 3 kHz for BW500 LoRa at 20.99 dBm total
+  ([AN1200.62](../../hardware/datasheets/semtech-an1200-62-fcc-best-practices.pdf) Fig. 4), so peak
+  PSD ≈ total − 20 dB. At +11 dBm that is **≈ −9 dBm / 3 kHz, about 17 dB inside the limit**.
+  (A flat-spectrum estimate gives −11 dBm; the measured peak is 2 dB higher.)
+- **The 6 dB bandwidth is a measurement, not a setting** — and it passes. Route 1 needs the
+  *measured* 6 dB bandwidth ≥ 500 kHz. Semtech measured **635.1 kHz** for BW500 LoRa per ANSI C63.10
+  §11.8.1 (AN1200.62 Fig. 1; occupied bandwidth 503 kHz), 27% above the floor. Their test used an
+  SX126x at SF8; a LoRa chirp sweeps the full bandwidth at every SF, so SF12 on the SX1276 is
+  expected to match. *Updated 2026-10-16; this bullet first called the margin "thin", which the
+  measurement shows it is not.*
+- **Sensitivity confirmed against the datasheet.** The [SX1276 datasheet Rev 7](../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf)
+  Table 10 (Band 1, 862–1020 MHz) gives **−123 dBm at BW125/SF7 and −130 dBm at BW500/SF12**: a
+  **7 dB** improvement, against the 6.5 dB modelled in §3. Both modelled absolutes were within
+  1.5 dB of the datasheet.
+- **+11 dBm is the right setting.** PA_BOOST output steps in 1 dB increments (datasheet Table 9),
+  so +12 dBm is nominally above the grant's 11.6 dBm and +11 is the highest setting below it. The
+  output also varies ±1 dB with supply voltage and ±1 dB over temperature.
 - **Band edges** — a 500 kHz signal centred on 915.0 MHz sits far from 902 and 928 MHz.
 - **Antenna gain >6 dBi reduction, §15.247(b)(4)** — moot: the grant's 2.15 dBi cap is stricter.
 
