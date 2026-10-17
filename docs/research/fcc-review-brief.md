@@ -66,6 +66,24 @@ Both are registered in [`sources.md`](../hub/research/sources.md#regulatory--rf-
 What the reviewer's judgement is still needed for: questions 2, 5, 6 and 7, which are about how
 the rules and the grant apply, not about measurements.
 
+## Outcome — reviewed 2026-10-16
+
+**Navid reviewed the brief and answered every question in the team's favour** (relayed by David,
+2026-10-16; [SCO-104](https://linear.app/scout1/issue/SCO-104) closed). Our current answers above
+stand as the agreed reading:
+
+- **Q2:** BW500/SF12 sits inside the `2ASEORFM95C` DTS grant.
+- **Q5:** stay at or below the certified 11.6 dBm conducted, with an antenna of the tested type at
+  ≤ 2.15 dBi.
+- **Q6:** the §15.23 home-built exemption applies to the prototype (not once S.C.O.U.T. is marketed).
+- **Q7:** a receive-only shore station is not bound by the 2.15 dBi cap.
+
+**Q7 changed the same day.** [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md)
+(also 2026-10-16) makes the link two-way: the shore station will now transmit firmware and
+settings. The favourable Q7 answer holds only for a receive-only antenna. Whatever the shore
+transmits through must meet the transmit limits, and the shore's LoRa FeatherWing (RFM95W) needs
+its own authorization checked. Tracked in [SCO-197](https://linear.app/scout1/issue/SCO-197).
+
 ## After the review
 
 Record each answer as a comment on [SCO-104](https://linear.app/scout1/issue/SCO-104) and in the

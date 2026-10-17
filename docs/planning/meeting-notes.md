@@ -798,7 +798,7 @@ was spent sorting out two different Zoom links.
 ## 2026-10-16 — Lab session (in person, with visitors)
 
 **Attendees:** David Chousal Cantu, a teammate who presented the mechanical and permitting work,
-a lab advisor, and two visiting industry engineers who offered general help. The Granola
+Navid Shaghaghi (advisor), and two visiting industry engineers who offered general help. The Granola
 transcript has no speaker labels, so attributions below are to roles, not names.
 
 Source: Granola transcript pasted to Claude. Most of the call was introductions and social
@@ -811,19 +811,20 @@ conversation; only the project content is recorded here.
   1, 2 or 3 from the dashboard, with a prediction of the battery-life effect
   ([SCO-198](https://linear.app/scout1/issue/SCO-198)). Not built: it needs a way to get a
   setting to the buoy, which is transmit-only today.
-- **Over-the-air firmware updates proposed, not decided.** An advisor suggested the shore station
+- **Over-the-air firmware updates proposed by Navid — decided "go" by David the same day**
+  ([ADR-0008](../decisions/0008-over-the-air-firmware-updates.md)). Navid suggested the shore station
   push new firmware to the buoy over LoRa, staged on the SD card and loaded by a bootloader, so
   nobody needs a boat to reflash it. David agreed to start this week. It conflicts with the
   transmit-only buoy, the FCC Review Brief's receive-only shore assumption, and the power budget,
-  so it is filed as a decision first ([SCO-197](https://linear.app/scout1/issue/SCO-197)).
+  so those costs are written into the ADR ([SCO-197](https://linear.app/scout1/issue/SCO-197)).
 - **Shore station architecture confirmed** (already decided in
   [SCO-86](https://linear.app/scout1/issue/SCO-86)): ESP32-S3 Feather plus a LoRa FeatherWing,
   pushing to the dashboard over WiFi, running FreeRTOS. Buoy stack: Feather M0 + Adalogger.
 
 ### Reported
 
-- **Parts.** The battery and Isabella's ordered components have arrived (reported by David on
-  Isabella's behalf; she was absent) ([SCO-115](https://linear.app/scout1/issue/SCO-115)). An
+- **Parts.** The battery and Isabella's ordered components have arrived; David confirmed afterwards
+  that every line on the invoice arrived ([SCO-115](https://linear.app/scout1/issue/SCO-115)). An
   advisor was unsure the Adalogger FeatherWing had been ordered; it is on invoice 3758294
   ([Purchase Log](purchase-log.md)).
 - **Radio link.** David is testing transmit and receive on two spare Feather M0 RFM95s from his
@@ -844,9 +845,8 @@ conversation; only the project content is recorded here.
 
 | Item | Owner |
 |---|---|
-| Decide go / no-go / post-MVP for over-the-air updates before writing code | David ([SCO-197](https://linear.app/scout1/issue/SCO-197)) |
+| Design the over-the-air protocol (listen windows, chunking, authentication, rollback) | David ([SCO-197](https://linear.app/scout1/issue/SCO-197)) |
 | Record the link-test config and RSSI results | David ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
-| Confirm every line of the Adafruit order arrived, incl. the Adalogger and CR1220 | Isabella ([SCO-115](https://linear.app/scout1/issue/SCO-115)) |
 | Print the new buoy body and insert | Mechanical ([SCO-190](https://linear.app/scout1/issue/SCO-190)) |
 | Send the team the tethering caveats research | Teammate (permitting) |
 
