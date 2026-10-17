@@ -794,3 +794,59 @@ was spent sorting out two different Zoom links.
 | Possible soldering work session this Sunday (advisor has soldering stations; confirm who can attend) | Isabella / John |
 | Shoba to reply to the lab request and point to the larger cabinet for the buoy enclosure | Shoba |
 | Resolve the decision-log merge with PR #170 (keep both sides) | John / Claude |
+
+## 2026-10-16 — Lab session (in person, with visitors)
+
+**Attendees:** David Chousal Cantu, a teammate who presented the mechanical and permitting work,
+Navid Shaghaghi (advisor), and two visiting industry engineers who offered general help. The Granola
+transcript has no speaker labels, so attributions below are to roles, not names.
+
+Source: Granola transcript pasted to Claude. Most of the call was introductions and social
+conversation; only the project content is recorded here.
+
+### Decisions and direction
+
+- **Transmit count becomes user-configurable.** The 3-slots-a-day plan (decided 2026-10-16,
+  [SCO-196](https://linear.app/scout1/issue/SCO-196)) stays the maximum, but a user should choose
+  1, 2 or 3 from the dashboard, with a prediction of the battery-life effect
+  ([SCO-198](https://linear.app/scout1/issue/SCO-198)). Not built: it needs a way to get a
+  setting to the buoy, which is transmit-only today.
+- **Over-the-air firmware updates proposed by Navid — decided "go" by David the same day**
+  ([ADR-0008](../decisions/0008-over-the-air-firmware-updates.md)). Navid suggested the shore station
+  push new firmware to the buoy over LoRa, staged on the SD card and loaded by a bootloader, so
+  nobody needs a boat to reflash it. David agreed to start this week. It conflicts with the
+  transmit-only buoy, the FCC Review Brief's receive-only shore assumption, and the power budget,
+  so those costs are written into the ADR ([SCO-197](https://linear.app/scout1/issue/SCO-197)).
+- **Shore station architecture confirmed** (already decided in
+  [SCO-86](https://linear.app/scout1/issue/SCO-86)): ESP32-S3 Feather plus a LoRa FeatherWing,
+  pushing to the dashboard over WiFi, running FreeRTOS. Buoy stack: Feather M0 + Adalogger.
+
+### Reported
+
+- **Parts.** The battery and Isabella's ordered components have arrived; David confirmed afterwards
+  that every line on the invoice arrived ([SCO-115](https://linear.app/scout1/issue/SCO-115)). An
+  advisor was unsure the Adalogger FeatherWing had been ordered; it is on invoice 3758294
+  ([Purchase Log](purchase-log.md)).
+- **Radio link.** David is testing transmit and receive on two spare Feather M0 RFM95s from his
+  roommate; early results look fine ([SCO-155](https://linear.app/scout1/issue/SCO-155)). Sleep and
+  watchdog paths wait for the Adalogger (RTC + SD).
+- **Mechanical.** The buoy is sealed. A new, lighter, smaller print with a lid holds a
+  three-compartment insert inside the pressure housing: batteries, electronics, desiccant.
+  Whether each compartment is itself waterproof is TBD. The buoyancy and stability simulation
+  shows it floats, does not tip, and lands upright if capsized; the earlier ballast arm is no
+  longer needed ([SCO-190](https://linear.app/scout1/issue/SCO-190)).
+- **Permitting.** Hawaii permitting for an anchored buoy may be too much (a full package, then a
+  3-month to 1-year wait). Plan stays tethered, not anchored, to a dock, pier or another buoy, for
+  about a week; Monterey and Santa Cruz contacts are in progress for closer tests. Consistent with
+  the Path B choice already recorded ([Deployment Strategy](deployment-strategy.md),
+  [SCO-185](https://linear.app/scout1/issue/SCO-185)).
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Design the over-the-air protocol (listen windows, chunking, authentication, rollback) | David ([SCO-197](https://linear.app/scout1/issue/SCO-197)) |
+| Record the link-test config and RSSI results | David ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
+| Print the new buoy body and insert | Mechanical ([SCO-190](https://linear.app/scout1/issue/SCO-190)) |
+| Send the team the tethering caveats research | Teammate (permitting) |
+
