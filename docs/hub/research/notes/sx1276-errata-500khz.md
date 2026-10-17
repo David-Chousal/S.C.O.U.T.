@@ -4,7 +4,7 @@
 > Source row: [`sx1276-errata`](../sources.md#lora-phy--radio-engineering) · corroborated in [Adafruit_CircuitPython_RFM9x #51](https://github.com/adafruit/Adafruit_CircuitPython_RFM9x/issues/51) and Semtech's own [SX1276Lib driver](https://os.mbed.com/teams/Semtech/code/SX1276Lib/file/7f3aab69cca9/sx1276/sx1276.cpp/) · ❓ access unverified
 
 **What it says.** Errata note §2.1, *Sensitivity Optimization with 500 kHz Bandwidth*: when the LoRa
-bandwidth is **≥ 500 kHz**, two undocumented registers must be written to reach the datasheet
+bandwidth is **≥ 500 kHz**, two registers must be written to reach the datasheet
 sensitivity —
 
 | Register | Value at BW ≥ 500 kHz | Value otherwise |
@@ -33,7 +33,12 @@ being rediscovered after a disappointing range test.
 **Caveat / how to use it.** Unverified on hardware, like the rest of the BW500 change
 ([SCO-98](https://linear.app/scout1/issue/SCO-98)). Two specific risks:
 
-- These are **undocumented registers**. RadioHead's `RH_RF95` does not expose `spiWrite` publicly, so
+- The datasheet **names but does not specify** these registers. Since Rev 6 (January 2019) it lists
+  `0x36` and `0x3A` as `RegHighBwOptimize1/2`, "Optimization for 500 kHz bandwidth. See errata note"
+  ([Rev 7 PDF](../../../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf), checked
+  2026-10-16), so the values above still come only from the errata and Semtech's driver. The
+  datasheet's own reset values for them disagree between tables (0x00 vs 0x20); don't rely on them.
+  RadioHead's `RH_RF95` does not expose `spiWrite` publicly, so
   applying them from a sketch needs either a subclass or a different driver — worth knowing before
   the shore receiver is designed around RadioHead.
 - If a BW500 range test disappoints, **check this before blaming the modem choice.** A receiver

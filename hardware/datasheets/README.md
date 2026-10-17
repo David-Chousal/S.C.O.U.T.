@@ -7,7 +7,8 @@ Local manufacturer documentation for components in the Rev A prototype schematic
 | File | Component |
 |---|---|
 | `adafruit-feather-m0-radio-with-lora-radio-module.pdf` | Feather M0 + RFM95 (build platform, per [ADR-0001](../../docs/decisions/0001-mcu-and-radio-selection.md)) |
-| `ti-sx1276-77-78-79-lora-transceiver.pdf` | SX1276 radio chip underlying the RFM95 module |
+| `semtech-sx1276-77-78-79-lora-transceiver.pdf` | SX1276 radio chip underlying the RFM95 module — **Rev 7, May 2020** (replaced Rev 4 on 2026-10-16; Rev 6 added the `RegHighBwOptimize1/2` registers the 500 kHz erratum writes). Was misnamed `ti-…`; it is a Semtech part |
+| `semtech-an1200-62-fcc-best-practices.pdf` | Semtech AN1200.62 Rev 1.0, "Best Practices for FCC — Pre-Compliance Testing of LoRaWAN Modules": §15.247 rules and Semtech's own measurements of 500 kHz LoRa (6 dB bandwidth 635 kHz, PSD, band edge). Vendor application note, kept with the vendor datasheets — see [FCC Review Brief](../../docs/research/fcc-review-brief.md) |
 | `adafruit-adalogger-featherwing.pdf` | Adalogger FeatherWing guide (RTC + microSD) |
 | `adafruit-adalogger-featherwing-reference-schematic.png` | Adafruit's own reference schematic for the Adalogger FeatherWing — confirms the PCF8523 RTC and SD chip-select on `D10` |
 | `maxim-ds18b20-digital-thermometer.pdf` | DS18B20 temperature probe |

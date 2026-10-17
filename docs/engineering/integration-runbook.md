@@ -405,7 +405,7 @@ python3 scripts/run_receiver.py --link rfm9x --out data-live
 ```
 
 > ⚠️ **SX1276 errata §2.1 — the receiver underperforms without it.** At BW ≥ 500 kHz two
-> undocumented registers must be written to reach datasheet sensitivity: `0x36` ← `0x02` and
+> registers (`RegHighBwOptimize1/2`, named in the datasheet but specified only in the errata) must be written to reach datasheet sensitivity: `0x36` ← `0x02` and
 > `0x3A` ← `0x64` ([reading note](../hub/research/notes/sx1276-errata-500khz.md)). It is a
 > **receive-side** fix, which is why the transmit-only buoy does not set it. Miss it and the link
 > looks weak for no visible reason — the exact failure that gets misdiagnosed as antenna or range.
