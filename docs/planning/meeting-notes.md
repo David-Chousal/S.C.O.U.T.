@@ -659,3 +659,53 @@ Granola's summary also says the structure is "PLA". The build material is **PETG
 | Possible soldering work session this Sunday (advisor has soldering stations; confirm who can attend) | Isabella / John |
 | Shoba to reply to the lab request and point to the larger cabinet for the buoy enclosure | Shoba |
 | Resolve the decision-log merge with PR #170 (keep both sides) | John / Claude |
+
+---
+
+## 2026-10-16 — SCOUT Weekly
+
+**Attendees:** John Ryan Myrdal (GENG) · David Chousal Cantu (CSEN) · Navid Shaghaghi (advisor)
+
+**Absent:** Isabella Rodriguez (ECEN) was not among the listed participants.
+
+Raw transcript's speaker labels were an anonymized "Me"/"Them". Speakers below are inferred from content: David on repo
+automation, John on the buoy and permitting. The Granola auto-summary had the code-ownership roles reversed; the transcript has
+David as code owner for software and John for mechanical.
+
+### Decisions
+
+- **Repo process (David presenting).** One monorepo with code owners per discipline. Branch protection is not on, because the repo
+  is not on GitHub Pro, so merges to `main` are gated by PR checks plus the rules in CLAUDE.md (no merge until a human does it). Navid
+  noted the decision write-ups are ADRs and that Claude responds well to the term. Already in place: ADRs in `docs/decisions/`.
+- **Permitting route.** Anchoring is out (an anchor damages coral). Tether to a dock, pier or another buoy, with caveats on the
+  buoy case. Hawaii stays the reef-data site; Monterey and Santa Cruz contacts are in progress for a closer systems test. Logged in the
+  [decision log](../hub/decision-log.md) and [Deployment Strategy](deployment-strategy.md).
+- **Buoy design (John).** Moving to a lighter, smaller buoy with a lid and a three-compartment package (batteries, electronics,
+  desiccant) inside the tube; per-compartment waterproofing is TBD. The first buoy is sealed and nearly done and is kept as a spare
+  (use it, build more). The buoyancy and stability simulation was demoed: it floats, does not tip, and self-rights.
+
+### Reported, not verified
+
+- NOAA permitting wait of **3 months to 1 year after a full submission**. No package can be submitted yet because the design keeps
+  changing. (Repo had "weeks to months"; see below.)
+- 4 kg of filament obtained from the general engineering department; next version to print soon.
+- Navid's advice: treat a 3D-printed hull as a composite; PETG or ABS alone cannot be trusted to hold water, so it is all sealed.
+- Sammy (mechanical engineer, former lab member) offered as a resource for mechanical questions and 3D printing.
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Permit wait 3 months to 1 year | [Hawaii permitting](../research/hawaii-deployment-permitting.md) said weeks to months; annotated, not replaced |
+| Linear states: design, progress, implementation, blocked, in review, post-deploy | Twelve states in CLAUDE.md (Backlog to Done) |
+| Three compartments: batteries, electronics, desiccant | Packaging option C ([packaging README](../../mechanical/cad/electronics-housing/packaging/README.md)) dropped the desiccant slab |
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Update CLAUDE.md to use the ADR format explicitly | David ([SCO-200](https://linear.app/scout1/issue/SCO-200)) |
+| Send Navid the permitting and tethering research | John ([SCO-199](https://linear.app/scout1/issue/SCO-199)) |
+| Confirm the 4 kg filament is PETG and enough, then close | John ([SCO-167](https://linear.app/scout1/issue/SCO-167)) |
+| Print the new buoy | John |
+

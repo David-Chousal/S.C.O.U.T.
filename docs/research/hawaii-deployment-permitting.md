@@ -55,7 +55,7 @@ Every regulatory claim is tagged with how well it is established:
 5. There is **no design approval** for a scientific buoy in any process we found. Regulators
    review the footprint, the anchor, what is in the water, the marking and the removal plan, not
    an engineering certification ([§8](#8-does-the-buoy-design-need-approval)).
-6. Permit lead times are weeks to months, so paperwork has to start **by 2026-12-01** for a
+6. Permit lead times are weeks to months (John reported 3 months to 1 year after a full submission at the 2026-10-16 weekly, unverified), so paperwork has to start **by 2026-12-01** for a
    2027-03-22 deployment ([§9](#9-schedule-and-owners)).
 
 ---
