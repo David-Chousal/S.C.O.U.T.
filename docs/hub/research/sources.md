@@ -114,7 +114,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | `cfr-15-247` | 47 CFR §15.247 — "Operation within the bands 902–928 MHz, 2400–2483.5 MHz, and 5725–5850 MHz." [eCFR](https://www.ecfr.gov/current/title-47/chapter-I/subchapter-A/part-15/subpart-C/subject-group-ECFR2f2e5828339709e/section-15.247) · [Cornell LII](https://www.law.cornell.edu/cfr/text/47/15.247) | 🔓 | — | **The governing rule.** (a)(1)(i) ≥50 hopping channels + ≤0.4 s occupancy per 20 s; (a)(2) ≥500 kHz minimum 6 dB bandwidth; (b)(2) power caps; (e) 8 dBm/3 kHz PSD; (f) hybrid systems — [notes](notes/cfr-15-247-ism-band-rules.md), [FCC 915 MHz Compliance](../../research/fcc-915-mhz-compliance.md) |
 | `cfr-15-23` | 47 CFR §15.23 — "Home-built devices." [eCFR](https://www.ecfr.gov/current/title-47/chapter-I/subchapter-A/part-15/subpart-A/section-15.23) | 🔓 | — | Exempts ≤5 non-marketed units from equipment **authorization**, not from the technical standards — why the capstone prototype needs no lab report but a sold product would — [notes](notes/cfr-15-23-home-built-exemption.md) |
 | `sunfire-lora-fcc` | Sunfire Testing. "LoRa FCC Certification Guide." [link](https://www.sunfiretesting.com/LoRa-FCC-Certification-Guide/) | 🔓 | — | Compliance lab's position: a 125 kHz LoRa signal does not meet the digital-modulation route; narrowband LoRa must hop |
-| `semtech-an1200-62` | Semtech (2021). AN1200.62, "Best Practices for FCC Pre-Compliance Testing." [pdf](https://www.mouser.com/pdfDocs/AN120062_BestPracticesforFCC_Rev_1_0_FINAL.pdf) | 🔓 | — | Semtech's own FCC guidance for LoRa parts — digital modulation vs hopping, dwell-limited payload sizing |
+| `semtech-an1200-62` | Semtech (2021, Rev 1.0). AN1200.62, "Best Practices for FCC — Pre-Compliance Testing of LoRaWAN Modules." [pdf](https://www.mouser.com/pdfDocs/AN120062_BestPracticesforFCC_Rev_1_0_FINAL.pdf) | 🔓 | [`hardware/datasheets/semtech-an1200-62-fcc-best-practices.pdf`](../../../hardware/datasheets/semtech-an1200-62-fcc-best-practices.pdf) | Semtech's own FCC guidance for LoRa parts — digital modulation vs hopping vs hybrid, dwell-limited payload sizing. **Read 2026-10-16** for [SCO-104](https://linear.app/scout1/issue/SCO-104): BW500 LoRa measures **635.1 kHz** 6 dB bandwidth (ANSI C63.10 §11.8.1), 503 kHz OBW, peak PSD ≈ total − 20 dB, band-edge −49 dB at 903 MHz. Test chip was an SX126x at SF8, +22 dBm. Vendor note, stored with the vendor datasheets (not `library/`) |
 | `ttn-us915` | The Things Network. "US902-928 MHz Band" regional parameters. [link](https://www.thethingsnetwork.org/docs/lorawan/regional-parameters/us915/) | 🔓 | — | Why LoRaWAN US915 defines 64 × 125 kHz channels (hopping route) **and** 8 × 500 kHz channels (digital-modulation route) — the industry precedent for both options |
 | `hi-dlnr-sap` | Hawaii DLNR Division of Aquatic Resources. "Special Activity Permit." [link](https://dlnr.hawaii.gov/dar/licenses-and-permits/special-activity-permit/) | 🔓 | — | State permit for research activity in Hawaii marine waters; refers in-water structures to OCCL |
 | `usace-nwp-10` | US Army Corps of Engineers. Nationwide Permit 10 — Mooring Buoys (eff. 2022-02-25). [pdf](https://www.nab.usace.army.mil/Portals/63/NWP%2010%20with%20General%20Conditions.pdf) | 🔓 | — | Federal Section 10 authorization pathway for mooring buoys in navigable waters |
@@ -140,7 +140,7 @@ configuration and the airtime calculator are derived from — not secondary expl
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `semtech-an1200-13` | Semtech (2013). AN1200.13, "SX1272/3/6/7/8: LoRa Modem Designer's Guide." [pdf](https://www.mouser.com/pdfdocs/semtech-lora-modem-design.pdf) | 🔓 | — | **The airtime formula.** Symbol time, preamble, and payload-symbol equations behind [`scripts/lora_airtime.py`](../../../scripts/lora_airtime.py) and every airtime figure in the compliance analysis — [notes](notes/semtech-an1200-13-airtime.md) |
-| `sx1276-datasheet` | Semtech. "SX1276/77/78/79 — 137 MHz to 1020 MHz Low Power Long Range Transceiver" datasheet. [pdf](https://cdn-shop.adafruit.com/product-files/3179/sx1276_77_78_79.pdf) | 🔓 | — | Register map for `RegModemConfig1/2/3` (0x1D/0x1E/0x26) — the derivation of `ModemConfig {0x98, 0xC4, 0x04}` in `firmware/src/config.h`, and the demodulator SNR limits per SF used in the link budget |
+| `sx1276-datasheet` | Semtech. "SX1276/77/78/79 — 137 MHz to 1020 MHz Low Power Long Range Transceiver" datasheet. [pdf](https://cdn-shop.adafruit.com/product-files/3179/sx1276_77_78_79.pdf) | 🔓 | [`hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf`](../../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf) (Rev 7, May 2020) | Register map for `RegModemConfig1/2/3` (0x1D/0x1E/0x26) — the derivation of `ModemConfig {0x98, 0xC4, 0x04}` in `firmware/src/config.h`, and the demodulator SNR limits per SF used in the link budget. Rev 7 Table 10 gives −130 dBm at BW500/SF12 and −123 dBm at BW125/SF7 (Band 1); Table 9 gives PA_BOOST 1 dB steps, ±1 dB over supply and temperature; Rev 6+ names `0x36`/`0x3A` as `RegHighBwOptimize1/2` (values still in the errata) |
 | `sx1276-errata` | Semtech. "Errata Note — SX1276/77/78," §2.1 *Sensitivity Optimization with 500 kHz Bandwidth*. Corroborated by [Adafruit_CircuitPython_RFM9x #51](https://github.com/adafruit/Adafruit_CircuitPython_RFM9x/issues/51) and the [Semtech SX1276Lib driver](https://os.mbed.com/teams/Semtech/code/SX1276Lib/file/7f3aab69cca9/sx1276/sx1276.cpp/) | ❓ | — | **Actionable gotcha:** at BW ≥ 500 kHz the receiver needs reg `0x36 = 0x02`, `0x3A = 0x64`. Receive-side only, so the TX-only buoy skips it and the shore station must not — [notes](notes/sx1276-errata-500khz.md), [SCO-24](https://linear.app/scout1/issue/SCO-24) |
 | `semtech-an1200-26` | Semtech. AN1200.26, "LoRa and FCC Part 15.247: Measurement Guidance." [mirror](https://dtsheet.com/doc/1842140/lora%E2%84%A2-and-fcc-part-15.247--measurement-guidance) | ❓ | — | Semtech's own measurement guidance for demonstrating §15.247 compliance, including dwell-limited maximum payload. **Not yet read in full** — the canonical Semtech PDF was not retrievable; obtain before the compliance filing |
 
@@ -217,6 +217,40 @@ configuration and the airtime calculator are derived from — not secondary expl
 Also re-used in this work, already registered above: `usace-cem` (linear wave theory — design-wave
 slope, orbital motion), `dnv-rp-c205` (added mass for the heave period), and `roark-8e` (flat-plate
 floor/lid and external-pressure cylinder checks for the flange-style housing).
+
+## Power system (2026-10-05)
+
+Sources behind the [Power Budget Update — 2026-10-05](../../engineering/power-budget-update-2026-10-05.md)
+and [ADR-0007](../../decisions/0007-primary-cell-power-source.md). Rows marked ❓ are still to
+pull and check; the update flags every number that depends on them as an estimate.
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `ds18b20-datasheet` | Maxim Integrated. *DS18B20 Programmable Resolution 1-Wire Digital Thermometer*, rev 042208. [pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf) | 🔓 | — | Supply range, active/standby current, 750 ms conversion (p. 19–20) |
+| `adafruit-adalogger-2922` | Adafruit. "Adalogger FeatherWing — RTC + SD Add-on" (PID 2922), schematic | 🔓 | — | SD card VDD tied straight to 3.3 V; PCF8523 RTC + CR1220 |
+| `adafruit-tpl5111-3435` | Adafruit. "TPL5111 Low Power Timer Breakout" (PID 3435), product page + guide | ❓ | — | Proposed power-gating of the Feather EN pin; floor current to verify |
+| `ti-tps61023` | Texas Instruments. *TPS61023* boost converter datasheet | ❓ | — | Boost efficiency (85% assumed) and EN/disconnect behaviour |
+| `ti-slva079` | Texas Instruments. SLVA079, linear regulator application note | ❓ | — | η = Vout/Vin for a linear regulator |
+| `saft-ls33600` | Saft. *LS 33600* Li-SOCl₂ D-cell datasheet; retail ~$22 (TME) to $35 (BatteryGuy) per cell, 2026-10-06 | ❓ | — | Capacity (≈ 17 Ah assumed), pulse limits, derating, passivation |
+| `ul-1642` | UL 1642, Standard for Lithium Batteries | 🔒 | — | Redundant protection against charging a primary lithium cell (wording to verify) |
+| `adafruit-feather-m0-rfm9x-schematic` | Adafruit. *Feather M0 RFMxx* schematic, rev B (2015) | 🔓 | — | AP2112K-3.3 linear regulator from VBAT, EN 100k pull-up (36 µA if held low), VBAT 100k/100k divider on D9/A7, MCP73831 charger at 100 mA, radio on D3/D4/D8 — [Electronics Build and Test Plan](../../engineering/electronics-build-and-test-plan.md) |
+| `seeed-grove-turbidity` | Seeed Studio. "Grove - Turbidity Sensor Meter for Arduino V1.0" (101020752). [wiki](https://wiki.seeedstudio.com/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/) | 🔓 | — | 3.3 V/5 V supply; output decreases as turbidity rises. Current draw and 3.3 V output range not specified |
+| `dmg2305ux-datasheet` | Diodes Inc. *DMG2305UX* P-channel MOSFET datasheet. [Mouser](https://www.mouser.co.uk/ProductDetail/621-DMG2305UX-7) | 🔓 | — | 52 mΩ @ −4.5 V, 100 mΩ @ −2.5 V, V<sub>GS(th)</sub> 0.9 V — switches fully from a 3.3 V pin |
+| `ti-pcm1808` | Texas Instruments. *PCM1808* audio ADC datasheet (SLES177). [pdf](https://www.ti.com/lit/gpn/pcm1808) | 🔓 | — | Analog supply 4.5–5.5 V, why it is not the default 3.3 V audio path |
+| `sandia-sand87-7023` | Sandia National Laboratories. SAND87-7023, *Stand-Alone Photovoltaic Systems: A Handbook of Recommended Design Practices* | ❓ | — | PV sizing and days-of-autonomy formulas (solar comparison only) |
+
+## Electronics interfaces (2026-10-12)
+
+Sources behind the [Electronics Drawing Set](../../engineering/electronics-drawing-set.md) and the
+Sensor Interface Review. Datasheets listed under Power system above are not repeated.
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `aquarian-h2dm-guide` | Aquarian Audio. *H2dM Hydrophone User's Guide*, and the [H2d product page](https://www.aquarianaudio.com/h2d-hydrophone.html) ($229 base, 2026-10) | 🔓 | — | 3.5 mm TRS dual-mono output; −172 dB re 1 V/µPa; 1.1 kΩ output impedance; minimum plug-in power 2 V, 0.7 mA; under 80 m. Sets the bias circuit and preamp gain |
+| `adafruit-feather-m0-lora-pinouts` | Adafruit. "Feather M0 Radio with LoRa Radio Module", [Pinouts](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/pinouts) | 🔓 | — | A1–A5 work as analog inputs and digital I/O; the radio uses #8, #3 and #4 internally. This is why A3 can be the audio power switch |
+| `adafruit-381` | Adafruit. Waterproof DS18B20 probe (PID 381), [product page](https://www.adafruit.com/product/381) | 🔓 | — | 3-wire colours (red VDD; black or blue GND; yellow or white data); 4.7 kΩ pull-up included; 91 cm cable |
+| `adafruit-261-851-1661-1699` | Adafruit product pages for PIDs [261](https://www.adafruit.com/product/261), [851](https://www.adafruit.com/product/851), [1661](https://www.adafruit.com/product/1661), [1699](https://www.adafruit.com/product/1699) | 🔓 | — | 261: JST-PH female with tinned ends (battery plug). 851: uFL to panel-mount SMA (not RP-SMA), 15 cm RG178. 1661: uFL SMT connector. 1699: 3.5 mm stereo jack breakout |
+| `dmg2305ux-ds36196` | Diodes Inc. *DMG2305UX* datasheet DS36196 rev 8-2 (July 2021) | 🔓 | — | P-channel; V<sub>GS(th)</sub> −0.5 to −0.9 V; R<sub>DS(on)</sub> ≤ 100 mΩ at −2.5 V; I<sub>DSS</sub> ≤ 1 µA. Confirms gate LOW = on from a 3.3 V pin |
 
 ## Market & commercial landscape
 

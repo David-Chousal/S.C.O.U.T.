@@ -11,10 +11,15 @@
 > Confirm with the university's EE faculty or a compliance lab before the Hawaii deployment.
 >
 > Investigation for [SCO-19](https://linear.app/scout1/issue/SCO-19), 2026-08-31.
+>
+> **Current configuration (2026-10-16):** BW500 / SF12 / CR4-8 at **+11 dBm**, fixed 915.0 MHz,
+> 3 transmit slots a day × 3 blind repeats. Sections 1–3 describe the configuration *before* the
+> 2026-09-01 fix. The open questions for a qualified reviewer are in the
+> [FCC Review Brief](fcc-review-brief.md) ([SCO-104](https://linear.app/scout1/issue/SCO-104)).
 
 ---
 
-## 1. What the firmware does today
+## 1. What the firmware did before 2026-09-01
 
 | Setting | Value | Where |
 |---|---|---|
@@ -23,7 +28,7 @@
 | Coding rate | 4/8 | reg 0x1D bits 3–1 = `100` |
 | Spreading factor | **SF7** | reg 0x1E bits 7–4 = `0111` |
 | TX power | **+14 dBm** (~25 mW) | [`config.h:49`](../../firmware/src/config.h) |
-| Cadence | 1 packet/day, 30 B, ×3 blind repeats | [`scout_link.h`](../../firmware/lib/scout_link/scout_link.h) |
+| Cadence | 1 packet/day, 30 B, ×3 blind repeats (now 3 slots/day, decided 2026-10-16) | [`scout_link.h`](../../firmware/lib/scout_link/scout_link.h) |
 
 ## 2. The rule
 
@@ -125,8 +130,9 @@ that the receiver must apply.
 
 ### Option C — reduce power under §15.249
 
-Compliant, and requires no protocol change, but the field-strength limit is roughly 20 dB below
-+14 dBm. That trades away most of the link budget on a project whose entire premise is a
+Compliant, and requires no protocol change, but the field-strength limit is far below +14 dBm:
+§15.249's 50 mV/m at 3 m works out to an EIRP of about −1.2 dBm, roughly 17 dB under the old
++14 dBm into a 2.15 dBi whip (≈ +16.2 dBm EIRP). *Corrected 2026-10-16 from "roughly 20 dB".* That trades away most of the link budget on a project whose entire premise is a
 low-power long-range link. **Not viable.**
 
 ## 4. Recommendation — adopted 2026-09-01
@@ -199,6 +205,32 @@ grant was found.
 FCC modular-approval rules require the integrator to keep output power and transmission
 parameters within the certified limits; failing to do so invalidates the approval. The old
 configuration missed on **two** counts — bandwidth mode and power — not one.
+
+### Pre-review check — 2026-10-16
+
+A second pass before faculty review ([SCO-104](https://linear.app/scout1/issue/SCO-104)) found no
+reason to reverse the recommendation, and two DTS limits this document had not checked:
+
+- **Power spectral density, §15.247(e)** — at most 8 dBm in any 3 kHz band. Semtech measured a
+  peak of 0.97 dBm / 3 kHz for BW500 LoRa at 20.99 dBm total
+  ([AN1200.62](../../hardware/datasheets/semtech-an1200-62-fcc-best-practices.pdf) Fig. 4), so peak
+  PSD ≈ total − 20 dB. At +11 dBm that is **≈ −9 dBm / 3 kHz, about 17 dB inside the limit**.
+  (A flat-spectrum estimate gives −11 dBm; the measured peak is 2 dB higher.)
+- **The 6 dB bandwidth is a measurement, not a setting** — and it passes. Route 1 needs the
+  *measured* 6 dB bandwidth ≥ 500 kHz. Semtech measured **635.1 kHz** for BW500 LoRa per ANSI C63.10
+  §11.8.1 (AN1200.62 Fig. 1; occupied bandwidth 503 kHz), 27% above the floor. Their test used an
+  SX126x at SF8; a LoRa chirp sweeps the full bandwidth at every SF, so SF12 on the SX1276 is
+  expected to match. *Updated 2026-10-16; this bullet first called the margin "thin", which the
+  measurement shows it is not.*
+- **Sensitivity confirmed against the datasheet.** The [SX1276 datasheet Rev 7](../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf)
+  Table 10 (Band 1, 862–1020 MHz) gives **−123 dBm at BW125/SF7 and −130 dBm at BW500/SF12**: a
+  **7 dB** improvement, against the 6.5 dB modelled in §3. Both modelled absolutes were within
+  1.5 dB of the datasheet.
+- **+11 dBm is the right setting.** PA_BOOST output steps in 1 dB increments (datasheet Table 9),
+  so +12 dBm is nominally above the grant's 11.6 dBm and +11 is the highest setting below it. The
+  output also varies ±1 dB with supply voltage and ±1 dB over temperature.
+- **Band edges** — a 500 kHz signal centred on 915.0 MHz sits far from 902 and 928 MHz.
+- **Antenna gain >6 dBi reduction, §15.247(b)(4)** — moot: the grant's 2.15 dBi cap is stricter.
 
 ## 6. Marine deployment permitting — Hawaii
 

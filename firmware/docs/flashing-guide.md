@@ -52,10 +52,10 @@ accept a flash. This is normal for SAMD21 boards after deep sleep.
 
 ## Notes
 
-- `enter_deep_sleep()` uses real SAMD21 standby (`ArduinoLowPower`), woken by the PCF8523
-  countdown-timer INT on `PIN_RTC_INT`. **USB/Serial drops while in standby** — the port
-  re-enumerates on wake, so watch the RTC cadence (or a scope on the sensor-gate pin), not a
-  continuous serial stream, to confirm timing. Wire the Adalogger INT to `PIN_RTC_INT` first,
-  and double-tap RESET to reflash if the bootloader is hard to catch during sleep cycles.
+- `sleep_until()` uses real SAMD21 standby (`ArduinoLowPower`), woken by the SAMD21's own RTC
+  alarm — no wake wire to add. **USB/Serial drops while in standby** — the port re-enumerates
+  on wake, so watch the logged timestamps (or a scope on the sensor-gate pin), not a continuous
+  serial stream, to confirm timing. Double-tap RESET to reflash if the bootloader is hard to
+  catch during sleep cycles.
 - Double-check the shared SPI bus (SD + LoRa) and the pin map in
   [pin-assignments.md](pin-assignments.md) against the ECE GPIO table before first power-on.

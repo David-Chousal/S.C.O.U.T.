@@ -1,14 +1,15 @@
 /*
  * SCOUT buoy firmware — duty-cycle state machine.
  *
- *   Sleep → Wake → Sense → Log → Battery check → Transmit (daily) → Sleep
+ *   Sleep → Wake → { Sample → Log  at :00/:30  |  Transmit last reading  in a fixed slot } → Sleep
  *
  * Platform: Adafruit Feather M0 + RFM95 (SAMD21), Arduino core (ADR-0001).
  * The packet encoder (lib/scout_packet) mirrors the shore decoder byte-for-byte; the
  * scheduling math (lib/scout_scheduler) is pure and unit-tested off-target.
  *
- * Standby sleep (ArduinoLowPower + PCF8523 INT wake) and the watchdog are implemented;
- * record_seq/last_tx are retained across resets in a no-init RAM section. The audio subsystem
+ * Standby sleep wakes on the SAMD21 RTC (ArduinoLowPower), timed against the PCF8523 wall clock
+ * (SCO-165/SCO-196); the watchdog is implemented; record_seq is retained across resets in a
+ * no-init RAM section. The audio subsystem
  * and on-hardware driver verification remain Phase 1–2 bring-up (see notes inline).
  */
 #include <Adafruit_SleepyDog.h>
@@ -30,18 +31,17 @@ static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
     "turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version";
 
-// Sequence counter and last-transmit time, kept in a NO-INIT RAM section that the C startup
-// does not clear. They therefore survive a watchdog/system reset (the MCU stays powered), so
-// record_seq stays monotonic and we don't re-send the daily packet after a reset. A magic
+// Sequence counter, kept in a NO-INIT RAM section that the C startup does not clear. It
+// therefore survives a watchdog/system reset (the MCU stays powered), so record_seq stays
+// monotonic. Transmits only happen in fixed slots, so a reset can't cause a re-send. A magic
 // guard tells real retained state from garbage on a cold power-on. This is RAM, so a full
 // power loss still cold-starts — the PCF8523 has no user NVRAM to hold it, and we chose not
 // to add SD/flash wear for the rarer power-loss case.
 struct RetainedState {
     uint32_t magic;
     uint32_t record_seq;
-    uint32_t last_tx_epoch;
 };
-static const uint32_t RETAINED_MAGIC = 0x5C002701u;
+static const uint32_t RETAINED_MAGIC = 0x5C002702u;  // bumped when the layout changes
 __attribute__((section(".noinit"))) static RetainedState g_state;
 
 static TemperatureSensor g_temp;
@@ -55,6 +55,20 @@ static bool g_sd_ok = false;
 static bool g_lora_ok = false;
 static bool g_watchdog_reset = false;  // set if the last reset was the watchdog firing
 static uint8_t g_soh = 0;              // device State-of-Health bitfield, computed at boot
+
+// The latest sample, held for the next transmit slot. Slots sit 10 min after a sample, so the
+// packet carries a fresh reading without a sensor read ever overlapping the radio (SCO-165).
+static ScoutReading g_last_reading;
+static bool g_have_reading = false;
+static scout_power_mode_t g_last_mode = SCOUT_POWER_NORMAL;
+static bool g_first_cycle = true;  // sample immediately after boot, before the first sleep
+static uint32_t g_next_event = 0;
+
+// Fallback clock for when the PCF8523 is unusable: advanced by hand across each sleep, since
+// millis() stops in standby. Coarse, but it keeps the sample/slot rhythm going instead of
+// stalling the buoy.
+static uint32_t g_fallback_epoch = 0;
+static uint32_t g_fallback_ms = 0;
 
 // ── flag-name formatting (matches the data-schema flags vocabulary) ──────────
 static void append_flag(char *buf, size_t cap, bool &first, const char *name) {
@@ -85,22 +99,52 @@ static void format_soh(uint8_t soh, char *buf, size_t cap) {
     if (soh & SCOUT_SOH_LORA_INIT_FAIL) append_flag(buf, cap, first, "LORA_INIT_FAIL");
 }
 
-// Wake ISR — the work happens back in loop() after deepSleep() returns; this just needs to
-// exist for the wake source. Keep it trivial (no I2C/Serial from interrupt context).
-static void on_rtc_wake() {}
+static uint32_t clock_now() {
+    if (g_rtc_ok) {
+        return g_rtc.nowEpoch();
+    }
+    return g_fallback_epoch + (millis() - g_fallback_ms) / 1000u;
+}
 
-static void enter_deep_sleep() {
-    // The watchdog must be OFF during the 30-min standby, or it would reset us mid-sleep — its
-    // max timeout (~16 s) is far shorter than the sample interval. It's re-armed at loop start.
+static void sensor_gates_off() {
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
+    digitalWrite(PIN_AUDIO_GATE, SENSOR_OFF);
+}
+
+static void sleep_seconds(uint32_t seconds) {
+    uint32_t before = clock_now();
+    // The watchdog must be OFF during standby, or it would reset us mid-sleep — its max
+    // timeout (~16 s) is far shorter than the sample interval. loop() re-arms it on wake.
     Watchdog.disable();
     g_lora.sleep();
     Serial.flush();
-    // SAMD21 standby (~microamps) until the PCF8523 countdown-timer INT pulls PIN_RTC_INT low.
-    // NOTE: USB/Serial drops during standby — expected in deployment; use the RTC cadence, not
+    // SAMD21 standby (~microamps) until its RTC alarm fires. The alarm has 1 s resolution, so
+    // callers always pass whole seconds ≥ 1 (an alarm on the current second may never match).
+    // NOTE: USB/Serial drops during standby — expected in deployment; use the timestamps, not
     // the USB monitor, to confirm wake timing on the bench.
-    LowPower.deepSleep();
-    // Woke: release the timer flag so INT1 deasserts and the next interval can trigger.
-    g_rtc.ackTimer();
+    LowPower.deepSleep(seconds * 1000u);
+    if (!g_rtc_ok) {
+        g_fallback_epoch = before + seconds;
+        g_fallback_ms = millis();
+    }
+}
+
+// Sleep until `target`, re-reading the clock after every wake: the SAMD21 RTC times only the
+// current interval, so its drift never accumulates, and a wake that lands up to a second
+// early just sleeps the remainder. Returns the event time actually reached.
+static uint32_t sleep_until(uint32_t target) {
+    for (;;) {
+        uint32_t now = clock_now();
+        if (now >= target) {
+            return target;
+        }
+        if (target - now > SAMPLE_INTERVAL_S) {
+            // No event is ever further away than one sample interval, so the clock moved
+            // backwards (PCF8523 reset or re-set): re-plan from the new time.
+            target = scout_next_event_epoch(now, SAMPLE_INTERVAL_S, TX_SLOTS_SOD, TX_SLOT_COUNT);
+        }
+        sleep_seconds(target - now);
+    }
 }
 
 void setup() {
@@ -118,15 +162,20 @@ void setup() {
     if (!warm_start) {
         g_state.magic = RETAINED_MAGIC;
         g_state.record_seq = 0;
-        g_state.last_tx_epoch = 0;
     }
 
     // Guard initialization too — a hung driver init shouldn't brick the buoy. loop() re-arms
     // it each cycle and disables it before the long standby sleep.
     Watchdog.enable(WDT_TIMEOUT_MS);
 
+    // Latch OFF before switching to output, so the gate never drives LOW for an instant and
+    // briefly powers the sensors (the output register resets to 0).
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
     pinMode(PIN_SENSOR_GATE, OUTPUT);
-    digitalWrite(PIN_SENSOR_GATE, LOW);
+    digitalWrite(PIN_AUDIO_GATE, SENSOR_OFF);
+    pinMode(PIN_AUDIO_GATE, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);  // D13 LED off — it would draw more than the sleep floor
+    digitalWrite(LED_BUILTIN, LOW);
 
     g_battery.begin();
     g_temp.begin();
@@ -136,13 +185,6 @@ void setup() {
     uint16_t startup_flags = 0;
     if (!g_rtc_ok || g_rtc.lostPower()) {
         startup_flags |= SCOUT_FLAG_RTC_LOST;
-    }
-    if (g_rtc_ok) {
-        g_rtc.enablePeriodicWake(SAMPLE_INTERVAL_MIN);
-        // PCF8523 INT1 is open-drain, active-low → pull-up, wake on the falling edge.
-        pinMode(PIN_RTC_INT, INPUT_PULLUP);
-        LowPower.attachInterruptWakeup(PIN_RTC_INT, on_rtc_wake, FALLING);
-        g_rtc.ackTimer();  // start from a clean flag
     }
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
@@ -167,19 +209,16 @@ void setup() {
     (void)startup_flags;  // folded into the first record below
 }
 
-void loop() {
-    // Re-arm the watchdog for this cycle (it was disabled for the standby sleep). If any step
-    // below hangs past WDT_TIMEOUT_MS, the buoy resets and recovers on its own.
-    Watchdog.enable(WDT_TIMEOUT_MS);
-
+// Sample every sensor the power mode allows, log the row, and keep it for the next slot.
+static void sample_and_log() {
     uint16_t flags = 0;
-    uint32_t now = g_rtc_ok ? g_rtc.nowEpoch() : 0;
+    uint32_t now = clock_now();
     if (!g_rtc_ok) {
         flags |= SCOUT_FLAG_RTC_LOST;
     }
 
     // 1. Power the switched sensor rail and let it settle.
-    digitalWrite(PIN_SENSOR_GATE, HIGH);
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_ON);
     delay(SENSOR_WARMUP_MS);
 
     // 2. Sense. Read the battery first so the power mode can gate the rest (graceful
@@ -201,7 +240,7 @@ void loop() {
     }
 
     // 3. Sensors off.
-    digitalWrite(PIN_SENSOR_GATE, LOW);
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
 
     // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
     //    V1 stretch not on the confirmed build; this records the intent.
@@ -268,59 +307,24 @@ void loop() {
         }
     }
 
-    // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s).
-    Watchdog.reset();
-
-    // 7. Transmit — throttled by power mode (base period in NORMAL, ×factor in CONSERVE),
-    //    and never in CRITICAL. The power-mode flags were set in step 5.
-    uint32_t tx_period = scout_transmit_period_s(mode, TRANSMIT_PERIOD_S, TRANSMIT_CONSERVE_FACTOR);
-    if (mode != SCOUT_POWER_CRITICAL && g_lora_ok &&
-        scout_is_transmit_cycle(now, g_state.last_tx_epoch, tx_period)) {
-        ScoutReading r;
-        r.schema_version = SCOUT_PACKET_VERSION;
-        r.buoy_id = BUOY_ID;
-        r.timestamp = now;
-        r.record_seq = g_state.record_seq;
-        r.temp_c_centi = scout_temp_centi(temp_c);
-        r.turbidity_adc = turbidity_adc;
-        r.battery_mv = battery_mv;
-        r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
-        r.flags = flags;
-        r.soh = g_soh;
-        r.audio_present = audio_present ? 1 : 0;
-        r.fw_major = FW_MAJOR;
-        r.fw_minor = FW_MINOR;
-        r.fw_patch = FW_PATCH;
-
-        uint8_t packet[SCOUT_PACKET_SIZE];
-        size_t n = scout_packet_encode(&r, packet);
-
-        // Blind repetition (lib/scout_link): send the same frame a few times, spaced, and
-        // never listen for an ACK. A lost daily packet costs timeliness, not data — the full
-        // record is on the SD card — so ACKed retransmit would buy little and risk an
-        // avalanche across a multi-buoy deployment. The shore station deduplicates on
-        // (buoy_id, record_seq), so the copies collapse to one row.
-        uint8_t copies = scout_link_repeat_count(mode, SCOUT_LINK_REPEATS_NORMAL,
-                                                 SCOUT_LINK_REPEATS_CONSERVE);
-        bool any_sent = false;
-        for (uint8_t i = 0; i < copies; i++) {
-            if (g_lora.send(packet, (uint8_t)n)) {
-                any_sent = true;
-            }
-            // Pet before the gap, not after: the watchdog must not expire while we wait.
-            // scout_link_fits_watchdog asserts this policy leaves 2x headroom.
-            Watchdog.reset();
-            if (i + 1 < copies) {
-                delay(scout_link_repeat_delay_ms((uint8_t)(i + 1),
-                                                 SCOUT_LINK_REPEAT_BASE_DELAY_MS));
-                Watchdog.reset();
-            }
-        }
-        // Advance only if at least one copy reached the air; otherwise retry next cycle.
-        if (any_sent) {
-            g_state.last_tx_epoch = now;
-        }
-    }
+    ScoutReading r;
+    r.schema_version = SCOUT_PACKET_VERSION;
+    r.buoy_id = BUOY_ID;
+    r.timestamp = now;
+    r.record_seq = g_state.record_seq;
+    r.temp_c_centi = scout_temp_centi(temp_c);
+    r.turbidity_adc = turbidity_adc;
+    r.battery_mv = battery_mv;
+    r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
+    r.flags = flags;
+    r.soh = g_soh;
+    r.audio_present = audio_present ? 1 : 0;
+    r.fw_major = FW_MAJOR;
+    r.fw_minor = FW_MINOR;
+    r.fw_patch = FW_PATCH;
+    g_last_reading = r;
+    g_have_reading = true;
+    g_last_mode = mode;
 
     const char *mode_str = mode == SCOUT_POWER_NORMAL ? "NORMAL"
                            : mode == SCOUT_POWER_CONSERVE ? "CONSERVE"
@@ -333,7 +337,58 @@ void loop() {
     Serial.print(flag_str[0] ? flag_str : "-");
     Serial.print(" soh=");
     Serial.println(soh_str[0] ? soh_str : "-");
+}
 
-    // 8. Back to sleep until the next scheduled wake.
-    enter_deep_sleep();
+// Send the held reading in a transmit slot. A slot with nothing sent is simply missed — the
+// next slot carries a fresher reading, and the full record is on the SD card regardless.
+static void transmit_last_reading() {
+    if (!g_lora_ok || !g_have_reading) {
+        return;
+    }
+    // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s per copy).
+    Watchdog.reset();
+
+    uint8_t packet[SCOUT_PACKET_SIZE];
+    size_t n = scout_packet_encode(&g_last_reading, packet);
+
+    // Blind repetition (lib/scout_link): send the same frame a few times, spaced, and
+    // never listen for an ACK. A lost packet costs timeliness, not data — the full
+    // record is on the SD card — so ACKed retransmit would buy little and risk an
+    // avalanche across a multi-buoy deployment. The shore station deduplicates on
+    // (buoy_id, record_seq), so the copies collapse to one row.
+    uint8_t copies = scout_link_repeat_count(g_last_mode, SCOUT_LINK_REPEATS_NORMAL,
+                                             SCOUT_LINK_REPEATS_CONSERVE);
+    for (uint8_t i = 0; i < copies; i++) {
+        g_lora.send(packet, (uint8_t)n);
+        // Pet before the gap, not after: the watchdog must not expire while we wait.
+        // scout_link_fits_watchdog asserts this policy leaves 2x headroom.
+        Watchdog.reset();
+        if (i + 1 < copies) {
+            delay(scout_link_repeat_delay_ms((uint8_t)(i + 1),
+                                             SCOUT_LINK_REPEAT_BASE_DELAY_MS));
+            Watchdog.reset();
+        }
+    }
+}
+
+void loop() {
+    // First pass after boot samples straight away; after that, sleep to the planned event.
+    uint32_t event = g_first_cycle ? clock_now() : sleep_until(g_next_event);
+
+    // Re-arm the watchdog for this cycle (it was disabled for the standby sleep). If any step
+    // below hangs past WDT_TIMEOUT_MS, the buoy resets and recovers on its own.
+    Watchdog.enable(WDT_TIMEOUT_MS);
+    sensor_gates_off();  // re-asserted every wake, whatever state a glitch left them in
+
+    if (g_first_cycle || scout_is_sample_time(event, SAMPLE_INTERVAL_S)) {
+        sample_and_log();
+    }
+    int slot = scout_tx_slot_index(event, TX_SLOTS_SOD, TX_SLOT_COUNT);
+    if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
+        transmit_last_reading();
+    }
+
+    g_first_cycle = false;
+    g_next_event = scout_next_event_epoch(clock_now(), SAMPLE_INTERVAL_S, TX_SLOTS_SOD,
+                                          TX_SLOT_COUNT);
 }

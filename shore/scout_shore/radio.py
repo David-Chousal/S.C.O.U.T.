@@ -15,9 +15,9 @@ Three things here are easy to get wrong and expensive to debug in the field:
 
 1. **The modem config must match the buoy exactly.** LoRa is not self-describing: a receiver
    configured differently does not receive a degraded signal, it receives nothing at all.
-2. **The SX1276 500 kHz errata.** At BW >= 500 kHz two undocumented registers must be written
-   or the receiver silently misses its datasheet sensitivity — which presents as "the link is
-   weak", sending you to look at antennas and range.
+2. **The SX1276 500 kHz errata.** At BW >= 500 kHz two registers (RegHighBwOptimize1/2, whose
+   values only the errata gives) must be written or the receiver silently misses its datasheet
+   sensitivity — which presents as "the link is weak", sending you to look at antennas and range.
 3. **RadioHead prepends a 4-byte header.** The buoy transmits via RadioHead's ``RH_RF95``,
    which puts TO/FROM/ID/FLAGS ahead of the payload. Adafruit's driver uses a 4-byte header in
    the same position, so ``with_header=False`` strips it correctly — but only because the two
@@ -84,7 +84,7 @@ class Rfm9xLink:
         self._apply_high_bandwidth_errata()
 
     def _apply_high_bandwidth_errata(self) -> None:
-        """Write the two undocumented registers the SX1276 needs at BW >= 500 kHz.
+        """Write the two RegHighBwOptimize registers the SX1276 needs at BW >= 500 kHz.
 
         Skipped below 500 kHz, where the chip selects these itself. Without this the receiver
         works — it just misses its rated sensitivity, which looks exactly like a bad antenna.
