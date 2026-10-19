@@ -65,7 +65,8 @@ measuring current or continuity · putting sensors in water · siting antennas �
 | D cells and battery protection | 🔴 Not bought — "Later order 1", after Stage 2 | [Build plan](electronics-build-and-test-plan.md#stage-6--run-on-the-batteries) |
 | Hydrophone (Aquarian H2dM) | 🔴 Not bought — waits for funding | [SCO-8](https://linear.app/scout1/issue/SCO-8) |
 | Shore radio hardware (ESP32-S3 Feather + LoRa FeatherWing) | ✅ Arrived 2026-10-16 | [SCO-86](https://linear.app/scout1/issue/SCO-86) |
-| Shore radio firmware (ESP32-S3) | 🔴 **Not written** | [SCO-24](https://linear.app/scout1/issue/SCO-24), §2 G2 |
+| Shore radio firmware (ESP32-S3) | 🔴 **Not written** | [SCO-24](https://linear.app/scout1/issue/SCO-24); design in [Shore Station](shore-station.md) |
+| Bench tooling: clock set (`set_rtc.py`), bench receiver (`feather_m0_rx`), transmit-every-minute build (`feather_m0_bench`), frame decoder (`decode_frames.py`) | ⚠️ Written and built, never run on hardware | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186) |
 | Shore software (decode, dedupe, CSV store, SD import, publish) | ✅ 64 tests pass on simulated data; Python, stdlib only | [`shore/`](../../shore/) |
 | Analytics pipeline | ✅ 86 tests pass on simulated data | [`analytics/telemetry/`](../../analytics/telemetry/) |
 | Public site + dashboard | ✅ Deployed (simulated data) | [Live Dashboard](live-dashboard.md) |
@@ -82,13 +83,13 @@ Found in the 2026-10-19 rewrite. Each names the first stage it blocks.
 
 | # | Gap | Blocks | Fix (owner) |
 |---|---|---|---|
-| **G1** 🔴 | **Nothing ever sets the RTC.** `ScoutRtc::setTime()` exists but is never called. A new or reset PCF8523 keeps whatever time it powers up with, flags `RTC_LOST`, and the firmware runs on it. Timestamps are wrong **and the three TX slots fire at the wrong times** (they are UTC times of day). | Stage 1 (RTC benchmark), Stage 4 (waiting for a slot), Stage 5 | Add a time-set path to the firmware — e.g. a serial `T<unix-epoch>` command accepted at boot, or set from a UTC build timestamp when `lostPower()` (CSEN, [SCO-201](https://linear.app/scout1/issue/SCO-201)) |
-| **G2** 🔴 | **The shore data path is undecided.** The ESP32-S3 receives LoRa and has WiFi, but nothing says where frames go next. All existing shore software (decode, dedupe, CSV store, publish) is Python for a host computer. | Stage 4 end to end | Decide: the S3 forwards raw 30-byte frames to a host running `scout_shore` (over USB serial for the bench, WiFi for the field), **or** the S3 decodes and posts rows itself. Recommended: forward raw frames; it reuses the tested Python stack. (CSEN, [SCO-24](https://linear.app/scout1/issue/SCO-24)) |
+| **G1** ✅ fixed in code | **Nothing ever set the RTC**, so timestamps and the UTC transmit slots were wrong on a new board. Now: for ~8 s after a reset, with USB connected, the firmware accepts `T<unix-epoch>`; `firmware/tools/set_rtc.py` sends it. | Stage 1, 4, 5 | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-201](https://linear.app/scout1/issue/SCO-201) — confirm on hardware that `RTC_LOST` clears |
+| **G2** ✅ design / 🔴 build | **Shore data path.** Resolved by the agreed design ([Shore Station](shore-station.md)): the **ESP32-S3 + LoRa FeatherWing is the shore station** — it receives, validates and **pushes to the dashboard over WiFi** on FreeRTOS, and under ADR-0008 sends firmware and settings back. **Still open:** which dashboard back end it pushes to (today's GitHub Pages site has no endpoint; Catherine's React + SQL dashboard is to be reviewed first, [SCO-120](https://linear.app/scout1/issue/SCO-120)). The S3 firmware is not written. | Stage 4b–4c | CS lead ([SCO-24](https://linear.app/scout1/issue/SCO-24)) |
 | **G3** ⚠️ | **The Rev A KiCad schematic still says `TEMP_DATA = D5`.** The Rev B drawing set, `pin-assignments.md` and `config.h` all agree on **D12**. | Nothing, if you wire from the Rev B drawing set | Update the KiCad schematic (ECE) |
-| **G4** 🔴 | **The SD file layout disagrees.** The firmware writes `YYYYMMDD.CSV` at the card root. The data schema and `sd_import.py` expect `/DATA/SCOUT-01_YYYYMMDD.csv`. The importer's `*.csv` match is case-sensitive, so **it finds none of the firmware's files** (tested 2026-10-19), and a retrieved card would merge nothing. | Card retrieval (§5) | Make the firmware write the schema's path (8.3 names allow `DATA/` but not `SCOUT-01_20261019.csv`; pick a short name and update the schema), and make the importer match case-insensitively (CSEN, [SCO-202](https://linear.app/scout1/issue/SCO-202)) |
-| **G5** 🔴 | **No receiver sketch exists for a bench link test.** | Stage 4a | A minimal receive-and-print sketch for a second Feather M0 or the S3 (Stage 4a; tracked on [SCO-155](https://linear.app/scout1/issue/SCO-155)) |
+| **G4** ✅ fixed in code | **SD file layout.** The firmware wrote `YYYYMMDD.CSV` at the card root and the importer matched `*.csv` case-sensitively, so a retrieved card merged nothing. Now `/DATA/YYYYMMDD.CSV` (8.3-safe), audio at `/AUDIO/YYYYMMDD/HHMMSSZ.WAV`, and a case-insensitive importer ([data-schema](data-schema.md#file-layout-on-the-sd-card)). | Card retrieval (§6) | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-202](https://linear.app/scout1/issue/SCO-202) — confirm with a real card |
+| **G5** ✅ fixed in code | **No receiver for the bench link test.** Now `feather_m0_rx` (a second Feather M0) and `shore/scripts/decode_frames.py`. | Stage 4a | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-155](https://linear.app/scout1/issue/SCO-155) |
 | **G6** ⚠️ | **No way to force a watchdog reset** for the Stage 5 test. | Stage 5 | A test-only build flag that hangs one cycle (CSEN) |
-| **G7** ⚠️ | **Audio is not implemented.** The firmware records the *intent* to record (`audio_present`); no capture code exists, and its filename format differs from the schema's. | Stage 7 | Hydrophone firmware once the H2dM arrives |
+| **G7** ⚠️ | **Audio is not implemented.** The firmware records the *intent* to record (`audio_present`); no capture code exists. | Stage 7 | Hydrophone firmware once the H2dM arrives |
 
 **Hard safety rule, not a gap:** **never connect a primary (Li-SOCl₂) cell to a Feather that still
 has its MCP73831 charger.** Charging a primary cell is a fire hazard. The charger comes off the
@@ -151,8 +152,9 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 | Target | What runs on it | Toolchain | Source of truth | Programmed by |
 |---|---|---|---|---|
 | **Feather M0 RFM95** — the buoy | `firmware/src/` + `firmware/lib/` (C++, Arduino SAMD core) | PlatformIO → BOSSA over USB | `firmware/src/config.h` (pins, schedule, radio) | `pio run -e feather_m0 -t upload`, double-tap RESET |
-| **ESP32-S3 Feather + LoRa FeatherWing** — shore radio | 🔴 not written (G2) | ⚠️ undecided | must match the buoy's modem config | — |
-| **Shore host** (laptop on the bench; field host TBD) | `shore/scout_shore/` (Python, stdlib) | none | `shore/scout_shore/packet.py` (wire format) | `python3 scripts/run_receiver.py`; Linux: [`scout-shore.service`](../../shore/deploy/scout-shore.service) |
+| **ESP32-S3 Feather + LoRa FeatherWing** — **the shore station** | LoRa receive, push to the dashboard over WiFi, downlink (ADR-0008) — 🔴 not written | ⚠️ Arduino core or ESP-IDF, undecided | the buoy's `config.h` radio settings; [Shore Station](shore-station.md) | — |
+| **Second Feather M0** — bench receiver (test instrument) | `firmware/src/bench_rx/` | PlatformIO | the buoy's `config.h` | `pio run -e feather_m0_rx -t upload` |
+| **A computer** — Python shore package | `shore/scout_shore/` (Python, stdlib): decode, dedupe, CSV store, SD import, Pages publishing; bench decoding | none | `shore/scout_shore/packet.py` (wire format) | `python3 scripts/decode_frames.py`, `import_sd_card.py`; its live role depends on the dashboard decision (G2) |
 | **Any machine** — analytics | `analytics/telemetry/` (Python, stdlib) | none | [data-schema.md](data-schema.md) | `python3 run_telemetry.py` |
 | **GitHub Pages** — public site | generated HTML | `.github/workflows/pages.yml` | `analytics/telemetry/site/` | CI on push to `main`, hourly cron |
 | **Cloudflare Worker** — "Fred" chat | `chatbot/worker.js` | Wrangler | `chatbot/wrangler.toml` | `wrangler deploy` (separate from the buoy chain) |
@@ -224,8 +226,8 @@ cd firmware && ~/.scout-venv/bin/pio test -e native && ~/.scout-venv/bin/pio run
 
 ### Stage 1 — First readings on USB power ⚠️ UNVERIFIED · [SCO-157](https://linear.app/scout1/issue/SCO-157), [SCO-25](https://linear.app/scout1/issue/SCO-25)
 
-**Preconditions:** Stage 0 PASS · **G1 fixed** (or accept wrong timestamps and record it) ·
-microSD formatted FAT32 · CR1220 in the Adalogger.
+**Preconditions:** Stage 0 PASS · PR #186 merged (clock set, SD layout) · microSD formatted
+FAT32 · CR1220 in the Adalogger.
 
 **Wire (human), from the Rev B drawing set:**
 
@@ -240,21 +242,26 @@ microSD formatted FAT32 · CR1220 in the Adalogger.
 ```bash
 cd firmware
 ~/.scout-venv/bin/pio run -e feather_m0 -t upload      # double-tap RESET if the port is not found
-~/.scout-venv/bin/pio device monitor -b 115200
+cd .. && python3 firmware/tools/set_rtc.py              # press RESET once when asked
+~/.scout-venv/bin/pio device monitor -d firmware -b 115200
 ```
+
+`set_rtc.py` waits for the board, sends the current UTC time inside the firmware's 8 s boot
+window, and prints `time: set to …`. Do it once per board, and again whenever the CR1220 is
+removed.
 
 **PASS:**
 
 - The boot line reports every subsystem up:
   `boot: watchdog_reset=no rtc=ok sd=ok lora=ok start=cold resume_seq=0`
-- A `seq=1 mode=NORMAL flags=- soh=-` line follows. `RTC_LOST` in flags means G1 is not fixed.
+- A `seq=1 mode=NORMAL flags=- soh=-` line follows. `RTC_LOST` in flags means the clock was
+  never set: run `set_rtc.py`.
 - **Temperature** within ±0.5 °C of a reference thermometer, and it tracks a warm hand.
 - **Turbidity polarity — the trap.** A **higher** ADC count means **clearer** water. Clear water,
   then a spoon of milk: **the count must go DOWN.** If it goes up, stop; the analytics chain
   depends on this sign ([facts.md](../hub/facts.md)). 50 consecutive readings vary < ~1%.
-- **SD:** a `YYYYMMDD.CSV` with the [data-schema](data-schema.md) header and one row per sample
-  (note G4: the path differs from the schema).
-- **RTC** keeps time across a power cycle (needs G1).
+- **SD:** `DATA/YYYYMMDD.CSV` with the [data-schema](data-schema.md) header and one row per sample.
+- **RTC** keeps time across a power cycle (unplug USB, wait, reconnect: no `RTC_LOST`).
 
 | Symptom | Cause | Action |
 |---|---|---|
@@ -303,40 +310,48 @@ at switch-on (rail dip < ~100 mV).
 
 > ⚠️ **Never power an RFM95 without its antenna.** Transmitting unterminated can destroy the PA.
 
-**4a — Bench link between two Feather M0s** (SCO-155 + SCO-98). Needs **G5**: a receive-and-print
-sketch on the second Feather. It must use exactly the buoy's settings:
-
-- `RH_RF95` at 915.0 MHz, `ModemConfig {0x98, 0xC4, 0x04}` (BW500 / SF12 / CR4-8)
-- **SX1276 500 kHz erratum on the receiver:** write `0x36` ← `0x02` and `0x3A` ← `0x64`
-  ([reading note](../hub/research/notes/sx1276-errata-500khz.md)). RadioHead does not expose
-  `spiWrite` publicly, so this needs a subclass. Without it the link looks weak for no visible
-  reason.
-- Print each frame as hex with RSSI and SNR.
-
-The buoy only transmits in a slot, so either fix G1 and set the clock a few minutes before a
-slot, or use a test build that transmits every cycle (and say which you used).
-
-**PASS:** 30-byte frames received; the hex decodes with `shore/scout_shore/packet.py` and passes
-CRC · on the bench, < 1% loss over 100+ frames · time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS`
-560; reproduce with `scripts/lora_airtime.py`) · TX current ≤ 100 mA · RSSI and SNR recorded
-with the distance. **Record the results on SCO-155 and SCO-98**; the register values and
-sensitivity become verified only here.
-
-**4b — ESP32-S3 shore radio** (SCO-24). 🔴 Blocked on **G2**. Same modem settings and erratum
-as 4a. It listens on the same slot table with a **±2 min** window. Under ADR-0008 it will also
-transmit, so its transmit antenna must stay **≤ 2.15 dBi** within the module grant, and the
-FeatherWing's own FCC authorization needs checking ([FCC brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16)).
-
-**4c — Into the shore software.** Once frames reach a host:
+**4a — Bench link between two Feather M0s** (SCO-155 + SCO-98).
 
 ```bash
-cd shore
-python3 scripts/run_receiver.py --link rfm9x --out data-live     # or the G2 forwarder's link
+cd firmware
+# Second Feather (the receiver), antenna on:
+~/.scout-venv/bin/pio run -e feather_m0_rx -t upload
+# Buoy Feather, antenna on: the bench build samples and transmits every minute
+~/.scout-venv/bin/pio run -e feather_m0_bench -t upload
+cd .. && python3 firmware/tools/set_rtc.py
+# Watch the receiver and decode as frames arrive (use the receiver's port):
+~/.scout-venv/bin/pio device monitor -d firmware -e feather_m0_rx -p <receiver port> \
+  | python3 shore/scripts/decode_frames.py --out /tmp/bench-data
 ```
 
-**PASS:** a received frame CRC-validates, schema-validates, and appends **one** row.
-**Dedupe:** the 3 blind copies collapse to exactly **one** row on `(buoy_id, record_seq)`. Three
-rows means dedupe is broken, and QC completeness would read 100% while hiding real gaps.
+`feather_m0_rx` is built from the buoy's own `config.h` (915.0 MHz, `{0x98, 0xC4, 0x04}`), and
+applies the **SX1276 500 kHz erratum** (`0x36` ← `0x02`, `0x3A` ← `0x64`; `spiWrite` is public
+in RadioHead, no subclass needed). It prints `bench_rx: radio=ok … errata=applied` at boot, then
+`RX len=30 rssi=… snr=… hex=…` per frame. `feather_m0_bench` prints a warning at boot; **reflash
+`feather_m0` before anything leaves the bench.**
+
+**PASS:** frames decode and pass CRC in `decode_frames.py` · 3 copies per minute collapse to one
+row (`new_rows` vs `copies collapsed` in its summary) · on the bench, < 1% loss over 100+ frames ·
+time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.py`) · TX current
+≤ 100 mA · RSSI and SNR recorded with the distance. **Record the results on SCO-155 and SCO-98**;
+the register values and sensitivity become verified only here. Then try the real schedule: flash
+`feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
+
+**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🔴 Firmware not written.
+Per the agreed design ([Shore Station](shore-station.md)) it receives with the same settings and
+erratum as 4a, listens in a **±2 min** window around each slot, and **pushes to the dashboard
+over WiFi**. Under ADR-0008 it will also transmit, so its transmit antenna must stay **≤ 2.15 dBi**
+and the FeatherWing's own FCC authorization needs checking
+([FCC brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16)).
+
+**PASS:** the S3 receives the buoy's slot transmissions and the readings appear on the dashboard,
+one row per reading.
+
+**4c — Dedupe and the dashboard.** Each slot sends 3 blind copies; whatever stores readings
+must collapse them to **one** row on `(buoy_id, record_seq)`. Three rows means dedupe is broken,
+and QC completeness would read 100% while hiding real gaps. The Python store already does this
+(checked on the bench by `decode_frames.py --out`). Where the S3's pushes land, and so where this
+check runs in the live system, waits on the dashboard decision (G2 open item).
 
 **4d — Outdoor range** with the spring antennas, line of sight, RSSI logged (aim ≥ 500 m). Real
 over-saltwater range is still unmeasured ([SCO-14](https://linear.app/scout1/issue/SCO-14)).
@@ -345,7 +360,8 @@ over-saltwater range is still unmeasured ([SCO-14](https://linear.app/scout1/iss
 
 ### Stage 5 — Whole system under firmware control ⚠️ UNVERIFIED · [SCO-160](https://linear.app/scout1/issue/SCO-160), [SCO-165](https://linear.app/scout1/issue/SCO-165)
 
-**Preconditions:** Stages 1–4a PASS · **G1 fixed** (the slots depend on real UTC).
+**Preconditions:** Stages 1–4a PASS · clock set with `set_rtc.py` (the slots run on UTC) ·
+the deployment build `feather_m0`, not `feather_m0_bench`.
 
 Run 24 h unattended on the bench supply. Read the SD card afterwards rather than the serial
 monitor (USB drops in standby).
@@ -453,14 +469,15 @@ python3 scripts/import_sd_card.py --card /Volumes/<card> --into data-live --dry-
 python3 scripts/import_sd_card.py --card /Volumes/<card> --into data-live
 ```
 
-🔴 **Blocked by G4:** as of 2026-10-19 the importer finds none of the firmware's files. Fix G4
-before the first retrieval, or the dry run will report nothing and the card's data will be left
-behind. Copy `/AUDIO/` off the card before reusing it; raw audio exists nowhere else.
+The importer reads `DATA/YYYYMMDD.CSV` (G4, fixed in PR #186; confirm with the first real card)
+and takes the `buoy_id` from the rows. Copy `/AUDIO/` off the card before reusing it; raw audio
+exists nowhere else.
 
-### Linux shore host (optional)
+### If the Python shore package runs as a service
 
-If the shore host is a Linux machine, run the receiver as a service so a reboot does not silently
-end reception:
+The shore station is the ESP32-S3. Whether the Python package also runs continuously (for
+example behind the dashboard) depends on the open dashboard decision (G2). If it does, on Linux,
+run it as a service so a reboot does not silently stop it:
 
 ```bash
 sudo cp shore/deploy/scout-shore.service /etc/systemd/system/
@@ -468,9 +485,8 @@ sudo systemctl daemon-reload && sudo systemctl enable --now scout-shore
 journalctl -u scout-shore -f
 ```
 
-On a Raspberry Pi, use the **64-bit** OS: on 32-bit armv7l nine analytics packages have no wheel
-(check with `python3 scripts/check_arm_wheels.py`). The shore code itself is stdlib-only and
-unaffected.
+The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its packages have no wheel
+(check with `python3 scripts/check_arm_wheels.py`). The shore package itself is stdlib-only.
 
 ---
 
@@ -479,17 +495,18 @@ unaffected.
 | Symptom | First suspicion | Why |
 |---|---|---|
 | Computer shows no port | Wrong USB port, charge-only cable, accessory prompt | §3 — the Feather's own micro-USB, a data cable |
-| Timestamps wrong, `RTC_LOST` set | G1: the clock was never set | Nothing calls `setTime()` yet |
-| No transmissions on the bench | Not in a slot, or the clock is wrong | TX only at 00:10/08:10/16:10 UTC |
+| Timestamps wrong, `RTC_LOST` set | The clock was never set | Run `firmware/tools/set_rtc.py` and press RESET once |
+| No transmissions on the bench | Not in a slot, or the clock is wrong | `feather_m0` sends only at 00:10/08:10/16:10 UTC; use `feather_m0_bench` for the link test |
+| Receiver prints nothing | Settings or antenna | Both boards built from the same `config.h`; antennas on both; `bench_rx: radio=ok` at boot |
 | Buoy sleeps and never wakes | SAMD21 RTC alarm not firing | Check the 32.768 kHz crystal; the wake no longer uses `INT1` |
 | Temperature never reads | DS18B20 not on D12, or no 4.7 kΩ pull-up | Wire from the Rev B drawing set, not Rev A KiCad (G3) |
 | Turbidity rises in dirty water | Polarity | Higher ADC = clearer; the Grove output must fall as turbidity rises |
 | Sensors read nothing | Gate polarity | LOW = on; a stale build with the old HIGH = on logic leaves them dark |
 | SD and radio work alone, not together | Shared SPI chip select | Only one of D10 / D8 may be active |
-| Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64` |
+| Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64`; `bench_rx` prints `errata=applied` |
 | Three CSV rows per transmission | Shore dedupe broken | Each slot sends 3 copies |
 | Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (560 ms) |
-| SD import finds nothing | G4 | Firmware file names differ from what the importer looks for |
+| SD import finds nothing | Card written by firmware older than PR #186 | Old builds wrote `YYYYMMDD.CSV` at the root; point the importer at the card root, and update the firmware |
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |
 | Completeness 0%, expected records absurd | A clock-invalid row | `RTC_LOST`/1970 rows are excluded from timing (`clock_invalid`) |
 | Dashboard shows sample data after go-live | Publishing from the wrong directory | Real CSVs belong in `shore/data-live/` |
