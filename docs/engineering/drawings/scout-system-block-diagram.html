@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCOUT System Block Diagram</title>
+<style>
+  @page master { size: 36in 24in; margin: 0; }
+  @page detail { size: 22in 17in; margin: 0; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: #111; }
+  .sheet { position: relative; overflow: hidden; background: #fff; }
+  .sheet.master { page: master; }
+  .sheet.detail { page: detail; }
+  .sheet svg { display: block; }
+  @media print {
+    .sheet { break-after: page; }
+    .sheet.master, .sheet.master svg { width: 36in; height: 24in; }
+    .sheet.detail, .sheet.detail svg { width: 22in; height: 17in; }
+    .screen-only { display: none; }
+  }
+  @media screen {
+    body { background: #6b7280; padding: 16px; }
+    .sheet { margin: 0 auto 24px; max-width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,.35); }
+    .sheet svg { width: 100%; height: auto; }
+    .screen-only { color: #fff; font: 14px "Segoe UI", Arial; max-width: 1200px; margin: 0 auto 12px; }
+  }
+
+  /* ---------- SVG text ---------- */
+  svg text { font-family: "Segoe UI", Arial, sans-serif; fill: #111; }
+  .t   { font-size: 10.5px; }
+  .ts  { font-size: 9.5px; }
+  .tm  { font-size: 12px; }
+  .tl  { font-size: 14px; }
+  .b   { font-weight: 600; }
+  .mono{ font-family: Consolas, "Courier New", monospace; }
+  .hd  { font-size: 10.5px; font-weight: 700; letter-spacing: .3px; }
+  .hdref { font-size: 9.5px; fill: #444; }
+  .zone { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; fill: #3d4f63; }
+  .pin  { font-size: 10px; font-weight: 700; font-family: Consolas, monospace; fill: #111; }
+  .wl   { font-size: 9.5px; font-weight: 600; }
+  .sec-title { font-size: 15px; font-weight: 700; letter-spacing: .4px; }
+  .sec-letter { font-size: 15px; font-weight: 800; fill: #fff; }
+  .sec-sub { font-size: 10.5px; fill: #444; }
+  .bal-t { font-size: 10px; font-weight: 700; fill: #fff; }
+  .if-t  { font-size: 9.5px; font-weight: 700; fill: #6a1b9a; }
+  .dim   { font-size: 10px; fill: #0b3d91; font-weight: 600; }
+  .big-title { font-size: 44px; font-weight: 800; letter-spacing: 1px; }
+  .big-sub { font-size: 20px; fill: #333; }
+
+  /* ---------- shapes ---------- */
+  .frame { fill: none; stroke: #111; stroke-width: 2.5; }
+  .frame2 { fill: none; stroke: #111; stroke-width: .8; }
+  .sec-frame { fill: #fff; stroke: #333; stroke-width: 1; }
+  .sec-tab { fill: #1f2937; }
+  .card { fill: #fff; stroke: #333; stroke-width: 1; }
+  .cardhd { stroke: #333; stroke-width: 1; fill: #eceff3; }
+  .k-hw  { fill: #fde9da; } .k-fw { fill: #dde9fb; } .k-me { fill: #e2f1e2; }
+  .k-da  { fill: #efe2f8; } .k-sh { fill: #fff3c4; } .k-pw { fill: #fbdcdc; }
+  .k-gap { fill: #ffd6d6; } .k-ok { fill: #d9f2dc; }
+  .z-water { fill: #e8f3fb; } .z-gland { fill: #e2e2e2; } .z-dry { fill: #fbfbf7; stroke: #555; stroke-dasharray: 6 3; stroke-width: 1.2; }
+  .z-air { fill: #f6f9ff; } .z-pod { fill: none; stroke: #2b6cb0; stroke-dasharray: 5 3; stroke-width: 1.2; }
+  .gland { fill: #9aa3ad; stroke: #333; stroke-width: .8; }
+  .bal { fill: #b91c1c; stroke: #fff; stroke-width: 1; }
+  .ifhex { fill: #f3e8fb; stroke: #6a1b9a; stroke-width: 1.1; }
+  .dot { stroke: none; }
+  .chip { stroke: #333; stroke-width: .8; }
+
+  /* ---------- nets ---------- */
+  .w { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .bat  { stroke: #c62828; stroke-width: 2.6; }
+  .v33  { stroke: #e67e00; stroke-width: 2.2; }
+  .gnd  { stroke: #111; stroke-width: 1.6; }
+  .ow   { stroke: #1b7f3a; stroke-width: 2; }
+  .ana  { stroke: #7b3fb5; stroke-width: 2; }
+  .i2c  { stroke: #1f5fbf; stroke-width: 2; }
+  .spi  { stroke: #8a5a00; stroke-width: 2; }
+  .gpio { stroke: #0b8a8a; stroke-width: 2; stroke-dasharray: 6 3; }
+  .rf   { stroke: #c2185b; stroke-width: 2.2; stroke-dasharray: 9 4; }
+  .data { stroke: #3b3b3b; stroke-width: 1.8; }
+  .data2{ stroke: #3b3b3b; stroke-width: 1.6; stroke-dasharray: 5 4; }
+  .mech { stroke: #333; stroke-width: 1.4; }
+  .moor { stroke: #7a5c2e; stroke-width: 3; }
+  .cab  { stroke: #444; stroke-width: 2; }
+  .dimln { stroke: #0b3d91; stroke-width: .9; fill: none; }
+  .d-bat { fill: #c62828; } .d-v33 { fill: #e67e00; } .d-gnd { fill: #111; } .d-ana { fill: #7b3fb5; }
+  .d-i2c { fill: #1f5fbf; } .d-ow { fill: #1b7f3a; } .d-rf { fill: #c2185b; } .d-data { fill: #3b3b3b; }
+
+  /* ---------- HTML inside foreignObject ---------- */
+  .fo { font: 10.5px/1.28 "Segoe UI", Arial, sans-serif; color: #111; }
+  .fo b { font-weight: 650; }
+  .fo .m { font-family: Consolas, "Courier New", monospace; font-size: .96em; }
+  .fo .r { color: #b91c1c; font-weight: 650; }
+  .fo .g { color: #1b6e2f; font-weight: 650; }
+  .fo .a { color: #9a5b00; font-weight: 650; }
+  .fo .dim2 { color: #555; }
+  .fo ul, .fo ol { margin: 0; padding-left: 15px; }
+  .fo li { margin: 0 0 1px; }
+  .fo p { margin: 0 0 3px; }
+  .fo table { border-collapse: collapse; width: 100%; }
+  .fo th, .fo td { border: .8px solid #777; padding: 1.5px 4px; text-align: left; vertical-align: top; }
+  .fo th { background: #eceff3; font-weight: 700; }
+  .fo td.n, .fo th.n { text-align: right; white-space: nowrap; }
+  .fo td:first-child b { white-space: nowrap; }
+  .fo tr.tot td { font-weight: 700; background: #f5f5f5; }
+  .fo.small { font-size: 9.8px; }
+  .notes { font: 10.5px/1.3 "Segoe UI", Arial, sans-serif; column-gap: 18px; }
+  .notes div { break-inside: avoid; margin: 0 0 4px; padding-left: 22px; text-indent: -22px; }
+  .notes .nn { display: inline-block; width: 17px; height: 17px; line-height: 17px; text-align: center; text-indent: 0;
+               border-radius: 50%; background: #b91c1c; color: #fff; font-weight: 700; font-size: 9.5px; margin-right: 5px; }
+  .tb { font: 10.5px/1.25 "Segoe UI", Arial, sans-serif; }
+  .tb table { border-collapse: collapse; width: 100%; height: 100%; }
+  .tb td { border: 1px solid #111; padding: 2px 5px; vertical-align: top; }
+  .tb .lab { font-size: 8.5px; color: #555; letter-spacing: .5px; display: block; }
+  .tb .val { font-weight: 650; }
+  .st { display: inline-block; padding: 0 4px; border-radius: 3px; font-size: .9em; font-weight: 700; border: .8px solid #333; }
+  .st.v { background: #c8ecd0; } .st.u { background: #fff0b8; } .st.x { background: #ffc9c9; }
+</style>
+</head>
+<body>
+<p class="screen-only">S.C.O.U.T. system block diagram, SCOUT-S-000. Sheet 1 prints at 36 × 24 in (ARCH D); sheets 2–4 at 22 × 17 in (ANSI C). Use the PDF for printing.</p>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2185b"/></marker>
+    <marker id="ard" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b3d91"/></marker>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#eef0e6"/><line x1="0" y1="0" x2="0" y2="7" stroke="#9aa07f" stroke-width="1.2"/></pattern>
+    <pattern id="hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="6" height="6" fill="#f2f2f2"/><line x1="0" y1="0" x2="0" y2="6" stroke="#888" stroke-width="1"/></pattern>
+    <pattern id="sand" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#efe3c8"/><circle cx="2" cy="3" r="1" fill="#b89b62"/><circle cx="7" cy="7" r="1" fill="#b89b62"/></pattern>
+  </defs>
+</svg>
+
+<div id="sheets"></div>
+
+<script>
+"use strict";
+const SVGNS = "http://www.w3.org/2000/svg", XHTML = "http://www.w3.org/1999/xhtml";
+let cur = null;            // current parent group
+let usedNotes = null;      // Set of note numbers referenced on the sheet being drawn
+
+function E(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in (attrs || {})) e.setAttribute(k, attrs[k]);
+  (parent || cur).appendChild(e);
+  return e;
+}
+function T(x, y, s, cls, anchor, rot) {
+  const t = E("text", { x, y, class: cls || "t" });
+  if (anchor) t.setAttribute("text-anchor", anchor);
+  if (rot) t.setAttribute("transform", `rotate(${rot} ${x} ${y})`);
+  String(s).split("\n").forEach((line, i) => {
+    const ts = E("tspan", { x, dy: i ? "1.22em" : 0 }, t);
+    ts.textContent = line;
+  });
+  return t;
+}
+function H(x, y, w, h, html, cls) {
+  const f = E("foreignObject", { x, y, width: w, height: h });
+  const d = document.createElementNS(XHTML, "div");
+  d.setAttribute("class", cls || "fo");
+  d.innerHTML = html;
+  f.appendChild(d);
+  return f;
+}
+function R(x, y, w, h, cls, extra) { return E("rect", Object.assign({ x, y, width: w, height: h, class: cls }, extra || {})); }
+function card(x, y, w, h, title, html, o) {
+  o = o || {};
+  R(x, y, w, h, "card");
+  R(x, y, w, 18, "cardhd " + (o.k ? "k-" + o.k : ""));
+  T(x + 6, y + 13, title, "hd");
+  if (o.ref) T(x + w - 6, y + 13, o.ref, "hdref", "end");
+  if (html) H(x + 5, y + 21, w - 10, h - 23, html, "fo" + (o.small ? " small" : ""));
+}
+function W(pts, net, o) {
+  o = o || {};
+  const a = { points: pts.map(p => p.join(",")).join(" "), class: "w " + net };
+  if (o.arrow === "end" || o.arrow === "both") a["marker-end"] = net === "rf" ? "url(#arr)" : "url(#ar)";
+  if (o.arrow === "start" || o.arrow === "both") a["marker-start"] = net === "rf" ? "url(#arr)" : "url(#ar)";
+  E("polyline", a);
+  if (o.label) T(o.lx, o.ly, o.label, o.lcls || "wl", o.la, o.rot);
+}
+function dot(x, y, net) { E("circle", { cx: x, cy: y, r: 3, class: "dot d-" + net }); }
+function B(x, y, n) {
+  if (usedNotes) usedNotes.add(n);
+  E("circle", { cx: x, cy: y, r: 8.5, class: "bal" });
+  T(x, y + 3.6, String(n), "bal-t", "middle");
+}
+function IF(x, y, n) {
+  const w = 38, h = 16, c = 6;
+  E("polygon", { points: `${x - w/2},${y} ${x - w/2 + c},${y - h/2} ${x + w/2 - c},${y - h/2} ${x + w/2},${y} ${x + w/2 - c},${y + h/2} ${x - w/2 + c},${y + h/2}`, class: "ifhex" });
+  T(x, y + 3.4, "IF-" + n, "if-t", "middle");
+}
+function gnd(x, y) {
+  W([[x, y], [x, y + 6]], "gnd");
+  W([[x - 7, y + 6], [x + 7, y + 6]], "gnd"); W([[x - 4.5, y + 9], [x + 4.5, y + 9]], "gnd"); W([[x - 2, y + 12], [x + 2, y + 12]], "gnd");
+}
+function dimV(x, y1, y2, label, side) {
+  E("line", { x1: x, y1, x2: x, y2, class: "dimln", "marker-start": "url(#ard)", "marker-end": "url(#ard)" });
+  T(x + (side === "l" ? -4 : 4), (y1 + y2) / 2 + 3, label, "dim", side === "l" ? "end" : "start");
+}
+function dimH(y, x1, x2, label, above) {
+  E("line", { x1, y1: y, x2, y2: y, class: "dimln", "marker-start": "url(#ard)", "marker-end": "url(#ard)" });
+  T((x1 + x2) / 2, y + (above === false ? 12 : -4), label, "dim", "middle");
+}
+function leader(x1, y1, x2, y2, label, anchor) {
+  E("polyline", { points: `${x1},${y1} ${x2},${y2}`, class: "w mech", "stroke-width": .8 });
+  E("circle", { cx: x1, cy: y1, r: 1.8, fill: "#333" });
+  T(x2 + (anchor === "end" ? -3 : 3), y2 + 3.5, label, "ts", anchor || "start");
+}
+function gland(x, y, label) { R(x, y - 7, 26, 14, "gland", { rx: 2 }); T(x + 13, y + 3.5, label, "pin", "middle"); }
+
+/* ======================================================================
+   NOTES — one numbered list shared by every sheet. A sheet prints the
+   notes its drawings reference; sheet 1 prints all of them.
+   ====================================================================== */
+const NOTES = {
+ 1: "Values marked † are proposed, not yet measured. Confirm each on the bench before soldering (Rev B drawing set SCOUT-E-100).",
+ 2: "<b>Remove the Feather's MCP73831 charger before any primary Li-SOCl₂ cell is connected.</b> It charges whatever is on BAT whenever USB is present, and charging a primary cell is a fire hazard. Bench work uses a current-limited 3.6 V supply into BAT.",
+ 3: "Cells in <b>parallel only</b>: series would be 7.2 V, too high for the 3.3 V regulator and the RFM95. One LM66100 ideal diode per cell stops one cell charging the other; F1 limits a short; P1 is keyed so it can't go in backwards.",
+ 4: "The cell must stay ≥ 3.35 V during a 100 mA transmit burst (AP2112K dropout ≈ 250 mV, estimated).",
+ 5: "Q1 and Q2 are high-side P-FETs: <b>gate LOW = sensor ON</b>. The 100 kΩ pull-ups keep sensors off through boot and reset; firmware latches the gate HIGH before making it an output and re-asserts OFF on every wake (SCO-186).",
+ 6: "<b>Turbidity polarity:</b> a higher ADC count means <b>clearer</b> water. The front end must stay non-inverting; analytics flag downward excursions. Bench check: add milk, the count must fall.",
+ 7: "The Grove board runs at 3.3 V and its SIG goes straight to A1, no divider. The buoy logs raw counts; NTU is computed downstream only once a calibration curve exists (SCO-12).",
+ 8: "<b>Open conflict:</b> Rev B draws the turbidity board inside the electronics housing; the Sensor Pod Packing Budget puts it in the pod's dry chamber. Decide before the gland count is fixed.",
+ 9: "DS18B20 data is on <b>D12</b> with R1 4.7 kΩ to 3V3. The Rev A KiCad schematic still says D5 (gap G3); wire from this set.",
+ 10: "Shared SPI: SD (CS D10) and radio (CS D8), only one LOW at a time. Shared I²C: PCF8523 0x68 and SHT40 0x44, pull-ups already on the boards. If SD and radio work alone but not together, suspect chip select first.",
+ 11: "Standby wake comes from the SAMD21's own RTC (32.768 kHz crystal). The PCF8523 is the battery-backed wall clock, re-read after every wake, so drift never accumulates. PCF8523 INT1 is not wired and D5 is free (SCO-196).",
+ 12: "<b>Never power the RFM95 without an antenna.</b> Deployed antenna ≤ 2.15 dBi and conducted power ≤ 11.6 dBm (FCC ID 2ASEORFM95C, DTS); firmware uses +11 dBm. The housing is engraved “Contains FCC ID: 2ASEORFM95C”.",
+ 13: "Modem: 915.0 MHz · BW 500 kHz · SF12 · CR 4/8 · explicit header · CRC on. Registers 0x1D = 0x98, 0x1E = 0xC4, 0x26 = 0x04 are computed from the SX1276 map, not bench-verified (SCO-98); fallback SF11 is 0x1E = 0xB4. BW 500 kHz is what 47 CFR §15.247(a)(2) requires.",
+ 14: "The shore receiver must match those three bytes exactly and apply the SX1276 500 kHz erratum: reg 0x36 ← 0x02, reg 0x3A ← 0x64 (receive side only).",
+ 15: "Packet: 30 bytes (28-byte body + CRC-16/CCITT-FALSE), little-endian, plus RadioHead's 4-byte header on air; ≈ 559 ms airtime. Firmware and shore decoder are checked against each other in CI (scripts/check_packet_contract.py). Change both and bump SCOUT_PACKET_VERSION.",
+ 16: "Delivery is blind repetition, never acknowledged: NORMAL 3 copies (gaps 2 s, then 4 s), CONSERVE 1 copy in slot 0 only, CRITICAL none. Shore deduplicates on (buoy_id, record_seq). A missed slot is skipped, not retried; the SD card holds the complete record.",
+ 17: "The power budget counts 3 transmissions a day with the MCU awake only while sending; firmware sends 3 slots × 3 copies = 9 and stays awake ≈ 7.7 s per slot. That is ≈ 0.07 mAh per slot, ≈ 0.21 mAh/day against the 0.05 budgeted: +≈ 0.16 mAh/day, about 1% of the budget. Re-run the budget with Stage 2 measurements.",
+ 18: "Sleep floor ≈ 501 µA (estimate: 300 µA board + ≈ 200 µA SD idle + 1 µA RTC) is ≈ 90% of the 13.3 mAh/day budget. Measure it first (SCO-23) and record it in facts.md.",
+ 19: "Battery life: 2 × 17 Ah × 70% derating = 23.8 Ah usable. Sensors only (13.3 mAh/day) ≈ 4.9 yr; with hydrophone, best estimate (30.3 mAh/day) ≈ 2.1 yr; pessimistic (55.1 mAh/day) ≈ 14 months. Design target 12 months.",
+ 20: "Li-SOCl₂ discharge is flat, so the 3200 / 3100 mV mode thresholds are provisional and voltage is a poor fuel gauge (SCO-83). On USB, A7 reads the charger output, not a cell.",
+ 21: "Watchdog 16.384 s (SAMD21 maximum): off during standby, re-armed every wake, petted between transmit copies. record_seq lives in .noinit RAM (magic 0x5C002702), so it survives a watchdog reset but not a full power loss.",
+ 22: "<b>Set the clock before every deployment.</b> For ≈ 8 s after a reset, with USB connected, the firmware accepts T&lt;unix-epoch&gt; and writes the PCF8523; firmware/tools/set_rtc.py sends it (gap G1, fixed in code by PR #186, SCO-201). Confirm on hardware that RTC_LOST clears. An unset clock gives wrong timestamps <b>and fires the TX slots at the wrong times</b>.",
+ 23: "SD layout (gap G4, fixed in code, SCO-202): /DATA/YYYYMMDD.CSV and /AUDIO/YYYYMMDD/HHMMSSZ.WAV, FAT 8.3 names in upper case, no buoy_id in the name (it is in every row). The card importer matches .csv in any case; shore-side files keep &lt;buoy_id&gt;_&lt;YYYYMMDD&gt;.csv. Confirm with a real card.",
+ 24: "<b>Shore design agreed 2026-10-19 (gap G2):</b> the ESP32-S3 + LoRa FeatherWing <i>is</i> the shore station. It runs FreeRTOS, receives, validates and deduplicates, pushes to the dashboard over WiFi, and later sends OTA and settings. <b>Open:</b> which dashboard back end receives the push; today's GitHub Pages site has no endpoint, and Catherine's React + SQL dashboard is to be reviewed first (SCO-120). S3 firmware not written (SCO-24, due 2026-10-30).",
+ 25: "Audio is never sent over LoRa. Clips stay in /AUDIO/ on the SD card and are retrieved physically (≈ 35 MB/day at 22.05 kHz). Capture code is not written yet (gap G7).",
+ 26: "Hydrophone bias: AUD_3V3 → R9 100 Ω / C10 → R4 1.1 kΩ → tip ≈ 2.46 V at 0.7 mA (minimum 2 V). Preamp gain ≈ 231 (47 dB) turns ≈ 2.5 mV of reef sound into ≈ 0.6 V at A2, centred on 1.65 V; low-pass ≈ 10.6 kHz anti-alias. If it clips, change R10 to 10 kΩ.",
+ 27: "Over-the-air updates (ADR-0008, accepted 2026-10-16, not designed yet): listen window after each send (RX ≈ 10–12 mA, not in the budget), image chunks staged on SD with per-chunk ACK and resume, authenticated image, rollback if the new image fails to check in, shore TX within the grant. A ≈ 66.6 KB image is ≈ 270 frames ≈ 13 min on air.",
+ 28: "SHT40 internal humidity is the leak detector: near-zero RH in a sealed bay, so a rise means a leak. It is on the BOM; firmware and schema columns are not added yet (needs a schema_version bump).",
+ 29: "Electronics housing: 4.4 in ID × 5 in (111.8 × 127 mm), flange style, static face seal on an AS568-247 O-ring (ID 117.07 × CS 3.53 mm) with every fastener outside the ring. Confirm the ring against a supplier table (SCO-137). Never seal an unverified board (Stage 8).",
+ 30: "All cables enter through glands in the top cap: hydrophone, antenna, DS18B20, turbidity. L3 has 4 × Ø9 mm cable holes. Glands come from lab stock; gland positions in the cap are not drawn yet. The 3.5 mm plug (≈ 6 mm) must pass its gland or be fitted after it.",
+ 31: "Packaging option C (2026-10-15): Ø104 mm printed discs on 3 pillars Ø7 at R47.5 (90°/210°/330°) with Ø3 pins or M3 rod. Three layers use 93 of 127 mm, leaving ≈ 34 mm for cable bend. Stack height ≈ 30 mm is unverified, and whether the lid uses part of the 127 mm is not recorded.",
+ 32: "The D cells lie on their side in L1 (Ø33.4 × 61.6 mm, ≈ 90–100 g each), vents facing away from the electronics.",
+ 33: "Float v9 (2026-10-16): printed PETG, 992 g, no foam, no ballast stem, no lead, with a cable guide channel through the float. At 2.87 kg: draft 2.56 in, freeboard 3.94 in, GM 1.47 in; self-rights from every angle, but GZ is only ≈ 1 mm near 178°. Tilt test from 180° pending (SCO-171).",
+ 34: "Stability masses are estimates (battery 250 g, epoxy/coating 330 g, mooring hardware 220 g, pod 217 g, hydrophone 150 g). Replace them with weighed values and re-run run_printed_float.py.",
+ 35: "Sensor pod hangs ≈ 4 in below the keel (study value). The dry chamber holds electronics; the flood chamber shades the probe from light. Pod O-ring: Everbilt 2-5/8 in OD × 3/16 in CS. Turbidity leads are epoxy-potted, not O-ring sealed.",
+ 36: "Mooring: tether to an existing authorized structure (permitting path B), no anchor of our own. Line: 3/8 in 3-strand nylon, scope TBD (SCO-17). Attachment hardware on the printed float is undecided. Fallback at an unmarked site: one mushroom anchor beside, never on, coral.",
+ 37: "Corrosion: 316 stainless hardware with 3M 5200 over exposed bolt heads and joints. Antifouling: Sea Hawk Smart Solution (copper-free; copper is toxic to coral). Fouling drift is screened in analytics (drift.py).",
+ 38: "Deployment depth 2–8 m. Pressure-test the sealed housing to 5 m water-equivalent before deployment. Survival design set: d 2 m · H 1.2 m · T 6 s · current 0.8 m/s · wind 22 m/s.",
+ 39: "Handling: set the buoy down on its base, never on a sidewall.",
+ 40: "Analytics: QC (completeness, gross range, QARTOD flat-line and rate-of-change) → daily means with a coverage floor → NOAA CRW Degree Heating Weeks (MMM + 1 °C, 12 weeks) → Mann-Kendall (Hamed–Rao) + Sen slope → turbidity anomalies (modified z-score) → biofouling drift. Each buoy is analysed alone, with its own MMM.",
+ 41: "The dashboard publishes from shore/data-live/, never shore/data/. Simulated data carries a banner. GitHub Pages rebuilds on push to main and hourly.",
+ 42: "Acoustic pipeline (retrieved SD cards): ACI, BI, NDSI, H, ADI → PCA → Acoustic Quality Score, on a 64-bit host (Pi OS aarch64 or a laptop).",
+ 43: "MVP target 2026-12-04 (hard limit 12-11): the buoy floats and self-rights, takes one temperature and one turbidity reading, and a packet reaches shore.",
+ 44: "Samples every 30 min at :00 / :30 UTC. Transmit slots 00:10, 08:10, 16:10 UTC, 10 min after a sample so the radio never overlaps a sensor read. Audio hours 00 / 08 / 16 UTC. Change slot times only in config.h.",
+ 45: "Firmware status: Stage 0 verified 2026-10-19 (20 native tests, target build RAM 19.4% / flash 25.4%), recorded before PR #186 added the bench tooling. The drivers and bench tools have never run on hardware; everything downstream is verified on simulated data only.",
+ 46: "Sources: repo main @ 455f709 (2026-10-19, through PR #187: runbook rewrite, bench readiness, agreed shore design); Rev B drawing set SCOUT-E-100 (2026-10-12); power budget update 2026-10-05; packaging option C (2026-10-15); printed-float v9 study (2026-10-16); facts.md.",
+ 47: "Bench builds (PR #186), never deploy: <b>feather_m0_bench</b> samples and transmits every minute and prints a warning at boot; <b>feather_m0_rx</b> turns a second Feather M0 into a bench receiver (erratum applied) that prints len, RSSI, SNR and hex per frame for shore/scripts/decode_frames.py. Reflash the normal build before sealing."
+};
+
+/* ======================================================================
+   SECTIONS — each draws in its own local coordinates (1 unit = 1/96 in
+   at scale 1). Sheets place them with a translate + scale.
+   ====================================================================== */
+const SEC = {};
+
+/* ---------- A · Electrical block diagram ---------- */
+SEC.A = { w: 1250, h: 712, title: "ELECTRICAL BLOCK DIAGRAM", sub: "every part, pin, net and protocol, buoy to shore radio", draw() {
+  R(0, 0, 190, 668, "z-water"); R(190, 0, 38, 668, "z-gland"); R(228, 0, 822, 668, "z-dry"); R(1050, 0, 200, 668, "z-air");
+  T(8, 15, "IN THE WATER", "zone"); T(236, 15, "SEALED ELECTRONICS HOUSING · 4.4 in ID × 5 in · dry + desiccant", "zone");
+  T(1058, 15, "ABOVE WATER · SHORE", "zone");
+  T(213, 330, "TOP-CAP GLANDS · lab stock", "zone", "middle", -90);
+  B(1036, 11, 29); B(209, 560, 30);
+
+  // sensor pod grouping
+  R(3, 24, 184, 262, "z-pod", { rx: 4 }); T(8, 37, "SENSOR POD · ≈ 4 in below keel", "ts b");
+  card(8, 44, 174, 116, "DS18B20 TEMP PROBE", "Adafruit 381 · <b>1-Wire</b> digital<br>3.0–5.5 V · 1.5 mA converting, 750 ms at 12-bit<br>±0.5 °C · outside the bay (it self-heats)<br>red VDD · yel/wht DQ · blk/blu GND", { k: "hw", small: true });
+  card(8, 168, 174, 112, "TURBIDITY PROBE HEAD", "Seeed Grove 101020752 · optical transmittance<br>tip in the pod's light-shielded flood chamber<br>leads epoxy-potted into the dry chamber", { k: "hw", small: true });
+  card(8, 382, 174, 168, "AQUARIAN H2dM HYDROPHONE", "−172 dB re 1 V/µPa · &lt;10 Hz to &gt;100 kHz<br>plug-in power ≥ 2 V, 0.7 mA · 1.1 kΩ out<br>6 m PU cable · 3.5 mm TRS (tip + ring = signal, sleeve = GND)<br>rated &lt; 80 m · 105 g · 25 × 46 mm<br><span class='r'>NOT BOUGHT · waits for funding (SCO-8)</span>", { k: "hw", small: true });
+  B(175, 168, 8); B(175, 382, 25);
+
+  // glands + cables from water
+  gland(196, 100, "G1"); gland(196, 212, "G2"); gland(196, 460, "G3");
+  W([[182, 100], [196, 100]], "ow"); W([[222, 100], [255, 100]], "ow");
+  W([[182, 212], [196, 212]], "ana"); W([[222, 212], [255, 212]], "ana");
+  W([[182, 460], [196, 460]], "ana"); W([[222, 460], [255, 460]], "ana");
+  IF(209, 78, 1); IF(209, 190, 2); IF(209, 438, 3);
+
+  // 3V3 rail and GND bus
+  W([[240, 42], [615, 42]], "v33"); W([[240, 42], [240, 402]], "v33");
+  T(300, 36, "3V3 rail (AP2112K out)", "wl");
+  W([[236, 655], [1046, 655]], "gnd"); T(420, 666, "common ground: every board, sensor, and battery (−)", "ts", "middle");
+
+  // Proto interface circuits (left column)
+  card(255, 58, 310, 86, "T1 + R1 · DS18B20 TERMINAL (on Proto)", "3-pin screw terminal at the Proto edge, no solder on the probe<br>pin 1 red → 3V3 · pin 2 yel/wht DQ → <b>D12</b> · pin 3 blk → GND<br>R1 4.7 kΩ DQ → 3V3 (comes in the probe bag)", { k: "hw", ref: "7A" });
+  W([[300, 42], [300, 58]], "v33"); dot(300, 42, "v33");
+  W([[565, 100], [615, 100]], "ow", { label: "DQ", lx: 572, ly: 95 });
+
+  card(255, 160, 310, 94, "GROVE TURBIDITY BOARD · 101020752", "LMV358 amp · mode switch on <b>A</b> (analog)<br>VCC = TURB_3V3 (switched) · GND<br>SIG 0–3.3 V → <b>A1</b> direct, no divider<br>cable 110990210: red VCC · blk GND · yel SIG · wht cut + insulated", { k: "hw", ref: "7B" });
+  W([[565, 215], [615, 215]], "ana", { label: "SIG", lx: 572, ly: 210 });
+
+  card(255, 270, 310, 96, "Q1 · TURBIDITY POWER SWITCH", "DMG2305UX P-FET on a SOT-23 → DIP adapter<br>S = 3V3 · G = <b>D11</b> · D = TURB_3V3 · gate LOW = ON<br>R2 100 kΩ gate → 3V3 holds it OFF at boot<br>C1 100 µF + C2 0.1 µF on TURB_3V3 · RDS(on) ≤ 100 mΩ", { k: "hw", ref: "7B" });
+  W([[240, 318], [255, 318]], "v33"); dot(240, 318, "v33");
+  W([[500, 270], [500, 254]], "v33"); T(506, 265, "TURB_3V3", "ts b");
+  W([[615, 300], [565, 300]], "gpio", { label: "gate", lx: 572, ly: 295 });
+
+  card(255, 382, 310, 262, "HYDROPHONE FRONT END · Q2 + PREAMP", "<b>Q2</b> DMG2305UX · G = <b>A3</b> (LOW = ON) · R3 100 kΩ pull-up → makes AUD_3V3 only while recording · C8 0.1 µF + C9 10 µF<br><b>Bias</b> (plug-in power): AUD_3V3 → R9 100 Ω + C10 10 µF → R4 1.1 kΩ → J1 tip ≈ 2.46 V at 0.7 mA<br><b>J1</b> 3.5 mm jack 1699: L = tip signal · sleeve GND · ring open<br><b>C3</b> 1 µF couples tip → U1A+; R7 100 kΩ to VMID · <b>VMID</b> 1.65 V = R5/R6 10 k/10 k + C4 10 µF<br><b>U1</b> MCP6002 in a DIP-8 socket · A: gain 1 + 20k/1k = 21 (R10, R11 + C5, high-pass ≈ 16 Hz) · LPF R8 1.5 k + C6 10 nF ≈ 10.6 kHz · B: gain 1 + 10k/1k = 11 (R12, R13 + C7)", { k: "hw", ref: "7D · Stage 7" });
+  W([[240, 402], [255, 402]], "v33"); dot(240, 402, "v33");
+  W([[615, 420], [565, 420]], "gpio", { label: "gate", lx: 572, ly: 415 });
+  // mini signal chain
+  const cy = 610, bx = [[262, 34, "J1 tip"], [306, 32, "C3 1µ"], [348, 50, "U1A ×21"], [408, 54, "LPF 10.6k"], [472, 50, "U1B ×11"]];
+  bx.forEach(([x, w, s]) => { R(x, cy - 12, w, 24, "chip", { fill: "#fff7ef" }); T(x + w / 2, cy + 3.5, s, "ts b", "middle"); });
+  for (let i = 0; i < bx.length - 1; i++) W([[bx[i][0] + bx[i][1], cy], [bx[i + 1][0], cy]], "ana", { arrow: "end" });
+  W([[522, cy], [615, cy]], "ana", { label: "≈ 0.6 V on 1.65 V", lx: 526, ly: cy - 6 });
+
+  // controller stack
+  R(615, 18, 230, 628, "card");
+  R(615, 18, 230, 18, "cardhd k-hw"); T(621, 31, "CONTROLLER STACK · Feather 51 × 23 mm", "hd");
+  R(648, 54, 164, 62, "card", { fill: "#fffaf5" });
+  H(652, 56, 158, 60, "<b>L3 · FeatherWing Proto 2884</b><br>T1, Q1, Q2, U1, J1, R/C (cards at left) · plain male headers into L2", "fo small");
+  R(648, 124, 164, 142, "card", { fill: "#fffaf5" });
+  H(652, 126, 158, 140, "<b>L2 · Adalogger FeatherWing 2922</b><br>PCF8523 RTC · I²C 0x68 · wall clock · CR1220 backup · INT1 not wired<br>microSD · SPI · CS <b>D10</b> (100 k pull-up) · FAT32 · industrial 16–32 GB to deploy<br>10 k I²C pull-ups · stacking headers 2830", "fo small");
+  R(648, 274, 164, 366, "card", { fill: "#fffaf5" });
+  H(652, 276, 158, 362, "<b>L1 · Feather M0 RFM95 3178</b><br>ATSAMD21G18 Cortex-M0+ 48 MHz · 256 KB flash · 32 KB SRAM · 12-bit ADC, Vref 3.3 V<br>internal RTC on the 32.768 kHz crystal → <b>standby wake</b><br>RFM95 (SX1276) on SPI: CS <b>D8</b> · IRQ <b>D3</b> · RST <b>D4</b> · uFL 1661 fitted<br>AP2112K-3.3 LDO, 500 mA peak → 3V3 rail<br>BAT ÷ 2 (100 k / 100 k) → <b>A7</b>, ≈ 18 µA<br><span class='r'>MCP73831 charger REMOVED</span> for primary cells<br>D13 red LED forced off<br>micro-USB = bench only (drops in standby)<br>stacking headers 2830", "fo small");
+  [["3V3", 42], ["D12", 100], ["A1", 215], ["D11", 300], ["A3", 420], ["A2", 610]].forEach(([s, y]) => T(619, y + 3.5, s, "pin"));
+  [["SDA", 150], ["SCL", 166], ["uFL", 330], ["BAT", 560]].forEach(([s, y]) => T(841, y + 3.5, s, "pin", "end"));
+  W([[730, 646], [730, 655]], "gnd"); dot(730, 655, "gnd"); T(736, 652, "GND", "pin");
+  B(632, 128, 11); B(632, 280, 21); B(632, 250, 10);
+
+  // SHT40 + desiccant
+  card(870, 118, 172, 108, "SHT40 · 4885", "humidity + temperature · I²C <b>0x44</b><br>STEMMA QT 4209: red 3V3 · blk GND · blu SDA · yel SCL<br><b>RH rising = leak</b><br>mount high, away from the cells", { k: "hw", ref: "7C" });
+  W([[845, 150], [870, 150]], "i2c"); W([[845, 166], [870, 166]], "i2c");
+  W([[956, 226], [956, 655]], "gnd"); dot(956, 655, "gnd");
+  card(870, 238, 172, 50, "DESICCANT · L3 pocket", "silica gel, type not chosen", { k: "me" });
+  IF(902, 110, 6); B(1032, 112, 28);
+
+  // battery
+  card(870, 432, 172, 212, "BATTERY BAY · L1 cradle", "<b>BT1, BT2</b> Saft LS33600 3.6 V Li-SOCl₂ D · 17 Ah each · in <b>parallel</b><br><b>D1, D2</b> LM66100 ideal diode, one per cell †<br><b>F1</b> PTC fuse, 0.5 A hold (MF-R050) †<br><b>P1</b> JST-PH 2-pin 261, keyed → BAT<br>stay ≥ 3.35 V during TX<br><span class='r'>NOT BOUGHT · after Stage 2</span><br>schematic: detail C", { k: "pw", ref: "7E" });
+  W([[845, 560], [870, 560]], "bat");
+  IF(990, 424, 5); B(1032, 426, 3); B(880, 610, 2); B(1014, 610, 4);
+
+  // RF path
+  card(1062, 300, 140, 64, "SMA BULKHEAD · LID", "uFL 1661 on M0 → 851 cable (RG178, 15 cm) → panel SMA", { k: "hw", small: true });
+  W([[845, 330], [1062, 330]], "rf", { label: "uFL → 851", lx: 870, ly: 324 });
+  card(1062, 36, 140, 72, "915 MHz WHIP", "SMA male · <b>≤ 2.15 dBi</b> (FCC grant) · above the waterline · part TBD", { k: "hw", small: true });
+  W([[1132, 300], [1132, 108]], "rf");
+  IF(1132, 384, 4); B(1210, 44, 12);
+  W([[1228, 70], [1228, 420]], "rf", { arrow: "end" });
+  T(1220, 245, "LoRa 915 MHz · 3 slots a day", "wl", "middle", -90);
+  card(1062, 424, 182, 238, "SHORE STATION", "<b>ESP32-S3 Feather 5477</b> + <b>RFM95W FeatherWing 3231</b> (CS / RST / IRQ jumpers) · FreeRTOS: LoRa RX task + WiFi task<br>same regs 0x98 / 0xC4 / 0x04 + erratum 0x36 ← 02, 0x3A ← 64 · listens ±2 min around each slot<br>validates, decodes, dedupes; serves 2 buoys<br><b>WiFi push → dashboard</b> (back end open, SCO-120)<br>OTA downlink later · ≤ 2.15 dBi when it transmits<br>wall power (USB)<br><span class='r'>firmware NOT written (SCO-24, due 10-30)</span>", { k: "sh", small: true });
+  B(1236, 432, 14); IF(1210, 676, 8);
+
+  T(4, 684, "Inside the stack, no wires to add: SPI SCK / MOSI / MISO is shared by the radio (CS D8) and the SD card (CS D10); I²C SDA / SCL is shared by the PCF8523 (0x68) and the SHT40 (0x44).", "ts");
+  T(4, 698, "Pins used by the boards: D3, D4, D8 (radio), D9 / A7 (battery), D10 (SD), D13 (LED, off). Free: A0, A4, A5, D5 (old RTC wake), D6 (keep for radio IO1), D0 / D1 (Serial1).", "ts");
+  B(1240, 690, 1);
+}};
+
+/* ---------- B · Controller stack side view ---------- */
+SEC.B = { w: 450, h: 285, title: "CONTROLLER STACK · SIDE VIEW", sub: "zoom of L1–L3, not to scale", draw() {
+  const x0 = 50, x1 = 330;
+  R(x0 - 10, 248, x1 - x0 + 20, 8, "card", { fill: "url(#hatch2)" }); T(x0 - 6, 270, "L2 stack tray (3 mm) on 4 × Ø6 × 4 standoffs at (±22.9, ±8.9) mm", "ts");
+  [[x0 + 18, 248], [x1 - 18, 248]].forEach(([x, y]) => R(x - 5, y - 10, 10, 10, "chip", { fill: "#ccc" }));
+  const boards = [[208, "L1 · Feather M0 RFM95 3178", "#2b6d3a"], [150, "L2 · Adalogger 2922", "#2b6d3a"], [96, "L3 · Proto 2884", "#2b6d3a"]];
+  boards.forEach(([y, s]) => { R(x0, y, x1 - x0, 7, "chip", { fill: "#3f7d4f" }); T(x1 + 8, y + 7, s, "ts b"); });
+  // headers
+  [x0 + 10, x1 - 14].forEach(x => { R(x, 157, 4, 51, "chip", { fill: "#222" }); R(x, 103, 4, 47, "chip", { fill: "#222" }); R(x - 2, 208, 8, 30, "chip", { fill: "#888" }); });
+  T(x0 + 70, 232, "long pins below L1: free in the housing", "ts");
+  // L1 parts
+  R(150, 182, 70, 26, "chip", { fill: "#ddd" }); T(185, 199, "RFM95", "ts b", "middle");
+  R(240, 196, 18, 12, "chip", { fill: "#f6d365" }); T(249, 192, "uFL", "ts", "middle");
+  R(x0 + 24, 196, 24, 12, "chip", { fill: "#eee" }); T(x0 + 36, 181, "JST BAT", "ts", "middle");
+  R(105, 198, 26, 10, "chip", { fill: "#bbb" }); T(118, 193, "SAMD21", "ts", "middle");
+  // L2 parts
+  R(120, 136, 40, 14, "chip", { fill: "#e5e5e5" }); T(140, 132, "CR1220", "ts", "middle");
+  R(200, 140, 60, 10, "chip", { fill: "#aaa" }); T(230, 132, "microSD", "ts", "middle");
+  // L3 parts
+  [[80, 30, "Q1"], [120, 30, "Q2"], [165, 34, "U1"], [215, 30, "J1"], [262, 34, "T1"]].forEach(([x, w, s]) => { R(x, 78, w, 18, "chip", { fill: "#fff1dd" }); T(x + w / 2, 91, s, "ts b", "middle"); });
+  dimH(60, x0, x1, "50.8 mm (Feather standard) × 22.9 mm deep");
+  dimV(28, 78, 215, "", "l"); T(20, 146, "stack ≈ 30 mm †", "dim", "middle", -90);
+  H(8, 2, 434, 44, "Heights above the housing floor (option C): M0 z 52–60 · Adalogger 61–69 · Proto 70–75 mm. Antenna: bench = spring 4269 on the ANT pad; deployed = uFL 1661 → 851 → SMA bulkhead → whip. Use one, never both.", "fo small");
+  B(436, 236, 31); B(430, 90, 12);
+}};
+
+/* ---------- C · Battery pack schematic ---------- */
+SEC.C = { w: 450, h: 240, title: "BATTERY PACK · SCHEMATIC", sub: "2 × Saft LS33600 in parallel", draw() {
+  const cell = (x, y, s) => { W([[x, y - 14], [x, y - 4]], "bat"); W([[x - 14, y - 4], [x + 14, y - 4]], "bat"); W([[x - 8, y + 2], [x + 8, y + 2]], "gnd"); W([[x, y + 2], [x, y + 14]], "gnd"); T(x - 20, y - 4, s, "ts b", "end"); T(x + 18, y - 6, "+", "ts b"); };
+  cell(70, 60, "BT1"); cell(70, 140, "BT2"); T(12, 168, "3.6 V · 17 Ah each", "ts");
+  const diode = (x, y, s) => { E("polygon", { points: `${x},${y - 8} ${x},${y + 8} ${x + 14},${y}`, fill: "#fff", stroke: "#c62828", "stroke-width": 1.6 }); W([[x + 14, y - 8], [x + 14, y + 8]], "bat"); T(x + 7, y - 12, s, "ts b", "middle"); };
+  W([[70, 46], [70, 34], [140, 34]], "bat"); diode(140, 34, "D1 LM66100 †");
+  W([[70, 126], [70, 114], [140, 114]], "bat"); diode(140, 114, "D2 LM66100 †");
+  W([[154, 34], [210, 34], [210, 114], [154, 114]], "bat"); dot(210, 74, "bat");
+  W([[210, 74], [240, 74]], "bat"); R(240, 66, 40, 16, "chip", { fill: "#fff" }); E("line", { x1: 244, y1: 80, x2: 276, y2: 68, stroke: "#c62828", "stroke-width": 1.2 });
+  T(260, 60, "F1 PTC 0.5 A †", "ts b", "middle");
+  W([[280, 74], [330, 74]], "bat");
+  R(330, 62, 30, 44, "chip", { fill: "#f3f3f3" }); T(345, 120, "P1 JST-PH", "ts b", "middle"); T(345, 132, "keyed (261)", "ts", "middle");
+  W([[70, 74], [70, 92], [100, 92]], "gnd"); W([[70, 154], [70, 170], [300, 170], [300, 96], [330, 96]], "gnd"); W([[100, 92], [100, 170]], "gnd");
+  W([[360, 74], [420, 74]], "bat", { arrow: "end", label: "to Feather BAT", lx: 364, ly: 64 });
+  W([[360, 96], [420, 96]], "gnd", { label: "to GND", lx: 364, ly: 110 });
+  H(8, 180, 434, 58, "Parallel, never series (7.2 V is too high). Each ideal diode stops one cell charging the other; F1 limits a short; P1 cannot go in backwards. Measure P1 before plugging in: +3.5 to 3.7 V. Solder to the tabs only, never the cell body.", "fo small");
+  B(430, 20, 3); B(405, 50, 2); B(405, 140, 32);
+}};
+
+/* ---------- D · Power tree + daily budget ---------- */
+SEC.D = { w: 690, h: 310, title: "POWER TREE + DAILY ENERGY BUDGET", sub: "power budget update 2026-10-05", draw() {
+  // tree
+  card(6, 6, 120, 44, "BAT 3.6 V", "2 × LS33600 · 34 Ah", { k: "pw", small: true });
+  W([[126, 28], [150, 28]], "bat", { arrow: "end" });
+  card(150, 6, 110, 44, "AP2112K-3.3", "LDO · 500 mA pk", { k: "pw", small: true });
+  W([[66, 50], [66, 66]], "bat"); T(72, 63, "÷2 → A7 ≈ 18 µA", "ts");
+  W([[205, 50], [205, 300]], "v33");
+  const br = [[78, "SAMD21: 11 mA awake"], [100, "RFM95: ≤ 100 mA TX · 0.2 µA sleep"], [122, "SD: 50 mA write · ≈ 200 µA idle"], [144, "DS18B20: 1.5 mA × 750 ms"], [166, "SHT40 (I²C, µA)"]];
+  br.forEach(([y, s]) => { W([[205, y], [222, y]], "v33"); dot(205, y, "v33"); T(226, y + 4, s, "ts"); });
+  W([[205, 196], [222, 196]], "v33"); dot(205, 196, "v33"); R(222, 186, 28, 20, "chip", { fill: "#fff" }); T(236, 200, "Q1", "ts b", "middle");
+  W([[250, 196], [262, 196]], "v33"); T(266, 200, "Grove turbidity (switched)", "ts");
+  W([[205, 230], [222, 230]], "v33"); dot(205, 230, "v33"); R(222, 220, 28, 20, "chip", { fill: "#fff" }); T(236, 234, "Q2", "ts b", "middle");
+  W([[250, 230], [262, 230]], "v33"); T(266, 234, "preamp + H2dM bias ≈ 2.3 mA", "ts");
+  T(8, 220, "PCF8523 ≈ 1 µA on 3V3;\nits CR1220 keeps time\nif main power is lost.\nNo 5 V rail; MiniBoost\n4654 is a backup only.", "ts");
+  // budget table
+  H(440, 4, 246, 302, `<table>
+   <tr><th>Load</th><th class="n">mA</th><th class="n">s</th><th class="n">×/d</th><th class="n">mAh/d</th></tr>
+   <tr><td>SAMD21 awake</td><td class="n">11</td><td class="n">1.5</td><td class="n">48</td><td class="n">0.220</td></tr>
+   <tr><td>DS18B20</td><td class="n">1.5</td><td class="n">0.75</td><td class="n">48</td><td class="n">0.015</td></tr>
+   <tr><td>Turbidity*</td><td class="n">71.3</td><td class="n">1.0</td><td class="n">48</td><td class="n">0.951</td></tr>
+   <tr><td>SD write</td><td class="n">50</td><td class="n">0.1</td><td class="n">48</td><td class="n">0.067</td></tr>
+   <tr><td>RFM95 TX</td><td class="n">≤100</td><td class="n">0.559</td><td class="n">3</td><td class="n">0.047</td></tr>
+   <tr><td>MCU during TX</td><td class="n">11</td><td class="n">0.559</td><td class="n">3</td><td class="n">0.005</td></tr>
+   <tr><td>Sleep floor</td><td class="n">0.501</td><td class="n">24 h</td><td class="n">1</td><td class="n">12.02</td></tr>
+   <tr class="tot"><td>Total, no audio</td><td colspan="3">avg ≈ 0.56 mA</td><td class="n">13.33</td></tr>
+   <tr><td>Hydrophone</td><td class="n">≈75.7</td><td colspan="2">13.4 min/d</td><td class="n">16.9</td></tr>
+   <tr class="tot"><td>Total, with audio</td><td colspan="3">best estimate</td><td class="n">30.3</td></tr>
+  </table>
+  <p style="margin-top:4px">*Budget row is the SEN0189 through a 5 V boost (worst case); the Grove at 3.3 V draws less. Audio row assumed a PCM1808 ADC; the MCP6002 path is lower. Usable 23.8 Ah → ≈ 4.9 yr without audio, ≈ 2.1 yr with.</p>`, "fo small");
+  B(400, 250, 17); B(400, 272, 18); B(400, 294, 19); B(250, 294, 20);
+}};
+
+/* ---------- E · Pin map ---------- */
+SEC.E = { w: 440, h: 330, title: "FEATHER M0 PIN MAP", sub: "config.h = pin-assignments.md = this drawing", draw() {
+  H(4, 4, 432, 322, `<table>
+   <tr><th>Pin</th><th>Signal</th><th>Type</th><th>Note</th></tr>
+   <tr><td class="m">D12</td><td>DS18B20 DQ</td><td>1-Wire</td><td>4.7 kΩ to 3V3</td></tr>
+   <tr><td class="m">A1</td><td>Turbidity SIG</td><td>analog</td><td>3.3 V, no divider</td></tr>
+   <tr><td class="m">D11</td><td>Q1 gate (turbidity)</td><td>GPIO out</td><td>LOW = on</td></tr>
+   <tr><td class="m">A3</td><td>Q2 gate (audio)</td><td>GPIO out</td><td>LOW = on</td></tr>
+   <tr><td class="m">A2</td><td>Preamp out</td><td>analog</td><td>Stage 7</td></tr>
+   <tr><td class="m">A7 / D9</td><td>Battery ÷ 2</td><td>analog</td><td>onboard 100 k / 100 k</td></tr>
+   <tr><td class="m">D10</td><td>microSD CS</td><td>SPI CS</td><td>Adalogger</td></tr>
+   <tr><td class="m">D8 · D4 · D3</td><td>RFM95 CS · RST · IRQ</td><td>SPI + GPIO</td><td>on-board, fixed</td></tr>
+   <tr><td class="m">SCK MOSI MISO</td><td>radio + SD</td><td>SPI</td><td>shared</td></tr>
+   <tr><td class="m">SDA · SCL</td><td>PCF8523 0x68 · SHT40 0x44</td><td>I²C</td><td>shared</td></tr>
+   <tr><td class="m">D13</td><td>red LED</td><td>GPIO</td><td>forced off</td></tr>
+   <tr><td class="m">BAT · GND</td><td>pack via JST-PH</td><td>power</td><td>charger removed</td></tr>
+   <tr><td class="m">D5 · D6</td><td>free</td><td>—</td><td>D6 kept for radio IO1</td></tr>
+   <tr><td class="m">A0 A4 A5</td><td>spare</td><td>—</td><td>D0 / D1 = Serial1</td></tr>
+  </table>`, "fo small");
+  B(430, 22, 9);
+}};
+
+/* ---------- F · Firmware state machine ---------- */
+SEC.F = { w: 730, h: 478, title: "FIRMWARE STATE MACHINE", sub: "firmware/src/main.cpp · Feather M0 · Arduino SAMD core", draw() {
+  card(10, 28, 200, 56, "POWER-ON / RESET", "cold start: record_seq = 0<br>watchdog reset: record_seq kept", { k: "fw", small: true });
+  W([[110, 84], [110, 98]], "data", { arrow: "end" });
+  card(10, 96, 350, 214, "BOOT · setup()", "<ol><li>read reset cause (watchdog?) → SOH bit</li><li>restore retained state if magic = 0x5C002702</li><li>watchdog on, 16.384 s</li><li>latch D11 and A3 HIGH (OFF) <b>before</b> pinMode OUTPUT; D13 LED off</li><li>ADC 12-bit; DS18B20 at 12-bit resolution</li><li>PCF8523 begin → RTC_LOST if unset</li><li>SD.begin(CS D10)</li><li>RFM95: reset pulse D4, 915.0 MHz, +11 dBm, regs 0x98 / 0xC4 / 0x04</li><li>SOH = WATCHDOG_RESET · RTC_UNSET · SD_INIT_FAIL · LORA_INIT_FAIL</li><li>8 s USB window: accept <span class='m'>T&lt;unix-epoch&gt;</span> → set PCF8523 (set_rtc.py); none on battery</li><li>print the <span class='m'>boot:</span> line</li></ol>", { k: "fw", small: true });
+  W([[185, 310], [185, 322]], "data", { arrow: "end", label: "first pass: sample now", lx: 192, ly: 320 });
+  card(10, 322, 350, 154, "SAMPLE + LOG · at :00 and :30 UTC", "<ol><li>D11 LOW, wait 500 ms for the sensor to settle</li><li>battery A7 → mode NORMAL / CONSERVE / CRITICAL</li><li>DS18B20 (750 ms) · else TEMP_TIMEOUT</li><li>turbidity A1 (skipped in CRITICAL)</li><li>D11 HIGH (off)</li><li>audio if hour ∈ {0, 8, 16} and NORMAL · <span class='r'>capture not written (G7)</span></li><li>flags · record_seq + 1 · CSV row → /DATA/YYYYMMDD.CSV (retry once → SD_RETRY)</li><li>hold the reading for the next slot</li></ol>", { k: "fw", small: true });
+  card(380, 28, 330, 78, "STANDBY SLEEP", "watchdog off · radio sleep · LowPower.deepSleep(Δt)<br>SAMD21 RTC alarm (1 s resolution) · USB drops<br>≈ 0.5 mA floor (estimate)", { k: "fw", small: true });
+  W([[545, 106], [545, 122]], "data", { arrow: "end" });
+  card(380, 122, 330, 92, "WAKE", "re-read PCF8523 · woke early → sleep the rest<br>clock jumped back → re-plan from the new time<br>watchdog re-armed · both gates forced OFF<br>no RTC → fallback clock advanced by hand", { k: "fw", small: true });
+  W([[380, 190], [370, 190], [370, 345], [360, 345]], "data", { arrow: "end", label: ":00 / :30", lx: 365, ly: 270, la: "middle", rot: -90 });
+  W([[545, 214], [545, 232]], "data", { arrow: "end", label: "slot 00:10 · 08:10 · 16:10", lx: 552, ly: 227 });
+  card(380, 232, 330, 156, "TRANSMIT LATEST READING", "encode 30 B + CRC-16 · pet the watchdog<br>copies: NORMAL 3 · CONSERVE 1 (slot 0 only) · CRITICAL 0<br>gaps 2 s then 4 s · send blocks ≤ 2 s (≈ 0.56 s on air)<br>never waits for an ACK · missed slot is skipped<br>nothing sent if LoRa init failed or no reading yet<br><span class='a'>OTA: listen window after the send (planned)</span>", { k: "fw", small: true });
+  W([[360, 450], [380, 450]], "data", { arrow: "end" });
+  W([[545, 388], [545, 420]], "data", { arrow: "end" });
+  card(380, 420, 330, 52, "PLAN NEXT EVENT", "next = earliest of (next :00 / :30, next TX slot)<br>scout_next_event_epoch() · pure, unit-tested", { k: "fw", small: true });
+  W([[710, 446], [722, 446], [722, 66], [710, 66]], "data", { arrow: "end" });
+  B(232, 40, 21); B(232, 70, 5); B(706, 290, 16); B(706, 252, 13); B(706, 140, 11); B(340, 470, 23); B(368, 120, 22);
+}};
+
+/* ---------- G · 24 h timeline + current profile ---------- */
+SEC.G = { w: 1000, h: 228, title: "24-HOUR SCHEDULE + CURRENT PROFILE", sub: "config.h: SAMPLE_INTERVAL_S 1800 · TX_SLOTS_SOD {600, 29400, 58200} · AUDIO_HOURS_UTC {0, 8, 16}", draw() {
+  const x0 = 60, px = 37.5, y = 64;
+  E("line", { x1: x0, y1: y, x2: x0 + 24 * px, y2: y, stroke: "#111", "stroke-width": 1.4 });
+  for (let i = 0; i <= 48; i++) { const x = x0 + i * px / 2; E("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#1b7f3a", "stroke-width": 1.2 }); }
+  for (let h = 0; h <= 24; h += 2) T(x0 + h * px, y + 20, String(h).padStart(2, "0") + ":00", "ts", "middle");
+  [0, 8, 16].forEach(h => {
+    const xs = x0 + (h + 1 / 6) * px;
+    R(xs - 3, y - 34, 6, 28, "chip", { fill: "#c2185b", stroke: "none" }); T(xs + 6, y - 26, "TX ×3", "ts b");
+    const xa = x0 + h * px; R(xa - 2, y + 26, 4, 14, "chip", { fill: "#7b3fb5", stroke: "none" }); T(xa + 5, y + 37, "audio", "ts");
+  });
+  T(x0, 18, "green ticks = 48 samples a day (:00 / :30) · magenta = TX slots 10 min after a sample · purple = audio hours (planned)", "ts");
+  T(x0 + 24 * px + 8, y + 4, "UTC", "ts b");
+  // current profile: sample cycle
+  const py = 200, sx = 60, sc = 34;
+  T(sx, 128, "One sample wake (≈ 1.5 s awake)", "ts b");
+  E("polyline", { points: `${sx},${py} ${sx + 20},${py} ${sx + 20},${py - 22} ${sx + 40},${py - 22} ${sx + 40},${py - 58} ${sx + 40 + 0.5 * sc},${py - 58} ${sx + 40 + 0.5 * sc},${py - 58} ${sx + 40 + 1.25 * sc},${py - 58} ${sx + 40 + 1.25 * sc},${py - 26} ${sx + 40 + 1.5 * sc},${py - 26} ${sx + 40 + 1.5 * sc},${py - 44} ${sx + 40 + 1.6 * sc},${py - 44} ${sx + 40 + 1.6 * sc},${py} ${sx + 220},${py}`, class: "w data" });
+  T(sx + 2, py + 13, "sleep ≈ 0.5 mA", "ts"); T(sx - 2, py - 26, "MCU 11 mA", "ts", "end");
+  T(sx + 62, py - 62, "turbidity on (D11 LOW) · 500 ms settle · DS18B20 750 ms", "ts");
+  T(sx + 102, py - 10, "D11 off → SD write 50 mA, 0.1 s → sleep", "ts");
+  // TX profile
+  const tx = 520; T(tx, 128, "One TX slot, NORMAL mode (3 copies, never ACKed)", "ts b");
+  let pts = `${tx},${py} `; let x = tx + 20; const on = 0.56 * 18, g1 = 2 * 18, g2 = 4 * 18;
+  [[on, g1], [on, g2], [on, 30]].forEach(([a, b]) => { pts += `${x},${py} ${x},${py - 60} ${x + a},${py - 60} ${x + a},${py - 10} ${x + a + b},${py - 10} `; x += a + b; });
+  pts += `${x},${py} ${x + 30},${py}`;
+  E("polyline", { points: pts, class: "w", style: "stroke:#c2185b;stroke-width:2" });
+  T(tx + 18, py - 64, "≤ 100 mA, 0.56 s each", "ts"); T(tx + 52, py - 14, "2 s", "ts"); T(tx + 112, py - 14, "4 s", "ts");
+  T(x + 40, py - 40, "≈ 0.07 mAh per slot:\nTX 0.047 + MCU awake\n11 mA × ≈ 7.7 s", "ts");
+  B(30, 64, 44); B(500, 124, 17); B(16, 200, 18);
+}};
+
+/* ---------- H · Packet byte map ---------- */
+SEC.H = { w: 1000, h: 168, title: "LoRa PACKET · 30 BYTES ON THE WIRE", sub: "firmware/lib/scout_packet ⇄ shore/scout_shore/packet.py · CI: check_packet_contract.py", draw() {
+  const f = [["ver", 1, "u8"], ["buoy_id", 2, "u16"], ["timestamp (UTC epoch s)", 4, "u32"], ["record_seq", 4, "u32"], ["temp_c ×100", 2, "i16"], ["turbidity_adc", 2, "u16"], ["battery_mv", 2, "u16"], ["uptime_s", 4, "u32"], ["flags", 2, "u16"], ["soh", 1, "u8"], ["audio", 1, "u8"], ["maj", 1, "u8"], ["min", 1, "u8"], ["pat", 1, "u8"], ["CRC-16", 2, "u16"]];
+  const cols = ["#e3eefc", "#fde9da", "#e2f1e2", "#efe2f8", "#fff3c4"];
+  let x = 20, b = 0; const cw = 31.5, y = 26;
+  f.forEach(([n, len, t], i) => {
+    R(x, y, cw * len, 34, "chip", { fill: i === f.length - 1 ? "#ffd6d6" : cols[i % cols.length] });
+    T(x + cw * len / 2, y + 15, n, len === 1 ? "ts" : "ts b", "middle"); T(x + cw * len / 2, y + 28, t, "ts", "middle");
+    T(x + 2, y - 4, String(b), "ts");
+    x += cw * len; b += len;
+  });
+  T(x + 2, y - 4, "30", "ts");
+  H(16, 70, 978, 96, "<b>Little-endian.</b> Bytes 0–27 body, 28–29 CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF). On air RadioHead adds a 4-byte header (to, from, id, flags). The 82-byte figure in the EDD is the payload <i>ceiling</i>, not today's size.<br><b>flags</b> bit 0 SD_RETRY · 1 TEMP_TIMEOUT · 2 TURBIDITY_RANGE · 3 BATT_LOW_SKIP_TX · 4 RTC_LOST · 5 POWER_CONSERVE &nbsp;&nbsp; <b>soh</b> bit 0 WATCHDOG_RESET · 1 RTC_UNSET · 2 SD_INIT_FAIL · 3 LORA_INIT_FAIL<br>Not in the packet (SD card only): turbidity_v, turbidity_ntu, audio_file. CSV v1 columns: schema_version, buoy_id, timestamp_utc, record_seq, temp_c, turbidity_adc, turbidity_v, turbidity_ntu, battery_v, uptime_s, audio_file, flags, soh, fw_version.", "fo small");
+  B(990, 14, 15);
+}};
+
+/* ---------- J · Power modes ---------- */
+SEC.J = { w: 470, h: 132, title: "POWER MODES", sub: "battery read first, every sample", draw() {
+  H(4, 4, 462, 126, `<table>
+  <tr><th>Mode</th><th>Battery</th><th>Senses</th><th>Transmits</th></tr>
+  <tr><td><b>NORMAL</b></td><td>≥ 3200 mV</td><td>temp, turbidity, audio</td><td>every slot, 3 copies</td></tr>
+  <tr><td><b>CONSERVE</b></td><td>3100–3199 mV</td><td>temp, turbidity · no audio</td><td>slot 0 only (1 a day), 1 copy · POWER_CONSERVE</td></tr>
+  <tr><td><b>CRITICAL</b></td><td>&lt; 3100 mV</td><td>temp + logging only</td><td>none · BATT_LOW_SKIP_TX</td></tr>
+  </table><p style="margin-top:4px">Thresholds are provisional (config.h). The Li-SOCl₂ curve is flat, so these mostly trip near end of life.</p>`, "fo small");
+  B(460, 120, 20);
+}};
+
+/* ---------- K · Data path buoy → shore → public ---------- */
+SEC.K = { w: 1000, h: 322, title: "DATA PATH · BUOY → SHORE → ANALYTICS → PUBLIC", sub: "what runs where, and in what language", draw() {
+  card(8, 26, 170, 128, "BUOY microSD", "<b>complete record</b> · CSV schema v1 · one row per sample<br>/DATA/YYYYMMDD.CSV<br>/AUDIO/YYYYMMDD/<br>HHMMSSZ.WAV (planned)<br>retrieved physically", { k: "fw", small: true });
+  card(8, 166, 170, 70, "BUOY RADIO", "30 B × 3 copies · 3 slots a day<br>transmit-only until OTA", { k: "fw", small: true });
+  W([[178, 190], [205, 190]], "rf", { arrow: "end" });
+  card(205, 166, 150, 70, "SHORE STATION (ESP32-S3)", "decode · dedupe · WiFi push · OTA ← later<br><span class='r'>not written (SCO-24)</span>", { k: "sh", small: true });
+  W([[355, 200], [410, 200]], "data2", { arrow: "end", label: "WiFi push", lx: 358, ly: 194 });
+  card(410, 26, 240, 210, "COMPUTER · scout_shore (Python)", "<b>packet.py</b> decode + CRC · <b>schema.py</b> validate<br><b>store.py</b> daily CSV per buoy, idempotent on (buoy_id, record_seq)<br><b>sd_import.py</b> merges a retrieved card; card row wins<br><b>decode_frames.py</b> bench receiver output → CSV<br>live role depends on which dashboard back end the S3 pushes to (<span class='r'>open, SCO-120</span>)<br>stdlib only · <span class='g'>64 tests pass (simulated)</span>", { k: "sh", small: true });
+  W([[178, 60], [410, 60]], "data2", { arrow: "end" });
+  T(186, 54, "card retrieval → sd_import", "ts");
+  W([[205, 222], [178, 222]], "data2", { arrow: "end" });
+  W([[650, 120], [676, 120]], "data", { arrow: "end" });
+  card(676, 26, 150, 92, "shore/data-live/", "real CSVs, committed<br>never shore/data/ (simulator scratch)", { k: "da", small: true });
+  W([[826, 70], [846, 70]], "data", { arrow: "end" });
+  card(846, 26, 148, 92, "GITHUB PAGES", "public site + dashboard<br>rebuilt on push + hourly<br>banner when simulated", { k: "da", small: true });
+  card(398, 250, 596, 66, "ANALYTICS · analytics/telemetry (Python, stdlib) · 86 tests pass (simulated)", "QC → daily means → Degree Heating Weeks (NOAA CRW) → Mann-Kendall + Sen → turbidity anomalies → biofouling drift → fleet (each buoy alone) → per-day CSV + JSON → site build", { k: "da", small: true });
+  W([[750, 118], [750, 250]], "data", { arrow: "both" });
+  card(8, 250, 370, 66, "ACOUSTIC PIPELINE · retrieved /AUDIO/", "ACI · BI · NDSI · H · ADI → PCA → Acoustic Quality Score · 64-bit host · validated on Sesoko 2017–18 data", { k: "da", small: true });
+  W([[93, 154], [93, 166]], "data");
+  W([[178, 130], [192, 130], [192, 250]], "data2", { arrow: "end" });
+  card(846, 128, 148, 52, "“FRED” CHAT", "Cloudflare Worker · separate from the buoy chain", { k: "da", small: true });
+  B(366, 160, 24); B(990, 240, 40); B(990, 120, 41); B(370, 312, 42); B(184, 30, 23); B(184, 172, 16); B(664, 30, 25);
+}};
+
+/* ---------- L · Gaps + verification ---------- */
+SEC.L = { w: 470, h: 310, title: "SOFTWARE GAPS + VERIFICATION", sub: "runbook §1–2 (10-19)", draw() {
+  H(4, 4, 462, 280, `<table>
+  <tr><th>#</th><th>Gap</th><th>Blocks</th></tr>
+  <tr><td><span class="st u">G1</span></td><td><b>Fixed in code</b> (PR #186): clock set over USB at boot · confirm RTC_LOST clears (SCO-201)</td><td>Stage 1, 4, 5</td></tr>
+  <tr><td><span class="st x">G2</span></td><td>Design agreed: S3 is the shore station, WiFi push · back end open (SCO-120) · S3 firmware not written (SCO-24)</td><td>Stage 4b–4c</td></tr>
+  <tr><td><span class="st u">G3</span></td><td>Rev A KiCad says DS18B20 on D5; it's D12</td><td>none if wired from Rev B</td></tr>
+  <tr><td><span class="st u">G4</span></td><td><b>Fixed in code</b>: /DATA/YYYYMMDD.CSV, case-insensitive importer · confirm with a real card (SCO-202)</td><td>card retrieval</td></tr>
+  <tr><td><span class="st u">G5</span></td><td><b>Fixed in code</b>: bench receiver feather_m0_rx + decode_frames.py (SCO-155)</td><td>Stage 4a</td></tr>
+  <tr><td><span class="st u">G6</span></td><td>No test build to force a watchdog reset</td><td>Stage 5</td></tr>
+  <tr><td><span class="st u">G7</span></td><td>Audio capture not implemented</td><td>Stage 7</td></tr>
+  <tr><td><span class="st x">OTA</span></td><td>ADR-0008 accepted, protocol not designed (SCO-197)</td><td>post-MVP</td></tr>
+  </table>
+  <p style="margin-top:5px"><span class="st v">VERIFIED</span> Stage 0: 20 native firmware tests · target build RAM 19.4% / flash 25.4% · 64 shore tests · 86 analytics tests · packet contract OK (30 B).<br><span class="st u">UNVERIFIED</span> every driver, the bench tools, the radio registers, sleep current, range. Nothing has met a real sensor or real water yet.</p>`, "fo small");
+  B(460, 298, 45); B(440, 298, 27); B(420, 298, 47);
+}};
+
+/* ---------- M · Buoy section (mechanical) ---------- */
+SEC.M_old = { w: 640, h: 980, title: "AS-DEPLOYED BUOY · SECTION", sub: "printed-float v9 + flange housing + pod · schematic, not to scale", draw() {
+  const cx = 300;
+  // sky + water + seabed
+  R(0, 0, 640, 560, "", { fill: "#f7fbff" });
+  R(0, 560, 640, 365, "", { fill: "#dcecf8" });
+  R(0, 925, 640, 55, "", { fill: "url(#sand)" });
+  E("path", { d: "M0,560 q20,-6 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0", fill: "none", stroke: "#2b6cb0", "stroke-width": 1.8 });
+  T(8, 554, "WATERLINE", "zone");
+  // whip
+  W([[cx + 34, 330], [cx + 34, 120]], "mech", {}); E("line", { x1: cx + 34, y1: 330, x2: cx + 34, y2: 120, stroke: "#222", "stroke-width": 4 });
+  R(cx + 27, 322, 14, 14, "chip", { fill: "#bbb" });
+  leader(cx + 34, 160, cx + 110, 140, "915 MHz whip, SMA, ≤ 2.15 dBi, length TBD");
+  leader(cx + 34, 328, cx + 150, 300, "SMA bulkhead in the lid (IF-4)");
+  // lid cable interface + glands
+  E("path", { d: `M${cx - 80},350 Q${cx},305 ${cx + 80},350 Z`, fill: "#d9dde3", stroke: "#333", "stroke-width": 1.2 });
+  [[-62, "G1"], [-38, "G2"], [40, "G3"]].forEach(([dx, s]) => { R(cx + dx - 8, 333 - Math.abs(dx) * 0.12, 16, 10, "gland", { rx: 2 }); });
+  leader(cx - 50, 335, cx - 160, 290, "curved cable interface (R 2 in) · glands G1–G3 point sideways", "end");
+  // flange + lid
+  R(cx - 120, 350, 240, 10, "card", { fill: "#cfd6de" }); R(cx - 120, 360, 240, 10, "card", { fill: "#b9c3cd" });
+  for (let i = 0; i < 6; i++) { const bx = cx - 108 + i * 43.2; R(bx, 346, 6, 28, "chip", { fill: "#888" }); }
+  leader(cx + 118, 356, cx + 175, 375, "lid + flange Ø6 in · 8 bolts at 45° (316)");
+  leader(cx + 90, 366, cx + 175, 398, "AS568-247 O-ring face seal (IF)");
+  // float body
+  const top = 372, keel = 640, rt = 196, rk = 142;
+  E("path", { d: `M${cx - rt},${top} L${cx + rt},${top} C${cx + rt},${top + 150} ${cx + rk + 8},${keel - 30} ${cx + rk},${keel} L${cx - rk},${keel} C${cx - rk - 8},${keel - 30} ${cx - rt},${top + 150} ${cx - rt},${top} Z`, fill: "url(#hatch)", stroke: "#333", "stroke-width": 1.6 });
+  // socket for housing
+  R(cx - 92, top, 184, 222, "", { fill: "#fbfbf7", stroke: "#333", "stroke-width": 1.4 });
+  // cable guide channel
+  R(cx + 128, top, 16, keel - top, "", { fill: "#fff", stroke: "#333", "stroke-width": 1 });
+  leader(cx + 136, 470, cx + 210, 455, "cable guide channel (v9)");
+  // housing tube contents
+  R(cx - 88, 372, 176, 220, "", { fill: "#fff", stroke: "#111", "stroke-width": 2 });
+  // L3 deck + cable bend
+  R(cx - 82, 430, 164, 5, "chip", { fill: "#9cc4a2" }); T(cx, 412, "≈ 34 mm cable bend", "ts", "middle");
+  // L2 stack
+  R(cx - 82, 498, 164, 4, "chip", { fill: "#9cc4a2" });
+  R(cx - 40, 456, 80, 40, "chip", { fill: "#3f7d4f" }); T(cx, 480, "M0 + Adalogger + Proto", "ts b", "middle").setAttribute("fill", "#fff");
+  // L1 cells
+  R(cx - 82, 586, 164, 4, "chip", { fill: "#9cc4a2" });
+  R(cx - 52, 540, 104, 44, "chip", { fill: "#e6b3b3" }); T(cx, 566, "2 × LS33600 (on side)", "ts b", "middle");
+  R(cx - 80, 552, 22, 30, "chip", { fill: "#fff" }); T(cx - 69, 571, "SHT", "ts", "middle");
+  R(cx + 58, 552, 22, 30, "chip", { fill: "#fff" }); T(cx + 69, 571, "D/F/P", "ts", "middle");
+  [-74, 74].forEach(dx => R(cx + dx - 3, 435, 6, 151, "chip", { fill: "#aaa" }));
+  leader(cx - 86, 432, cx - 210, 420, "L3 cable deck · 4 × Ø9 holes · desiccant", "end");
+  leader(cx - 40, 470, cx - 210, 470, "L2 stack tray · controller stack (detail B)", "end");
+  leader(cx - 52, 560, cx - 210, 520, "L1 cradle · cells, power bay, SHT40 (detail C)", "end");
+  leader(cx - 74, 520, cx - 210, 495, "3 pillars Ø7 at R47.5 · Ø3 pins", "end");
+  // dims
+  dimV(cx - 230, 372, 640, "6.5 in float", "l");
+  dimV(cx + 260, 560, 640, "draft 2.56 in", "r");
+  dimV(cx + 260, 372, 560, "freeboard 3.94 in", "r");
+  dimH(712, cx - rk, cx + rk, "keel Ø 7.09 in (R 90 mm)", false);
+  dimH(250, cx - rt, cx + rt, "float Ø 9.76 in (R 124 mm) · housing tube Ø 4.5 in OD × 5 in · 4.4 in ID", true);
+  leader(cx + 160, 420, cx + 215, 425, "printed PETG float · 992 g · no foam");
+  // cables down the channel to the pod, DS18B20 and hydrophone
+  W([[cx + 136, 335], [cx + 136, 660], [cx + 70, 760]], "cab"); W([[cx + 140, 335], [cx + 140, 660], [cx + 112, 780]], "cab");
+  W([[cx + 132, 335], [cx + 132, 660], [cx - 10, 830], [cx - 120, 880]], "cab");
+  // pod
+  R(cx + 20, 760, 100, 60, "card", { fill: "#e0e6ee" }); R(cx + 40, 820, 60, 40, "card", { fill: "#cde3f5" });
+  T(cx + 70, 790, "dry chamber", "ts", "middle"); T(cx + 70, 845, "flood chamber", "ts", "middle");
+  leader(cx + 120, 790, cx + 175, 770, "SENSOR POD ≈ 4 in below keel · 217 g est.");
+  leader(cx + 100, 845, cx + 175, 845, "turbidity tip, light-shielded (IF-2)");
+  R(cx + 108, 780, 8, 46, "chip", { fill: "#bbb" }); leader(cx + 116, 815, cx + 175, 815, "DS18B20 probe (IF-1)");
+  // hydrophone
+  E("ellipse", { cx: cx - 130, cy: 885, rx: 18, ry: 11, fill: "#555" }); leader(cx - 148, 885, cx - 200, 860, "H2dM hydrophone · 6 m cable (IF-3)", "end");
+  T(cx - 205, 873, "hangs clear of the hull (self-noise)", "ts", "end");
+  // mooring
+  W([[cx - 30, 640], [cx - 120, 740], [cx - 230, 830], [cx - 270, 930]], "moor");
+  R(cx - 290, 905, 40, 25, "", { fill: "#7a7a7a" }); T(cx - 270, 958, "existing authorized structure", "ts b", "middle");
+  leader(cx - 120, 740, cx - 205, 700, "3/8 in 3-strand nylon · scope TBD", "end");
+  T(cx - 30, 655, "mooring attachment TBD", "ts", "middle");
+  T(420, 950, "reef: never anchor on coral · depth 2–8 m", "ts b");
+  // balloons
+  B(cx - 104, 380, 29); B(cx + 160, 335, 30); B(cx - 230, 600, 33); B(cx + 250, 790, 35); B(cx - 290, 880, 36); B(cx + 60, 135, 12); B(cx - 100, 600, 32); B(20, 940, 38); B(620, 580, 34); B(620, 600, 39);
+  IF(cx + 60, 300, 4);
+}};
+
+/* ---------- M · Buoy section, as deployed ---------- */
+function lab(side, yl, x1, y1, html) {
+  const L = side === "L";
+  const f = H(L ? 6 : 552, yl - 8, 144, 46, `<div style="text-align:${L ? "right" : "left"}">${html}</div>`, "fo small");
+  E("polyline", { points: `${L ? 152 : 548},${yl} ${x1},${y1}`, class: "w mech", "stroke-width": .8 });
+  E("circle", { cx: x1, cy: y1, r: 2, fill: "#333" });
+  return f;
+}
+SEC.M = { w: 700, h: 990, title: "AS-DEPLOYED BUOY · SECTION", sub: "float v9 + flange housing + pod · schematic, NTS", draw() {
+  const cx = 350, top = 372, keel = 640, wl = 535, rt = 170, rk = 123;
+  // sky, water, seabed
+  R(0, 0, 700, wl, "", { fill: "#f7fbff" });
+  R(0, wl, 700, 400, "", { fill: "#dcecf8" });
+  R(0, 935, 700, 55, "", { fill: "url(#sand)" });
+  let d = `M0,${wl}`; for (let i = 0; i < 35; i++) d += ` q10,-5 20,0`;
+  E("path", { d, fill: "none", stroke: "#2b6cb0", "stroke-width": 1.8 });
+  T(160, wl + 16, "WL", "zone");
+  // whip + bulkhead
+  E("line", { x1: cx + 60, y1: 334, x2: cx + 60, y2: 120, stroke: "#222", "stroke-width": 4, "stroke-linecap": "round" });
+  R(cx + 53, 328, 14, 14, "chip", { fill: "#bbb" });
+  // lid cable interface + glands
+  E("path", { d: `M${cx - 74},350 Q${cx - 10},306 ${cx + 54},350 Z`, fill: "#d9dde3", stroke: "#333", "stroke-width": 1.2 });
+  [[-56, -1], [-36, -1], [12, 1]].forEach(([dx, s]) => R(cx + dx - 8, 334, 16, 10, "gland", { rx: 2 }));
+  // flange + lid with bolts
+  R(cx - 104, 350, 208, 10, "card", { fill: "#cfd6de" }); R(cx - 104, 360, 208, 10, "card", { fill: "#b9c3cd" });
+  for (let i = 0; i < 5; i++) R(cx - 96 + i * 46, 346, 5, 28, "chip", { fill: "#7d7d7d" });
+  // float body (printed PETG, hatched), socket, channel
+  E("path", { d: `M${cx - rt},${top} L${cx + rt},${top} C${cx + rt},${top + 150} ${cx + rk + 8},${keel - 30} ${cx + rk},${keel} L${cx - rk},${keel} C${cx - rk - 8},${keel - 30} ${cx - rt},${top + 150} ${cx - rt},${top} Z`, fill: "url(#hatch)", stroke: "#333", "stroke-width": 1.6 });
+  R(cx - 82, top, 164, 224, "", { fill: "#fbfbf7", stroke: "#333", "stroke-width": 1.2 });
+  R(cx + 118, top, 16, keel - top, "", { fill: "#fff", stroke: "#333", "stroke-width": 1 });
+  // housing tube
+  R(cx - 78, 370, 156, 222, "", { fill: "#fff", stroke: "#111", "stroke-width": 2.2 });
+  const z = mm => 590 - mm * 1.73;
+  R(cx - 74, z(4), 148, 4 * 1.73, "chip", { fill: "#9cc4a2" });
+  R(cx - 54, z(37.6), 108, 33.4 * 1.73, "chip", { fill: "#e6b3b3" }); T(cx, z(18), "2 × LS33600", "ts b", "middle");
+  R(cx - 74, z(18), 18, 20, "chip", { fill: "#e3eefc" }); R(cx + 56, z(18), 18, 20, "chip", { fill: "#fff4d6" });
+  R(cx - 74, z(48), 148, 3 * 1.73, "chip", { fill: "#9cc4a2" });
+  R(cx - 44, z(75), 88, 23 * 1.73, "chip", { fill: "#3f7d4f" }); T(cx, z(61), "M0 · Adalogger · Proto", "ts b", "middle").setAttribute("fill", "#fff");
+  R(cx - 74, z(93), 148, 3 * 1.73, "chip", { fill: "#9cc4a2" });
+  [-66, 66].forEach(dx => R(cx + dx - 3, z(93), 6, 89 * 1.73, "chip", { fill: "#aaa" }));
+  T(cx, z(112), "≈ 34 mm cable bend", "ts", "middle");
+  // cables: cap glands → sideways → down the channel → out of the keel
+  // one bundle: out of the cap glands, sideways, down the float's channel, splits below the keel
+  E("polyline", { points: `${cx - 56},339 ${cx + 126},339 ${cx + 126},${keel + 20}`, class: "w", style: "stroke:#444;stroke-width:5" });
+  W([[cx + 126, keel + 20], [cx + 90, 760]], "cab"); W([[cx + 126, keel + 20], [cx + 156, 778]], "cab");
+  W([[cx + 126, keel + 20], [cx - 20, 830], [cx - 120, 890]], "cab");
+  T(cx + 132, keel + 34, "bundle splits", "ts");
+  // sensor pod
+  R(cx + 40, 760, 100, 60, "card", { fill: "#e0e6ee" }); R(cx + 60, 820, 60, 40, "card", { fill: "#cde3f5" });
+  T(cx + 90, 794, "dry", "ts", "middle"); T(cx + 90, 845, "flood", "ts", "middle");
+  R(cx + 152, 778, 8, 48, "chip", { fill: "#bbb" });
+  // hydrophone
+  E("ellipse", { cx: cx - 132, cy: 895, rx: 18, ry: 11, fill: "#555" });
+  // mooring to an existing structure
+  W([[cx - 30, keel], [cx - 120, 740], [cx - 220, 840], [cx - 255, 925]], "moor");
+  R(cx - 285, 905, 48, 30, "", { fill: "#7a7a7a" });
+  // dimensions
+  dimV(cx + 186, top, wl, "", "r"); T(cx + 180, (top + wl) / 2, "freeboard 3.94 in", "dim", "middle", -90);
+  dimV(cx + 186, wl, keel, "", "r"); T(cx + 180, (wl + keel) / 2, "draft 2.56", "dim", "middle", -90);
+  E("line", { x1: cx - rt, y1: 262, x2: cx + rt, y2: 262, class: "dimln", "marker-start": "url(#ard)", "marker-end": "url(#ard)" });
+  T(cx + 40, 256, "float Ø 9.76 in (R 124 mm)", "dim", "end");
+  E("line", { x1: cx - rk, y1: 676, x2: cx + rk, y2: 676, class: "dimln", "marker-start": "url(#ard)", "marker-end": "url(#ard)" });
+  T(cx - 40, 690, "keel Ø 7.09 in (R 90 mm)", "dim", "middle");
+  // labels, left column
+  lab("L", 300, cx - 50, 340, "lid cable interface (R 2 in) · glands G1–G3 point sideways");
+  lab("L", 372, cx - 100, 356, "lid + flange Ø 6 in · 8 bolts at 45° · 316 SS + 3M 5200");
+  lab("L", 430, cx - 70, z(92), "L3 cable deck · 4 × Ø9 holes · desiccant pocket");
+  lab("L", 478, cx - 44, z(53), "L2 tray · controller stack (detail B)");
+  lab("L", 522, cx - 66, z(46), "3 pillars Ø7 at R47.5 · Ø3 pins");
+  lab("L", 568, cx - 54, z(24), "L1 cradle · D cells, power bay, SHT40 (detail C)");
+  lab("L", 730, cx - 140, 750, "3/8 in 3-strand nylon · scope TBD · attachment on the float TBD");
+  lab("L", 840, cx - 148, 890, "H2dM hydrophone · 6 m cable (IF-3) · hangs clear of the hull");
+  lab("L", 952, cx - 260, 920, "existing authorized structure (path B) · never on coral");
+  // labels, right column
+  lab("R", 150, cx + 60, 180, "915 MHz whip · SMA · ≤ 2.15 dBi · length TBD");
+  lab("R", 300, cx + 60, 335, "SMA bulkhead in the lid (IF-4) · FCC ID engraved");
+  lab("R", 372, cx + 100, 362, "AS568-247 face seal · fasteners outside the ring");
+  lab("R", 425, cx + 78, 425, "housing tube Ø 4.5 in OD × 5 in · 4.4 in ID");
+  lab("R", 478, cx + 150, 470, "printed PETG float v9 · 992 g · 6.5 in tall · no foam, no ballast");
+  lab("R", 590, cx + 126, 600, "cable guide channel through the float");
+  lab("R", 770, cx + 140, 790, "SENSOR POD ≈ 4 in below keel · 217 g (est.)");
+  lab("R", 822, cx + 160, 812, "DS18B20 probe (IF-1)");
+  lab("R", 868, cx + 120, 848, "turbidity tip, light-shielded (IF-2)");
+  T(cx, 980, "depth 2–8 m · not to scale below the keel", "ts b", "middle");
+  // balloons
+  B(cx - 86, 392, 29); B(cx - 92, 322, 30); B(cx - 150, 628, 33); B(cx + 172, 760, 35); B(cx - 240, 880, 36);
+  B(cx + 76, 140, 12); B(cx - 64, 610, 32); B(cx + 206, 960, 38); B(cx + 200, 655, 34); B(cx + 200, 520, 39);
+  IF(cx + 104, 300, 4);
+}};
+
+/* ---------- N · Housing packaging (option C) ---------- */
+SEC.N_old = { w: 620, h: 432, title: "ELECTRONICS HOUSING · PACKAGING OPTION C", sub: "side section, z above the housing floor, mm (2.6 px/mm)", draw() {
+  const s = 2.6, fx = 150, fy = 390, cx = fx + 145;
+  const z = v => fy - v * s;
+  R(fx - 6, z(127) - 4, 302, 127 * s + 10, "", { fill: "#fff", stroke: "#111", "stroke-width": 3 });
+  T(fx + 145, z(127) - 10, "inside Ø 111.8 mm (4.4 in) × 127 mm (5 in)", "ts b", "middle");
+  // pillars
+  [-123, 123].forEach(dx => R(cx + dx - 9, z(93), 18, 93 * s, "chip", { fill: "#d7d7d7" }));
+  // L1
+  R(fx + 10, z(4), 270, 4 * s, "chip", { fill: "#9cc4a2" });
+  R(cx - 80, z(37.6), 160, 33.4 * s, "chip", { fill: "#e6b3b3" }); T(cx, z(22), "2 × LS33600 · Ø33.4 × 61.6 · axis z 20.9", "ts b", "middle");
+  [[-26, -20], [20, 26]].forEach(([a, b]) => R(cx + a * s, z(16.9 + 4), (b - a) * s, 16.9 * s, "chip", { fill: "#b9d7be" }));
+  R(cx + (40.5 - 9) * s, z(11), 18 * s, 7 * s, "chip", { fill: "#fff4d6" }); T(cx + 40.5 * s, z(13), "power bay", "ts", "middle");
+  R(cx + (-40.5 - 9.5) * s, z(9), 19 * s, 5 * s, "chip", { fill: "#e3eefc" }); T(cx - 40.5 * s, z(11), "SHT40", "ts", "middle");
+  // L2
+  R(fx + 10, z(48), 270, 3 * s, "chip", { fill: "#9cc4a2" });
+  [[52, 60, "M0 RFM95"], [61, 69, "Adalogger"], [70, 75, "Proto"]].forEach(([a, b, n]) => { R(cx - 25.4 * s, z(b), 50.8 * s, (b - a) * s, "chip", { fill: "#3f7d4f" }); T(cx, z(b) + (b - a) * s / 2 + 3.5, n, "ts b", "middle").setAttribute("fill", "#fff"); });
+  R(cx - 18 * s - 7 * s, z(81), 14 * s, 6 * s, "chip", { fill: "#fff1dd" }); T(cx - 18 * s, z(82), "jack", "ts", "middle");
+  R(cx + 16 * s - 7.5 * s, z(85), 15 * s, 10 * s, "chip", { fill: "#fff1dd" }); T(cx + 16 * s, z(86), "terminal", "ts", "middle");
+  // L3
+  R(fx + 10, z(93), 270, 3 * s, "chip", { fill: "#9cc4a2" });
+  [-32, 32].forEach(dx => R(cx + dx * s - 4.5 * s, z(93), 9 * s, 3 * s, "chip", { fill: "#fff" }));
+  R(cx - 15 * s, z(101), 30 * s, 8 * s, "chip", { fill: "#f2f2f2" }); T(cx, z(103), "desiccant", "ts", "middle");
+  // cables up
+  [-32, 32].forEach(dx => W([[cx + dx * s, z(93)], [cx + dx * s, z(127)]], "cab"));
+  T(cx, z(114), "≈ 34 mm cable bend → glands in the cap", "ts", "middle");
+  // z scale
+  [0, 4, 38, 45, 48, 52, 60, 69, 75, 90, 93, 127].forEach(v => { E("line", { x1: fx - 40, y1: z(v), x2: fx - 30, y2: z(v), stroke: "#0b3d91" }); T(fx - 44, z(v) + 3.5, "z " + v, "dim", "end"); });
+  E("line", { x1: fx - 35, y1: z(0), x2: fx - 35, y2: z(127), class: "dimln" });
+  // labels right
+  const lab = [[19, "L1 cradle z 0–38 · 4 mm floor · saddle ribs 69 × 6 × 16.9 with Ø33.8 notches"], [62, "L2 tray z 45–76 · 3 mm · 4 × Ø6 × 4 standoffs"], [91, "L3 deck z 90–93 · 4 × Ø9 cable holes at (±32, ±12)"], [112, "93 of 127 mm used"]];
+  lab.forEach(([v, t2]) => T(fx + 310, z(v) + 3, t2, "ts"));
+  T(fx + 310, z(40), "pillars: 41 mm (L1–L2), 38 mm (L2–L3)", "ts");
+  T(fx + 310, z(30), "power bay at x 40.5: 2 diode pockets 15 × 8,", "ts"); T(fx + 310, z(30) + 12, "PTC 9 × 4, JST 10 × 7", "ts");
+  T(fx + 310, z(8), "SHT40 pocket at x −40.5 (19 × 27 × 5)", "ts");
+  B(600, 26, 31); B(600, 380, 32); B(600, 360, 28);
+}};
+
+SEC.N = { w: 700, h: 432, title: "ELECTRONICS HOUSING · PACKAGING OPTION C", sub: "side section · z above housing floor, mm", draw() {
+  const s = 2.6, fx = 112, fy = 400, cx = fx + 145;
+  const z = v => fy - v * s;
+  R(fx - 6, z(127) - 4, 302, 127 * s + 10, "", { fill: "#fff", stroke: "#111", "stroke-width": 3 });
+  T(fx + 145, z(127) - 10, "inside Ø 111.8 mm (4.4 in) × 127 mm (5 in)", "ts b", "middle");
+  [-123, 123].forEach(dx => R(cx + dx - 9, z(93), 18, 93 * s, "chip", { fill: "#d7d7d7" }));
+  R(fx + 10, z(4), 270, 4 * s, "chip", { fill: "#9cc4a2" });
+  R(cx - 80, z(37.6), 160, 33.4 * s, "chip", { fill: "#e6b3b3" });
+  [[-26, -20], [20, 26]].forEach(([a, b]) => R(cx + a * s, z(16.9 + 4), (b - a) * s, 16.9 * s, "chip", { fill: "#b9d7be" }));
+  T(cx, z(30), "2 × LS33600", "ts b", "middle"); T(cx, z(30) + 13, "Ø33.4 × 61.6 · axis z 20.9", "ts", "middle");
+  R(cx + (40.5 - 9) * s, z(11), 18 * s, 7 * s, "chip", { fill: "#fff4d6" }); T(cx + 40.5 * s, z(13), "power bay", "ts", "middle");
+  R(cx + (-40.5 - 9.5) * s, z(9), 19 * s, 5 * s, "chip", { fill: "#e3eefc" }); T(cx - 40.5 * s, z(11), "SHT40", "ts", "middle");
+  R(fx + 10, z(48), 270, 3 * s, "chip", { fill: "#9cc4a2" });
+  [[52, 60, "M0 RFM95"], [61, 69, "Adalogger"], [70, 75, "Proto"]].forEach(([a, b, n]) => { R(cx - 25.4 * s, z(b), 50.8 * s, (b - a) * s, "chip", { fill: "#3f7d4f" }); T(cx, z(b) + (b - a) * s / 2 + 3.5, n, "ts b", "middle").setAttribute("fill", "#fff"); });
+  R(cx - 18 * s - 7 * s, z(81), 14 * s, 6 * s, "chip", { fill: "#fff1dd" }); T(cx - 18 * s, z(82), "jack", "ts", "middle");
+  R(cx + 16 * s - 7.5 * s, z(85), 15 * s, 10 * s, "chip", { fill: "#fff1dd" }); T(cx + 16 * s, z(86), "terminal", "ts", "middle");
+  R(fx + 10, z(93), 270, 3 * s, "chip", { fill: "#9cc4a2" });
+  [-32, 32].forEach(dx => R(cx + dx * s - 4.5 * s, z(93), 9 * s, 3 * s, "chip", { fill: "#fff" }));
+  R(cx - 15 * s, z(101), 30 * s, 8 * s, "chip", { fill: "#f2f2f2" }); T(cx, z(103), "desiccant", "ts", "middle");
+  [-32, 32].forEach(dx => W([[cx + dx * s, z(93)], [cx + dx * s, z(127)]], "cab"));
+  T(cx, z(116), "≈ 34 mm cable bend → glands in the cap", "ts", "middle");
+  [0, 4, 38, 45, 48, 52, 60, 69, 75, 90, 93, 127].forEach(v => { E("line", { x1: fx - 40, y1: z(v), x2: fx - 30, y2: z(v), stroke: "#0b3d91" }); T(fx - 44, z(v) + 3.5, "z " + v, "dim", "end"); });
+  E("line", { x1: fx - 35, y1: z(0), x2: fx - 35, y2: z(127), class: "dimln" });
+  const lx = fx + 312, lw = 700 - lx - 6;
+  const lab2 = (v, html) => H(lx, z(v) - 8, lw, 46, html, "fo small");
+  lab2(112, "<b>93 of 127 mm used</b> · ≈ 34 mm left for cable bend under the cap");
+  lab2(95, "<b>L3 deck</b> z 90–93 · 3 mm · 4 × Ø9 cable holes at (±32, ±12) · desiccant pocket 30 × 14 × 8");
+  lab2(76, "<b>L2 tray</b> z 45–48 · 4 × Ø6 × 4 standoffs at (±22.9, ±8.9) · boards z 52–75 · jack and terminal on the Proto");
+  lab2(44, "<b>pillars</b> Ø7 at R47.5 (90°, 210°, 330°) · 41 mm L1–L2, 38 mm L2–L3 · Ø3 pins or M3 rod in Ø3.2 holes");
+  lab2(25, "<b>L1 cradle</b> z 0–38 · 4 mm floor · 2 saddle ribs 69 × 6 × 16.9 with Ø33.8 notches · cells along X at y ±17.2");
+  lab2(6, "<b>power bay</b> at x 40.5: diode pockets 15 × 8, PTC 9 × 4, JST 10 × 7 · <b>SHT40</b> pocket at x −40.5");
+  B(690, 16, 31); B(690, 410, 32); B(670, 410, 28);
+}};
+
+/* ---------- X · System at a glance (master only) ---------- */
+SEC.X = { w: 450, h: 262, title: "SYSTEM AT A GLANCE", sub: "", draw() {
+  H(4, 4, 442, 254, `<table>
+  <tr><td><b>Mission</b></td><td>nearshore reef monitoring buoy: water temperature, turbidity, reef sound</td></tr>
+  <tr><td><b>Sites</b></td><td>Hawaii for reef data (Kāneʻohe Yacht Club slip first) · Monterey Bay / Santa Cruz for survivability tests · 2–8 m</td></tr>
+  <tr><td><b>Cadence</b></td><td>sample every 30 min · 3 uplink slots a day · audio 3 × a day (planned)</td></tr>
+  <tr><td><b>Link</b></td><td>LoRa 915 MHz, BW500 SF12 CR4/8, +11 dBm · ≈ 2 km LOS (datasheet) · 30 B packet</td></tr>
+  <tr><td><b>Power</b></td><td>2 × D Li-SOCl₂, no solar · ≈ 0.56 mA average without audio · 12-month target</td></tr>
+  <tr><td><b>Body</b></td><td>printed PETG float, ≈ 2.9 kg, self-righting · sealed 4.4 × 5 in housing</td></tr>
+  <tr><td><b>Shore</b></td><td>ESP32-S3 shore station on wall power → WiFi push → dashboard (back end open) · 2 buoys planned</td></tr>
+  <tr><td><b>Dates</b></td><td>MVP 2026-12-04 · Hawaii deployment Mar–May 2027</td></tr>
+  <tr><td><b>Cost</b></td><td>prototype electronics ≈ $502–652 · system target &lt; $5,000</td></tr>
+  </table>`, "fo small");
+}};
+
+/* ---------- P · Seals, interfaces, materials ---------- */
+SEC.P = { w: 700, h: 250, title: "SEALS · PENETRATIONS · MATERIALS", sub: "mechanical/cad READMEs + facts.md", draw() {
+  H(4, 4, 692, 242, `<table>
+  <tr><th>Item</th><th>Spec</th><th>Status</th></tr>
+  <tr><td>Housing seal</td><td>AS568-247, ID 117.07 × CS 3.53 mm · groove ID 117.07 / OD 122.00, 4.93 wide × 2.65 deep → 25% squeeze, 75% fill · fasteners outside the ring</td><td><span class="st u">confirm ring (SCO-137)</span></td></tr>
+  <tr><td>Flange + lid</td><td>Ø6 in flange, 8 bolts at 45° (Ø0.22 / Ø0.13 in holes) · tube Ø4.5 in OD × 5 in · R2 in curved cable interface · FCC ID engraved</td><td><span class="st u">DFM drawing, not released</span></td></tr>
+  <tr><td>Pod seal</td><td>Everbilt 2-5/8 OD × 3/16 in CS · groove Ø2.20 × Ø2.74 in, ≈ 28% squeeze · 6 bolts on Ø3.10 in · leads potted in epoxy with an anti-wick boss</td><td><span class="st x">leaked twice; re-test with real ring</span></td></tr>
+  <tr><td>Glands</td><td>lab stock, sized per cable · 3 in the cap (+ SMA bulkhead)</td><td><span class="st u">positions not drawn</span></td></tr>
+  <tr><td>Hardware</td><td>316 stainless · 3M 5200 over bolt heads and joints</td><td><span class="st v">decided 10-16</span></td></tr>
+  <tr><td>Body + coating</td><td>PETG (ASA for scale-up) · Sea Hawk Smart Solution antifouling, copper-free</td><td><span class="st v">decided</span></td></tr>
+  <tr><td>Pressure</td><td>5 m water-equivalent (50.3 kPa) before any deployment</td><td><span class="st x">not tested</span></td></tr>
+  </table>`, "fo small");
+  B(690, 238, 37);
+}};
+
+/* ---------- Q · Mass, buoyancy, stability ---------- */
+SEC.Q = { w: 700, h: 230, title: "MASS · BUOYANCY · STABILITY", sub: "printed-float tip explorer, v9 re-run 2026-10-16", draw() {
+  H(4, 4, 300, 222, `<table>
+  <tr><th>Quantity</th><th class="n">Value</th></tr>
+  <tr><td>Total mass (estimate)</td><td class="n">2.87 kg</td></tr>
+  <tr><td>Printed float v9</td><td class="n">992 g</td></tr>
+  <tr><td>Draft / freeboard</td><td class="n">2.56 / 3.94 in</td></tr>
+  <tr><td>KG / GM</td><td class="n">2.26 / 1.47 in</td></tr>
+  <tr><td>Max righting arm</td><td class="n">40 mm at ≈ 70°</td></tr>
+  <tr><td>GZ at 178° (v8)</td><td class="n">≈ 1 mm</td></tr>
+  <tr><td>Float envelope</td><td class="n">7.0 L · 6.5 in tall</td></tr>
+  <tr><td>+2 kg payload</td><td class="n">2.1 in freeboard left</td></tr>
+  </table>`, "fo small");
+  H(312, 4, 384, 222, `<p><b>Mass inputs (estimates):</b> battery 250 g at 25 mm · boards at 80–90 mm · antenna at 150 mm · epoxy/coating 330 g · mooring hardware 220 g at the keel · pod 217 g + hydrophone 150 g, 4 in below keel.</p><p><b>No ballast, no lead, no foam.</b> 500 g at the keel only lifts GZ(178°) from 1.1 to 1.5 mm, so hull shape governs. Pod depth moves GM: at the keel 1.20 in, 13.5 in below 1.96 in.</p><p><b>Not covered:</b> mooring heel, wave loads, chamber flooding, fouling mass. Physical tilt test from 180° (SCO-171).</p>`, "fo small");
+  B(690, 14, 33); B(690, 216, 34);
+}};
+
+/* ---------- R · Build + test workflow ---------- */
+SEC.R = { w: 1000, h: 226, title: "BUILD, TEST + DEPLOY WORKFLOW", sub: "build-and-test plan stages · each stage's PASS is the next stage's precondition", draw() {
+  const st = [
+    ["0", "Software, no hardware", "all tests + target build", "v"],
+    ["1", "First readings on USB", "boot line all ok · temp ±0.5 °C · milk → count falls", "u"],
+    ["2", "Measure power", "sleep ≤ 500 µA · 13–15 mAh/day", "u"],
+    ["3", "Sensor switching", "rail 3.3 V on / 0 V asleep · dip < 100 mV", "u"],
+    ["4", "Link buoy → shore", "4a bench < 1% loss · 4b S3 · 4c 1 row per slot · 4d ≥ 500 m", "u"],
+    ["5", "24 h under firmware", "48 samples · 3 slots · WDT recovers", "u"],
+    ["6", "On the D cells", "charger off · 0 µA into cells · 7 days", "u"],
+    ["7", "Hydrophone", "1-min clips · ≤ 76 mA", "u"],
+    ["8", "Sealed housing", "7–14 days · ≥ 95% packets · RH flat", "u"],
+    ["9", "Deploy", "tethered · 2–8 m · MVP 12-04", "u"]];
+  const w = 96, y = 28;
+  st.forEach(([n, a, b, s], i) => {
+    const x = 6 + i * 99;
+    E("polygon", { points: `${x},${y} ${x + w - 10},${y} ${x + w},${y + 22} ${x + w - 10},${y + 44} ${x},${y + 44} ${x + 10},${y + 22}`, fill: s === "v" ? "#c8ecd0" : "#fff0b8", stroke: "#333", "stroke-width": 1 });
+    T(x + w / 2, y + 18, "STAGE " + n, "ts b", "middle"); T(x + w / 2, y + 32, s === "v" ? "VERIFIED 10-19" : "not run", "ts", "middle");
+    H(x, y + 48, w - 4, 98, `<b>${a}</b><br>${b}`, "fo small");
+  });
+  T(6, 186, "MECHANICAL TRACK (in parallel)", "ts b");
+  const mt = ["print float v9 + housing", "seal coupon: AS568-247", "5 m pressure test", "tilt test from 180° (SCO-171)", "antifouling · 316 SS · 5200", "tether to existing structure"];
+  mt.forEach((s, i) => { const x = 6 + i * 165; R(x, 194, 158, 26, "chip", { fill: "#e2f1e2" }); H(x + 3, 198, 154, 22, s, "fo small"); if (i < mt.length - 1) W([[x + 158, 207], [x + 165, 207]], "data", { arrow: "end" }); });
+  T(994, 186, "owners: ECE Isabella · CSEN David · GENG John Ryan", "ts", "end");
+  B(990, 30, 43); B(990, 60, 38);
+}};
+
+/* ---------- S · Interface register (master + all detail sheets) ---------- */
+SEC.S = { w: 1000, h: 286, title: "INTERFACE REGISTER · HOW THE THREE VIEWS CONNECT", sub: "each IF tag appears on the mechanical, electrical and firmware drawings", draw() {
+  H(4, 4, 992, 278, `<table>
+  <tr><th>IF</th><th>Mechanical (where it physically is)</th><th>Electrical (part → pin)</th><th>Firmware / data (what it becomes)</th><th>Status</th></tr>
+  <tr><td><b>IF-1</b></td><td>DS18B20 probe at the pod · cable up the float channel · gland G1 in the cap</td><td>T1 screw terminal → <b>D12</b> (1-Wire), R1 4.7 kΩ</td><td>temp_c (CSV) · temp_c_centi (packet) · TEMP_TIMEOUT</td><td><span class="st u">parts in hand</span></td></tr>
+  <tr><td><b>IF-2</b></td><td>Turbidity tip in the pod flood chamber · potted leads · gland G2</td><td>Grove board → <b>A1</b>; power via Q1 (<b>D11</b> LOW)</td><td>turbidity_adc (packet) · turbidity_v (SD) · NTU later</td><td><span class="st u">board location open</span></td></tr>
+  <tr><td><b>IF-3</b></td><td>H2dM on 6 m cable, below the pod · gland G3</td><td>J1 jack → preamp → <b>A2</b>; power via Q2 (<b>A3</b> LOW)</td><td>/AUDIO/YYYYMMDD/HHMMSSZ.WAV on SD · audio_present flag · never over LoRa</td><td><span class="st x">not bought · no code</span></td></tr>
+  <tr><td><b>IF-4</b></td><td>SMA bulkhead in the lid · whip above the waterline</td><td>RFM95 uFL → 851 → SMA, ≤ 2.15 dBi, +11 dBm</td><td>30 B packet · 3 slots × 3 copies · OTA downlink planned</td><td><span class="st u">regs unverified</span></td></tr>
+  <tr><td><b>IF-5</b></td><td>2 D cells on their side in the L1 cradle, vents away</td><td>diodes → PTC → JST → <b>BAT</b>; ÷2 → <b>A7</b></td><td>battery_mv → power mode NORMAL / CONSERVE / CRITICAL</td><td><span class="st x">cells not bought</span></td></tr>
+  <tr><td><b>IF-6</b></td><td>SHT40 in the L1 floor pocket, sealed bay</td><td>STEMMA QT → I²C <b>0x44</b></td><td>internal_humidity_pct (future column) → leak alarm</td><td><span class="st x">no firmware</span></td></tr>
+  <tr><td><b>IF-7</b></td><td>microSD in the Adalogger, reached by opening the lid</td><td>SPI, CS <b>D10</b></td><td>/DATA/YYYYMMDD.CSV, the complete record → sd_import on retrieval</td><td><span class="st u">fixed in code (G4)</span></td></tr>
+  <tr><td><b>IF-8</b></td><td>Shore station antenna at the shore site (wall power)</td><td>ESP32-S3 + RFM95W, erratum applied</td><td>decode + dedupe → WiFi push → dashboard (back end open)</td><td><span class="st x">no S3 firmware</span></td></tr>
+  </table>`, "fo");
+}};
+
+/* ======================================================================
+   SHEET FURNITURE
+   ====================================================================== */
+function sectionFrame(id, s) {
+  const S = SEC[id];
+  R(0, -30, S.w, S.h + 30, "sec-frame");
+  E("rect", { x: 0, y: -30, width: 26, height: 24, class: "sec-tab" });
+  T(13, -12.5, id, "sec-letter", "middle");
+  T(34, -12, S.title, "sec-title");
+  if (S.sub && 34 + S.title.length * 10 + S.sub.length * 5.6 + 24 < S.w) T(S.w - 6, -12, S.sub, "sec-sub", "end");
+}
+function place(svg, id, x, y, s) {
+  const g = E("g", { transform: `translate(${x},${y + 30 * s}) scale(${s})` }, svg);
+  const prev = cur; cur = g;
+  sectionFrame(id, s);
+  SEC[id].draw();
+  cur = prev;
+}
+function notesBlock(svg, x, y, w, h, cols, nums, fs, title) {
+  const prev = cur; cur = svg;
+  R(x, y, w, h, "sec-frame");
+  T(x + 8, y + 18, title || "NOTES · numbers match the red balloons on every sheet", "sec-title");
+  const html = nums.map(n => `<div><span class="nn">${n}</span>${NOTES[n]}</div>`).join("");
+  H(x + 8, y + 26, w - 16, h - 32, html, "notes").firstChild.style.cssText = `column-count:${cols};font-size:${fs || 10.5}px`;
+  cur = prev;
+}
+function legend(svg, x, y, w, h, fs) {
+  const prev = cur; cur = E("g", { transform: `translate(${x},${y})` }, svg);
+  R(0, 0, w, h, "sec-frame"); T(8, 18, "LEGEND", "sec-title");
+  const nets = [["bat", "battery 3.6 V"], ["v33", "3.3 V rail / switched rails"], ["gnd", "ground"], ["ow", "1-Wire data"], ["ana", "analog signal"], ["i2c", "I²C"], ["gpio", "GPIO on/off control"], ["rf", "RF / LoRa"], ["data", "data / firmware flow"], ["data2", "planned or physical-retrieval path"], ["cab", "cable (mechanical view)"], ["moor", "mooring line"]];
+  nets.forEach(([n, s], i) => { const yy = 36 + i * 17; W([[10, yy], [50, yy]], n); T(58, yy + 4, s, "ts"); });
+  const two = w >= 500, ox = two ? w / 2 : 0;
+  const y2 = two ? 36 : 36 + nets.length * 17 + 6;
+  B(ox + 20, y2, 0); usedNotes && usedNotes.delete(0); T(ox + 34, y2 + 4, "note number (see NOTES)", "ts");
+  IF(ox + 24, y2 + 22, "n"); T(ox + 48, y2 + 26, "interface tag (see register S)", "ts");
+  T(ox + 10, y2 + 48, "†  proposed value, confirm on the bench", "ts");
+  const cy = y2 + 64;
+  [["v", "VERIFIED"], ["u", "UNVERIFIED / OPEN"], ["x", "GAP · NOT BUILT"]].forEach(([c, s], i) => { R(ox + 10, cy + i * 16 - 10, 14, 12, "chip", { fill: c === "v" ? "#c8ecd0" : c === "u" ? "#fff0b8" : "#ffc9c9" }); T(ox + 30, cy + i * 16, s, "ts"); });
+  const ky = cy + 56;
+  [["hw", "electrical part"], ["pw", "power"], ["fw", "firmware"], ["sh", "shore station"], ["da", "data / analytics"], ["me", "mechanical"]].forEach(([k, s], i) => { R(ox + 10 + (i % 2) * 120, ky + Math.floor(i / 2) * 16 - 10, 14, 12, "chip k-" + k); T(ox + 30 + (i % 2) * 120, ky + Math.floor(i / 2) * 16, s, "ts"); });
+  cur = prev;
+}
+function titleBlock(svg, x, y, w, h, sheet) {
+  const prev = cur; cur = svg;
+  H(x, y, w, h, `<table>
+   <tr><td colspan="2" style="background:#111;color:#fff"><span class="lab" style="color:#bbb">PROJECT</span><span class="val" style="font-size:15px">S.C.O.U.T. · Santa Clara Oceanic Utilities Transmitter</span><br>Nearshore reef monitoring buoy · Santa Clara University Senior Design 2026–27</td></tr>
+   <tr><td colspan="2"><span class="lab">TITLE</span><span class="val" style="font-size:14px">${sheet.title}</span></td></tr>
+   <tr><td><span class="lab">DRAWING NO.</span><span class="val">SCOUT-S-000</span></td><td><span class="lab">SHEET</span><span class="val">${sheet.num}</span></td></tr>
+   <tr><td><span class="lab">REVISION</span><span class="val">A (draft) · first issue</span></td><td><span class="lab">DATE</span><span class="val">2026-10-19</span></td></tr>
+   <tr><td><span class="lab">DRAWN</span><span class="val">I. Rodriguez (ECEN)</span></td><td><span class="lab">CHECKED</span><span class="val">— (S. Krishnan to review)</span></td></tr>
+   <tr><td><span class="lab">MECH SOURCE</span>J. R. Myrdal (GENG) CAD</td><td><span class="lab">FW / SHORE SOURCE</span>D. Chousal (CSEN) repo</td></tr>
+   <tr><td><span class="lab">PAPER · SCALE</span>${sheet.paper} · NTS</td><td><span class="lab">SUPERSEDES</span>nothing · companion to SCOUT-E-100 Rev B</td></tr>
+  </table>`, "tb");
+  cur = prev;
+}
+function header(svg, w, title, sub, fs) {
+  const prev = cur; cur = svg;
+  T(40, 40 * fs, "S.C.O.U.T. · SYSTEM BLOCK DIAGRAM · SCOUT-S-000", "big-sub").setAttribute("style", `font-size:${16 * fs}px;font-weight:700;letter-spacing:2px`);
+  T(40, 78 * fs, title, "big-title").setAttribute("style", `font-size:${32 * fs}px`);
+  T(w - 40, 40 * fs, sub, "big-sub", "end").setAttribute("style", `font-size:${14 * fs}px`);
+  const t = T(w - 40, 64 * fs, "PRELIMINARY · NOT FOR FINAL BUILD", "big-sub", "end");
+  t.setAttribute("style", `font-size:${14 * fs}px;font-weight:800;fill:#b91c1c;letter-spacing:1px`);
+  cur = prev;
+}
+
+/* ======================================================================
+   SHEETS
+   ====================================================================== */
+const SHEETS = [
+  { cls: "master", W: 3456, H: 2304, num: "1 of 4 (master)", paper: "36 × 24 in (ARCH D)",
+    title: "Integrated system: mechanical · electrical · firmware · data",
+    sub: "Everything on sheets 2–4 is on this sheet, with the same letters and note numbers",
+    hs: 1.25,
+    place: [["M", 36, 140, 1.0], ["N", 36, 1170, 1.0], ["P", 36, 1642, 1.0], ["Q", 36, 1932, 1.0],
+            ["A", 756, 140, 1.0], ["B", 756, 892, 1.0], ["C", 1216, 892, 1.0], ["X", 756, 1217, 1.0], ["D", 1216, 1172, 1.0],
+            ["S", 756, 1522, 1.0],
+            ["F", 2026, 140, 1.0], ["J", 2766, 140, 1.0], ["L", 2766, 312, 1.0],
+            ["G", 2026, 658, 1.0], ["H", 2026, 926, 1.0], ["K", 2026, 1134, 1.0], ["R", 2026, 1496, 1.0],
+            ["E", 3036, 1098, 0.86]],
+    notes: [756, 1842, 2244, 438, 5, 8.9], legend: [3036, 658, 384, 430], tb: [3010, 1950, 410, 320] },
+  { cls: "detail", W: 2112, H: 1632, num: "2 of 4", paper: "22 × 17 in (ANSI C)",
+    title: "Electrical hardware", sub: "zoom of sheet 1 · sections A–E · same note numbers", hs: 0.85,
+    place: [["A", 30, 110, 1.04], ["E", 1350, 110, 1.0], ["C", 1350, 750, 1.0], ["B", 30, 892, 1.0], ["D", 490, 892, 1.0]],
+    notes: [30, 1242, 1610, 360, 4, 9.8], legend: [1350, 480, 720, 260], tb: [1660, 1290, 422, 312] },
+  { cls: "detail", W: 2112, H: 1632, num: "3 of 4", paper: "22 × 17 in (ANSI C)",
+    title: "Firmware, radio link and data", sub: "zoom of sheet 1 · sections F–L, R · same note numbers", hs: 0.85,
+    place: [["F", 30, 110, 1.0], ["J", 780, 110, 1.0], ["L", 780, 282, 1.0], ["K", 1270, 110, 0.8],
+            ["G", 30, 628, 1.0], ["H", 30, 896, 1.0], ["R", 1050, 672, 1.0]],
+    notes: [30, 1104, 1610, 496, 4, 9.8], legend: [1270, 402, 812, 260], tb: [1660, 1290, 422, 312] },
+  { cls: "detail", W: 2112, H: 1632, num: "4 of 4", paper: "22 × 17 in (ANSI C)",
+    title: "Mechanical and integration", sub: "zoom of sheet 1 · sections M, N, P, Q, S, R · same note numbers", hs: 0.85,
+    place: [["M", 30, 110, 1.2], ["N", 890, 110, 1.0], ["P", 890, 582, 1.0], ["Q", 890, 872, 1.0],
+            ["S", 890, 1142, 0.7], ["R", 30, 1366, 0.9]],
+    notes: [1600, 550, 482, 730, 1, 9.6], legend: [1600, 110, 482, 430], tb: [1660, 1290, 422, 312] }
+];
+
+const host = document.getElementById("sheets");
+SHEETS.forEach((sh, i) => {
+  const div = document.createElement("div");
+  div.className = "sheet " + sh.cls;
+  host.appendChild(div);
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${sh.W} ${sh.H}`);
+  svg.setAttribute("xmlns", SVGNS);
+  div.appendChild(svg);
+  cur = svg;
+  usedNotes = new Set();
+  R(12, 12, sh.W - 24, sh.H - 24, "frame"); R(18, 18, sh.W - 36, sh.H - 36, "frame2");
+  header(svg, sh.W, sh.title, sh.sub, sh.hs);
+  sh.place.forEach(([id, x, y, s]) => place(svg, id, x, y, s));
+  if (sh.legend && sh.legend[2]) legend(svg, ...sh.legend);
+  let nums = [...usedNotes].sort((a, b) => a - b);
+  if (i === 0) nums = Object.keys(NOTES).map(Number);
+  if (!nums.includes(46)) nums.push(46);
+  const [nx, ny, nw, nh, nc, nf] = sh.notes;
+  notesBlock(svg, nx, ny, nw, nh, nc, nums, nf, i === 0 ? null : "NOTES · same numbers as sheet 1");
+  titleBlock(svg, ...sh.tb, sh);
+});
+</script>
+</body>
+</html>

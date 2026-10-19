@@ -7,10 +7,11 @@
 > entry names the target page, what changed, and — where the content needs reshaping for
 > Notion — the paste-ready text.
 >
-> Part of the [Knowledge Hub](README.md). **As of 2026-10-15 — eleven entries pending**
+> Part of the [Knowledge Hub](README.md). **As of 2026-10-19 — twelve entries pending**
 > (10 wedge v5, 11 decision sweep, 12 CAD updates, 13 site dramatic pass, 14 lean wedge bottom,
 > 15 through-bolted mooring bracket + full assembly, 16 the 2026-09-24 meeting, 17 electronics
-> housing packaging page, 18 the 2026-10-05 power budget, 19 the electronics build plan, 20 the electronics drawing set).
+> housing packaging page, 18 the 2026-10-05 power budget, 19 the electronics build plan, 20 the
+> electronics drawing set, 21 the system block diagram).
 >
 > ⛔ **Notion is currently write-blocked — the workspace has used all of its free-plan blocks.**
 > Confirmed 2026-09-24: every write is refused, including an in-place edit of an existing table
@@ -47,6 +48,15 @@ full rule, including why a push through the Notion **API** needs the opposite tr
 > to the wrong workspace and could only queue rather than push. **If a session can reach the
 > S.C.O.U.T. workspace, push directly and log it in Done — do not add a queue entry**, or the
 > queue becomes a backlog that a later session has to discover rather than a handoff.
+
+### 21 · System Block Diagram SCOUT-S-000 · queued 2026-10-19
+
+- **Notion pages** — Engineering → new page *System Block Diagram* (attach the PDF); Research →
+  *Open Questions* (three new rows).
+- **Source** — [`../engineering/system-block-diagram.md`](../engineering/system-block-diagram.md),
+  [`research/open-questions.md`](research/open-questions.md).
+- **What changed** — whole-system drawing (master + three zoom sheets); four inconsistencies
+  surfaced as open questions. Still write-blocked (free-block limit), same as entries 16–20.
 
 ### 20 · Electronics Drawing Set + hydrophone decision + purchase log · queued 2026-10-12
 
