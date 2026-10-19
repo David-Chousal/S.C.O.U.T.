@@ -29,11 +29,20 @@
 
 ```
 /DATA/
-  SCOUT-01_20260814.csv     one file per UTC day: <buoy_id>_<YYYYMMDD>.csv
-  SCOUT-01_20260815.csv
+  20260814.CSV              one file per UTC day: YYYYMMDD.CSV
+  20260815.CSV
 /AUDIO/
-  SCOUT-01_20260814T003000Z.wav   audio referenced by the audio_file column
+  20260814/
+    003000Z.WAV             audio referenced by the audio_file column (20260814/003000Z.WAV)
 ```
+
+**Names are FAT 8.3** (at most 8 characters, a dot, 3 characters), because the buoy's Arduino SD
+library cannot write long names; the buoy writes them in upper case. The `buoy_id` is in every
+row, so it is left out of the file name. On the **shore** side the store and the card importer
+name the same daily file `<buoy_id>_<YYYYMMDD>.csv` (e.g. `SCOUT-01_20260814.csv`), taking the
+`buoy_id` from the rows. The card importer matches `.csv` in any case. Changed 2026-10-19
+([SCO-202](https://linear.app/scout1/issue/SCO-202)); the earlier `SCOUT-01_20260814.csv` card
+name could not be written by the buoy.
 
 Each daily CSV starts with the header row below.
 
@@ -51,7 +60,7 @@ Each daily CSV starts with the header row below.
 | 8 | `turbidity_ntu` | float | NTU | `` | **Computed downstream, never on the buoy** ([SCO-13](https://linear.app/scout1/issue/SCO-13)). Populated by the analytics pipeline only once a calibration curve exists ([SCO-12](https://linear.app/scout1/issue/SCO-12)); empty until then. |
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
 | 10 | `uptime_s` | uint32 | s | `172800` | Seconds since boot (State-of-Health). |
-| 11 | `audio_file` | string | — | `SCOUT-01_20260814T003000Z.wav` | Filename in `/AUDIO/` if a recording was taken this cycle, else empty. |
+| 11 | `audio_file` | string | — | `20260814/003000Z.WAV` | Path under `/AUDIO/` if a recording was taken this cycle, else empty. |
 | 12 | `flags` | string | — | `TEMP_TIMEOUT` | `|`-separated per-cycle event codes; empty when clean. |
 | 13 | `soh` | string | — | `WATCHDOG_RESET` | `|`-separated device State-of-Health codes (set at boot); empty when healthy. |
 | 14 | `fw_version` | string | — | `v0.1.0` | Firmware tag that wrote the row. |
@@ -131,7 +140,7 @@ needed; keep them SCREAMING_SNAKE_CASE and documented here.
 schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version
 1,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0
 1,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0
-1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,SCOUT-01_20260814T060000Z.wav,,,v0.1.0
+1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,20260814/060000Z.WAV,,,v0.1.0
 1,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX,WATCHDOG_RESET,v0.1.0
 ```
 

@@ -20,7 +20,12 @@ public:
 
     uint32_t nowEpoch() { return rtc_.now().unixtime(); }
 
-    void setTime(uint32_t epoch) { rtc_.adjust(DateTime((uint32_t)epoch)); }
+    /* Writes the time, clears the oscillator-stop flag and enables battery switchover (RTClib's
+     * adjust), then makes sure the oscillator runs. After this, lostPower() is false. */
+    void setTime(uint32_t epoch) {
+        rtc_.adjust(DateTime((uint32_t)epoch));
+        rtc_.start();
+    }
 
 private:
     RTC_PCF8523 rtc_;

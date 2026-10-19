@@ -63,4 +63,6 @@ jobs:
       # reached main unnoticed. Build the real target so that cannot happen again.
       - name: Build for the Feather M0 target
         working-directory: firmware
-        run: pio run -e feather_m0
+        # Also the bench build and the bench receiver (SCO-155): both are what the first
+        # hardware tests flash, so a break there should fail CI, not the bench session.
+        run: pio run -e feather_m0 -e feather_m0_bench -e feather_m0_rx

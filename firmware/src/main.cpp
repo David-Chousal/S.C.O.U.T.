@@ -26,6 +26,7 @@
 #include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
+#include "scout_timeset.h"
 
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
@@ -147,6 +148,48 @@ static uint32_t sleep_until(uint32_t target) {
     }
 }
 
+// Bench clock set (SCO-201). Nothing else gives the buoy the real time, and the transmit slots
+// are UTC times of day. Waits briefly for a USB host; on battery none appears and this returns
+// after the window. firmware/tools/set_rtc.py sends the command.
+static bool read_line(char *line, size_t cap, uint32_t deadline_ms) {
+    size_t len = 0;
+    while ((int32_t)(deadline_ms - millis()) > 0) {
+        if (!Serial.available()) {
+            delay(10);
+            continue;
+        }
+        char c = (char)Serial.read();
+        if (c == '\n' || len + 1 >= cap) {
+            line[len] = '\0';
+            return true;
+        }
+        line[len++] = c;
+    }
+    return false;
+}
+
+static void accept_time_command() {
+    uint32_t deadline = millis() + TIME_SET_WINDOW_MS;
+    while (!Serial && (int32_t)(deadline - millis()) > 0) {
+        delay(10);
+    }
+    if (!Serial || !g_rtc_ok) {
+        return;
+    }
+    Serial.println("time: send T<unix-epoch> (UTC) now to set the clock");
+    char line[24];
+    while (read_line(line, sizeof(line), deadline)) {
+        uint32_t epoch = 0;
+        if (scout_parse_time_command(line, MIN_VALID_EPOCH, &epoch)) {
+            g_rtc.setTime(epoch);
+            Serial.print("time: set to ");
+            Serial.println(epoch);
+            return;
+        }
+        Serial.println("time: ignored, expected T<unix-epoch>");
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -182,6 +225,7 @@ void setup() {
     g_turbidity.begin();
 
     g_rtc_ok = g_rtc.begin();
+    accept_time_command();
     uint16_t startup_flags = 0;
     if (!g_rtc_ok || g_rtc.lostPower()) {
         startup_flags |= SCOUT_FLAG_RTC_LOST;
@@ -206,6 +250,9 @@ void setup() {
     Serial.print(g_lora_ok ? "ok" : "FAIL");
     Serial.print(warm_start ? " start=warm resume_seq=" : " start=cold resume_seq=");
     Serial.println(g_state.record_seq);
+    if (TX_EVERY_SAMPLE) {
+        Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
+    }
     (void)startup_flags;  // folded into the first record below
 }
 
@@ -266,10 +313,12 @@ static void sample_and_log() {
     } else {
         snprintf(timestamp, sizeof(timestamp), "1970-01-01T00:00:00Z");
     }
-    char audio_file[20] = "";
+    // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
+    char audio_file[32] = "";
     if (audio_present) {
-        snprintf(audio_file, sizeof(audio_file), "%02u%02u%02uZ.wav",
-                 (unsigned)((now % 86400) / 3600), (unsigned)((now % 3600) / 60), 0u);
+        DateTime dt((uint32_t)now);
+        snprintf(audio_file, sizeof(audio_file), "%04u%02u%02u/%02u%02u%02uZ.WAV", dt.year(),
+                 dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
     }
 
     char flag_str[80];
@@ -380,10 +429,14 @@ void loop() {
     Watchdog.enable(WDT_TIMEOUT_MS);
     sensor_gates_off();  // re-asserted every wake, whatever state a glitch left them in
 
-    if (g_first_cycle || scout_is_sample_time(event, SAMPLE_INTERVAL_S)) {
+    bool sampled = g_first_cycle || scout_is_sample_time(event, SAMPLE_INTERVAL_S);
+    if (sampled) {
         sample_and_log();
     }
     int slot = scout_tx_slot_index(event, TX_SLOTS_SOD, TX_SLOT_COUNT);
+    if (TX_EVERY_SAMPLE && sampled) {
+        slot = 0;  // bench build only: every sample is treated as a transmit slot
+    }
     if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
         transmit_last_reading();
     }

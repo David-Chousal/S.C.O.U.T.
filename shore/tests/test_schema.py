@@ -36,7 +36,7 @@ class SchemaTest(unittest.TestCase):
 
     def test_audio_filename_populated_when_present(self):
         row = reading_to_row(_reading(audio_present=True))
-        self.assertEqual(row["audio_file"], "SCOUT-01_20260814T003000Z.wav")
+        self.assertEqual(row["audio_file"], "20260814/003000Z.WAV")
 
     def test_flags_are_pipe_joined_and_sorted(self):
         row = reading_to_row(_reading(flags=frozenset({"TEMP_TIMEOUT", "SD_RETRY"})))

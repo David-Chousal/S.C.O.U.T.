@@ -47,9 +47,11 @@ def buoy_label(buoy_id: int) -> str:
 
 
 def audio_filename(reading: Reading) -> str:
-    """Reconstruct the audio filename for a cycle, matching data-schema.md's /AUDIO/ naming."""
-    stamp = reading.timestamp.strftime("%Y%m%dT%H%M%SZ")
-    return f"{buoy_label(reading.buoy_id)}_{stamp}.wav"
+    """Reconstruct the audio path for a cycle, relative to /AUDIO/, as the buoy names it.
+
+    One folder per UTC day keeps the names FAT 8.3-safe (data-schema.md, SCO-202).
+    """
+    return reading.timestamp.strftime("%Y%m%d/%H%M%SZ.WAV")
 
 
 def turbidity_volts(adc: int) -> float:

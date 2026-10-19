@@ -60,6 +60,17 @@ class SdImportTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
+    def test_files_named_the_way_the_firmware_writes_them_are_found(self) -> None:
+        """The buoy writes 8.3 names, upper case: /DATA/YYYYMMDD.CSV, no buoy_id in the name
+        (SCO-202). A case-sensitive *.csv match found none of them, so a card merged nothing."""
+        (self.card / "DATA").mkdir(parents=True)
+        card_file = _write(self.card / "DATA", "20260814", [_row(1), _row(2)])
+        card_file.rename(card_file.with_name("20260814.CSV"))
+        result = import_card(self.card, self.shore)
+        self.assertEqual(result.cards_read, 1)
+        self.assertEqual(result.added, 2)
+        self.assertTrue((self.shore / "SCOUT-01_20260814.csv").exists())
+
     def test_readings_shore_never_received_are_recovered(self) -> None:
         """The entire point: fill the gaps LoRa lost."""
         _write(self.shore, "20260814", [_row(1), _row(3)])
