@@ -38,9 +38,9 @@ being rediscovered after a disappointing range test.
   ([Rev 7 PDF](../../../../hardware/datasheets/semtech-sx1276-77-78-79-lora-transceiver.pdf), checked
   2026-10-16), so the values above still come only from the errata and Semtech's driver. The
   datasheet's own reset values for them disagree between tables (0x00 vs 0x20); don't rely on them.
-  RadioHead's `RH_RF95` does not expose `spiWrite` publicly, so
-  applying them from a sketch needs either a subclass or a different driver — worth knowing before
-  the shore receiver is designed around RadioHead.
+  **Writing them from RadioHead is direct:** `spiWrite` is public on `RHSPIDriver`, which `RH_RF95`
+  inherits (`RHSPIDriver.h`, checked 2026-10-19), so no subclass is needed. An earlier version of
+  this note said otherwise. The bench receiver (`firmware/src/bench_rx/`) applies both writes.
 - If a BW500 range test disappoints, **check this before blaming the modem choice.** A receiver
   missing the erratum will underperform its datasheet sensitivity, which would look exactly like the
   BW500 decision having been wrong when it was not.

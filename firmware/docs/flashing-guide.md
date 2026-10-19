@@ -27,7 +27,8 @@ cd firmware
 pio test -e native
 ```
 
-This runs `test_packet` (encoder vs. the shore golden vector) and `test_scheduler`.
+This runs `test_packet` (encoder vs. the shore golden vector), `test_scheduler`, `test_link`
+and `test_timeset`.
 
 ## Build & flash
 
@@ -42,13 +43,42 @@ pio device monitor      # watch the serial log (115200 baud)
 button** — the onboard LED pulses, a `FEATHERBOOT` drive appears, and the M0 is ready to
 accept a flash. This is normal for SAMD21 boards after deep sleep.
 
+## Set the clock (once per board, and after the coin cell is removed)
+
+Nothing else gives the buoy the real time, and its transmit slots are UTC times of day
+([SCO-201](https://linear.app/scout1/issue/SCO-201)). After flashing, run this and press RESET
+once when asked:
+
+```bash
+python3 firmware/tools/set_rtc.py
+```
+
+For about 8 s after a reset, while USB is connected, the firmware accepts one line
+`T<unix-epoch>` and writes it to the PCF8523. The script sends the current UTC time and prints
+`time: set to …`. On battery there is no USB host, so the window simply passes.
+
+## Build environments
+
+| Env | What it is | Use |
+|---|---|---|
+| `feather_m0` | The buoy firmware | Everything that might be deployed |
+| `feather_m0_bench` | Buoy firmware that samples **and transmits every 60 s**; prints a warning at boot | Bench link test only; **never deploy** |
+| `feather_m0_rx` | Bench LoRa receiver for a **second** Feather M0 RFM95, same radio settings plus the 500 kHz erratum; prints `RX len=… rssi=… snr=… hex=…` per frame | Link test ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
+
+```bash
+pio run -e feather_m0_rx -t upload        # on the second Feather
+pio device monitor | python3 ../shore/scripts/decode_frames.py --out /tmp/bench-data
+```
+
+`decode_frames.py` CRC-checks and decodes each frame with the shore codec; with `--out` the 3
+copies of each transmission collapse to one CSV row.
+
 ## First-boot checks
 
-- Serial prints a `seq=… flags=…` line each cycle.
-- `RTC_LOST` in the flags on first boot is expected until the PCF8523 is set — set the clock
-  once (RTClib `adjust`) so timestamps are real.
-- A `YYYYMMDD.CSV` file should appear on the microSD with the [data-schema](../../docs/engineering/data-schema.md)
-  header and one row per cycle.
+- Serial prints a `boot: …` line, then a `seq=… flags=…` line each sample.
+- `RTC_LOST` in the flags means the clock was never set: run `set_rtc.py` above.
+- A `DATA/YYYYMMDD.CSV` file should appear on the microSD with the
+  [data-schema](../../docs/engineering/data-schema.md) header and one row per sample.
 
 ## Notes
 

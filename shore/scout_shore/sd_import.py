@@ -30,8 +30,9 @@ from pathlib import Path
 
 from .schema import COLUMNS
 
-# The buoy writes /DATA/<buoy_id>_<YYYYMMDD>.csv (data-schema.md). Cards are usually handed over
-# as the whole card root, so accept either the card root or the DATA directory itself.
+# The buoy writes /DATA/YYYYMMDD.CSV: FAT 8.3 names, upper case, no buoy_id in the name
+# (data-schema.md). The buoy_id comes from each row instead. Cards are usually handed over as the
+# whole card root, so accept either the card root or the DATA directory itself.
 _CARD_SUBDIR = "DATA"
 
 
@@ -114,7 +115,9 @@ def find_card_csvs(card_dir: Path) -> list[Path]:
         raise FileNotFoundError(f"card directory does not exist: {card_dir}")
     data_dir = card_dir / _CARD_SUBDIR
     search = data_dir if data_dir.is_dir() else card_dir
-    return sorted(search.glob("*.csv"))
+    # Match the extension case-insensitively: the firmware writes .CSV, and on a case-sensitive
+    # filesystem a "*.csv" glob would silently find nothing on a real card.
+    return sorted(p for p in search.iterdir() if p.is_file() and p.suffix.lower() == ".csv")
 
 
 def import_card(

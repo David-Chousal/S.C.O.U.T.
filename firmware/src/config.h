@@ -17,7 +17,15 @@ static const uint16_t BUOY_ID = 1;  // CSV/label renders as SCOUT-01
 #define FW_PATCH 0
 
 /* ── Cadence (seconds) ────────────────────────────────────────────────────── */
+#ifdef SCOUT_BENCH
+/* BENCH BUILD ONLY (env feather_m0_bench): sample every minute and transmit after every sample,
+ * so the bench link test (SCO-155) gets a frame a minute instead of three a day. Never deploy. */
+static const uint32_t SAMPLE_INTERVAL_S = 60;
+static const bool TX_EVERY_SAMPLE = true;
+#else
 static const uint32_t SAMPLE_INTERVAL_S = 1800;         // 30-minute duty cycle (:00 and :30)
+static const bool TX_EVERY_SAMPLE = false;
+#endif
 /* Fixed LoRa transmit slots, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
  * decided 2026-10-16). Each sits 10 min after a sample so the radio never overlaps a sensor
  * read, and the shore station listens on the same table. Change slot times here only. */
@@ -25,6 +33,10 @@ static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
 static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
+/* Bench clock set (SCO-201): at boot, wait this long for USB and then for a "T<unix-epoch>"
+ * line. Only at power-on/reset, never on a wake, so the battery cost is one ~8 s window. */
+static const uint32_t TIME_SET_WINDOW_MS = 8000;
+static const uint32_t MIN_VALID_EPOCH = 1767225600;     // 2026-01-01T00:00:00Z
 static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a cycle hangs
                                                         // (SAMD21 max; a healthy cycle is a few s)
 
