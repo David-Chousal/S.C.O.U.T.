@@ -4,6 +4,13 @@
 > buoy's data. It is a **Raspberry Pi** with a LoRa radio, and it is the canonical home for
 > Raspberry Pi in S.C.O.U.T. This page is the reference for what the Pi does and how it fits the
 > system.
+>
+> ⚠️ **Out of date (flagged 2026-10-19).** Since 2026-09-24 the shore *radio* is an **ESP32-S3
+> Feather + LoRa FeatherWing**, not a Pi ([SCO-86](https://linear.app/scout1/issue/SCO-86)), and
+> since [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md) it will also transmit. Where
+> the Python shore software runs, and how frames get from the S3 to it, is undecided (gap G2 in the
+> [Integration Runbook](integration-runbook.md#2-gates--known-gaps-to-fix-or-work-around-before-the-stage-that-needs-them)).
+> The roles below still describe what the shore side must do; the hardware sections do not.
 
 ---
 
