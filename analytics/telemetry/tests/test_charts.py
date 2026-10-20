@@ -10,6 +10,7 @@ import unittest
 from datetime import date, timedelta
 
 from telemetry import charts
+from telemetry.site import theme
 
 _D0 = date(2026, 9, 1)
 
@@ -67,6 +68,29 @@ class Layering(unittest.TestCase):
     def test_a_wide_gap_is_labelled(self):
         html = _chart(_days([26.0] * 5 + [None] * 6 + [26.5] * 5))
         self.assertIn("<b>no data</b>", html)
+
+
+class ViewData(unittest.TestCase):
+    def setUp(self):
+        self.css = theme.styles(bundle="dashboard")
+
+    def test_an_open_table_cannot_widen_the_chart(self):
+        # The frame is a one-column grid; an auto column grew to the table's 520 px minimum.
+        self.assertIn(".chart-frame{display:grid;grid-template-columns:minmax(0,1fr)", self.css)
+
+    def test_the_three_column_table_fits_without_scrolling_sideways(self):
+        self.assertIn(".viewdata table.data{min-width:0;", self.css)
+
+    def test_dates_never_break_across_lines(self):
+        self.assertRegex(self.css, r"\.viewdata table\.data td,\.viewdata table\.data th\{[^}]*white-space:nowrap")
+
+    def test_the_toggle_looks_like_a_control(self):
+        self.assertRegex(self.css, r"\.viewdata summary\{[^}]*border:var\(--border-control\)")
+        self.assertIn(".viewdata summary::-webkit-details-marker{display:none}", self.css)
+
+    def test_the_chevron_turns_when_open(self):
+        self.assertIn(".viewdata summary::after{", self.css)
+        self.assertRegex(self.css, r"\.viewdata\[open\] summary::after\{[^}]*transform:")
 
 
 class AxisText(unittest.TestCase):

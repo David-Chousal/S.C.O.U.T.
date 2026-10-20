@@ -21,9 +21,10 @@ CSS = """/* ── Buttons ─────────────────�
 /* Over the home hero the header floats on the photograph: no sand bar cutting the top of the
    frame. `html.at-top` is seeded by the inline head script before first paint (no sand flash
    on load), then kept by reveal.js from a sentinel spanning the hero, so the header fades to
-   its normal sand only once it has scrolled past the photograph. Scoped to `.page-home` — every other page has a light ground under
+   its normal sand only once it has scrolled past the photograph. Wide screens only: on a phone
+   the header stays the sand bar, so its drop-down menu keeps dark type. Scoped to `.page-home` — every other page has a light ground under
    the header and must keep its dark type. */
-.page-home .site-header{transition:background var(--dur-quick) var(--ease-standard),
+@media(min-width:721px){.page-home .site-header{transition:background var(--dur-quick) var(--ease-standard),
   backdrop-filter var(--dur-settle) var(--ease-settle)}
 html.at-top .page-home .site-header{background:transparent;backdrop-filter:none;
   -webkit-backdrop-filter:none}
@@ -39,10 +40,7 @@ html.at-top .page-home .site-header .nav-social a,
 html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.92)}
 html.at-top .page-home .site-header .nav-links a:hover,
 html.at-top .page-home .site-header .nav-social a:hover,
-html.at-top .page-home .site-header .nav-chat:hover{color:#fff}
-html.at-top .page-home .site-header .nav-burger span,
-html.at-top .page-home .site-header .nav-burger span::before,
-html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
+html.at-top .page-home .site-header .nav-chat:hover{color:#fff}}
 /* The sentinel is a zero-height marker, never a visible element. */
 /* Spans the hero minus one header height, so it stays on screen exactly while the header is
    still over the photograph — not just for the first pixel of scroll. */

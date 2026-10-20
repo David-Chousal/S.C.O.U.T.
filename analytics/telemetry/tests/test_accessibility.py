@@ -112,6 +112,21 @@ class HeaderOverHero(unittest.TestCase):
         self.assertIn("linear-gradient(180deg,rgba(8,16,21,0.62) 0%", css)
         self.assertIn("color:rgba(251,248,244,0.92)", css)
 
+    def test_header_floats_over_the_hero_only_on_wide_screens(self):
+        # On a phone the header stays the default sand bar over the hero, so the open menu's
+        # links keep their dark type instead of inheriting the over-photo white.
+        css = theme.styles()
+        start = css.index("@media(min-width:721px){.page-home .site-header{")
+        depth, end = 0, start
+        for i in range(css.index("{", start), len(css)):
+            depth += {"{": 1, "}": -1}.get(css[i], 0)
+            if depth == 0:
+                end = i
+                break
+        outside = css[:start] + css[end:]
+        self.assertNotIn("html.at-top", outside)
+        self.assertIn("html.at-top .page-home .site-header{background:transparent", css[start:end])
+
     def test_mobile_menu_toggle_is_named_and_points_at_the_menu(self):
         nav = header("", "home")
         self.assertRegex(nav, r'<input[^>]*id="nav-toggle"[^>]*aria-label="Menu"')

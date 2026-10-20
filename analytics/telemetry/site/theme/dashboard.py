@@ -15,7 +15,9 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .panel-head .unit{color:var(--color-text-subtle);font-size:var(--text-micro);letter-spacing:0.03em}
 /* Charts (telemetry/charts.py): the SVG holds geometry only and stretches to the panel, so
    strokes and dots use non-scaling strokes and every label is HTML at real pixels. */
-.chart-frame{display:grid;gap:var(--space-2)}
+/* One column that may shrink below its content: an open data table scrolls inside it rather
+   than widening the chart past the panel. */
+.chart-frame{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-2)}
 .chart-plot{position:relative;height:180px;margin-left:3.25rem;background:var(--color-surface-raised)}
 .chart-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .chart-svg *{vector-effect:non-scaling-stroke}
@@ -46,10 +48,21 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .ax-x{display:flex;justify-content:space-between;margin-left:3.25rem;font-family:var(--font-mono);
   font-size:var(--text-micro);color:var(--color-text-subtle)}
 .chart-empty{color:var(--color-text-subtle);font-size:var(--text-small)}
-.viewdata summary{cursor:pointer;font-size:var(--text-small);font-weight:500;
-  color:var(--color-text);min-height:24px;display:flex;align-items:center}
+.viewdata summary{cursor:pointer;font-size:var(--text-small);font-weight:500;color:var(--color-text);
+  list-style:none;display:inline-flex;align-items:center;gap:0.55rem;min-height:32px;
+  padding:0.25rem 0.95rem;border:var(--border-control);border-radius:var(--radius-pill);
+  white-space:nowrap;transition:color var(--dur-quick) var(--ease-standard),
+  border-color var(--dur-quick) var(--ease-standard)}
+.viewdata summary::-webkit-details-marker{display:none}
+.viewdata summary:hover{color:var(--color-accent);border-color:var(--color-accent)}
+/* A chevron drawn from two borders: points down when closed, up when open. */
+.viewdata summary::after{content:"";width:0.42em;height:0.42em;margin-top:-0.2em;
+  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg);transition:transform var(--dur-quick) var(--ease-standard)}
+.viewdata[open] summary::after{margin-top:0.2em;transform:rotate(-135deg)}
 .viewdata .table-scroll{margin-top:var(--space-2);max-height:16rem}
-.viewdata td,.viewdata th{padding:0.35rem 0.8rem}
+.viewdata table.data{min-width:0;font-size:var(--text-small)}  /* three short columns fit any panel; no sideways scroll */
+.viewdata table.data td,.viewdata table.data th{padding:0.4rem 0.6rem;white-space:nowrap}
 /* Instrument status: the colour is on the glyph; the label stays readable text. */
 .freshness{display:flex;flex-wrap:wrap;gap:0.3rem 0.8rem;align-items:center;margin-bottom:0;
   font-size:var(--text-small);color:var(--color-text-muted)}
