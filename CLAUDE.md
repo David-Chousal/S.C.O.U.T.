@@ -324,6 +324,29 @@ design decisions still open — the hydrophone part (SCO-8) and the LiFePO₄ ch
 carried into Phase 1 rather than holding the phase open. Its central decision,
 [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md), landed on 2026-08-14.
 
+### Initiative and milestones
+
+Three layers, adopted 2026-10-19. Each answers a different question, so none duplicates another:
+
+| Layer | Linear object | Holds |
+|---|---|---|
+| Whole capstone | **One initiative**, "S.C.O.U.T. Capstone 2026–27" | The seven phase projects. Overall health and update feed |
+| Phase | **Project** (the table above) | Every issue in that phase. The workspace timeline shows only these seven bars |
+| Workstream inside a phase | **Project milestone** | A slice of the phase's issues, e.g. *Electronics bench bring-up (Stages 1–3)* |
+
+- **Do not create sub-projects for a phase.** An issue can belong to only one project, so a
+  sub-project would pull its issues out of the phase project and add a bar to the timeline.
+  Milestones keep both intact.
+- **Every issue in a phase project gets exactly one milestone** of that project. When creating
+  an issue, pick the milestone alongside the project. If none fits, add a milestone rather than
+  leaving the issue loose.
+- Discipline stays on labels, not milestones. A milestone names an outcome
+  (*Sensor pod & sealing*), not a person or a discipline.
+- Milestones are per project, so each phase defines its own when it becomes active. Phase 1's
+  seven are the first set.
+- The initiative must be created in the Linear app (**Settings → Initiatives**); Linear's MCP
+  tools cannot create one. Milestones can be created and assigned from Claude.
+
 ### Status discipline
 
 Move to `In Progress` when work actually starts, not when it is planned. Anything in
