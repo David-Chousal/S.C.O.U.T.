@@ -323,7 +323,7 @@ def build_html(rows: list[dict]) -> str:
     p.append(f"<li><b>John Ryan Myrdal (GENG)</b> &mdash; field and mechanical: buoy structure, deployment. {counts.get('John Ryan Myrdal', 0)} tasks.</li>")
     p.append(f"<li><b>Isabella Rodriguez (ECEN)</b> &mdash; hardware: electrical design, power, bench tests. {counts.get('Isabella Rodriguez', 0)} tasks.</li>")
     p.append(f"<li><b>David Chousal Cantu (CSEN)</b> &mdash; software: firmware, data pipeline, shore station. {counts.get('David Chousal Cantu', 0)} tasks.</li>")
-    p.append("<li>Advisors: Jes Kuczenski, Hoeseok Yang (ECEN), Navid Shaghaghi.</li></ul>")
+    p.append("<li>Advisors: Jes Kuczenski (GENG), Shoba Krishnan (ECEN), Navid Shaghaghi (CSEN).</li></ul>")
     p.append("<h2>Milestones and external deadlines</h2><ul>")
     for r in sorted(mil, key=lambda x: x["start_d"]):
         tag = "SCU deadline" if r["kind"] == "deadline" else "Milestone"
