@@ -52,7 +52,7 @@
   }
 
   /* The home header floats transparent while it is over the hero photograph. Driven by a
-   * sentinel at the top of the hero rather than a scroll listener, so there is no per-frame
+   * sentinel spanning the hero rather than a scroll listener, so there is no per-frame
    * work: the observer fires twice per visit, on the way out and on the way back. */
   function headerOverHero() {
     var sentinel = document.querySelector(".hero-sentinel");
