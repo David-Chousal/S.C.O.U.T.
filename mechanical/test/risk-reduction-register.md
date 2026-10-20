@@ -8,8 +8,9 @@
 >
 > Part of [`mechanical/test/`](README.md). Detailed write-ups stay in their own records; this
 > page is the index. Benchmarks are **provisional** until
-> [SCO-139](https://linear.app/scout1/issue/SCO-139) sets them, and the stage plan comes from
-> [SCO-140](https://linear.app/scout1/issue/SCO-140).
+> [SCO-139](https://linear.app/scout1/issue/SCO-139) sets them, and the stage plan is in the
+> [Layered Test Protocol](../../docs/engineering/layered-test-protocol.md)
+> ([SCO-140](https://linear.app/scout1/issue/SCO-140)).
 
 ## How to use this page
 
