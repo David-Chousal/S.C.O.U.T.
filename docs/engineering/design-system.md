@@ -455,17 +455,22 @@ Targets are stricter than the Core Web Vitals "good" thresholds (LCP ≤ 2.5 s, 
 CLS ≤ 0.1 at the 75th percentile — [web.dev](https://web.dev/articles/defining-core-web-vitals-thresholds))
 because the site is static and small enough to beat them comfortably.
 
+**Baseline measured 2026-10-20** on `main` (dc664e9): headless Chrome over CDP, cache disabled,
+median of 3 runs, Lighthouse's default mobile throttling (150 ms RTT, 1.6 Mbps down, 4× CPU,
+375 × 812 at 2×), served locally without compression — lab numbers, not field data. Full table
+in [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191).
+
 | Metric | Budget | Today (measured or estimated) |
 |---|---|---|
-| LCP (mobile, 4G) | ≤ 2.0 s | Not yet measured — measure before the first migration PR |
+| LCP (mobile, 4G) | ≤ 2.0 s | **Home 3.49 s** (fails); inner pages 1.29–1.46 s |
 | INP | ≤ 100 ms | Near-zero JS; expected to pass |
-| CLS | ≤ 0.05 | Font swap without metric-matched fallback is the main risk |
-| Fonts | ≤ 60 KB, 2 files, 1 preload | 94 KB (two DM Sans subsets) |
-| CSS (inline, per page) | ≤ 36 KB raw / ≤ 9 KB brotli | ~45 KB raw (944-line `_CSS`) |
-| JS (first party) | ≤ 15 KB | ~12 KB + **680 KB Lottie** |
+| CLS | ≤ 0.05 | 0 on every page except Science (0.012) |
+| Fonts | ≤ 60 KB, 2 files, 1 preload | 61 KB per page (DM Sans Latin); 92 KB where Latin Extended also loads |
+| CSS (inline, per page) | ≤ 36 KB raw / ≤ 9 KB brotli | 54.5 KB raw |
+| JS (first party) | ≤ 15 KB | ~12 KB + **~650 KB Lottie on every page** (168 KB player + 479–527 KB JSON) |
 | Hero image | ≤ 120 KB at 1600 w AVIF | 234 KB WebP at 1440 w (upscaled on wide screens) |
-| Home page total | ≤ 450 KB | ~1.3 MB (images + Lottie) |
-| Analytics / Fleet page | ≤ 150 KB, zero images | Within budget |
+| Home page total | ≤ 450 KB | 1033 KB |
+| Analytics / Fleet page | ≤ 150 KB, zero images | 794 / 787 KB — over, almost all of it Lottie |
 
 **Image rules.** `<picture>` with AVIF → WebP → JPEG; `srcset` at 640, 960, 1440 and 1920 px
 (only up to the source resolution — the hero source is 1440 × 720 and needs a higher-resolution
@@ -474,7 +479,8 @@ the one LCP image; `width`/`height` always. Measured: the hero at 1440 w is 170 
 239 KB WebP.
 
 **Lottie is retired.** The footer and side critters cost ~680 KB (a 168 KB player plus 516 KB of
-JSON) — more than fonts, CSS and hero combined — and loop forever. If the team wants one ambient
+JSON on disk) — more than fonts, CSS and hero combined — load on **every** page including
+Analytics and Fleet (measured 2026-10-20), and loop forever. If the team wants one ambient
 element, it is redrawn as a single inline SVG with a CSS `transform` animation, under 4 KB,
 disabled under reduced motion.
 
