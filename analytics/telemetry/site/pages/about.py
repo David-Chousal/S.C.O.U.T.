@@ -35,7 +35,7 @@ _TEAM = [
      "https://www.linkedin.com/in/john-ryan-myrdal-33a292298/", "team/john.jpg"),
     ("Isabella Rodriguez", "Hardware lead", "ECEN", "IR", 210, 200,
      "Leads the electrical design: the PCB, the power system, and the sensor and radio front "
-     "end, all of which have to run for a year in salt water on solar power.",
+     "end, all of which have to run for a year in salt water on battery power.",
      "https://www.linkedin.com/in/isabellarodriguez17/", "team/isabella.jpg"),
 ]
 
@@ -56,7 +56,7 @@ def _overview() -> str:
             "The project",
             "A monitoring platform, not a one-off buoy",
             "S.C.O.U.T., the Santa Clara Oceanic Utilities Transmitter, is a low-cost, "
-            "solar-powered buoy that carries several sensing signals at once. Coral-reef health is "
+            "battery-powered buoy that carries several sensing signals at once. Coral-reef health is "
             "the first mission, and the platform is built to take on others.")
         + '<div class="bento" style="align-items:start;margin-top:2.6rem">'
         '<div class="col-4 prose reveal">'
@@ -73,7 +73,7 @@ def _overview() -> str:
         "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "
         "server to keep running.</p>"
         "<p>Every choice serves one constraint: it has to survive. The buoy must run "
-        "<strong>more than a year unattended</strong> on solar power in salt water, stay under a "
+        "<strong>more than a year unattended</strong> on battery power in salt water, stay under a "
         "cost ceiling a small program can actually afford, and be simple enough for a "
         "three-person team to build, deploy, and maintain. The sensor payload is modular, so the "
         "same platform can grow past temperature and turbidity as the science asks for more.</p>"
@@ -108,7 +108,7 @@ def _story() -> str:
         "measurements in shallow nearshore water</strong>, where satellite products lose "
         "accuracy. The aim is to add coverage where it is currently missing.</p>"
         "<p>The result is a buoy a small program can afford to deploy and leave in place, with "
-        "solar power, low maintenance, a modular sensor payload, and data-quality reporting "
+        "battery power, low maintenance, a modular sensor payload, and data-quality reporting "
         "built in. Coral-reef health is the first application, and the platform is designed to "
         "support others.</p>"
         "</div></div>",

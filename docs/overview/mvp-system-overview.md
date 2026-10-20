@@ -18,7 +18,7 @@ Last Updated: May 2026
 
 ## Project Vision
 
-S.C.O.U.T. is a **small, solar-powered, modular marine buoy system** for **long-term shallow-water coral reef monitoring**. Deployed adjacent to reefs, it collects environmental data indicative of reef health.
+S.C.O.U.T. is a **small, battery-powered, modular marine buoy system** for **long-term shallow-water coral reef monitoring**. Deployed adjacent to reefs, it collects environmental data indicative of reef health.
 
 **Design priorities:**
 
@@ -40,7 +40,7 @@ S.C.O.U.T. is a **small, solar-powered, modular marine buoy system** for **long-
 
 ## Primary Mission (MVP)
 
-Deploy a **solar-powered buoy adjacent to coral reefs** that:
+Deploy a **battery-powered buoy adjacent to coral reefs** that:
 
 - Records reef-relevant environmental data
 

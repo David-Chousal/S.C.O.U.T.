@@ -7,7 +7,7 @@ from ..context import SiteContext
 
 TITLE = "Technology · S.C.O.U.T."
 DESCRIPTION = (
-    "How the S.C.O.U.T. buoy works: solar power, a duty-cycled sensing state machine built to run "
+    "How the S.C.O.U.T. buoy works: battery power, a duty-cycled sensing state machine built to run "
     "unattended for a year, a 30-byte daily LoRa packet to a Raspberry Pi shore station, and a "
     "self-contained telemetry pipeline that publishes the dashboard."
 )
@@ -92,10 +92,10 @@ def _cycle() -> str:
 
 def _subsystems() -> str:
     specs = [
-        ("solar", "Power", "Long-life primary cell (under review)",
-         "The current working plan is two sealed 3.6 V lithium-thionyl-chloride D cells with "
+        ("battery", "Power", "Long-life primary cells",
+         "The buoy runs on two sealed 3.6 V lithium-thionyl-chloride D cells with "
          "no solar panel, with the electronics sleeping between wake-ups and every part running "
-         "on a single 3.3 V rail. Solar with a rechargeable battery is the alternative. The "
+         "on a single 3.3 V rail. The "
          "target is over a year of unattended operation."),
         ("cpu", "Compute", "Duty-cycled state machine",
          "The microcontroller sleeps most of the time and wakes on a timer to sense, log, and "
@@ -290,7 +290,7 @@ def body(ctx: SiteContext) -> str:
         c.page_header("Technology",
                       "How the buoy works",
                       "S.C.O.U.T. runs for a long time because it spends most of its time asleep. One "
-                      "constraint shapes the whole design: a solar-powered buoy, deployed for a year "
+                      "constraint shapes the whole design: a battery-powered buoy, deployed for a year "
                       "or more, that can transmit only a single small packet per day.")
         + _architecture()
         + _cycle()
