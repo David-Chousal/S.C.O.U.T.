@@ -103,6 +103,11 @@ Source: [NOAA CRW Bleaching Alert Area](https://coralreefwatch.noaa.gov/product/
 ⚠️ The pipeline (`bleaching.py`) currently stops at Alert Level 2 = DHW ≥ 8 — see
 [Design System → Contradictions](design-system.md#contradictions-surfaced-while-building-this).
 
+Where a level is set **as text** — a stat value, a verdict, a badge label on its 12% tint —
+it uses `--alert-<level>-text`: the same hue darkened until it reads at ≥ 4.6:1 on the canvas,
+the sunken canvas and its tint (No Stress `#496b7f`, Watch `#816200`, Warning `#a44d00`,
+Alert 1 `#c1291b`; Levels 2–5 are already dark enough to use their fills).
+
 In charts, alert levels appear as horizontal **bands** behind the DHW line (fill at 16% over the
 plot ground) with the level name direct-labelled at the right edge. No Stress, Watch and Warning
 swatches fall below 3:1 against the canvas, so their legend swatches carry a 1 px ink outline.

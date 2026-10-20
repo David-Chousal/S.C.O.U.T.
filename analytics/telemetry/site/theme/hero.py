@@ -3,7 +3,7 @@
 CSS = """/* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
   border-radius:var(--radius);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
-  border:1px solid var(--line-2);color:var(--ink);background:transparent;cursor:pointer;
+  border:1px solid var(--color-line-strong);color:var(--ink);background:transparent;cursor:pointer;
   transition:transform var(--dur) var(--ease),background var(--dur) var(--ease),
     border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
 .btn:hover{transform:translateY(-2px);border-color:var(--ink);opacity:1}
@@ -27,8 +27,9 @@ CSS = """/* ── Buttons ─────────────────�
   --text:#fbf8f4;
   --bg:#101d24;             /* .btn-primary label, read against the cream ground */
   --muted:rgba(251,248,244,0.80);   /* eyebrow, hero-expand */
-  --faint:rgba(251,248,244,0.74);   /* .signal.soon — kept above AA, not decorative grey */
-  --line-2:rgba(251,248,244,0.42);  /* .btn border */
+  --color-text-muted:rgba(251,248,244,0.80);
+  --color-text-subtle:rgba(251,248,244,0.74);  /* .signal.soon — kept above AA */
+  --color-line-strong:rgba(251,248,244,0.42); /* .btn border */
   position:relative;isolation:isolate;padding-block:0;text-align:center;overflow:hidden;
   /* Pulled up under the sticky header so the photograph runs to the very top of the page and
      the first screen is a true full viewport, not a viewport minus the nav. `.hero-body`
@@ -62,7 +63,7 @@ CSS = """/* ── Buttons ─────────────────�
   background:
     radial-gradient(105% 88% at 50% 47%,rgba(4,10,14,0.72) 0%,rgba(4,10,14,0.58) 40%,
       rgba(4,10,14,0.34) 66%,rgba(4,10,14,0.10) 85%,rgba(4,10,14,0) 100%),
-    linear-gradient(180deg,rgba(8,16,21,0.56) 0%,rgba(8,16,21,0.44) 38%,
+    linear-gradient(180deg,rgba(8,16,21,0.62) 0%,rgba(8,16,21,0.44) 38%,
       rgba(8,16,21,0.54) 72%,rgba(6,12,16,0.88) 100%)}
 .hero-body{position:relative;z-index:3;width:100%;
   padding-block:clamp(5rem,12vh,9rem) clamp(7rem,16vh,11rem)}

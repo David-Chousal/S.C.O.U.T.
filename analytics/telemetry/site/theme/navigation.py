@@ -22,7 +22,7 @@ html.at-top .page-home .site-header .nav-links a[aria-current=page]{color:#fbf8f
 html.at-top .page-home .site-header .brand .mark{filter:brightness(0) invert(1)}
 html.at-top .page-home .site-header .nav-links a,
 html.at-top .page-home .site-header .nav-social a,
-html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.82)}
+html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.92)}
 html.at-top .page-home .site-header .nav-links a:hover,
 html.at-top .page-home .site-header .nav-social a:hover,
 html.at-top .page-home .site-header .nav-chat:hover{color:#fff}
@@ -40,13 +40,13 @@ html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
 .brand .mark{width:26px;height:26px;flex:none}
 .brand-txt{display:flex;flex-direction:column;line-height:1.1}
 .brand-txt b{font-weight:700;letter-spacing:0.02em;font-size:0.85rem}
-.brand-txt span{font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
+.brand-txt span{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
   margin-top:2px}
 /* Centred by the header grid's `1fr auto 1fr` columns — no justify-self needed (and it would
    wrongly shrink-to-fit the absolutely-positioned mobile dropdown). */
 .nav-links{display:flex;align-items:center;gap:clamp(1rem,0.4rem + 1.6vw,2.2rem);
   list-style:none;margin:0;padding:0}
-.nav-links a{color:var(--muted);font-size:0.64rem;font-weight:500;
+.nav-links a{color:var(--muted);font-size:0.75rem;font-weight:500;
   letter-spacing:var(--track);text-transform:uppercase;padding:0.4rem 0;position:relative}
 .nav-links a:hover{color:var(--ink);opacity:1}
 .nav-links a[aria-current=page]{color:var(--ink)}
@@ -110,13 +110,13 @@ html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
   .doc-nav{display:block;position:sticky;top:84px;align-self:start}
 }
 .doc-nav-title{font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:var(--track);
-  text-transform:uppercase;color:var(--faint);margin:0 0 1rem}
+  text-transform:uppercase;color:var(--color-text-subtle);margin:0 0 1rem}
 .doc-nav-list{list-style:none;margin:0;padding:0;position:relative}
 .doc-nav-list::before{content:"";position:absolute;left:3px;top:0.9rem;bottom:0.9rem;width:1px;
   background:var(--line)}
 .doc-nav-link{display:flex;align-items:center;gap:0.8rem;padding:0.42rem 0;
   font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:0.02em;
-  color:var(--faint);transition:color var(--dur) var(--ease)}
+  color:var(--color-text-subtle);transition:color var(--dur) var(--ease)}
 .doc-nav-link:hover{color:var(--muted);opacity:1}
 .doc-nav-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--bg);
   box-shadow:0 0 0 1px var(--line-2);position:relative;z-index:1;

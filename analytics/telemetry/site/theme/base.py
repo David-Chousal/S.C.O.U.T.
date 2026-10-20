@@ -16,13 +16,12 @@ CSS = """
   --ink:var(--color-text);
   --text:var(--color-text);
   --muted:var(--color-text-subtle);
-  --faint:#9c948a;
-  --line:rgba(42,37,32,0.10);
+  --line:var(--color-line);
   --line-2:rgba(42,37,32,0.16);
-  --accent:#1f6f6a;            /* calm deep-sea teal, for links, focus, the one accent */
-  --accent-soft:#dfeae6;
+  --accent:var(--color-accent); /* calm deep-sea teal, for links, focus, the one accent */
+  --accent-soft:var(--color-accent-tint);
   --coral:#c76b52;
-  --on-accent:#fbf9f5;
+  --on-accent:var(--color-on-accent);
   --ring:0 0 0 1px rgba(42,37,32,0.06);   /* kept only for the buoy render-slot */
   /* No hairline ring on cards: differentiation comes from the lighter surface + a soft,
      eased-back drop shadow. */
@@ -99,6 +98,12 @@ p{margin:0 0 1.15em}
 a{color:var(--accent);text-decoration:none;transition:color var(--dur) var(--ease),
   opacity var(--dur) var(--ease)}
 a:hover{opacity:0.7}
+/* Links inside running text carry an underline: their colour alone is only 2.3:1 against the
+   body text around them (WCAG 1.4.1). Classed links — buttons, nav, cards — are recognisable
+   by form and position. */
+main :where(p,li,dd,td) a:not([class]){text-decoration:underline;text-decoration-thickness:1px;
+  text-underline-offset:0.2em}
+main :where(p,li,dd,td) a:not([class]):hover{opacity:1;text-decoration-thickness:2px}
 strong{font-weight:600;color:var(--ink)}
 em{font-style:italic}
 code{font-family:var(--font-mono);font-size:0.9em;background:var(--surface-2);
@@ -117,13 +122,13 @@ main figure{margin:0}
 .wrap-wide{max-width:1460px}
 .narrow{max-width:940px}
 .prose{max-width:var(--measure)}
-.prose p,.prose li{color:var(--muted)}
+.prose p,.prose li{color:var(--color-text-muted)}
 .prose strong{color:var(--ink)}
 
 /* The signature micro-label */
 .eyebrow{font-size:var(--text-micro);font-weight:500;letter-spacing:var(--track);
   text-transform:uppercase;color:var(--muted);margin:0 0 1.4rem}
-.lead{font-size:var(--text-lead);line-height:1.55;color:var(--muted);font-weight:400}
+.lead{font-size:var(--text-lead);line-height:1.55;color:var(--color-text-muted);font-weight:400}
 .section{padding-block:var(--section)}
 .section-sm{padding-block:clamp(3.4rem,2.4rem + 4vw,6rem)}
 .divider{height:1px;background:var(--line)}

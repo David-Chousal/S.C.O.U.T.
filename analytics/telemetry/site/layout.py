@@ -98,10 +98,11 @@ def header(base: str, active: str, social: bool = True) -> str:
     return (
         '<header class="site-header"><nav class="wrap nav" aria-label="Primary">'
         f"{_brand(base)}"
-        '<input type="checkbox" id="nav-toggle" class="nav-toggle">'
+        '<input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Menu" '
+        'aria-controls="primary-menu">'
         '<label for="nav-toggle" class="nav-burger" aria-label="Toggle navigation menu">'
         "<span></span></label>"
-        f'<ul class="nav-links">{"".join(links)}</ul>'
+        f'<ul class="nav-links" id="primary-menu">{"".join(links)}</ul>'
         f"{social_html}"
         "</nav></header>"
     )

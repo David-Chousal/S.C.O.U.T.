@@ -99,7 +99,7 @@ def carousel(slides: str, *, label: str, cls: str = "") -> str:
         f'<button class="carousel-arrow carousel-next" type="button" '
         f'aria-label="Next">{_CHEVRON_R}</button>'
         "</div>"
-        '<div class="carousel-dots" role="tablist" aria-label="Choose slide"></div>'
+        '<div class="carousel-dots" role="group" aria-label="Choose slide"></div>'
         "</div>"
     )
 

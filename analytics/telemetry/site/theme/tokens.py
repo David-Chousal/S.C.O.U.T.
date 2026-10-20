@@ -9,7 +9,7 @@ so anything inside a dark ground inverts through the cascade.
 
 from __future__ import annotations
 
-from .colour import oklch_to_hex, wcag
+from .colour import mix, oklch_to_hex, wcag
 
 _STONE = {0: (.993, .004), 50: (.985, .005), 100: (.968, .008), 150: (.952, .009),
           200: (.930, .010), 300: (.880, .011), 400: (.760, .012), 500: (.600, .013),
@@ -95,6 +95,24 @@ def _on(fill: str) -> str:
 # level → (fill, label colour on that fill)
 ALERTS = {level: (oklch_to_hex(*lch), _on(oklch_to_hex(*lch))) for level, lch in _ALERT_LCH.items()}
 
+
+def _text_variant(lch: tuple) -> str:
+    """The level's hue, darkened until it reads as text (≥ 4.6:1) on the canvas, the sunken
+    canvas, and its own 12% badge tint over the surface."""
+    l, c, h = lch
+    surface = PRIMITIVES["p-stone-50"][1]
+    grounds = (PRIMITIVES["p-stone-100"][1], PRIMITIVES["p-stone-200"][1])
+    while True:
+        text = oklch_to_hex(l, c, h)
+        tint = mix(text, 0.12, surface)
+        if all(wcag(text, g) >= 4.6 for g in (*grounds, tint)):
+            return text
+        l -= 0.01
+
+
+# level → a text-safe colour in the level's hue, for labels and verdicts set as text.
+ALERT_TEXT = {level: _text_variant(lch) for level, lch in _ALERT_LCH.items()}
+
 # Variable identity: cmocean thermal 0.50 and turbid 0.60; instrument health is neutral ink.
 DATA = {
     "data-temp": "#b15f82",
@@ -153,7 +171,7 @@ def _css() -> str:
         *DATA.items(),
         *((f"cat-{i}", hexval) for i, hexval in enumerate(CATEGORICAL, 1)),
         *((f"alert-{lvl}-{part}", val) for lvl, (fill, on) in ALERTS.items()
-          for part, val in (("fill", fill), ("on", on))),
+          for part, val in (("fill", fill), ("on", on), ("text", ALERT_TEXT[lvl]))),
         *((f"space-{i}", f"{px}px") for i, px in enumerate(_SPACE, 1)),
         ("radius-none", "0"), ("radius-xs", "4px"),
         *((f"z-{name}", str(z)) for name, z in _Z.items()),

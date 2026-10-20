@@ -160,13 +160,19 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 - `--faint` uses → `--color-text-subtle`; `--muted` split per selector (prose vs labels).
 - Secondary button and input edges → `--color-line-strong` (3:1).
 - Prose links underlined.
-- 12 px floor: nav links (0.64 rem), brand subline (0.52 rem), chart axis text (9 px).
+- 12 px floor: nav links (0.64 rem), brand subline (0.52 rem), photo credits and team tags
+  (0.6 rem). Chart axis text (9 SVG units) moves to step 6: it scales with the chart's
+  viewBox, so CSS cannot floor it.
 - Header over hero: scrim top stop 0.56 → 0.62, nav text 82% → 92% (measured worst pixel
   3.38:1 → 4.63:1).
 - Carousel dots → 24 × 24 buttons with "Slide n of N" labels; drop `role="tablist"`.
 - Doc nav: `aria-current="location"`; burger checkbox gets `aria-controls` and a name.
-- **Test first:** extend `test_web.py` — no text colour token below 4.5:1 on its ground; no
-  pointer target class below 24 px.
+- Alert levels set as text (dashboard stats, drift verdict, Fleet badges) use new
+  `--alert-<level>-text` tokens: each NOAA hue darkened until it reads at ≥ 4.6:1, including on
+  its own badge tint. Banner emphasis moves from coral to `--status-warning`.
+- **Done** (step 4). `telemetry/tests/test_accessibility.py` resolves every `color:` in the
+  light-ground CSS through its custom-property chain and fails below 4.5:1, and checks the
+  12 px floor, control edges, link underlines, the hero scrim, the carousel and the ARIA.
 
 ### PR 5 — `refactor(analytics): adopt Tideline shape, space and motion tokens`
 

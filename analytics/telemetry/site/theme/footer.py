@@ -42,21 +42,21 @@ CSS = """/* ── Footer ──────────────────
 .footer-brand{grid-column:1/-1;max-width:38ch}
 @media(min-width:641px){.footer-brand{grid-column:auto}}
 .footer-brand .brand{margin-bottom:1.1rem}
-.footer-brand p{color:var(--muted);font-size:0.94rem;margin:0}
+.footer-brand p{color:var(--color-text-muted);font-size:0.94rem;margin:0}
 .footer-col h4{font-size:var(--text-micro);letter-spacing:var(--track);text-transform:uppercase;
-  color:var(--faint);font-weight:500;margin:0 0 1.1rem}
+  color:var(--color-text-subtle);font-weight:500;margin:0 0 1.1rem}
 .footer-col ul{list-style:none;margin:0;padding:0;display:grid;gap:0.6rem}
 .footer-col a{color:var(--muted);font-size:0.94rem}
 .footer-col a:hover{color:var(--ink);opacity:1}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.6rem;
   margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--line);
-  color:var(--faint);font-size:var(--text-small)}
+  color:var(--color-text-subtle);font-size:var(--text-small)}
 @media(max-width:560px){.footer-base{flex-direction:column;align-items:flex-start;gap:0.35rem}}
 
 /* ── Sample-data banner (Analytics) ───────────────────────────────────────── */
 .banner{max-width:1140px;margin:1.6rem auto 0;padding:0.9rem 1.3rem;border-radius:var(--radius);
   background:var(--surface);box-shadow:var(--shadow-1);color:var(--muted);font-size:var(--text-small)}
-.banner b{color:var(--coral)}
+.banner b{color:var(--status-warning)}
 
 /* ── Page header (inner pages) ────────────────────────────────────────────── */
 /* Inner-page headers get their own arrival: a deep, tinted wash behind oversized display type,
@@ -90,7 +90,7 @@ CSS = """/* ── Footer ──────────────────
 .flow{width:100%;height:auto;display:block;overflow:visible}
 .figure-card{background:var(--surface);border-radius:var(--radius-lg);
   padding:clamp(1.4rem,1rem + 1.4vw,2.4rem);box-shadow:var(--shadow-1)}
-.figure-card figcaption{color:var(--muted);font-size:var(--text-small);margin-top:1.2rem;
+.figure-card figcaption{color:var(--color-text-muted);font-size:var(--text-small);margin-top:1.2rem;
   text-align:center;max-width:52ch;margin-inline:auto}
 
 """
