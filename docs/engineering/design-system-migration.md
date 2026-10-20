@@ -185,6 +185,18 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 - Instrument plates (`.stat`, `.panel`, `.buoy-tile`, tables) switch from shadow to hairline;
   container queries on them.
 - Old token aliases deleted.
+- **Done** (step 5), with these measured or deliberate differences from the plan:
+  - Every old name is gone except the chart and alert colours (`--c-*`, `--a-*`, `--coral`),
+    which step 6 replaces. A test now also fails if a page builder writes a `var(--…)` the
+    stylesheet does not declare (step 4's `--faint` removal had left two such inline styles).
+  - Spacing rounds to the scale: e.g. 1.2 rem → 16 px, 2.4 rem → 32 px, 2.6–2.8 rem → 48 px;
+    reference lists 1.8 → 1.6 line height; the Science split gap uses `--space-section`.
+  - Micro-label tracking 0.18 → 0.14 em; heading weights 520/560 → 500 (the wordmark keeps 700).
+  - `.buoy-tile` keeps its card styling; it is rebuilt with the slot rule in step 6.
+  - Inline CSS grew to 63.7 KB (longer token names, utilities, comments). Minifying at build
+    time measures 46 KB raw / ~10 KB gzip; that moves to step 7.
+  - Technology on mobile measures CLS 0.061 (budget 0.05): the pre-existing font swap, no longer
+    hidden by the 900 ms header fade. Re-measure after step 7 removes Lottie.
 
 ### PR 6 — `feat(analytics): draw telemetry honestly — gaps, QC marks, freshness, slot rule`
 

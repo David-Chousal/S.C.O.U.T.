@@ -57,12 +57,12 @@ def _architecture() -> str:
 
 def _cycle() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("Operating cycle", "Built to run unattended for a year",
                        "Battery life is the whole game, so the buoy spends almost all of its time "
                        "asleep and wakes only to do a small, fixed amount of work.")
-        + '<div class="prose" style="margin-top:1.2rem">'
+        + '<div class="prose stack-4">'
         "<p>The controller sits in a low-power standby state and wakes on a real-time-clock alarm "
         "roughly every 30 minutes. It samples, appends one row to the microSD log, checks the "
         "battery, and returns to sleep. A full transmission happens only <strong>once a day</strong>, "
@@ -128,12 +128,12 @@ def _subsystems() -> str:
 
 def _platform(ctx: SiteContext) -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("MCU and radio", "Hardware platform",
                        "The microcontroller and radio are settled in ADR-0001, which lets "
                        "firmware and wiring proceed. A production PCB target is kept on the shelf.")
-        + '<div class="prose" style="margin-top:1rem"><p>The confirmed build platform is the '
+        + '<div class="prose stack-4"><p>The confirmed build platform is the '
         "<strong>Adafruit Feather M0 with an RFM95 radio</strong>: an Arduino SAMD21 core with "
         "the RadioHead <code>RH_RF95</code> driver, an Adalogger FeatherWing for the microSD "
         "card and PCF8523 real-time clock. An ESP32-C3 with an SX1262 radio is kept as the "
@@ -176,10 +176,10 @@ def _platform(ctx: SiteContext) -> str:
 
 def _packet() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("The daily packet", "30 bytes, once a day")
-        + '<div class="prose" style="margin-top:1.4rem"><p>The binding constraint on a LoRa link '
+        + '<div class="prose stack-5"><p>The binding constraint on a LoRa link '
         "is bandwidth. The buoy stores full data locally and transmits only a compact daily "
         "summary of statistics rather than raw waveforms. The packet layout is a versioned "
         "contract: the firmware encoder and the shore decoder are byte-identical, checked by a "
@@ -203,12 +203,12 @@ def _packet() -> str:
 
 def _link() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("The shore link", "LoRa to a Raspberry Pi on shore",
                        "The buoy talks to a Raspberry Pi on shore over a 915 MHz LoRa link. LoRa "
                        "is built for exactly this: tiny payloads, long range, very low power.")
-        + '<div class="prose" style="margin-top:1.2rem">'
+        + '<div class="prose stack-4">'
         "<p>Over seawater, the water itself is not the problem. Field studies of LoRa over open "
         "seawater have measured clear line-of-sight links out to tens of kilometres, and conclude "
         "the sea surface does not limit the link. The real constraint for S.C.O.U.T. is "
@@ -221,7 +221,7 @@ def _link() -> str:
         "below.</p></div></div>"
         '<div class="col-3">'
         + c.head_block("On shore", "What the Raspberry Pi does")
-        + '<div style="margin-top:1.2rem">'
+        + '<div class="stack-4">'
         + c.spec([
             ("Receive", "Listen for the buoy's daily LoRa packet"),
             ("Validate", "Check the counter and CRC; drop malformed frames"),
@@ -238,7 +238,7 @@ def _link() -> str:
 
 def _mechanical(ctx: SiteContext) -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2">'
         + c.head_block("Mechanical", "Sealed above, sensing below")
         + "</div>"
@@ -274,11 +274,11 @@ def _refs() -> str:
         c.head_block("References", "Where these choices are grounded",
                      "The communications design leans on published LoRa-over-water propagation "
                      "studies; the rest is specified in the project's own engineering records.")
-        + '<div class="bento" style="margin-top:2rem;align-items:start">'
+        + '<div class="bento stack-6 align-start">'
         '<div class="col-3 prose"><h3>Communications over water</h3>'
-        f'<ul style="line-height:1.6">{render(_REFS_COMMS)}</ul></div>'
+        f'<ul class="refs">{render(_REFS_COMMS)}</ul></div>'
         '<div class="col-3 prose"><h3>Design records</h3>'
-        f'<ul style="line-height:1.8">{docs}</ul></div>'
+        f'<ul class="refs">{docs}</ul></div>'
         "</div>",
         cls="section-sm",
         sid="references",

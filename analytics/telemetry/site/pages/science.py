@@ -109,7 +109,7 @@ def _tracks() -> str:
                      "S.C.O.U.T. samples a small set of environmental signals and turns each into a "
                      "reviewed metric. Temperature and turbidity transmit daily; the reef "
                      "soundscape is recorded and analysed on board.")
-        + '<div style="margin-top:2rem">'
+        + '<div class="stack-6">'
         + c.data_table(
             "Each signal, its sensor, and the metrics the pipeline produces.",
             ["Signal", "Sensor", "What S.C.O.U.T. derives"], _TRACK_ROWS)
@@ -123,7 +123,7 @@ def _thermal() -> str:
         c.head_block("Heat and bleaching", "Thermal stress metrics",
                      "S.C.O.U.T. uses NOAA Coral Reef Watch's operational framework, the standard "
                      "method for anticipating mass coral bleaching.")
-        + '<div class="bento" style="margin-top:2.4rem;align-items:start">'
+        + '<div class="bento stack-6 align-start">'
         '<div class="col-3 prose">'
         + c.spec([
             ("MMM", "The Maximum Monthly Mean: the warmest of the site's climatological monthly "
@@ -150,14 +150,14 @@ def _thermal() -> str:
 def _alerts(ctx: SiteContext) -> str:
     media, credit = imagery.bleaching(ctx.base, ctx.img_dir)
     figure = (
-        '<figure class="hero-figure reveal" style="margin-top:2.6rem;aspect-ratio:16/9">'
+        '<figure class="hero-figure reveal stack-7 ratio-16-9">'
         f'{media}<div class="pill-scrim"></div>{credit}'
         "<figcaption>Bleached staghorn coral, Great Barrier Reef, 2017 — the Alert Level 2 "
         "outcome the thresholds above are meant to anticipate.</figcaption></figure>"
     ) if media else ""
     return c.section(
         c.head_block("Warning tiers", "Bleaching alert levels")
-        + '<div style="margin-top:2rem">'
+        + '<div class="stack-6">'
         + c.data_table(
             "NOAA Coral Reef Watch bleaching alert levels. Warning and above require a current "
             "HotSpot of at least 1 °C. If the water cools, accumulated DHW no longer raises the "
@@ -189,7 +189,7 @@ def _soundscape() -> str:
         # More air than the old card grid needed. The split's last entry ends on a plain
         # baseline, so this gap has to beat the ~104px that separates two indices from each
         # other — otherwise the methodology columns read as a seventh index.
-        + '<div class="bento" style="margin-top:clamp(5.5rem,4rem + 5vw,9rem);align-items:start">'
+        + '<div class="bento stack-section align-start">'
         '<div class="col-3 prose">'
         "<h3>How the indices stay honest</h3>"
         "<p>A <strong>three-zone frequency model</strong> carves out a 200–1000 Hz mixed band "
@@ -238,7 +238,7 @@ def _pipeline() -> str:
         c.head_block("Processing", "The analysis pipeline",
                      "Every environmental stage runs on the Python standard library, so it "
                      "executes and is unit-tested on a bare Raspberry Pi.")
-        + f'<div class="bento" style="margin-top:2.4rem">{grid}</div>',
+        + f'<div class="bento stack-6">{grid}</div>',
         cls="section-sm",
         sid="pipeline",
     )
@@ -246,7 +246,7 @@ def _pipeline() -> str:
 
 def _caveats() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2">'
         + c.head_block("Limitations", "What the data can't tell you")
         + "</div>"
@@ -283,13 +283,13 @@ def _refs() -> str:
         c.head_block("References", "The literature these methods rest on",
                      "Thermal-stress and turbidity methods, then reef bioacoustics. Full "
                      "citations with DOIs are in the methodology documents.")
-        + '<div class="bento" style="margin-top:2rem;align-items:start">'
+        + '<div class="bento stack-6 align-start">'
         '<div class="col-3 prose"><h3>Thermal stress &amp; turbidity</h3>'
-        f'<ul style="line-height:1.6">{render(_REFS_THERMAL)}</ul>'
+        f'<ul class="refs">{render(_REFS_THERMAL)}</ul>'
         f'<p><a class="textlink" href="{_DOC_ENV}">Environmental telemetry methodology</a></p>'
         "</div>"
         '<div class="col-3 prose"><h3>Reef bioacoustics</h3>'
-        f'<ul style="line-height:1.6">{render(_REFS_ACOUSTIC)}</ul>'
+        f'<ul class="refs">{render(_REFS_ACOUSTIC)}</ul>'
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Coral bioacoustic methodology</a></p>'
         "</div></div>",
         cls="section-sm",

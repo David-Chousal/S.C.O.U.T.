@@ -132,20 +132,6 @@ _MOTION = {
     "ease-exit": "cubic-bezier(0.4,0,1,1)",
 }
 
-# Old token → (new token it now aliases, its previous literal value). Only names whose new value
-# is within 3/255 per channel move now; the rest keep their literals until the migration step
-# that changes them on purpose (docs/engineering/design-system-migration.md).
-LEGACY_ALIASES = {
-    "sand": ("color-canvas", "#f8f4f1"),
-    "bg": ("color-canvas", "#f8f4f1"),
-    "surface": ("color-surface", "#fcfaf8"),
-    "surface-2": ("p-stone-150", "#f4f1eb"),
-    "ink": ("color-text", "#2a2520"),
-    "text": ("color-text", "#2a2520"),
-    "muted": ("color-text-subtle", "#6f675e"),
-}
-
-
 def hex_of(name: str) -> str:
     """Resolve a primitive, a day role, or ``night-<role>`` to its opaque hex value."""
     if name.startswith("night-"):
@@ -174,6 +160,9 @@ def _css() -> str:
           for part, val in (("fill", fill), ("on", on), ("text", ALERT_TEXT[lvl]))),
         *((f"space-{i}", f"{px}px") for i, px in enumerate(_SPACE, 1)),
         ("radius-none", "0"), ("radius-xs", "4px"),
+        ("shadow-0", "none"),
+        ("border-hairline", "1px solid var(--color-line)"),
+        ("border-control", "1px solid var(--color-line-strong)"),
         *((f"z-{name}", str(z)) for name, z in _Z.items()),
         *_MOTION.items(),
     ])

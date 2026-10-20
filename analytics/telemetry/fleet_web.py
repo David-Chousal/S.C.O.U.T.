@@ -201,7 +201,7 @@ def render_overview(
         f'<p class="lead">{n_buoys} {buoy_word} reporting across the network. Each is analysed '
         "independently — its own daily means, its own Degree Heating Weeks against its own site "
         "climatology — then summarised here.</p>"
-        '<div class="dash-meta" style="margin-top:1.6rem">'
+        '<div class="dash-meta stack-5">'
         f'<span><span class="k">Generated</span> {html.escape(generated)}</span>'
         f'<span><span class="k">Buoys</span> {n_buoys}</span>'
         f'<span><span class="k">Highest alert</span> {html.escape(worst)}</span>'
@@ -215,7 +215,7 @@ def render_overview(
         f'<div class="fleet-grid">{tiles}</div>'
         '<p class="data-links">Each tile links to that buoy\'s full dashboard · '
         'fleet rollup <a href="fleet_summary.json">summary JSON</a></p>'
-        '<p class="data-links" style="color:var(--faint)">Buoys are never blended: merging '
+        '<p class="data-links">Buoys are never blended: merging '
         "streams would corrupt daily means and Degree Heating Weeks. Thermal stress uses NOAA "
         "Coral Reef Watch DHW with a per-buoy Maximum Monthly Mean.</p>"
         "</div></section>"

@@ -42,8 +42,8 @@ def cta(kicker: str, title: str, buttons: str) -> str:
     return section(
         '<article class="card card-ink center">'
         f'<p class="kicker">{kicker}</p>'
-        f'<h2 style="max-width:20ch;margin-inline:auto">{title}</h2>'
-        f'<div class="btn-row" style="margin-top:1.8rem">{buttons}</div></article>',
+        f'<h2 class="cta-title">{title}</h2>'
+        f'<div class="btn-row stack-6">{buttons}</div></article>',
         cls="section-sm",
     )
 
@@ -186,7 +186,7 @@ def data_path() -> str:
     ])
     return section(
         head_block("How it works", "The data path")
-        + f'<div style="margin-top:2.8rem">{body}</div>',
+        + f'<div class="stack-7">{body}</div>',
         cls="section-sm",
         sid="how",
     )

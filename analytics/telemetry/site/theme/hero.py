@@ -2,19 +2,20 @@
 
 CSS = """/* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
-  border-radius:var(--radius);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
-  border:1px solid var(--color-line-strong);color:var(--ink);background:transparent;cursor:pointer;
-  transition:transform var(--dur) var(--ease),background var(--dur) var(--ease),
-    border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
-.btn:hover{transform:translateY(-2px);border-color:var(--ink);opacity:1}
-.btn-primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn-primary:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  border-radius:var(--radius-pill);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
+  white-space:nowrap;max-width:100%;
+  border:1px solid var(--color-line-strong);color:var(--color-text);background:transparent;cursor:pointer;
+  transition:transform var(--dur-settle) var(--ease-settle),background var(--dur-quick) var(--ease-standard),
+    border-color var(--dur-quick) var(--ease-standard),color var(--dur-quick) var(--ease-standard)}
+.btn:hover{transform:translateY(-2px);border-color:var(--color-text);opacity:1}
+.btn-primary{background:var(--color-text);color:var(--color-canvas);border-color:var(--color-text)}
+.btn-primary:hover{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-on-accent)}
 .btn svg{width:1.05em;height:1.05em}
 .btn-row{display:flex;flex-wrap:wrap;gap:0.9rem;align-items:center}
 .center .btn-row{justify-content:center}
-.textlink{display:inline-flex;align-items:center;gap:0.4rem;font-weight:500;color:var(--ink)}
-.textlink svg{width:0.9em;height:0.9em;transition:transform var(--dur) var(--ease)}
-.textlink:hover{opacity:1;color:var(--accent)}
+.textlink{display:inline-flex;align-items:center;gap:0.4rem;font-weight:500;color:var(--color-text)}
+.textlink svg{width:0.9em;height:0.9em;transition:transform var(--dur-settle) var(--ease-settle)}
+.textlink:hover{opacity:1;color:var(--color-accent)}
 .textlink:hover svg{transform:translateX(3px)}
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
@@ -23,13 +24,11 @@ CSS = """/* ── Buttons ─────────────────�
    tokens to their dark-ground equivalents, so every child (buttons, eyebrow, signals) inverts
    through the cascade instead of needing its own override. */
 .hero{
-  --ink:#fbf8f4;            /* h1, .btn text, .btn-primary ground, .textlink */
-  --text:#fbf8f4;
-  --bg:#101d24;             /* .btn-primary label, read against the cream ground */
-  --muted:rgba(251,248,244,0.80);   /* eyebrow, hero-expand */
+  --color-text:#fbf8f4;             /* h1, .btn text, .btn-primary ground, .textlink */
+  --color-canvas:#101d24;           /* .btn-primary label, read against the cream ground */
   --color-text-muted:rgba(251,248,244,0.80);
-  --color-text-subtle:rgba(251,248,244,0.74);  /* .signal.soon — kept above AA */
-  --color-line-strong:rgba(251,248,244,0.42); /* .btn border */
+  --color-text-subtle:rgba(251,248,244,0.80);  /* eyebrow, hero-expand: measured on the scrim */
+  --color-line-strong:rgba(251,248,244,0.42);  /* .btn border */
   position:relative;isolation:isolate;padding-block:0;text-align:center;overflow:hidden;
   /* Pulled up under the sticky header so the photograph runs to the very top of the page and
      the first screen is a true full viewport, not a viewport minus the nav. `.hero-body`
@@ -43,7 +42,7 @@ CSS = """/* ── Buttons ─────────────────�
    to `.hero .hero-figure`. Scoping this wrong tears the Science figure out of the document
    flow, which is exactly what happened the first time. */
 .hero-figure{margin-top:0;overflow:hidden;height:clamp(420px,66vh,820px);position:relative;
-  background:var(--surface-2)}
+  background:var(--color-canvas-sunken)}
 .hero-figure img,.hero-figure .atmos{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover}
 .hero-figure figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;
@@ -69,10 +68,10 @@ CSS = """/* ── Buttons ─────────────────�
   padding-block:clamp(5rem,12vh,9rem) clamp(7rem,16vh,11rem)}
 .hero .eyebrow{margin-bottom:2rem}
 .hero .btn-row{justify-content:center;margin-top:clamp(2rem,1.4rem + 1.6vw,2.6rem)}
-.hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--ink);
+.hero-title{font-size:var(--text-hero);letter-spacing:0.06em;font-weight:500;color:var(--color-text);
   margin:0;text-shadow:0 2px 30px rgba(4,10,14,0.55)}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
-  text-transform:uppercase;color:var(--muted);margin:1.2rem 0 0;font-weight:500}
+  text-transform:uppercase;color:var(--color-text-subtle);margin:1.2rem 0 0;font-weight:500}
 
 /* ── Section heading block ────────────────────────────────────────────────── */
 .head-block{max-width:56ch}

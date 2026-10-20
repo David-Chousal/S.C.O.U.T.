@@ -206,7 +206,7 @@ def footer(base: str, *, external: bool = True) -> str:
         f"{email}</div>"
         f'<div class="footer-col"><h4>Explore</h4><ul>{explore}</ul></div>'
         f"{resources}"
-        '<div class="wrap footer-base" style="padding-inline:0">'
+        '<div class="wrap footer-base flush-x">'
         "<span>© 2026 D. Chousal Cantu · I. Rodriguez · J. R. Myrdal · MIT License</span>"
         "<span>Thermal-stress metrics via NOAA Coral Reef Watch</span>"
         f"{hero_credit}"

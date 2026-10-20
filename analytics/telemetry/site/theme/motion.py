@@ -12,7 +12,7 @@ CSS = """/* ── Motion: scroll reveals and scroll-driven drama ────�
    reader — distance is what the eye tracks, and a stagger draws attention to the sequence. What
    is left is content arriving at full opacity a beat after it enters view, which reads as the
    page settling rather than as an effect. */
-html.js-reveal .reveal{opacity:0;transition:opacity 400ms var(--ease);will-change:opacity}
+html.js-reveal .reveal{opacity:0;transition:opacity 400ms var(--ease-settle);will-change:opacity}
 html.js-reveal .reveal.is-in{opacity:1;will-change:auto}
 @media (prefers-reduced-motion:reduce){
   html.js-reveal .reveal{opacity:1;transition:none}
@@ -38,7 +38,7 @@ html.js-reveal .reveal.is-in{opacity:1;will-change:auto}
   /* `both` fill means the resting state before the animation runs is `from` — opacity 0. That
      is a content trap if the animation never starts, so it is gated on the same flag as the
      reveals: no JavaScript, no hiding. */
-  html.js-reveal .hero-body>*{animation:hero-rise 420ms var(--ease) both}
+  html.js-reveal .hero-body>*{animation:hero-rise 420ms var(--ease-settle) both}
   html.js-reveal .hero-body>*:nth-child(1){animation-delay:0ms}
   html.js-reveal .hero-body>*:nth-child(2){animation-delay:70ms}
   html.js-reveal .hero-body>*:nth-child(3){animation-delay:140ms}

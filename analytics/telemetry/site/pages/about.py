@@ -58,7 +58,7 @@ def _overview() -> str:
             "S.C.O.U.T., the Santa Clara Oceanic Utilities Transmitter, is a low-cost, "
             "battery-powered buoy that carries several sensing signals at once. Coral-reef health is "
             "the first mission, and the platform is built to take on others.")
-        + '<div class="bento" style="align-items:start;margin-top:2.6rem">'
+        + '<div class="bento align-start stack-7">'
         '<div class="col-4 prose reveal">'
         "<p>S.C.O.U.T. addresses a specific gap in ocean monitoring. Satellites map "
         "sea-surface temperature at scale but lose accuracy in the shallow nearshore water where "
@@ -97,7 +97,7 @@ def _overview() -> str:
 
 def _story() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2 reveal"><p class="eyebrow">The story</p>'
         '<p class="quote">It started from a question: where is the real gap in reef '
         "monitoring?</p></div>"
@@ -127,7 +127,7 @@ def _team(base: str) -> str:
         c.head_block("Who built it", "The team",
                      "Three students, one each from electrical, mechanical, and software "
                      "engineering, each responsible for the part of the system in their field.")
-        + f'<div class="team" style="margin-top:2.4rem">{cards}</div>',
+        + f'<div class="team stack-6">{cards}</div>',
         cls="section-sm",
         sid="team",
     )
@@ -135,10 +135,10 @@ def _team(base: str) -> str:
 
 def _institution() -> str:
     return c.section(
-        '<div class="bento" style="align-items:center">'
+        '<div class="bento align-center">'
         '<div class="col-3 reveal"><p class="eyebrow">Institution &amp; advisors</p>'
         '<h2>Santa Clara University</h2>'
-        '<p class="lead" style="margin-top:0.8rem">School of Engineering · Senior Design '
+        '<p class="lead stack-3">School of Engineering · Senior Design '
         "Capstone · 2026–2027</p></div>"
         '<div class="col-3 reveal">'
         + c.spec([
@@ -159,15 +159,15 @@ def _roadmap() -> str:
         chip = '<span class="chip info">In progress</span>' if active else \
                '<span class="chip">Planned</span>'
         rows += (
-            '<div class="spec-row" style="grid-template-columns:6rem 1fr auto auto;gap:1rem">'
-            f'<dt style="color:var(--accent)">{tag}</dt><dd style="color:var(--ink)">{name}</dd>'
-            f'<dd style="text-align:right">{window}</dd><dd>{chip}</dd></div>'
+            '<div class="spec-row spec-row-timeline">'
+            f'<dt>{tag}</dt><dd>{name}</dd>'
+            f'<dd>{window}</dd><dd>{chip}</dd></div>'
         )
     return c.section(
         c.head_block("Roadmap", "Project phases",
                      "Re-baselined in August 2026. The plan runs from campus bring-up to a field "
                      "deployment in Hawaii.")
-        + f'<dl class="spec" style="margin-top:2rem">{rows}</dl>',
+        + f'<dl class="spec stack-6">{rows}</dl>',
         cls="section-sm",
         sid="roadmap",
     )

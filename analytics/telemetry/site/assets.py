@@ -19,11 +19,11 @@ def logo_mark(cls: str = "mark") -> str:
     """Concentric sonar rings — the S.C.O.U.T. mark. Uses ``currentColor`` + the accent token."""
     return (
         f'<svg class="{cls}" viewBox="0 0 32 32" role="img" aria-label="S.C.O.U.T. mark" fill="none">'
-        '<rect width="32" height="32" rx="8" fill="var(--surface-2)"/>'
-        '<circle cx="16" cy="16" r="2.6" fill="var(--accent)"/>'
-        '<circle cx="16" cy="16" r="6.4" stroke="var(--accent)" stroke-width="1.4" opacity="0.72"/>'
-        '<circle cx="16" cy="16" r="10.4" stroke="var(--accent)" stroke-width="1.2" opacity="0.4"/>'
-        '<path d="M16 26.4V29" stroke="var(--accent)" stroke-width="1.2" opacity="0.5"/>'
+        '<rect width="32" height="32" rx="8" fill="var(--color-canvas-sunken)"/>'
+        '<circle cx="16" cy="16" r="2.6" fill="var(--color-accent)"/>'
+        '<circle cx="16" cy="16" r="6.4" stroke="var(--color-accent)" stroke-width="1.4" opacity="0.72"/>'
+        '<circle cx="16" cy="16" r="10.4" stroke="var(--color-accent)" stroke-width="1.2" opacity="0.4"/>'
+        '<path d="M16 26.4V29" stroke="var(--color-accent)" stroke-width="1.2" opacity="0.5"/>'
         "</svg>"
     )
 
@@ -36,11 +36,11 @@ def hero_waves() -> str:
         '<radialGradient id="hg" cx="78%" cy="-6%" r="90%">'
         '<stop offset="0" stop-color="#f6f2ec" stop-opacity="0.5"/>'
         '<stop offset="0.5" stop-color="#f6f2ec" stop-opacity="0.06"/>'
-        '<stop offset="1" stop-color="var(--surface-2)" stop-opacity="0"/>'
+        '<stop offset="1" stop-color="var(--color-canvas-sunken)" stop-opacity="0"/>'
         "</radialGradient>"
         '<linearGradient id="hb" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--accent)" stop-opacity="0.16"/>'
-        '<stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>'
+        '<stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.16"/>'
+        '<stop offset="1" stop-color="var(--color-accent)" stop-opacity="0"/>'
         "</linearGradient>"
         "</defs>"
         '<rect width="1200" height="720" fill="url(#hg)"/>'
@@ -152,30 +152,30 @@ def buoy_render_svg() -> str:
         '<svg class="rs-svg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
         "<defs>"
         '<linearGradient id="rs-sky" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--surface)"/><stop offset="1" stop-color="var(--surface-2)"/>'
+        '<stop offset="0" stop-color="var(--color-surface)"/><stop offset="1" stop-color="var(--color-canvas-sunken)"/>'
         "</linearGradient>"
         '<linearGradient id="rs-sea" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--accent)" stop-opacity="0.14"/>'
-        '<stop offset="1" stop-color="var(--accent) " stop-opacity="0.04"/>'
+        '<stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.14"/>'
+        '<stop offset="1" stop-color="var(--color-accent) " stop-opacity="0.04"/>'
         "</linearGradient>"
         "</defs>"
         '<rect width="480" height="210" fill="url(#rs-sky)"/>'
         '<rect y="210" width="480" height="150" fill="url(#rs-sea)"/>'
-        '<line x1="0" y1="210" x2="480" y2="210" stroke="var(--accent)" stroke-width="1.5" opacity="0.5"/>'
+        '<line x1="0" y1="210" x2="480" y2="210" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5"/>'
         # buoy
-        '<g stroke="var(--line-2)" stroke-width="2" fill="var(--surface)" '
+        '<g stroke="var(--color-line)" stroke-width="2" fill="var(--color-surface)" '
         'stroke-linejoin="round" opacity="0.9">'
         '<path d="M212 210 L268 210 L258 150 L222 150 Z"/>'          # float body
         '<rect x="228" y="120" width="24" height="32" rx="3"/>'      # electronics bay
-        '<rect x="214" y="104" width="52" height="12" rx="3" fill="var(--surface-2)"/>'  # solar panel
+        '<rect x="214" y="104" width="52" height="12" rx="3" fill="var(--color-canvas-sunken)"/>'  # solar panel
         '<line x1="240" y1="104" x2="240" y2="78"/>'                 # antenna
-        '<circle cx="240" cy="74" r="4" fill="var(--accent)" stroke="none"/>'
+        '<circle cx="240" cy="74" r="4" fill="var(--color-accent)" stroke="none"/>'
         "</g>"
         # mooring + sensor below
-        '<g stroke="var(--accent)" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4">'
+        '<g stroke="var(--color-accent)" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4">'
         '<line x1="240" y1="210" x2="240" y2="320"/></g>'
-        '<circle cx="240" cy="322" r="6" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.7"/>'
-        '<path d="M232 336 L248 336 L240 348 Z" fill="var(--accent)" opacity="0.5"/>'  # anchor
+        '<circle cx="240" cy="322" r="6" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.7"/>'
+        '<path d="M232 336 L248 336 L240 348 Z" fill="var(--color-accent)" opacity="0.5"/>'  # anchor
         "</svg>"
     )
 
@@ -193,7 +193,7 @@ def avatar(initials: str, uid: int, hue: int) -> str:
         f'<circle cx="32" cy="32" r="32" fill="url(#{gid})"/>'
         '<circle cx="32" cy="32" r="20" fill="none" stroke="oklch(96% 0.02 200)" '
         'stroke-width="0.8" opacity="0.35"/>'
-        f'<text x="32" y="41" text-anchor="middle" font-family="var(--font)" '
+        f'<text x="32" y="41" text-anchor="middle" font-family="var(--font-sans)" '
         f'font-size="22" fill="oklch(97% 0.01 200)" font-weight="500">{initials}</text>'
         "</svg>"
     )
@@ -277,20 +277,20 @@ def datapath_svg() -> str:
     node = (
         lambda x, label, sub: (
             f'<g transform="translate({x} 40)">'
-            f'<rect x="-52" y="-30" width="104" height="60" rx="12" fill="var(--surface-2)"/>'
-            f'<text x="0" y="-4" text-anchor="middle" font-family="var(--font)" font-size="13" '
-            f'fill="var(--ink)">{label}</text>'
+            f'<rect x="-52" y="-30" width="104" height="60" rx="12" fill="var(--color-canvas-sunken)"/>'
+            f'<text x="0" y="-4" text-anchor="middle" font-family="var(--font-sans)" font-size="13" '
+            f'fill="var(--color-text)">{label}</text>'
             f'<text x="0" y="14" text-anchor="middle" font-family="var(--font-sans)" font-size="9" '
-            f'fill="var(--muted)" letter-spacing="0.04em">{sub}</text></g>'
+            f'fill="var(--color-text-subtle)" letter-spacing="0.04em">{sub}</text></g>'
         )
     )
     arrow = (
         lambda x, tag: (
-            f'<g stroke="var(--accent)" stroke-width="1.6" fill="none" opacity="0.75">'
+            f'<g stroke="var(--color-accent)" stroke-width="1.6" fill="none" opacity="0.75">'
             f'<path d="M{x} 40 h44" stroke-dasharray="4 4"/>'
             f'<path d="M{x + 44} 40 l-6 -4 M{x + 44} 40 l-6 4" stroke-dasharray="0"/></g>'
             f'<text x="{x + 22}" y="30" text-anchor="middle" font-family="var(--font-sans)" '
-            f'font-size="8.5" fill="var(--accent)" letter-spacing="0.06em">{tag}</text>'
+            f'font-size="8.5" fill="var(--color-accent)" letter-spacing="0.06em">{tag}</text>'
         )
     )
     return (
@@ -321,15 +321,15 @@ def dhw_svg() -> str:
         '<stop offset="1" stop-color="var(--c-dhw)" stop-opacity="0"/>'
         "</linearGradient></defs>"
         # axes
-        '<line x1="48" y1="20" x2="48" y2="222" stroke="var(--line-2)"/>'
-        '<line x1="48" y1="222" x2="600" y2="222" stroke="var(--line-2)"/>'
+        '<line x1="48" y1="20" x2="48" y2="222" stroke="var(--color-line)"/>'
+        '<line x1="48" y1="222" x2="600" y2="222" stroke="var(--color-line)"/>'
         # threshold + MMM lines
         '<line x1="48" y1="96" x2="600" y2="96" stroke="var(--a-alert1)" stroke-dasharray="5 4"/>'
         '<text x="596" y="90" text-anchor="end" font-family="var(--font-sans)" font-size="10" '
         'fill="var(--a-alert1)">Bleaching threshold  (MMM + 1 °C)</text>'
-        '<line x1="48" y1="140" x2="600" y2="140" stroke="var(--faint)" stroke-dasharray="3 4"/>'
+        '<line x1="48" y1="140" x2="600" y2="140" stroke="var(--color-text-subtle)" stroke-dasharray="3 4"/>'
         '<text x="596" y="134" text-anchor="end" font-family="var(--font-sans)" font-size="10" '
-        'fill="var(--faint)">MMM</text>'
+        'fill="var(--color-text-subtle)">MMM</text>'
         # accumulated hotspot area (above threshold, clipped conceptually)
         '<path d="M232 96 C 300 40 360 44 430 96 L430 96 C 360 78 300 74 232 96 Z" fill="url(#dh)"/>'
         '<path d="M232 96 C 300 40 360 44 430 96" stroke="none" fill="url(#dh)"/>'
@@ -337,7 +337,7 @@ def dhw_svg() -> str:
         # SST curve
         '<path d="M48 176 C 130 168 180 150 232 96 C 300 40 360 44 430 96 C 500 150 540 168 600 172" '
         'stroke="var(--c-temp)" stroke-width="2.4"/>'
-        '<text x="150" y="205" font-family="var(--font-sans)" font-size="10" fill="var(--muted)">'
+        '<text x="150" y="205" font-family="var(--font-sans)" font-size="10" fill="var(--color-text-subtle)">'
         'daily SST</text>'
         '<text x="330" y="150" text-anchor="middle" font-family="var(--font-sans)" font-size="10" '
         'fill="var(--c-dhw)">HotSpot accumulates → DHW</text>'

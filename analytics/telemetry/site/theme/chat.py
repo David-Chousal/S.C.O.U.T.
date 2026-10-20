@@ -1,17 +1,20 @@
 """The "Ask Fred" chat widget."""
 
 CSS = """/* ── Ask Fred — centred frosted-glass chat (Fin-style) ───────────────────────── */
-.chat{z-index:60}
+.chat{z-index:var(--z-overlay)}
+/* The mobile launcher floats over the page; keep keyboard focus from landing underneath it
+   (WCAG 2.4.11 Focus Not Obscured). */
+@media(max-width:720px){html{scroll-padding-bottom:5.5rem}}
 .chat-toggle{border:none;background:none;cursor:pointer;color:inherit;padding:0;font:inherit}
 /* Navbar launcher (desktop) — matches the GitHub/LinkedIn icons in .nav-social. */
-.nav-chat{display:inline-flex;color:var(--muted);transition:color var(--dur) var(--ease)}
-.nav-chat:hover,.chat.chat-open .nav-chat{color:var(--accent)}
+.nav-chat{display:inline-flex;color:var(--color-text-subtle);transition:color var(--dur-quick) var(--ease-standard)}
+.nav-chat:hover,.chat.chat-open .nav-chat{color:var(--color-accent)}
 .nav-chat svg{width:15px;height:15px}
 /* Floating launcher — shown only on mobile, where .nav-social is hidden. */
-.chat-fab{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:60;
-  width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+.chat-fab{position:fixed;right:clamp(1rem,2vw,1.6rem);bottom:clamp(1rem,2vw,1.6rem);z-index:var(--z-overlay);
+  width:56px;height:56px;border-radius:50%;background:var(--color-accent);color:var(--color-on-accent);
   display:none;place-items:center;box-shadow:var(--shadow-2);
-  transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease)}
+  transition:transform var(--dur-settle) var(--ease-settle),opacity var(--dur-quick) var(--ease-standard)}
 .chat-fab:hover{transform:translateY(-2px) scale(1.04)}
 .chat-fab svg{width:24px;height:24px}
 @media(max-width:720px){.chat-fab{display:grid}}
@@ -20,13 +23,13 @@ CSS = """/* ── Ask Fred — centred frosted-glass chat (Fin-style) ───
    the input pill. The column is click-through (pointer-events:none) so the page stays fully
    usable around and between its pieces — only the card and pill capture clicks. Never dims the
    page; closes only via the header chevron or Escape. */
-.chat-panel{position:fixed;left:50%;bottom:clamp(1rem,2vw,1.4rem);z-index:60;pointer-events:none;
+.chat-panel{position:fixed;left:50%;bottom:clamp(1rem,2vw,1.4rem);z-index:var(--z-overlay);pointer-events:none;
   width:min(442px,calc(100vw - 2rem));max-height:calc(100dvh - 2.5rem);
   display:flex;flex-direction:column;gap:0.7rem;
   transform:translateX(-50%) translateY(14px);visibility:hidden;
-  transition:transform .3s var(--ease),visibility 0s .3s}
+  transition:transform .3s var(--ease-settle),visibility 0s .3s}
 .chat.chat-open .chat-panel{visibility:visible;transform:translateX(-50%);
-  transition:transform .32s var(--ease),visibility 0s}
+  transition:transform .32s var(--ease-settle),visibility 0s}
 /* Opacity lives on the leaves, never on their shared ancestor: `backdrop-filter` samples the
    backdrop *behind* its element, and an ancestor mid-fade is a composited group with nothing
    in it, so the blur read as absent until the fade landed and then snapped into focus. */
@@ -39,12 +42,12 @@ CSS = """/* ── Ask Fred — centred frosted-glass chat (Fin-style) ───
   height:min(364px,calc(100dvh - 9rem));border-radius:22px;color:#fff;
   background:linear-gradient(155deg,rgba(38,64,68,.62),rgba(15,32,36,.74));
   backdrop-filter:blur(4px) saturate(1.05);-webkit-backdrop-filter:blur(4px) saturate(1.05);
-  transition:backdrop-filter .34s var(--ease),-webkit-backdrop-filter .34s var(--ease);
+  transition:backdrop-filter .34s var(--ease-settle),-webkit-backdrop-filter .34s var(--ease-settle);
   border:1px solid rgba(255,255,255,.14);box-shadow:0 34px 90px -34px rgba(8,22,26,.65)}
 /* Header on the glass. */
 .chat-head{display:flex;align-items:center;gap:0.7rem;padding:0.95rem 1.1rem;
   border-bottom:1px solid rgba(255,255,255,.12)}
-.chat-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);
+.chat-avatar{flex:none;width:34px;height:34px;border-radius:50%;background:var(--color-accent);
   display:grid;place-items:center;overflow:hidden}
 .chat-avatar img{width:22px;height:22px;object-fit:contain;display:block;filter:brightness(0) invert(1)}
 .chat-id{min-width:0;line-height:1.25}
@@ -69,21 +72,21 @@ CSS = """/* ── Ask Fred — centred frosted-glass chat (Fin-style) ───
 .chat-chips{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.15rem}
 .chat-chip{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.07);color:#fff;
   border-radius:999px;padding:0.42rem 0.85rem;font:inherit;font-size:0.83rem;cursor:pointer;
-  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  transition:background var(--dur-quick) var(--ease-standard),border-color var(--dur-quick) var(--ease-standard)}
 .chat-chip:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.42)}
 /* Composer — a detached solid pill floating below the glass. */
 .chat-form{pointer-events:auto;display:flex;flex-direction:column}
-.chat-field{display:flex;align-items:center;gap:0.5rem;background:var(--surface);
+.chat-field{display:flex;align-items:center;gap:0.5rem;background:var(--color-surface);
   border:1px solid var(--color-line-strong);border-radius:999px;padding:0.35rem 0.35rem 0.35rem 1.15rem;
-  box-shadow:0 18px 44px -22px rgba(8,22,26,.5);transition:border-color var(--dur) var(--ease)}
-.chat-field:focus-within{border-color:var(--accent)}
+  box-shadow:0 18px 44px -22px rgba(8,22,26,.5);transition:border-color var(--dur-quick) var(--ease-standard)}
+.chat-field:focus-within{border-color:var(--color-accent)}
 .chat-input{flex:1;min-width:0;border:none;background:none;padding:0.5rem 0;font:inherit;
-  font-size:0.95rem;color:var(--ink)}
-.chat-input::placeholder{color:var(--muted)}
+  font-size:0.95rem;color:var(--color-text)}
+.chat-input::placeholder{color:var(--color-text-subtle)}
 .chat-input:focus{outline:none}
-.chat-send{flex:none;width:40px;height:40px;border:none;border-radius:50%;background:var(--accent);
-  color:var(--on-accent);display:grid;place-items:center;cursor:pointer;
-  transition:filter var(--dur) var(--ease)}
+.chat-send{flex:none;width:40px;height:40px;border:none;border-radius:50%;background:var(--color-accent);
+  color:var(--color-on-accent);display:grid;place-items:center;cursor:pointer;
+  transition:filter var(--dur-quick) var(--ease-standard)}
 .chat-send:hover{filter:brightness(1.08)}
 .chat-send svg{width:18px;height:18px}
 @media(max-width:720px){

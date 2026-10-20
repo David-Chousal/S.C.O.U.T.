@@ -34,7 +34,7 @@ class FontFaces(unittest.TestCase):
         self.assertNotIn("Fallback", self.css)
 
     def test_stacks_put_the_web_font_first_then_the_system_font(self):
-        self.assertRegex(self.css, r"--font:'DM Sans',ui-sans-serif,system-ui,")
+        self.assertRegex(self.css, r"--font-sans:'DM Sans',ui-sans-serif,system-ui,")
         self.assertRegex(self.css, r"--font-mono:'JetBrains Mono',ui-monospace,")
 
     def test_optical_sizing_is_on(self):

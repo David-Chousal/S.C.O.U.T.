@@ -30,13 +30,14 @@ and degrade to a static composition. Only `transform` and `opacity` animate, so 
 off the main thread.
 
 The CSS lives in one module per area (``tokens``, ``base``, ``navigation``, ``hero``,
-``content``, ``footer``, ``dashboard``, ``motion``, ``chat``) and is joined below in cascade
+``content``, ``footer``, ``dashboard``, ``motion``, ``chat``, ``utilities``) and is joined in cascade
 order, so a later module still overrides an earlier one exactly as the single string did.
 """
 
 from __future__ import annotations
 
-from . import base, chat, content, dashboard, fonts, footer, hero, motion, navigation, tokens
+from . import (base, chat, content, dashboard, fonts, footer, hero, motion, navigation, tokens,
+               utilities)
 
 # ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
 # the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
@@ -79,4 +80,5 @@ _CSS = "".join((
     dashboard.CSS,
     motion.CSS,
     chat.CSS,
+    utilities.CSS,
 ))

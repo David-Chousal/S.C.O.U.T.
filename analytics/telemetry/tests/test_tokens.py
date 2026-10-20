@@ -107,12 +107,6 @@ class EmittedCss(unittest.TestCase):
         self.assertIn("--color-text:", block)
         self.assertNotIn("--p-", block.split(":", 1)[0])
 
-    def test_legacy_names_that_now_alias_a_token_stay_within_three_levels(self):
-        for old, (new, previous) in tokens.LEGACY_ALIASES.items():
-            with self.subTest(old=old):
-                self.assertRegex(self.css, rf"--{re.escape(old)}:var\(--{re.escape(new)}\)")
-                self.assertLessEqual(colour.channel_distance(tokens.hex_of(new), previous), 3)
-
 
 if __name__ == "__main__":
     unittest.main()
