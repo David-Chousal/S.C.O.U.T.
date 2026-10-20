@@ -95,10 +95,11 @@ Three tiers, after Material 3 (`ref → sys → comp`) and GitHub Primer's namin
 panel) sets `data-ground="night"`, which redefines `--color-*` so every child inverts through the
 cascade. This formalises what `.hero` already does today.
 
-**Source of truth:** a Python dict in the shape of the
+**Source of truth:** `analytics/telemetry/site/theme/tokens.py` — plain Python dicts holding
+the same tiers (primitives in OKLCH, roles as references to them), from which the theme emits CSS
+custom properties. Standard library only. A
 [DTCG 2025.10](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/)
-format (`$value`, `$type`, aliases as `{p.stone.900}`), from which `theme.py` emits CSS custom
-properties and an optional `tokens.json` for design tools. Standard library only.
+`tokens.json` export is deferred until a design tool needs it.
 
 ---
 

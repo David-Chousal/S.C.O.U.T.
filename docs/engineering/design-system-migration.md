@@ -11,7 +11,10 @@
 
 ## Principles for the migration
 
-1. **Small PRs, each shippable.** Every PR leaves the site working and deployable on its own.
+1. **Small steps, each shippable, in one PR.** Every step leaves the site working and
+   deployable. Since 2026-10-20 all steps land as commits on **one** pull request,
+   [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191), so the whole migration can be
+   audited locally before it merges; work stops for review after each step.
 2. **Refactor before redesign.** The first code PR changes no pixels and proves it with a
    byte-identical CSS test, so every later diff is a design change and nothing else.
 3. **Old names alias new ones until the last caller moves.** No big-bang rename.
@@ -40,7 +43,10 @@ in page builders bypass it.
 
 ## Token rename map
 
-Old names stay as aliases (`--bg: var(--color-canvas)`) from PR 2 until PR 5, then are deleted.
+From step 2, an old name aliases its new token (`--bg: var(--color-canvas)`) **only where the
+value moves by ≤ 3/255 per channel**; every other old name keeps its literal until the step that
+changes that role on purpose (accent and `--faint` in step 4, chart and alert colours in step 6).
+All old names are deleted in step 5.
 
 ### Colour
 
@@ -103,10 +109,12 @@ Most class names are kept; only these change.
 
 ---
 
-## Pull requests, in order
+## Steps, in order
 
-Each PR follows CLAUDE.md: its own branch, conventional title, the five-section body, Hub
-updates, `check_conventions.py`, and an end-to-end site build.
+Each step below was first planned as its own PR; they now land as commits on
+[#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191) (step 0 excepted, which is copy
+only). Each step still carries Hub updates, `check_conventions.py`, and an end-to-end site
+build, and #191's description logs every step.
 
 ### PR 0 — `fix(analytics): say three transmit slots a day, not one`
 
@@ -116,22 +124,24 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 
 ### PR 1 — `refactor(analytics): split theme.py into a package without changing its output`
 
-- `site/theme/` package: `tokens.py`, `base.py`, `layout.py`, `components/*.py`,
-  `dashboard.py`, `chat.py`, `motion.py`; `styles()` concatenates them in today's order.
+- `site/theme/` package: `base`, `navigation`, `hero`, `content`, `footer`, `dashboard`,
+  `motion`, `chat`; `styles()` joins them in today's order. **Done** (commit `d8a6769`).
 - **Test first:** snapshot today's `styles()` output and assert the new package returns the
   identical string.
 - No visual change, no token change.
 
 ### PR 2 — `feat(analytics): add the Tideline token tiers alongside the old names`
 
-- `site/theme/tokens.py`: primitives and semantic roles as a DTCG-shaped dict; emits
-  `:root{…}`, the `[data-ground="night"]` block, and the `@supports not (color: oklch(0 0 0))`
-  hex fallbacks. Optional `tokens.json` export for design tools.
-- Old names become aliases of the new ones (values shift by ≤ 2/255; visually identical).
-- `scripts/check_tokens.py` (the generator and validator used to build this system):
-  recomputes every pairing in the [contrast table](design-system.md#contrast-computed) and the
-  categorical CVD separation, and **fails CI** if any falls below its threshold.
-- **Test first:** `test_tokens.py` asserts the thresholds.
+- `site/theme/tokens.py`: OKLCH primitives with derived hex, semantic roles, the
+  `[data-ground="night"]` block, status, eight alert levels, data and categorical colours,
+  space, z-index and motion; hex ships by default and OKLCH layers on under
+  `@supports (color: oklch(0 0 0))`. `site/theme/colour.py` holds the maths. **Done** (commit
+  `ccdd192`).
+- Old names alias new ones only within 3/255 (see the rename map above); visually identical.
+- The contrast and CVD validator is **`telemetry/tests/test_tokens.py`**, run by the existing
+  CI unit-test job, rather than a separate `scripts/check_tokens.py`.
+- Deferred: a DTCG `tokens.json` export. Nothing consumes it yet; add it when a design tool
+  does.
 
 ### PR 3 — `feat(analytics): self-host DM Sans with optical sizing and add JetBrains Mono`
 
