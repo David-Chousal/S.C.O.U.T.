@@ -42,7 +42,7 @@ _TEAM = [
 _PHASES = [
     ("Phase 0", "Kickoff", "Aug – Sep 2026", True),
     ("Phase 1", "Subsystem bring-up", "Sep – Oct 2026", False),
-    ("Phase 2", "System integration", "Oct – Nov 2026", False),
+    ("Phase 2", "System integration", "Oct – Dec 2026", False),
     ("Phase 3", "Enclosure &amp; waterproofing", "Nov 2026 – Jan 2027", False),
     ("Phase 4", "Field prototype deployment", "Jan – Feb 2027", False),
     ("Phase 5", "Hawaii deployment prep", "Mar 2027", False),
