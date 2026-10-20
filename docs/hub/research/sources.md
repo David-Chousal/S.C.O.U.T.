@@ -308,6 +308,21 @@ depends on them.
 | `scu-mantaray-2026` | A. Balamurugan *et al.*, "MANTARAY Profiler," B.S. thesis, Santa Clara Univ., 2026. [scholarcommons](https://scholarcommons.scu.edu/idp_senior/111/) | 🔓 | — | Autonomous ocean profiler; ballast/CG scaled-model testing; thesis benchmark |
 | `scu-marine-robot-2022` | V. Chulyukina, N. Villar, K. Blair, M. Singh, and N. Burke, "Marine Robot Sample Retrieving System," B.S. thesis, Santa Clara Univ., 2022. [scholarcommons](https://scholarcommons.scu.edu/mech_senior/124/) | 🔓 | — | ROV sampling arm; cautionary case of PETG parts warping and under-testing; thesis benchmark |
 
+## Data visualization & web design (2026-10-19)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `thyng-2016` | Thyng, Greene, Hetland, Zimmerle & DiMarco (2016). "True colors of oceanography: Guidelines for effective and accurate colormap selection." *Oceanography* 29(3):9–13. [cmocean](https://matplotlib.org/cmocean/) | 🔓 | — | cmocean `thermal`, `turbid`, `balance` scales in the [Data Visualization](../../engineering/design-system-data-viz.md) spec |
+| `crameri-2020` | Crameri, Shephard & Heron (2020). "The misuse of colour in science communication." *Nature Communications* 11:5444. [doi](https://doi.org/10.1038/s41467-020-19160-7) | 🔓 | — | Why rainbow scales are banned in the data-viz spec |
+| `machado-2009` | Machado, Oliveira & Fernandes (2009). "A physiologically-based model for simulation of color vision deficiency." *IEEE TVCG* 15(6):1291–1298. [doi](https://doi.org/10.1109/TVCG.2009.113) | 🔒 | — | CVD simulation used to validate the categorical palette |
+| `okabe-ito-2008` | Okabe & Ito (2008). *Color Universal Design.* [palette](https://siegal.bio.nyu.edu/color-palette/) | 🔓 | — | Base of the five-colour categorical palette |
+| `noaa-crw-baa-2023` | NOAA Coral Reef Watch, Bleaching Alert Area product, Alert Levels 3–5 added 2023-12-15. [CRW](https://coralreefwatch.noaa.gov/product/5km/index_5km_baa-max-365d.php) | 🔓 | — | Eight-level alert scale in the design system; the pipeline still stops at Level 2 |
+| `dtcg-2025` | Design Tokens Community Group (2025). *Design Tokens Format Module* 2025.10. [w3.org](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/) | 🔓 | — | Token file shape ([ADR-0009](../../decisions/0009-tideline-design-system.md)) |
+| `wcag-22` | W3C (2023). *Web Content Accessibility Guidelines 2.2.* [w3.org](https://www.w3.org/TR/WCAG22/) | 🔓 | — | AA contrast, SC 2.5.8 target size, SC 2.4.11 focus not obscured |
+| `web-dev-cwv` | web.dev, "How the Core Web Vitals metrics thresholds were defined." [web.dev](https://web.dev/articles/defining-core-web-vitals-thresholds) | 🔓 | — | LCP / INP / CLS thresholds behind the performance budget |
+| `bocoup-gaps` | Beshai, "Showing missing data in line charts," Bocoup. [bocoup.com](https://bocoup.com/blog/showing-missing-data-in-line-charts) | 🔓 | — | Never interpolate across missing packets |
+| `webstatus-dev` | Google / W3C WebDX, webstatus.dev Baseline API (queried 2026-10-19). [webstatus.dev](https://webstatus.dev/) | 🔓 | — | Browser support for every CSS feature adopted or rejected |
+
 ## Maintenance
 
 - **Adding a source:** add a row to the right topic table, fill DOI + access, and — if you have

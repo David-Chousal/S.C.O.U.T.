@@ -58,6 +58,10 @@ Technical design and component specification.
 | [Hardware/Software Integration Runbook](engineering/integration-runbook.md) | **How the software gets onto the hardware** — toolchain, what programs what, and the staged bring-up from bench to field, with a PASS gate at every step. Written to be executed by a Claude session. |
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |
+| [Design System](engineering/design-system.md) | "Tideline" — brand foundations, voice, and every token for the site and dashboard, with computed contrast |
+| [Design System — Components](engineering/design-system-components.md) | Every component's anatomy, variants, states and accessibility notes; page templates |
+| [Design System — Data Visualization](engineering/design-system-data-viz.md) | Honest telemetry charts: colour scales, units, gaps, freshness, the three-slot packet |
+| [Design System Migration](engineering/design-system-migration.md) | Token rename map and the eight-PR plan to move `theme.py` to Tideline (proposed) |
 | [Buoy Structural Engineering](engineering/buoy-structural/) | Load equations, mass/buoyancy budget, force tracking, and print settings — grouped together since they cite each other constantly. See the [folder's own index](engineering/buoy-structural/README.md) for what's inside |
 | [Electronics Housing Packing Budget](engineering/electronics-housing-packing-budget.md) | Real component dimensions from Isabella's Rev A datasheets, three candidate cylindrical packing layouts, and the resulting minimum diameter/length/volume for each |
 | [Design Panel Reviews](engineering/reviews/) | Panel-review write-ups (raw source PDF + Markdown transcription) of subsystem architecture — currently the [buoy preliminary design panel review](engineering/reviews/buoy-preliminary-design-panel-review-2026-08.md) |
