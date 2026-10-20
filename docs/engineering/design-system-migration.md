@@ -145,10 +145,12 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 
 ### PR 3 — `feat(analytics): self-host DM Sans with optical sizing and add JetBrains Mono`
 
-- Re-subset DM Sans (Latin, `opsz` 9–40, `wght` 300–700, keep `ss01` and `case`) → 44.5 KB;
-  add JetBrains Mono (Latin, `wght` 400–600) → 12.9 KB; ship its OFL licence next to DM Sans'.
-- Metric-matched fallback `@font-face` (`size-adjust`, `ascent-override`, `descent-override`
-  computed from the files) to keep CLS ≤ 0.05; preload DM Sans Latin only.
+- Re-subset DM Sans (`opsz` 9–40, `wght` 300–700, keep `ss01` and `case`): core 46.6 KB plus
+  a 17.7 KB Latin Extended-A file fetched on demand; add JetBrains Mono (`wght` 400–600)
+  13.1 KB; ship its OFL licence next to DM Sans'. **Done** (step 3).
+- Metric-matched Arial fallbacks were tried and dropped (they caused the layout shift they
+  were meant to prevent); Home alone preloads the core subset. Both decisions are measured in
+  the typography section.
 - `font-optical-sizing: auto` on `body`.
 - A small build script under `scripts/` does the subsetting (fontTools + brotli, dev-only — the
   site still has no runtime dependency).

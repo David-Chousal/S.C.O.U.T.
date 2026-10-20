@@ -259,6 +259,14 @@ def chat_widget(base: str) -> str:
     )
 
 
+def _font_preload(base: str) -> str:
+    # Home only: its LCP is the hero title, and preloading the core subset took it from 3.46 to
+    # 3.01 s on mobile 4G. On text-led inner pages the same preload delayed first paint
+    # (Science LCP 1.22 -> 2.46 s), so they let the font arrive on its own.
+    return (f'<link rel="preload" href="{base}assets/fonts/dmsans-latin.woff2" as="font" '
+            'type="font/woff2" crossorigin>\n')
+
+
 def document(
     *,
     title: str,
@@ -286,6 +294,7 @@ def document(
         '<meta name="theme-color" content="#f5f1ec">\n'
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
+        f"{_font_preload(base) if fonts_present and active == 'home' else ''}"
         f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"
         f"{_REVEAL_FLAG}\n"
         f'</head>\n<body class="page-{active}" data-lottie-base="{base}assets/lottie/">\n'

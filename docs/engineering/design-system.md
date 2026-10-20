@@ -260,13 +260,16 @@ Summarised here; rules, usage and CVD results live in the
 
 | Role | Family | Axes kept | Subset | Size (woff2) |
 |---|---|---|---|---|
-| Shore — everything a person wrote | **DM Sans** (kept) | `opsz` 9–40, `wght` 300–700 | Latin + punctuation, `°` `±` `µ` `−` `≤` `≥` | 44.5 KB |
-| Instrument — everything the buoy measured | **JetBrains Mono** (new) | `wght` 400–600 | Same | 12.9 KB |
-| **Total** | | | | **57.4 KB** (today: 62.5 KB for DM Sans Latin alone) |
+| Shore — everything a person wrote | **DM Sans** (kept) | `opsz` 9–40, `wght` 300–700 | Latin-1 + punctuation, arrows, `−` `≈` `≠` `≤` `≥` | 46.6 KB |
+| Shore, on demand | DM Sans, Latin Extended-A | same | Names such as "ć", Hawaiian kahakō (fetched only when a page uses them) | 17.7 KB |
+| Instrument — everything the buoy measured | **JetBrains Mono** (new) | `wght` 400–600 | ASCII, Latin-1, dashes, arrows, maths | 13.1 KB |
+| **Per page** | | | | **59.7 KB** (+17.7 KB with Extended-A). Before: 61 KB, or 92 KB with Latin Extended |
 
-**Why keep DM Sans.** It is already self-hosted and recognised, and its unused optical-size axis
-gives tighter, crisper display type and more open micro-labels for free
-(`font-optical-sizing: auto`, widely available since 2020).
+**Why keep DM Sans.** It is already self-hosted and recognised, and its optical-size axis gives
+tighter display type and more open micro-labels (`font-optical-sizing: auto`, widely available
+since 2020). *Correction (2026-10-20):* this was first described as an unused axis. The shipped
+subset already carried `opsz`, and `auto` is the CSS default, so optical sizing was already in
+effect; the new subset keeps it and the CSS now states it explicitly.
 
 **Why add a mono.** Measured on the shipped file and on upstream: DM Sans has **no `tnum`
 feature** and proportional digits (`1` is 342 units, `0` is 656), so the five
@@ -279,9 +282,12 @@ italic) and IBM Plex Mono (static weights only) for its size and its unambiguous
 The current subset also stripped DM Sans' `ss01`, which `body` requests — so that declaration
 does nothing today either. The new subset keeps `ss01` and `case`.
 
-Both files use `font-display: swap` plus a metric-matched fallback `@font-face`
-(`size-adjust`, `ascent-override`, `descent-override`, computed from the font files) so the swap
-causes no layout shift. Only DM Sans Latin is preloaded.
+All files use `font-display: swap`; while one loads, text shows in the system UI font. A
+metric-matched Arial fallback (`size-adjust` and overrides) was built and **measured worse**:
+it shifted layout (CLS 0.051 on Technology, mobile) where the system font shifted nothing
+(macOS Chrome; not yet measured on Windows or Android). **Only Home preloads** the core subset:
+it took Home's LCP (the hero title) from 3.46 to 3.01 s on mobile 4G, while on text-led inner
+pages the same preload delayed first paint and pushed Science's LCP from 1.22 to 2.46 s.
 
 ### Scale
 
@@ -466,7 +472,7 @@ in [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191).
 | LCP (mobile, 4G) | ≤ 2.0 s | **Home 3.49 s** (fails); inner pages 1.29–1.46 s |
 | INP | ≤ 100 ms | Near-zero JS; expected to pass |
 | CLS | ≤ 0.05 | 0 on every page except Science (0.012) |
-| Fonts | ≤ 60 KB, 2 files, 1 preload | 61 KB per page (DM Sans Latin); 92 KB where Latin Extended also loads |
+| Fonts | ≤ 60 KB per page, no preload | Before step 3: 61 KB per page; 92 KB where Latin Extended also loads |
 | CSS (inline, per page) | ≤ 36 KB raw / ≤ 9 KB brotli | 54.5 KB raw |
 | JS (first party) | ≤ 15 KB | ~12 KB + **~650 KB Lottie on every page** (168 KB player + 479–527 KB JSON) |
 | Hero image | ≤ 120 KB at 1600 w AVIF | 234 KB WebP at 1440 w (upscaled on wide screens) |

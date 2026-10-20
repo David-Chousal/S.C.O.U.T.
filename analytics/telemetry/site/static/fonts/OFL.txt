@@ -1,7 +1,8 @@
 DM Sans — self-hosted for the S.C.O.U.T. website
 =================================================
 
-Files:  dmsans-latin.woff2, dmsans-latin-ext.woff2  (variable, weight 300–700)
+Files:  dmsans-latin.woff2, dmsans-latin-ext.woff2  (variable: weight 300–700,
+        optical size 9–40)
 Family: DM Sans
 Design: Colophon Foundry, Jonny Pinhorn, Indian Type Foundry
 Source: https://fonts.google.com/specimen/DM+Sans
@@ -19,5 +20,6 @@ retained. The full license text is available at:
     https://openfontlicense.org
     https://scripts.sil.org/OFL
 
-The fonts are subset-hosted here (Latin + Latin-Extended) so the site loads no
-external resources; see ../../theme.py for the @font-face declarations.
+The fonts are subset-hosted here (Latin + Latin Extended-A) so the site loads no
+external resources. Built by scripts/subset_site_fonts.py; see ../../theme/fonts.py for
+the @font-face declarations. JetBrains Mono's licence is in OFL-JetBrainsMono.txt.

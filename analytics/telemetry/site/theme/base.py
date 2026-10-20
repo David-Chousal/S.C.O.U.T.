@@ -41,7 +41,7 @@ CSS = """
   --a-alert2:#9a5b8e;
 
   --font:'DM Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
-  --font-mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
 
   --text-hero:clamp(3rem,1.6rem + 6vw,6.4rem);
   --text-display:clamp(2rem,1.3rem + 2.8vw,3.4rem);
@@ -69,6 +69,7 @@ html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
   margin:0;background:var(--bg);color:var(--text);
   font-family:var(--font);font-size:var(--text-body);line-height:1.7;font-weight:400;
+  font-optical-sizing:auto;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
   font-feature-settings:"ss01";
 }

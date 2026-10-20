@@ -3,7 +3,7 @@
 A pure refactor must keep these digests; a deliberate design change updates them in the same
 commit, with the reason in the commit message. History: taken on main at 563a1f7 (after #189)
 before the package split; re-pinned when the Tideline token tiers were added (every rendered
-page within 3/255 per channel of the previous output).
+page within 3/255 per channel of the previous output), and when the fonts changed (step 3).
 """
 
 import hashlib
@@ -20,19 +20,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "9107be5bdc6d5ce3240588cf41ab30b363323dc92b13c60920033bda0f1e9894",
+            "c936ab013fd9ff45eb13b033a5eac462fcc7360d6e889a838d7393d7908ea583",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "7a2e1adaa8893abe2568cc9d7da44516873b752e42595df7af3adfbe9799891c",
+            "c96d045950160fb5d91262ae42424449439afdf93f3ff6ac90ea0653ea73e3d0",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "c0af6978773269998479b0c88994f0c5dfe5e6fab9a2f3da3a39ab1204c2bb77",
+            "bd8380004ed72b28a2b4cc45f22615f9a96da931bc959feab471c244723e0177",
         )
 
     def test_favicon_is_unchanged(self):
