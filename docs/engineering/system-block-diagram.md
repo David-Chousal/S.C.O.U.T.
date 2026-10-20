@@ -55,5 +55,7 @@ four are rows in [open questions](../hub/research/open-questions.md).
 - The housing flange has 6 bolts in the 2026-09-28 sizing and 8 bolts in the 2026-10-06 DFM
   drawing. The diagram follows the newer DFM drawing.
 - The turbidity board's location (housing vs sensor pod) is still open; it was already listed.
-- `purchase-log.md` lists the Mouser order as not yet placed; the runbook says those parts
-  arrived 2026-10-16.
+- The [Integration Runbook](integration-runbook.md) §1 says the Mouser parts (Grove turbidity
+  sensor, DMG2305UX switches, CR1220, adapters) arrived 2026-10-16. They did not: Isabella
+  confirmed 2026-10-19 that the order was never placed, so `purchase-log.md` ("not yet placed")
+  is right, and the order is being placed now. The runbook row and SCO-115 need correcting.
