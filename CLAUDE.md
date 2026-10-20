@@ -87,7 +87,7 @@ than skipping the step.
 
 ## The project
 
-**S.C.O.U.T.** (Santa Clara Oceanic Utilities Transmitter) — a low-cost, solar-powered,
+**S.C.O.U.T.** (Santa Clara Oceanic Utilities Transmitter) — a low-cost, battery-powered,
 modular **nearshore environmental monitoring platform**: one buoy carrying many sensing
 signals (temperature, turbidity, dissolved oxygen, and more), with coral-reef health as its
 first application. Santa Clara University Senior Design Capstone, 2026–2027.
@@ -98,7 +98,7 @@ first application. Santa Clara University Senior Design Capstone, 2026–2027.
 | John Ryan Myrdal | GENG | Field & mechanical — buoy structure, deployment |
 | David Chousal Cantu | CSEN | Software — firmware, data pipeline, shore station |
 
-**Faculty advisors:** Jes Kuczenski · Hoeseok Yang (ECEN) · Navid Shaghaghi
+**Faculty advisors:** Jes Kuczenski (GENG) · Shoba Krishnan (ECEN) · Navid Shaghaghi (CSEN)
 
 Start with [README.md](README.md) for architecture and status. Full doc index at
 [docs/README.md](docs/README.md).

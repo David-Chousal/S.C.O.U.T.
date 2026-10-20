@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/David-Chousal/S.C.O.U.T./actions/workflows/ci.yml/badge.svg)](https://github.com/David-Chousal/S.C.O.U.T./actions/workflows/ci.yml)
 
-**Santa Clara Oceanic Utilities Transmitter** — a low-cost, solar-powered, modular
+**Santa Clara Oceanic Utilities Transmitter** — a low-cost, battery-powered, modular
 **nearshore environmental monitoring platform**: one buoy carrying many sensing signals
 (temperature, turbidity, dissolved oxygen, and more), with coral-reef health as its first
 application.
@@ -18,7 +18,7 @@ monitor them are expensive and rarely serviced. Existing monitoring buoys cost t
 thousands of dollars, and researchers interviewed for this project described sites where data
 is physically retrieved only every few years.
 
-S.C.O.U.T. is a small, modular, solar-powered buoy designed to be deployed adjacent to shallow
+S.C.O.U.T. is a small, modular, battery-powered buoy designed to be deployed adjacent to shallow
 reefs and left alone. It samples a stack of environmental signals — water temperature and
 turbidity today, with dissolved oxygen, light, chlorophyll, and reef soundscapes on the
 sensor roadmap — stores everything locally, and transmits a summarized daily packet to a

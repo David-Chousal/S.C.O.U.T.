@@ -7,7 +7,7 @@ from ..context import SiteContext
 
 TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
 DESCRIPTION = (
-    "S.C.O.U.T. is a low-cost, solar-powered nearshore monitoring buoy measuring reef "
+    "S.C.O.U.T. is a low-cost, battery-powered nearshore monitoring buoy measuring reef "
     "temperature, turbidity and health, and computing NOAA Coral Reef Watch thermal-stress "
     "metrics. Santa Clara University Senior Design Capstone, 2026–2027."
 )
@@ -56,7 +56,7 @@ def _mission() -> str:
         "every few years. When we interviewed reef scientists, they pointed to the same gap: "
         "<strong>affordable measurements in the shallow nearshore water where satellite products "
         "lose accuracy</strong>.</p>"
-        "<p>S.C.O.U.T. is designed to run unattended, with solar power, low maintenance, and a modular "
+        "<p>S.C.O.U.T. is designed to run unattended, on battery power, low maintenance, and a modular "
         "sensor payload. The target system cost is under $5,000, the figure researchers gave as "
         "a practical ceiling.</p>"
         "</div></div>",
@@ -79,7 +79,7 @@ def _senses() -> str:
          "retrieved by hand — never sent over the radio — then analysed for bioacoustic "
          "signs of reef health."),
         ("battery", "Signal 04", "Battery &amp; health",
-         "Battery state-of-health and daily minimum voltage track whether the solar power budget "
+         "Battery state-of-health and daily minimum voltage track whether the battery power budget "
          "is holding up over a long deployment."),
     ]
     entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in signals)
