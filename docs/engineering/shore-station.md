@@ -111,7 +111,7 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
 
 ## Timeline
 
-Phase 2 (System Integration, 2026-10-19 – 2026-11-25): bring up reception on the S3
+Phase 2 (System Integration, 2026-10-22 – 2026-12-06): bring up reception on the S3
 ([SCO-24](https://linear.app/scout1/issue/SCO-24), due 2026-10-30) after the bench link test
 ([SCO-155](https://linear.app/scout1/issue/SCO-155)). MVP target 2026-12-04: a packet reaches
 the shore station.
