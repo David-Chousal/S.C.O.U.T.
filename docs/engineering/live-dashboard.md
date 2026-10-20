@@ -160,8 +160,11 @@ contrast was measured against. The hero type still rises, but its last element l
 rather than 1520 ms, inside the same window.
 
 The reveal itself is an `IntersectionObserver`, not a scroll handler — including the one that
-makes the header float transparent over the hero, which watches a 1px sentinel at the top of the
-hero rather than sampling scroll position every frame.
+makes the header float transparent over the hero, which watches a sentinel spanning the hero
+(less one header height) rather than sampling scroll position every frame. Two details matter
+there: the sentinel must span the hero, or the header turns sand after the first pixel of scroll
+while it is still over the photograph; and `at-top` is seeded by the inline head script, not
+only by the deferred `reveal.js`, or the first paint shows a sand header that then fades away.
 
 #### Two things that were nearly shipped broken
 

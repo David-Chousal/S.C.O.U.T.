@@ -118,11 +118,17 @@ def _lottie_scripts(base: str) -> str:
 # and back out. The CSS that hides `.reveal` is gated entirely on this class, which means a
 # reader with JavaScript off sees every element normally. The watchdog is the third safety
 # net: if reveal.js somehow never runs, the flag clears itself and the page un-hides.
+# `at-top` is seeded here, before first paint, so the home header starts transparent over the
+# hero instead of flashing its sand bar until the deferred reveal.js arrives. It only styles
+# `.page-home`, so seeding it on every page is harmless. The watchdog drops it with `js-reveal`:
+# without reveal.js nothing would ever clear it on scroll.
 _REVEAL_FLAG = (
     "<script>"
     "document.documentElement.classList.add('js-reveal');"
+    "if('IntersectionObserver' in window&&(window.scrollY||0)<10)"
+    "document.documentElement.classList.add('at-top');"
     "window.__scoutRevealWatchdog=setTimeout(function(){"
-    "document.documentElement.classList.remove('js-reveal')},4000);"
+    "document.documentElement.classList.remove('js-reveal','at-top')},4000);"
     "</script>"
 )
 
