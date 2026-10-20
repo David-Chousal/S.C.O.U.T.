@@ -108,13 +108,6 @@ def header(base: str, active: str, social: bool = True) -> str:
     )
 
 
-def _lottie_scripts(base: str) -> str:
-    return (
-        f'<script defer src="{base}assets/lottie/lottie.min.js"></script>'
-        f'<script defer src="{base}assets/lottie/init.js"></script>'
-    )
-
-
 # Set synchronously in <head>, before the body paints, so revealed content never flashes in
 # and back out. The CSS that hides `.reveal` is gated entirely on this class, which means a
 # reader with JavaScript off sees every element normally. The watchdog is the third safety
@@ -136,17 +129,6 @@ _REVEAL_FLAG = (
 
 def _reveal_script(base: str) -> str:
     return f'<script defer src="{base}assets/js/reveal.js"></script>'
-
-
-def _footer_seaweed(base: str) -> str:
-    src = f"{base}assets/lottie/seaweed.json"
-    return (
-        '<div class="footer-seaweed" aria-hidden="true">'
-        f'<span class="weed weed-a" data-lottie="{src}"></span>'
-        f'<span class="weed weed-b" data-lottie="{src}"></span>'
-        f'<span class="weed weed-c" data-lottie="{src}"></span>'
-        "</div>"
-    )
 
 
 def footer(base: str, *, external: bool = True) -> str:
@@ -188,18 +170,8 @@ def footer(base: str, *, external: bool = True) -> str:
         f'<a href="{imagery.HERO.source_url}">{imagery.HERO.source}</a></span>'
         if external and imagery.HERO.photographer else ""
     )
-    seaweed = _footer_seaweed(base)  # on every page, including Analytics
-    # Ambient critters drifting around the footer — one each, spread for good spacing.
-    critters = (
-        '<div class="footer-critters" aria-hidden="true">'
-        f'<span class="critter critter-jelly" data-lottie="{base}assets/lottie/jellyfish.json"></span>'
-        f'<span class="critter critter-sub" data-lottie="{base}assets/lottie/submarine.json"></span>'
-        f'<span class="critter critter-crab" data-lottie="{base}assets/lottie/crab.json"></span>'
-        f'<span class="critter critter-star" data-lottie="{base}assets/lottie/starfish.json"></span>'
-        "</div>"
-    )
     return (
-        f'<footer class="site-footer">{seaweed}{critters}<div class="wrap footer-grid">'
+        '<footer class="site-footer"><div class="wrap footer-grid">'
         '<div class="footer-brand">'
         "<p>Santa Clara Oceanic Utilities Transmitter. A low-cost, battery-powered nearshore "
         "monitoring buoy. Santa Clara University senior design capstone, 2026–2027.</p>"
@@ -268,6 +240,11 @@ def _font_preload(base: str) -> str:
             'type="font/woff2" crossorigin>\n')
 
 
+def _bundle(active: str) -> str:
+    # Analytics and Fleet carry no hero or content components; the authored pages no charts.
+    return "dashboard" if active in ("analytics", "fleet") else "site"
+
+
 def document(
     *,
     title: str,
@@ -296,9 +273,10 @@ def document(
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"{_font_preload(base) if fonts_present and active == 'home' else ''}"
-        f"<style>{theme.styles(base=base, fonts_present=fonts_present)}</style>\n"
+        f"<style>{theme.styles(base=base, fonts_present=fonts_present, bundle=_bundle(active))}"
+        "</style>\n"
         f"{_REVEAL_FLAG}\n"
-        f'</head>\n<body class="page-{active}" data-lottie-base="{base}assets/lottie/">\n'
+        f'</head>\n<body class="page-{active}">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
         # Header social icons appear on every page (they are hyperlinks, not loaded resources).
@@ -307,11 +285,8 @@ def document(
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
         f"{footer(base, external=external)}\n"
-        # Self-hosted Lottie runtime for the ambient animations, on every page (including
-        # Analytics). Same-origin only; the page still makes no cross-origin request.
-        f"{_lottie_scripts(base)}"
-        # Scroll reveals, on every page for the same reason: same-origin, and the CSS that
-        # hides anything is gated on a class only this script's head flag sets.
+        # Scroll reveals, on every page: same-origin, and the CSS that hides anything is gated
+        # on a class only this script's head flag sets.
         f"{_reveal_script(base)}"
         f"{chat_widget(base)}\n"
         "</body>\n</html>\n"

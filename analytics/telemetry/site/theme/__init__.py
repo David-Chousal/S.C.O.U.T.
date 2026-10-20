@@ -1,10 +1,9 @@
 """The S.C.O.U.T. design system — tokens, CSS, and inline-SVG brand assets.
 
-Direction: *warm zen · beachy · oceanic minimalism* — a pale-sand canvas, warm ink, enormous
-whitespace, one clean geometric sans (DM Sans, self-hosted), and micro-labels set in uppercase
-with wide tracking. Chrome stays quiet and warm-neutral; colour comes from the reef imagery and
-the data. Cards are softly rounded and lifted by a soft, eased-back shadow — no outline
-(only the buoy render-slot keeps a hairline ring).
+Direction: *Tideline* (docs/engineering/design-system.md) — a pale-sand canvas and reef
+photography for everything a person wrote (DM Sans), and a precise instrument layer for
+everything the buoy measured (JetBrains Mono, hairline plates). Surfaces are square, controls are
+round; marketing cards float on a soft shadow, instrument plates sit flat on a hairline.
 
 The Home page opens on a **full-viewport photographic hero**: the reef photograph is the stage
 and the type sits over it, on a scrim whose stops were set by measuring worst-case contrast on
@@ -36,8 +35,10 @@ order, so a later module still overrides an earlier one exactly as the single st
 
 from __future__ import annotations
 
-from . import (base, chat, content, dashboard, fonts, footer, hero, motion, navigation, tokens,
-               utilities)
+import re
+
+from . import (base, chat, content, dashboard, fonts, footer, hero, motion, navigation, surfaces,
+               tokens, utilities)
 
 # ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
 # the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
@@ -63,22 +64,31 @@ SERIES = {
 }
 
 
-def styles(*, base: str = "", fonts_present: bool = False) -> str:
-    """Return the full design-system CSS, with the self-hosted fonts when they are bundled."""
+def styles(*, base: str = "", fonts_present: bool = False, bundle: str = "all") -> str:
+    """Return the minified design-system CSS for ``bundle``, with the fonts when bundled.
+
+    ``"site"`` is for the authored pages (no dashboard rules), ``"dashboard"`` for Analytics and
+    Fleet (no hero or content components), ``"all"`` for both.
+    """
     face = fonts.css(base) if fonts_present else ""
-    return face + _CSS
+    return _minify(face + "".join(m.CSS for m in _BUNDLES[bundle]))
 
 
-# Emitted in cascade order — later sections override earlier ones.
-_CSS = "".join((
-    tokens.CSS,
-    base.CSS,
-    navigation.CSS,
-    hero.CSS,
-    content.CSS,
-    footer.CSS,
-    dashboard.CSS,
-    motion.CSS,
-    chat.CSS,
-    utilities.CSS,
-))
+def _minify(css: str) -> str:
+    """Strip comments and collapse whitespace. Spaces inside values (``calc(a * -1)``) and
+    descendant combinators (``main :where(...)``) survive; only space next to ``{ } ; , >`` and
+    runs of whitespace go."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    css = re.sub(r"\s+", " ", css)
+    css = re.sub(r"\s*([{};,>])\s*", r"\1", css)
+    return css.replace(";}", "}").strip()
+
+
+# Each bundle lists its modules in cascade order — later sections override earlier ones.
+_COMMON_HEAD = (tokens, base, navigation)
+_COMMON_TAIL = (motion, chat, utilities)
+_BUNDLES = {
+    "all": (*_COMMON_HEAD, hero, surfaces, content, footer, dashboard, *_COMMON_TAIL),
+    "site": (*_COMMON_HEAD, hero, surfaces, content, footer, *_COMMON_TAIL),
+    "dashboard": (*_COMMON_HEAD, surfaces, footer, dashboard, *_COMMON_TAIL),
+}

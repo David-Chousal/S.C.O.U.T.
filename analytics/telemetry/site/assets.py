@@ -15,60 +15,6 @@ import html
 import re
 
 
-def logo_mark(cls: str = "mark") -> str:
-    """Concentric sonar rings — the S.C.O.U.T. mark. Uses ``currentColor`` + the accent token."""
-    return (
-        f'<svg class="{cls}" viewBox="0 0 32 32" role="img" aria-label="S.C.O.U.T. mark" fill="none">'
-        '<rect width="32" height="32" rx="8" fill="var(--color-canvas-sunken)"/>'
-        '<circle cx="16" cy="16" r="2.6" fill="var(--color-accent)"/>'
-        '<circle cx="16" cy="16" r="6.4" stroke="var(--color-accent)" stroke-width="1.4" opacity="0.72"/>'
-        '<circle cx="16" cy="16" r="10.4" stroke="var(--color-accent)" stroke-width="1.2" opacity="0.4"/>'
-        '<path d="M16 26.4V29" stroke="var(--color-accent)" stroke-width="1.2" opacity="0.5"/>'
-        "</svg>"
-    )
-
-
-def hero_waves() -> str:
-    """Abyssal hero backdrop: descending caustic light, slow current bands, a drifting field."""
-    return (
-        '<svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
-        "<defs>"
-        '<radialGradient id="hg" cx="78%" cy="-6%" r="90%">'
-        '<stop offset="0" stop-color="#f6f2ec" stop-opacity="0.5"/>'
-        '<stop offset="0.5" stop-color="#f6f2ec" stop-opacity="0.06"/>'
-        '<stop offset="1" stop-color="var(--color-canvas-sunken)" stop-opacity="0"/>'
-        "</radialGradient>"
-        '<linearGradient id="hb" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.16"/>'
-        '<stop offset="1" stop-color="var(--color-accent)" stop-opacity="0"/>'
-        "</linearGradient>"
-        "</defs>"
-        '<rect width="1200" height="720" fill="url(#hg)"/>'
-        # slow current bands
-        '<g class="sway" opacity="0.5">'
-        '<path d="M-60 250 C 300 200 620 300 1260 236" stroke="url(#hb)" stroke-width="2" fill="none"/>'
-        '<path d="M-60 330 C 340 286 700 372 1260 312" stroke="#f6f2ec" stroke-width="1" '
-        'fill="none" opacity="0.5"/>'
-        '<path d="M-60 430 C 360 384 720 470 1260 408" stroke="#f6f2ec" stroke-width="1" '
-        'fill="none" opacity="0.32"/>'
-        "</g>"
-        # caustic light shafts
-        '<g class="drift" opacity="0.6">'
-        '<path d="M760 -40 L 900 -40 L 660 760 L 560 760 Z" fill="url(#hb)"/>'
-        '<path d="M980 -40 L 1050 -40 L 900 760 L 840 760 Z" fill="url(#hb)" opacity="0.7"/>'
-        '<path d="M540 -40 L 580 -40 L 430 760 L 400 760 Z" fill="url(#hb)" opacity="0.5"/>'
-        "</g>"
-        # particulate
-        '<g fill="#f6f2ec" opacity="0.5">'
-        '<circle cx="220" cy="180" r="1.6"/><circle cx="410" cy="520" r="1.2"/>'
-        '<circle cx="880" cy="150" r="1.4"/><circle cx="1040" cy="470" r="1.6"/>'
-        '<circle cx="300" cy="620" r="1"/><circle cx="700" cy="560" r="1.2"/>'
-        '<circle cx="1120" cy="300" r="1.2"/><circle cx="120" cy="420" r="1"/>'
-        "</g>"
-        "</svg>"
-    )
-
-
 # Authored reef atmospheres — each a distinct oceanic mood built from gradients + organic forms.
 _ATMOS = {
     "sunlit": (
@@ -146,40 +92,6 @@ def reef_atmosphere(variant: str, uid: int) -> str:
     return "".join(parts)
 
 
-def buoy_render_svg() -> str:
-    """Schematic buoy above/below a waterline — fills the 'render coming soon' slot."""
-    return (
-        '<svg class="rs-svg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
-        "<defs>"
-        '<linearGradient id="rs-sky" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--color-surface)"/><stop offset="1" stop-color="var(--color-canvas-sunken)"/>'
-        "</linearGradient>"
-        '<linearGradient id="rs-sea" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.14"/>'
-        '<stop offset="1" stop-color="var(--color-accent) " stop-opacity="0.04"/>'
-        "</linearGradient>"
-        "</defs>"
-        '<rect width="480" height="210" fill="url(#rs-sky)"/>'
-        '<rect y="210" width="480" height="150" fill="url(#rs-sea)"/>'
-        '<line x1="0" y1="210" x2="480" y2="210" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5"/>'
-        # buoy
-        '<g stroke="var(--color-line)" stroke-width="2" fill="var(--color-surface)" '
-        'stroke-linejoin="round" opacity="0.9">'
-        '<path d="M212 210 L268 210 L258 150 L222 150 Z"/>'          # float body
-        '<rect x="228" y="120" width="24" height="32" rx="3"/>'      # electronics bay
-        '<rect x="214" y="104" width="52" height="12" rx="3" fill="var(--color-canvas-sunken)"/>'  # solar panel
-        '<line x1="240" y1="104" x2="240" y2="78"/>'                 # antenna
-        '<circle cx="240" cy="74" r="4" fill="var(--color-accent)" stroke="none"/>'
-        "</g>"
-        # mooring + sensor below
-        '<g stroke="var(--color-accent)" stroke-width="1.5" opacity="0.55" stroke-dasharray="3 4">'
-        '<line x1="240" y1="210" x2="240" y2="320"/></g>'
-        '<circle cx="240" cy="322" r="6" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.7"/>'
-        '<path d="M232 336 L248 336 L240 348 Z" fill="var(--color-accent)" opacity="0.5"/>'  # anchor
-        "</svg>"
-    )
-
-
 def avatar(initials: str, uid: int, hue: int) -> str:
     """A circular gradient monogram — authored stand-in for a team portrait."""
     gid = f"av{uid}"
@@ -200,15 +112,18 @@ def avatar(initials: str, uid: int, hue: int) -> str:
 
 
 def picture(img_html: str) -> str:
-    """Wrap an ``<img ….(jpg|jpeg|png)>`` in a ``<picture>`` that prefers a same-origin WebP
-    sibling (identical path, ``.webp`` extension) and falls back to the original raster for
-    browsers without WebP. Both sources stay same-origin, so the strict Analytics contract holds.
-    If the ``src`` is not a raster we can pair, the ``<img>`` is returned unchanged."""
-    m = re.search(r'src="([^"]+)\.(?:jpg|jpeg|png)"', img_html)
+    """Wrap an ``<img ….(jpg|jpeg|png)>`` in a ``<picture>`` that prefers same-origin siblings
+    at the identical path: AVIF for photographs (every ``.jpg`` has one, built by
+    ``scripts/encode_site_images.py``), then WebP, then the original raster. All sources stay
+    same-origin, so the strict Analytics contract holds. If the ``src`` is not a raster we can
+    pair, the ``<img>`` is returned unchanged."""
+    m = re.search(r'src="([^"]+)\.(jpg|jpeg|png)"', img_html)
     if not m:
         return img_html
-    webp = m.group(1) + ".webp"
-    return f'<picture><source srcset="{webp}" type="image/webp">{img_html}</picture>'
+    stem, ext = m.groups()
+    avif = f'<source srcset="{stem}.avif" type="image/avif">' if ext in ("jpg", "jpeg") else ""
+    return (f'<picture>{avif}<source srcset="{stem}.webp" type="image/webp">'
+            f"{img_html}</picture>")
 
 
 def avatar_photo(src: str, name: str) -> str:
@@ -269,42 +184,6 @@ def glyph(name: str, cls: str = "card-glyph") -> str:
     return (
         f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
         f'stroke-width="1.6" aria-hidden="true">{body}</svg>'
-    )
-
-
-def datapath_svg() -> str:
-    """Buoy → LoRa → shore Pi → dashboard, as a calm horizontal flow (Technology page)."""
-    node = (
-        lambda x, label, sub: (
-            f'<g transform="translate({x} 40)">'
-            f'<rect x="-52" y="-30" width="104" height="60" rx="12" fill="var(--color-canvas-sunken)"/>'
-            f'<text x="0" y="-4" text-anchor="middle" font-family="var(--font-sans)" font-size="13" '
-            f'fill="var(--color-text)">{label}</text>'
-            f'<text x="0" y="14" text-anchor="middle" font-family="var(--font-sans)" font-size="9" '
-            f'fill="var(--color-text-subtle)" letter-spacing="0.04em">{sub}</text></g>'
-        )
-    )
-    arrow = (
-        lambda x, tag: (
-            f'<g stroke="var(--color-accent)" stroke-width="1.6" fill="none" opacity="0.75">'
-            f'<path d="M{x} 40 h44" stroke-dasharray="4 4"/>'
-            f'<path d="M{x + 44} 40 l-6 -4 M{x + 44} 40 l-6 4" stroke-dasharray="0"/></g>'
-            f'<text x="{x + 22}" y="30" text-anchor="middle" font-family="var(--font-sans)" '
-            f'font-size="8.5" fill="var(--color-accent)" letter-spacing="0.06em">{tag}</text>'
-        )
-    )
-    return (
-        '<svg viewBox="0 0 620 96" class="flow" role="img" '
-        'aria-label="Data path: buoy transmits a 30-byte daily LoRa packet to the shore '
-        'Raspberry Pi, which runs the pipeline and publishes this dashboard." fill="none">'
-        + node(64, "Buoy", "sense · log · sleep")
-        + arrow(116, "82 B · 1×/day")
-        + node(224, "LoRa", "~2 km line of sight")
-        + arrow(276, "915 MHz")
-        + node(384, "Shore Pi", "validate · store")
-        + arrow(436, "pipeline")
-        + node(548, "Dashboard", "QC · DHW · trends")
-        + "</svg>"
     )
 
 

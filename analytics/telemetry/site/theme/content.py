@@ -5,16 +5,7 @@ CSS = """/* ── Grid / bento ────────────────
 .bento>*{grid-column:span 6}
 @media(min-width:721px){
   .col-2{grid-column:span 2}.col-3{grid-column:span 3}.col-4{grid-column:span 4}
-  .col-6{grid-column:span 6}.row-2{grid-row:span 2}
 }
-.card{height:100%;background:var(--color-surface);border-radius:var(--radius-none);
-  padding:clamp(1.5rem,1.1rem + 1.2vw,2.2rem);box-shadow:var(--shadow-1);
-  transition:transform var(--dur-settle) var(--ease-settle),box-shadow var(--dur-settle) var(--ease-settle)}
-.card.hoverable:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
-.card h3{margin-bottom:0.5rem}
-.card p{color:var(--color-text-muted);margin-bottom:0}
-.card .kicker{font-size:var(--text-micro);letter-spacing:var(--track-micro);text-transform:uppercase;
-  color:var(--color-text-subtle);font-weight:500;margin-bottom:1.1rem}
 .card-glyph{width:34px;height:34px;color:var(--color-accent);margin-bottom:1.1rem}
 .feature-plain h3{margin-bottom:0.4rem}
 .feature-plain p{color:var(--color-text-muted);margin-bottom:0}
@@ -41,12 +32,6 @@ CSS = """/* ── Grid / bento ────────────────
   /* 68px is .nav's min-height, i.e. the sticky header this must clear. */
   .sticky-split-head{position:sticky;top:calc(68px + clamp(1.4rem,4vh,3rem))}
 }
-.big{font-weight:500;font-size:clamp(2.4rem,1.6rem + 2.4vw,3.4rem);line-height:1;
-  letter-spacing:-0.03em;color:var(--color-text)}
-.big-unit{font-size:0.85rem;color:var(--color-text-subtle);font-weight:500;letter-spacing:0.04em}
-
-/* accent (soft, warm) card for CTAs & the live band */
-.card-accent{background:var(--color-accent-tint);box-shadow:var(--shadow-1)}
 .card-ink{background:var(--color-text);color:var(--color-canvas);box-shadow:none}
 .card-ink h2,.card-ink h3{color:var(--color-canvas)}
 .card-ink p{color:color-mix(in srgb,var(--color-canvas) 78%,transparent)}
@@ -132,20 +117,6 @@ CSS = """/* ── Grid / bento ────────────────
 .drawing figcaption{padding:0.85rem 1.1rem 1rem;border-top:1px solid var(--color-line);
   color:var(--color-text);font-weight:500;font-size:0.98rem}
 
-/* ── Render slot (buoy wall-art, coming soon) ─────────────────────────────── */
-.render-slot{position:relative;border-radius:var(--radius-none);overflow:hidden;
-  min-height:clamp(260px,32vw,440px);display:grid;place-items:center;
-  box-shadow:0 0 0 1px var(--color-line);background:var(--color-surface)}
-.render-slot .rs-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0.85}
-.render-slot .rs-label{position:relative;z-index:2;text-align:center;padding:1.8rem}
-.render-slot .rs-label .tag{display:inline-block;font-size:var(--text-micro);font-weight:500;
-  letter-spacing:var(--track-micro);text-transform:uppercase;color:var(--color-text-subtle);
-  border:1px solid var(--color-line);border-radius:var(--radius-pill);padding:0.35rem 0.95rem;
-  margin-bottom:1.1rem;background:color-mix(in srgb,var(--color-surface) 70%,transparent)}
-.render-slot .rs-label b{display:block;font-size:1.35rem;color:var(--color-text);font-weight:500;
-  margin-bottom:0.3rem}
-.render-slot .rs-label span{color:var(--color-text-muted);font-size:0.95rem}
-
 /* ── Steps ────────────────────────────────────────────────────────────────── */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:clamp(1.4rem,0.8rem + 1.6vw,2.6rem);counter-reset:step}
@@ -165,25 +136,11 @@ CSS = """/* ── Grid / bento ────────────────
 @media(max-width:560px){.spec-row{grid-template-columns:1fr;gap:0.2rem}}
 
 /* ── Data table ───────────────────────────────────────────────────────────── */
-.table-scroll{overflow-x:auto;border-radius:var(--radius-none);border:var(--border-hairline);
-  box-shadow:var(--shadow-0);
-  background:var(--color-surface);-webkit-overflow-scrolling:touch}
-table.data{border-collapse:collapse;width:100%;min-width:520px;font-size:0.94rem}
-table.data caption{text-align:left;padding:1rem 1.2rem 0;color:var(--color-text-subtle);
-  font-size:var(--text-small)}
-table.data th,table.data td{padding:0.8rem 1.2rem;text-align:left;border-bottom:1px solid var(--color-line)}
-table.data thead th{color:var(--color-text-subtle);font-weight:500;font-size:var(--text-micro);
-  letter-spacing:0.08em;text-transform:uppercase}
-table.data tbody tr:last-child td{border-bottom:0}
-table.data .lvl{font-weight:500;color:var(--color-text)}
 
 /* ── Quote / callout ──────────────────────────────────────────────────────── */
 .callout{border-left:2px solid var(--color-accent);padding:0.2rem 0 0.2rem 1.4rem;color:var(--color-text-muted)}
 .quote{font-weight:400;font-size:clamp(1.5rem,1.1rem + 1.8vw,2.4rem);line-height:1.28;
   color:var(--color-text);letter-spacing:-0.02em;max-width:20ch;margin:0}
-.quote-cite{display:block;font-size:var(--text-micro);letter-spacing:var(--track-micro);
-  text-transform:uppercase;color:var(--color-text-subtle);margin-top:1.4rem}
-
 /* ── Team ─────────────────────────────────────────────────────────────────── */
 .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.6rem}
 /* Card is a link; on hover an accent outline draws clockwise around the rounded card

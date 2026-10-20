@@ -11,17 +11,6 @@ import html
 from . import assets
 
 
-def side_critter(base: str, name: str, side: str, aspect: str) -> str:
-    """A single ambient Lottie animation fixed in a page's side margin (shown only on wide
-    screens where real margin exists). ``side`` is 'left' or 'right'; ``aspect`` is the
-    animation's ``w/h`` (e.g. ``'1666/1607'``). Same-origin JSON, driven by the shared init.js."""
-    return (
-        f'<div class="side-critter side-{side}" aria-hidden="true" '
-        f'style="aspect-ratio:{aspect}" '
-        f'data-lottie="{base}assets/lottie/{name}.json"></div>'
-    )
-
-
 def section(inner: str, *, cls: str = "", sid: str | None = None, wrap: str = "wrap") -> str:
     idattr = f' id="{sid}"' if sid else ""
     classes = ("section " + cls).strip()
@@ -101,23 +90,6 @@ def carousel(slides: str, *, label: str, cls: str = "") -> str:
         "</div>"
         '<div class="carousel-dots" role="group" aria-label="Choose slide"></div>'
         "</div>"
-    )
-
-
-def stat_card(value: str, unit: str, label: str, *, deep: bool = False) -> str:
-    cls = "card feature-deep reveal" if deep else "card reveal"
-    return (
-        f'<article class="{cls}"><p class="kicker">{label}</p>'
-        f'<p class="big">{value} <span class="big-unit">{unit}</span></p></article>'
-    )
-
-
-def render_slot(tag: str, title: str, sub: str) -> str:
-    return (
-        '<div class="render-slot reveal">'
-        f"{assets.buoy_render_svg()}"
-        f'<div class="rs-label"><span class="tag">{tag}</span>'
-        f"<b>{title}</b><span>{sub}</span></div></div>"
     )
 
 

@@ -467,21 +467,29 @@ median of 3 runs, Lighthouse's default mobile throttling (150 ms RTT, 1.6 Mbps d
 375 × 812 at 2×), served locally without compression — lab numbers, not field data. Full table
 in [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191).
 
-| Metric | Budget | Today (measured or estimated) |
-|---|---|---|
-| LCP (mobile, 4G) | ≤ 2.0 s | **Home 3.49 s** (fails); inner pages 1.29–1.46 s |
-| INP | ≤ 100 ms | Near-zero JS; expected to pass |
-| CLS | ≤ 0.05 | 0 on every page except Science (0.012) |
-| Fonts | ≤ 60 KB per page, no preload | Before step 3: 61 KB per page; 92 KB where Latin Extended also loads |
-| CSS (inline, per page) | ≤ 36 KB raw / ≤ 9 KB brotli | 54.5 KB raw |
-| JS (first party) | ≤ 15 KB | ~12 KB + **~650 KB Lottie on every page** (168 KB player + 479–527 KB JSON) |
-| Hero image | ≤ 120 KB at 1600 w AVIF | 234 KB WebP at 1440 w (upscaled on wide screens) |
-| Home page total | ≤ 450 KB | 1033 KB |
-| Analytics / Fleet page | ≤ 150 KB, zero images | 794 / 787 KB — over, almost all of it Lottie |
+| Metric | Budget | Baseline (main, 2026-10-20) | After step 7 |
+|---|---|---|---|
+| LCP (mobile, 4G) | ≤ 2.0 s | **Home 3.49 s**; inner 1.29–1.46 s | **Home 1.57 s**; inner 0.82–0.97 s |
+| INP | ≤ 100 ms | Near-zero JS | ~12 KB first-party JS, no long tasks expected (not field-measured) |
+| CLS | ≤ 0.05 | ≤ 0.012 | 0 everywhere except Fleet mobile 0.045 (font swap) and Analytics 0.001 |
+| Fonts | ≤ 60 KB per page | 61 KB; 92 KB with Latin Extended | 47–60 KB; 78 KB on Technology (uses "ć") |
+| CSS (inline, per page) | ≤ 9 KB gzip (raw ≤ 40 KB ceiling) | 54.5 KB raw | Site pages 38.5 KB raw / **8.8 KB gzip**; Analytics and Fleet 31.7 / **7.6 KB** |
+| JS (first party) | ≤ 15 KB | ~12 KB + **~650 KB Lottie** | 11–14 KB, Lottie retired |
+| Hero image | ≤ 120 KB AVIF | 234 KB WebP | **117 KB AVIF** (1440 w source) |
+| Home page total | ≤ 450 KB | 1033 KB | **258 KB** |
+| Analytics / Fleet page | ≤ 150 KB, zero images | 794 / 787 KB | **137 / 120 KB** |
 
-**Image rules.** `<picture>` with AVIF → WebP → JPEG; `srcset` at 640, 960, 1440 and 1920 px
-(only up to the source resolution — the hero source is 1440 × 720 and needs a higher-resolution
-original); `sizes` on every responsive image; `fetchpriority="high"` and no `loading="lazy"` on
+*Budget revision (step 7):* the original "≤ 36 KB raw" CSS target was an unmeasured estimate.
+Minified and split per page type, the site bundle is 38.5 KB raw — 2.5 KB over — but 8.8 KB
+gzip, inside the 9 KB that actually crosses the network (GitHub Pages serves gzip). The test now
+enforces the compressed budget, with a 40 KB raw ceiling to catch regressions.
+
+**Image rules.** `<picture>` with AVIF → WebP → JPEG, AVIF built by
+`scripts/encode_site_images.py`. *As built:* no width-variant `srcset` — every card photo is
+lazy-loaded and ≤ 900 px wide (already right for a 2× phone), and the hero is cover-cropped into
+a portrait screen on phones, so width variants would not shrink it. A higher-resolution hero
+original is still needed for sharpness on screens wider than 1440 px. Originally planned: `srcset`
+at 640, 960, 1440 and 1920 px; `sizes` on every responsive image; `fetchpriority="high"` and no `loading="lazy"` on
 the one LCP image; `width`/`height` always. Measured: the hero at 1440 w is 170 KB AVIF vs
 239 KB WebP.
 

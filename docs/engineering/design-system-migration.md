@@ -230,6 +230,15 @@ values only) and the ±0.5 °C band (meant for ≤ 7-day views, which do not exi
 - **Needs a higher-resolution hero original** (today's is 1440 × 720).
 - Re-measure LCP and page weight against the [budget](design-system.md#performance-budget).
 
+**Done** (step 7, 2026-10-20). Lottie retired (runtime, seven animations, footer seaweed and
+critters, side turtles); CSS minified at build and split per page type (`theme.styles(bundle=…)`:
+Analytics and Fleet skip the hero and content rules, the authored pages skip the chart rules);
+seven never-called builders (`render_slot`, `stat_card`, `buoy_render_svg`, `datapath_svg`,
+`hero_waves`, `logo_mark`, `any_photos`) and their CSS removed; the OKLCH layer dropped (every
+primitive is in sRGB, so it rendered identically); AVIF for every photograph, hero 117 KB. Width
+variants were not built — see the performance budget's image rules. Measured: Home LCP 3.49 →
+1.57 s, Home 1033 → 258 KB, Analytics 794 → 137 KB, Technology CLS 0.061 → 0.
+
 ### PR 8 — `feat(analytics): add the instrument layer to the public pages`
 
 - Hero instrument strip stating the true phase ("PHASE 1 · SUBSYSTEM BRING-UP · BENCH

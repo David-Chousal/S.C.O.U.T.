@@ -165,14 +165,6 @@ def bleaching(base: str, img_dir: Path | None = None) -> tuple[str, str]:
     return media, credit
 
 
-def any_photos(img_dir: Path | None) -> bool:
-    return (
-        _hero_available(img_dir)
-        or _bleaching_available(img_dir)
-        or any(_photo_available(r, img_dir) for r in CATALOG)
-    )
-
-
 def credits_page_body(img_dir: Path | None) -> str:
     """Body HTML for assets/credits.html — lists real-photo attributions + the authored note."""
     entries: list[tuple[str, Photo]] = []

@@ -5,7 +5,7 @@ They replace the static inline ``style=""`` attributes the page builders used to
 
 CSS = """
 /* ── Utilities ── */
-.stack-2{margin-top:var(--space-2)}.stack-3{margin-top:var(--space-3)}
+.stack-3{margin-top:var(--space-3)}
 .stack-4{margin-top:var(--space-4)}.stack-5{margin-top:var(--space-5)}
 .stack-6{margin-top:var(--space-6)}.stack-7{margin-top:var(--space-7)}
 .stack-section{margin-top:var(--space-section)}

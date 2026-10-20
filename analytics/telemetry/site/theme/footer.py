@@ -1,42 +1,9 @@
-"""The footer and its ambient critters, the sample-data banner, inner page headers, figures."""
+"""The footer, the sample-data banner, inner page headers, figures."""
 
 CSS = """/* ── Footer ───────────────────────────────────────────────────────────────── */
 .site-footer{position:relative;isolation:isolate;overflow:hidden;
   border-top:1px solid var(--color-line);margin-top:var(--space-section);
   padding-top:clamp(3.4rem,2.4rem + 3vw,5rem);padding-bottom:clamp(1.5rem,1rem + 1vw,2.25rem)}
-/* Footer sits flush at the very bottom: the copyright is near the edge and the seaweed reaches
-   the edge too, its base fading into it so it never looks sliced. No sand band beneath. */
-.footer-seaweed{position:absolute;left:0;right:0;bottom:0;height:200px;
-  z-index:0;max-width:1200px;margin-inline:auto;pointer-events:none}
-.footer-seaweed .weed{position:absolute;bottom:0;aspect-ratio:144/402;
-  -webkit-mask-image:linear-gradient(to top,transparent 0,#000 20%);
-  mask-image:linear-gradient(to top,transparent 0,#000 20%)}
-.footer-seaweed .weed svg{width:100%;height:100%;display:block}
-.weed-a{left:clamp(1rem,2vw,3.5rem);height:172px;opacity:0.5}
-.weed-b{right:clamp(1rem,2vw,3.5rem);height:146px;opacity:0.44}
-.weed-c{left:44%;height:132px;opacity:0.4}
-@media (max-width:560px){.weed-c{display:none}}
-@media (prefers-reduced-motion:reduce){.footer-seaweed{display:none}}
-/* Ambient footer critters — one submarine, crab, and starfish, spread around the footer and
-   sitting behind the text (z-index 0, below the footer-grid). */
-.footer-critters{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.footer-critters .critter{position:absolute}
-.footer-critters .critter svg{width:100%;height:100%;display:block}
-.critter-sub{top:9%;right:6%;width:clamp(72px,7vw,108px);aspect-ratio:512/512;opacity:0.5}
-.critter-crab{bottom:8px;left:11%;width:clamp(46px,5vw,70px);aspect-ratio:1/1;opacity:0.62}
-.critter-star{bottom:20px;right:17%;width:clamp(38px,4vw,56px);aspect-ratio:63/66;opacity:0.58}
-.critter-jelly{top:clamp(3rem,9%,6rem);left:clamp(1rem,3.5vw,4rem);
-  width:clamp(88px,9vw,128px);aspect-ratio:1080/1080;opacity:0.92}
-@media (max-width:560px){.critter-sub,.critter-jelly{display:none}}
-@media (prefers-reduced-motion:reduce){.footer-critters{display:none}}
-/* A single ambient critter fixed in a page's side margin — only where real margin exists. */
-.side-critter{position:fixed;top:calc(50% + 130px);transform:translateY(-50%);z-index:2;pointer-events:none;
-  width:clamp(110px,9vw,168px);opacity:0.72}
-.side-critter svg{width:100%;height:100%;display:block}
-.side-right{right:clamp(0.5rem,1.6vw,2rem)}
-.side-left{left:clamp(0.5rem,1.6vw,2rem)}
-@media (max-width:1439px){.side-critter{display:none}}
-@media (prefers-reduced-motion:reduce){.side-critter{display:none}}
 .footer-grid{position:relative;z-index:1;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.4rem}
 @media(max-width:560px){.footer-grid{grid-template-columns:1fr 1fr}}
 .footer-brand{grid-column:1/-1;max-width:38ch}

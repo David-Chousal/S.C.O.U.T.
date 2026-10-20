@@ -18,6 +18,35 @@ CSS = """/* ── Buttons ─────────────────�
 .textlink:hover{opacity:1;color:var(--color-accent)}
 .textlink:hover svg{transform:translateX(3px)}
 
+/* Over the home hero the header floats on the photograph: no sand bar cutting the top of the
+   frame. `html.at-top` is seeded by the inline head script before first paint (no sand flash
+   on load), then kept by reveal.js from a sentinel spanning the hero, so the header fades to
+   its normal sand only once it has scrolled past the photograph. Scoped to `.page-home` — every other page has a light ground under
+   the header and must keep its dark type. */
+.page-home .site-header{transition:background var(--dur-quick) var(--ease-standard),
+  backdrop-filter var(--dur-settle) var(--ease-settle)}
+html.at-top .page-home .site-header{background:transparent;backdrop-filter:none;
+  -webkit-backdrop-filter:none}
+html.at-top .page-home .site-header .brand,
+html.at-top .page-home .site-header .nav-links a[aria-current=page]{color:#fbf8f4}
+/* The brand mark is black raster artwork, so `color` cannot reach it — it stayed dark against
+   the photograph while every other header element inverted. Same whitening filter the chat
+   avatar uses on the same asset. Transitioned so it changes with the header, not after it. */
+.brand .mark{transition:filter var(--dur-quick) var(--ease-standard)}
+html.at-top .page-home .site-header .brand .mark{filter:brightness(0) invert(1)}
+html.at-top .page-home .site-header .nav-links a,
+html.at-top .page-home .site-header .nav-social a,
+html.at-top .page-home .site-header .nav-chat{color:rgba(251,248,244,0.92)}
+html.at-top .page-home .site-header .nav-links a:hover,
+html.at-top .page-home .site-header .nav-social a:hover,
+html.at-top .page-home .site-header .nav-chat:hover{color:#fff}
+html.at-top .page-home .site-header .nav-burger span,
+html.at-top .page-home .site-header .nav-burger span::before,
+html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
+/* The sentinel is a zero-height marker, never a visible element. */
+/* Spans the hero minus one header height, so it stays on screen exactly while the header is
+   still over the photograph — not just for the first pixel of scroll. */
+.hero-sentinel{position:absolute;top:0;bottom:var(--nav-h);left:0;width:1px;pointer-events:none}
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 /* A full-viewport cinematic stage: the photograph is the backdrop and the type sits over it,
    rather than a text screen stacked above a banner. The whole hero re-points the palette

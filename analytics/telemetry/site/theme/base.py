@@ -86,7 +86,6 @@ main figure{margin:0}
 .skip:focus{left:0}
 
 .wrap{width:100%;max-width:1140px;margin-inline:auto;padding-inline:var(--space-gutter)}
-.wrap-wide{max-width:1460px}
 .narrow{max-width:940px}
 .prose{max-width:var(--measure)}
 .prose p,.prose li{color:var(--color-text-muted)}

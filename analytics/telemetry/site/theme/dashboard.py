@@ -5,16 +5,6 @@ CSS = """/* ══ Analytics dashboard ═════════════�
   gap:0.4rem 1.6rem;font-variant-numeric:tabular-nums}
 .dash-meta .k{color:var(--color-text-subtle);text-transform:uppercase;letter-spacing:0.1em;
   font-size:var(--text-micro);margin-right:0.4rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
-  gap:clamp(0.8rem,0.4rem + 0.8vw,1.2rem);margin:0 0 2.4rem}
-/* Instrument plates sit flat on a hairline; marketing cards float on a shadow. */
-.stat{background:var(--color-surface);border-radius:var(--radius-none);padding:1.1rem 1.25rem;
-  border:var(--border-hairline);box-shadow:var(--shadow-0);container-type:inline-size}
-.stat .stat-label{color:var(--color-text-subtle);font-size:var(--text-micro);letter-spacing:0.08em;
-  text-transform:uppercase;font-weight:500}
-.stat .stat-value{font-family:var(--font-mono);font-size:1.55rem;font-weight:500;margin:0.4rem 0 0;line-height:1.1;
-  letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
-.stat .stat-sub{color:var(--color-text-subtle);font-size:var(--text-micro);margin:0.25rem 0 0}
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
 @media(max-width:720px){.panels{grid-template-columns:1fr}}
 .panel{background:var(--color-surface);border-radius:var(--radius-none);padding:1.4rem 1.5rem 1.2rem;
@@ -91,10 +81,6 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .legend i.sw-alert1,.legend i.sw-alert2{height:0.7rem}
 .sw-alert1{background:var(--alert-alert1-fill)}.sw-alert2{background:var(--alert-alert2-fill)}
 .legend i.sw-ev{width:0.55rem;height:0.55rem;border-radius:50%;background:var(--status-warning)}
-/* Alert levels set as text use the text-safe variant of each NOAA hue (≥ 4.6:1). */
-.a-nostress{color:var(--alert-nostress-text)}.a-watch{color:var(--alert-watch-text)}
-.a-warning{color:var(--alert-warning-text)}.a-alert1{color:var(--alert-alert1-text)}
-.a-alert2{color:var(--alert-alert2-text)}
 .data-links{color:var(--color-text-subtle);font-size:var(--text-small);margin-top:1.8rem}
 .data-links a{font-weight:500}
 

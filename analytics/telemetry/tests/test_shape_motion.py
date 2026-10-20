@@ -80,7 +80,7 @@ class Shape(unittest.TestCase):
 
     def test_surfaces_are_square(self):
         for sel in (".card", ".panel", ".stat", ".drawing", ".banner", ".table-scroll", ".member",
-                    ".pill", ".render-slot", ".figure-card", ".spark-empty"):
+                    ".pill", ".figure-card", ".spark-empty"):
             with self.subTest(selector=sel):
                 radius = re.search(r"border-radius:([^;]+)", self.rules[sel])
                 if radius:

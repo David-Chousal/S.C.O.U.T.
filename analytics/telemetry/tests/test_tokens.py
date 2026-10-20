@@ -99,8 +99,9 @@ class EmittedCss(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertRegex(self.css, rf"--{re.escape(name)}:")
 
-    def test_oklch_values_are_gated_behind_supports(self):
-        self.assertIn("@supports (color:oklch(0 0 0))", self.css)
+    def test_primitives_ship_as_hex_because_all_sit_inside_srgb(self):
+        self.assertNotIn("oklch(", self.css)
+        self.assertIn(f"--p-stone-100:{tokens.PRIMITIVES['p-stone-100'][1]}", self.css)
 
     def test_the_night_ground_re_points_roles_not_primitives(self):
         block = self.css.split('[data-ground="night"]{', 1)[1].split("}", 1)[0]
