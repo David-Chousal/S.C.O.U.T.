@@ -247,6 +247,14 @@ variants were not built — see the performance budget's image rules. Measured: 
 - Technology opens with a spec block drawn only from `facts.md`.
 - Measured values on all pages set in mono; editorial targets stay in sans.
 
+**Done** (step 8, 2026-10-20), with step 0 folded in (all site edits now go through #191):
+the hero strip reads "Phase 1 · Subsystem bring-up · Bench prototype" from `site/project.py`,
+which a test keeps equal to `status.md`, and switches to live freshness once real packets exist;
+the slot rule divides Home and Technology as the schedule only; Technology opens with an "At a
+glance" spec block whose every value a test traces to its `facts.md` row; every "once a day"
+is corrected to the three fixed slots, here and in `data-schema.md`. The spec block omits the
+LoRa spreading factor: `facts.md` says SF12 in one row and SF7 in another.
+
 ## Open decisions this plan does not make
 
 | Decision | Owner | Blocks |

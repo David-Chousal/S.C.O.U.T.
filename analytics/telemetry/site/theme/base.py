@@ -91,6 +91,11 @@ main figure{margin:0}
 .prose p,.prose li{color:var(--color-text-muted)}
 .prose strong{color:var(--color-text)}
 
+/* The instrument face: anything the buoy measured or specifies. */
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.micro-mono{font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--color-text-subtle)}
+.subtle{color:var(--color-text-subtle);font-size:var(--text-small)}
 /* The signature micro-label */
 .eyebrow{font-size:var(--text-micro);font-weight:500;letter-spacing:var(--track-micro);
   text-transform:uppercase;color:var(--color-text-subtle);margin:0 0 1.4rem}

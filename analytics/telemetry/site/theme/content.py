@@ -117,6 +117,13 @@ CSS = """/* ── Grid / bento ────────────────
 .drawing figcaption{padding:0.85rem 1.1rem 1rem;border-top:1px solid var(--color-line);
   color:var(--color-text);font-weight:500;font-size:0.98rem}
 
+/* The slot rule as a divider: the schedule only, every tick hollow. */
+.slot-divider{display:grid;gap:var(--space-2);padding-block:var(--space-6) 0}
+.slot-divider svg{display:block;width:100%;height:24px}
+.slot-divider .base{stroke:var(--color-line-strong);stroke-width:1;vector-effect:non-scaling-stroke}
+.slot-divider .sched{fill:var(--color-canvas);stroke:var(--color-text-subtle);stroke-width:1.5;
+  vector-effect:non-scaling-stroke}
+.spec-block dd{color:var(--color-text);font-size:0.9375rem}
 /* ── Steps ────────────────────────────────────────────────────────────────── */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:clamp(1.4rem,0.8rem + 1.6vw,2.6rem);counter-reset:step}

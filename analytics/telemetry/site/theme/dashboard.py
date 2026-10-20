@@ -42,6 +42,7 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .ax-y{right:calc(100% + var(--space-2));top:var(--y);transform:translateY(-50%)}
 .ax-ref{right:var(--space-1);top:var(--y);transform:translateY(calc(-100% - 3px));
   background:color-mix(in oklab,var(--color-surface-raised) 85%,transparent);padding:1px 3px}
+.tx-mmm{color:var(--color-text-subtle)}.tx-threshold{color:var(--alert-alert1-text)}
 .ax-x{display:flex;justify-content:space-between;margin-left:3.25rem;font-family:var(--font-mono);
   font-size:var(--text-micro);color:var(--color-text-subtle)}
 .chart-empty{color:var(--color-text-subtle);font-size:var(--text-small)}

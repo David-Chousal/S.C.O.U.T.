@@ -101,6 +101,12 @@ html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
   margin:0;text-shadow:0 2px 30px rgba(4,10,14,0.55)}
 .hero-expand{font-size:clamp(0.75rem,0.65rem + 0.5vw,0.95rem);letter-spacing:0.24em;
   text-transform:uppercase;color:var(--color-text-subtle);margin:1.2rem 0 0;font-weight:500}
+/* The instrument strip: the project's true phase (or live status) in the instrument face. */
+.hero-strip{margin:clamp(1.6rem,1.2rem + 1vw,2.2rem) auto 0;font-family:var(--font-mono);
+  font-size:var(--text-micro);letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--color-text-muted);display:flex;justify-content:center;flex-wrap:wrap;gap:0.4rem 0.8rem}
+.hero-strip-live .status{color:var(--color-text-muted)}
+.hero-strip-live .status-text{text-transform:none;letter-spacing:0}
 
 /* ── Section heading block ────────────────────────────────────────────────── */
 .head-block{max-width:56ch}

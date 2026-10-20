@@ -34,6 +34,7 @@ table.data th,table.data td{padding:0.8rem 1.2rem;text-align:left;border-bottom:
 table.data thead th{color:var(--color-text-subtle);font-weight:500;font-size:var(--text-micro);
   letter-spacing:0.08em;text-transform:uppercase}
 table.data tbody tr:last-child td{border-bottom:0}
+table.data .num{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 table.data .lvl{font-weight:500;color:var(--color-text)}
 /* Alert levels set as text use the text-safe variant of each NOAA hue (≥ 4.6:1). */
 .a-nostress{color:var(--alert-nostress-text)}.a-watch{color:var(--alert-watch-text)}

@@ -140,6 +140,22 @@ def data_table(caption: str, headers: list[str], rows: list[list[str]], *, num_c
     )
 
 
+def slot_divider(days: int = 7) -> str:
+    """The slot rule as a section divider: the transmit schedule only — every tick hollow, because
+    an authored page never implies that a packet arrived (docs/engineering/design-system.md)."""
+    n = days * 3
+    ticks = "".join(
+        f'<rect class="tick sched" x="{(i + 0.5) / n * 1000 - 3:.1f}" y="6" width="6" height="28"/>'
+        for i in range(n))
+    return (
+        '<div class="wrap"><div class="slot-divider" role="img" aria-label="Transmit schedule: '
+        'three slots a day, at 00:10, 08:10 and 16:10 UTC">'
+        '<svg viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+        f'<line class="base" x1="0" y1="20" x2="1000" y2="20"/>{ticks}</svg>'
+        '<span class="micro-mono" aria-hidden="true">00:10 · 08:10 · 16:10 UTC</span></div></div>'
+    )
+
+
 def data_path() -> str:
     """The buoy → shore → dashboard data path. Shared verbatim by Home and Technology so the two
     can never drift. Values track docs/hub/facts.md (Communications & data · Sensing)."""
@@ -149,9 +165,9 @@ def data_path() -> str:
         ("Store", "Each wake appends one row to an on-board CSV log, timestamped in UTC. Raw data "
                   "never leaves the buoy: the full archive, audio included, stays in on-board "
                   "storage and is retrieved by hand."),
-        ("Transmit", "Once a day the buoy sends a single 30-byte summary to shore over a 915 MHz "
-                     "LoRa link, roughly 2 km line of sight. No cellular service or internet is "
-                     "used at the buoy."),
+        ("Transmit", "Three times a day, at 00:10, 08:10 and 16:10 UTC, the buoy sends its latest "
+                     "reading to shore as a 30-byte packet over a 915 MHz LoRa link, roughly 2 km "
+                     "line of sight. No cellular service or internet is used at the buoy."),
         ("Publish", "The shore Raspberry Pi validates each packet, runs quality control and NOAA "
                     "Coral Reef Watch thermal-stress metrics, and regenerates this dashboard, "
                     "using only the Python standard library."),

@@ -122,7 +122,7 @@ def _fmt(value: float | None, unit: str, digits: int = 1) -> str:
     return f"{value:.{digits}f} {unit}" if value is not None else "—"
 
 
-def _live_stats(report, banner: str | None) -> LiveStats:
+def _live_stats(report, banner: str | None, status_html: str) -> LiveStats:
     daily = report.daily
     latest_temp = next((d.temp_mean for d in reversed(daily) if d.temp_mean is not None), None)
     latest_batt = next((d.battery_min_v for d in reversed(daily) if d.battery_min_v is not None), None)
@@ -143,6 +143,7 @@ def _live_stats(report, banner: str | None) -> LiveStats:
         span=span,
         mmm=mmm,
         is_sample=bool(banner),
+        status_html=status_html,
     )
 
 
@@ -178,7 +179,10 @@ def build_site(
     # No site-wide ribbon: the sample-data notice appears on the Home live band and the
     # Analytics banner instead.
     ribbon = None
-    live = _live_stats(report, banner)
+    from .. import freshness
+    fresh = freshness.assess(report.received[-1] if report.received else None,
+                             now=generated_at, faults=report.latest_flags)
+    live = _live_stats(report, banner, web.status_line(fresh))
 
     def page(base: str, active: str, mod, body_html: str) -> str:
         return layout.document(

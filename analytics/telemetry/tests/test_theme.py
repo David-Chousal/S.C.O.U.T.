@@ -6,7 +6,8 @@ before the package split; re-pinned when the Tideline token tiers were added (ev
 page within 3/255 per channel of the previous output), when the fonts changed (step 3), for the
 accessibility pass (step 4), for shape, space and motion (step 5),
 for the chart rebuild (step 6), and for
-minified, bundled output (step 7).
+minified, bundled output (step 7), and for the instrument layer
+(step 8).
 """
 
 import hashlib
@@ -23,19 +24,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "0043cc2ca1681268fea56d8bcd0eeab8744078a61379c2858a9ceed2e8691cbf",
+            "08b878606bd1358578c03b8d897c074ddd3bd1c85cf4b786d3571a718ab140ad",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "24420406e508250a7e1446011051a29d9af17defc337e1cc950a3a58716b3843",
+            "96cff6506f32d025323f96e231597ec9be25a6ef56e9d62de6daabb77a229151",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "974305211f67f8c8e1d7645f9299e112bed9d8bef2eaab8c5b6c05afe0130133",
+            "628d019b11395c1037c513fe507433692907d3425ec645fb88dc1d5db34bae5d",
         )
 
     def test_favicon_is_unchanged(self):

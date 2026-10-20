@@ -24,6 +24,9 @@ class LiveStats:
     span: str
     mmm: str
     is_sample: bool           # True while the banner (sample-data) is set
+    # Freshness against the transmit slots, as rendered HTML; shown in the hero once real packets
+    # exist (telemetry.web.status_line).
+    status_html: str = ""
 
 
 @dataclass(frozen=True)

@@ -67,7 +67,7 @@ def _overview() -> str:
         "that matter most for reef health. S.C.O.U.T. is a buoy <strong>cheap and rugged enough "
         "to put there and leave in place</strong>.</p>"
         "<p>A single buoy wakes about every half hour to log water temperature, turbidity, and "
-        "battery health, then sleeps to conserve power. Once a day it sends one small summary to "
+        "battery health, then sleeps to conserve power. Three times a day it sends its latest reading to "
         "a shore station over a long-range 915&nbsp;MHz radio link; the full raw archive, audio "
         "included, never leaves the buoy. On shore, a Raspberry&nbsp;Pi runs quality control and "
         "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "

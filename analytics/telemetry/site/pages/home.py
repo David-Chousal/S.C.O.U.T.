@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, drawings, imagery
+from .. import components as c, drawings, imagery, project
 from ..context import SiteContext
 
 TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
@@ -40,6 +40,7 @@ def _hero(ctx: SiteContext) -> str:
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
         "</div>"
+        f"{_strip(live)}"
         "</div>"
         "</section>"
     )
@@ -167,6 +168,14 @@ def _live_band(ctx: SiteContext) -> str:
     )
 
 
+def _strip(live) -> str:
+    """The instrument strip: the project's true phase until real packets exist, then the buoy's
+    live status. Never a sample-data status dressed up as a feed."""
+    if live.is_sample or not live.status_html:
+        return f'<p class="hero-strip">{project.PHASE_LABEL}</p>'
+    return f'<p class="hero-strip hero-strip-live">{live.status_html}</p>'
+
+
 def body(ctx: SiteContext) -> str:
     return (
         _hero(ctx)
@@ -174,6 +183,7 @@ def body(ctx: SiteContext) -> str:
         + '<div class="wrap"><div class="divider"></div></div>'
         + _senses()
         + _habitat(ctx)
+        + c.slot_divider()
         + c.data_path()
         + _live_band(ctx)
         + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
