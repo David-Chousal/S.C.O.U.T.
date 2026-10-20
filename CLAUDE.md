@@ -343,8 +343,10 @@ Three layers, adopted 2026-10-19. Each answers a different question, so none dup
   leaving the issue loose.
 - Discipline stays on labels, not milestones. A milestone names an outcome
   (*Sensor pod & sealing*), not a person or a discipline.
-- Milestones are per project, so each phase defines its own when it becomes active. Phase 1's
-  seven are the first set.
+- **Every milestone has a target date inside its phase window, and the dates are spread out**
+  so the timeline shows progress through the phase, not a stack at the end. Milestones are per
+  project; all seven phases have a set (Phase 6's are deployment checkpoints with no tickets
+  yet). Add or re-date milestones in Linear, which is the source of truth.
 - The initiative must be created in the Linear app (**Settings → Initiatives**); Linear's MCP
   tools cannot create one. Milestones can be created and assigned from Claude.
 
