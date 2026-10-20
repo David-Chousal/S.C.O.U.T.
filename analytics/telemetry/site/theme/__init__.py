@@ -29,14 +29,14 @@ visible. Scroll-driven layers additionally sit behind `@supports (animation-time
 and degrade to a static composition. Only `transform` and `opacity` animate, so the work stays
 off the main thread.
 
-The CSS lives in one module per area (``base``, ``navigation``, ``hero``, ``content``, ``footer``,
-``dashboard``, ``motion``, ``chat``) and is joined below in cascade order, so a later module still
-overrides an earlier one exactly as the single string did.
+The CSS lives in one module per area (``tokens``, ``base``, ``navigation``, ``hero``,
+``content``, ``footer``, ``dashboard``, ``motion``, ``chat``) and is joined below in cascade
+order, so a later module still overrides an earlier one exactly as the single string did.
 """
 
 from __future__ import annotations
 
-from . import base, chat, content, dashboard, footer, hero, motion, navigation
+from . import base, chat, content, dashboard, footer, hero, motion, navigation, tokens
 
 # ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
 # the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
@@ -85,6 +85,7 @@ def styles(*, base: str = "", fonts_present: bool = False) -> str:
 
 # Emitted in cascade order — later sections override earlier ones.
 _CSS = "".join((
+    tokens.CSS,
     base.CSS,
     navigation.CSS,
     hero.CSS,

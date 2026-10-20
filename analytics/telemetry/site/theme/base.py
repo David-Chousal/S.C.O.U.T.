@@ -4,15 +4,18 @@ CSS = """
 :root{
   color-scheme:light only;
   /* Warm sand and ink, the reference palette. The site is deliberately light-only:
-     a single sandy, beige canvas regardless of the OS colour-scheme preference. */
-  --sand:#f8f4f1;
-  --bg:#f8f4f1;
+     a single sandy, beige canvas regardless of the OS colour-scheme preference.
+     Legacy names: the ones below that read var(--…) already alias a Tideline token
+     (theme/tokens.py); the literals keep their values until the migration step that
+     changes them on purpose (docs/engineering/design-system-migration.md). */
+  --sand:var(--color-canvas);
+  --bg:var(--color-canvas);
   --bg-2:#f3efe9;
-  --surface:#fcfaf8;
-  --surface-2:#f4f1eb;
-  --ink:#2a2520;
-  --text:#2a2520;
-  --muted:#6f675e;
+  --surface:var(--color-surface);
+  --surface-2:var(--p-stone-150);
+  --ink:var(--color-text);
+  --text:var(--color-text);
+  --muted:var(--color-text-subtle);
   --faint:#9c948a;
   --line:rgba(42,37,32,0.10);
   --line-2:rgba(42,37,32,0.16);
