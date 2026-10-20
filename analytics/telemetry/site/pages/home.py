@@ -28,7 +28,7 @@ def _hero(ctx: SiteContext) -> str:
     # of the frame, not just darken a card's lower edge. Nothing else sits on the photograph.
     return (
         '<section class="hero">'
-        # Watched by reveal.js: while this 1px marker is on screen the header is over the
+        # Watched by reveal.js: while this marker is on screen the header is over the
         # photograph and goes transparent. An observer, not a scroll handler — no per-frame work.
         '<span class="hero-sentinel" aria-hidden="true"></span>'
         f'<figure class="hero-figure">{hero_media}<div class="hero-scrim"></div></figure>'

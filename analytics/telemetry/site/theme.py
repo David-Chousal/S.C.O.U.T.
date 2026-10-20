@@ -208,9 +208,9 @@ main figure{margin:0}
   background:color-mix(in srgb,var(--bg) 67%,transparent);
   backdrop-filter:saturate(1.3) blur(16px);-webkit-backdrop-filter:saturate(1.3) blur(16px)}
 /* Over the home hero the header floats on the photograph: no sand bar cutting the top of the
-   frame. `html.at-top` is set by reveal.js from a sentinel at the top of the hero and dropped
-   the moment it scrolls away, so the header fades to its normal sand as soon as the reader
-   leaves the first screen. Scoped to `.page-home` — every other page has a light ground under
+   frame. `html.at-top` is seeded by the inline head script before first paint (no sand flash
+   on load), then kept by reveal.js from a sentinel spanning the hero, so the header fades to
+   its normal sand only once it has scrolled past the photograph. Scoped to `.page-home` — every other page has a light ground under
    the header and must keep its dark type. */
 .page-home .site-header{transition:background var(--dur) var(--ease),
   backdrop-filter var(--dur) var(--ease)}
@@ -233,7 +233,9 @@ html.at-top .page-home .site-header .nav-burger span,
 html.at-top .page-home .site-header .nav-burger span::before,
 html.at-top .page-home .site-header .nav-burger span::after{background:#fbf8f4}
 /* The sentinel is a zero-height marker, never a visible element. */
-.hero-sentinel{position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none}
+/* Spans the hero minus one header height, so it stays on screen exactly while the header is
+   still over the photograph — not just for the first pixel of scroll. */
+.hero-sentinel{position:absolute;top:0;bottom:var(--nav-h);left:0;width:1px;pointer-events:none}
 /* Three-column header: brand left, nav menu centred, social icons right. */
 .nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.4rem;min-height:68px}
 .brand{display:inline-flex;align-items:center;gap:0.7rem;color:var(--ink);justify-self:start}
