@@ -10,7 +10,7 @@ from __future__ import annotations
 import csv
 import json
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 from . import bleaching, turbidity
@@ -52,6 +52,10 @@ class TelemetryReport:
     turbidity_anomalies: turbidity.TurbidityAnomalies
     turbidity_drift: DriftAssessment
     mmm: float | None
+    # When each timed packet was stamped, for freshness against the transmit slots, and the
+    # flags + SoH codes on the newest one (any code there marks a fault).
+    received: tuple[datetime, ...] = ()
+    latest_flags: frozenset[str] = frozenset()
 
 
 def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> TelemetryReport:
@@ -97,7 +101,16 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
         turbidity_anomalies=turbidity_anomalies,
         turbidity_drift=turbidity_drift,
         mmm=mmm,
+        received=tuple(sorted(r.timestamp for r in timed)),
+        latest_flags=_latest_flags(timed),
     )
+
+
+def _latest_flags(timed: list[TelemetryRecord]) -> frozenset[str]:
+    if not timed:
+        return frozenset()
+    newest = max(timed, key=lambda r: r.timestamp)
+    return newest.flags | newest.soh
 
 
 def write_daily_csv(report: TelemetryReport, path: str | Path) -> Path:

@@ -55,11 +55,15 @@ class TextContrastOnTheLightGround(unittest.TestCase):
         for sel, body in _rules(css):
             if _DARK_GROUND.search(sel):
                 continue
+            # Text that sits on its own opaque fill (a filled badge) is checked against that fill.
+            own = re.search(r"(?<![-\w])background:([^;}]+)", body)
+            own_ground = _resolve(own.group(1), props) if own else None
+            grounds = (own_ground,) if own_ground else _GROUNDS
             for value in re.findall(r"(?<![-\w])color:([^;}]+)", body):
                 hexval = _resolve(value, props)
                 if hexval is None:
                     continue
-                for ground in _GROUNDS:
+                for ground in grounds:
                     with self.subTest(selector=sel, colour=value.strip(), ground=ground):
                         self.assertGreaterEqual(colour.wcag(hexval, ground), 4.5)
 

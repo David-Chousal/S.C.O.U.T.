@@ -317,16 +317,16 @@ def dhw_svg() -> str:
         'Degree Heating Weeks." fill="none">'
         "<defs>"
         '<linearGradient id="dh" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="var(--c-dhw)" stop-opacity="0.34"/>'
-        '<stop offset="1" stop-color="var(--c-dhw)" stop-opacity="0"/>'
+        '<stop offset="0" stop-color="var(--alert-warning-fill)" stop-opacity="0.34"/>'
+        '<stop offset="1" stop-color="var(--alert-warning-fill)" stop-opacity="0"/>'
         "</linearGradient></defs>"
         # axes
         '<line x1="48" y1="20" x2="48" y2="222" stroke="var(--color-line)"/>'
         '<line x1="48" y1="222" x2="600" y2="222" stroke="var(--color-line)"/>'
         # threshold + MMM lines
-        '<line x1="48" y1="96" x2="600" y2="96" stroke="var(--a-alert1)" stroke-dasharray="5 4"/>'
+        '<line x1="48" y1="96" x2="600" y2="96" stroke="var(--alert-alert1-fill)" stroke-dasharray="5 4"/>'
         '<text x="596" y="90" text-anchor="end" font-family="var(--font-sans)" font-size="10" '
-        'fill="var(--a-alert1)">Bleaching threshold  (MMM + 1 °C)</text>'
+        'fill="var(--alert-alert1-text)">Bleaching threshold  (MMM + 1 °C)</text>'
         '<line x1="48" y1="140" x2="600" y2="140" stroke="var(--color-text-subtle)" stroke-dasharray="3 4"/>'
         '<text x="596" y="134" text-anchor="end" font-family="var(--font-sans)" font-size="10" '
         'fill="var(--color-text-subtle)">MMM</text>'
@@ -336,10 +336,10 @@ def dhw_svg() -> str:
         '<path d="M232 222 L232 96 C 300 40 360 44 430 96 L430 222 Z" fill="url(#dh)"/>'
         # SST curve
         '<path d="M48 176 C 130 168 180 150 232 96 C 300 40 360 44 430 96 C 500 150 540 168 600 172" '
-        'stroke="var(--c-temp)" stroke-width="2.4"/>'
+        'stroke="var(--data-temp)" stroke-width="2.4"/>'
         '<text x="150" y="205" font-family="var(--font-sans)" font-size="10" fill="var(--color-text-subtle)">'
         'daily SST</text>'
         '<text x="330" y="150" text-anchor="middle" font-family="var(--font-sans)" font-size="10" '
-        'fill="var(--c-dhw)">HotSpot accumulates → DHW</text>'
+        'fill="var(--color-text)">HotSpot accumulates → DHW</text>'
         "</svg>"
     )

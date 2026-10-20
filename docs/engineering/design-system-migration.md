@@ -215,6 +215,12 @@ Split into 6a and 6b if the diff is large.
 - **Test first:** gaps produce separate path segments; a failed reading never joins a line;
   freshness thresholds at their boundaries; duplicates collapse by `(buoy_id, record_seq)`.
 
+**Done** (step 6, 2026-10-20) as one step, not 6a/6b. Built: `telemetry/charts.py`,
+`telemetry/freshness.py`, the estimate rule (see Data Visualization), solid NOAA badge fills on
+Fleet tiles, mono figures on dashboard plates, the PNG export on the same palette and calendar,
+and all legacy chart colours retired. Not built: per-packet QC markers (the dashboard has daily
+values only) and the ±0.5 °C band (meant for ≤ 7-day views, which do not exist yet).
+
 ### PR 7 — `perf(analytics): retire Lottie and serve responsive AVIF images`
 
 - Remove `lottie.min.js`, the six JSON files, `init.js`, the critter and seaweed markup and CSS

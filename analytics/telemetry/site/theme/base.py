@@ -8,18 +8,6 @@ CSS = """
      scale, layout measures and the two shadows. */
   --shadow-1:0 12px 32px -22px rgba(42,37,32,0.18);
   --shadow-2:0 22px 52px -30px rgba(42,37,32,0.26);
-  /* Kept until the chart rebuild (migration step 6): chart lines, alert swatches, events. */
-  --coral:#c76b52;
-  --c-temp:#c26647;
-  --c-dhw:#c58a3a;
-  --c-turb:#2b7d84;
-  --c-batt:#5a8f66;
-  --a-nostress:#3f8f78;
-  --a-watch:#c39a3a;
-  --a-warning:#c9752f;
-  --a-alert1:#c1503f;
-  --a-alert2:#9a5b8e;
-
   --font-sans:'DM Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
 

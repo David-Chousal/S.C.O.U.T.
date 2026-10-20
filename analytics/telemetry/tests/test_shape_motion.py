@@ -16,12 +16,15 @@ _BUILDERS = [*sorted((_TELEMETRY / "site").glob("*.py")),
              *sorted((_TELEMETRY / "site" / "pages").glob("*.py")),
              _TELEMETRY / "web.py", _TELEMETRY / "fleet_web.py"]
 
-# Retired in this step. The chart and alert colours (--c-*, --a-*, --coral) move in step 6.
+# Retired in step 5; the chart and alert colours followed in step 6.
 _LEGACY = ("sand", "bg", "bg-2", "surface", "surface-2", "ink", "text", "muted", "line", "line-2",
            "accent", "accent-soft", "on-accent", "ring", "radius", "radius-lg", "track", "ease",
-           "dur", "font", "gutter", "section")
-# Inline styles a builder may still write: data-driven colours and measured aspect ratios.
-_ALLOWED_INLINE = re.compile(r"^(background:var\(--((c|a)-[\w{}-]+|coral)\)|aspect-ratio:\{\w+\})$")
+           "dur", "font", "gutter", "section", "coral", "c-temp", "c-dhw", "c-turb", "c-batt",
+           "a-nostress", "a-watch", "a-warning", "a-alert1", "a-alert2")
+# Inline styles a builder may still write: data-driven positions on a chart and measured
+# aspect ratios. Every one carries a computed value; none is a hand-tuned style.
+_ALLOWED_INLINE = re.compile(
+    r"^(aspect-ratio:\{\w+\}|--y:\{[^}]+\}%|--x0:\{[^}]+\}%;--x1:\{[^}]+\}%)$")
 # Colour changes are quick; everything else (movement, and opacity fades, which are arrivals)
 # settles within --dur-settle.
 _QUICK_PROPS = {"color", "background", "background-color", "border-color", "filter", "fill",
