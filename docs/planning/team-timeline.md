@@ -8,8 +8,8 @@
 >
 > **Re-baselined 2026-08-14** — the original plan ran Phases 0–2 over summer 2026. Those
 > deliverables did not complete (firmware had not started), so the schedule was reset to run
-> **Aug 14, 2026 → May 28, 2027**. The windows below are the current plan; the Linear phase
-> projects mirror these dates exactly.
+> **Aug 14, 2026 → May 28, 2027**. The windows below are the current plan. **Linear's phase
+> projects are the source of truth for these dates**; this page mirrors them.
 
 ---
 
@@ -68,7 +68,7 @@ every member completes before the next phase begins.
 
 ## PHASE 1
 
-**Window:** Sep 7 – Oct 16, 2026 (6 weeks, Fall Quarter)
+**Window:** Sep 7 – Oct 23, 2026 (7 weeks, Fall Quarter)
 
 **Status:** 🟡 In progress — the active phase since 2026-09-24.
 
@@ -117,7 +117,7 @@ every member completes before the next phase begins.
 
 ## PHASE 2
 
-**Window:** Oct 19 – Nov 25, 2026 (5.5 weeks, Fall Quarter)
+**Window:** Oct 22 – Dec 6, 2026 (6.5 weeks, Fall Quarter). Overlaps Phase 1 by two days and Phase 3 by one week, as set in Linear
 
 **Goal:** System Integration — Full Duty-Cycle Loop Running
 

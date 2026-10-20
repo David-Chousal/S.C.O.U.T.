@@ -308,15 +308,16 @@ per-discipline work and exit criteria.
 | Project | Window | State |
 |---|---|---|
 | Phase 0 — Kickoff | Aug 14 – Sep 20, 2026 | Completed 2026-09-24 |
-| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | In Progress |
-| Phase 2 — System Integration | Oct 19 – Nov 25, 2026 | Planned |
+| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 23, 2026 | In Progress |
+| Phase 2 — System Integration | Oct 22 – Dec 6, 2026 | Planned |
 | Phase 3 — Enclosure & Waterproofing | Nov 30, 2026 – Jan 15, 2027 | Planned |
 | Phase 4 — Field Prototype Deployment | Jan 18 – Feb 26, 2027 | Planned |
 | Phase 5 — Hawaii Deployment Prep | Mar 1 – Mar 19, 2027 | Planned |
 | Phase 6 — Hawaii Live Deployment | Mar 22 – May 28, 2027 | Planned |
 
-These dates are mirrored in [docs/planning/team-timeline.md](docs/planning/team-timeline.md).
-If one changes, change both in the same session.
+**Linear is the source of truth for these dates.** They are mirrored in
+[docs/planning/team-timeline.md](docs/planning/team-timeline.md), `docs/hub/status.md` and the
+About page timeline. When a Linear date changes, update every mirror in the same session.
 
 **Phase 1 is the active phase** (since 2026-09-24). Phase 0 was closed that day with two of its
 design decisions still open — the hydrophone part (SCO-8) and the LiFePO₄ charging path (SCO-10,
