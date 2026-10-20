@@ -308,21 +308,47 @@ per-discipline work and exit criteria.
 | Project | Window | State |
 |---|---|---|
 | Phase 0 — Kickoff | Aug 14 – Sep 20, 2026 | Completed 2026-09-24 |
-| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 16, 2026 | In Progress |
-| Phase 2 — System Integration | Oct 19 – Nov 25, 2026 | Planned |
+| Phase 1 — Subsystem Bring-Up | Sep 7 – Oct 23, 2026 | In Progress |
+| Phase 2 — System Integration | Oct 22 – Dec 6, 2026 | Planned |
 | Phase 3 — Enclosure & Waterproofing | Nov 30, 2026 – Jan 15, 2027 | Planned |
 | Phase 4 — Field Prototype Deployment | Jan 18 – Feb 26, 2027 | Planned |
 | Phase 5 — Hawaii Deployment Prep | Mar 1 – Mar 19, 2027 | Planned |
 | Phase 6 — Hawaii Live Deployment | Mar 22 – May 28, 2027 | Planned |
 
-These dates are mirrored in [docs/planning/team-timeline.md](docs/planning/team-timeline.md).
-If one changes, change both in the same session.
+**Linear is the source of truth for these dates.** They are mirrored in
+[docs/planning/team-timeline.md](docs/planning/team-timeline.md), `docs/hub/status.md` and the
+About page timeline. When a Linear date changes, update every mirror in the same session.
 
 **Phase 1 is the active phase** (since 2026-09-24). Phase 0 was closed that day with two of its
 design decisions still open — the hydrophone part (SCO-8) and the LiFePO₄ charging path (SCO-10,
 [ADR-0002](docs/decisions/0002-lifepo4-charging-path.md)) — and every open Phase 0 issue was
 carried into Phase 1 rather than holding the phase open. Its central decision,
 [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md), landed on 2026-08-14.
+
+### Initiative and milestones
+
+Three layers, adopted 2026-10-19. Each answers a different question, so none duplicates another:
+
+| Layer | Linear object | Holds |
+|---|---|---|
+| Whole capstone | **One initiative**, "S.C.O.U.T. Capstone 2026–27" | The seven phase projects. Overall health and update feed |
+| Phase | **Project** (the table above) | Every issue in that phase. The workspace timeline shows only these seven bars |
+| Workstream inside a phase | **Project milestone** | A slice of the phase's issues, e.g. *Electronics bench bring-up (Stages 1–3)* |
+
+- **Do not create sub-projects for a phase.** An issue can belong to only one project, so a
+  sub-project would pull its issues out of the phase project and add a bar to the timeline.
+  Milestones keep both intact.
+- **Every issue in a phase project gets exactly one milestone** of that project. When creating
+  an issue, pick the milestone alongside the project. If none fits, add a milestone rather than
+  leaving the issue loose.
+- Discipline stays on labels, not milestones. A milestone names an outcome
+  (*Sensor pod & sealing*), not a person or a discipline.
+- **Every milestone has a target date inside its phase window, and the dates are spread out**
+  so the timeline shows progress through the phase, not a stack at the end. Milestones are per
+  project; all seven phases have a set (Phase 6's are deployment checkpoints with no tickets
+  yet). Add or re-date milestones in Linear, which is the source of truth.
+- The initiative must be created in the Linear app (**Settings → Initiatives**); Linear's MCP
+  tools cannot create one. Milestones can be created and assigned from Claude.
 
 ### Status discipline
 

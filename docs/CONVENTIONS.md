@@ -385,7 +385,8 @@ Full conventions live in [CLAUDE.md](../CLAUDE.md#linear-conventions). The short
 **Every issue gets:**
 - One type label — `Feature` `Bug` `Improvement`
 - One discipline label — `ece` `csen` `geng` `cross-discipline`
-- A phase project (Phase 0–6)
+- A phase project (Phase 0–6), and one milestone inside it — milestones are the workstreams of a
+  phase; never make a sub-project ([why](../CLAUDE.md#initiative-and-milestones))
 - A due date, so it shows on the roadmap
 
 **`On Deck`** marks what's queued next without moving it out of Backlog.
