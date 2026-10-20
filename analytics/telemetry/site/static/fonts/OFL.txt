@@ -22,4 +22,4 @@ retained. The full license text is available at:
 
 The fonts are subset-hosted here (Latin + Latin Extended-A) so the site loads no
 external resources. Built by scripts/subset_site_fonts.py; see ../../theme/fonts.py for
-the @font-face declarations. JetBrains Mono's licence is in OFL-JetBrainsMono.txt.
+the @font-face declarations. JetBrains Mono's licence is in ofl-jetbrains-mono.txt.

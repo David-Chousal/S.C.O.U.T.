@@ -77,7 +77,7 @@ class FontFiles(unittest.TestCase):
 
     def test_both_licences_ship_with_the_fonts(self):
         self.assertIn("DM Sans", (_FONTS_DIR / "OFL.txt").read_text())
-        self.assertIn("JetBrains Mono", (_FONTS_DIR / "OFL-JetBrainsMono.txt").read_text())
+        self.assertIn("JetBrains Mono", (_FONTS_DIR / "ofl-jetbrains-mono.txt").read_text())
 
     def test_css_unicode_ranges_match_the_subsetting_script(self):
         script = _SUBSET_SCRIPT.read_text()
