@@ -430,3 +430,7 @@ of revisions 1 to 3 is still inferred:
 
 Per-part `-vN` numbers (the `v3` above) count within one part line, so they do not match the
 revision column. Correct the table and the filenames if an early revision turns out to be out of order.
+
+## Insert direction and print material — 2026-10-21
+
+The pod's first passing submersion ([record](../../test/sensor-housing-petg-pass-2026-10-21.md)) was printed in PETG with the heat-set inserts pressed in **from the bottom** of the flange. Pressed from the top, the hot inserts slightly deformed the flange face and reduced even clamping around the O-ring. Insert from the bottom.
