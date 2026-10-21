@@ -25,7 +25,7 @@ _Add references as numbered entries._
 
 - Appendix A: Bill of Materials and Budget
 - Appendix B: Engineering Drawings
-- Appendix C: Calculations (Mass, Freeboard, Stability, Loads)
+- Appendix C: Calculations (Mass, Freeboard, Stability, Loads): [`appendix-c-calculations.md`](appendix-c-calculations.md), first draft
 - Appendix D: Test Procedures, Logs, and Raw Data
 - Appendix E: Source Code and Repository
 - Appendix F: Hazard Assessment Form
