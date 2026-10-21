@@ -1,25 +1,50 @@
-"""Multi-panel telemetry dashboard (temperature + DHW, turbidity, battery).
+"""Multi-panel telemetry dashboard (temperature + DHW, turbidity, battery) as a PNG.
 
 Optional: needs ``matplotlib``. The rest of the pipeline runs without it — this import only
-happens when a dashboard is explicitly requested. Style follows the acoustic pipeline's
-``visualize.py`` (Agg backend, shared colour palette).
+happens when a dashboard is explicitly requested. Colours come from the site's design tokens and
+missing calendar days are NaN, so the export matches the web charts: same palette, lines broken
+at gaps rather than drawn across them (docs/engineering/design-system-data-viz.md).
 """
 
 from __future__ import annotations
 
+import math
+from datetime import date, timedelta
 from pathlib import Path
 
 from . import bleaching
 from .pipeline import TelemetryReport
+from .site.theme import tokens
 
-# Shared palette with the alert scale.
-_ALERT_COLORS = {
-    bleaching.ALERT_NO_STRESS: "#2ecc71",
-    bleaching.ALERT_WATCH: "#f1c40f",
-    bleaching.ALERT_WARNING: "#e67e22",
-    bleaching.ALERT_LEVEL_1: "#e74c3c",
-    bleaching.ALERT_LEVEL_2: "#8e44ad",
+PALETTE = {
+    "canvas": tokens.hex_of("color-canvas"),
+    "ink": tokens.hex_of("color-text"),
+    "subtle": tokens.hex_of("color-text-subtle"),
+    "line": tokens.hex_of("color-line-strong"),
+    "temp": tokens.DATA["data-temp"],
+    "turb": tokens.DATA["data-turb"],
+    "batt": tokens.DATA["data-instrument"],
+    "dhw": tokens.hex_of("color-text"),
+    "threshold": tokens.ALERTS["alert1"][0],
+    "alert1": tokens.ALERTS["alert1"][0],
+    "alert2": tokens.ALERTS["alert2"][0],
+    "event": tokens.STATUS["warning"],
 }
+
+
+def calendar_series(points: list[tuple[date, float | None]]) -> tuple[list[date], list[float]]:
+    """Every calendar day from first to last, with NaN where there is no value."""
+    if not points:
+        return [], []
+    by_day = dict(points)
+    first, last = min(by_day), max(by_day)
+    days, values, day = [], [], first
+    while day <= last:
+        v = by_day.get(day)
+        days.append(day)
+        values.append(math.nan if v is None else v)
+        day += timedelta(days=1)
+    return days, values
 
 
 def plot_dashboard(report: TelemetryReport, output_path: str | Path) -> Path:
@@ -35,56 +60,71 @@ def plot_dashboard(report: TelemetryReport, output_path: str | Path) -> Path:
             "The dashboard needs matplotlib. Install it (pip install matplotlib) or omit --dashboard."
         ) from exc
 
+    p = PALETTE
+    style = {"axes.facecolor": p["canvas"], "figure.facecolor": p["canvas"],
+             "axes.edgecolor": p["line"], "text.color": p["ink"], "axes.labelcolor": p["ink"],
+             "xtick.color": p["subtle"], "ytick.color": p["subtle"]}
+    with plt.rc_context(style):  # scoped: never changes matplotlib's global settings
+        return _draw(plt, mdates, report, Path(output_path))
+
+
+def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
+    p = PALETTE
     daily = report.daily
-    days = [d.day for d in daily]
     fig, axes = plt.subplots(3, 1, figsize=(12, 11), sharex=True)
     fig.suptitle("SCOUT telemetry — thermal stress, turbidity, power", fontsize=14, weight="bold")
 
     # Panel 1 — daily mean temperature with MMM / bleaching threshold, DHW on a twin axis.
     ax = axes[0]
-    temps = [d.temp_mean for d in daily]
-    ax.plot(days, temps, color="#c0392b", marker=".", lw=1.2, label="Daily mean SST")
+    days, temps = calendar_series([(d.day, d.temp_mean) for d in daily])
+    ax.plot(days, temps, color=p["temp"], marker=".", lw=1.6, label="Daily mean SST")
     if report.mmm is not None:
-        ax.axhline(report.mmm, color="#7f8c8d", ls="--", lw=1, label="MMM")
-        ax.axhline(bleaching.bleaching_threshold(report.mmm), color="#e74c3c", ls=":", lw=1,
+        ax.axhline(report.mmm, color=p["line"], ls="--", lw=1, label="MMM")
+        ax.axhline(bleaching.bleaching_threshold(report.mmm), color=p["threshold"], ls=":", lw=1,
                    label="Bleaching threshold (MMM+1)")
     ax.set_ylabel("Temperature (°C)")
     ax.legend(loc="upper left", fontsize=8)
 
     if report.thermal:
         ax2 = ax.twinx()
-        thermal_by_day = {t.day: t.dhw for t in report.thermal}
-        ax2.fill_between(days, [thermal_by_day.get(d, 0.0) for d in days], color="#e74c3c",
-                         alpha=0.12)
-        ax2.axhline(bleaching.DHW_ALERT_LEVEL_1, color="#e74c3c", ls="--", lw=0.8)
-        ax2.axhline(bleaching.DHW_ALERT_LEVEL_2, color="#8e44ad", ls="--", lw=0.8)
+        t_days, dhw = calendar_series([(t.day, t.dhw) for t in report.thermal])
+        ax2.plot(t_days, dhw, color=p["dhw"], lw=1.2)
+        peak = max((v for v in dhw if not math.isnan(v)), default=0.0)
+        # Like the web chart, a band is drawn only once DHW reaches it — an empty alert band
+        # would read as an alert that never happened.
+        if peak >= bleaching.DHW_ALERT_LEVEL_1:
+            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_1, bleaching.DHW_ALERT_LEVEL_2,
+                        color=p["alert1"], alpha=0.12)
+        if peak >= bleaching.DHW_ALERT_LEVEL_2:
+            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_2, peak, color=p["alert2"], alpha=0.12)
         ax2.set_ylabel("DHW (°C-weeks)")
 
-    # Panel 2 — turbidity (uncalibrated ADC) with event markers.
+    # Panel 2 — turbidity (uncalibrated ADC; higher counts = clearer water) with events.
     ax = axes[1]
-    turb = [d.turbidity_median_adc for d in daily]
-    ax.plot(days, turb, color="#2980b9", marker=".", lw=1.2, label="Daily median turbidity (ADC)")
+    days, turb = calendar_series([(d.day, d.turbidity_median_adc) for d in daily])
+    ax.plot(days, turb, color=p["turb"], marker=".", lw=1.6,
+            label="Daily median (ADC, higher = clearer)")
     event_days = {
         (e.at.date() if hasattr(e.at, "date") else e.at)
         for e in report.turbidity_anomalies.events
     }
-    ev_x = [d.day for d in daily if d.day in event_days]
-    ev_y = [d.turbidity_median_adc for d in daily if d.day in event_days]
-    if ev_x:
-        ax.scatter(ev_x, ev_y, color="#e74c3c", zorder=5, label="Anomaly")
+    ev = [(d.day, d.turbidity_median_adc) for d in daily if d.day in event_days]
+    if ev:
+        ax.scatter([e[0] for e in ev], [e[1] for e in ev], color=p["event"], zorder=5,
+                   label="Anomaly")
     ax.set_ylabel("Turbidity (ADC, uncal.)")
     ax.legend(loc="upper left", fontsize=8)
 
-    # Panel 3 — daily minimum battery voltage.
+    # Panel 3 — daily minimum battery voltage (instrument health: neutral, dashed).
     ax = axes[2]
-    ax.plot(days, [d.battery_min_v for d in daily], color="#27ae60", marker=".", lw=1.2)
+    days, batt = calendar_series([(d.day, d.battery_min_v) for d in daily])
+    ax.plot(days, batt, color=p["batt"], marker=".", lw=1.2, ls="--")
     ax.set_ylabel("Battery min (V)")
     ax.set_xlabel("Date (UTC)")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
     fig.autofmt_xdate()
 
     fig.tight_layout(rect=(0, 0, 1, 0.97))
-    output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=130)
     plt.close(fig)

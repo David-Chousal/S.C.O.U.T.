@@ -11,7 +11,10 @@
 
 ## Principles for the migration
 
-1. **Small PRs, each shippable.** Every PR leaves the site working and deployable on its own.
+1. **Small steps, each shippable, in one PR.** Every step leaves the site working and
+   deployable. Since 2026-10-20 all steps land as commits on **one** pull request,
+   [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191), so the whole migration can be
+   audited locally before it merges; work stops for review after each step.
 2. **Refactor before redesign.** The first code PR changes no pixels and proves it with a
    byte-identical CSS test, so every later diff is a design change and nothing else.
 3. **Old names alias new ones until the last caller moves.** No big-bang rename.
@@ -40,7 +43,10 @@ in page builders bypass it.
 
 ## Token rename map
 
-Old names stay as aliases (`--bg: var(--color-canvas)`) from PR 2 until PR 5, then are deleted.
+From step 2, an old name aliases its new token (`--bg: var(--color-canvas)`) **only where the
+value moves by ≤ 3/255 per channel**; every other old name keeps its literal until the step that
+changes that role on purpose (accent and `--faint` in step 4, chart and alert colours in step 6).
+All old names are deleted in step 5.
 
 ### Colour
 
@@ -103,10 +109,12 @@ Most class names are kept; only these change.
 
 ---
 
-## Pull requests, in order
+## Steps, in order
 
-Each PR follows CLAUDE.md: its own branch, conventional title, the five-section body, Hub
-updates, `check_conventions.py`, and an end-to-end site build.
+Each step below was first planned as its own PR; they now land as commits on
+[#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191) (step 0 excepted, which is copy
+only). Each step still carries Hub updates, `check_conventions.py`, and an end-to-end site
+build, and #191's description logs every step.
 
 ### PR 0 — `fix(analytics): say three transmit slots a day, not one`
 
@@ -116,29 +124,33 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 
 ### PR 1 — `refactor(analytics): split theme.py into a package without changing its output`
 
-- `site/theme/` package: `tokens.py`, `base.py`, `layout.py`, `components/*.py`,
-  `dashboard.py`, `chat.py`, `motion.py`; `styles()` concatenates them in today's order.
+- `site/theme/` package: `base`, `navigation`, `hero`, `content`, `footer`, `dashboard`,
+  `motion`, `chat`; `styles()` joins them in today's order. **Done** (commit `d8a6769`).
 - **Test first:** snapshot today's `styles()` output and assert the new package returns the
   identical string.
 - No visual change, no token change.
 
 ### PR 2 — `feat(analytics): add the Tideline token tiers alongside the old names`
 
-- `site/theme/tokens.py`: primitives and semantic roles as a DTCG-shaped dict; emits
-  `:root{…}`, the `[data-ground="night"]` block, and the `@supports not (color: oklch(0 0 0))`
-  hex fallbacks. Optional `tokens.json` export for design tools.
-- Old names become aliases of the new ones (values shift by ≤ 2/255; visually identical).
-- `scripts/check_tokens.py` (the generator and validator used to build this system):
-  recomputes every pairing in the [contrast table](design-system.md#contrast-computed) and the
-  categorical CVD separation, and **fails CI** if any falls below its threshold.
-- **Test first:** `test_tokens.py` asserts the thresholds.
+- `site/theme/tokens.py`: OKLCH primitives with derived hex, semantic roles, the
+  `[data-ground="night"]` block, status, eight alert levels, data and categorical colours,
+  space, z-index and motion; hex ships by default and OKLCH layers on under
+  `@supports (color: oklch(0 0 0))`. `site/theme/colour.py` holds the maths. **Done** (commit
+  `ccdd192`).
+- Old names alias new ones only within 3/255 (see the rename map above); visually identical.
+- The contrast and CVD validator is **`telemetry/tests/test_tokens.py`**, run by the existing
+  CI unit-test job, rather than a separate `scripts/check_tokens.py`.
+- Deferred: a DTCG `tokens.json` export. Nothing consumes it yet; add it when a design tool
+  does.
 
 ### PR 3 — `feat(analytics): self-host DM Sans with optical sizing and add JetBrains Mono`
 
-- Re-subset DM Sans (Latin, `opsz` 9–40, `wght` 300–700, keep `ss01` and `case`) → 44.5 KB;
-  add JetBrains Mono (Latin, `wght` 400–600) → 12.9 KB; ship its OFL licence next to DM Sans'.
-- Metric-matched fallback `@font-face` (`size-adjust`, `ascent-override`, `descent-override`
-  computed from the files) to keep CLS ≤ 0.05; preload DM Sans Latin only.
+- Re-subset DM Sans (`opsz` 9–40, `wght` 300–700, keep `ss01` and `case`): core 46.6 KB plus
+  a 17.7 KB Latin Extended-A file fetched on demand; add JetBrains Mono (`wght` 400–600)
+  13.1 KB; ship its OFL licence next to DM Sans'. **Done** (step 3).
+- Metric-matched Arial fallbacks were tried and dropped (they caused the layout shift they
+  were meant to prevent); Home alone preloads the core subset. Both decisions are measured in
+  the typography section.
 - `font-optical-sizing: auto` on `body`.
 - A small build script under `scripts/` does the subsetting (fontTools + brotli, dev-only — the
   site still has no runtime dependency).
@@ -148,13 +160,19 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 - `--faint` uses → `--color-text-subtle`; `--muted` split per selector (prose vs labels).
 - Secondary button and input edges → `--color-line-strong` (3:1).
 - Prose links underlined.
-- 12 px floor: nav links (0.64 rem), brand subline (0.52 rem), chart axis text (9 px).
+- 12 px floor: nav links (0.64 rem), brand subline (0.52 rem), photo credits and team tags
+  (0.6 rem). Chart axis text (9 SVG units) moves to step 6: it scales with the chart's
+  viewBox, so CSS cannot floor it.
 - Header over hero: scrim top stop 0.56 → 0.62, nav text 82% → 92% (measured worst pixel
   3.38:1 → 4.63:1).
 - Carousel dots → 24 × 24 buttons with "Slide n of N" labels; drop `role="tablist"`.
 - Doc nav: `aria-current="location"`; burger checkbox gets `aria-controls` and a name.
-- **Test first:** extend `test_web.py` — no text colour token below 4.5:1 on its ground; no
-  pointer target class below 24 px.
+- Alert levels set as text (dashboard stats, drift verdict, Fleet badges) use new
+  `--alert-<level>-text` tokens: each NOAA hue darkened until it reads at ≥ 4.6:1, including on
+  its own badge tint. Banner emphasis moves from coral to `--status-warning`.
+- **Done** (step 4). `telemetry/tests/test_accessibility.py` resolves every `color:` in the
+  light-ground CSS through its custom-property chain and fails below 4.5:1, and checks the
+  12 px floor, control edges, link underlines, the hero scrim, the carousel and the ARIA.
 
 ### PR 5 — `refactor(analytics): adopt Tideline shape, space and motion tokens`
 
@@ -167,6 +185,18 @@ day (00:10, 08:10, 16:10 UTC)". Also fixes `data-schema.md`'s "one summary readi
 - Instrument plates (`.stat`, `.panel`, `.buoy-tile`, tables) switch from shadow to hairline;
   container queries on them.
 - Old token aliases deleted.
+- **Done** (step 5), with these measured or deliberate differences from the plan:
+  - Every old name is gone except the chart and alert colours (`--c-*`, `--a-*`, `--coral`),
+    which step 6 replaces. A test now also fails if a page builder writes a `var(--…)` the
+    stylesheet does not declare (step 4's `--faint` removal had left two such inline styles).
+  - Spacing rounds to the scale: e.g. 1.2 rem → 16 px, 2.4 rem → 32 px, 2.6–2.8 rem → 48 px;
+    reference lists 1.8 → 1.6 line height; the Science split gap uses `--space-section`.
+  - Micro-label tracking 0.18 → 0.14 em; heading weights 520/560 → 500 (the wordmark keeps 700).
+  - `.buoy-tile` keeps its card styling; it is rebuilt with the slot rule in step 6.
+  - Inline CSS grew to 63.7 KB (longer token names, utilities, comments). Minifying at build
+    time measures 46 KB raw / ~10 KB gzip; that moves to step 7.
+  - Technology on mobile measures CLS 0.061 (budget 0.05): the pre-existing font swap, no longer
+    hidden by the 900 ms header fade. Re-measure after step 7 removes Lottie.
 
 ### PR 6 — `feat(analytics): draw telemetry honestly — gaps, QC marks, freshness, slot rule`
 
@@ -185,6 +215,12 @@ Split into 6a and 6b if the diff is large.
 - **Test first:** gaps produce separate path segments; a failed reading never joins a line;
   freshness thresholds at their boundaries; duplicates collapse by `(buoy_id, record_seq)`.
 
+**Done** (step 6, 2026-10-20) as one step, not 6a/6b. Built: `telemetry/charts.py`,
+`telemetry/freshness.py`, the estimate rule (see Data Visualization), solid NOAA badge fills on
+Fleet tiles, mono figures on dashboard plates, the PNG export on the same palette and calendar,
+and all legacy chart colours retired. Not built: per-packet QC markers (the dashboard has daily
+values only) and the ±0.5 °C band (meant for ≤ 7-day views, which do not exist yet).
+
 ### PR 7 — `perf(analytics): retire Lottie and serve responsive AVIF images`
 
 - Remove `lottie.min.js`, the six JSON files, `init.js`, the critter and seaweed markup and CSS
@@ -194,6 +230,15 @@ Split into 6a and 6b if the diff is large.
 - **Needs a higher-resolution hero original** (today's is 1440 × 720).
 - Re-measure LCP and page weight against the [budget](design-system.md#performance-budget).
 
+**Done** (step 7, 2026-10-20). Lottie retired (runtime, seven animations, footer seaweed and
+critters, side turtles); CSS minified at build and split per page type (`theme.styles(bundle=…)`:
+Analytics and Fleet skip the hero and content rules, the authored pages skip the chart rules);
+seven never-called builders (`render_slot`, `stat_card`, `buoy_render_svg`, `datapath_svg`,
+`hero_waves`, `logo_mark`, `any_photos`) and their CSS removed; the OKLCH layer dropped (every
+primitive is in sRGB, so it rendered identically); AVIF for every photograph, hero 117 KB. Width
+variants were not built — see the performance budget's image rules. Measured: Home LCP 3.49 →
+1.57 s, Home 1033 → 258 KB, Analytics 794 → 137 KB, Technology CLS 0.061 → 0.
+
 ### PR 8 — `feat(analytics): add the instrument layer to the public pages`
 
 - Hero instrument strip stating the true phase ("PHASE 1 · SUBSYSTEM BRING-UP · BENCH
@@ -201,6 +246,14 @@ Split into 6a and 6b if the diff is large.
 - Slot rule as the section divider on Home and Technology.
 - Technology opens with a spec block drawn only from `facts.md`.
 - Measured values on all pages set in mono; editorial targets stay in sans.
+
+**Done** (step 8, 2026-10-20), with step 0 folded in (all site edits now go through #191):
+the hero carries a live-freshness strip only once real packets exist (a phase label shown
+until then was removed in review: project-status copy does not belong on the hero);
+the slot rule divides Home and Technology as the schedule only; Technology opens with an "At a
+glance" spec block whose every value a test traces to its `facts.md` row; every "once a day"
+is corrected to the three fixed slots, here and in `data-schema.md`. The spec block omits the
+LoRa spreading factor: `facts.md` says SF12 in one row and SF7 in another.
 
 ## Open decisions this plan does not make
 

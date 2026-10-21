@@ -20,7 +20,8 @@ Every chart therefore shows **what arrived, when it arrived, and what did not** 
 implies a continuous stream. Concretely:
 
 1. A point marker on every value that came off the radio.
-2. Lines break at missing slots; they are never interpolated across.
+2. Lines break at missing days. Only a **single** missing day between two measured days is
+   bridged, by a faint dashed line labelled "Estimated"; longer gaps are never bridged.
 3. Every chart and KPI carries a freshness line ("received 16:10 UTC") and the page carries
    its publish time.
 4. The on-board record is described as the full record; the dashboard as a sample of it.
@@ -103,6 +104,11 @@ Source: [NOAA CRW Bleaching Alert Area](https://coralreefwatch.noaa.gov/product/
 ⚠️ The pipeline (`bleaching.py`) currently stops at Alert Level 2 = DHW ≥ 8 — see
 [Design System → Contradictions](design-system.md#contradictions-surfaced-while-building-this).
 
+Where a level is set **as text** — a stat value, a verdict, a badge label on its 12% tint —
+it uses `--alert-<level>-text`: the same hue darkened until it reads at ≥ 4.6:1 on the canvas,
+the sunken canvas and its tint (No Stress `#496b7f`, Watch `#816200`, Warning `#a44d00`,
+Alert 1 `#c1291b`; Levels 2–5 are already dark enough to use their fills).
+
 In charts, alert levels appear as horizontal **bands** behind the DHW line (fill at 16% over the
 plot ground) with the level name direct-labelled at the right edge. No Stress, Watch and Warning
 swatches fall below 3:1 against the canvas, so their legend swatches carry a 1 px ink outline.
@@ -144,9 +150,25 @@ Follow [CONVENTIONS → Engineering data](../CONVENTIONS.md#engineering-data):
 | Duplicate copies of one packet | Collapsed by `(buoy_id, record_seq)` before drawing — one point |
 | Data the buoy holds but has not sent (between slots) | Not drawn. The chart note says: "The buoy samples every 30 minutes; the full record is retrieved from the buoy." |
 
-Never draw a line across a gap, never fill a gap with zero, never smooth over one
+Never draw a solid line across a gap, never fill a gap with zero, never smooth over one
 ([Bocoup](https://bocoup.com/blog/showing-missing-data-in-line-charts),
 [Datawrapper](https://www.datawrapper.de/academy/patchy-data)).
+
+**The estimate rule (decided 2026-10-20).** A *single* missing day between two measured days is
+bridged by a faint dashed line labelled "Estimated (one missing day)", over its hatched band: water
+temperature at 2–8 m changes slowly, so the likely path is worth showing — as an estimate. Gaps of
+two or more days are never bridged: a long silence is when a guess is most likely to be wrong (a
+storm can cut the radio link and stir up the water at once), and the buoy's on-board record will
+fill it with real values when retrieved. Estimates are **display only**: they never enter the
+data table, Degree Heating Weeks or the trend test, which run on measured days alone
+(`bleaching.py` already gives a missing day zero contribution and reports the window coverage).
+
+**As built (step 6).** The dashboard plots one point per *day* (the daily aggregate), not per
+packet, on a calendar-true axis: a day with no rows keeps its place. A day that had rows but fell
+below the 50% coverage floor is a gap too, and the data table names why ("too few samples (12 of
+48)"). Gap bands are HTML, beneath the plot, so a bridge stays visible; a band narrower than 12% of
+the plot carries no label rather than a clipped one. QC suspect/fail markers per packet are not
+drawn yet — the dashboard has only daily values — and wait for per-packet charts.
 
 ## Freshness
 
@@ -161,7 +183,12 @@ relative age in the reader's browser (no network request).
 | ○ Offline | 3 or more consecutive slots missed (a full day) | "No packets since 2026-10-18 16:10 UTC" |
 | ▲ Fault | The newest packet carries a SoH fault bit, a QC fail, or battery below threshold | "Packet received with a fault: low battery" |
 
-Every dashboard page shows **"Published 2026-10-19 16:42 UTC"** next to the freshness row. A
+Every dashboard page shows **"Published 2026-10-19 16:42 UTC"** next to the freshness row.
+
+As built: a packet belongs to the first slot at or after its timestamp (`telemetry/freshness.py`).
+If that slot is still ahead of the publish time — an imported on-board record, or a publish
+between a sample and its slot — the line describes the reading by its own time instead of naming
+a future slot. Slots before the first packet ever received are pre-deployment, not missed. A
 static page cannot know how old it is when read; the publish time lets the reader work it out.
 
 ## Uncertainty

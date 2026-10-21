@@ -40,6 +40,7 @@ def _hero(ctx: SiteContext) -> str:
         f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
         "</div>"
+        f"{_strip(live)}"
         "</div>"
         "</section>"
     )
@@ -47,7 +48,7 @@ def _hero(ctx: SiteContext) -> str:
 
 def _mission() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2"><p class="eyebrow">Background</p>'
         '<p class="quote">The gap is affordable data from shallow, nearshore water.</p></div>'
         '<div class="col-4 prose">'
@@ -150,13 +151,13 @@ def _live_band(ctx: SiteContext) -> str:
         f'<p class="stat-value {cls}">{value}</p></div>'))
     return c.section(
         '<article class="card card-ink">'
-        '<div class="bento" style="align-items:center;gap:1.4rem 1.8rem">'
+        '<div class="bento align-center live-band">'
         '<div class="col-3"><p class="kicker">From the buoy</p>'
         '<h2>Current reef status</h2>'
-        f'<p style="margin:0.6rem 0 0">{note} Span {live.span}.</p>'
-        '<div class="btn-row" style="margin-top:1.6rem">'
+        f'<p class="live-note">{note} Span {live.span}.</p>'
+        '<div class="btn-row stack-5">'
         f'<a class="btn btn-primary" href="analytics/">Open the dashboard {_ARROW}</a></div></div>'
-        '<div class="col-3"><div class="cards" style="margin:0">'
+        '<div class="col-3"><div class="cards flush">'
         + stat("Bleaching alert", live.current_alert, live.alert_class)
         + stat("Latest temp", live.latest_temp)
         + stat("Completeness", live.completeness)
@@ -167,6 +168,14 @@ def _live_band(ctx: SiteContext) -> str:
     )
 
 
+def _strip(live) -> str:
+    """The buoy's live status under the hero buttons, once real packets exist. Sample data gets
+    nothing: neither a simulated feed dressed up as live nor project-status copy on the hero."""
+    if live.is_sample or not live.status_html:
+        return ""
+    return f'<p class="hero-strip hero-strip-live">{live.status_html}</p>'
+
+
 def body(ctx: SiteContext) -> str:
     return (
         _hero(ctx)
@@ -174,6 +183,7 @@ def body(ctx: SiteContext) -> str:
         + '<div class="wrap"><div class="divider"></div></div>'
         + _senses()
         + _habitat(ctx)
+        + c.slot_divider()
         + c.data_path()
         + _live_band(ctx)
         + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'

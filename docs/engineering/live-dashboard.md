@@ -206,9 +206,9 @@ data changes. That makes a **static site** the right tool:
 - **No server, no infra, free, public.** GitHub Pages just serves files. Nothing to keep
   running, nothing to secure, and the link is shareable with NOAA/stakeholders.
 - **Same-origin, no third parties.** Inline design-system CSS and inline SVG graphics, with
-  self-hosted fonts, images and animations, and **no CDNs or cross-origin requests** anywhere.
-  Every page (Analytics included) loads a self-hosted Lottie runtime for the ambient animations:
-  the footer seaweed and the roaming fish on every page, plus the hero fish on Home. The
+  self-hosted fonts and images, and **no CDNs or cross-origin requests** anywhere. The ambient
+  Lottie animations (footer seaweed and critters, side turtles) were retired on 2026-10-20: they
+  cost ~650 KB on every page, more than everything else combined. The
   **Analytics** page keeps its data content fully inline (inline CSS, inline SVG charts) and
   references no external host; that no-cross-origin contract is enforced by
   [`test_web.py`](../../analytics/telemetry/tests/test_web.py). The site is a single light

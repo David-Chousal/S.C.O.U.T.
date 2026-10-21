@@ -146,10 +146,11 @@ schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v
 
 ## Relationship to the LoRa daily packet
 
-The daily packet is a **summary**, not a row dump. Per the
-[Team Timeline](../planning/team-timeline.md) Phase 2, it carries at least `timestamp_utc`,
-`record_seq` (as the packet counter), a temperature summary, a turbidity summary, and
-`battery_v`. The CSV is the full local record; the packet is what fits over radio. Raw audio is
+The packet is not a row dump. Since 2026-10-16 the buoy transmits in **three fixed slots a
+day — 00:10, 08:10 and 16:10 UTC — each packet carrying the latest reading**
+([`facts.md`](../hub/facts.md), [SCO-196](https://linear.app/scout1/issue/SCO-196); it was one
+packet a day before). It carries at least `timestamp_utc`, `record_seq` (as the packet
+counter), the temperature and turbidity readings, and `battery_v`. The CSV is the full local record; the packet is what fits over radio. Raw audio is
 **never** transmitted — it stays in `/AUDIO/` on the card.
 
 **Two numbers, two meanings — do not use them interchangeably:**
@@ -167,7 +168,8 @@ doc and `facts.md` quoted 82 B as though it were the packet size, which is what
 82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a
 timestamp, **18 temperature values, 18 turbidity values**, battery voltage, status flags,
 firmware version, and a CRC. That is a multi-sample packet built for the ESP32-C3 production
-target. The as-built 30-byte packet is a different design: **one** summary reading per day, on
+target. The as-built 30-byte packet is a different design: **one** reading per packet, three packets a
+day, on
 the Feather M0 build platform ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)), plus
 fields the EDD layout never had (`record_seq`, `uptime_s`, `soh`, `audio_present`).
 
