@@ -127,6 +127,12 @@ class HeaderOverHero(unittest.TestCase):
         self.assertNotIn("html.at-top", outside)
         self.assertIn("html.at-top .page-home .site-header{background:transparent", css[start:end])
 
+    def test_phone_header_height_is_the_token_the_hero_pulls_up_by(self):
+        # A 56 px header with a 68 px pull-up left a 12 px band of sand under the hero.
+        css = theme.styles()
+        self.assertIn("@media(max-width:720px){:root{--nav-h:56px}", css)
+        self.assertIn("min-height:var(--nav-h)", css)
+
     def test_mobile_menu_toggle_is_named_and_points_at_the_menu(self):
         nav = header("", "home")
         self.assertRegex(nav, r'<input[^>]*id="nav-toggle"[^>]*aria-label="Menu"')

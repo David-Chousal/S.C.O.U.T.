@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, drawings, imagery, project
+from .. import components as c, drawings, imagery
 from ..context import SiteContext
 
 TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
@@ -169,10 +169,10 @@ def _live_band(ctx: SiteContext) -> str:
 
 
 def _strip(live) -> str:
-    """The instrument strip: the project's true phase until real packets exist, then the buoy's
-    live status. Never a sample-data status dressed up as a feed."""
+    """The buoy's live status under the hero buttons, once real packets exist. Sample data gets
+    nothing: neither a simulated feed dressed up as live nor project-status copy on the hero."""
     if live.is_sample or not live.status_html:
-        return f'<p class="hero-strip">{project.PHASE_LABEL}</p>'
+        return ""
     return f'<p class="hero-strip hero-strip-live">{live.status_html}</p>'
 
 

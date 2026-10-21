@@ -30,7 +30,9 @@ CSS = """/* ── Header / nav ────────────────
 /* Mobile nav toggle — hidden on desktop, where the links show inline. */
 .nav-toggle,.nav-burger{display:none}
 @media(max-width:720px){
-  .nav{display:flex;justify-content:space-between;gap:0.8rem;min-height:56px}
+  /* The phone header is shorter; the hero pulls up by --nav-h, so both read the same token. */
+  :root{--nav-h:56px}
+  .nav{display:flex;justify-content:space-between;gap:0.8rem;min-height:var(--nav-h)}
   /* Hamburger button (a <label> driving the hidden checkbox). */
   .nav-burger{display:inline-flex;position:relative;width:30px;height:30px;cursor:pointer;z-index:2}
   .nav-burger span{position:absolute;left:5px;right:5px;top:50%;height:2px;margin-top:-1px;

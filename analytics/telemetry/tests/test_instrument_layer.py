@@ -1,6 +1,6 @@
 """Tideline step 8: the instrument layer on the authored pages.
 
-The hero states the project's true phase (or live status once real packets exist), the slot rule
+The hero carries live status only once real packets exist, the slot rule
 divides sections as the transmit schedule, Technology opens with a spec block whose every value
 traces to docs/hub/facts.md, and no page still says the buoy transmits once a day.
 """
@@ -9,7 +9,7 @@ import re
 import unittest
 from pathlib import Path
 
-from telemetry.site import context, project
+from telemetry.site import context
 from telemetry.site.pages import home, technology
 
 _REPO = Path(__file__).resolve().parents[3]
@@ -33,21 +33,13 @@ def _facts_row(label: str) -> str:
 
 
 class HeroStrip(unittest.TestCase):
-    def test_sample_data_states_the_project_phase_not_a_live_feed(self):
-        html = home.body(_ctx(is_sample=True))
-        strip = re.search(r'<p class="hero-strip[^"]*">(.*?)</p>', html).group(1)
-        self.assertIn(project.PHASE_LABEL, strip)
-        self.assertNotIn("status-live", strip)
+    def test_sample_data_puts_no_strip_on_the_hero(self):
+        self.assertNotIn("hero-strip", home.body(_ctx(is_sample=True)))
 
     def test_real_packets_switch_the_strip_to_live_status(self):
         html = home.body(_ctx(is_sample=False))
         strip = re.search(r'<p class="hero-strip[^"]*">(.*?)</p>', html).group(1)
         self.assertIn("status-live", strip)
-
-    def test_the_phase_matches_the_knowledge_hub(self):
-        status = (_REPO / "docs" / "hub" / "status.md").read_text()
-        self.assertIn(f"**{project.PHASE}**", status)
-
 
 class SlotDivider(unittest.TestCase):
     def test_home_and_technology_carry_the_schedule_rule(self):
