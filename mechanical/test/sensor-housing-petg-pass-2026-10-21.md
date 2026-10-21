@@ -35,5 +35,7 @@ inspected. Recorded by John; no timestamped start/stop log.
 - **Doesn't:** salt water (~35 ppt), the 5 m-equivalent pressure target, the 1-week soak with the
   sensor live ([SCO-176](https://linear.app/scout1/issue/SCO-176)), or the electronics-housing
   clamp, which is still untested under [SCO-108](https://linear.app/scout1/issue/SCO-108).
-- **Not recorded:** exact CAD revision, bolt count and torque. The photo shows eight inserts in
-  the body. Confirm these against the STEP before citing them as the design baseline.
+- **Design revision:** John says it was the most recent version, **2.5**. Which file or STEP that
+  maps to is not yet confirmed.
+- **Not recorded:** bolt count and torque. The photo shows eight inserts in the body. Confirm
+  against the STEP before citing them as the design baseline.
