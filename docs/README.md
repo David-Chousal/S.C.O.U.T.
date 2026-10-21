@@ -16,6 +16,7 @@ imported directly into Notion with formatting intact.
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
 | Find the schedule | [Team Timeline](planning/team-timeline.md) |
 | Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
+| Write the thesis | [Thesis Working Draft](thesis/README.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---
