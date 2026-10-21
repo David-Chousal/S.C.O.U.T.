@@ -53,7 +53,7 @@ processing. Photograph every opening on A so the drain positions in step 2 are r
 
 | Item | Spec | Notes |
 |---|---|---|
-| Scale | Resolution **≤ 0.1 g** for coupons; for the buoy, the best resolution available at its mass, and capacity above the buoy's wet mass | Record capacity and resolution. Check it with a known mass before each weigh-in. The buoy needs its own, larger scale |
+| Scale | A **food scale** for the buoy, which weighs about **1100 g** dry (John's estimate; the exact mass is taken on test day). Coupons need a finer scale, **≤ 0.1 g** if one is available | Record the scale's make, capacity and resolution on test day, before the first weigh-in. Check it with a known mass before each weigh-in |
 | Tubs | A bin big enough to submerge the whole buoy, plus a small one for the coupons | The 50 gal bin from [SCO-168](https://linear.app/scout1/issue/SCO-168) works. Same bin for fresh and salt is fine if rinsed and dried |
 | Hold-down | Non-absorbing weights or a plastic grid | PETG floats. Use stainless or glass, not wood or foam |
 | Fresh water | Tap, room temperature | Record temperature |
@@ -205,5 +205,8 @@ the hazard form's boxes for water near electronics and heavy lifting.
 
 1. **The "act" threshold.** A mass gain that matters for freeboard is not yet defined.
 2. **Intermediate readings.** Whether to take the 1 hr and 4 hr weights.
-3. **Scale.** The lab scale's capacity and resolution are not recorded in the repo, and the
-   buoy needs a larger one than the coupons.
+3. **Scale capacity and resolution.** The food scale's capacity and smallest step are
+   recorded on test day. If it reads whole grams, the smallest gain it can show on a ~1100 g
+   buoy is about 0.09% of the dry mass, so a smaller gain is reported as "not detected at this
+   resolution". The coupons, on a finer scale if one is available, then give the absorption
+   number and the buoy is the check.
