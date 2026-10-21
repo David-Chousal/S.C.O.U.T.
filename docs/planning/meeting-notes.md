@@ -1011,7 +1011,7 @@ the advisors' feedback and side remarks are left out; the project content is her
 
 | Meeting said | Repo says |
 |---|---|
-| Granola summary: a "72-byte payload". In the transcript the speaker said 72 bits, corrected to 72 bytes, and later 30 bytes | [facts.md](../hub/facts.md): the daily packet is 30 bytes (82 B is the budget ceiling) |
+| Granola summary: a "72-byte payload". In the transcript the speaker said 72 bits, corrected to 72 bytes, and later 30 bytes | [facts.md](../hub/facts.md): the daily packet is 30 bytes (82 B is the budget ceiling). **Resolved 2026-10-21 (John): 30 bytes is right; the Granola summary was wrong.** No change to facts.md |
 | Float soak and battery endurance: "7-month extrapolation" (transcript: "seven month") | [SCO-159](https://linear.app/scout1/issue/SCO-159): at least a 12-month extrapolation |
 | Phase 2 milestone list includes a fluorometer as deferred scope | Fluorometer ([SCO-18](https://linear.app/scout1/issue/SCO-18)) is Deferred; the team says it should not be in scope |
 
