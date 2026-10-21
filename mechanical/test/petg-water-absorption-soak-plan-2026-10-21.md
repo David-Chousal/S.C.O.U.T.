@@ -7,7 +7,8 @@
 > freeboard budget. **Not yet run.** Register row **RR-19**,
 > [SCO-219](https://linear.app/scout1/issue/SCO-219).
 >
-> Part of [`mechanical/test/`](README.md). Plan written 2026-10-21 at John Ryan's request.
+> Part of [`mechanical/test/`](README.md). Plan written 2026-10-21 at John Ryan's request;
+> test piece confirmed the same day as the unsealed full-size raw PETG buoy.
 > Owner: John Ryan Myrdal (GENG).
 
 ---
@@ -30,33 +31,30 @@ water is what the buoy sees, so it is the result that counts.
 
 ## What is tested
 
-Two articles, run together so they see the same water, temperature and timing.
+Two test pieces, run together so they see the same water, temperature and timing.
 
-| Article | What it is | Why |
+| Test piece | What it is | Why |
 |---|---|---|
-| **A: the raw PETG buoy** (or the closest raw printed section) | Printed PETG, **no** coating, epoxy, J-B Weld or sealant on any surface | The thing the question is about |
-| **B: raw PETG coupons** (3, printed with the same settings and filament) | Small solid or open-top pieces, one with the buoy's wall count | Cheap control: a solid piece cannot flood, so any gain is absorption |
+| **A: the unsealed full-size raw PETG buoy** | The complete printed buoy with **no** coating, epoxy, J-B Weld or sealant, and **left unsealed**: lid off or open, no seam closed, so water flows freely in and out of every cavity | The thing the question is about |
+| **B: raw PETG coupons** (3, printed with the same filament and settings) | Small solid blocks, one with the buoy's wall count | Control: a solid block has no cavity, so any gain is the plastic itself |
 
-**The flooding trap.** A hollow buoy with a slow leak gains mass from water *inside* the
-cavity, which is not absorption. Pick one before the run and write it in the log:
+**Why unsealed.** Leaving the buoy open means water cannot be trapped by a leak, so the
+mass gain is the plastic taking up water plus any water still clinging in the buoy's pockets
+and layer lines after it is lifted out. The second part is the main thing to control: the
+fixed drain routine below empties every cavity the same way each time, and coupon B shows
+what the plastic alone takes up. If A gains clearly more than B scaled by surface area,
+the difference is retained water, not absorption.
 
-- Run A with its cavities **open and drained** (a hole or an unsealed lid), so water goes in
-  and out freely and only the plastic's own uptake is left, **or**
-- Run A **sealed** and treat any gain as leak plus absorption, with coupon B as the
-  absorption-only reading.
-
-Recommended: both A (sealed, as built) and B. If A gains more than B scaled by surface area,
-the difference is ingress.
-
-Record for each article: print date, filament brand and colour, print settings (walls, infill,
-layer height), and any post-processing. Sanding or heat-set inserts count as processing.
+Record for each test piece: print date, filament brand and colour, print settings (walls,
+infill, layer height), and any post-processing. Sanding or heat-set inserts count as
+processing. Photograph every opening on A so the drain positions in step 2 are repeatable.
 
 ## Equipment
 
 | Item | Spec | Notes |
 |---|---|---|
-| Scale | Resolution **≤ 0.1 g** for coupons; **≤ 1 g** for the buoy | Record capacity and resolution. Check it with a known mass before each weigh-in |
-| Tubs | Large enough to submerge A fully, plus a second for the coupons | Same tub for fresh and salt is fine if rinsed |
+| Scale | Resolution **≤ 0.1 g** for coupons; for the buoy, the best resolution available at its mass, and capacity above the buoy's wet mass | Record capacity and resolution. Check it with a known mass before each weigh-in. The buoy needs its own, larger scale |
+| Tubs | A bin big enough to submerge the whole buoy, plus a small one for the coupons | The 50 gal bin from [SCO-168](https://linear.app/scout1/issue/SCO-168) works. Same bin for fresh and salt is fine if rinsed and dried |
 | Hold-down | Non-absorbing weights or a plastic grid | PETG floats. Use stainless or glass, not wood or foam |
 | Fresh water | Tap, room temperature | Record temperature |
 | Salt water | ~35 ppt, Instant Ocean | Needs [SCO-168](https://linear.app/scout1/issue/SCO-168) (salt and a salinity meter) |
@@ -93,8 +91,11 @@ Use the same steps for both articles in each run.
 Water clinging to the surface and in layer-line gaps is the biggest source of error, so the
 routine must be identical for every weigh-in:
 
-1. Lift the article out and let it **drain for 30 s** in the same orientation each time.
-2. **Blot with a lint-free towel for 60 s**, same pressure, covering all faces. Do not rub.
+1. Lift the buoy out and **drain it in a fixed sequence**: hold it with each opening facing
+   down for 30 s, in the same order every time (record the order from the photos). Coupons
+   drain for 30 s in one orientation.
+2. **Blot with a lint-free towel for 60 s**, same pressure, covering all faces and the inside
+   of each cavity you can reach. Do not rub.
 3. **Weigh within 2 min of leaving the water.** Record the mass and the time.
 4. Weigh again at **+10 min**. If the mass is still falling, the first reading included
    surface water. Record both.
@@ -129,8 +130,9 @@ For each article and each run:
 - **Mass gain (g)** = m₁ − m₀
 - **Mass gain (%)** = (m₁ − m₀) ÷ m₀ × 100
 - **Retained after dry-back (g)** = m₂ − m₀
-- **Gain per surface area (g/cm²)** for article A against coupon B, to separate absorption
-  from ingress. Use the CAD surface area for A and the measured one for B.
+- **Gain per surface area (g/cm²)** for A against B, to separate the plastic's own uptake
+  from water retained in A's pockets. Use the CAD surface area for A and the measured one
+  for B.
 
 Record the scale resolution next to every result. A gain at or below the resolution is
 reported as "not detected at this resolution", not as zero.
@@ -145,7 +147,7 @@ until the team agrees them, in line with
 |---|---|---|
 | **No concern** | Gain ≤ scale resolution on both articles, fresh and salt | No coating needed for absorption alone |
 | **Note and budget** | Measurable gain, returns to baseline on dry-back | Add the gain to the mass budget as a wet-mass allowance |
-| **Act** | Gain on A well above B scaled by area, or gain that does not return | Suspect ingress or trapped water in layer lines; coat or seal, then rerun |
+| **Act** | Gain on A well above B scaled by area, or gain that does not return on dry-back | Suspect water held in layer lines and pockets; coat or seal, then rerun |
 
 The threshold between "note" and "act" is **open**. Suggested starting point, to be confirmed:
 a gain that would move the waterline by more than the ±0.5 in freeboard tolerance used in
@@ -160,8 +162,10 @@ a gain that would move the waterline by more than the ±0.5 in freeboard toleran
 | Scale drift | Check with a known mass each session; same scale, same surface |
 | Temperature change | Record water and room temperature; keep them within a few degrees |
 | Salt crystals adding mass | Dip-rinse step, both readings recorded |
-| Air trapped in a hollow article | Shake out bubbles; note any article that floats back up |
+| Air trapped in the buoy's cavities | Tilt and shake out bubbles; note if A floats back up |
+| Water left in cavities after lifting | Fixed drain sequence, second weigh at +10 min |
 | Different print settings between A and B | Print B from the same filament and walls as A |
+| Lifting a full-size wet buoy | Two people, or drain the bin first |
 
 ## Data sheet
 
@@ -199,8 +203,7 @@ the hazard form's boxes for water near electronics and heavy lifting.
 
 ## Open decisions
 
-1. **Which article is A?** The full raw buoy, a raw section, or only coupons. Sealed or
-   open-cavity.
-2. **The "act" threshold.** A mass gain that matters for freeboard is not yet defined.
-3. **Intermediate readings.** Whether to take the 1 hr and 4 hr weights.
-4. **Scale.** The lab scale's resolution is not recorded in the repo.
+1. **The "act" threshold.** A mass gain that matters for freeboard is not yet defined.
+2. **Intermediate readings.** Whether to take the 1 hr and 4 hr weights.
+3. **Scale.** The lab scale's capacity and resolution are not recorded in the repo, and the
+   buoy needs a larger one than the coupons.
