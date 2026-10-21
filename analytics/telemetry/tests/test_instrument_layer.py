@@ -86,6 +86,11 @@ class Cadence(unittest.TestCase):
             with self.subTest(file=path.name):
                 self.assertNotIn("raspberry", path.read_text().lower())
 
+    def test_feature_cards_emit_no_unstyled_wrapper(self):
+        # `card-figure` never had a CSS rule (SCO-215); the glyph sits directly in the card.
+        from telemetry.site import components
+        self.assertNotIn("card-figure", components.feature_card("chip", "k", "t", "b"))
+
     def test_technology_states_the_three_slots(self):
         self.assertIn("00:10, 08:10 and 16:10 UTC", technology.body(_ctx()))
 
