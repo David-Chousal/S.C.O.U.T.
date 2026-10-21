@@ -22,7 +22,8 @@
 ## Her question back to us (unanswered)
 
 What existing structure would the buoy be tethered to? The answer decides whether a permit is needed, so it
-should be settled before replying. Consistent with
+should be settled before replying. Candidate docks, contacts and the other permissions around a dock test are in
+[Monterey and Santa Cruz Dock Test](monterey-santa-cruz-dock-test-hosts-and-permissions.md). Consistent with
 [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md), tethering to existing infrastructure avoids a
 seafloor anchor.
 
@@ -31,3 +32,8 @@ seafloor anchor.
 - Reply to Kacy Cooper naming the structure the buoy would tether to, and ask for the answer in writing.
 - **Decided 2026-10-16:** tether-only, no anchor of our own (path B). The application is not needed unless that changes.
 - Confirm the harbor areas outside sanctuary jurisdiction if a short-term test is wanted.
+- 2026-10-21: the permit coordinator's email, subject line and application route were checked on NOAA's permit page and
+  are filed in the dock-test document. Written confirmation is tracked in [SCO-222](https://linear.app/scout1/issue/SCO-222).
+- Rule text read 2026-10-21: [15 CFR 922.132(a)(4)](https://www.law.cornell.edu/cfr/text/15/part-922/subpart-M) bars placing
+  a structure on submerged lands, and none of its listed exceptions names a tethered floating buoy. The "likely no permit"
+  answer therefore rests on the coordinator's reply, which is why it should be confirmed in writing.
