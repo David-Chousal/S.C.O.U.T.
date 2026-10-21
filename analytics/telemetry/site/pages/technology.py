@@ -79,7 +79,7 @@ _REFS_COMMS = [
 # The design records on the repo that this page summarises.
 _REFS_DOCS = [
     ("Engineering Design Document", f"{_DOC}/engineering/engineering-design-document.md"),
-    ("Shore Station (Raspberry Pi)", f"{_DOC}/engineering/shore-station.md"),
+    ("Shore Station (ESP32-S3)", f"{_DOC}/engineering/shore-station.md"),
     ("On-Board CSV Data Schema", f"{_DOC}/engineering/data-schema.md"),
     ("ADR-0001 · MCU and radio selection", f"{_DOC}/decisions/0001-mcu-and-radio-selection.md"),
     ("ADR-0003 · Single-point sensing", f"{_DOC}/decisions/0003-single-point-sensing.md"),
@@ -147,9 +147,10 @@ def _subsystems() -> str:
         ("anchor", "Mechanical", "Enclosure and mooring",
          "The electronics stay sealed above the waterline. One sensor of each type sits at a "
          "single point below the buoy, with spares kept for field replacement."),
-        ("cpu", "Shore", "Raspberry Pi pipeline",
-         "The shore Raspberry Pi validates and stores each packet, runs the analysis, and "
-         "regenerates this site, using only the Python standard library."),
+        ("cpu", "Shore", "ESP32-S3 base station",
+         "A Feather ESP32-S3 with a LoRa radio receives each packet and forwards it over WiFi. "
+         "A standard-library Python pipeline validates it, runs the analysis, and regenerates "
+         "this site."),
     ]
     entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
@@ -243,8 +244,9 @@ def _link() -> str:
     return c.section(
         '<div class="bento align-start">'
         '<div class="col-3">'
-        + c.head_block("The shore link", "LoRa to a Raspberry Pi on shore",
-                       "The buoy talks to a Raspberry Pi on shore over a 915 MHz LoRa link. LoRa "
+        + c.head_block("The shore link", "LoRa to a base station on shore",
+                       "The buoy talks to an ESP32-S3 base station on shore over a 915 MHz LoRa "
+                       "link. LoRa "
                        "is built for exactly this: tiny payloads, long range, very low power.")
         + '<div class="prose stack-4">'
         "<p>Over seawater, the water itself is not the problem. Field studies of LoRa over open "
@@ -258,12 +260,12 @@ def _link() -> str:
         "datasheet line-of-sight figure. The evidence for both bounds is in the references "
         "below.</p></div></div>"
         '<div class="col-3">'
-        + c.head_block("On shore", "What the Raspberry Pi does")
+        + c.head_block("On shore", "What happens on shore")
         + '<div class="stack-4">'
         + c.spec([
-            ("Receive", "Listen for the buoy's daily LoRa packet"),
+            ("Receive", "An ESP32-S3 base station listens for the buoy's LoRa packets"),
+            ("Forward", "It pushes each packet over WiFi toward the dashboard"),
             ("Validate", "Check the counter and CRC; drop malformed frames"),
-            ("Store", "Append to CSV, the same schema the buoy logs"),
             ("Analyse", "Run the standard-library telemetry pipeline"),
             ("Publish", "Regenerate and push this static site"),
             ("Range target", "~2 km line of sight (conservative)"),
