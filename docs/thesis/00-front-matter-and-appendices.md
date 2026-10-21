@@ -26,7 +26,7 @@ _Add references as numbered entries._
 - Appendix A: Bill of Materials and Budget
 - Appendix B: Engineering Drawings
 - Appendix C: Calculations (Mass, Freeboard, Stability, Loads): [`appendix-c-calculations.md`](appendix-c-calculations.md), first draft
-- Appendix D: Test Procedures, Logs, and Raw Data
+- Appendix D: Test Procedures, Logs, and Raw Data: [`appendix-d-test-procedures-and-logs.md`](appendix-d-test-procedures-and-logs.md), first draft
 - Appendix E: Source Code and Repository
 - Appendix F: Hazard Assessment Form
 - Appendix G: Stakeholder Interview Records

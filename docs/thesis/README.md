@@ -18,6 +18,7 @@
 | File | Chapter |
 |---|---|
 | [`appendix-c-calculations.md`](appendix-c-calculations.md) | Appendix C: Calculations, models and simulations (first draft) |
+| [`appendix-d-test-procedures-and-logs.md`](appendix-d-test-procedures-and-logs.md) | Appendix D: Test procedures, logs and raw data (first draft) |
 | [`00-front-matter-and-appendices.md`](00-front-matter-and-appendices.md) | Front matter, references, appendices |
 | [`01-introduction.md`](01-introduction.md) | 1 Introduction |
 | [`02-background-and-literature-review.md`](02-background-and-literature-review.md) | 2 Background and Literature Review |
