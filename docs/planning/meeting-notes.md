@@ -901,3 +901,64 @@ David as code owner for software and John for mechanical.
 | Confirm the 4 kg filament is PETG and enough, then close | John ([SCO-167](https://linear.app/scout1/issue/SCO-167)) |
 | Print the new buoy | John |
 
+
+---
+
+## 2026-10-21 — Advisor meeting (GENG + ECEN)
+
+**Attendees:** John Myrdal, Isabella Rodriguez, Shoba Krishnan, Jes Kuczenski.
+
+The transcript's speaker labels are anonymized, so advice below is attributed to "the advisors", not to one person. Where the
+Granola summary and the transcript differ, the transcript is followed.
+
+### Decisions and direction
+
+- **Marina permitting route.** John is contacting the Santa Cruz and Monterey marinas: hanging the buoy from a marina's private dock
+  needs the marina's approval and a Coast Guard notification instead of the longer permit processes. Monterey has no tropical
+  reef coral, so part of the test still has to go to Hawaii. Extends the 2026-10-16 path B
+  ([SCO-195](https://linear.app/scout1/issue/SCO-195)).
+- **PETG turbidity pod is waterproof without a coating** (John, after months of PLA failures). The advisors want it quantified.
+  See [`sensor-housing-petg-pass-2026-10-21.md`](../../mechanical/test/sensor-housing-petg-pass-2026-10-21.md) once PR #195 merges.
+- **Buoy redesign shown:** solar-free, smaller, cheaper, printable at full scale; a mushroom-shaped float and a second shape, both
+  float in a bucket; custom G-code infill makes many sealed chambers so a puncture floods only one; the electronics housing slides
+  into the float.
+- **Advisor guidance, not yet adopted as team decisions:** name a team lead (rotating is fine); break tasks into chunks of 4 to 6 hours
+  at most, each with a clear definition of done; avoid unrealistic timelines; scope creep is the main risk, so test more and
+  redesign less; know when a design is good enough.
+
+### Discussion
+
+- **MBARI contact.** Email through the site has not reached anyone. Try LinkedIn alumni and the SCU Bronco Exchange. Jes offered to
+  ask a contact the next morning who at MBARI can connect the team; the team needs a contract-level connection only.
+- **Humidity.** The internal humidity/temperature sensor is on order; the advisors want an alert when humidity gets high and a
+  calibration curve made by adding known amounts of water ("water showed up" is not enough).
+- **Ingress test.** Weigh a PETG sample, submerge it with and without coating, reweigh after 10 to 20 days. Small samples are fine;
+  extrapolate by surface area. John has a kitchen scale.
+- **Thesis.** Problem statement, introduction and background are due Sunday or Monday. Write up calculations, permit research and
+  design rationale now. The appendix is a file folder with its own table of contents; the story and impact go in the body. Alternatives
+  analyses only for decisions that changed the design (solar removal is the example): criteria, options, ranking, decision,
+  justification, impact. Needs concept, context, iteration, result, impact.
+- **System diagrams.** An overview exists and Isabella has a detailed per-subsystem one; email the overview to the advisors.
+- **CDR** is in finals week, on a Monday, presented to classmates not on the project. Date to confirm.
+- **California vs Hawaii.** Document the differences (temperature, waves, salinity, animals) as justified test assumptions; harsher
+  California waves are a useful limit.
+- **Hazard form.** Corrections needed before the advisor signs (see Action items).
+- **Team schedule.** Integration starts next week; the team is meeting more often than weekly. A full-team lunch with David today to
+  set availability and a lab schedule.
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Find an MBARI contact via LinkedIn alumni, Bronco Exchange and Jes's referral | John ([SCO-203](https://linear.app/scout1/issue/SCO-203)) |
+| Start the PETG weigh-in/weigh-out ingress test | John ([SCO-141](https://linear.app/scout1/issue/SCO-141)) |
+| Draft the problem statement, introduction and background | John ([SCO-206](https://linear.app/scout1/issue/SCO-206)) |
+| Move calculations, permit research and rationale into the thesis | John ([SCO-207](https://linear.app/scout1/issue/SCO-207)) |
+| Write the solar-removal alternatives analysis | John ([SCO-208](https://linear.app/scout1/issue/SCO-208)) |
+| Decide on a team lead | Team ([SCO-209](https://linear.app/scout1/issue/SCO-209)) |
+| List California vs Hawaii differences | John ([SCO-210](https://linear.app/scout1/issue/SCO-210)) |
+| Fix the hazard form (copy-paste error, spell out EHS, ventilation, bin leaks, battery disposal) and get the signature | John ([SCO-211](https://linear.app/scout1/issue/SCO-211)) |
+| Humidity calibration curve | Isabella ([SCO-204](https://linear.app/scout1/issue/SCO-204)) |
+| Humidity alert in firmware | David ([SCO-205](https://linear.app/scout1/issue/SCO-205)) |
+| Email the system diagram overview to the advisors | John ([SCO-187](https://linear.app/scout1/issue/SCO-187)) |
+| Jes asks his MBARI contact for an internal referral | Jes |
