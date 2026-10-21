@@ -48,9 +48,9 @@ def page_header(eyebrow: str, title: str, lead: str) -> str:
 def feature_card(glyph_name: str, kicker: str, title: str, body: str, *, cls: str = "") -> str:
     return (
         f'<article class="card hoverable reveal {cls}">'
-        f'<div class="card-figure">{assets.glyph(glyph_name)}<div>'
+        f'{assets.glyph(glyph_name)}<div>'
         f'<p class="kicker">{kicker}</p><h3>{title}</h3><p>{body}</p>'
-        "</div></div></article>"
+        "</div></article>"
     )
 
 
@@ -168,7 +168,8 @@ def data_path() -> str:
         ("Transmit", "Three times a day, at 00:10, 08:10 and 16:10 UTC, the buoy sends its latest "
                      "reading to shore as a 30-byte packet over a 915 MHz LoRa link, roughly 2 km "
                      "line of sight. No cellular service or internet is used at the buoy."),
-        ("Publish", "The shore Raspberry Pi validates each packet, runs quality control and NOAA "
+        ("Publish", "On shore, an ESP32-S3 base station receives each packet and forwards it "
+                    "over WiFi. The telemetry pipeline validates it, runs quality control and NOAA "
                     "Coral Reef Watch thermal-stress metrics, and regenerates this dashboard, "
                     "using only the Python standard library."),
     ])

@@ -207,7 +207,7 @@ def _soundscape() -> str:
         "Okinawa</strong>: eight monthly sessions from August 2017 to July 2018, a stand-in "
         "until S.C.O.U.T. records its own audio.</p>"
         '<p class="callout"><strong>Raw audio never leaves the buoy.</strong> Waveform data is '
-        "far too large for the daily LoRa packet, so the buoy stores recordings on board and "
+        "far too large for a 30-byte LoRa packet, so the buoy stores recordings on board and "
         "transmits only summary statistics.</p>"
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Full bioacoustic methodology</a></p>'
         "</div></div>",
@@ -237,7 +237,7 @@ def _pipeline() -> str:
     return c.section(
         c.head_block("Processing", "The analysis pipeline",
                      "Every environmental stage runs on the Python standard library, so it "
-                     "executes and is unit-tested on a bare Raspberry Pi.")
+                     "runs anywhere Python 3 does, with nothing to install.")
         + f'<div class="bento stack-6">{grid}</div>',
         cls="section-sm",
         sid="pipeline",
