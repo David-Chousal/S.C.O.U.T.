@@ -962,3 +962,67 @@ Granola summary and the transcript differ, the transcript is followed.
 | Humidity alert in firmware | David ([SCO-205](https://linear.app/scout1/issue/SCO-205)) |
 | Email the system diagram overview to the advisors | John ([SCO-187](https://linear.app/scout1/issue/SCO-187)) |
 | Jes asks his MBARI contact for an internal referral | Jes |
+
+---
+
+## 2026-10-21 — Team lunch
+
+**Attendees:** John Myrdal (GENG), David Chousal Cantu (CSEN), Isabella Rodriguez (ECEN).
+
+Informal lunch after the advisor meeting. Speaker labels in the transcript are anonymized, so some owners below are inferred. Venting about
+the advisors' feedback and side remarks are left out; the project content is here.
+
+### Decisions and direction
+
+- **Batteries.** The original D-cell order was back-ordered; a larger cell of the same chemistry was ordered instead. Two in parallel
+  give redundancy, and the budget already closes for 12 months on one cell. The cell part number was not given
+  ([SCO-158](https://linear.app/scout1/issue/SCO-158), [SCO-163](https://linear.app/scout1/issue/SCO-163)).
+- **Hydrophone audio amplifier: reuse an earlier thesis group's circuit** instead of redesigning it; Shoba is asking Jes for the contact
+  and a lab contact also has a design ([SCO-216](https://linear.app/scout1/issue/SCO-216)). The hydrophone purchase waits on funding.
+- **A temperature and humidity sensor goes inside the electronics housing** (already ordered; see
+  [SCO-60](https://linear.app/scout1/issue/SCO-60), [SCO-204](https://linear.app/scout1/issue/SCO-204)).
+- **Team lead:** discussed, not decided. The lean was a lead per meeting or topic plus a one-page printed timeline for the advisors
+  ([SCO-209](https://linear.app/scout1/issue/SCO-209), still Needs Decision).
+- **Test documentation:** every bench test, pass or fail, is documented in a PR with decisions, failures and fixes.
+
+### Status reported
+
+- **Electronics (Isabella):** system design and power done and approved by Shoba; schematic built in KiCad, breadboard layout generated, bill of
+  materials ready, none pushed yet. All parts in hand except the turbidity sensor (arriving next week) and the hydrophone. Hydrophone data
+  sheets are thin, so it needs physical tests.
+- **Firmware (David):** the sleep, wake, sense, log, transmit loop, watchdog, RTC wake and retry/error logging are in. Some pin numbers in code are
+  placeholders until wiring is locked; a one-line change each once documented.
+- **Dashboard (David):** a digital design system (colors, button states, stat tiles, graphs, alerts) and a gated login dashboard in progress.
+- **Mechanical (John):** housing design is complete except the cable gland diameter ([SCO-68](https://linear.app/scout1/issue/SCO-68)).
+- **Shore station:** a Feather with a LoRa wing, wall powered; it also transmits (ADR-0008).
+
+### Plan
+
+| When | What |
+|---|---|
+| Sat Oct 24 | Optional coffee and work session to sync and delegate electronics tasks |
+| Sun Oct 25 | Lab session: temperature sensor on the Feather M0, link between two Feathers, then add parts one at a time |
+| By Halloween | All sensors except the hydrophone in hand, initial tests underway; Phase 1 issues resolved by Saturday |
+| About Nov 15 | All sensors connected |
+| After Thanksgiving | Software loaded, 48 h bench run; Phase 2 ends Dec 6 |
+| After finals | Four days of cleanup before the break; return in January ready to deploy |
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Granola summary: a "72-byte payload". In the transcript the speaker said 72 bits, corrected to 72 bytes, and later 30 bytes | [facts.md](../hub/facts.md): the daily packet is 30 bytes (82 B is the budget ceiling). **Resolved 2026-10-21 (John): 30 bytes is right; the Granola summary was wrong.** No change to facts.md |
+| Float soak and battery endurance: "7-month extrapolation" (transcript: "seven month") | [SCO-159](https://linear.app/scout1/issue/SCO-159): at least a 12-month extrapolation |
+| Phase 2 milestone list includes a fluorometer as deferred scope | Fluorometer ([SCO-18](https://linear.app/scout1/issue/SCO-18)) is Deferred; the team says it should not be in scope |
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Push the KiCad schematic, breadboard layout and bill of materials to `hardware/`, with the pin assignments documented | Isabella ([SCO-156](https://linear.app/scout1/issue/SCO-156)) |
+| Simplified block diagram: sensor name and M0 connection only | Isabella ([SCO-187](https://linear.app/scout1/issue/SCO-187)) |
+| Resolve or close the open Phase 1 issues by Saturday | Each owner ([SCO-157](https://linear.app/scout1/issue/SCO-157)) |
+| Reuse the earlier team's amplifier design | Isabella ([SCO-216](https://linear.app/scout1/issue/SCO-216)) |
+| Confirm budget status and hydrophone funding with Jes; confirm the new D-cell part | Team ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
+| One-page milestone and timeline handout for Wednesday | Owner not decided ([SCO-218](https://linear.app/scout1/issue/SCO-218)) |
+| Weekly report skill that builds a Sunday PDF | Owner not decided ([SCO-217](https://linear.app/scout1/issue/SCO-217)) |
