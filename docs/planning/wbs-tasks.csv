@@ -6,7 +6,7 @@ task,1.5,SCO-149,Write an alternatives analysis for the main mechanical choices,
 task,1.6,SCO-90 / SCO-95,LLC and patent strategy for SCOUT IP,John Ryan Myrdal,Phase 1,Backlog,2026-10-26,2026-11-25,,Possible advisor or university IP office input,,estimated
 task,1.7,SCO-121,Decide a per-unit naming scheme for Scout prototypes,Unassigned,Phase 1,Backlog,2026-10-20,2026-10-30,,Unassigned in Linear; needs an owner and a team decision,,estimated
 task,2.1,SCO-70,Deliver the final electronics component list and dimensions,Isabella Rodriguez,Phase 1,Todo,2026-10-06,2026-10-08,,Overdue since 2026-09-04; blocks housing dimensions,Component list final,Linear due
-task,2.2,SCO-116,Take the full electronics design to Shoba for a power and solar review,Isabella Rodriguez,Phase 1,Todo,2026-10-08,2026-10-09,,Shoba's availability; Dr. Yang review follows,Design review complete,proposed
+task,2.2,SCO-116,Take the full electronics design to Shoba for a power and solar review,Isabella Rodriguez,Phase 1,Todo,2026-10-08,2026-10-09,,Shoba's availability,Design review complete,proposed
 task,2.3,SCO-115,"Bench parts order arrives (Feather M0, Adalogger, sensors, boost, TPL5111)",Isabella Rodriguez,Phase 1,Waiting on Parts,2026-10-09,2026-10-09,SCO-70 SCO-116,Vendor shipping; ordered through Dr. Krishnan 2026-10-05; arrival date assumed,Parts arrive,Linear due
 task,2.4,SCO-142,Inventory spare sensors and boards in advisor and team labs,Isabella Rodriguez,Phase 1,Todo,2026-10-07,2026-10-12,,Needs advisor and lab access,,proposed
 task,2.5,SCO-8,Decide the hydrophone part (H2a-XLR vs H2dM),Isabella Rodriguez,Phase 1,Needs Decision,2026-10-12,2026-10-16,,Hydrophone not in the bench order,Decision recorded,Linear due
