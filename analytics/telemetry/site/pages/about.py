@@ -42,7 +42,7 @@ _TEAM = [
 _PHASES = [
     ("Phase 0", "Kickoff", "Aug – Sep 2026", True),
     ("Phase 1", "Subsystem bring-up", "Sep – Oct 2026", False),
-    ("Phase 2", "System integration", "Oct – Nov 2026", False),
+    ("Phase 2", "System integration", "Oct – Dec 2026", False),
     ("Phase 3", "Enclosure &amp; waterproofing", "Nov 2026 – Jan 2027", False),
     ("Phase 4", "Field prototype deployment", "Jan – Feb 2027", False),
     ("Phase 5", "Hawaii deployment prep", "Mar 2027", False),
@@ -58,7 +58,7 @@ def _overview() -> str:
             "S.C.O.U.T., the Santa Clara Oceanic Utilities Transmitter, is a low-cost, "
             "battery-powered buoy that carries several sensing signals at once. Coral-reef health is "
             "the first mission, and the platform is built to take on others.")
-        + '<div class="bento" style="align-items:start;margin-top:2.6rem">'
+        + '<div class="bento align-start stack-7">'
         '<div class="col-4 prose reveal">'
         "<p>S.C.O.U.T. addresses a specific gap in ocean monitoring. Satellites map "
         "sea-surface temperature at scale but lose accuracy in the shallow nearshore water where "
@@ -67,10 +67,11 @@ def _overview() -> str:
         "that matter most for reef health. S.C.O.U.T. is a buoy <strong>cheap and rugged enough "
         "to put there and leave in place</strong>.</p>"
         "<p>A single buoy wakes about every half hour to log water temperature, turbidity, and "
-        "battery health, then sleeps to conserve power. Once a day it sends one small summary to "
+        "battery health, then sleeps to conserve power. Three times a day it sends its latest reading to "
         "a shore station over a long-range 915&nbsp;MHz radio link; the full raw archive, audio "
-        "included, never leaves the buoy. On shore, a Raspberry&nbsp;Pi runs quality control and "
-        "NOAA Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "
+        "included, never leaves the buoy. On shore, a small ESP32-S3 base station receives it and "
+        "forwards it over WiFi, and a standard-library pipeline runs quality control and NOAA "
+        "Coral Reef Watch thermal-stress metrics, then regenerates this public site, with no "
         "server to keep running.</p>"
         "<p>Every choice serves one constraint: it has to survive. The buoy must run "
         "<strong>more than a year unattended</strong> on battery power in salt water, stay under a "
@@ -97,7 +98,7 @@ def _overview() -> str:
 
 def _story() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2 reveal"><p class="eyebrow">The story</p>'
         '<p class="quote">It started from a question: where is the real gap in reef '
         "monitoring?</p></div>"
@@ -127,7 +128,7 @@ def _team(base: str) -> str:
         c.head_block("Who built it", "The team",
                      "Three students, one each from electrical, mechanical, and software "
                      "engineering, each responsible for the part of the system in their field.")
-        + f'<div class="team" style="margin-top:2.4rem">{cards}</div>',
+        + f'<div class="team stack-6">{cards}</div>',
         cls="section-sm",
         sid="team",
     )
@@ -135,10 +136,10 @@ def _team(base: str) -> str:
 
 def _institution() -> str:
     return c.section(
-        '<div class="bento" style="align-items:center">'
+        '<div class="bento align-center">'
         '<div class="col-3 reveal"><p class="eyebrow">Institution &amp; advisors</p>'
         '<h2>Santa Clara University</h2>'
-        '<p class="lead" style="margin-top:0.8rem">School of Engineering · Senior Design '
+        '<p class="lead stack-3">School of Engineering · Senior Design '
         "Capstone · 2026–2027</p></div>"
         '<div class="col-3 reveal">'
         + c.spec([
@@ -159,15 +160,15 @@ def _roadmap() -> str:
         chip = '<span class="chip info">In progress</span>' if active else \
                '<span class="chip">Planned</span>'
         rows += (
-            '<div class="spec-row" style="grid-template-columns:6rem 1fr auto auto;gap:1rem">'
-            f'<dt style="color:var(--accent)">{tag}</dt><dd style="color:var(--ink)">{name}</dd>'
-            f'<dd style="text-align:right">{window}</dd><dd>{chip}</dd></div>'
+            '<div class="spec-row spec-row-timeline">'
+            f'<dt>{tag}</dt><dd>{name}</dd>'
+            f'<dd>{window}</dd><dd>{chip}</dd></div>'
         )
     return c.section(
         c.head_block("Roadmap", "Project phases",
                      "Re-baselined in August 2026. The plan runs from campus bring-up to a field "
                      "deployment in Hawaii.")
-        + f'<dl class="spec" style="margin-top:2rem">{rows}</dl>',
+        + f'<dl class="spec stack-6">{rows}</dl>',
         cls="section-sm",
         sid="roadmap",
     )

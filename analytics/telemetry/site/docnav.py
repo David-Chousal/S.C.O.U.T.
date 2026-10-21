@@ -25,7 +25,7 @@ def page(*, title: str, items: list[tuple[str, str]], content: str, base: str) -
     """Wrap page ``content`` in the two-column doc layout with the sticky section sidebar.
 
     ``items`` are ``(section_id, label)`` pairs; each ``section_id`` must match a section's id
-    in ``content``. The sidebar is hidden below the two-column breakpoint (see theme.py).
+    in ``content``. The sidebar is hidden below the two-column breakpoint (see theme/navigation.py).
     """
     return (
         f'<div class="doc">{_sidebar(title, items)}'

@@ -1,7 +1,7 @@
 """Analytics dashboard generator — the data-driven page of the S.C.O.U.T. site.
 
-Because the buoy transmits ~once per day, "live" means *republished when new data lands*, not
-real-time. The shore Raspberry Pi runs the pipeline on a schedule, calls :func:`write_site`,
+The buoy transmits in three fixed slots a day, so "live" means *republished when new data
+lands*, not real-time; the page says how fresh the data is against that schedule. The shore Raspberry Pi runs the pipeline on a schedule, calls :func:`write_site`,
 and pushes the result; GitHub Pages serves it. See docs/engineering/live-dashboard.md.
 
 The page is rendered through the shared site design system (:mod:`telemetry.site`) so it reads
@@ -10,10 +10,9 @@ inline SVG charts) and it **loads nothing cross-origin**: no CDN, no third-party
 resource (fonts, animations, data) same-origin. The header GitHub icon is an external
 *hyperlink* — a user navigation, not a loaded resource — so it is present here as on every
 page; ``tests/test_web.py`` enforces the real invariant (no cross-origin resource loads) rather
-than banning outbound links. Like the rest of the site it also loads the shared self-hosted
-ambient animations (the footer seaweed and the roaming fish), which are same-origin JavaScript,
-so the page is not script-free. Chart colours are CSS design tokens. Standard library only (on
-the Python side).
+than banning outbound links. Like the rest of the site it loads small same-origin scripts (scroll
+reveals, the chat widget), so it is not script-free. Chart colours are CSS design tokens.
+Standard library only (on the Python side).
 """
 
 from __future__ import annotations
@@ -22,7 +21,8 @@ import html
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import bleaching, drift
+from . import bleaching, charts, drift, freshness
+from .aggregate import SAMPLES_PER_DAY
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
 from .site import layout
 
@@ -42,101 +42,6 @@ _DRIFT_CLASS = {
     drift.DRIFT_SUSPECT: "a-warning",
     drift.DRIFT_LIKELY: "a-alert1",
 }
-_W, _H = 720, 200
-_PAD_L, _PAD_R, _PAD_T, _PAD_B = 46, 14, 14, 26
-
-
-def _range(values: list[float | None], extra: tuple[float, ...] = ()) -> tuple[float, float]:
-    nums = [v for v in values if v is not None] + list(extra)
-    if not nums:
-        return 0.0, 1.0
-    lo, hi = min(nums), max(nums)
-    if lo == hi:
-        return lo - 1.0, hi + 1.0
-    pad = (hi - lo) * 0.10
-    return lo - pad, hi + pad
-
-
-def _svg_chart(
-    values: list[float | None],
-    *,
-    series: str,                       # 'temp' | 'dhw' | 'turb' | 'batt' → CSS classes s-*/f-*
-    days: list[date],
-    reflines: tuple[tuple[float, str, str], ...] = (),   # (value, css_suffix, label)
-    markers: frozenset[int] = frozenset(),
-    fill: bool = False,
-) -> str:
-    """One responsive SVG line chart, styled entirely by CSS class (theme-aware)."""
-    vmin, vmax = _range(values, extra=tuple(r[0] for r in reflines))
-    n = len(values)
-    span_x = _W - _PAD_L - _PAD_R
-    span_y = _H - _PAD_T - _PAD_B
-
-    def x(i: int) -> float:
-        return _PAD_L + (0 if n <= 1 else i / (n - 1) * span_x)
-
-    def y(v: float) -> float:
-        return _PAD_T + span_y - (v - vmin) / (vmax - vmin) * span_y
-
-    # No xmlns: inline SVG in HTML5 inherits the SVG namespace from the parser, so the page
-    # stays provably free of any external reference (not even a namespace URL).
-    parts: list[str] = [
-        f'<svg viewBox="0 0 {_W} {_H}" class="chart" preserveAspectRatio="none" role="img">'
-    ]
-    # baseline + y-axis min/max labels
-    parts.append(f'<line class="grid" x1="{_PAD_L}" y1="{y(vmin):.1f}" '
-                 f'x2="{_W - _PAD_R}" y2="{y(vmin):.1f}"/>')
-    parts.append(f'<text x="6" y="{y(vmax) + 3:.1f}" class="ax">{vmax:.2f}</text>')
-    parts.append(f'<text x="6" y="{y(vmin):.1f}" class="ax">{vmin:.2f}</text>')
-    # reference lines (MMM, threshold, DHW alert levels …)
-    for value, suffix, label in reflines:
-        if vmin <= value <= vmax:
-            yy = y(value)
-            parts.append(f'<line class="rl-{suffix}" x1="{_PAD_L}" y1="{yy:.1f}" '
-                         f'x2="{_W - _PAD_R}" y2="{yy:.1f}" stroke-dasharray="4 3" '
-                         'stroke-width="1" opacity="0.85"/>')
-            parts.append(f'<text class="ax tx-{suffix}" x="{_W - _PAD_R:.1f}" y="{yy - 3:.1f}" '
-                         f'text-anchor="end">{html.escape(label)}</text>')
-    # data as polyline segments (break on None gaps)
-    segment: list[str] = []
-    for i, v in enumerate(values):
-        if v is None:
-            if len(segment) > 1:
-                parts.append(_polyline(segment, series, fill, y(vmin)))
-            segment = []
-        else:
-            segment.append(f"{x(i):.1f},{y(v):.1f}")
-    if len(segment) > 1:
-        parts.append(_polyline(segment, series, fill, y(vmin)))
-    elif len(segment) == 1:
-        cx, cy = segment[0].split(",")
-        parts.append(f'<circle class="f-{series}" cx="{cx}" cy="{cy}" r="2.6"/>')
-    # markers (e.g. turbidity events)
-    for i in markers:
-        if 0 <= i < n and values[i] is not None:
-            parts.append(f'<circle class="mk-event" cx="{x(i):.1f}" cy="{y(values[i]):.1f}" '
-                         'r="3.4" stroke="var(--surface)" stroke-width="0.8"/>')
-    # x-axis date labels
-    if days:
-        parts.append(f'<text x="{_PAD_L}" y="{_H - 6}" class="ax">{days[0].isoformat()}</text>')
-        parts.append(f'<text x="{_W - _PAD_R}" y="{_H - 6}" class="ax" '
-                     f'text-anchor="end">{days[-1].isoformat()}</text>')
-    parts.append("</svg>")
-    return "".join(parts)
-
-
-def _polyline(points: list[str], series: str, fill: bool, baseline_y: float) -> str:
-    line = (f'<polyline class="s-{series}" points="{" ".join(points)}" fill="none" '
-            'stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
-    if not fill:
-        return line
-    first_x = points[0].split(",")[0]
-    last_x = points[-1].split(",")[0]
-    area = (f'<polygon class="f-{series}" points="{first_x},{baseline_y:.1f} '
-            f'{" ".join(points)} {last_x},{baseline_y:.1f}" opacity="0.14"/>')
-    return area + line
-
-
 def _stat(label: str, value: str, *, cls: str = "", sub: str | None = None) -> str:
     sub_html = f'<p class="stat-sub">{html.escape(sub)}</p>' if sub else ""
     return (
@@ -146,19 +51,33 @@ def _stat(label: str, value: str, *, cls: str = "", sub: str | None = None) -> s
     )
 
 
-def _legend(items: list[tuple[str, str]]) -> str:
-    spans = "".join(
-        f'<span><i class="f-{cls}" style="background:var(--c-{cls})"></i>{html.escape(lbl)}</span>'
-        for cls, lbl in items
+_STATUS_GLYPH = {
+    "live": '<circle cx="6" cy="6" r="4.5"/>',
+    "stale": '<circle cx="6" cy="6" r="4" class="ring"/><path d="M6 2a4 4 0 0 1 0 8z"/>',
+    "offline": '<circle cx="6" cy="6" r="4" class="ring"/>',
+    "fault": '<path d="M6 1.5 11 10.5H1z"/>',
+}
+_STATUS_LABEL = {"live": "Live", "stale": "Stale", "offline": "Offline", "fault": "Fault"}
+
+
+def status_line(f: freshness.Freshness) -> str:
+    """Glyph + label + one sentence; the colour is on the glyph, the words stay readable."""
+    return (
+        f'<span class="status status-{f.status}"><svg viewBox="0 0 12 12" aria-hidden="true">'
+        f"{_STATUS_GLYPH[f.status]}</svg>{_STATUS_LABEL[f.status]}</span> "
+        f'<span class="status-text">{html.escape(freshness.describe(f))}</span>'
     )
-    return f'<div class="legend">{spans}</div>'
 
 
-def _panel(title: str, unit: str, chart: str, legend: str = "", note: str = "") -> str:
+def _points(daily, attr: str) -> list:
+    return [(d.day, getattr(d, attr)) for d in daily]
+
+
+def _panel(title: str, unit: str, chart: str, note: str = "") -> str:
     return (
         '<section class="panel reveal"><div class="panel-head">'
         f'<h3>{html.escape(title)}</h3><span class="unit">{html.escape(unit)}</span></div>'
-        f"{chart}{legend}{note}</section>"
+        f"{chart}{note}</section>"
     )
 
 
@@ -177,41 +96,12 @@ def _drift_note(drift) -> str:
     )
 
 
-def render_html(
-    report: TelemetryReport,
-    *,
-    title: str = "Live Telemetry · S.C.O.U.T.",
-    generated_at: datetime | None = None,
-    banner: str | None = None,
-    base: str = "../",
-    fonts_present: bool = False,
-) -> str:
-    """Render the full self-contained Analytics document."""
-    generated_at = generated_at or datetime.now(timezone.utc)
-    generated = generated_at.strftime("%Y-%m-%d %H:%M UTC")
-    daily = report.daily
-    days = [d.day for d in daily]
-    thermal_by_day = {t.day: t for t in report.thermal}
-    event_days = {
-        (e.at.date() if hasattr(e.at, "date") else e.at) for e in report.turbidity_anomalies.events
-    }
-
-    temps = [d.temp_mean for d in daily]
-    dhws = [thermal_by_day[d].dhw if d in thermal_by_day else None for d in days]
-    turb = [d.turbidity_median_adc for d in daily]
-    batt = [d.battery_min_v for d in daily]
-    turb_markers = frozenset(i for i, d in enumerate(days) if d in event_days)
-
-    ts = report.thermal_summary
+def _cards(report: TelemetryReport) -> str:
+    ts, tt = report.thermal_summary, report.temp_trend
     latest_alert = report.thermal[-1].alert if report.thermal else "n/a"
-    latest_batt = next((b for b in reversed(batt) if b is not None), None)
-    tt = report.temp_trend
-    mmm_line = (
-        "MMM %.2f °C" % report.mmm if report.mmm is not None else "no MMM set, DHW disabled"
-    )
-
-    # Status cards
-    cards = "".join([
+    latest_batt = next((d.battery_min_v for d in reversed(report.daily)
+                        if d.battery_min_v is not None), None)
+    return "".join([
         _stat("Current alert", latest_alert, cls=_ALERT_CLASS.get(latest_alert, "")),
         _stat("Peak DHW", f"{ts.peak_dhw:g} °C-wk" if ts else "—"),
         _stat("Peak alert", ts.peak_alert if ts else "—",
@@ -231,79 +121,93 @@ def render_html(
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
     ])
 
+
+def _low_coverage(daily) -> dict:
+    """Why a day that had rows still has no daily mean: it fell below the coverage floor."""
+    return {d.day: f"too few samples ({d.temp_n} of {SAMPLES_PER_DAY})"
+            for d in daily if d.temp_mean is None and d.n_samples}
+
+
+def _panels(report: TelemetryReport) -> list[str]:
+    daily = report.daily
+    events = frozenset(e.at.date() if hasattr(e.at, "date") else e.at
+                       for e in report.turbidity_anomalies.events)
     temp_refs: tuple[tuple[float, str, str], ...] = ()
     if report.mmm is not None:
-        temp_refs = (
-            (report.mmm, "mmm", "MMM"),
-            (bleaching.bleaching_threshold(report.mmm), "threshold", "threshold"),
-        )
-    dhw_refs = (
-        (bleaching.DHW_ALERT_LEVEL_1, "a1", "Alert 1"),
-        (bleaching.DHW_ALERT_LEVEL_2, "a2", "Alert 2"),
-    )
+        threshold = bleaching.bleaching_threshold(report.mmm)
+        temp_refs = ((report.mmm, "mmm", f"MMM {report.mmm:.1f}"),
+                     (threshold, "threshold", f"Bleaching threshold {threshold:.1f}"))
+    panels = [_panel("Daily mean temperature", "°C", charts.chart(
+        _points(daily, "temp_mean"), series="temp", title="Daily mean water temperature",
+        unit="°C", reflines=temp_refs, missing_reasons=_low_coverage(daily)))]
+    if report.thermal:
+        panels.append(_panel("Degree Heating Weeks", "°C-weeks", charts.chart(
+            [(t.day, t.dhw) for t in report.thermal], series="dhw", title="Degree Heating Weeks",
+            unit="°C-weeks", bands=charts.DHW_BANDS)))
+    panels.append(_panel("Turbidity (daily median)", "ADC · uncalibrated", charts.chart(
+        _points(daily, "turbidity_median_adc"), series="turb", title="Daily median turbidity",
+        unit="ADC counts", events=events,
+        # Polarity rides in the legend: it is the one thing a reader can get exactly backwards.
+        legend_extra=('<span>Higher counts = clearer water</span>'
+                      '<span><i class="sw sw-ev"></i>Anomaly event</span>')),
+        note=_drift_note(report.turbidity_drift)))
+    panels.append(_panel("Battery (daily minimum)", "V", charts.chart(
+        _points(daily, "battery_min_v"), series="batt", title="Daily minimum battery voltage",
+        unit="V")))
+    return panels
 
+
+def _head(report: TelemetryReport, generated_at: datetime, published: str) -> str:
+    fresh = freshness.assess(report.received[-1] if report.received else None,
+                             now=generated_at, faults=report.latest_flags)
     span = (f"{report.qc.first:%Y-%m-%d %H:%M} → {report.qc.last:%Y-%m-%d %H:%M} UTC"
             if report.qc.first and report.qc.last else "no data")
-
-    panels = [_panel(
-        "Daily mean temperature", "°C",
-        _svg_chart(temps, series="temp", days=days, reflines=temp_refs),
-        _legend([("temp", "Daily mean SST")]) if temp_refs == () else
-        '<div class="legend"><span><i style="background:var(--c-temp)"></i>Daily mean SST</span>'
-        '<span><i style="background:var(--a-alert1)"></i>Bleaching threshold</span></div>',
-    )]
-    if report.thermal:
-        panels.append(_panel(
-            "Degree Heating Weeks", "°C-weeks",
-            _svg_chart(dhws, series="dhw", days=days, reflines=dhw_refs, fill=True),
-            '<div class="legend"><span><i style="background:var(--c-dhw)"></i>DHW</span>'
-            '<span><i style="background:var(--a-alert1)"></i>Alert 1 (≥4)</span>'
-            '<span><i style="background:var(--a-alert2)"></i>Alert 2 (≥8)</span></div>',
-        ))
-    panels.append(_panel(
-        "Turbidity (daily median)", "ADC · uncalibrated",
-        _svg_chart(turb, series="turb", days=days, markers=turb_markers),
-        # Polarity rides in the legend rather than the unit: it is the one thing a reader can
-        # get exactly backwards here, and the unit slot is too narrow to hold it without
-        # wrapping the panel head.
-        '<div class="legend">'
-        '<span><i style="background:var(--c-turb)"></i>Daily median — higher is clearer water</span>'
-        '<span><i style="background:var(--coral)"></i>Anomaly event</span></div>',
-        note=_drift_note(report.turbidity_drift),
-    ))
-    panels.append(_panel(
-        "Battery (daily minimum)", "V",
-        _svg_chart(batt, series="batt", days=days),
-        _legend([("batt", "Daily minimum voltage")]),
-    ))
-
-    dash_head = (
+    mmm_line = ("MMM %.2f °C" % report.mmm if report.mmm is not None
+                else "no MMM set, DHW disabled")
+    history = freshness.slot_history(report.received, now=generated_at)
+    return (
         '<section class="page-head"><div class="wrap">'
         '<p class="eyebrow">From the buoy</p>'
         '<h1>Reef telemetry</h1>'
-        '<div class="dash-meta" style="margin-top:1rem">'
-        f'<span><span class="k">Generated</span> {html.escape(generated)}</span>'
+        f'<p class="freshness stack-4">{status_line(fresh)}</p>'
+        f'{charts.slot_rule(history, label="Packets")}'
+        '<div class="dash-meta stack-4">'
+        f'<span><span class="k">Published</span> {html.escape(published)}</span>'
         f'<span><span class="k">Data span</span> {html.escape(span)}</span>'
         f'<span><span class="k">Climatology</span> {html.escape(mmm_line)}</span>'
         "</div></div></section>"
     )
 
+
+def render_html(
+    report: TelemetryReport,
+    *,
+    title: str = "Live Telemetry · S.C.O.U.T.",
+    generated_at: datetime | None = None,
+    banner: str | None = None,
+    base: str = "../",
+    fonts_present: bool = False,
+) -> str:
+    """Render the full self-contained Analytics document."""
+    generated_at = generated_at or datetime.now(timezone.utc)
+    published = generated_at.strftime("%Y-%m-%d %H:%M UTC")
     body = (
-        f"{dash_head}"
+        f"{_head(report, generated_at, published)}"
         '<section class="section"><div class="wrap">'
-        f'<div class="cards">{cards}</div>'
-        f'<div class="panels">{"".join(panels)}</div>'
+        f'<div class="cards">{_cards(report)}</div>'
+        f'<div class="panels">{"".join(_panels(report))}</div>'
         '<p class="data-links">Raw data · '
         '<a href="telemetry_daily.csv">daily CSV</a> · '
         '<a href="telemetry_summary.json">summary JSON</a> · '
         '<a href="../science/">how these metrics are computed</a></p>'
-        '<p class="data-links" style="color:var(--faint)">Thermal stress is computed with NOAA '
-        "Coral Reef Watch Degree Heating Weeks. Turbidity is uncalibrated and reported as "
-        "relative events, not NTU. This page is regenerated by the shore station from the buoy's "
-        "LoRa telemetry.</p>"
+        '<p class="data-links">Each point is one day. The buoy samples every 30 minutes and '
+        "keeps the full record on board; this page shows what reached shore by radio, in three "
+        "transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
+        "gaps stay empty until the on-board record is retrieved. Thermal stress is computed "
+        "with NOAA Coral Reef Watch Degree Heating Weeks from measured days only. Turbidity is "
+        "uncalibrated and reported as relative events, not NTU.</p>"
         "</div></section>"
     )
-
     return layout.document(
         title=title,
         description=("Live environmental telemetry from the S.C.O.U.T. reef-monitoring buoy: "
@@ -312,7 +216,7 @@ def render_html(
         body=body,
         base=base,
         banner=banner,
-        generated=generated,
+        generated=published,
         fonts_present=fonts_present,
         external=False,
     )

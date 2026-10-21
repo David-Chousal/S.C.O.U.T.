@@ -18,8 +18,7 @@
         var d = document.createElement('button');
         d.type = 'button';
         d.className = 'carousel-dot';
-        d.setAttribute('role', 'tab');
-        d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        d.setAttribute('aria-label', 'Slide ' + (i + 1) + ' of ' + slides.length);
         d.addEventListener('click', function () { scrollToIndex(i); });
         dotsWrap.appendChild(d);
         dots.push(d);
@@ -49,7 +48,8 @@
     function update() {
       var idx = currentIndex();
       dots.forEach(function (d, i) {
-        d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+        if (i === idx) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
       });
       if (prev) prev.disabled = track.scrollLeft <= 2;
       if (next) next.disabled =

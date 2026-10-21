@@ -26,7 +26,12 @@
   });
 
   function setActive(id) {
-    links.forEach(function (a) { a.classList.toggle('is-active', a === byId[id]); });
+    links.forEach(function (a) {
+      var on = a === byId[id];
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
+    });
   }
 
   if ('IntersectionObserver' in window && sections.length) {

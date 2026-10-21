@@ -11,17 +11,6 @@ import html
 from . import assets
 
 
-def side_critter(base: str, name: str, side: str, aspect: str) -> str:
-    """A single ambient Lottie animation fixed in a page's side margin (shown only on wide
-    screens where real margin exists). ``side`` is 'left' or 'right'; ``aspect`` is the
-    animation's ``w/h`` (e.g. ``'1666/1607'``). Same-origin JSON, driven by the shared init.js."""
-    return (
-        f'<div class="side-critter side-{side}" aria-hidden="true" '
-        f'style="aspect-ratio:{aspect}" '
-        f'data-lottie="{base}assets/lottie/{name}.json"></div>'
-    )
-
-
 def section(inner: str, *, cls: str = "", sid: str | None = None, wrap: str = "wrap") -> str:
     idattr = f' id="{sid}"' if sid else ""
     classes = ("section " + cls).strip()
@@ -42,8 +31,8 @@ def cta(kicker: str, title: str, buttons: str) -> str:
     return section(
         '<article class="card card-ink center">'
         f'<p class="kicker">{kicker}</p>'
-        f'<h2 style="max-width:20ch;margin-inline:auto">{title}</h2>'
-        f'<div class="btn-row" style="margin-top:1.8rem">{buttons}</div></article>',
+        f'<h2 class="cta-title">{title}</h2>'
+        f'<div class="btn-row stack-6">{buttons}</div></article>',
         cls="section-sm",
     )
 
@@ -59,9 +48,9 @@ def page_header(eyebrow: str, title: str, lead: str) -> str:
 def feature_card(glyph_name: str, kicker: str, title: str, body: str, *, cls: str = "") -> str:
     return (
         f'<article class="card hoverable reveal {cls}">'
-        f'<div class="card-figure">{assets.glyph(glyph_name)}<div>'
+        f'{assets.glyph(glyph_name)}<div>'
         f'<p class="kicker">{kicker}</p><h3>{title}</h3><p>{body}</p>'
-        "</div></div></article>"
+        "</div></article>"
     )
 
 
@@ -99,25 +88,8 @@ def carousel(slides: str, *, label: str, cls: str = "") -> str:
         f'<button class="carousel-arrow carousel-next" type="button" '
         f'aria-label="Next">{_CHEVRON_R}</button>'
         "</div>"
-        '<div class="carousel-dots" role="tablist" aria-label="Choose slide"></div>'
+        '<div class="carousel-dots" role="group" aria-label="Choose slide"></div>'
         "</div>"
-    )
-
-
-def stat_card(value: str, unit: str, label: str, *, deep: bool = False) -> str:
-    cls = "card feature-deep reveal" if deep else "card reveal"
-    return (
-        f'<article class="{cls}"><p class="kicker">{label}</p>'
-        f'<p class="big">{value} <span class="big-unit">{unit}</span></p></article>'
-    )
-
-
-def render_slot(tag: str, title: str, sub: str) -> str:
-    return (
-        '<div class="render-slot reveal">'
-        f"{assets.buoy_render_svg()}"
-        f'<div class="rs-label"><span class="tag">{tag}</span>'
-        f"<b>{title}</b><span>{sub}</span></div></div>"
     )
 
 
@@ -168,6 +140,22 @@ def data_table(caption: str, headers: list[str], rows: list[list[str]], *, num_c
     )
 
 
+def slot_divider(days: int = 7) -> str:
+    """The slot rule as a section divider: the transmit schedule only — every tick hollow, because
+    an authored page never implies that a packet arrived (docs/engineering/design-system.md)."""
+    n = days * 3
+    ticks = "".join(
+        f'<rect class="tick sched" x="{(i + 0.5) / n * 1000 - 3:.1f}" y="6" width="6" height="28"/>'
+        for i in range(n))
+    return (
+        '<div class="wrap"><div class="slot-divider" role="img" aria-label="Transmit schedule: '
+        'three slots a day, at 00:10, 08:10 and 16:10 UTC">'
+        '<svg viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+        f'<line class="base" x1="0" y1="20" x2="1000" y2="20"/>{ticks}</svg>'
+        '<span class="micro-mono" aria-hidden="true">00:10 · 08:10 · 16:10 UTC</span></div></div>'
+    )
+
+
 def data_path() -> str:
     """The buoy → shore → dashboard data path. Shared verbatim by Home and Technology so the two
     can never drift. Values track docs/hub/facts.md (Communications & data · Sensing)."""
@@ -177,16 +165,17 @@ def data_path() -> str:
         ("Store", "Each wake appends one row to an on-board CSV log, timestamped in UTC. Raw data "
                   "never leaves the buoy: the full archive, audio included, stays in on-board "
                   "storage and is retrieved by hand."),
-        ("Transmit", "Once a day the buoy sends a single 30-byte summary to shore over a 915 MHz "
-                     "LoRa link, roughly 2 km line of sight. No cellular service or internet is "
-                     "used at the buoy."),
-        ("Publish", "The shore Raspberry Pi validates each packet, runs quality control and NOAA "
+        ("Transmit", "Three times a day, at 00:10, 08:10 and 16:10 UTC, the buoy sends its latest "
+                     "reading to shore as a 30-byte packet over a 915 MHz LoRa link, roughly 2 km "
+                     "line of sight. No cellular service or internet is used at the buoy."),
+        ("Publish", "On shore, an ESP32-S3 base station receives each packet and forwards it "
+                    "over WiFi. The telemetry pipeline validates it, runs quality control and NOAA "
                     "Coral Reef Watch thermal-stress metrics, and regenerates this dashboard, "
                     "using only the Python standard library."),
     ])
     return section(
         head_block("How it works", "The data path")
-        + f'<div style="margin-top:2.8rem">{body}</div>',
+        + f'<div class="stack-7">{body}</div>',
         cls="section-sm",
         sid="how",
     )

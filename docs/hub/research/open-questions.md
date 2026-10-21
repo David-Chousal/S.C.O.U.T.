@@ -41,6 +41,8 @@ its sources are in the [Source Registry](sources.md).
 
 | Question | Answer lives in | Sources added |
 |---|---|---|
+| Which LoRa spreading factor is canonical, SF12 or SF7? | **SF12.** The SF7 sentence in `facts.md`'s "Delivery scheme" row predated the 2026-09-01 move to BW 500 kHz and was never updated; firmware, shore radio and tests all run SF12. Row corrected in [`facts.md`](../facts.md) (Delivery scheme), 2026-10-21, [SCO-213](https://linear.app/scout1/issue/SCO-213) | — (internal reconciliation) |
+| Does the site still describe the shore station correctly? | **It did not; now it does.** Every "Raspberry Pi" in the site copy now describes the ESP32-S3 base station that forwards over WiFi, without naming a host for the pipeline (still open, SCO-120). [Shore Station](../../engineering/shore-station.md), 2026-10-21, [SCO-214](https://linear.app/scout1/issue/SCO-214) | — |
 | Should the buoy accept over-the-air firmware updates (a two-way link)? | **Yes** — [ADR-0008](../../decisions/0008-over-the-air-firmware-updates.md), 2026-10-16; design in [SCO-197](https://linear.app/scout1/issue/SCO-197) | — (engineering decision, no external sources) |
 | Which acoustic indices, and how to combine them? | [Coral Bioacoustic Methodology](../../analysis/coral-bioacoustic-methodology.md) | ✅ 7 index papers in [sources.md](sources.md) |
 | How to detect multi-month acoustic trends robustly? | [Coral Bioacoustic Methodology](../../analysis/coral-bioacoustic-methodology.md) | ✅ Mann-Kendall papers in [sources.md](sources.md) |

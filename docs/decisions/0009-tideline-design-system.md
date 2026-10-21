@@ -42,7 +42,8 @@ Lagoon teal is the only accent.
 - Keeps every hard-won piece of the current site: the measured hero scrim, the motion safety
   model, light-only canvas.
 - Teal is the one hue no data scale uses, so the accent never reads as an alert.
-- Cheapest in bytes: 57.4 KB of fonts, less than today's 62.5 KB.
+- Cheapest in bytes: 59.7 KB of fonts per page (measured after step 3), less than the 61–92 KB
+  shipped before.
 
 **Cons**
 - The least visually surprising of the three; its distinctiveness rests on the instrument layer

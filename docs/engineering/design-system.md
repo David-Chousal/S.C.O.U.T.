@@ -95,10 +95,11 @@ Three tiers, after Material 3 (`ref → sys → comp`) and GitHub Primer's namin
 panel) sets `data-ground="night"`, which redefines `--color-*` so every child inverts through the
 cascade. This formalises what `.hero` already does today.
 
-**Source of truth:** a Python dict in the shape of the
+**Source of truth:** `analytics/telemetry/site/theme/tokens.py` — plain Python dicts holding
+the same tiers (primitives in OKLCH, roles as references to them), from which the theme emits CSS
+custom properties. Standard library only. A
 [DTCG 2025.10](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/)
-format (`$value`, `$type`, aliases as `{p.stone.900}`), from which `theme.py` emits CSS custom
-properties and an optional `tokens.json` for design tools. Standard library only.
+`tokens.json` export is deferred until a design tool needs it.
 
 ---
 
@@ -259,13 +260,16 @@ Summarised here; rules, usage and CVD results live in the
 
 | Role | Family | Axes kept | Subset | Size (woff2) |
 |---|---|---|---|---|
-| Shore — everything a person wrote | **DM Sans** (kept) | `opsz` 9–40, `wght` 300–700 | Latin + punctuation, `°` `±` `µ` `−` `≤` `≥` | 44.5 KB |
-| Instrument — everything the buoy measured | **JetBrains Mono** (new) | `wght` 400–600 | Same | 12.9 KB |
-| **Total** | | | | **57.4 KB** (today: 62.5 KB for DM Sans Latin alone) |
+| Shore — everything a person wrote | **DM Sans** (kept) | `opsz` 9–40, `wght` 300–700 | Latin-1 + punctuation, arrows, `−` `≈` `≠` `≤` `≥` | 46.6 KB |
+| Shore, on demand | DM Sans, Latin Extended-A | same | Names such as "ć", Hawaiian kahakō (fetched only when a page uses them) | 17.7 KB |
+| Instrument — everything the buoy measured | **JetBrains Mono** (new) | `wght` 400–600 | ASCII, Latin-1, dashes, arrows, maths | 13.1 KB |
+| **Per page** | | | | **59.7 KB** (+17.7 KB with Extended-A). Before: 61 KB, or 92 KB with Latin Extended |
 
-**Why keep DM Sans.** It is already self-hosted and recognised, and its unused optical-size axis
-gives tighter, crisper display type and more open micro-labels for free
-(`font-optical-sizing: auto`, widely available since 2020).
+**Why keep DM Sans.** It is already self-hosted and recognised, and its optical-size axis gives
+tighter display type and more open micro-labels (`font-optical-sizing: auto`, widely available
+since 2020). *Correction (2026-10-20):* this was first described as an unused axis. The shipped
+subset already carried `opsz`, and `auto` is the CSS default, so optical sizing was already in
+effect; the new subset keeps it and the CSS now states it explicitly.
 
 **Why add a mono.** Measured on the shipped file and on upstream: DM Sans has **no `tnum`
 feature** and proportional digits (`1` is 342 units, `0` is 656), so the five
@@ -278,9 +282,12 @@ italic) and IBM Plex Mono (static weights only) for its size and its unambiguous
 The current subset also stripped DM Sans' `ss01`, which `body` requests — so that declaration
 does nothing today either. The new subset keeps `ss01` and `case`.
 
-Both files use `font-display: swap` plus a metric-matched fallback `@font-face`
-(`size-adjust`, `ascent-override`, `descent-override`, computed from the font files) so the swap
-causes no layout shift. Only DM Sans Latin is preloaded.
+All files use `font-display: swap`; while one loads, text shows in the system UI font. A
+metric-matched Arial fallback (`size-adjust` and overrides) was built and **measured worse**:
+it shifted layout (CLS 0.051 on Technology, mobile) where the system font shifted nothing
+(macOS Chrome; not yet measured on Windows or Android). **Only Home preloads** the core subset:
+it took Home's LCP (the hero title) from 3.46 to 3.01 s on mobile 4G, while on text-led inner
+pages the same preload delayed first paint and pushed Science's LCP from 1.22 to 2.46 s.
 
 ### Scale
 
@@ -455,26 +462,40 @@ Targets are stricter than the Core Web Vitals "good" thresholds (LCP ≤ 2.5 s, 
 CLS ≤ 0.1 at the 75th percentile — [web.dev](https://web.dev/articles/defining-core-web-vitals-thresholds))
 because the site is static and small enough to beat them comfortably.
 
-| Metric | Budget | Today (measured or estimated) |
-|---|---|---|
-| LCP (mobile, 4G) | ≤ 2.0 s | Not yet measured — measure before the first migration PR |
-| INP | ≤ 100 ms | Near-zero JS; expected to pass |
-| CLS | ≤ 0.05 | Font swap without metric-matched fallback is the main risk |
-| Fonts | ≤ 60 KB, 2 files, 1 preload | 94 KB (two DM Sans subsets) |
-| CSS (inline, per page) | ≤ 36 KB raw / ≤ 9 KB brotli | ~45 KB raw (944-line `_CSS`) |
-| JS (first party) | ≤ 15 KB | ~12 KB + **680 KB Lottie** |
-| Hero image | ≤ 120 KB at 1600 w AVIF | 234 KB WebP at 1440 w (upscaled on wide screens) |
-| Home page total | ≤ 450 KB | ~1.3 MB (images + Lottie) |
-| Analytics / Fleet page | ≤ 150 KB, zero images | Within budget |
+**Baseline measured 2026-10-20** on `main` (dc664e9): headless Chrome over CDP, cache disabled,
+median of 3 runs, Lighthouse's default mobile throttling (150 ms RTT, 1.6 Mbps down, 4× CPU,
+375 × 812 at 2×), served locally without compression — lab numbers, not field data. Full table
+in [#191](https://github.com/David-Chousal/S.C.O.U.T./pull/191).
 
-**Image rules.** `<picture>` with AVIF → WebP → JPEG; `srcset` at 640, 960, 1440 and 1920 px
-(only up to the source resolution — the hero source is 1440 × 720 and needs a higher-resolution
-original); `sizes` on every responsive image; `fetchpriority="high"` and no `loading="lazy"` on
+| Metric | Budget | Baseline (main, 2026-10-20) | After step 7 |
+|---|---|---|---|
+| LCP (mobile, 4G) | ≤ 2.0 s | **Home 3.49 s**; inner 1.29–1.46 s | **Home 1.57 s**; inner 0.82–0.97 s |
+| INP | ≤ 100 ms | Near-zero JS | ~12 KB first-party JS, no long tasks expected (not field-measured) |
+| CLS | ≤ 0.05 | ≤ 0.012 | 0 everywhere except Fleet mobile 0.045 (font swap) and Analytics 0.001 |
+| Fonts | ≤ 60 KB per page | 61 KB; 92 KB with Latin Extended | 47–60 KB; 78 KB on Technology (uses "ć") |
+| CSS (inline, per page) | ≤ 9 KB gzip (raw ≤ 40 KB ceiling) | 54.5 KB raw | Site pages 38.5 KB raw / **8.8 KB gzip**; Analytics and Fleet 31.7 / **7.6 KB** |
+| JS (first party) | ≤ 15 KB | ~12 KB + **~650 KB Lottie** | 11–14 KB, Lottie retired |
+| Hero image | ≤ 120 KB AVIF | 234 KB WebP | **117 KB AVIF** (1440 w source) |
+| Home page total | ≤ 450 KB | 1033 KB | **258 KB** |
+| Analytics / Fleet page | ≤ 150 KB, zero images | 794 / 787 KB | **137 / 120 KB** |
+
+*Budget revision (step 7):* the original "≤ 36 KB raw" CSS target was an unmeasured estimate.
+Minified and split per page type, the site bundle is 38.5 KB raw — 2.5 KB over — but 8.8 KB
+gzip, inside the 9 KB that actually crosses the network (GitHub Pages serves gzip). The test now
+enforces the compressed budget, with a 40 KB raw ceiling to catch regressions.
+
+**Image rules.** `<picture>` with AVIF → WebP → JPEG, AVIF built by
+`scripts/encode_site_images.py`. *As built:* no width-variant `srcset` — every card photo is
+lazy-loaded and ≤ 900 px wide (already right for a 2× phone), and the hero is cover-cropped into
+a portrait screen on phones, so width variants would not shrink it. A higher-resolution hero
+original is still needed for sharpness on screens wider than 1440 px. Originally planned: `srcset`
+at 640, 960, 1440 and 1920 px; `sizes` on every responsive image; `fetchpriority="high"` and no `loading="lazy"` on
 the one LCP image; `width`/`height` always. Measured: the hero at 1440 w is 170 KB AVIF vs
 239 KB WebP.
 
 **Lottie is retired.** The footer and side critters cost ~680 KB (a 168 KB player plus 516 KB of
-JSON) — more than fonts, CSS and hero combined — and loop forever. If the team wants one ambient
+JSON on disk) — more than fonts, CSS and hero combined — load on **every** page including
+Analytics and Fleet (measured 2026-10-20), and loop forever. If the team wants one ambient
 element, it is redrawn as a single inline SVG with a CSS `transform` animation, under 4 KB,
 disabled under reduced motion.
 

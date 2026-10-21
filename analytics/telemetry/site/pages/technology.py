@@ -8,17 +8,18 @@ from ..context import SiteContext
 TITLE = "Technology · S.C.O.U.T."
 DESCRIPTION = (
     "How the S.C.O.U.T. buoy works: battery power, a duty-cycled sensing state machine built to run "
-    "unattended for a year, a 30-byte daily LoRa packet to a Raspberry Pi shore station, and a "
+    "unattended for a year, a 30-byte LoRa packet in three fixed slots a day to a shore station, and a "
     "self-contained telemetry pipeline that publishes the dashboard."
 )
 
 # (section id, sidebar label) — ids must match the `sid=` on each section below.
 _NAV = [
+    ("glance", "At a glance"),
     ("how", "Data path"),
     ("cycle", "Operating cycle"),
     ("subsystems", "Subsystems"),
     ("platform", "Platform"),
-    ("packet", "Daily packet"),
+    ("packet", "The packet"),
     ("link", "Shore link"),
     ("mechanical", "Mechanical"),
     ("references", "References"),
@@ -26,6 +27,43 @@ _NAV = [
 
 _REPO = "https://github.com/David-Chousal/S.C.O.U.T."
 _DOC = f"{_REPO}/blob/main/docs"
+
+# The spec block: (label, value, facts.md row, evidence that row must contain). Every value comes
+# from docs/hub/facts.md; test_instrument_layer.py fails if a row stops saying it. The LoRa
+# spreading factor is left out on purpose: facts.md gives SF12 in "LoRa modem config" and SF7 in
+# "Delivery scheme", and that contradiction is for the team to settle, not this page.
+SPEC = (
+    ("Deployment depth", "2–8 m", "Deployment depth", ("2–8 m",)),
+    ("Endurance", "1+ year unattended (target)", "Autonomous deployment", ("1+ year",)),
+    ("Build platform", "Feather M0 + RFM95", "MCU + radio (build)", ("Feather M0 + RFM95",)),
+    ("Radio", "915 MHz LoRa · BW 500 kHz · +11 dBm", "LoRa modem config",
+     ("915.0 MHz", "BW 500 kHz", "+11 dBm")),
+    ("Transmit", "3 slots a day · 00:10 / 08:10 / 16:10 UTC", "Daily packet",
+     ("3 fixed TX slots per day", "00:10 / 08:10 / 16:10 UTC")),
+    ("Range", "~2 km line of sight (datasheet)", "LoRa range", ("~2 km line of sight",)),
+    ("Water temperature", "DS18B20 · ±0.5 °C", "Temperature", ("DS18B20", "±0.5 °C")),
+    ("Turbidity", "Raw ADC counts · higher = clearer", "Turbidity polarity", ("CLEARER",)),
+    ("Power", "Two primary lithium D cells (direction, not final)",
+     "Battery chemistry (deployment)", ("two primary lithium D cells",)),
+    ("Electronics housing", "4.4 in ID × 5 in tall", "Enclosure dimensions",
+     ("4.4 in inside diameter × 5 in tall",)),
+    ("Cost", "< $5,000 (engineering target)", "Total system cost",
+     ("< $5,000", "Engineering target only")),
+)
+
+
+def _glance() -> str:
+    rows = "".join(f'<div class="spec-row"><dt>{label}</dt><dd class="mono">{value}</dd></div>'
+                   for label, value, _, _ in SPEC)
+    return c.section(
+        c.head_block("At a glance", "The buoy in numbers")
+        + f'<dl class="spec-block spec stack-6">{rows}</dl>'
+        + f'<p class="subtle stack-4">Every value is the canonical one in the project\'s '
+        f'<a href="{_REPO}/blob/main/docs/hub/facts.md">Knowledge Hub facts</a>. Targets are '
+        "marked as targets; nothing here is a field measurement yet.</p>",
+        cls="section-sm",
+        sid="glance",
+    )
 
 # LoRa-over-water propagation — the evidence behind the range target and the shore-antenna plan.
 _REFS_COMMS = [
@@ -41,7 +79,7 @@ _REFS_COMMS = [
 # The design records on the repo that this page summarises.
 _REFS_DOCS = [
     ("Engineering Design Document", f"{_DOC}/engineering/engineering-design-document.md"),
-    ("Shore Station (Raspberry Pi)", f"{_DOC}/engineering/shore-station.md"),
+    ("Shore Station (ESP32-S3)", f"{_DOC}/engineering/shore-station.md"),
     ("On-Board CSV Data Schema", f"{_DOC}/engineering/data-schema.md"),
     ("ADR-0001 · MCU and radio selection", f"{_DOC}/decisions/0001-mcu-and-radio-selection.md"),
     ("ADR-0003 · Single-point sensing", f"{_DOC}/decisions/0003-single-point-sensing.md"),
@@ -57,16 +95,16 @@ def _architecture() -> str:
 
 def _cycle() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("Operating cycle", "Built to run unattended for a year",
                        "Battery life is the whole game, so the buoy spends almost all of its time "
                        "asleep and wakes only to do a small, fixed amount of work.")
-        + '<div class="prose" style="margin-top:1.2rem">'
+        + '<div class="prose stack-4">'
         "<p>The controller sits in a low-power standby state and wakes on a real-time-clock alarm "
         "roughly every 30 minutes. It samples, appends one row to the microSD log, checks the "
-        "battery, and returns to sleep. A full transmission happens only <strong>once a day</strong>, "
-        "not on every wake.</p>"
+        "battery, and returns to sleep. It transmits only in <strong>three fixed slots a day</strong>, "
+        "at 00:10, 08:10 and 16:10 UTC, not on every wake.</p>"
         "<p>Running untended for a year is a firmware problem as much as a hardware one. A "
         "hardware watchdog resets the buoy if it ever hangs, and the record counter and "
         "last-transmit time are held in retained memory, so a reset resumes the record cleanly "
@@ -109,9 +147,10 @@ def _subsystems() -> str:
         ("anchor", "Mechanical", "Enclosure and mooring",
          "The electronics stay sealed above the waterline. One sensor of each type sits at a "
          "single point below the buoy, with spares kept for field replacement."),
-        ("cpu", "Shore", "Raspberry Pi pipeline",
-         "The shore Raspberry Pi validates and stores each packet, runs the analysis, and "
-         "regenerates this site, using only the Python standard library."),
+        ("cpu", "Shore", "ESP32-S3 base station",
+         "A Feather ESP32-S3 with a LoRa radio receives each packet and forwards it over WiFi. "
+         "A standard-library Python pipeline validates it, runs the analysis, and regenerates "
+         "this site."),
     ]
     entries = "".join(c.feature_plain(g, k, t, b) for g, k, t, b in specs)
     return c.section(
@@ -128,12 +167,12 @@ def _subsystems() -> str:
 
 def _platform(ctx: SiteContext) -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
         + c.head_block("MCU and radio", "Hardware platform",
                        "The microcontroller and radio are settled in ADR-0001, which lets "
                        "firmware and wiring proceed. A production PCB target is kept on the shelf.")
-        + '<div class="prose" style="margin-top:1rem"><p>The confirmed build platform is the '
+        + '<div class="prose stack-4"><p>The confirmed build platform is the '
         "<strong>Adafruit Feather M0 with an RFM95 radio</strong>: an Arduino SAMD21 core with "
         "the RadioHead <code>RH_RF95</code> driver, an Adalogger FeatherWing for the microSD "
         "card and PCF8523 real-time clock. An ESP32-C3 with an SX1262 radio is kept as the "
@@ -176,23 +215,23 @@ def _platform(ctx: SiteContext) -> str:
 
 def _packet() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
-        + c.head_block("The daily packet", "30 bytes, once a day")
-        + '<div class="prose" style="margin-top:1.4rem"><p>The binding constraint on a LoRa link '
-        "is bandwidth. The buoy stores full data locally and transmits only a compact daily "
-        "summary of statistics rather than raw waveforms. The packet layout is a versioned "
+        + c.head_block("The packet", "30 bytes, three times a day")
+        + '<div class="prose stack-5"><p>The binding constraint on a LoRa link '
+        "is bandwidth. The buoy stores full data locally and transmits only its latest compact "
+        "reading, three times a day, rather than raw waveforms. The packet layout is a versioned "
         "contract: the firmware encoder and the shore decoder are byte-identical, checked by a "
         "cross-language test so the two can never silently drift apart.</p>"
         '<p class="callout"><strong>Raw audio is never transmitted.</strong> There is not enough '
         "LoRa bandwidth for waveform data, so the buoy stores audio on board and sends only the "
-        "30-byte summary. This is a settled design decision.</p></div></div>"
+        "30-byte packet. This is a settled design decision.</p></div></div>"
         '<div class="col-3">'
         + c.spec([
             ("Packet size", "30 bytes (82-byte budget ceiling)"),
-            ("Cadence", "1 transmission / day"),
+            ("Cadence", "3 fixed slots / day: 00:10, 08:10 and 16:10 UTC"),
             ("Sampling", "1 record / 30 min (48 / day)"),
-            ("Carries", "Daily temperature, turbidity &amp; battery summaries"),
+            ("Carries", "The latest temperature, turbidity &amp; battery reading"),
             ("Integrity", "Counter + CRC; malformed frames dropped"),
             ("Schema", "Versioned; byte-identical buoy ↔ shore codec"),
         ])
@@ -203,12 +242,13 @@ def _packet() -> str:
 
 def _link() -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-3">'
-        + c.head_block("The shore link", "LoRa to a Raspberry Pi on shore",
-                       "The buoy talks to a Raspberry Pi on shore over a 915 MHz LoRa link. LoRa "
+        + c.head_block("The shore link", "LoRa to a base station on shore",
+                       "The buoy talks to an ESP32-S3 base station on shore over a 915 MHz LoRa "
+                       "link. LoRa "
                        "is built for exactly this: tiny payloads, long range, very low power.")
-        + '<div class="prose" style="margin-top:1.2rem">'
+        + '<div class="prose stack-4">'
         "<p>Over seawater, the water itself is not the problem. Field studies of LoRa over open "
         "seawater have measured clear line-of-sight links out to tens of kilometres, and conclude "
         "the sea surface does not limit the link. The real constraint for S.C.O.U.T. is "
@@ -220,12 +260,12 @@ def _link() -> str:
         "datasheet line-of-sight figure. The evidence for both bounds is in the references "
         "below.</p></div></div>"
         '<div class="col-3">'
-        + c.head_block("On shore", "What the Raspberry Pi does")
-        + '<div style="margin-top:1.2rem">'
+        + c.head_block("On shore", "What happens on shore")
+        + '<div class="stack-4">'
         + c.spec([
-            ("Receive", "Listen for the buoy's daily LoRa packet"),
+            ("Receive", "An ESP32-S3 base station listens for the buoy's LoRa packets"),
+            ("Forward", "It pushes each packet over WiFi toward the dashboard"),
             ("Validate", "Check the counter and CRC; drop malformed frames"),
-            ("Store", "Append to CSV, the same schema the buoy logs"),
             ("Analyse", "Run the standard-library telemetry pipeline"),
             ("Publish", "Regenerate and push this static site"),
             ("Range target", "~2 km line of sight (conservative)"),
@@ -238,7 +278,7 @@ def _link() -> str:
 
 def _mechanical(ctx: SiteContext) -> str:
     return c.section(
-        '<div class="bento" style="align-items:start">'
+        '<div class="bento align-start">'
         '<div class="col-2">'
         + c.head_block("Mechanical", "Sealed above, sensing below")
         + "</div>"
@@ -274,11 +314,11 @@ def _refs() -> str:
         c.head_block("References", "Where these choices are grounded",
                      "The communications design leans on published LoRa-over-water propagation "
                      "studies; the rest is specified in the project's own engineering records.")
-        + '<div class="bento" style="margin-top:2rem;align-items:start">'
+        + '<div class="bento stack-6 align-start">'
         '<div class="col-3 prose"><h3>Communications over water</h3>'
-        f'<ul style="line-height:1.6">{render(_REFS_COMMS)}</ul></div>'
+        f'<ul class="refs">{render(_REFS_COMMS)}</ul></div>'
         '<div class="col-3 prose"><h3>Design records</h3>'
-        f'<ul style="line-height:1.8">{docs}</ul></div>'
+        f'<ul class="refs">{docs}</ul></div>'
         "</div>",
         cls="section-sm",
         sid="references",
@@ -291,7 +331,9 @@ def body(ctx: SiteContext) -> str:
                       "How the buoy works",
                       "S.C.O.U.T. runs for a long time because it spends most of its time asleep. One "
                       "constraint shapes the whole design: a battery-powered buoy, deployed for a year "
-                      "or more, that can transmit only a single small packet per day.")
+                      "or more, that can transmit only a small packet three times a day.")
+        + _glance()
+        + c.slot_divider()
         + _architecture()
         + _cycle()
         + _subsystems()
@@ -304,5 +346,4 @@ def body(ctx: SiteContext) -> str:
                 '<a class="btn btn-primary" href="../science/">Read the science</a>'
                 '<a class="btn" href="../analytics/">See live data</a>')
     )
-    return (c.side_critter(ctx.base, "turtle", "right", "1666/1607")
-            + docnav.page(title="Technology", items=_NAV, content=content, base=ctx.base))
+    return docnav.page(title="Technology", items=_NAV, content=content, base=ctx.base)
