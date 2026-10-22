@@ -15,6 +15,7 @@ imported directly into Notion with formatting intact.
 | See the full technical design | [Engineering Design Document](engineering/engineering-design-document.md) |
 | Know what researchers actually need | [Stakeholder Interviews](research/stakeholder-interviews.md) |
 | Find the schedule | [Team Timeline](planning/team-timeline.md) |
+| Find who to contact and which permits a deployment test needs | [Deployment Strategy](planning/deployment-strategy.md), [Monterey and Santa Cruz dock test](research/monterey-santa-cruz-dock-test-hosts-and-permissions.md), [Hawaii permitting](research/hawaii-deployment-permitting.md) |
 | Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
 | Write the thesis | [Thesis Working Draft](thesis/README.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
@@ -76,6 +77,9 @@ External input and decision tracking.
 | [Stakeholder Interviews](research/stakeholder-interviews.md) | Summer 2026 interviews with three NOAA coral reef researchers; consolidated findings and recommended direction |
 | [Market Analysis](research/market-analysis.md) | Is there a market beyond the capstone? Scientific and defence ocean monitoring sized against verifiable sources; what is and is not defensible; and §8, the operational sequence to a profitable company — IP gate, buyer pivot, 24-month plan with kill criteria |
 | [Systems Decision Matrix](research/systems-decision-matrix.md) | Master taxonomy of every research and design decision area across all disciplines |
+| [Monterey and Santa Cruz Dock Test](research/monterey-santa-cruz-dock-test-hosts-and-permissions.md) | Who to contact (harbors, labs, yacht clubs) to hang the test buoy off a dock for about a week, and every permit and permission around it, each tagged verified or not |
+| [Monterey Bay Sanctuary Permitting](research/monterey-bay-sanctuary-permitting.md) | What the sanctuary permit coordinator said on 2026-10-16 and what is still unanswered |
+| [Hawaii Deployment Permitting](research/hawaii-deployment-permitting.md) | Every permit route for a Kāneʻohe Bay deployment, a question bank for written answers, and a backward schedule |
 
 ## Analysis
 
@@ -96,6 +100,7 @@ Schedule, meetings, and administrative records.
 |---|---|
 | [Team Timeline](planning/team-timeline.md) | Phase 0–6 work plan from kickoff through Hawaii deployment, with parallel per-discipline tracks |
 | [Meeting Notes](planning/meeting-notes.md) | Running team design meeting notes |
+| [Deployment Strategy](planning/deployment-strategy.md) | Hawaii for reef data, Monterey or Santa Cruz for a systems test, and the permitting next steps |
 | [Gantt Chart and WBS](planning/gantt-and-wbs.md) | How the CSV, script and PDF task plan fit together |
 | [Senior Design Time Log](planning/time-log.md) | John Ryan Myrdal's hours on S.C.O.U.T., estimated for the past and reported going forward |
 | [Signature Page](planning/signature-page.md) | SCU capstone declaration — team members and faculty advisors |
