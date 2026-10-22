@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S.C.O.U.T. Advisor Progress Sheet</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #1b2330; --muted: #5d6878; --line: #d9dee6;
+    --done: #2f8f5b; --partial: #d99a1d; --behind: #c8472f; --open: #9aa5b4; --accent: #1f5fae;
+    --done-bg: #e3f3ea; --partial-bg: #fbf1dc; --behind-bg: #f9e4df; --open-bg: #eef1f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141b; --card: #171e28; --ink: #e6ebf2; --muted: #98a4b5; --line: #2b3442;
+      --done: #4cc084; --partial: #f0b84a; --behind: #ef7b64; --open: #66738a; --accent: #6aa7f0;
+      --done-bg: #14301f; --partial-bg: #33280f; --behind-bg: #36191a; --open-bg: #1d2531;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 13px/1.35 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .page { max-width: 1320px; margin: 0 auto; padding: 16px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  h1 { font-size: 20px; margin: 0; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+  .sub { color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .headline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .stat b { display: block; font-size: 22px; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 12px; }
+  .stat.bad b { color: var(--behind); }
+  .gantt-wrap { margin-bottom: 10px; }
+  svg text { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
+  svg .muted { fill: var(--muted); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .lane h3 { margin: 0 0 6px; font-size: 14px; display: flex; justify-content: space-between; }
+  .lane h3 small { color: var(--muted); font-weight: 400; font-size: 11px; }
+  .lane h2 { margin-top: 8px; }
+  .node { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 5px 8px; margin-bottom: 5px; background: var(--open-bg); }
+  .node.done { border-left-color: var(--done); background: var(--done-bg); }
+  .node.partial { border-left-color: var(--partial); background: var(--partial-bg); }
+  .node.behind { border-left-color: var(--behind); background: var(--behind-bg); }
+  .node .t { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+  .node .m { color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; gap: 6px; }
+  .bar { height: 5px; background: var(--line); border-radius: 3px; margin: 3px 0; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--partial); }
+  .node.done .bar > i { background: var(--done); }
+  .node.behind .bar > i { background: var(--behind); }
+  .late { color: var(--behind); font-weight: 600; }
+  ul { margin: 0; padding-left: 16px; }
+  li { margin-bottom: 2px; }
+  .tag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 3px; background: var(--open-bg); color: var(--muted); border: 1px solid var(--line); margin-left: 3px; white-space: nowrap; }
+  .tag.stuck { background: var(--behind-bg); color: var(--behind); border-color: var(--behind); }
+  .tag.ev { background: var(--done-bg); color: var(--done); border-color: var(--done); }
+  .bottom { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 8px; }
+  .grey li { color: var(--muted); }
+  footer { margin-top: 8px; color: var(--muted); font-size: 11px; }
+  @media (max-width: 900px) { .headline { grid-template-columns: 1fr 1fr; } .lanes, .bottom { grid-template-columns: 1fr; } .gantt-wrap { overflow-x: auto; } }
+  @media print {
+    @page { size: landscape; margin: 8mm; }
+    body { background: #fff; font-size: 10.5px; }
+    .page { padding: 0; max-width: none; }
+    .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>S.C.O.U.T. &middot; Advisor Progress Sheet</h1>
+    <div class="sub" id="subtitle"></div>
+  </header>
+
+  <section class="headline" id="headline"></section>
+
+  <section class="card gantt-wrap">
+    <h2>Where we are in the project</h2>
+    <svg id="gantt" width="100%" viewBox="0 0 1290 250" role="img" aria-label="Phase Gantt chart with today marker"></svg>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>Work done (share of phase milestones)</span>
+      <span><i style="background:var(--line)"></i>Phase window</span>
+      <span><i style="background:none;border:1.5px solid var(--behind)"></i>Time elapsed past work done</span>
+      <span>&#9670; milestone (filled = complete)</span>
+      <span style="color:var(--behind)">&#9474; today</span>
+    </div>
+  </section>
+
+  <section class="lanes" id="lanes"></section>
+
+  <section class="bottom">
+    <div class="card"><h2>Cross-lane handoffs (who is waiting on whom)</h2><ul id="handoffs"></ul></div>
+    <div class="card"><h2>Asks for the advisors</h2><ul id="asks"></ul></div>
+    <div class="card grey"><h2>Activity this week with no status change</h2><ul id="activity"></ul></div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* ---- DATA: regenerated each week by the skill from Linear, git, test register ---- */
+const DATA = {
+  today: "2026-10-22",
+  weekStart: "2026-10-15",
+  currentPhase: 1,
+  phases: [
+    { n: 0, name: "Kickoff",                  start: "2026-08-14", end: "2026-09-20", progress: 100 },
+    { n: 1, name: "Subsystem Bring-Up",       start: "2026-09-07", end: "2026-10-23", progress: 64 },
+    { n: 2, name: "System Integration",       start: "2026-10-22", end: "2026-12-06", progress: 10 },
+    { n: 3, name: "Enclosure & Waterproofing",start: "2026-11-30", end: "2027-01-15", progress: 55 },
+    { n: 4, name: "Field Prototype",          start: "2027-01-18", end: "2027-02-26", progress: 11 },
+    { n: 5, name: "Hawaii Prep",              start: "2027-03-01", end: "2027-03-19", progress: 22 },
+    { n: 6, name: "Hawaii Live Deployment",   start: "2027-03-22", end: "2027-05-28", progress: 0 }
+  ],
+  milestones: [
+    [0,"2026-08-21",100],[0,"2026-08-28",100],[0,"2026-09-11",100],[0,"2026-09-18",100],
+    [1,"2026-09-30",54],[1,"2026-10-09",94],[1,"2026-10-14",50],[1,"2026-10-16",32],[1,"2026-10-20",75],[1,"2026-10-21",85],[1,"2026-10-23",55],
+    [2,"2026-10-30",0],[2,"2026-11-06",28],[2,"2026-11-13",0],[2,"2026-11-20",0],[2,"2026-11-25",50],[2,"2026-12-02",0],[2,"2026-12-04",0],[2,"2026-12-06",0],
+    [3,"2026-12-04",50],[3,"2026-12-11",100],[3,"2026-12-18",0],[3,"2027-01-08",100],[3,"2027-01-15",25],
+    [4,"2027-01-29",0],[4,"2027-02-12",0],[4,"2027-02-19",0],[4,"2027-02-26",42],
+    [5,"2027-03-05",25],[5,"2027-03-12",40],[5,"2027-03-19",0],
+    [6,"2027-03-26",0],[6,"2027-04-23",0],[6,"2027-05-21",0],[6,"2027-05-28",0]
+  ],
+  lanes: [
+    { key: "ECEN", who: "Isabella Rodriguez",
+      nodes: [
+        { name: "Electronics bench bring-up (Stages 1–3)", pct: 32, due: "2026-10-16", ev: "Parts ordered Oct 17; hydrophone part and power review decided" },
+        { name: "Buoy-to-shore radio link (Stage 4)", pct: 55, due: "2026-10-23", ev: "FCC 915 MHz review done; link test in progress (SCO-155)", shared: "CSEN" }
+      ],
+      moved: [
+        ["Ordered every part for one complete Scout + shore station", "SCO-115"],
+        ["Confirmed hydrophone part; took electronics design to Shoba for review", "SCO-8, SCO-116"],
+        ["Delivered final component list + dimensions for the housing", "SCO-70"]
+      ],
+      stuck: [["SCO-10 LiFePO4 charging path undecided", "Blocked"], ["SCO-83 battery-voltage telemetry", "Blocked"]],
+      next: [
+        ["Bring up bench breadboard, verify DS18B20 / RTC / microSD / SEN0189", "SCO-152"],
+        ["Pass bench Stages 1–3 (readings, power, switching)", "SCO-157"],
+        ["Finish RFM95 link test", "SCO-155"]
+      ] },
+    { key: "CSEN", who: "David Chousal Cantu",
+      nodes: [
+        { name: "Firmware & shore software", pct: 85, due: "2026-10-21", ev: "Packet cadence decided (SCO-196); analytics and shore path built" },
+        { name: "Buoy-to-shore radio link (Stage 4)", pct: 55, due: "2026-10-23", ev: "Shared with ECEN", shared: "ECEN" }
+      ],
+      moved: [
+        ["Decided packet cadence and wake source", "SCO-196"],
+        ["Had faculty/compliance review the FCC 915 MHz findings", "SCO-104"],
+        ["Reconciled LoRa SF12 vs SF7 in facts.md", "SCO-213"]
+      ],
+      stuck: [
+        ["SCO-25 validate drivers on real hardware", "Blocked"],
+        ["SCO-24 real LoRa receiver on shore station", "Blocked"],
+        ["SCO-98 FCC-compliant modem config", "Blocked"],
+        ["SCO-12 calibrate turbidity to NTU", "Blocked"]
+      ],
+      next: [
+        ["Get FCC-compliant modem config running (unblock SCO-98)", "SCO-98"],
+        ["Validate SAMD21 drivers once bench hardware is up", "SCO-25"],
+        ["Bring up the shore-station LoRa receiver", "SCO-24"]
+      ] },
+    { key: "GENG", who: "John Ryan Myrdal",
+      nodes: [
+        { name: "Buoy structure & fabrication", pct: 94, due: "2026-10-09", ev: "Dry-float waterline matches model; chassis top + lid done" },
+        { name: "Sensor pod & sealing", pct: 75, due: "2026-10-20", ev: "Face-seal validated Oct 21; submersion re-test in test (SCO-108)" },
+        { name: "Test sites & permits", pct: 50, due: "2026-10-14", ev: "Aquarium option explored; permitting research written" }
+      ],
+      moved: [
+        ["Validated the remodelled turbidity face seal", "SCO-91"],
+        ["Chassis top section: sealing + service-access port", "SCO-68"],
+        ["Sourced PETG for the second buoy", "SCO-167"]
+      ],
+      stuck: [["SCO-166 / SCO-178 foam-filled second unit", "Deferred"]],
+      next: [
+        ["Finish submersion re-test of the face-seal joint", "SCO-108"],
+        ["Confirm swivel, U-bolt and AS568-247 part numbers", "SCO-137"],
+        ["Send Navid the permitting and tethering research", "SCO-199"]
+      ] }
+  ],
+  handoffs: [
+    "ECEN → CSEN: bench breadboard (SCO-152) has to be up before real-hardware driver validation (SCO-25) can start. [inferred, verify in Linear]",
+    "ECEN ↔ CSEN: the radio link needs the FCC-compliant modem config (SCO-98) and a working receiver (SCO-24) before the link test (SCO-155) means anything. [inferred]",
+    "ECEN → GENG: turbidity sensor order (SCO-189) gates a fully installed sensor pod. [inferred]"
+  ],
+  asks: [
+    "Decision: LiFePO4 charging path (SCO-10, ADR-0002) — still open since Phase 0.",
+    "Hazard form: corrections made, signature needed (SCO-211).",
+    "Review: permitting and tethering research (SCO-199) before the Hawaii window is locked."
+  ],
+  activity: [
+    "Submitted the senior design budget (SCO-117)",
+    "Mapped the layered test protocol (SCO-140)",
+    "Sent the lab-space request (SCO-192)",
+    "Shared the updated system block diagram (SCO-187)"
+  ]
+};
+
+/* ---- render ---- */
+const D = s => new Date(s + "T00:00:00Z").getTime();
+const DAY = 86400000;
+const today = D(DATA.today);
+const fmt = s => new Date(D(s)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+// headline
+const p = DATA.phases[DATA.currentPhase];
+const elapsed = Math.round((today - D(p.start)) / (D(p.end) - D(p.start)) * 100);
+const allMs = DATA.milestones.filter(m => m[0] === DATA.currentPhase);
+const late = allMs.filter(m => D(m[1]) < today && m[2] < 100);
+const blocked = DATA.lanes.reduce((a, l) => a + l.stuck.filter(s => s[1] === "Blocked").length, 0);
+document.getElementById("subtitle").textContent =
+  `Week of ${fmt(DATA.weekStart)} – ${fmt(DATA.today)}, 2026 · Phase ${p.n}: ${p.name}`;
+document.getElementById("headline").innerHTML = [
+  [`${elapsed}%`, `of Phase ${p.n} time elapsed (ends ${fmt(p.end)})`, elapsed - p.progress > 20],
+  [`${p.progress}%`, `of Phase ${p.n} milestones done (average)`, false],
+  [`${late.length} of ${allMs.length}`, `Phase ${p.n} milestones past their target date`, late.length > 0],
+  [`${blocked}`, `issues blocked right now`, blocked > 0]
+].map(([b, s, bad]) => `<div class="card stat ${bad ? "bad" : ""}"><b>${b}</b><span>${s}</span></div>`).join("");
+
+// gantt
+const svg = document.getElementById("gantt");
+const X0 = 190, X1 = 1270, rowH = 26, gTop = 30;
+const tMin = D(DATA.phases[0].start), tMax = D(DATA.phases[6].end);
+const x = t => X0 + (t - tMin) / (tMax - tMin) * (X1 - X0);
+let g = "";
+// month ticks
+for (let t = new Date(Date.UTC(2026, 7, 1)); t.getTime() <= tMax; t.setUTCMonth(t.getUTCMonth() + 1)) {
+  const tx = x(Math.max(t.getTime(), tMin));
+  g += `<line x1="${tx}" x2="${tx}" y1="${gTop - 6}" y2="${gTop + rowH * 7 + 4}" stroke="var(--line)" stroke-width="1"/>`;
+  g += `<text class="muted" x="${tx + 3}" y="${gTop - 12}">${t.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" })}${t.getUTCMonth() === 0 ? " '27" : ""}</text>`;
+}
+DATA.phases.forEach((ph, i) => {
+  const y = gTop + i * rowH, xs = x(D(ph.start)), xe = x(D(ph.end)), w = xe - xs;
+  const cur = ph.n === DATA.currentPhase;
+  g += `<text x="6" y="${y + 15}" ${cur ? 'font-weight="700"' : ""}>P${ph.n} ${ph.name}</text>`;
+  g += `<rect x="${xs}" y="${y + 4}" width="${w}" height="16" rx="3" fill="var(--line)" ${cur ? 'stroke="var(--accent)" stroke-width="1.5"' : ""}/>`;
+  g += `<rect x="${xs}" y="${y + 4}" width="${w * ph.progress / 100}" height="16" rx="3" fill="var(--accent)" opacity="${ph.n < DATA.currentPhase ? .55 : .9}"/>`;
+  // time elapsed beyond work done
+  const el = Math.max(0, Math.min(1, (today - D(ph.start)) / (D(ph.end) - D(ph.start))));
+  if (el > ph.progress / 100 && el < 1.0001 && today >= D(ph.start)) {
+    g += `<rect x="${xs + w * ph.progress / 100}" y="${y + 4}" width="${w * (el - ph.progress / 100)}" height="16" rx="3" fill="none" stroke="var(--behind)" stroke-width="1.5"/>`;
+  }
+  g += `<text x="${xe + 4}" y="${y + 16}" class="muted">${ph.progress}%</text>`;
+});
+DATA.milestones.forEach(([n, d, pct]) => {
+  const cx = x(D(d)), cy = gTop + n * rowH + 12;
+  g += `<path d="M${cx} ${cy - 5} l5 5 l-5 5 l-5 -5 z" fill="${pct >= 100 ? "var(--done)" : "var(--card)"}" stroke="${pct >= 100 ? "var(--done)" : "var(--ink)"}" stroke-width="1.2"/>`;
+});
+const tx = x(today);
+g += `<line x1="${tx}" x2="${tx}" y1="${gTop - 8}" y2="${gTop + rowH * 7 + 6}" stroke="var(--behind)" stroke-width="2"/>`;
+g += `<text x="${tx - 20}" y="${gTop + rowH * 7 + 20}" fill="var(--behind)" font-weight="700" style="fill:var(--behind)">Today ${fmt(DATA.today)}</text>`;
+const endx = x(tMax);
+g += `<text x="${endx - 128}" y="${gTop + rowH * 7 + 20}" class="muted">Final report May 28, 2027</text>`;
+svg.innerHTML = g;
+
+// lanes
+const cls = n => n.pct >= 100 ? "done" : (D(n.due) < today && n.pct < 60) ? "behind" : "partial";
+document.getElementById("lanes").innerHTML = DATA.lanes.map(l => `
+  <div class="card lane">
+    <h3>${l.key}<small>${l.who}</small></h3>
+    <h2>Exit criteria</h2>
+    ${l.nodes.map(n => {
+      const dl = Math.round((today - D(n.due)) / DAY);
+      return `<div class="node ${cls(n)}">
+        <div class="t"><span>${n.name}</span><span>${n.pct}%</span></div>
+        <div class="bar"><i style="width:${n.pct}%"></i></div>
+        <div class="m"><span>${n.ev}</span><span class="${dl > 0 ? "late" : ""}">${dl > 0 ? `${dl} d past ${fmt(n.due)}` : `due ${fmt(n.due)}`}</span></div>
+      </div>`; }).join("")}
+    <h2>Moved this week <span class="tag ev">evidence</span></h2>
+    <ul>${l.moved.map(([t, id]) => `<li>${t} <span class="tag">${id}</span></li>`).join("")}</ul>
+    <h2>Stuck</h2>
+    <ul>${l.stuck.map(([t, s]) => `<li>${t} <span class="tag stuck">${s}</span></li>`).join("")}</ul>
+    <h2>Next steps (agreed by team)</h2>
+    <ul>${l.next.map(([t, id]) => `<li>${t} <span class="tag">${id}</span></li>`).join("")}</ul>
+  </div>`).join("");
+
+const li = a => a.map(t => `<li>${t}</li>`).join("");
+document.getElementById("handoffs").innerHTML = li(DATA.handoffs);
+document.getElementById("asks").innerHTML = li(DATA.asks);
+document.getElementById("activity").innerHTML = li(DATA.activity);
+document.getElementById("footer").textContent =
+  "Source: Linear (statuses, milestones), generated " + DATA.today + ". Phase % = average of its milestone progress. Items marked [inferred] or 'agreed by team' need confirmation before the meeting.";
+</script>
+</body>
+</html>

@@ -103,6 +103,7 @@ Schedule, meetings, and administrative records.
 | [Deployment Strategy](planning/deployment-strategy.md) | Hawaii for reef data, Monterey or Santa Cruz for a systems test, and the permitting next steps |
 | [Gantt Chart and WBS](planning/gantt-and-wbs.md) | How the CSV, script and PDF task plan fit together |
 | [Senior Design Time Log](planning/time-log.md) | John Ryan Myrdal's hours on S.C.O.U.T., estimated for the past and reported going forward |
+| [Advisor Progress Sheet](planning/advisor-progress-sheet/README.md) | One-page weekly sheet for advisor meetings: exit-criteria progress, phase Gantt, per-discipline lanes |
 | [Signature Page](planning/signature-page.md) | SCU capstone declaration — team members and faculty advisors |
 | [Thesis Outline](planning/thesis-outline.md) | **Current running outline** of the senior design thesis: every chapter and section, formatting rules, version history |
 
