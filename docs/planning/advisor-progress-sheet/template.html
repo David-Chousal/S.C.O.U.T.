@@ -137,7 +137,7 @@ const DATA = {
     [5,"2027-03-05",25],[5,"2027-03-12",40],[5,"2027-03-19",0],
     [6,"2027-03-26",0],[6,"2027-04-23",0],[6,"2027-05-21",0],[6,"2027-05-28",0]
   ],
-  blocked: { count: 6, tracedToBench: 4 },
+  blocked: { count: 4, tracedToBench: 4 },
   /* status: pass | partial | fail | untested. Evidence = test-register row or Linear issue. */
   lanes: [
     { key: "ECEN", who: "Isabella Rodriguez",
@@ -179,8 +179,6 @@ const DATA = {
       ],
       stuck: [
         ["Drivers on real hardware (SCO-25)", "Blocked", "by SCO-152 bench breadboard"],
-        ["Real LoRa receiver (SCO-24)", "Blocked", "Linear lists SCO-155 (link test, in progress) and SCO-115 (Done). Shore-station parts arrived Oct 13, so this status looks stale"],
-        ["FCC-compliant modem config (SCO-98)", "Blocked", "Linear still says Blocked, but the Oct 16 comment says it is unblocked and being tested with SCO-155. Status looks stale"],
         ["Turbidity to NTU (SCO-12)", "Blocked", "by SCO-153 and SCO-47"]
       ],
       next: [
@@ -209,7 +207,7 @@ const DATA = {
   ],
   handoffs: [
     "SCO-152 bench breadboard (ECEN) gates SCO-25 drivers on real hardware (CSEN)",
-    "SCO-155 link test (ECEN) is still listed as a blocker of SCO-98 and SCO-24 (CSEN); both look unblocked since parts arrived",
+    "SCO-155 link test (ECEN, in progress) is listed as a blocker of SCO-98 and SCO-24 (CSEN), both now In Progress",
     "SCO-153 and SCO-47 (ECEN) gate SCO-12 turbidity to NTU (CSEN)",
     "SCO-23 sleep current (ECEN) gates SCO-10 charging path, which gates SCO-83"
   ],
@@ -253,7 +251,7 @@ document.getElementById("headline").innerHTML = [
   [`${cnt("pass")} of ${crit.length}`, `Phase ${p.n} criteria fully passed · ${cnt("partial")} partial · ${cnt("untested")} untested${cnt("fail") ? " · " + cnt("fail") + " failed" : ""}`, cnt("pass") < crit.length / 2],
   [`${elapsed}% / ${p.progress}%`, `of Phase ${p.n} time elapsed / milestones done (ends ${fmt(p.end)})`, elapsed - p.progress > 20],
   [`${late.length} of ${allMs.length}`, `Phase ${p.n} milestones past their target date`, late.length > 0],
-  [`${DATA.blocked.tracedToBench} of ${DATA.blocked.count}`, `Linear-blocked issues trace to unfinished ECEN bench tests; the other ${DATA.blocked.count - DATA.blocked.tracedToBench} look stale`, DATA.blocked.tracedToBench > 0]
+  [`${DATA.blocked.tracedToBench} of ${DATA.blocked.count}`, `blocked issues trace to unfinished ECEN bench tests`, DATA.blocked.tracedToBench > 0]
 ].map(([b, s, bad]) => `<div class="card stat ${bad ? "bad" : ""}"><b>${b}</b><span>${s}</span></div>`).join("");
 
 /* gantt */
