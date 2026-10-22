@@ -323,6 +323,19 @@ depends on them.
 | `bocoup-gaps` | Beshai, "Showing missing data in line charts," Bocoup. [bocoup.com](https://bocoup.com/blog/showing-missing-data-in-line-charts) | 🔓 | — | Never interpolate across missing packets |
 | `webstatus-dev` | Google / W3C WebDX, webstatus.dev Baseline API (queried 2026-10-19). [webstatus.dev](https://webstatus.dev/) | 🔓 | — | Browser support for every CSS feature adopted or rejected |
 
+## Monterey Bay and Santa Cruz dock test (2026-10-21)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `scpd-visitor-berthing-2026` | Santa Cruz Port District. "Visitor berthing information." [web](https://santacruzharbor.specialdistrict.org/visitor-berthing-information) | 🔓 | — | Guest slip rules, two-week limit, harbor office contact. [dock-test file](../../research/monterey-santa-cruz-dock-test-hosts-and-permissions.md) |
+| `monterey-municipal-marina-2026` | City of Monterey. "Municipal Marina" and harbor page. [web](https://monterey.gov/your_city_hall/departments/public_works/harbor_and_marina/municipal_marina.php) | 🔓 | — | Berth assignment rule, harbormaster contacts and hours |
+| `mlhd-operations-2026` | Moss Landing Harbor District. "Harbor operations." [web](https://mosslandingharbor.specialdistrict.org/moss-landing-harbor-operations) | 🔓 | — | Permit types incl. special activities, contact |
+| `cfr-15-922-subpart-m` | 15 CFR Part 922 Subpart M, Monterey Bay National Marine Sanctuary, §§922.132-922.133. [web](https://www.law.cornell.edu/cfr/text/15/part-922/subpart-M) | 🔓 | — | Prohibitions on structures on submerged lands; permit route |
+| `mbnms-permits-2026` | NOAA MBNMS. "Permits." [web](https://montereybay.noaa.gov/resourcepro/permit/) | 🔓 | — | Permit coordinator and how to apply |
+| `cfr-33-322` | 33 CFR 322.3, Permits for structures or work in navigable waters (Section 10). [web](https://www.law.cornell.edu/cfr/text/33/322.3) | 🔓 | — | Whether a temporary tethered buoy needs Corps authorization |
+| `cfr-33-66` | 33 CFR Part 66, Private aids to navigation, and Coast Guard form CG-2554. [web](https://media.defense.gov/2017/Oct/16/2001827524/-1/-1/0/CG_2554.PDF) | 🔓 | — | Whether a research buoy needs authorization as a private aid |
+| `ccc-central-coast-office-2026` | Santa Cruz Public Libraries directory, California Coastal Commission Central Coast District Office. [web](https://santacruzpl.org/cid/subjects/1582) | 🔓 | — | Office address and phone for coastal permit questions |
+
 ## Maintenance
 
 - **Adding a source:** add a row to the right topic table, fill DOI + access, and — if you have

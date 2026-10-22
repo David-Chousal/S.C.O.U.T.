@@ -6,7 +6,8 @@
 > our own. Decided 2026-10-16.
 >
 > Part of the [planning docs](team-timeline.md). Permitting detail:
-> [Hawaii](../research/hawaii-deployment-permitting.md), [Monterey](../research/monterey-bay-sanctuary-permitting.md).
+> [Hawaii](../research/hawaii-deployment-permitting.md), [Monterey](../research/monterey-bay-sanctuary-permitting.md),
+> [dock-test hosts and permissions](../research/monterey-santa-cruz-dock-test-hosts-and-permissions.md).
 
 ---
 
@@ -49,7 +50,8 @@ In order. Each is a Linear issue; a written answer is filed in the repo before t
 |---|---|---|---|
 | 1 | Email the Kāneʻohe Yacht Club: may a sensor hang from the boat in its slip for weeks to months, removed each outing? Ask about the slip agreement, permit S-5407, insurance, who approves | [SCO-194](https://linear.app/scout1/issue/SCO-194) | Draft ready, not sent |
 | 2 | Email HIMB / Chris Sabine about hosting the buoy on the CRIMP2 mooring (live deployment, weeks to months, March 22 start) | [SCO-185](https://linear.app/scout1/issue/SCO-185) | Draft ready, not sent |
-| 3 | Pick a Monterey or Santa Cruz host (first choice: UC Santa Cruz Long Marine Laboratory), get their written yes, then answer the sanctuary and ask for written confirmation of no permit | [SCO-195](https://linear.app/scout1/issue/SCO-195) | Not started |
+| 3 | Pick a Monterey or Santa Cruz host (first choice: UC Santa Cruz Long Marine Laboratory), get their written yes, then answer the sanctuary and ask for written confirmation of no permit | [SCO-195](https://linear.app/scout1/issue/SCO-195) | Contacts researched 2026-10-21 ([hosts and permissions](../research/monterey-santa-cruz-dock-test-hosts-and-permissions.md)); emails not sent |
+| 3b | Ask the Corps, Coast Guard, Coastal Commission and sanctuary for written answers on the dock test | [SCO-222](https://linear.app/scout1/issue/SCO-222) | Not started |
 | 4 | If the club says yes: ask DOBOR in writing whether the hung sensor counts as part of the vessel | [SCO-194](https://linear.app/scout1/issue/SCO-194) | After step 1 |
 | 5 | Confirm with DOBOR and the Coast Guard what a boat-tethered attended test in Hawaii needs | [SCO-185](https://linear.app/scout1/issue/SCO-185) | After step 1 |
 | 6 | **Only if a host says no and we need our own anchor:** send the Corps, OCCL, Land Division, DAR, DOBOR and USCG question emails | [SCO-185](https://linear.app/scout1/issue/SCO-185) | On hold |
