@@ -7,14 +7,14 @@
 <style>
   :root {
     --bg: #f6f7f9; --card: #ffffff; --ink: #1b2330; --muted: #5d6878; --line: #d9dee6;
-    --done: #2f8f5b; --partial: #d99a1d; --behind: #c8472f; --open: #9aa5b4; --accent: #1f5fae;
-    --done-bg: #e3f3ea; --partial-bg: #fbf1dc; --behind-bg: #f9e4df; --open-bg: #eef1f5;
+    --pass: #2f8f5b; --partial: #d99a1d; --fail: #c8472f; --untested: #7d8899; --accent: #1f5fae;
+    --pass-bg: #e3f3ea; --partial-bg: #fbf1dc; --fail-bg: #f9e4df; --untested-bg: #eef1f5;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0f141b; --card: #171e28; --ink: #e6ebf2; --muted: #98a4b5; --line: #2b3442;
-      --done: #4cc084; --partial: #f0b84a; --behind: #ef7b64; --open: #66738a; --accent: #6aa7f0;
-      --done-bg: #14301f; --partial-bg: #33280f; --behind-bg: #36191a; --open-bg: #1d2531;
+      --pass: #4cc084; --partial: #f0b84a; --fail: #ef7b64; --untested: #8d99ad; --accent: #6aa7f0;
+      --pass-bg: #14301f; --partial-bg: #33280f; --fail-bg: #36191a; --untested-bg: #1d2531;
     }
   }
   * { box-sizing: border-box; }
@@ -23,13 +23,13 @@
   .page { max-width: 1320px; margin: 0 auto; padding: 16px; }
   header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
   h1 { font-size: 20px; margin: 0; }
-  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+  h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 5px; }
   .sub { color: var(--muted); }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
   .headline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-  .stat b { display: block; font-size: 22px; line-height: 1.1; }
+  .stat b { display: block; font-size: 21px; line-height: 1.1; }
   .stat span { color: var(--muted); font-size: 12px; }
-  .stat.bad b { color: var(--behind); }
+  .stat.bad b { color: var(--fail); }
   .gantt-wrap { margin-bottom: 10px; }
   svg text { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
   svg .muted { fill: var(--muted); }
@@ -39,30 +39,36 @@
   .lane h3 { margin: 0 0 6px; font-size: 14px; display: flex; justify-content: space-between; }
   .lane h3 small { color: var(--muted); font-weight: 400; font-size: 11px; }
   .lane h2 { margin-top: 8px; }
-  .node { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 5px 8px; margin-bottom: 5px; background: var(--open-bg); }
-  .node.done { border-left-color: var(--done); background: var(--done-bg); }
-  .node.partial { border-left-color: var(--partial); background: var(--partial-bg); }
-  .node.behind { border-left-color: var(--behind); background: var(--behind-bg); }
-  .node .t { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
-  .node .m { color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; gap: 6px; }
-  .bar { height: 5px; background: var(--line); border-radius: 3px; margin: 3px 0; overflow: hidden; }
-  .bar > i { display: block; height: 100%; background: var(--partial); }
-  .node.done .bar > i { background: var(--done); }
-  .node.behind .bar > i { background: var(--behind); }
-  .late { color: var(--behind); font-weight: 600; }
+  .crit { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 4px 8px; margin-bottom: 4px; background: var(--untested-bg); border-left-color: var(--untested); }
+  .crit.pass { border-left-color: var(--pass); background: var(--pass-bg); }
+  .crit.partial { border-left-color: var(--partial); background: var(--partial-bg); }
+  .crit.fail { border-left-color: var(--fail); background: var(--fail-bg); }
+  .crit .t { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+  .crit .badge { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; color: var(--untested); }
+  .crit.pass .badge { color: var(--pass); } .crit.partial .badge { color: var(--partial); } .crit.fail .badge { color: var(--fail); }
+  .crit .m { color: var(--muted); font-size: 11px; }
+  .crit .m b { color: var(--ink); font-weight: 600; }
+  .ms { color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; gap: 6px; }
+  .late { color: var(--fail); font-weight: 600; }
   ul { margin: 0; padding-left: 16px; }
   li { margin-bottom: 2px; }
-  .tag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 3px; background: var(--open-bg); color: var(--muted); border: 1px solid var(--line); margin-left: 3px; white-space: nowrap; }
-  .tag.stuck { background: var(--behind-bg); color: var(--behind); border-color: var(--behind); }
-  .tag.ev { background: var(--done-bg); color: var(--done); border-color: var(--done); }
-  .bottom { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 8px; }
+  .tag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 3px; background: var(--untested-bg); color: var(--muted); border: 1px solid var(--line); margin-left: 3px; white-space: nowrap; }
+  .tag.stuck { background: var(--fail-bg); color: var(--fail); border-color: var(--fail); }
+  .tag.ev { background: var(--pass-bg); color: var(--pass); border-color: var(--pass); }
+  .tag.sug { background: var(--partial-bg); color: var(--partial); border-color: var(--partial); }
+  .why { display: block; color: var(--muted); font-size: 11px; }
+  .unconfirmed { background: var(--partial-bg); border: 1px dashed var(--partial); color: var(--ink); border-radius: 5px; padding: 2px 6px; font-size: 11px; margin-bottom: 4px; }
+  .bottom { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
   .grey li { color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
   footer { margin-top: 8px; color: var(--muted); font-size: 11px; }
-  @media (max-width: 900px) { .headline { grid-template-columns: 1fr 1fr; } .lanes, .bottom { grid-template-columns: 1fr; } .gantt-wrap { overflow-x: auto; } }
+  @media (max-width: 900px) { .headline { grid-template-columns: 1fr 1fr; } .lanes, .bottom { grid-template-columns: 1fr; } .gantt-wrap, .fb { overflow-x: auto; } }
   @media print {
-    @page { size: landscape; margin: 8mm; }
-    body { background: #fff; font-size: 10.5px; }
-    .page { padding: 0; max-width: none; }
+    @page { size: landscape; margin: 6mm; }
+    body { background: #fff; font-size: 9.5px; }
+    .page { padding: 0; max-width: none; zoom: .72; }
     .card { break-inside: avoid; }
   }
 </style>
@@ -80,20 +86,27 @@
     <h2>Where we are in the project</h2>
     <svg id="gantt" width="100%" viewBox="0 0 1290 250" role="img" aria-label="Phase Gantt chart with today marker"></svg>
     <div class="legend">
-      <span><i style="background:var(--accent)"></i>Work done (share of phase milestones)</span>
+      <span><i style="background:var(--accent)"></i>Milestones done (issue-based)</span>
       <span><i style="background:var(--line)"></i>Phase window</span>
-      <span><i style="background:none;border:1.5px solid var(--behind)"></i>Time elapsed past work done</span>
+      <span><i style="background:none;border:1.5px solid var(--fail)"></i>Time elapsed past work done</span>
       <span>&#9670; milestone (filled = complete)</span>
-      <span style="color:var(--behind)">&#9474; today</span>
+      <span style="color:var(--fail)">&#9474; today</span>
     </div>
   </section>
 
   <section class="lanes" id="lanes"></section>
 
   <section class="bottom">
-    <div class="card"><h2>Cross-lane handoffs (who is waiting on whom)</h2><ul id="handoffs"></ul></div>
+    <div class="card"><h2>Last week's plan vs. what happened</h2><div id="plan"></div></div>
+    <div class="card"><h2>Who is waiting on whom (Linear blocking relations)</h2><ul id="handoffs"></ul></div>
     <div class="card"><h2>Asks for the advisors</h2><ul id="asks"></ul></div>
-    <div class="card grey"><h2>Activity this week with no status change</h2><ul id="activity"></ul></div>
+    <div class="card grey"><h2>Activity this week, no criterion moved</h2><ul id="activity"></ul></div>
+  </section>
+
+  <section class="card fb">
+    <h2>Advisor feedback and what we changed</h2>
+    <table><thead><tr><th>Advisor</th><th>Feedback</th><th>What we changed</th><th>Status</th></tr></thead>
+    <tbody id="feedback"></tbody></table>
   </section>
 
   <footer id="footer"></footer>
@@ -105,6 +118,7 @@ const DATA = {
   today: "2026-10-22",
   weekStart: "2026-10-15",
   currentPhase: 1,
+  nextConfirmed: false,
   phases: [
     { n: 0, name: "Kickoff",                  start: "2026-08-14", end: "2026-09-20", progress: 100 },
     { n: 1, name: "Subsystem Bring-Up",       start: "2026-09-07", end: "2026-10-23", progress: 64 },
@@ -123,77 +137,100 @@ const DATA = {
     [5,"2027-03-05",25],[5,"2027-03-12",40],[5,"2027-03-19",0],
     [6,"2027-03-26",0],[6,"2027-04-23",0],[6,"2027-05-21",0],[6,"2027-05-28",0]
   ],
+  blocked: { count: 6, tracedToBench: 6 },
+  /* status: pass | partial | fail | untested. Evidence = test-register row or Linear issue. */
   lanes: [
     { key: "ECEN", who: "Isabella Rodriguez",
-      nodes: [
-        { name: "Electronics bench bring-up (Stages 1–3)", pct: 32, due: "2026-10-16", ev: "Parts ordered Oct 17; hydrophone part and power review decided" },
-        { name: "Buoy-to-shore radio link (Stage 4)", pct: 55, due: "2026-10-23", ev: "FCC 915 MHz review done; link test in progress (SCO-155)", shared: "CSEN" }
+      criteria: [
+        { t: "Bench breadboard reads DS18B20, PCF8523, microSD, SEN0189", target: "all four read correctly", s: "untested", r: "SCO-152 Todo" },
+        { t: "Sleep current", target: "< 5 mA", s: "untested", r: "SCO-23 Todo, nothing measured yet" },
+        { t: "Per-sensor power switching", target: "each sensor gates on and off", s: "untested", r: "SCO-87 Todo" },
+        { t: "RFM95 link on FCC-compliant config", target: "packet received by a second radio", s: "untested", r: "SCO-155 in progress; modem config SCO-98 blocked", shared: "CSEN" }
       ],
+      milestones: [["Electronics bench bring-up", 32, "2026-10-16"], ["Radio link (Stage 4)", 55, "2026-10-23"]],
       moved: [
         ["Ordered every part for one complete Scout + shore station", "SCO-115"],
-        ["Confirmed hydrophone part; took electronics design to Shoba for review", "SCO-8, SCO-116"],
+        ["Confirmed hydrophone part; took electronics design to Shoba", "SCO-8, SCO-116"],
         ["Delivered final component list + dimensions for the housing", "SCO-70"]
       ],
-      stuck: [["SCO-10 LiFePO4 charging path undecided", "Blocked"], ["SCO-83 battery-voltage telemetry", "Blocked"]],
+      stuck: [
+        ["Charging path undecided (SCO-10)", "Blocked", "by SCO-23 sleep-current measurement, not started"],
+        ["Battery-voltage telemetry (SCO-83)", "Blocked", "by SCO-10"]
+      ],
       next: [
-        ["Bring up bench breadboard, verify DS18B20 / RTC / microSD / SEN0189", "SCO-152"],
-        ["Pass bench Stages 1–3 (readings, power, switching)", "SCO-157"],
-        ["Finish RFM95 link test", "SCO-155"]
+        { t: "Design the SEN0189 front end as non-inverting", id: "SCO-47", who: "Isabella", done: "[team to add]", src: "ondeck" },
+        { t: "Add internal temp/humidity sensor for State-of-Health", id: "SCO-60", who: "Isabella", done: "[team to add]", src: "ondeck" },
+        { t: "Decide the LiFePO4 charging path", id: "SCO-10", who: "Isabella", done: "ADR-0002 Accepted and facts.md updated", src: "ondeck" },
+        { t: "Bring up the bench breadboard", id: "SCO-152", who: "Isabella", done: "all four sensors read", src: "suggested" },
+        { t: "Measure sleep current", id: "SCO-23", who: "Isabella", done: "value recorded vs < 5 mA", src: "suggested" }
       ] },
     { key: "CSEN", who: "David Chousal Cantu",
-      nodes: [
-        { name: "Firmware & shore software", pct: 85, due: "2026-10-21", ev: "Packet cadence decided (SCO-196); analytics and shore path built" },
-        { name: "Buoy-to-shore radio link (Stage 4)", pct: 55, due: "2026-10-23", ev: "Shared with ECEN", shared: "ECEN" }
+      criteria: [
+        { t: "SAMD21 drivers validated on real hardware", target: "every driver passes on the bench", s: "untested", r: "SCO-25 blocked by SCO-152" },
+        { t: "Real shore LoRa receiver", target: "receives a buoy packet", s: "untested", r: "SCO-24 blocked by SCO-155" },
+        { t: "Shore data path and analytics", target: "LoRa to CSV to analytics runs", s: "partial", r: "passes in simulation, not on a real radio" },
+        { t: "RFM95 link on FCC-compliant config", target: "packet received by a second radio", s: "untested", r: "shared with ECEN", shared: "ECEN" }
       ],
+      milestones: [["Firmware & shore software", 85, "2026-10-21"], ["Radio link (Stage 4)", 55, "2026-10-23"]],
       moved: [
         ["Decided packet cadence and wake source", "SCO-196"],
-        ["Had faculty/compliance review the FCC 915 MHz findings", "SCO-104"],
+        ["Faculty/compliance review of the FCC 915 MHz findings", "SCO-104"],
         ["Reconciled LoRa SF12 vs SF7 in facts.md", "SCO-213"]
       ],
       stuck: [
-        ["SCO-25 validate drivers on real hardware", "Blocked"],
-        ["SCO-24 real LoRa receiver on shore station", "Blocked"],
-        ["SCO-98 FCC-compliant modem config", "Blocked"],
-        ["SCO-12 calibrate turbidity to NTU", "Blocked"]
+        ["Drivers on real hardware (SCO-25)", "Blocked", "by SCO-152 bench breadboard"],
+        ["Real LoRa receiver (SCO-24)", "Blocked", "by SCO-155 link test; also SCO-115, which is Done (order placed Oct 17), so this may really be a parts wait"],
+        ["FCC-compliant modem config (SCO-98)", "Blocked", "by SCO-155; also SCO-115, closed"],
+        ["Turbidity to NTU (SCO-12)", "Blocked", "by SCO-153 and SCO-47"]
       ],
       next: [
-        ["Get FCC-compliant modem config running (unblock SCO-98)", "SCO-98"],
-        ["Validate SAMD21 drivers once bench hardware is up", "SCO-25"],
-        ["Bring up the shore-station LoRa receiver", "SCO-24"]
+        { t: "Bring up the real LoRa receiver on the shore station", id: "SCO-24", who: "David", done: "[team to add]", src: "ondeck" },
+        { t: "Make analytics CLI flags consistent", id: "SCO-26", who: "David", done: "flags consistent or documented", src: "ondeck" }
       ] },
     { key: "GENG", who: "John Ryan Myrdal",
-      nodes: [
-        { name: "Buoy structure & fabrication", pct: 94, due: "2026-10-09", ev: "Dry-float waterline matches model; chassis top + lid done" },
-        { name: "Sensor pod & sealing", pct: 75, due: "2026-10-20", ev: "Face-seal validated Oct 21; submersion re-test in test (SCO-108)" },
-        { name: "Test sites & permits", pct: 50, due: "2026-10-14", ev: "Aquarium option explored; permitting research written" }
+      criteria: [
+        { t: "Hull survives mooring and wave loads", target: "SF ≥ 4 (provisional)", s: "pass", r: "RR-04 SF 10–1450; v5 re-check RR-09" },
+        { t: "Buoy rights itself from any angle", target: "self-rights from any angle", s: "partial", r: "v6 with 24 in ballast passed (RR-11); the current no-stem printed float is not re-checked" },
+        { t: "Sensor-pod face seal stays dry", target: "dry after 24 h at ≥ 0.3 m, ~35 ppt salt water", s: "partial", r: "RR-18 passed in fresh water, no sensor, shallow; salt and depth untested; RR-12/14/15 failed earlier" },
+        { t: "Assembled buoy floats at modelled waterline", target: "freeboard within ±0.5 in", s: "partial", r: "RR-17 floated well; seams leaked slightly; run without foam" },
+        { t: "Test sites and permits", target: "written permit determinations", s: "partial", r: "research written; determinations not recorded in the repo" }
       ],
+      milestones: [["Buoy structure & fabrication", 94, "2026-10-09"], ["Sensor pod & sealing", 75, "2026-10-20"], ["Test sites & permits", 50, "2026-10-14"]],
       moved: [
         ["Validated the remodelled turbidity face seal", "SCO-91"],
         ["Chassis top section: sealing + service-access port", "SCO-68"],
         ["Sourced PETG for the second buoy", "SCO-167"]
       ],
-      stuck: [["SCO-166 / SCO-178 foam-filled second unit", "Deferred"]],
+      stuck: [["Foam-filled second unit (SCO-166, SCO-178)", "Deferred", "parked by choice"]],
       next: [
-        ["Finish submersion re-test of the face-seal joint", "SCO-108"],
-        ["Confirm swivel, U-bolt and AS568-247 part numbers", "SCO-137"],
-        ["Send Navid the permitting and tethering research", "SCO-199"]
+        { t: "Start saltwater-bath leak tests on printed capsules (1, 2, 3 walls)", id: "SCO-141", who: "John Ryan", done: "capsules soaking with a moisture indicator", src: "ondeck" },
+        { t: "Finish submersion re-test of the face-seal joint", id: "SCO-108", who: "John Ryan", done: "[team to add]", src: "suggested" }
       ] }
   ],
   handoffs: [
-    "ECEN → CSEN: bench breadboard (SCO-152) has to be up before real-hardware driver validation (SCO-25) can start. [inferred, verify in Linear]",
-    "ECEN ↔ CSEN: the radio link needs the FCC-compliant modem config (SCO-98) and a working receiver (SCO-24) before the link test (SCO-155) means anything. [inferred]",
-    "ECEN → GENG: turbidity sensor order (SCO-189) gates a fully installed sensor pod. [inferred]"
+    "SCO-152 bench breadboard (ECEN) gates SCO-25 drivers on real hardware (CSEN)",
+    "SCO-155 link test (ECEN) gates SCO-98 modem config and SCO-24 shore receiver (CSEN)",
+    "SCO-153 and SCO-47 (ECEN) gate SCO-12 turbidity to NTU (CSEN)",
+    "SCO-23 sleep current (ECEN) gates SCO-10 charging path, which gates SCO-83"
   ],
+  plan: { priorCommitted: null, priorDone: null,
+          note: "First sheet: no commitments were recorded last week. The next steps above are saved now and scored at the next meeting." },
   asks: [
-    "Decision: LiFePO4 charging path (SCO-10, ADR-0002) — still open since Phase 0.",
-    "Hazard form: corrections made, signature needed (SCO-211).",
-    "Review: permitting and tethering research (SCO-199) before the Hawaii window is locked."
+    "Decision: LiFePO4 charging path (SCO-10, ADR-0002), open since Phase 0.",
+    "Signature: corrected hazard form (SCO-211).",
+    "Review: permitting and tethering research (SCO-199)."
   ],
   activity: [
     "Submitted the senior design budget (SCO-117)",
     "Mapped the layered test protocol (SCO-140)",
     "Sent the lab-space request (SCO-192)",
     "Shared the updated system block diagram (SCO-187)"
+  ],
+  feedback: [
+    ["Dr. Krishnan", "Needs to be more systematic. Team works together to identify next steps and work through them.",
+     "Next steps are set by the team before each meeting, with an owner and a done-when. Each week is scored plan vs. actual.", "Starts this week"],
+    ["Dr. Kuczenski", "Trouble communicating progress vs. activities.",
+     "Progress is shown as pass / fail / untested against a target, with a test-register or Linear reference. Activity is grey.", "First sheet; ask if it answers this"]
   ]
 };
 
@@ -202,29 +239,29 @@ const D = s => new Date(s + "T00:00:00Z").getTime();
 const DAY = 86400000;
 const today = D(DATA.today);
 const fmt = s => new Date(D(s)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-// headline
 const p = DATA.phases[DATA.currentPhase];
 const elapsed = Math.round((today - D(p.start)) / (D(p.end) - D(p.start)) * 100);
 const allMs = DATA.milestones.filter(m => m[0] === DATA.currentPhase);
 const late = allMs.filter(m => D(m[1]) < today && m[2] < 100);
-const blocked = DATA.lanes.reduce((a, l) => a + l.stuck.filter(s => s[1] === "Blocked").length, 0);
+const crit = DATA.lanes.flatMap(l => l.criteria).filter((c, i, a) => a.findIndex(x => x.t === c.t) === i);
+const cnt = k => crit.filter(c => c.s === k).length;
 document.getElementById("subtitle").textContent =
   `Week of ${fmt(DATA.weekStart)} – ${fmt(DATA.today)}, 2026 · Phase ${p.n}: ${p.name}`;
 document.getElementById("headline").innerHTML = [
-  [`${elapsed}%`, `of Phase ${p.n} time elapsed (ends ${fmt(p.end)})`, elapsed - p.progress > 20],
-  [`${p.progress}%`, `of Phase ${p.n} milestones done (average)`, false],
+  [`${cnt("pass")} of ${crit.length}`, `Phase ${p.n} criteria fully passed · ${cnt("partial")} partial · ${cnt("untested")} untested${cnt("fail") ? " · " + cnt("fail") + " failed" : ""}`, cnt("pass") < crit.length / 2],
+  [`${elapsed}% / ${p.progress}%`, `of Phase ${p.n} time elapsed / milestones done (ends ${fmt(p.end)})`, elapsed - p.progress > 20],
   [`${late.length} of ${allMs.length}`, `Phase ${p.n} milestones past their target date`, late.length > 0],
-  [`${blocked}`, `issues blocked right now`, blocked > 0]
+  [`${DATA.blocked.tracedToBench} of ${DATA.blocked.count}`, `blocked issues trace to unfinished ECEN bench tests`, DATA.blocked.tracedToBench > 0]
 ].map(([b, s, bad]) => `<div class="card stat ${bad ? "bad" : ""}"><b>${b}</b><span>${s}</span></div>`).join("");
 
-// gantt
+/* gantt */
 const svg = document.getElementById("gantt");
 const X0 = 190, X1 = 1270, rowH = 26, gTop = 30;
 const tMin = D(DATA.phases[0].start), tMax = D(DATA.phases[6].end);
 const x = t => X0 + (t - tMin) / (tMax - tMin) * (X1 - X0);
 let g = "";
-// month ticks
 for (let t = new Date(Date.UTC(2026, 7, 1)); t.getTime() <= tMax; t.setUTCMonth(t.getUTCMonth() + 1)) {
   const tx = x(Math.max(t.getTime(), tMin));
   g += `<line x1="${tx}" x2="${tx}" y1="${gTop - 6}" y2="${gTop + rowH * 7 + 4}" stroke="var(--line)" stroke-width="1"/>`;
@@ -236,51 +273,53 @@ DATA.phases.forEach((ph, i) => {
   g += `<text x="6" y="${y + 15}" ${cur ? 'font-weight="700"' : ""}>P${ph.n} ${ph.name}</text>`;
   g += `<rect x="${xs}" y="${y + 4}" width="${w}" height="16" rx="3" fill="var(--line)" ${cur ? 'stroke="var(--accent)" stroke-width="1.5"' : ""}/>`;
   g += `<rect x="${xs}" y="${y + 4}" width="${w * ph.progress / 100}" height="16" rx="3" fill="var(--accent)" opacity="${ph.n < DATA.currentPhase ? .55 : .9}"/>`;
-  // time elapsed beyond work done
   const el = Math.max(0, Math.min(1, (today - D(ph.start)) / (D(ph.end) - D(ph.start))));
   if (el > ph.progress / 100 && el < 1.0001 && today >= D(ph.start)) {
-    g += `<rect x="${xs + w * ph.progress / 100}" y="${y + 4}" width="${w * (el - ph.progress / 100)}" height="16" rx="3" fill="none" stroke="var(--behind)" stroke-width="1.5"/>`;
+    g += `<rect x="${xs + w * ph.progress / 100}" y="${y + 4}" width="${w * (el - ph.progress / 100)}" height="16" rx="3" fill="none" stroke="var(--fail)" stroke-width="1.5"/>`;
   }
   g += `<text x="${xe + 4}" y="${y + 16}" class="muted">${ph.progress}%</text>`;
 });
 DATA.milestones.forEach(([n, d, pct]) => {
   const cx = x(D(d)), cy = gTop + n * rowH + 12;
-  g += `<path d="M${cx} ${cy - 5} l5 5 l-5 5 l-5 -5 z" fill="${pct >= 100 ? "var(--done)" : "var(--card)"}" stroke="${pct >= 100 ? "var(--done)" : "var(--ink)"}" stroke-width="1.2"/>`;
+  g += `<path d="M${cx} ${cy - 5} l5 5 l-5 5 l-5 -5 z" fill="${pct >= 100 ? "var(--pass)" : "var(--card)"}" stroke="${pct >= 100 ? "var(--pass)" : "var(--ink)"}" stroke-width="1.2"/>`;
 });
 const tx = x(today);
-g += `<line x1="${tx}" x2="${tx}" y1="${gTop - 8}" y2="${gTop + rowH * 7 + 6}" stroke="var(--behind)" stroke-width="2"/>`;
-g += `<text x="${tx - 20}" y="${gTop + rowH * 7 + 20}" fill="var(--behind)" font-weight="700" style="fill:var(--behind)">Today ${fmt(DATA.today)}</text>`;
-const endx = x(tMax);
-g += `<text x="${endx - 128}" y="${gTop + rowH * 7 + 20}" class="muted">Final report May 28, 2027</text>`;
+g += `<line x1="${tx}" x2="${tx}" y1="${gTop - 8}" y2="${gTop + rowH * 7 + 6}" stroke="var(--fail)" stroke-width="2"/>`;
+g += `<text x="${tx - 20}" y="${gTop + rowH * 7 + 20}" style="fill:var(--fail)" font-weight="700">Today ${fmt(DATA.today)}</text>`;
+g += `<text x="${x(tMax) - 128}" y="${gTop + rowH * 7 + 20}" class="muted">Final report May 28, 2027</text>`;
 svg.innerHTML = g;
 
-// lanes
-const cls = n => n.pct >= 100 ? "done" : (D(n.due) < today && n.pct < 60) ? "behind" : "partial";
+/* lanes */
+const label = { pass: "Pass", partial: "Partial", fail: "Fail", untested: "Untested" };
 document.getElementById("lanes").innerHTML = DATA.lanes.map(l => `
   <div class="card lane">
     <h3>${l.key}<small>${l.who}</small></h3>
-    <h2>Exit criteria</h2>
-    ${l.nodes.map(n => {
-      const dl = Math.round((today - D(n.due)) / DAY);
-      return `<div class="node ${cls(n)}">
-        <div class="t"><span>${n.name}</span><span>${n.pct}%</span></div>
-        <div class="bar"><i style="width:${n.pct}%"></i></div>
-        <div class="m"><span>${n.ev}</span><span class="${dl > 0 ? "late" : ""}">${dl > 0 ? `${dl} d past ${fmt(n.due)}` : `due ${fmt(n.due)}`}</span></div>
-      </div>`; }).join("")}
+    <h2>Exit criteria (target · result)</h2>
+    ${l.criteria.map(c => `<div class="crit ${c.s}">
+      <div class="t"><span>${esc(c.t)}${c.shared ? ` <span class="tag">shared with ${c.shared}</span>` : ""}</span><span class="badge">${label[c.s]}</span></div>
+      <div class="m"><b>Target:</b> ${esc(c.target)} · ${esc(c.r)}</div></div>`).join("")}
+    <div style="margin-top:4px">${l.milestones.map(([n, pc, due]) => { const dl = Math.round((today - D(due)) / DAY);
+      return `<div class="ms"><span>${n} (issues): ${pc}%</span><span class="${dl > 0 && pc < 100 ? "late" : ""}">${dl > 0 && pc < 100 ? `${dl} d past ${fmt(due)}` : `due ${fmt(due)}`}</span></div>`; }).join("")}</div>
     <h2>Moved this week <span class="tag ev">evidence</span></h2>
-    <ul>${l.moved.map(([t, id]) => `<li>${t} <span class="tag">${id}</span></li>`).join("")}</ul>
-    <h2>Stuck</h2>
-    <ul>${l.stuck.map(([t, s]) => `<li>${t} <span class="tag stuck">${s}</span></li>`).join("")}</ul>
-    <h2>Next steps (agreed by team)</h2>
-    <ul>${l.next.map(([t, id]) => `<li>${t} <span class="tag">${id}</span></li>`).join("")}</ul>
+    <ul>${l.moved.map(([t, id]) => `<li>${esc(t)} <span class="tag">${id}</span></li>`).join("")}</ul>
+    <h2>Stuck, and why</h2>
+    <ul>${l.stuck.map(([t, s, why]) => `<li>${esc(t)} <span class="tag stuck">${s}</span><span class="why">${esc(why)}</span></li>`).join("")}</ul>
+    <h2>Next steps (owner · done when)</h2>
+    ${DATA.nextConfirmed ? "" : '<div class="unconfirmed">Not yet confirmed by the team. Set in the weekly sync before the meeting.</div>'}
+    <ul>${l.next.map(n => `<li>${esc(n.t)} <span class="tag">${n.id}</span> <span class="tag ${n.src === "suggested" ? "sug" : ""}">${n.src === "suggested" ? "suggested by sheet" : "On Deck"}</span><span class="why">${n.who} · done when: ${esc(n.done)}</span></li>`).join("")}</ul>
   </div>`).join("");
 
-const li = a => a.map(t => `<li>${t}</li>`).join("");
+const li = a => a.map(t => `<li>${esc(t)}</li>`).join("");
+document.getElementById("plan").innerHTML = DATA.plan.priorCommitted === null
+  ? `<div class="sub">${esc(DATA.plan.note)}</div>`
+  : `<b>${DATA.plan.priorDone} of ${DATA.plan.priorCommitted}</b> committed steps finished. ${esc(DATA.plan.note)}`;
 document.getElementById("handoffs").innerHTML = li(DATA.handoffs);
 document.getElementById("asks").innerHTML = li(DATA.asks);
 document.getElementById("activity").innerHTML = li(DATA.activity);
+document.getElementById("feedback").innerHTML = DATA.feedback.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 document.getElementById("footer").textContent =
-  "Source: Linear (statuses, milestones), generated " + DATA.today + ". Phase % = average of its milestone progress. Items marked [inferred] or 'agreed by team' need confirmation before the meeting.";
+  "Sources: Linear (statuses, milestones, blocking relations), mechanical/test/risk-reduction-register.md. Generated " + DATA.today +
+  ". Milestone % is issue completion, not a result. Pass / partial / fail / untested reflects recorded tests only.";
 </script>
 </body>
 </html>
