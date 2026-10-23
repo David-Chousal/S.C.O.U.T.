@@ -2,7 +2,7 @@
 
 The buoy transmits in three fixed slots a day, 00:10 / 08:10 / 16:10 UTC (docs/hub/facts.md,
 SCO-196), each carrying the latest reading. A packet belongs to the first slot at or after its
-timestamp. Every later slot that has passed — plus a grace period for the blind repeats — with no
+timestamp. Every later slot that has passed — plus a grace period for a late arrival — with no
 packet is a missed slot:
 
     0 missed → live · 1–2 → stale · 3 or more (a full day) → offline

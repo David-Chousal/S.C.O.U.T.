@@ -13,7 +13,7 @@
 > Investigation for [SCO-19](https://linear.app/scout1/issue/SCO-19), 2026-08-31.
 >
 > **Current configuration (2026-10-16):** BW500 / SF12 / CR4-8 at **+11 dBm**, fixed 915.0 MHz,
-> 3 transmit slots a day × 3 blind repeats. Sections 1–3 describe the configuration *before* the
+> 3 transmit slots a day, one copy each (since 2026-10-23). Sections 1–3 describe the configuration *before* the
 > 2026-09-01 fix. The open questions for a qualified reviewer are in the
 > [FCC Review Brief](fcc-review-brief.md) ([SCO-104](https://linear.app/scout1/issue/SCO-104)).
 

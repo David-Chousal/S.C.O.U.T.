@@ -25,9 +25,10 @@ Everything conforms to the
 [On-Board CSV Data Schema](../docs/engineering/data-schema.md), so shore-decoded data and
 retrieved on-buoy data share one format and one analytics path.
 
-**Writes are idempotent.** The buoy transmits each daily packet several times without waiting
-for an acknowledgement (blind repetition — see `firmware/lib/scout_link`), so the same reading
-legitimately arrives more than once. `CsvStore` keys on `(buoy_id, record_seq)` and skips
+**Writes are idempotent.** The same reading can legitimately arrive more than once: a frame
+received twice, a buoy configured to send extra copies per slot (`SCOUT_LINK_REPEATS_NORMAL` in
+`firmware/lib/scout_link`; one copy since 2026-10-23), or an SD-card import of readings the radio
+already delivered. `CsvStore` keys on `(buoy_id, record_seq)` and skips
 copies it has already stored, seeding that key set from the daily file on disk so a restarted
 shore station does not re-admit them. `Receiver.stats.duplicates` counts the skips: they are
 expected traffic, not errors. Without this, repeats would triple every row and inflate the

@@ -334,8 +334,8 @@ in RadioHead, no subclass needed). It prints `bench_rx: radio=ok … errata=appl
 `RX len=30 rssi=… snr=… hex=…` per frame. `feather_m0_bench` prints a warning at boot; **reflash
 `feather_m0` before anything leaves the bench.**
 
-**PASS:** frames decode and pass CRC in `decode_frames.py` · 3 copies per minute collapse to one
-row (`new_rows` vs `copies collapsed` in its summary) · on the bench, < 1% loss over 100+ frames ·
+**PASS:** frames decode and pass CRC in `decode_frames.py` · one frame per minute, one row each
+(the buoy sends one copy per slot since 2026-10-23) · on the bench, < 1% loss over 100+ frames ·
 time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.py`) · TX current
 ≤ 100 mA · RSSI and SNR recorded with the distance. **Record the results on SCO-155 and SCO-98**;
 the register values and sensitivity become verified only here. Then try the real schedule: flash
@@ -351,10 +351,11 @@ and the FeatherWing's own FCC authorization needs checking
 **PASS:** the S3 receives the buoy's slot transmissions and the readings appear on the dashboard,
 one row per reading.
 
-**4c — Dedupe and the dashboard.** Each slot sends 3 blind copies; whatever stores readings
-must collapse them to **one** row on `(buoy_id, record_seq)`. Three rows means dedupe is broken,
-and QC completeness would read 100% while hiding real gaps. The Python store already does this
-(checked on the bench by `decode_frames.py --out`). Where the S3's pushes land, and so where this
+**4c — Dedupe and the dashboard.** Each slot sends one copy (SCO-21, 2026-10-23), but the same
+reading can still arrive twice: a re-received frame, or an SD-card import of a reading the radio
+already delivered. Whatever stores readings must collapse those to **one** row on
+`(buoy_id, record_seq)`; duplicate rows would inflate QC completeness and hide real gaps. The
+Python store already does this and is unit-tested. Where the S3's pushes land, and so where this
 check runs in the live system, waits on the dashboard decision (G2 open item).
 
 **4d — Outdoor range** with the spring antennas, line of sight, RSSI logged (aim ≥ 500 m). Real
@@ -510,7 +511,7 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 | Sensors read nothing | Gate polarity | LOW = on; a stale build with the old HIGH = on logic leaves them dark |
 | SD and radio work alone, not together | Shared SPI chip select | Only one of D10 / D8 may be active |
 | Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64`; `bench_rx` prints `errata=applied` |
-| Three CSV rows per transmission | Shore dedupe broken | Each slot sends 3 copies |
+| Duplicate CSV rows for one reading | Shore dedupe broken | Rows must be unique on `(buoy_id, record_seq)` |
 | Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (560 ms) |
 | SD import finds nothing | Card written by firmware older than PR #186 | Old builds wrote `YYYYMMDD.CSV` at the root; point the importer at the card root, and update the firmware |
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |

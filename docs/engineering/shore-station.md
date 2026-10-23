@@ -37,7 +37,7 @@ open is listed under [Open items](#open-items).
 2. **Packet validation and decode** against the 30-byte packet contract (CRC, version).
 3. **Push to the dashboard over WiFi.**
 4. **Downlink (ADR-0008):** send firmware images and settings to the buoys in their listen windows.
-5. **Serve more than one buoy** (two planned), deduplicating each buoy's blind repeats on
+5. **Serve more than one buoy** (two planned), deduplicating any repeated reading on
    `(buoy_id, record_seq)`.
 
 Raw audio never crosses the link; it stays on the buoy's SD card and is processed after retrieval.
@@ -70,7 +70,7 @@ The bench receiver `firmware/src/bench_rx/` (a second Feather M0) already does t
 and is the reference for the S3's radio setup. It is a test instrument, not the shore station.
 
 **The Python package [`shore/`](../../shore/) — written and tested, runs on a computer.**
-It decodes and validates packets, deduplicates the blind repeats, writes the daily CSVs
+It decodes and validates packets, deduplicates repeated readings, writes the daily CSVs
 (`shore/data-live/`), merges a retrieved SD card back in, and feeds the static site that GitHub
 Pages publishes today ([Live Dashboard](live-dashboard.md)). On the bench it decodes the bench
 receiver's output (`scripts/decode_frames.py`). How it relates to the S3's WiFi push depends on
@@ -83,7 +83,7 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
   sample every 30 min → SD card              LoRa RX task  ──►  validate + decode
         │                                         ▲                    │
         └── 3 slots/day: LoRa TX ─────────────────┘                    ▼
-            (30-byte packet, 3 copies)                        WiFi task: push to the dashboard
+            (30-byte packet, 1 copy per slot)                 WiFi task: push to the dashboard
                                                                        │
         ◄── downlink in listen windows (ADR-0008, not built) ──        ▼
             firmware images, settings                          dashboard (back end: open item 1)

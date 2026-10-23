@@ -98,13 +98,13 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     still cold-starts (the PCF8523 has no user NVRAM; SD/flash persistence was declined to
     avoid wear for the rarer power-loss case). Verify by inducing a reset and confirming
     `resume_seq` continues in the boot log.
-  - **Daily-packet delivery reliability** — CR 4/8 forward error correction plus **blind
-    repetition**: the same frame goes out `SCOUT_LINK_REPEATS_NORMAL` times, spaced with
-    widening gaps, and the buoy never listens for an acknowledgement. A lost daily packet
-    costs timeliness, not data (the full record is on the SD card), so ACKed retransmit would
-    buy little and risks an avalanche across a multi-buoy deployment. Repeat count degrades
-    with the power mode like everything else (3 in NORMAL, 1 in CONSERVE, 0 in CRITICAL).
-    The shore station deduplicates on `(buoy_id, record_seq)`, so copies collapse to one row.
+  - **Packet delivery reliability** — CR 4/8 forward error correction, and **one copy per
+    transmit slot** (`SCOUT_LINK_REPEATS_NORMAL`; was 3 copies until 2026-10-23, SCO-21): the
+    three daily slots ~8 h apart give the time diversity, and the buoy never listens for an
+    acknowledgement. A lost packet costs timeliness, not data (the full record is on the SD
+    card), so ACKed retransmit would buy little and risks an avalanche across a multi-buoy
+    deployment. Copies by power mode: 1 in NORMAL, 1 in CONSERVE (slot 0 only), 0 in CRITICAL.
+    The shore station deduplicates on `(buoy_id, record_seq)`, so any duplicate collapses to one row.
     The modem runs **BW 500 kHz · SF12 · CR 4/8 · +11 dBm** — widened from BW125/SF7 on
     2026-09-01 because 47 CFR §15.247 requires either a ≥500 kHz bandwidth or ≥50-channel
     hopping, and the old single-channel BW125 config met neither (SCO-19). See the note in
