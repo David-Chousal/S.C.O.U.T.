@@ -23,7 +23,7 @@ def _records(buoy_id, temp, days=14, per_day=48):
             out.append(TelemetryRecord(
                 timestamp=_T0 + timedelta(days=d, minutes=30 * s),
                 buoy_id=buoy_id, record_seq=seq, temp_c=temp, turbidity_adc=520,
-                turbidity_v=None, turbidity_ntu=None, battery_v=3.3, uptime_s=seq * 1800,
+                turbidity_v=None, turbidity_fau=None, battery_v=3.3, uptime_s=seq * 1800,
                 audio_file="",
             ))
     return out

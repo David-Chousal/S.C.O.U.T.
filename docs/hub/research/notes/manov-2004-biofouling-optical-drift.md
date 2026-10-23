@@ -19,7 +19,7 @@ never trust a single fouled optical channel; cross-check against an independent 
 requirement for S.C.O.U.T.'s QC, not a nicety.
 
 **Caveat / how to use it.** The study uses higher-end oceanographic instruments and open-ocean moorings;
-S.C.O.U.T.'s low-cost SEN0189 will foul *faster* in shallow nearshore water, not slower. The cross-comparison
+S.C.O.U.T.'s low-cost turbidity sensor (the Grove 101020752) will foul *faster* in shallow nearshore water, not slower. The cross-comparison
 method assumes a reference S.C.O.U.T. may not have at a lone buoy — so it argues for building in a drift check
 (e.g. a periodic wiped/covered reference reading, or cross-signal consistency) rather than assuming clean
 turbidity. Mitigation *hardware* (copper, wipers) is the GENG lane and deliberately out of scope here.

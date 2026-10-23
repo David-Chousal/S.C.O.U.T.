@@ -231,7 +231,10 @@ FAT32 · CR1220 in the Adalogger.
 
 1. Stack the Adalogger FeatherWing on the Feather M0 with stacking headers.
 2. DS18B20: red → 3V3, black → GND, yellow (data) → **D12**, **4.7 kΩ** between data and 3V3.
-3. Grove turbidity: VCC → **3V3** (not 5 V), GND → GND, signal → **A1**. For this stage power it
+3. Grove turbidity: set the switch on the Grove board to **A** (analog). Grove → male cable
+   (713-110990210): red VCC → **3V3** (not 5 V), black → GND, yellow → **A1** (no divider), white
+   not connected (cut short and insulate). The probe has its own cable to the board; only the probe
+   tip goes in water. For this stage power it
    straight from 3V3; the P-FET switch arrives in Stage 3.
 4. **Antenna on the RFM95** before the firmware runs — it can transmit at boot if a slot is due.
 
@@ -270,6 +273,7 @@ removed.
 | `lora=FAIL` | Radio not responding | On-board wiring is fixed (8/4/3); check the stack is not shorting pins |
 | `TEMP_TIMEOUT` every cycle | DS18B20 on the wrong pin or no pull-up | D12 + 4.7 kΩ |
 | Turbidity reads 0 | Sensor not powered | Stage 1 powers it from 3V3 directly |
+| Turbidity jumps between two values | Grove board switch on **D** (digital threshold) | Set it to **A**. The board's knob sets sensitivity (Isabella's sensor review): don't move it once calibrated, and record its position |
 
 ---
 
@@ -291,9 +295,11 @@ be accepted.
 
 ### Stage 3 — Sensor switching ⚠️ UNVERIFIED · [SCO-157](https://linear.app/scout1/issue/SCO-157), [SCO-186](https://linear.app/scout1/issue/SCO-186)
 
-**Wire (human):** Grove VCC now goes through **Q1** (DMG2305UX on its SOT-23 adapter): source to
-3V3, drain to the Grove VCC, gate to **D11** with a **100 kΩ pull-up to 3V3**. Add the 100 µF +
-0.1 µF decoupling on the switched side.
+**Wire (human)**, per the Rev B drawing set, sheet 7B: Grove VCC (red) now goes through **Q1**
+(DMG2305UX on its SOT-23 adapter): source to 3V3, drain to the `TURB_3V3` node and the Grove VCC,
+gate to **D11** with **R2 100 kΩ pull-up to 3V3**. C1 is a 100 µF 10 V electrolytic (watch the
+polarity) and C2 0.1 µF ceramic next to Q1, both on the switched side. If the 3V rail dips more
+than ~100 mV at turn-on, the drawing set says to change C1 to 10 µF †.
 
 **The logic is inverted:** gate **LOW = sensor ON**. The firmware drives `SENSOR_ON`/`SENSOR_OFF`,
 latches the gate off before making it an output, and re-asserts it off on every wake.
@@ -377,7 +383,9 @@ monitor (USB drops in standby).
 ### Stage 6 — Run on the batteries ⚠️ UNVERIFIED · [SCO-159](https://linear.app/scout1/issue/SCO-159), [SCO-150](https://linear.app/scout1/issue/SCO-150) · parts not bought
 
 **Preconditions:** Stage 2 PASS (it justifies the battery order) · **the MCP73831 charger removed
-from the deployment Feather** (§2 safety rule).
+from the deployment Feather** (§2 safety rule). *When:* the Rev B drawing set (sheet 7) removes it
+at the end of Stage 3; the build plan lists it under Stage 6. Either is safe as long as it happens
+before any primary cell is connected.
 
 Two Saft LS33600 D cells in parallel, each through an ideal diode, then a PTC fuse and a keyed
 connector into `BAT` ([ADR-0007](../decisions/0007-primary-cell-power-source.md); packaging in the

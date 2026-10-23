@@ -28,7 +28,7 @@ def _rec(minutes, temp=26.0, turb=500):
         temp_c=temp,
         turbidity_adc=turb,
         turbidity_v=None,
-        turbidity_ntu=None,
+        turbidity_fau=None,
         battery_v=3.3,
         uptime_s=None,
         audio_file="",
@@ -142,7 +142,7 @@ class CleanWaterReadingTest(unittest.TestCase):
     def test_it_tracks_the_clearest_reading_not_the_events(self):
         rng = random.Random(7)
         # One day of quiet clear water (high ADC) plus a few sediment plumes, which on the
-        # SEN0189 read as DIPS. The clean-water reading must ignore the dips.
+        # turbidity sensor read as DIPS. The clean-water reading must ignore the dips.
         turbs = [int(v) for v in _wobble(rng, 3000, 5, 44)] + [2100, 2050, 2000, 1900]
         clean = daily_clean_water_reading(_series(turbs=turbs, n=48))
         self.assertEqual(len(clean), 1)
@@ -157,7 +157,7 @@ class CleanWaterReadingTest(unittest.TestCase):
 def _deployment(days, clean_at, temp_at, rng, events_per_day=0):
     """Build a multi-day deployment from per-day clean-water and temperature functions.
 
-    Turbidity is in raw SEN0189 ADC counts, so a *higher* value is clearer water and an
+    Turbidity is in raw turbidity-sensor ADC counts, so a *higher* value is clearer water and an
     event pulls the reading DOWN.
     """
     records = []

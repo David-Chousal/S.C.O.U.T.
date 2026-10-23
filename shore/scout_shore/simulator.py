@@ -19,7 +19,7 @@ DEFAULT_INTERVAL_S = 1800  # 30-minute duty cycle (EDD / data-schema)
 # Provisional environmental model — tune once real data exists.
 _TEMP_MEAN_C = 26.5
 _TEMP_DIURNAL_AMPLITUDE_C = 1.2
-# A HIGHER ADC count is CLEARER water: the SEN0189's output voltage falls as turbidity rises
+# A HIGHER ADC count is CLEARER water: the turbidity sensor's output voltage falls as turbidity rises
 # ("the output value will decrease when in liquids with a high turbidity" — DFRobot datasheet),
 # and the firmware logs raw analogRead with no inversion. Clear water (< 0.5 NTU) is ~4.1 V at
 # the sensor, so a baseline near the top of the 12-bit range and a downward excursion for a

@@ -16,7 +16,9 @@ adds "high temp = bad" + "high turbidity = bad" will misread a moderately turbid
 heatwave. S.C.O.U.T. is one of the few low-cost platforms that measures *both* signals at the same point and
 time — exactly what's needed to resolve this interaction locally.
 
-**Caveat / how to use it.** The metric is **Kd490 (optical attenuation), not NTU**. S.C.O.U.T.'s SEN0189
-reports turbidity in NTU/ADC, and NTU→Kd490 is site- and instrument-dependent — so this can't be applied
-quantitatively until the [turbidity→NTU calibration question](../open-questions.md) is closed. For now it
+**Caveat / how to use it.** The metric is **Kd490 (diffuse attenuation of downwelling 490 nm light), not NTU**. S.C.O.U.T.'s turbidity sensor (the Grove 101020752, which measures near-IR beam attenuation and calibrates to FAU, not NTU — [SCO-12](https://linear.app/scout1/issue/SCO-12))
+reports raw ADC, and there is no direct conversion to Kd490 (different wavelength, beam vs diffuse
+attenuation) — a site-specific relation, e.g. against satellite Kd490 at the site, is the realistic route.
+So this can't be applied quantitatively until the [turbidity calibration question](../open-questions.md)
+is closed and that relation exists. For now it
 sets the modeling stance (interaction term, not additive), not a numeric threshold.

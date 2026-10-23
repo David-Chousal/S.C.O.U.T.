@@ -59,7 +59,7 @@ When a decision is significant and hard to reverse, record it as an
 | Manufacturing & scalability | | | Not started | |
 | Deployment logistics | | | Not started | Hawaii site, Phase 5–6 |
 | Temperature sensor selection | | | Completed | DS18B20 |
-| Water quality sensor tradeoff (turbidity vs light) | | | Completed | Turbidity (DFRobot SEN0189) |
+| Water quality sensor tradeoff (turbidity vs light) | | | Completed | Turbidity (DFRobot SEN0189; prototype changed to the Seeed Grove 101020752 on 2026-10-06) |
 | Hydrophone feasibility | | | In progress | Aquarian H2dM — part number differs across docs |
 | Reef-safe anchoring strategy | | | Completed | [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md) — mushroom anchor, adjacent to coral with swing clearance; synthetic rope default, chain in high-turbulence sites |
 | Housing manufacturing method | | | Not started | |

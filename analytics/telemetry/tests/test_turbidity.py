@@ -13,7 +13,7 @@ def _series(values):
 
 class TurbidityTest(unittest.TestCase):
     def test_a_drop_in_adc_is_flagged_as_dirtier_water(self):
-        # The SEN0189's output falls as turbidity rises, so a sediment plume is a DIP.
+        # The turbidity sensor's output falls as turbidity rises, so a sediment plume is a DIP.
         result = detect_events(_series([500] * 20 + [1]))
         self.assertEqual(len(result.events), 1)
         self.assertEqual(result.events[0].value, 1)

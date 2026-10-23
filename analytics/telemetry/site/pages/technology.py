@@ -191,8 +191,8 @@ def _platform(ctx: SiteContext) -> str:
                       "board, regulated 5 V system rail. Longer-term deployment battery "
                       "architecture remains under evaluation (ADR-0002)"),
             ("Temperature", "DS18B20 digital thermometer (±0.5 °C)"),
-            ("Turbidity", "DFRobot SEN0189 through a non-inverting level-safe divider — "
-                          "schematic/datasheet verified, bench validation pending"),
+            ("Turbidity", "Seeed Grove 101020752 optical transmittance sensor at 3.3 V, "
+                          "wired straight to the ADC — bench validation pending"),
             ("Acoustic", "Planned for a later electrical revision; hydrophone/interface "
                          "selection under review"),
             ("Enclosure", "4-inch Schedule 40 PVC, O-ring end caps"),

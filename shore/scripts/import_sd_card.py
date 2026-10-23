@@ -3,7 +3,7 @@
 
 Run this after physically recovering a card. Readings shore never received are added; readings
 it did receive are enriched with the columns a 30-byte packet could not carry (`turbidity_v`,
-`turbidity_ntu`, the audio filename). Nothing is ever deleted, and running it twice is a no-op.
+`turbidity_fau`, the audio filename). Nothing is ever deleted, and running it twice is a no-op.
 
     # See what a card holds before touching anything:
     python scripts/import_sd_card.py --card /Volumes/SCOUT --into data-live --dry-run

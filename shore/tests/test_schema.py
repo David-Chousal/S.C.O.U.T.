@@ -31,7 +31,7 @@ class SchemaTest(unittest.TestCase):
         self.assertEqual(row["buoy_id"], "SCOUT-01")
         self.assertEqual(row["timestamp_utc"], "2026-08-14T00:30:00Z")
         self.assertEqual(row["temp_c"], "26.42")
-        self.assertEqual(row["turbidity_ntu"], "")  # uncalibrated → blank
+        self.assertEqual(row["turbidity_fau"], "")  # uncalibrated → blank
         self.assertEqual(row["audio_file"], "")  # no audio this cycle
 
     def test_audio_filename_populated_when_present(self):

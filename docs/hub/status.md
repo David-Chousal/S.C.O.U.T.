@@ -24,7 +24,7 @@ open Phase 0 issue. Full plan:
 | Stakeholder research | ✅ Complete | 3 NOAA researchers interviewed | — |
 | System architecture | 🟡 Reconciling | [EDD v0.3](../engineering/engineering-design-document.md) — **mechanical architecture (§4) fully reconciled 2026-09-09** against the detailed design/analysis work (six-wedge flotation v5, buoyancy/freeboard model, mooring load path, structural framework + FEA, sealing, materials). §§5–17, 20 (electrical/power/sensor/audio/comms/firmware/storage/energy) still on the earlier baseline — ECE/CSEN owners | Electrical/firmware EDD pass |
 | Acoustic analysis pipeline | ✅ Working | Validated on 8 Sesoko sessions | — |
-| Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)). SEN0189 polarity corrected pipeline-wide ([SCO-41](https://linear.app/scout1/issue/SCO-41)) | — |
+| Environmental telemetry pipeline | ✅ Working | QC (incl. QARTOD per-channel tests + biofouling drift screen), NOAA CRW DHW + bleaching alerts, trends, turbidity ([`analytics/telemetry/`](../../analytics/telemetry/)). Turbidity polarity (higher ADC = clearer) corrected pipeline-wide ([SCO-41](https://linear.app/scout1/issue/SCO-41)) | — |
 | Live dashboard | 🟢 Deployed | Public multi-page GitHub Pages site + telemetry dashboard, sample data ([live-dashboard](../engineering/live-dashboard.md), [SCO-44](https://linear.app/scout1/issue/SCO-44)). Biofouling drift verdict surfaced as a status card + a rationale note under the turbidity chart ([SCO-51](https://linear.app/scout1/issue/SCO-51)) | — |
 | Ask S.C.O.U.T. chat | 🟢 Live | "Fred" widget backed by a Cloudflare Worker proxy (`scout-chat.scout1.workers.dev`, Groq key as a Worker secret); answers from the published `chat-context.txt` ([chatbot/README](../../chatbot/README.md)) | — |
 | Firmware | 🟡 In progress | Phase 1: state machine, drivers, verified packet codec + scheduler, standby sleep, watchdog, adaptive transmission, CR 4/8 + blind repetition. **Target build compiles and is now gated in CI**. Sensor power gates flipped to the P-FET hardware's LOW = on, and the A3 hydrophone gate added ([SCO-186](https://linear.app/scout1/issue/SCO-186), 2026-10-16). Fixed schedule in code: samples at :00/:30, 3 transmit slots a day, standby wake on the SAMD21 RTC with no wake wire ([SCO-165](https://linear.app/scout1/issue/SCO-165), 2026-10-16; bench-unverified). Bench tooling 2026-10-19: clock set over USB ([SCO-201](https://linear.app/scout1/issue/SCO-201)), a transmit-every-minute bench build and a bench LoRa receiver ([SCO-155](https://linear.app/scout1/issue/SCO-155)), SD layout fixed ([SCO-202](https://linear.app/scout1/issue/SCO-202)) | Hardware bring-up |
@@ -65,10 +65,13 @@ open Phase 0 issue. Full plan:
    [SCO-115](https://linear.app/scout1/issue/SCO-115)
 4. **Hydrophone** — *decided 2026-10-12:* Aquarian H2dM with a 6 m cable, on the 3.3 V rail through a 1.1 kΩ bias resistor ([Electronics Drawing Set](../engineering/electronics-drawing-set.md)). The purchase now waits only on funding (November).
    [SCO-8](https://linear.app/scout1/issue/SCO-8)
-5. **SEN0189 analog front end must be non-inverting** — an inverting stage would silently
-   invert every downstream turbidity interpretation with no error anywhere. The Rev A divider
-   has been verified on paper ([SCO-85](https://linear.app/scout1/issue/SCO-85)); the front-end
-   design itself is still open. [SCO-47](https://linear.app/scout1/issue/SCO-47)
+5. **Turbidity polarity must be confirmed on the bench** — the pipeline assumes a higher ADC
+   count is clearer water; if the sensor read the other way, every downstream turbidity
+   interpretation would silently invert. The prototype's Seeed Grove 101020752 runs at 3.3 V
+   straight into A1 with **no front end** (2026-10-06), so the old SEN0189 non-inverting-divider
+   concern ([SCO-47](https://linear.app/scout1/issue/SCO-47)) no longer applies; what remains is
+   the bench check in [SCO-25](https://linear.app/scout1/issue/SCO-25). The Grove sensor itself is
+   **not yet ordered** ([SCO-189](https://linear.app/scout1/issue/SCO-189)). *Updated 2026-10-23.*
 6. **Rev A pin map contradicts the firmware** — the schematic wires the DS18B20 to
    `D5`; the firmware polls `D12` and needs `D5` for the RTC wake interrupt, whose wire is
    absent from the schematic entirely. Flashed as-is, temperature never reads and the buoy
