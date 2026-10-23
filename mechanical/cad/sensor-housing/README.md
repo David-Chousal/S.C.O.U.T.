@@ -407,7 +407,10 @@ DFRobot SEN0189 ×1 per [`facts.md`](../../../docs/hub/facts.md#sensing-single-p
 > **Update 2026-10-23:** it is not. The prototype sensor has been the **Seeed Grove 101020752**
 > since 2026-10-06 (3.3 V, wired straight to the Feather's A1). The pod dimensions above, including
 > the ≥Ø52 mm dry chamber, were derived from the SEN0189 and need re-checking against the Grove
-> probe once it is ordered ([SCO-189](https://linear.app/scout1/issue/SCO-189)).
+> probe once it is ordered ([SCO-189](https://linear.app/scout1/issue/SCO-189)). Isabella's Rev B
+> [drawing set](../../../docs/engineering/electronics-drawing-set.md) puts only the probe tip in the
+> water and the Grove board inside the electronics housing; where the board lives is still an
+> [open question](../../../docs/hub/research/open-questions.md) for John and Isabella.
 
 ## Revision labels (added 2026-10-06)
 
