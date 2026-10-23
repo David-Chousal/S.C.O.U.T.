@@ -39,7 +39,7 @@ _ALERT_ROWS = [
 _TRACK_ROWS = [
     ["Water temperature", "Digital thermometer (DS18B20)",
      "Daily mean, HotSpot, Degree Heating Weeks, bleaching alert level"],
-    ["Turbidity", "Optical sensor (SEN0189)",
+    ["Turbidity", "Optical transmittance sensor (Seeed Grove)",
      "Daily median, relative anomaly events (runoff, resuspension, plumes)"],
     ["Battery & power", "Bus voltage",
      "Daily minimum, state-of-health, data completeness"],

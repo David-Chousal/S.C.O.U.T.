@@ -7,7 +7,7 @@ already *read* a card (`load_dir` takes any directory of CSVs), but nothing merg
 record sets, so a deployment ended with a gappy shore CSV and a complete card that never met.
 
 The card is also the *better* record, not merely an equal one. A LoRa packet is a lossy 30-byte
-compression of a CSV row: `turbidity_v`, `turbidity_ntu` and the audio filename do not fit and
+compression of a CSV row: `turbidity_v`, `turbidity_fau` and the audio filename do not fit and
 are dropped. So where both sides hold the same reading, the card's row wins.
 """
 

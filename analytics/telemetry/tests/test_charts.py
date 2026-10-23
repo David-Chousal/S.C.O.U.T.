@@ -180,7 +180,7 @@ class DashboardIntegration(unittest.TestCase):
                 records.append(TelemetryRecord(
                     timestamp=t0 + timedelta(days=d, minutes=30 * s), buoy_id="SCOUT-01",
                     record_seq=seq, temp_c=27.0, turbidity_adc=520, turbidity_v=None,
-                    turbidity_ntu=None, battery_v=3.6, uptime_s=seq * 1800, audio_file="",
+                    turbidity_fau=None, battery_v=3.6, uptime_s=seq * 1800, audio_file="",
                     flags=frozenset()))
         report = analyze(records, mmm=27.6)
         published = t0 + timedelta(days=5, hours=23, minutes=55)

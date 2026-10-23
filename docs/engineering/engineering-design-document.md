@@ -13,7 +13,9 @@
 > the same pass** and still reflect the earlier baseline — several decisions since (FCC-compliant
 > LoRa config, daily packet size, on-board turbidity units, Rev A battery chemistry
 > [ADR-0006](../decisions/0006-rev-a-battery-chemistry.md), V1 sensing payload
-> [ADR-0005](../decisions/0005-v1-sensing-payload.md)) are captured in the
+> [ADR-0005](../decisions/0005-v1-sensing-payload.md); and since 2026-10-06 the prototype
+> turbidity sensor is the 3.3 V Seeed Grove 101020752, not the SEN0189 this document describes,
+> with calibrated values in FAU, not NTU) are captured in the
 > [Knowledge Hub](../hub/README.md) but not yet folded in here. Owners: ECE (Isabella) and CSEN
 > (David).
 

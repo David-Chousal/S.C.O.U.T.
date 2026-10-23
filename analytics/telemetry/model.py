@@ -29,7 +29,7 @@ class TelemetryRecord:
     temp_c: float | None
     turbidity_adc: int | None
     turbidity_v: float | None
-    turbidity_ntu: float | None
+    turbidity_fau: float | None  # formazin attenuation units, once calibrated (SCO-12)
     battery_v: float | None
     uptime_s: int | None
     audio_file: str

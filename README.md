@@ -151,7 +151,7 @@ full options, and the [live telemetry dashboard](docs/engineering/live-dashboard
    │                                        │                   │
    │                                        ▼                   │
    │  Temperature (DS18B20 ×1) ──┐    Microcontroller           │
-   │  Turbidity  (SEN0189 ×1) ───┼──►  duty-cycle state machine │
+   │  Turbidity  (Grove ×1)   ───┼──►  duty-cycle state machine │
    │  Hydrophone (Aquarian) ─────┘     sleep / sense / log / TX │
    │                                        │                   │
    │                          Onboard flash ┤                   │

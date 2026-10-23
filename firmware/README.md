@@ -32,7 +32,7 @@ See [ADR-0001](../docs/decisions/0001-mcu-and-radio-selection.md).
 
 Per [Engineering Design Document §12](../docs/engineering/engineering-design-document.md):
 
-- Sensor management — temperature (DS18B20, 1-Wire), turbidity (SEN0189, analog), audio (PCM1808, I²S)
+- Sensor management — temperature (DS18B20, 1-Wire), turbidity (Seeed Grove 101020752, analog), audio (PCM1808, I²S)
 - Duty-cycle state machine — `Sleep → Wake → Sense → Log → Battery check → Transmit → Sleep`
 - Deep sleep scheduling and RTC alarm wake
 - Battery voltage monitoring, with transmission skipped below threshold

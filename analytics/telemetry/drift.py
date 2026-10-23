@@ -9,7 +9,7 @@ individual reading passes the gross-range, flat-line, and rate-of-change tests i
 
 The discriminator used here is the **daily clean-water reading**: a high percentile of each
 day's samples, which approximates the clearest water the sensor saw that day. A *high*
-percentile because a lower ADC count is dirtier water — the SEN0189's output falls as
+percentile because a lower ADC count is dirtier water — the turbidity sensor's output falls as
 turbidity rises (see :mod:`telemetry.turbidity` for the datasheet wording), so the clearest
 water of a day is its largest reading.
 
@@ -55,7 +55,7 @@ from .model import TelemetryRecord
 from .trends import TrendResult, mann_kendall
 
 # A high percentile, not the maximum — the maximum is one sample and rides on sensor noise.
-# High rather than low because a larger ADC count is *clearer* water on the SEN0189.
+# High rather than low because a larger ADC count is *clearer* water on the turbidity sensor.
 CLEAN_WATER_PERCENTILE = 0.90
 MIN_SAMPLES_PER_DAY = 6  # below this a daily percentile is not a baseline, it is a guess
 MIN_DRIFT_DAYS = 14  # fouling is a weeks-scale process; less cannot support a verdict

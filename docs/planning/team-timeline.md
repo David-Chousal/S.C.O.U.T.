@@ -80,7 +80,7 @@ every member completes before the next phase begins.
 - Week 1: Wire DS18B20 temp sensor → confirm °C readings in Serial Monitor
 - Week 1: Wire/enable the PCF8523 RTC (on the Adalogger) → confirm time read and alarm interrupt fires
 - Week 2: Wire MicroSD card → confirm CSV file creates, appends, closes cleanly
-- Week 2: Wire turbidity sensor (SEN0189) → confirm ADC value changes with water clarity
+- Week 2: Wire turbidity sensor (Seeed Grove 101020752; SEN0189 in the original plan) → confirm ADC value changes with water clarity
 - Week 3: Bring up the onboard RFM95 LoRa → run RadioHead ping-pong between 2 Feather M0s
 - Week 3: Measure and record sleep current with multimeter (target <5 mA avg)
 - Week 4: Document all wiring with labeled breadboard photo + schematic sketch

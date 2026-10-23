@@ -30,7 +30,7 @@
 
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
-    "turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version";
+    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version";
 
 // Sequence counter, kept in a NO-INIT RAM section that the C startup does not clear. It
 // therefore survives a watchdog/system reset (the MCU stays powered), so record_seq stays

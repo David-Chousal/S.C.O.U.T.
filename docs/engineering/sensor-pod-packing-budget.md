@@ -19,6 +19,12 @@
 > same board as occupying volume in the main housing. Confirmed with John: **the adapter board
 > lives here, in the sensor pod** — the electronics housing document has been corrected to
 > remove it (see that document's own changelog note).
+>
+> ⚠️ **Sensor changed after this analysis (noted 2026-10-23).** Every dimension here comes from
+> the DFRobot **SEN0189** drawings. The prototype sensor has been the **Seeed Grove 101020752**
+> since 2026-10-06, and its probe and board dimensions have not been checked against this pod.
+> The ≥Ø52 mm dry-chamber figure (set by the SEN0189 probe's mounting ears) may not apply. Re-check
+> once the Grove sensor is in hand; it is not yet ordered ([SCO-189](https://linear.app/scout1/issue/SCO-189)).
 
 ---
 

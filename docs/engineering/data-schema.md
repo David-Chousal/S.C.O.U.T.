@@ -55,9 +55,9 @@ Each daily CSV starts with the header row below.
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the buoy sends each daily packet several times without acknowledgement, and the copies must collapse to one row. |
 | 5 | `temp_c` | float | °C | `26.42` | DS18B20 water temperature, 2 dp (sensor is ±0.5 °C — see [sensor-selection](sensor-selection.md)). |
-| 6 | `turbidity_adc` | uint16 | counts | `3300` | Raw SEN0189 ADC reading, **not inverted**. Always logged — it is the ground truth. **A higher count is clearer water** (see the polarity note below). |
+| 6 | `turbidity_adc` | uint16 | counts | `3300` | Raw turbidity-sensor ADC reading (Seeed Grove 101020752), **not inverted**. Always logged — it is the ground truth. **A higher count is clearer water** (see the polarity note below). |
 | 7 | `turbidity_v` | float | V | `1.65` | Derived sensor voltage (ADC × Vref ÷ full-scale). |
-| 8 | `turbidity_ntu` | float | NTU | `` | **Computed downstream, never on the buoy** ([SCO-13](https://linear.app/scout1/issue/SCO-13)). Populated by the analytics pipeline only once a calibration curve exists ([SCO-12](https://linear.app/scout1/issue/SCO-12)); empty until then. |
+| 8 | `turbidity_fau` | float | FAU | `` | Formazin attenuation units. **Computed downstream, never on the buoy** ([SCO-13](https://linear.app/scout1/issue/SCO-13)). Populated by the analytics pipeline only once a calibration curve exists ([SCO-12](https://linear.app/scout1/issue/SCO-12)); empty until then. **FAU, not NTU:** the sensor measures light transmitted straight through the water, and ISO 7027-1 reports that method in FAU; NTU/FNU are for 90° scattered light. Named `turbidity_ntu` before 2026-10-23; readers accept the old name. |
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
 | 10 | `uptime_s` | uint32 | s | `172800` | Seconds since boot (State-of-Health). |
 | 11 | `audio_file` | string | — | `20260814/003000Z.WAV` | Path under `/AUDIO/` if a recording was taken this cycle, else empty. |
@@ -78,33 +78,33 @@ Each daily CSV starts with the header row below.
   ([sensor-string-architecture](sensor-string-architecture.md)) is ever populated. Per
   [ADR-0003](../decisions/0003-single-point-sensing.md) the build is single-point, so v1 logs
   the one deployed DS18B20 in `temp_c` and these columns do not exist.
-- `turbidity_ntu` becomes populated once a calibration exists.
+- `turbidity_fau` becomes populated once a calibration exists.
 
 ### Turbidity polarity — a higher ADC count is *clearer* water
 
-Settled 2026-08-15. The SEN0189 measures **transmittance**: suspended particles block light
-reaching its phototransistor, so its analog output *falls* as turbidity rises. The DFRobot
+Settled 2026-08-15 for the SEN0189, carried over to the Seeed Grove 101020752 that replaced it
+on 2026-10-06. Both measure **transmittance**: suspended particles block light reaching the
+phototransistor, so the analog output *falls* as turbidity rises. The DFRobot SEN0189
 datasheet states it directly — *"Analog Signal Output, the output value will decrease when in
-liquids with a high turbidity"* — and clear water (< 0.5 NTU) reads ≈ 4.1 V at the sensor.
+liquids with a high turbidity"* — and the Seeed wiki says the same of the Grove sensor. A bench
+check on the Grove sensor is still owed ([SCO-25](https://linear.app/scout1/issue/SCO-25)).
 The firmware logs raw `analogRead` with no inversion
 ([`drivers/turbidity.h`](../../firmware/src/drivers/turbidity.h)), so `turbidity_adc` inherits
 that direction:
 
 | Water | Sensor volts | `turbidity_adc` |
 |---|---|---|
-| Clear | High (≈ 4.1 V) | **High** |
+| Clear | High | **High** |
 | Turbid (runoff, resuspension, plume) | Low | **Low** |
 
 A sediment plume is therefore a **dip** in this column, not a spike. Anything reading this
-field — event detection, drift screening, dashboards, a future NTU calibration curve — must
+field — event detection, drift screening, dashboards, a future FAU calibration curve — must
 treat a falling count as worsening water quality.
 
-> **Constraint for the analog front end (ECE).** The SEN0189 swings up to 4.5 V and the SAMD21
-> ADC tops out at 3.3 V, so a level-shifting front end sits between them
-> ([ADR-0002](../decisions/0002-lifepo4-charging-path.md), still open). That stage **must be
-> non-inverting** — a resistive divider or a buffer, not an inverting amplifier. An inverting
-> stage would flip this convention and silently invert every downstream interpretation. If the
-> design ends up inverting for another reason, say so here first and the analytics follow.
+> **If an analog front end is ever added, it must be non-inverting.** The prototype's Grove sensor
+> runs at 3.3 V straight into the SAMD21 ADC with no front end (2026-10-06). The SEN0189 it
+> replaced swung up to 4.5 V and needed a level-shifting stage; any future sensor that does must
+> use a divider or buffer, not an inverting amplifier, or this convention silently flips.
 
 ### `RTC_LOST` rows are excluded from time-based analysis
 
@@ -137,7 +137,7 @@ needed; keep them SCREAMING_SNAKE_CASE and documented here.
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version
 1,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0
 1,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0
 1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,20260814/060000Z.WAV,,,v0.1.0
@@ -184,15 +184,16 @@ production-target analysis, not a spec for the Feather build.
 
 - ~~**Turbidity units.**~~ ✅ Resolved by [SCO-13](https://linear.app/scout1/issue/SCO-13)
   (2026-08-31): the buoy ships **raw ADC counts**. `turbidity_adc` is canonical and is what the
-  packet carries; `turbidity_v` is derived from it. `turbidity_ntu` stays an optional column
+  packet carries; `turbidity_v` is derived from it. `turbidity_fau` (named `turbidity_ntu`
+  until 2026-10-23) stays an optional column
   computed **downstream in the analytics pipeline**, and only once a calibration curve exists
   ([SCO-12](https://linear.app/scout1/issue/SCO-12)) — until then it is empty. Rationale: raw
   counts are lossless, so a calibration can be revised and re-applied to historical data,
-  whereas one baked in on-board cannot be undone. The SEN0189 is not factory-calibrated and NTU
-  needs formazin reference standards the team does not yet have.
-- **ADC full-scale.** SAMD21 ADC is 12-bit (0–4095) but SEN0189 outputs up to ~4.5 V — the
-  divider/front end (see [hardware/README](../../hardware/README.md)) sets how `turbidity_v` is
-  computed. Lock this once the analog input is designed.
+  whereas one baked in on-board cannot be undone. The sensor is not factory-calibrated, and a
+  calibration needs formazin reference standards the team does not yet have.
+- ~~**ADC full-scale.**~~ ✅ Resolved by the sensor change (2026-10-06): the Grove sensor runs at
+  3.3 V into the 12-bit SAMD21 ADC with no divider, so `turbidity_v = turbidity_adc × 3.3 ÷ 4095`
+  in both the firmware (`drivers/turbidity.h`) and the shore code (`schema.py`).
 - ~~**Depth string count.**~~ ✅ Resolved by [ADR-0003](../decisions/0003-single-point-sensing.md):
   single-point sensing, so no `temp_c_NN` columns.
 - **SoH sensor — which part, and does it make Rev A?** *Whether* to add one is settled

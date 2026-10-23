@@ -53,7 +53,9 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             temp_c=_opt_float(row.get("temp_c", "")),
             turbidity_adc=_opt_int(row.get("turbidity_adc", "")),
             turbidity_v=_opt_float(row.get("turbidity_v", "")),
-            turbidity_ntu=_opt_float(row.get("turbidity_ntu", "")),
+            # Formazin attenuation units (SCO-12). CSVs written before 2026-10-23 named this
+            # column turbidity_ntu; read it so they keep loading.
+            turbidity_fau=_opt_float(row.get("turbidity_fau", row.get("turbidity_ntu", ""))),
             battery_v=_opt_float(row.get("battery_v", "")),
             uptime_s=_opt_int(row.get("uptime_s", "")),
             audio_file=row.get("audio_file", "").strip(),

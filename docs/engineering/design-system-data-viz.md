@@ -121,7 +121,7 @@ Follow [CONVENTIONS → Engineering data](../CONVENTIONS.md#engineering-data):
 - **Precision never exceeds the sensor.** DS18B20 is ±0.5 °C → one decimal. Daily means may
   carry one decimal; never two.
 - **Turbidity is raw ADC counts** (`turbidity_adc`), and **higher counts mean clearer water**
-  (the SEN0189 is a transmittance sensor). Every turbidity axis and readout states the direction:
+  (the turbidity sensor measures transmittance). Every turbidity axis and readout states the direction:
   "ADC counts (higher = clearer)". When a field chart maps turbidity to colour, the scale is
   inverted so that darker = murkier. NTU appears only after calibration
   ([SCO-12](https://linear.app/scout1/issue/SCO-12)).

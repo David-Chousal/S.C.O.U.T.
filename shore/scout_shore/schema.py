@@ -22,7 +22,7 @@ COLUMNS: tuple[str, ...] = (
     "temp_c",
     "turbidity_adc",
     "turbidity_v",
-    "turbidity_ntu",
+    "turbidity_fau",
     "battery_v",
     "uptime_s",
     "audio_file",
@@ -62,8 +62,8 @@ def turbidity_volts(adc: int) -> float:
 def reading_to_row(reading: Reading) -> dict[str, str]:
     """Render a :class:`Reading` as a schema-conformant CSV row (all values as strings).
 
-    ``turbidity_ntu`` is left empty by design: the buoy ships raw ADC only (SCO-13), and
-    NTU is computed downstream once a calibration curve exists (SCO-12).
+    ``turbidity_fau`` is left empty by design: the buoy ships raw ADC only (SCO-13), and
+    formazin attenuation units are computed downstream once a calibration curve exists (SCO-12).
     """
     return {
         "schema_version": str(reading.schema_version),
@@ -73,7 +73,7 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "temp_c": f"{reading.temp_c:.2f}",
         "turbidity_adc": str(reading.turbidity_adc),
         "turbidity_v": f"{turbidity_volts(reading.turbidity_adc):.3f}",
-        "turbidity_ntu": "",  # uncalibrated — intentionally blank
+        "turbidity_fau": "",  # uncalibrated — intentionally blank
         "battery_v": f"{reading.battery_v:.2f}",
         "uptime_s": str(reading.uptime_s),
         "audio_file": audio_filename(reading) if reading.audio_present else "",

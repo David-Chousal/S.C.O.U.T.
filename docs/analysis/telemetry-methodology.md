@@ -137,16 +137,18 @@ standard for anticipating mass bleaching (Liu et al. 2014; Skirving et al. 2020)
 
 ## 4. Turbidity
 
-The SEN0189 is **uncalibrated** (raw ADC/volts, not NTU — see the data-schema open questions),
-so absolute water-quality thresholds are not defensible. The pipeline instead detects
+The turbidity sensor (Seeed Grove 101020752 since 2026-10-06; SEN0189 before) is
+**uncalibrated** (raw ADC/volts). A formazin calibration of a transmitted-light sensor gives FAU,
+not NTU (ISO 7027-1; [SCO-12](https://linear.app/scout1/issue/SCO-12)), so absolute water-quality thresholds are not defensible. The pipeline instead detects
 **relative** turbidity events (runoff, resuspension, sediment plumes) against the deployment's
 own robust baseline using the **Iglewicz–Hoaglin modified z-score** (median + MAD, with a
 mean-absolute-deviation fallback when the MAD degenerates), flagging excursions beyond a 3.5
 modified-z threshold (Iglewicz & Hoaglin 1993).
 
-**Polarity — a dirtier reading is a lower number.** The SEN0189 measures transmittance, so its
+**Polarity — a dirtier reading is a lower number.** Both sensors measure transmittance, so the
 output *falls* as turbidity rises: *"the output value will decrease when in liquids with a high
-turbidity"* (DFRobot datasheet), with clear water (< 0.5 NTU) at ≈ 4.1 V. The firmware logs raw
+turbidity"* (DFRobot SEN0189 datasheet), and the Seeed wiki says the same of the Grove sensor
+(bench confirmation pending). The firmware logs raw
 `analogRead` with no inversion, so a sediment plume is a **dip** in `turbidity_adc`. Detection
 therefore flags **negative** excursions. Until 2026-08-15 it flagged positive ones and was
 reporting each day's clearest water as a plume; see

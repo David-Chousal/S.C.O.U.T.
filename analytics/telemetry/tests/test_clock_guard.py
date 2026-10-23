@@ -24,7 +24,7 @@ _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 def _rec(ts, seq, *, flags=frozenset(), temp=26.0):
     return TelemetryRecord(
         timestamp=ts, buoy_id="SCOUT-01", record_seq=seq, temp_c=temp,
-        turbidity_adc=3300, turbidity_v=None, turbidity_ntu=None, battery_v=3.3,
+        turbidity_adc=3300, turbidity_v=None, turbidity_fau=None, battery_v=3.3,
         uptime_s=seq * 1800, audio_file="", flags=flags,
     )
 
