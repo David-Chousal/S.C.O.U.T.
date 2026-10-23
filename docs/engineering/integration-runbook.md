@@ -125,8 +125,6 @@ breaks every `gh` command.
 - **`shore/` and `analytics/telemetry/` are standard-library only.** The one exception is the
   optional real-radio backend [`radio.py`](../../shore/scout_shore/radio.py), which imports
   `adafruit-circuitpython-rfm9x` lazily so the test suite still runs on a bare machine.
-- **`--audio_dir` uses an underscore** while other flags use hyphens. Known; do not change without
-  an issue.
 - **The `Arduino Low Power` library ID contains spaces** in `platformio.ini`.
   `arduino-libraries/ArduinoLowPower` does not resolve.
 
