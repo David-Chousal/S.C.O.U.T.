@@ -53,7 +53,7 @@ Each daily CSV starts with the header row below.
 | 1 | `schema_version` | int | — | `1` | Bumped when columns change. Constant within a file. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
-| 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the buoy sends each daily packet several times without acknowledgement, and the copies must collapse to one row. |
+| 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the same reading can arrive twice (a re-received frame, or an SD-card import of a reading the radio already delivered), and must collapse to one row. |
 | 5 | `temp_c` | float | °C | `26.42` | DS18B20 water temperature, 2 dp (sensor is ±0.5 °C — see [sensor-selection](sensor-selection.md)). |
 | 6 | `turbidity_adc` | uint16 | counts | `3300` | Raw turbidity-sensor ADC reading (Seeed Grove 101020752), **not inverted**. Always logged — it is the ground truth. **A higher count is clearer water** (see the polarity note below). |
 | 7 | `turbidity_v` | float | V | `1.65` | Derived sensor voltage (ADC × Vref ÷ full-scale). |
@@ -169,8 +169,8 @@ ceiling.
 (`SCOUT_LINK_TX_BUDGET_MS`). At the shipped BW500 / SF12 / CR4-8, a 140-byte payload plus
 RadioHead's 4-byte header takes 1,739 ms on air, under 90% of that timeout. The largest payload
 that fits at all is ~158 B; the radio's own 251 B frame would take ~3.0 s and time out. At three
-slots a day with three copies each, a full 140 B packet would cost about 0.49 mAh/day, 3.6% of
-the 13.3 mAh/day power budget (30 B today: 1.2%). Reproduce with `scripts/lora_airtime.py`.
+slots a day, one copy each (SCO-21, 2026-10-23), a full 140 B packet would cost about
+0.16 mAh/day, 1.2% of the 13.3 mAh/day power budget (30 B today: 0.4%). Reproduce with `scripts/lora_airtime.py`.
 
 **Where the old 82 came from, and why it was never a real limit.** EDD §10's
 82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a

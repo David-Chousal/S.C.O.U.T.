@@ -2,7 +2,7 @@
 
 Three fixed slots a day, 00:10 / 08:10 / 16:10 UTC (docs/hub/facts.md, SCO-196). A packet
 belongs to the first slot at or after its timestamp; each later slot that has passed (plus a
-30-minute grace for the blind repeats) without one is a missed slot.
+30-minute grace for a late arrival) without one is a missed slot.
 """
 
 import unittest

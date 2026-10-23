@@ -34,9 +34,14 @@
 extern "C" {
 #endif
 
-/* Shipped policy. Repeating is an energy cost, so it degrades with the pack exactly as
- * sensing and transmit cadence already do (scout_scheduler power modes). */
-#define SCOUT_LINK_REPEATS_NORMAL 3
+/* Shipped policy: ONE copy per transmit slot (decided 2026-10-23, SCO-21). Three copies a few
+ * seconds apart were chosen in August, when the buoy sent one packet a day. Since 2026-10-16 it
+ * transmits in three slots ~8 h apart, which gives far better time diversity than copies 2-4 s
+ * apart (a wave, heel or fade that kills one copy usually kills the next), and a missed slot
+ * only delays the dashboard: the SD card keeps every reading. Raise this again if the range
+ * test (SCO-14) shows high per-slot loss. Repeating is an energy cost, so it degrades with the
+ * pack exactly as sensing and transmit cadence already do (scout_scheduler power modes). */
+#define SCOUT_LINK_REPEATS_NORMAL 1
 #define SCOUT_LINK_REPEATS_CONSERVE 1
 #define SCOUT_LINK_REPEAT_BASE_DELAY_MS 2000u
 /* Worst-case time for one send, matching LoraLink::send's waitPacketSent timeout. This is

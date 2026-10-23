@@ -29,7 +29,7 @@ void test_longest_unpetted_stretch(void) {
 }
 
 void test_shipped_policy_leaves_watchdog_headroom(void) {
-    // The real numbers: 3 copies, 2 s base gap, 2 s TX budget, 16384 ms WDT.
+    // The real numbers: shipped copies per slot, 2 s base gap, 2 s TX budget, 16384 ms WDT.
     TEST_ASSERT_TRUE(scout_link_fits_watchdog(SCOUT_LINK_REPEATS_NORMAL,
                                               SCOUT_LINK_REPEAT_BASE_DELAY_MS,
                                               SCOUT_LINK_TX_BUDGET_MS, 16384));

@@ -400,11 +400,11 @@ static void transmit_last_reading() {
     uint8_t packet[SCOUT_PACKET_SIZE];
     size_t n = scout_packet_encode(&g_last_reading, packet);
 
-    // Blind repetition (lib/scout_link): send the same frame a few times, spaced, and
-    // never listen for an ACK. A lost packet costs timeliness, not data — the full
-    // record is on the SD card — so ACKed retransmit would buy little and risk an
-    // avalanche across a multi-buoy deployment. The shore station deduplicates on
-    // (buoy_id, record_seq), so the copies collapse to one row.
+    // Copies per slot come from lib/scout_link (one since 2026-10-23; the three daily slots
+    // give the time diversity). Never listen for an ACK: a lost packet costs timeliness, not
+    // data — the full record is on the SD card — so ACKed retransmit would buy little and risk
+    // an avalanche across a multi-buoy deployment. The shore station deduplicates on
+    // (buoy_id, record_seq), so any duplicate collapses to one row.
     uint8_t copies = scout_link_repeat_count(g_last_mode, SCOUT_LINK_REPEATS_NORMAL,
                                              SCOUT_LINK_REPEATS_CONSERVE);
     for (uint8_t i = 0; i < copies; i++) {

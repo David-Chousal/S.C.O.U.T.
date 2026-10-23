@@ -51,7 +51,7 @@ def main():
     baseline = sensitivity_dbm(7, 125_000)
 
     print(f"S.C.O.U.T. daily packet: {SCOUT_PACKET_BYTES} B "
-          f"(+{RH_HEADER_BYTES} B RadioHead header = {on_air} B on air), 3 slots/day, 3 blind repeats each\n")
+          f"(+{RH_HEADER_BYTES} B RadioHead header = {on_air} B on air), 3 slots/day, one copy each\n")
 
     shipped = sensitivity_dbm(12, 500_000)
     print("SHIPPED — ModemConfig {0x98, 0xC4, 0x04}: BW500 / SF12 / CR4-8 @ +11 dBm")
@@ -89,8 +89,8 @@ def main():
         print(f"  BW500/SF{sf:<2} {s:>10.1f} dBm {delta:>+9.1f} {t:>7.0f} ms "
               f"{10 ** (-delta / 20):>6.2f}x")
 
-    print("\nDuty cycle and energy (3 blind repeats, once per day):")
-    for label, sf, bw in (("today  BW125/SF7", 7, 125_000), ("option BW500/SF12", 12, 500_000)):
+    print("\nDuty cycle and energy (3 sends a day: 3 slots, one copy each):")
+    for label, sf, bw in (("old    BW125/SF7", 7, 125_000), ("shipped BW500/SF12", 12, 500_000)):
         t = airtime_ms(on_air, sf, bw) * 3
         mah_year = TX_CURRENT_MA * (t / 1000) / 3600 * 365
         print(f"  {label}: {t:>7.0f} ms/day = {t / 864_000_00 * 100:.6f}%  ->  {mah_year:.1f} mAh/year")
