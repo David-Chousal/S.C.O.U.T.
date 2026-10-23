@@ -10,7 +10,7 @@ Main entry point. Runs the full acoustic analysis pipeline:
 
 Usage:
     python3 run_pipeline.py
-    python3 run_pipeline.py --audio_dir /path/to/wavs --output results.csv
+    python3 run_pipeline.py --audio-dir /path/to/wavs --output results.csv
 """
 
 import argparse
@@ -27,8 +27,11 @@ from utils.visualize import plot_dashboard, plot_index_timeseries
 
 def main():
     parser = argparse.ArgumentParser(description="SCOUT Acoustic Health Pipeline")
+    # --audio-dir matches the hyphenated flags of the other analytics scripts (SCO-26).
+    # --audio_dir stays as an alias so existing commands and docs keep working.
     parser.add_argument(
-        "--audio_dir",
+        "--audio-dir", "--audio_dir",
+        dest="audio_dir",
         default="data/raw_audio",
         help="Directory containing .wav files (default: data/raw_audio)"
     )

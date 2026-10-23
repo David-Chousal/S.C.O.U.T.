@@ -459,11 +459,11 @@ Confirm the code actually runs — not just that it imports or typechecks. For t
 pipeline that means executing it end to end:
 
 ```bash
-cd analytics && python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 --output /tmp/check.csv
+cd analytics && python run_pipeline.py --audio-dir data/longitudinal/201708_20170801 --output /tmp/check.csv
 ```
 
-Note `--audio_dir` uses an underscore while other scripts use hyphens. This inconsistency is
-known and documented; do not "fix" it without an issue.
+`--audio-dir` is hyphenated like every other analytics flag. The old `--audio_dir` spelling
+still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-10-23).
 
 ---
 

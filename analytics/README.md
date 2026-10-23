@@ -82,13 +82,13 @@ Run all commands from the `analytics/` directory — default paths are relative 
 **Single session**
 
 ```bash
-python run_pipeline.py --audio_dir data/longitudinal/201708_20170801 \
+python run_pipeline.py --audio-dir data/longitudinal/201708_20170801 \
                        --output data/processed/results.csv
 ```
 
 | Flag | Default | Purpose |
 |---|---|---|
-| `--audio_dir` | `data/raw_audio` | Directory containing `.wav` files |
+| `--audio-dir` | `data/raw_audio` | Directory containing `.wav` files (`--audio_dir` still accepted) |
 | `--output` | `data/processed/results.csv` | Output CSV path |
 
 Produces a per-file index table, a reef health classification, and a dashboard figure.
@@ -124,9 +124,9 @@ python compare_sites.py --sites "Site A:data/raw_audio" "Site B:data/raw_audio_s
 | `--sites` | Site A + Site B | `Label:path` pairs |
 | `--output` | `data/processed/site_comparison.png` | Output comparison chart |
 
-> **Note** — flag naming is inconsistent across scripts: `run_pipeline.py` uses
-> `--audio_dir` with an underscore, while the others use hyphenated flags. Left as-is to
-> avoid breaking existing invocations; worth normalizing in a future change.
+> **Note** — every analytics flag is hyphenated. `run_pipeline.py`'s old `--audio_dir` spelling
+> still works as an alias so existing commands do not break
+> ([SCO-26](https://linear.app/scout1/issue/SCO-26)).
 
 ## Environmental telemetry
 
