@@ -37,7 +37,7 @@ Per [Engineering Design Document §12](../docs/engineering/engineering-design-do
 - Deep sleep scheduling and RTC alarm wake
 - Battery voltage monitoring, with transmission skipped below threshold
 - Local logging to microSD (Adalogger FeatherWing)
-- LoRa packet assembly and transmission (30-byte daily payload; 82 B is the EDD budget ceiling)
+- LoRa packet assembly and transmission (30-byte payload; 140 B is the ceiling, `SCOUT_LINK_PAYLOAD_CEILING_BYTES`)
 - Watchdog timer and error recovery
 - State of Health telemetry — battery voltage, internal temperature, humidity
 

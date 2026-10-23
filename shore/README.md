@@ -125,8 +125,8 @@ prevent.
 
 ## Contract note
 
-`packet.py` is the **verified wire format** (30 bytes, well under the 82-byte daily budget
-ceiling in EDD §10 — see [`docs/hub/facts.md`](../docs/hub/facts.md) for why those are two
-different numbers, not a contradiction). It's mirrored byte-identical by the firmware C
+`packet.py` is the **verified wire format** (30 bytes, under the 140-byte payload ceiling
+that `LORA_PAYLOAD_BUDGET_BYTES` shares with the firmware — see
+[`docs/hub/facts.md`](../docs/hub/facts.md)). It's mirrored byte-identical by the firmware C
 encoder, CI-enforced via a golden vector (`firmware/test/test_packet`). `turbidity_v` still
 uses provisional ADC constants pending the analog front-end design.

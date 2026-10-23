@@ -53,6 +53,16 @@ extern "C" {
  * (SCO-19 / SCO-98). Modelled, not yet measured on hardware. */
 #define SCOUT_LINK_AIRTIME_MS 560u
 
+/* Largest telemetry payload the buoy may send, in bytes (SCO-97, decided 2026-10-23). Derived
+ * from the send timeout above, not inherited: a 140-byte payload plus RadioHead's 4-byte
+ * header is 1,739 ms on air at BW500/SF12/CR4-8, under 90% of SCOUT_LINK_TX_BUDGET_MS. The old
+ * 82 B was the byte-sum of an abandoned EDD layout; the radio's own 251 B frame would take
+ * ~3.0 s and time out. shore/scout_shore/packet.py's LORA_PAYLOAD_BUDGET_BYTES must match, and
+ * scripts/check_packet_contract.py recomputes the airtime from config.h in CI. */
+#define SCOUT_LINK_PAYLOAD_CEILING_BYTES 140u
+/* Airtime of a ceiling-size frame (payload + 4 B header), rounded up from 1,738.8 ms. */
+#define SCOUT_LINK_CEILING_AIRTIME_MS 1739u
+
 /* How many copies of the daily packet to send in this power mode. CRITICAL returns 0. */
 uint8_t scout_link_repeat_count(scout_power_mode_t mode, uint8_t normal_repeats,
                                 uint8_t conserve_repeats);

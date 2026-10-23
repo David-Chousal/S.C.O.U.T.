@@ -7,10 +7,9 @@ Both ends MUST agree on this layout — the firmware C encoder mirrors this modu
 > ✅ **Verified against the firmware encoder** — byte-identical, CI-enforced via a golden
 > vector (`firmware/test/test_packet`). No longer a proposal pending ECE sign-off.
 
-Layout (little-endian), 28-byte body + 2-byte CRC = **30 bytes** (well under the
-82-byte daily budget ceiling in EDD §10, leaving room for future signals; see
-[`docs/hub/facts.md`](../../docs/hub/facts.md) for why 30 and 82 are different kinds
-of number, not a contradiction):
+Layout (little-endian), 28-byte body + 2-byte CRC = **30 bytes** (under the 140-byte
+payload ceiling, derived from the firmware's send timeout, leaving room for future signals;
+see [`docs/hub/facts.md`](../../docs/hub/facts.md)):
 
 | Field | Type | Encoding |
 |---|---|---|
@@ -42,7 +41,11 @@ _BODY_SIZE = struct.calcsize(_BODY_FORMAT)
 _CRC_FORMAT = "<H"
 PACKET_SIZE = _BODY_SIZE + struct.calcsize(_CRC_FORMAT)
 
-LORA_PAYLOAD_BUDGET_BYTES = 82  # EDD §10 daily payload ceiling
+# Largest telemetry payload the buoy may send (SCO-97, 2026-10-23). Derived from the firmware's
+# 2 s send timeout: 140 B + RadioHead's 4 B header is 1,739 ms at BW500/SF12/CR4-8. Must equal
+# SCOUT_LINK_PAYLOAD_CEILING_BYTES in firmware/lib/scout_link; scripts/check_packet_contract.py
+# enforces it. Replaces the 82 B inherited from an abandoned EDD layout.
+LORA_PAYLOAD_BUDGET_BYTES = 140
 
 # Bit position for each flag name (see docs/engineering/data-schema.md flags vocabulary).
 FLAG_BITS = {
