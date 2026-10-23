@@ -270,3 +270,9 @@ from. This investigation answers it conditionally:
 Either way, **82 B is not where any real limit sits** — it is the byte-sum of an abandoned
 ESP32-C3 packet layout (see [SCO-40](https://linear.app/scout1/issue/SCO-40)). The ceiling should
 be re-derived once this decision lands.
+
+> **Resolved 2026-10-23 ([SCO-97](https://linear.app/scout1/issue/SCO-97)): 140 B, not 251 B.**
+> The FCC side is as above, but the firmware adds its own limit this analysis did not consider:
+> `send()` waits at most 2 s. A full 251 B frame takes ~3.0 s at BW500/SF12 and would time out.
+> The ceiling is 140 B (1,739 ms on air, under 90% of the timeout), shared by firmware and shore
+> and checked in CI.

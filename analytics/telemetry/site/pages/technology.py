@@ -228,7 +228,7 @@ def _packet() -> str:
         "30-byte packet. This is a settled design decision.</p></div></div>"
         '<div class="col-3">'
         + c.spec([
-            ("Packet size", "30 bytes (82-byte budget ceiling)"),
+            ("Packet size", "30 bytes (140-byte ceiling)"),
             ("Cadence", "3 fixed slots / day: 00:10, 08:10 and 16:10 UTC"),
             ("Sampling", "1 record / 30 min (48 / day)"),
             ("Carries", "The latest temperature, turbidity &amp; battery reading"),

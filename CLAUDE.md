@@ -475,8 +475,9 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    [Known inconsistencies](README.md#known-inconsistencies).
 2. **Raw audio never goes over LoRa.** This is settled design, not an open question
    ([EDD §10](docs/engineering/engineering-design-document.md)). Bandwidth makes it
-   infeasible; the buoy stores audio locally and transmits a **30-byte** daily packet (82 B is
-   the EDD §10 budget *ceiling*, not the actual size — see [`facts.md`](docs/hub/facts.md)).
+   infeasible; the buoy stores audio locally and transmits a **30-byte** packet (140 B is the
+   payload *ceiling*, derived from the send timeout, not the actual size — see
+   [`facts.md`](docs/hub/facts.md)).
 3. **The MCU/radio choice is settled** ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md),
    accepted 2026-08-14): **Feather M0 + RFM95** is the confirmed build platform (Arduino
    SAMD21 core, RadioHead `RH_RF95`); ESP32-C3 + SX1262 is the documented future production

@@ -158,13 +158,21 @@ counter), the temperature and turbidity readings, and `battery_v`. The CSV is th
 | Number | What it is | Where it lives |
 |---|---|---|
 | **30 bytes** | The **actual** encoded packet today — 28-byte body + 2-byte CRC | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
-| **82 bytes** | The **budget ceiling** — the most a daily packet may grow to | `LORA_PAYLOAD_BUDGET_BYTES`, [EDD §10, §14](engineering-design-document.md) |
+| **140 bytes** | The **payload ceiling** — the most a packet may grow to (since 2026-10-23, [SCO-97](https://linear.app/scout1/issue/SCO-97)) | `SCOUT_LINK_PAYLOAD_CEILING_BYTES` (firmware), `LORA_PAYLOAD_BUDGET_BYTES` (shore); CI checks they match and that a ceiling-size frame fits the send timeout |
 
-The packet therefore has ~52 bytes of headroom for future signals. Earlier revisions of this
+The packet therefore has 110 bytes of headroom for future signals. Earlier revisions of this
 doc and `facts.md` quoted 82 B as though it were the packet size, which is what
-[SCO-40](https://linear.app/scout1/issue/SCO-40) corrected.
+[SCO-40](https://linear.app/scout1/issue/SCO-40) corrected; until 2026-10-23 82 B was also the
+ceiling.
 
-**Where 82 actually comes from, and why it is not simply "the same packet, bigger."** EDD §10's
+**Where 140 comes from.** The firmware's `send()` waits at most 2 s for the radio to finish
+(`SCOUT_LINK_TX_BUDGET_MS`). At the shipped BW500 / SF12 / CR4-8, a 140-byte payload plus
+RadioHead's 4-byte header takes 1,739 ms on air, under 90% of that timeout. The largest payload
+that fits at all is ~158 B; the radio's own 251 B frame would take ~3.0 s and time out. At three
+slots a day with three copies each, a full 140 B packet would cost about 0.49 mAh/day, 3.6% of
+the 13.3 mAh/day power budget (30 B today: 1.2%). Reproduce with `scripts/lora_airtime.py`.
+
+**Where the old 82 came from, and why it was never a real limit.** EDD §10's
 82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a
 timestamp, **18 temperature values, 18 turbidity values**, battery voltage, status flags,
 firmware version, and a CRC. That is a multi-sample packet built for the ESP32-C3 production
@@ -173,10 +181,9 @@ day, on
 the Feather M0 build platform ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)), plus
 fields the EDD layout never had (`record_seq`, `uptime_s`, `soh`, `audio_present`).
 
-Treating 82 B as a growth ceiling — which is what `LORA_PAYLOAD_BUDGET_BYTES` does — is a
-reasonable reinterpretation, and it is the one the code and this doc use. But the two numbers
-are not the same packet at two sizes, and the headroom figure should not be read as "we could
-add 52 bytes to today's layout and match the EDD." Consistent with
+Using 82 B as a growth ceiling was a reinterpretation of that layout, not a derived limit, which
+is why [SCO-97](https://linear.app/scout1/issue/SCO-97) replaced it with the timeout-derived
+140 B. Consistent with
 [CLAUDE.md standing rule 3](../../CLAUDE.md#standing-rules), the EDD's figure is
 production-target analysis, not a spec for the Feather build.
 
