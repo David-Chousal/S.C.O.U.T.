@@ -56,6 +56,8 @@ class TelemetryReport:
     # flags + SoH codes on the newest one (any code there marks a fault).
     received: tuple[datetime, ...] = ()
     latest_flags: frozenset[str] = frozenset()
+    # schema_version of the newest packet: v2 and later carry the housing humidity flags.
+    latest_schema_version: int = 0
 
 
 def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> TelemetryReport:
@@ -103,6 +105,7 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
         mmm=mmm,
         received=tuple(sorted(r.timestamp for r in timed)),
         latest_flags=_latest_flags(timed),
+        latest_schema_version=max(timed, key=lambda r: r.timestamp).schema_version if timed else 0,
     )
 
 

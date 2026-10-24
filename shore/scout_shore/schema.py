@@ -29,6 +29,10 @@ COLUMNS: tuple[str, ...] = (
     "flags",
     "soh",
     "fw_version",
+    # Housing humidity sensor (SCO-205, schema v2). On the SD card only: the radio packet
+    # carries just the HUMIDITY_HIGH / HUMIDITY_FAIL flags, so live rows leave these blank.
+    "internal_temp_c",
+    "internal_humidity_pct",
 )
 
 # Provisional analog front-end constants — SAMD21 12-bit ADC at 3.3 V Vref.
@@ -80,6 +84,8 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "flags": "|".join(sorted(reading.flags)),
         "soh": "|".join(sorted(reading.soh)),
         "fw_version": reading.fw_version,
+        "internal_temp_c": "",  # SD card only — not in the packet
+        "internal_humidity_pct": "",
     }
 
 

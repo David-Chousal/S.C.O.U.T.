@@ -20,7 +20,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define SCOUT_PACKET_VERSION 1
+/* v2 (2026-10-23, SCO-205): HUMIDITY_HIGH / HUMIDITY_FAIL flag bits, and the CSV gained
+ * internal_temp_c / internal_humidity_pct. The byte layout is unchanged. Per ADR-0005 the
+ * internal-sensor columns come with a schema_version bump, and this one number versions both
+ * the packet and the CSV. */
+#define SCOUT_PACKET_VERSION 2
 #define SCOUT_PACKET_SIZE 30
 #define SCOUT_PACKET_BODY_SIZE 28
 
@@ -31,6 +35,8 @@
 #define SCOUT_FLAG_BATT_LOW_SKIP_TX (1u << 3)
 #define SCOUT_FLAG_RTC_LOST (1u << 4)
 #define SCOUT_FLAG_POWER_CONSERVE (1u << 5)
+#define SCOUT_FLAG_HUMIDITY_HIGH (1u << 6)  /* housing RH at/above the alert threshold */
+#define SCOUT_FLAG_HUMIDITY_FAIL (1u << 7)  /* SHT40 read failed (no ACK or bad CRC) */
 
 /* Device State-of-Health bits (set at boot/init) — must equal SOH_BITS in packet.py. */
 #define SCOUT_SOH_WATCHDOG_RESET (1u << 0)

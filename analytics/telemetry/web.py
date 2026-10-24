@@ -99,11 +99,26 @@ def _drift_note(drift) -> str:
     )
 
 
+def housing_humidity(report: TelemetryReport) -> tuple[str, str]:
+    """The housing-humidity card's value and class, from the newest packet's flags (SCO-205).
+
+    A buoy on schema v1 has no humidity sensor, so absent flags there mean "unknown", not OK.
+    """
+    if report.latest_schema_version < 2:
+        return "—", ""
+    if "HUMIDITY_FAIL" in report.latest_flags:
+        return "Sensor fault", "a-warning"
+    if "HUMIDITY_HIGH" in report.latest_flags:
+        return "Alert", "a-alert2"
+    return "OK", ""
+
+
 def _cards(report: TelemetryReport) -> str:
     ts, tt = report.thermal_summary, report.temp_trend
     latest_alert = report.thermal[-1].alert if report.thermal else "n/a"
     latest_batt = next((d.battery_min_v for d in reversed(report.daily)
                         if d.battery_min_v is not None), None)
+    humidity, humidity_cls = housing_humidity(report)
     return "".join([
         _stat("Current alert", latest_alert, cls=_ALERT_CLASS.get(latest_alert, "")),
         _stat("Peak DHW", f"{ts.peak_dhw:g} °C-wk" if ts else "—"),
@@ -122,6 +137,7 @@ def _cards(report: TelemetryReport) -> str:
         (_stat("Clock-invalid rows", str(report.qc.clock_invalid), cls="a-warning",
                sub="excluded from timing") if report.qc.clock_invalid else ""),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
+        _stat("Housing humidity", humidity, cls=humidity_cls, sub="leak early warning"),
     ])
 
 

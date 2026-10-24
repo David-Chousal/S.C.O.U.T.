@@ -15,7 +15,8 @@ from telemetry.pipeline import write_daily_csv, write_summary_json
 _T0 = datetime(2026, 3, 1, 0, 0, tzinfo=timezone.utc)
 _SCHEMA_COLUMNS = (
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
-    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version"
+    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,"
+    "internal_humidity_pct"
 ).split(",")
 
 
@@ -99,7 +100,7 @@ class PipelineTest(unittest.TestCase):
                     r.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"), r.record_seq,
                     f"{r.temp_c:.2f}", r.turbidity_adc, "", "",
                     f"{r.battery_v:.2f}", r.uptime_s, r.audio_file,
-                    "|".join(sorted(r.flags)), "|".join(sorted(r.soh)), r.fw_version,
+                    "|".join(sorted(r.flags)), "|".join(sorted(r.soh)), r.fw_version, "", "",
                 ])
 
 
