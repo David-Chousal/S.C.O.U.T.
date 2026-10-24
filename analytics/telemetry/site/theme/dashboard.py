@@ -67,14 +67,6 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 /* Instrument status: the colour is on the glyph; the label stays readable text. */
 .freshness{display:flex;flex-wrap:wrap;gap:0.3rem 0.8rem;align-items:center;margin-bottom:0;
   font-size:var(--text-small);color:var(--color-text-muted)}
-.status{display:inline-flex;align-items:center;gap:0.45rem;font-family:var(--font-mono);
-  font-size:var(--text-micro);letter-spacing:0.08em;text-transform:uppercase;
-  color:var(--color-text-muted)}
-.status svg{width:11px;height:11px;flex:none}
-.status-live svg{fill:var(--status-live)}.status-stale svg{fill:var(--status-stale)}
-.status-offline svg{fill:var(--status-offline)}.status-fault svg{fill:var(--status-warning)}
-.status svg .ring{fill:none;stroke-width:1.5}
-.status-stale svg .ring{stroke:var(--status-stale)}.status-offline svg .ring{stroke:var(--status-offline)}
 /* The slot rule: one tick per transmit slot (00:10 · 08:10 · 16:10 UTC). */
 .slot-rule{margin-top:var(--space-3);max-width:36rem}
 .slot-rule svg{display:block;width:100%;height:24px}

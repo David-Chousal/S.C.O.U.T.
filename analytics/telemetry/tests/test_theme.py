@@ -8,7 +8,9 @@ accessibility pass (step 4), for shape, space and motion (step 5),
 for the chart rebuild (step 6), and for
 minified, bundled output (step 7), for the instrument layer
 (step 8), and for the view-data toggle and the sand mobile header and its height token (step 8 review), and for NOAA
-Alert Levels 3–5 with the badge label colours moved to the dashboard bundle (SCO-212).
+Alert Levels 3–5 with the badge label colours moved to the dashboard bundle (SCO-212), and for the status
+glyph shared with the Home hero strip, paid for by moving dashboard-only tokens out of the site
+bundle.
 """
 
 import hashlib
@@ -25,19 +27,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "792454e9d3b90d5b4067673805638571c1ee8f641dfaab88236aca1f4555d590",
+            "709529016bbe72a4488ce6036609dcbfbff403798fd2ef47a053db316842828b",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "cc562383a4bbb24be2c7f362529e873bb0ce1116703e1227fc7da90cdfca2ad5",
+            "3bf0f844c601d50b42793112b6b7c5e9ca88155bee9b2c14610cadff14173c33",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "09da323adc790784694b6737bd6e590d29f4bca7f4e1cd752ccc75e0720c61af",
+            "cdc1fcf5073ef0019c198c6579223296a7a52c62687bf456163374cb8e1b3648",
         )
 
     def test_favicon_is_unchanged(self):
