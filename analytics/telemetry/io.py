@@ -63,6 +63,8 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             soh=frozenset(s for s in row.get("soh", "").split("|") if s),
             schema_version=int(row.get("schema_version", "1") or "1"),
             fw_version=row.get("fw_version", "").strip(),
+            internal_temp_c=_opt_float(row.get("internal_temp_c", "")),
+            internal_humidity_pct=_opt_float(row.get("internal_humidity_pct", "")),
         )
     except (KeyError, ValueError) as exc:
         raise TelemetryFormatError(f"{source}:{line}: {exc}") from exc

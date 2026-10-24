@@ -32,6 +32,10 @@ static const bool TX_EVERY_SAMPLE = false;
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
 static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
+/* Housing humidity alert (SCO-205). ⚠️ PROVISIONAL: a placeholder until the calibration in
+ * SCO-204 (sealed chamber, known water added) gives a threshold from data. Rows at or above it
+ * carry HUMIDITY_HIGH, which reaches the dashboard as a fault. */
+static const float HUMIDITY_ALERT_RH_PCT = 70.0f;
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
 /* Bench clock set (SCO-201): at boot, wait this long for USB and then for a "T<unix-epoch>"
  * line. Only at power-on/reset, never on a wake, so the battery cost is one ~8 s window. */

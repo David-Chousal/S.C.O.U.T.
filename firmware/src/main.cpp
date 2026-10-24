@@ -21,16 +21,19 @@
 #include "drivers/lora_link.h"
 #include "drivers/rtc.h"
 #include "drivers/sd_logger.h"
+#include "drivers/sht40.h"
 #include "drivers/temperature.h"
 #include "drivers/turbidity.h"
 #include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
+#include "scout_sht4x.h"
 #include "scout_timeset.h"
 
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
-    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version";
+    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,"
+    "internal_humidity_pct";
 
 // Sequence counter, kept in a NO-INIT RAM section that the C startup does not clear. It
 // therefore survives a watchdog/system reset (the MCU stays powered), so record_seq stays
@@ -47,6 +50,7 @@ __attribute__((section(".noinit"))) static RetainedState g_state;
 
 static TemperatureSensor g_temp;
 static TurbiditySensor g_turbidity;
+static HousingSensor g_housing;
 static Battery g_battery;
 static ScoutRtc g_rtc;
 static SdLogger g_sd;
@@ -89,6 +93,8 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
     if (flags & SCOUT_FLAG_BATT_LOW_SKIP_TX) append_flag(buf, cap, first, "BATT_LOW_SKIP_TX");
     if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
     if (flags & SCOUT_FLAG_POWER_CONSERVE) append_flag(buf, cap, first, "POWER_CONSERVE");
+    if (flags & SCOUT_FLAG_HUMIDITY_HIGH) append_flag(buf, cap, first, "HUMIDITY_HIGH");
+    if (flags & SCOUT_FLAG_HUMIDITY_FAIL) append_flag(buf, cap, first, "HUMIDITY_FAIL");
 }
 
 static void format_soh(uint8_t soh, char *buf, size_t cap) {
@@ -223,6 +229,7 @@ void setup() {
     g_battery.begin();
     g_temp.begin();
     g_turbidity.begin();
+    g_housing.begin();  // a missing sensor shows up as HUMIDITY_FAIL on every row
 
     g_rtc_ok = g_rtc.begin();
     accept_time_command();
@@ -254,6 +261,26 @@ void setup() {
         Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
     }
     (void)startup_flags;  // folded into the first record below
+}
+
+// Housing humidity/temperature (SCO-205). Read every cycle in every power mode: it is the
+// early warning that the housing is taking on water, and costs ~10 ms. Fills the two CSV
+// fields (blank on a failed read) and sets HUMIDITY_HIGH or HUMIDITY_FAIL.
+static void read_housing(uint16_t &flags, char *temp_s, size_t temp_cap, char *rh_s,
+                         size_t rh_cap) {
+    temp_s[0] = '\0';
+    rh_s[0] = '\0';
+    float temp_c = 0.0f;
+    float rh_pct = 0.0f;
+    if (!g_housing.read(temp_c, rh_pct)) {
+        flags |= SCOUT_FLAG_HUMIDITY_FAIL;
+        return;
+    }
+    if (scout_humidity_high(rh_pct, HUMIDITY_ALERT_RH_PCT)) {
+        flags |= SCOUT_FLAG_HUMIDITY_HIGH;
+    }
+    snprintf(temp_s, temp_cap, "%.2f", temp_c);
+    snprintf(rh_s, rh_cap, "%.1f", rh_pct);
 }
 
 // Sample every sensor the power mode allows, log the row, and keep it for the next slot.
@@ -289,6 +316,11 @@ static void sample_and_log() {
     // 3. Sensors off.
     digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
 
+    char housing_temp_s[12];
+    char housing_rh_s[12];
+    read_housing(flags, housing_temp_s, sizeof(housing_temp_s), housing_rh_s,
+                 sizeof(housing_rh_s));
+
     // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
     //    V1 stretch not on the confirmed build; this records the intent.
     bool audio_present =
@@ -321,7 +353,7 @@ static void sample_and_log() {
                  dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
     }
 
-    char flag_str[80];
+    char flag_str[128];
     format_flags(flags, flag_str, sizeof(flag_str));
     char soh_str[80];
     format_soh(g_soh, soh_str, sizeof(soh_str));
@@ -334,13 +366,13 @@ static void sample_and_log() {
         snprintf(turb_v_s, sizeof(turb_v_s), "%.3f", turbidity_v);
     }
 
-    char line[224];
+    char line[288];
     snprintf(line, sizeof(line),
-             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d",
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d,%s,%s",
              SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
              temp_c, turb_adc_s, turb_v_s, battery_mv / 1000.0f,
              (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, flag_str, soh_str,
-             FW_MAJOR, FW_MINOR, FW_PATCH);
+             FW_MAJOR, FW_MINOR, FW_PATCH, housing_temp_s, housing_rh_s);
 
     if (g_sd_ok) {
         char date_ymd[9];
