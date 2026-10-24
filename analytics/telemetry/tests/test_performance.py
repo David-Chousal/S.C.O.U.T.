@@ -58,6 +58,25 @@ class InlineCss(unittest.TestCase):
         self.assertNotIn(".chart-plot", css)
         self.assertIn(".hero-scrim", css)
 
+    def test_dashboard_only_tokens_ship_with_the_dashboard(self):
+        # No authored page references these, so they stay out of the site budget.
+        site, dash = theme.styles(bundle="site"), theme.styles(bundle="dashboard")
+        names = ("data-turb", "data-instrument", *(f"cat-{i}" for i in range(1, 6)), "z-base",
+                 "z-raised", "z-sticky", "dur-instant", "ease-exit", "space-section-sm")
+        for name in names:
+            with self.subTest(token=name):
+                self.assertIn(f"--{name}:", dash)
+                self.assertNotIn(f"--{name}:", site)
+
+    def test_authored_pages_size_and_colour_the_status_glyph(self):
+        # Home's hero strip renders web.status_line() once real packets exist.
+        css = theme.styles(bundle="site")
+        self.assertRegex(css, r"\.status svg\{[^}]*width:11px;height:11px")
+        for status, token in (("live", "live"), ("stale", "stale"), ("offline", "offline"),
+                              ("fault", "warning")):
+            with self.subTest(status=status):
+                self.assertIn(f".status-{status} svg{{fill:var(--status-{token})}}", css)
+
 
 class Images(unittest.TestCase):
     def test_every_photograph_has_an_avif(self):
