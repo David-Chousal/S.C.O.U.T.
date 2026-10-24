@@ -77,3 +77,4 @@ must cover, at minimum:
 - [Meeting notes, 2026-10-16](../planning/meeting-notes.md)
 - [FCC Review Brief](../research/fcc-review-brief.md)
 - [ADR-0007 — power source](0007-primary-cell-power-source.md)
+- [Over-the-Air Firmware Update Design](../engineering/ota-firmware-update-design.md) — the protocol design (draft, 2026-10-23)
