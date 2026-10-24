@@ -29,7 +29,15 @@ sys.path.insert(0, str(_ROOT / "shore"))
 sys.path.insert(0, str(_ROOT / "scripts"))
 
 from lora_airtime import PAYLOAD_CEILING_BYTES, airtime_ms  # noqa: E402
-from scout_shore.packet import LORA_PAYLOAD_BUDGET_BYTES, PACKET_SIZE, Reading, encode  # noqa: E402
+from scout_shore.packet import (  # noqa: E402
+    FLAG_BITS,
+    LORA_PAYLOAD_BUDGET_BYTES,
+    PACKET_SIZE,
+    PACKET_VERSION,
+    SOH_BITS,
+    Reading,
+    encode,
+)
 
 CANONICAL = Reading(
     buoy_id=1,
@@ -47,6 +55,7 @@ CANONICAL = Reading(
 
 _TEST_CPP = _ROOT / "firmware" / "test" / "test_packet" / "test_packet.cpp"
 _LINK_H = _ROOT / "firmware" / "lib" / "scout_link" / "scout_link.h"
+_PACKET_H = _ROOT / "firmware" / "lib" / "scout_packet" / "scout_packet.h"
 _CONFIG_H = _ROOT / "firmware" / "src" / "config.h"
 _RH_HEADER_BYTES = 4
 _BW_HZ = {0x7: 125_000, 0x8: 250_000, 0x9: 500_000}  # RegModemConfig1 bits 7-4 (SX1276)
@@ -59,6 +68,27 @@ def _c_number(path: pathlib.Path, name: str) -> int:
     if not match:
         sys.exit(f"could not find {name} in {path}")
     return int(match.group(1), 0)
+
+
+def check_bit_maps() -> str:
+    """Flag and SoH bit positions, and the version, must be identical on both sides.
+
+    The golden vector only exercises the bits it happens to set, so a new flag added on one
+    side with a different position would otherwise pass CI and mis-decode in the field.
+    """
+    text = _PACKET_H.read_text()
+    problems = []
+    for prefix, shore in (("SCOUT_FLAG_", FLAG_BITS), ("SCOUT_SOH_", SOH_BITS)):
+        firmware = {name: int(bit) for name, bit in
+                    re.findall(rf"#define {prefix}(\w+)\s+\(1u\s*<<\s*(\d+)\)", text)}
+        if firmware != shore:
+            problems.append(f"{prefix}* bits differ: firmware {firmware} vs shore {shore}")
+    firmware_version = _c_number(_PACKET_H, "SCOUT_PACKET_VERSION")
+    if firmware_version != PACKET_VERSION:
+        problems.append(f"SCOUT_PACKET_VERSION = {firmware_version}, shore PACKET_VERSION = {PACKET_VERSION}")
+    if problems:
+        sys.exit("PACKET BIT-MAP DRIFT:\n  " + "\n  ".join(problems))
+    return (f"bit maps OK — v{PACKET_VERSION}, {len(FLAG_BITS)} flags, {len(SOH_BITS)} SoH bits")
 
 
 def check_payload_ceiling() -> str:
@@ -115,6 +145,7 @@ def main() -> None:
             "Update both sides in lockstep (and the golden vector)."
         )
     print(f"packet contract OK — {len(fw_hex) // 2} bytes: {python_hex}")
+    print(check_bit_maps())
     print(check_payload_ceiling())
 
 
