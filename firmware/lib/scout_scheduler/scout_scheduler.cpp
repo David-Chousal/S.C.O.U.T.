@@ -71,6 +71,21 @@ bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t cons
     }
 }
 
+bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,
+                            uint32_t half_width_s) {
+    uint32_t second_of_day = epoch % SCOUT_SECONDS_PER_DAY;
+    for (size_t i = 0; i < n; i++) {
+        uint32_t ahead =
+            (second_of_day + SCOUT_SECONDS_PER_DAY - slots_sod[i]) % SCOUT_SECONDS_PER_DAY;
+        uint32_t behind = SCOUT_SECONDS_PER_DAY - ahead;
+        uint32_t distance = ahead < behind ? ahead : behind;
+        if (distance <= half_width_s) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool scout_battery_ok(uint16_t battery_mv, uint16_t min_mv) {
     return battery_mv >= min_mv;
 }

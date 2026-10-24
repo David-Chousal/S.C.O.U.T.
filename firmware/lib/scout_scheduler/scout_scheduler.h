@@ -59,6 +59,11 @@ uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
  * skipped slot is simply skipped — there are no retries outside a slot. */
 bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every);
 
+/* Shore side (SCO-24): true when `epoch` is within `half_width_s` of any slot, either side,
+ * counting across midnight. The shore station listens ±2 min around each slot. */
+bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,
+                            uint32_t half_width_s);
+
 /* Battery gate: true when the pack is at or above the skip-TX threshold. */
 bool scout_battery_ok(uint16_t battery_mv, uint16_t min_mv);
 

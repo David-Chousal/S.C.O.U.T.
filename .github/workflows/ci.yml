@@ -65,4 +65,4 @@ jobs:
         working-directory: firmware
         # Also the bench build and the bench receiver (SCO-155): both are what the first
         # hardware tests flash, so a break there should fail CI, not the bench session.
-        run: pio run -e feather_m0 -e feather_m0_bench -e feather_m0_rx
+        run: pio run -e feather_m0 -e feather_m0_bench -e feather_m0_rx -e feather_esp32s3_shore
