@@ -230,6 +230,10 @@ changed line instead of one changed paragraph.
 
 ### Notion mirroring
 
+> ⏸️ **Paused since 2026-10-23.** The Notion workspace is out of free-plan blocks, so nothing
+> new can be added there. The existing pages are frozen and will go stale: read and edit the
+> docs on GitHub instead. The rule below applies again when mirroring resumes.
+
 Every `docs/` file has a Notion counterpart, and **the repo is the source of truth.** If you
 edit in Notion, say so in your next Claude session and it will back-port the change. If the two
 disagree and nobody says otherwise, the repo wins.
@@ -510,7 +514,8 @@ Ask Claude. If it genuinely doesn't fit, that's usually a sign the folder struct
 home — worth a two-minute conversation rather than a guess.
 
 **Can I edit documents in Notion instead of the repo?**
-Yes — that's what Notion is for. Just mention it in your next Claude session so the repo gets
+**Not while mirroring is paused (since 2026-10-23)** — Notion is out of free-plan blocks. Ask
+your Claude to make the change in the repo instead. When mirroring resumes: yes — that's what Notion is for. Just mention it in your next Claude session so the repo gets
 the change too. The repo is the copy that survives.
 
 **I accidentally committed something big / secret. What now?**
