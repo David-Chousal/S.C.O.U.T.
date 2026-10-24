@@ -40,6 +40,22 @@ void test_tx_slot_index_matches_exact_slot_times_only(void) {
     TEST_ASSERT_EQUAL_INT(-1, scout_tx_slot_index(DAY0 + 1800u, SLOTS, 3));  // a sample, not a slot
 }
 
+void test_listen_window_is_two_minutes_either_side_of_a_slot(void) {
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + 600u, SLOTS, 3, 120));
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + 480u, SLOTS, 3, 120));   // 00:08:00
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + 720u, SLOTS, 3, 120));   // 00:12:00
+    TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 + 721u, SLOTS, 3, 120));
+    TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 + 479u, SLOTS, 3, 120));
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + 86400u + 58300u, SLOTS, 3, 120));  // next day
+    TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 + 600u, SLOTS, 0, 120));  // no slots
+}
+
+void test_listen_window_crosses_midnight(void) {
+    static const uint32_t MIDNIGHT_SLOT[] = {30u};  // 00:00:30
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 - 60u, MIDNIGHT_SLOT, 1, 120));   // 23:59:00
+    TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 - 91u, MIDNIGHT_SLOT, 1, 120));
+}
+
 void test_sample_time_is_on_the_grid(void) {
     TEST_ASSERT_TRUE(scout_is_sample_time(DAY0 + 1800u, 1800));
     TEST_ASSERT_FALSE(scout_is_sample_time(DAY0 + 600u, 1800));  // the 00:10 slot
@@ -96,6 +112,8 @@ static void run_all() {
     RUN_TEST(test_next_event_wraps_to_tomorrows_first_slot);
     RUN_TEST(test_next_event_without_slots_is_the_sample_grid);
     RUN_TEST(test_tx_slot_index_matches_exact_slot_times_only);
+    RUN_TEST(test_listen_window_is_two_minutes_either_side_of_a_slot);
+    RUN_TEST(test_listen_window_crosses_midnight);
     RUN_TEST(test_sample_time_is_on_the_grid);
     RUN_TEST(test_slot_transmits_by_power_mode);
     RUN_TEST(test_battery_gate);

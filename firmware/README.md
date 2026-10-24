@@ -53,7 +53,8 @@ firmware/
 ├── lib/                    Hardware-free, host-testable libraries:
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
 │   ├── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
-│   └── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
+│   ├── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
+│   └── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq)
 ├── test/                   Unity unit tests (run on the host)
 │   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
 │   ├── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
