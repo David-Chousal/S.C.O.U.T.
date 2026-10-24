@@ -12,7 +12,7 @@ import math
 from datetime import date, timedelta
 from pathlib import Path
 
-from . import bleaching
+from . import bleaching, charts
 from .pipeline import TelemetryReport
 from .site.theme import tokens
 
@@ -28,8 +28,21 @@ PALETTE = {
     "threshold": tokens.ALERTS["alert1"][0],
     "alert1": tokens.ALERTS["alert1"][0],
     "alert2": tokens.ALERTS["alert2"][0],
+    "alert3": tokens.ALERTS["alert3"][0],
+    "alert4": tokens.ALERTS["alert4"][0],
+    "alert5": tokens.ALERTS["alert5"][0],
     "event": tokens.STATUS["warning"],
 }
+
+
+def dhw_band_spans(peak: float) -> list[tuple[float, float, str]]:
+    """The alert bands the PNG shades, from the same ``charts.DHW_BANDS`` as the web chart.
+
+    A band is drawn only once DHW reaches it — an empty alert band would read as an alert that
+    never happened — and the highest one reached stops at the peak rather than running on.
+    """
+    return [(band.lo, peak if band.hi is None else min(band.hi, peak), band.level)
+            for band in charts.DHW_BANDS if peak >= band.lo]
 
 
 def calendar_series(points: list[tuple[date, float | None]]) -> tuple[list[date], list[float]]:
@@ -90,13 +103,8 @@ def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
         t_days, dhw = calendar_series([(t.day, t.dhw) for t in report.thermal])
         ax2.plot(t_days, dhw, color=p["dhw"], lw=1.2)
         peak = max((v for v in dhw if not math.isnan(v)), default=0.0)
-        # Like the web chart, a band is drawn only once DHW reaches it — an empty alert band
-        # would read as an alert that never happened.
-        if peak >= bleaching.DHW_ALERT_LEVEL_1:
-            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_1, bleaching.DHW_ALERT_LEVEL_2,
-                        color=p["alert1"], alpha=0.12)
-        if peak >= bleaching.DHW_ALERT_LEVEL_2:
-            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_2, peak, color=p["alert2"], alpha=0.12)
+        for lo, hi, level in dhw_band_spans(peak):
+            ax2.axhspan(lo, hi, color=p[level], alpha=0.12)
         ax2.set_ylabel("DHW (°C-weeks)")
 
     # Panel 2 — turbidity (uncalibrated ADC; higher counts = clearer water) with events.

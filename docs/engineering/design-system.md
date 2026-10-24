@@ -527,9 +527,9 @@ Recorded, not silently resolved:
 1. **NOAA alert scale.** NOAA Coral Reef Watch added Bleaching Alert Levels 3–5 on 2023-12-15
    (Level 2 is now 8 ≤ DHW < 12; Level 3 12–16; Level 4 16–20; Level 5 ≥ 20 —
    [CRW](https://coralreefwatch.noaa.gov/product/5km/index_5km_baa-max-365d.php)).
-   `analytics/telemetry/bleaching.py` and `facts.md` stop at Alert Level 2 (DHW ≥ 8). The design
-   system reserves colours for all eight levels; whether the pipeline adopts them is a separate
-   decision.
+   `analytics/telemetry/bleaching.py` and `facts.md` stopped at Alert Level 2 (DHW ≥ 8). The design
+   system reserves colours for all eight levels. **Resolved 2026-10-23:** the pipeline adopted
+   Levels 3–5 ([SCO-212](https://linear.app/scout1/issue/SCO-212)).
 2. **Packet cadence in `data-schema.md`.** It still describes "one summary reading per day";
    firmware and `facts.md` say three fixed slots (00:10, 08:10, 16:10 UTC). The site's data-path
    copy ("Once a day…") also predates the change.

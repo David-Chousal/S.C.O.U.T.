@@ -6,6 +6,10 @@ from datetime import date, timedelta
 from telemetry.bleaching import (
     ALERT_LEVEL_1,
     ALERT_LEVEL_2,
+    ALERT_LEVEL_3,
+    ALERT_LEVEL_4,
+    ALERT_LEVEL_5,
+    ALERT_LEVELS,
     ALERT_NO_STRESS,
     ALERT_WARNING,
     ALERT_WATCH,
@@ -112,3 +116,39 @@ class SummaryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExtendedAlertScaleTest(unittest.TestCase):
+    """CRW's 2023 extension (Levels 3–5): lower bounds inclusive, upper bounds exclusive, and
+    every level from Warning up still needs a current HotSpot ≥ 1 °C (coralreefwatch.noaa.gov,
+    Bleaching Alert Area product)."""
+
+    def test_level_2_now_stops_below_twelve(self):
+        self.assertEqual(alert_level(1.5, 11.9), ALERT_LEVEL_2)
+
+    def test_level_3_starts_at_twelve(self):
+        self.assertEqual(alert_level(1.5, 12.0), ALERT_LEVEL_3)
+
+    def test_level_3_stops_below_sixteen(self):
+        self.assertEqual(alert_level(1.5, 15.9), ALERT_LEVEL_3)
+
+    def test_level_4_starts_at_sixteen(self):
+        self.assertEqual(alert_level(1.5, 16.0), ALERT_LEVEL_4)
+
+    def test_level_4_stops_below_twenty(self):
+        self.assertEqual(alert_level(1.5, 19.9), ALERT_LEVEL_4)
+
+    def test_level_5_starts_at_twenty_and_has_no_ceiling(self):
+        self.assertEqual(alert_level(1.5, 20.0), ALERT_LEVEL_5)
+        self.assertEqual(alert_level(1.5, 40.0), ALERT_LEVEL_5)
+
+    def test_cooled_water_caps_even_extreme_dhw_at_watch(self):
+        self.assertEqual(alert_level(0.5, 25.0), ALERT_WATCH)
+
+    def test_severity_order_runs_through_level_5(self):
+        self.assertEqual(ALERT_LEVELS[-4:], (ALERT_LEVEL_2, ALERT_LEVEL_3, ALERT_LEVEL_4,
+                                             ALERT_LEVEL_5))
+
+    def test_summary_peak_reaches_level_5(self):
+        series = _run([31.0] * 84)  # HotSpot 3 °C for 12 weeks → DHW 36
+        self.assertEqual(summarize(series, MMM).peak_alert, ALERT_LEVEL_5)

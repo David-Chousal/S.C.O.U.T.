@@ -39,5 +39,6 @@ table.data .lvl{font-weight:500;color:var(--color-text)}
 /* Alert levels set as text use the text-safe variant of each NOAA hue (≥ 4.6:1). */
 .a-nostress{color:var(--alert-nostress-text)}.a-watch{color:var(--alert-watch-text)}
 .a-warning{color:var(--alert-warning-text)}.a-alert1{color:var(--alert-alert1-text)}
-.a-alert2{color:var(--alert-alert2-text)}
+.a-alert2{color:var(--alert-alert2-text)}.a-alert3{color:var(--alert-alert3-text)}
+.a-alert4{color:var(--alert-alert4-text)}.a-alert5{color:var(--alert-alert5-text)}
 """

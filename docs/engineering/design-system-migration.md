@@ -259,7 +259,7 @@ LoRa spreading factor: `facts.md` says SF12 in one row and SF7 in another.
 
 | Decision | Owner | Blocks |
 |---|---|---|
-| Adopt NOAA Alert Levels 3–5 in `bleaching.py` and `facts.md` | David (CSEN) | Nothing in this plan; the colours are reserved either way |
+| Adopt NOAA Alert Levels 3–5 in `bleaching.py` and `facts.md` | David (CSEN) | **Decided 2026-10-23: adopted** ([SCO-212](https://linear.app/scout1/issue/SCO-212)) |
 | Commission a real photograph or labelled render of the buoy for the hero | Team | The juror's main objection; PR 8's hero subject |
 | Supply a ≥ 2400 px hero original | Team | PR 7 |
 | Clarify the degree-sign rule in CONVENTIONS | David | Nothing; PR 0 can include it |

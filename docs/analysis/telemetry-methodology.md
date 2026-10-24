@@ -116,15 +116,21 @@ standard for anticipating mass bleaching (Liu et al. 2014; Skirving et al. 2020)
 - **HotSpot** = max(0, daily SST − MMM): the positive thermal anomaly.
 - **Degree Heating Weeks (DHW)** = the trailing-**12-week** (84-day) accumulation of daily
   HotSpots that are **≥ 1 °C**, in °C-weeks: `DHW = Σ(HotSpot ≥ 1 over 84 days) / 7`.
-- **Bleaching Alert Level** (requires a *current* HotSpot ≥ 1 °C for Warning and above):
+- **Bleaching Alert Level** (requires a *current* HotSpot ≥ 1 °C for Warning and above). This
+  is CRW's scale as extended on 2023-12-15 with Levels 3–5, adopted here on 2026-10-23
+  ([SCO-212](https://linear.app/scout1/issue/SCO-212)). Meanings are CRW's own wording
+  ([Bleaching Alert Area](https://coralreefwatch.noaa.gov/product/5km/index_5km_baa-max-365d.php)):
 
   | Level | Condition | Meaning |
   |---|---|---|
   | No Stress | HotSpot ≤ 0 | at/below MMM |
   | Bleaching Watch | 0 < HotSpot < 1 | warm, not yet stressful |
-  | Bleaching Warning | HotSpot ≥ 1, DHW < 4 | stress accumulating |
-  | Alert Level 1 | HotSpot ≥ 1, 4 ≤ DHW < 8 | significant bleaching likely |
-  | Alert Level 2 | HotSpot ≥ 1, DHW ≥ 8 | severe bleaching + mortality likely |
+  | Bleaching Warning | HotSpot ≥ 1, 0 < DHW < 4 | risk of possible bleaching |
+  | Alert Level 1 | HotSpot ≥ 1, 4 ≤ DHW < 8 | risk of reef-wide bleaching |
+  | Alert Level 2 | HotSpot ≥ 1, 8 ≤ DHW < 12 | risk of reef-wide bleaching with mortality of heat-sensitive corals |
+  | Alert Level 3 | HotSpot ≥ 1, 12 ≤ DHW < 16 | risk of multi-species mortality |
+  | Alert Level 4 | HotSpot ≥ 1, 16 ≤ DHW < 20 | risk of severe, multi-species mortality (> 50 % of corals) |
+  | Alert Level 5 | HotSpot ≥ 1, DHW ≥ 20 | risk of near-complete mortality (> 80 % of corals) |
 
 **Caveats, stated plainly:**
 - *Diurnal bias.* CRW builds daily SST from **nighttime** satellite retrievals to suppress skin
