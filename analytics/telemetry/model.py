@@ -37,6 +37,9 @@ class TelemetryRecord:
     soh: frozenset[str] = field(default_factory=frozenset)  # device State-of-Health bits
     schema_version: int = 1
     fw_version: str = ""
+    # Housing sensor (SCO-205, schema v2). SD-card rows only; live rows and v1 rows have None.
+    internal_temp_c: float | None = None
+    internal_humidity_pct: float | None = None
 
 
 def has_valid_clock(record: TelemetryRecord) -> bool:

@@ -34,7 +34,9 @@ import struct
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-PACKET_VERSION = 1
+# v2 (2026-10-23, SCO-205): HUMIDITY_HIGH / HUMIDITY_FAIL flags and two internal-sensor CSV
+# columns; byte layout unchanged. Must equal SCOUT_PACKET_VERSION in firmware/lib/scout_packet.
+PACKET_VERSION = 2
 
 _BODY_FORMAT = "<BHIIhHHIHBBBBB"  # 28 bytes (soh byte inserted after flags)
 _BODY_SIZE = struct.calcsize(_BODY_FORMAT)
@@ -55,6 +57,8 @@ FLAG_BITS = {
     "BATT_LOW_SKIP_TX": 3,
     "RTC_LOST": 4,
     "POWER_CONSERVE": 5,
+    "HUMIDITY_HIGH": 6,
+    "HUMIDITY_FAIL": 7,
 }
 
 # Device State-of-Health bits (set at boot/init; persistent, distinct from the per-cycle

@@ -1,4 +1,4 @@
-# On-Board CSV Data Schema (v1)
+# On-Board CSV Data Schema (v2)
 
 > **Summary** — The format of the CSV log the buoy writes to microSD: one row per sampling
 > event, fixed column order, UTC timestamps. This is the contract between the firmware
@@ -46,11 +46,11 @@ name could not be written by the buoy.
 
 Each daily CSV starts with the header row below.
 
-## Columns (v1)
+## Columns (v2)
 
 | # | Column | Type | Unit | Example | Notes |
 |---|---|---|---|---|---|
-| 1 | `schema_version` | int | — | `1` | Bumped when columns change. Constant within a file. |
+| 1 | `schema_version` | int | — | `2` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the same reading can arrive twice (a re-received frame, or an SD-card import of a reading the radio already delivered), and must collapse to one row. |
@@ -64,16 +64,11 @@ Each daily CSV starts with the header row below.
 | 12 | `flags` | string | — | `TEMP_TIMEOUT` | `|`-separated per-cycle event codes; empty when clean. |
 | 13 | `soh` | string | — | `WATCHDOG_RESET` | `|`-separated device State-of-Health codes (set at boot); empty when healthy. |
 | 14 | `fw_version` | string | — | `v0.1.0` | Firmware tag that wrote the row. |
+| 15 | `internal_temp_c` | float | °C | `24.50` | Air temperature inside the electronics housing, SHT40, 2 dp. **SD card only**: the packet does not carry it, so live rows leave it empty. Empty when the read failed (`HUMIDITY_FAIL`). |
+| 16 | `internal_humidity_pct` | float | %RH | `41.2` | Relative humidity inside the housing, SHT40, 1 dp. **The leak early warning**: a sealed housing should stay low and steady, so a rise means water is getting in. SD card only, like column 15; the packet carries only the `HUMIDITY_HIGH` / `HUMIDITY_FAIL` flags. |
 
 ### Optional / future columns (append at the end when the hardware lands)
 
-- `internal_temp_c`, `internal_humidity_pct` — enclosure State-of-Health.
-  [ADR-0005](../decisions/0005-v1-sensing-payload.md) **decided to add** the SoH temp/humidity
-  sensor these columns depend on, but it is **not yet on the BOM, has no part number, and has
-  no firmware** (the SAMD21 and PCF8523 provide neither reading reliably). So the columns stay
-  optional and unpopulated. Promoting them is not a schema edit on its own — per ADR-0005 it
-  means a `schema_version` bump plus matching firmware and shore changes. Tracked as
-  [SCO-60](https://linear.app/scout1/issue/SCO-60).
 - `temp_c_01`, `temp_c_02`, … — multi-depth temperature **only if** the vertical sensor string
   ([sensor-string-architecture](sensor-string-architecture.md)) is ever populated. Per
   [ADR-0003](../decisions/0003-single-point-sensing.md) the build is single-point, so v1 logs
@@ -128,20 +123,23 @@ Device State-of-Health, set at boot and carried in every row/packet (distinct fr
 per-cycle `flags`): `WATCHDOG_RESET` · `RTC_UNSET` · `SD_INIT_FAIL` · `LORA_INIT_FAIL`. A
 recurring `WATCHDOG_RESET` means a cycle is hanging. Matches `SOH_BITS` in the packet codec.
 
-### `flags` vocabulary (v1)
+### `flags` vocabulary (v2)
 
 `SD_RETRY` · `TEMP_TIMEOUT` · `TURBIDITY_RANGE` · `BATT_LOW_SKIP_TX` · `RTC_LOST` ·
-`POWER_CONSERVE` (battery-saving mode: audio off, transmit throttled) — extend as
+`POWER_CONSERVE` (battery-saving mode: audio off, transmit throttled) · `HUMIDITY_HIGH`
+(housing humidity at or above `HUMIDITY_ALERT_RH_PCT` in `config.h`; ⚠️ the 70 %RH value is a
+placeholder until the calibration in [SCO-204](https://linear.app/scout1/issue/SCO-204)) ·
+`HUMIDITY_FAIL` (the SHT40 did not answer or failed its CRC; added in v2) — extend as
 needed; keep them SCREAMING_SNAKE_CASE and documented here.
 
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version
-1,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0
-1,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0
-1,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,20260814/060000Z.WAV,,,v0.1.0
-1,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX,WATCHDOG_RESET,v0.1.0
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct
+2,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2
+2,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3
+2,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,20260814/060000Z.WAV,,,v0.1.0,25.02,38.9
+2,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,
 ```
 
 ## Relationship to the LoRa daily packet
@@ -203,8 +201,8 @@ production-target analysis, not a spec for the Feather build.
   in both the firmware (`drivers/turbidity.h`) and the shore code (`schema.py`).
 - ~~**Depth string count.**~~ ✅ Resolved by [ADR-0003](../decisions/0003-single-point-sensing.md):
   single-point sensing, so no `temp_c_NN` columns.
-- **SoH sensor — which part, and does it make Rev A?** *Whether* to add one is settled
-  ([ADR-0005](../decisions/0005-v1-sensing-payload.md): yes). What is open is the part number,
-  whether it lands on the Rev A board or waits for Rev B, and the firmware driver plus
-  `schema_version` bump that promoting the columns requires.
+- ~~**SoH sensor — which part?**~~ ✅ The SHT40 (Adafruit 4885, bought 2026-10-06); driver,
+  columns 15–16 and the `schema_version` 2 bump landed 2026-10-23
+  ([SCO-205](https://linear.app/scout1/issue/SCO-205)). Still open: the alert threshold
+  ([SCO-204](https://linear.app/scout1/issue/SCO-204) calibration). Was
   [SCO-60](https://linear.app/scout1/issue/SCO-60)
