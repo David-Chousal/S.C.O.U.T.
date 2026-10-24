@@ -97,7 +97,7 @@
 
 | Fact | Canonical value | Source |
 |---|---|---|
-| Thermal-stress metric | **NOAA Coral Reef Watch Degree Heating Weeks** over a 12-week window, against a per-site Maximum Monthly Mean; alert levels No Stress → Watch → Warning → Alert 1/2 | [Telemetry Methodology](../analysis/telemetry-methodology.md) |
+| Thermal-stress metric | **NOAA Coral Reef Watch Degree Heating Weeks** over a 12-week window, against a per-site Maximum Monthly Mean; alert levels No Stress → Watch → Warning → Alert 1–5, CRW's eight-level scale as extended on 2023-12-15 (Level 2 is 8 ≤ DHW < 12; 3: 12–16; 4: 16–20; 5: ≥ 20). Adopted 2026-10-23, [SCO-212](https://linear.app/scout1/issue/SCO-212) | [Telemetry Methodology](../analysis/telemetry-methodology.md) |
 | Multi-buoy analysis | Each `buoy_id` is analysed **in isolation** (never blended — merging streams corrupts daily means and DHW), each with **its own MMM** | [`analytics/telemetry/fleet.py`](../../analytics/telemetry/fleet.py) |
 | Live dashboard | Self-contained static site on GitHub Pages, republished per publish (not real-time); **Analytics** (one buoy) and **Fleet** (network overview) pages are data-driven | [Live Dashboard](../engineering/live-dashboard.md) |
 

@@ -36,6 +36,9 @@ _ALERT_CLASS = {
     bleaching.ALERT_WARNING: "a-warning",
     bleaching.ALERT_LEVEL_1: "a-alert1",
     bleaching.ALERT_LEVEL_2: "a-alert2",
+    bleaching.ALERT_LEVEL_3: "a-alert3",
+    bleaching.ALERT_LEVEL_4: "a-alert4",
+    bleaching.ALERT_LEVEL_5: "a-alert5",
 }
 # Severity order for triage: worst buoys sort to the top of the grid. "No data" is lowest.
 _SEVERITY = {name: i for i, name in enumerate(bleaching.ALERT_LEVELS)}
@@ -47,6 +50,9 @@ _ALERT_LEVEL = {
     bleaching.ALERT_WARNING: "warning",
     bleaching.ALERT_LEVEL_1: "alert1",
     bleaching.ALERT_LEVEL_2: "alert2",
+    bleaching.ALERT_LEVEL_3: "alert3",
+    bleaching.ALERT_LEVEL_4: "alert4",
+    bleaching.ALERT_LEVEL_5: "alert5",
 }
 
 

@@ -30,9 +30,14 @@ class Band:
     label: str
 
 
-# NOAA CRW Alert Levels 1 and 2 — the levels bleaching.py computes. Levels 3–5 (NOAA, 2023) are
-# deliberately not drawn until the pipeline adopts them (docs/hub/research/open-questions.md).
-DHW_BANDS = (Band(4.0, 8.0, "alert1", "Alert Level 1"), Band(8.0, None, "alert2", "Alert Level 2"))
+# NOAA CRW Alert Levels 1–5 (the 2023 scale bleaching.py computes), one band per DHW range.
+DHW_BANDS = (
+    Band(4.0, 8.0, "alert1", "Alert Level 1"),
+    Band(8.0, 12.0, "alert2", "Alert Level 2"),
+    Band(12.0, 16.0, "alert3", "Alert Level 3"),
+    Band(16.0, 20.0, "alert4", "Alert Level 4"),
+    Band(20.0, None, "alert5", "Alert Level 5"),
+)
 _DIGITS = {"temp": 1, "dhw": 1, "turb": 0, "batt": 2}
 _SERIES_LABEL = {"temp": "Daily mean", "dhw": "DHW", "turb": "Daily median", "batt": "Daily minimum"}
 

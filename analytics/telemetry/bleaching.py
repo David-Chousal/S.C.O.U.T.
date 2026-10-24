@@ -13,9 +13,15 @@ community uses to anticipate bleaching:
   are ≥ 1 °C, expressed in °C-weeks: ``DHW = Σ(HS ≥ 1 over 84 days) / 7``.
 - **Bleaching Alert Level** — CRW's categorical scale derived from HS and DHW.
 
-Thresholds (Liu et al. 2014; Skirving et al. 2020):
-    DHW ≥ 4  → Alert Level 1 — significant bleaching likely
-    DHW ≥ 8  → Alert Level 2 — severe bleaching + mortality likely
+Thresholds — CRW's Bleaching Alert Area scale as extended on 2023-12-15 with Levels 3–5
+(coralreefwatch.noaa.gov; Liu et al. 2014; Skirving et al. 2020). Lower bounds inclusive,
+upper exclusive; every level from Warning up also needs a current HotSpot ≥ 1 °C:
+    0 < DHW < 4    → Bleaching Warning — risk of possible bleaching
+    4 ≤ DHW < 8    → Alert Level 1 — risk of reef-wide bleaching
+    8 ≤ DHW < 12   → Alert Level 2 — reef-wide bleaching with mortality of heat-sensitive corals
+    12 ≤ DHW < 16  → Alert Level 3 — risk of multi-species mortality
+    16 ≤ DHW < 20  → Alert Level 4 — severe, multi-species mortality (> 50 % of corals)
+    DHW ≥ 20       → Alert Level 5 — near-complete mortality (> 80 % of corals)
 
 Deviation from the operational product: CRW builds daily SST from *nighttime-only* satellite
 retrievals to suppress diurnal skin warming. A shallow surface buoy sees a real diurnal
@@ -41,8 +47,11 @@ from datetime import date, timedelta
 BLEACHING_THRESHOLD_OFFSET_C = 1.0  # threshold = MMM + 1 °C
 HOTSPOT_MIN_C = 1.0  # only HotSpots ≥ 1 °C accumulate into DHW
 DHW_WINDOW_DAYS = 84  # 12 weeks
-DHW_ALERT_LEVEL_1 = 4.0  # °C-weeks — significant bleaching likely
-DHW_ALERT_LEVEL_2 = 8.0  # °C-weeks — severe bleaching + mortality likely
+DHW_ALERT_LEVEL_1 = 4.0  # °C-weeks — risk of reef-wide bleaching
+DHW_ALERT_LEVEL_2 = 8.0  # °C-weeks — reef-wide bleaching, heat-sensitive corals die
+DHW_ALERT_LEVEL_3 = 12.0  # °C-weeks — multi-species mortality
+DHW_ALERT_LEVEL_4 = 16.0  # °C-weeks — severe multi-species mortality (> 50 %)
+DHW_ALERT_LEVEL_5 = 20.0  # °C-weeks — near-complete mortality (> 80 %)
 
 # Ordered from least to most severe; index doubles as a numeric severity.
 ALERT_NO_STRESS = "No Stress"
@@ -50,7 +59,20 @@ ALERT_WATCH = "Bleaching Watch"
 ALERT_WARNING = "Bleaching Warning"
 ALERT_LEVEL_1 = "Alert Level 1"
 ALERT_LEVEL_2 = "Alert Level 2"
-ALERT_LEVELS = (ALERT_NO_STRESS, ALERT_WATCH, ALERT_WARNING, ALERT_LEVEL_1, ALERT_LEVEL_2)
+ALERT_LEVEL_3 = "Alert Level 3"
+ALERT_LEVEL_4 = "Alert Level 4"
+ALERT_LEVEL_5 = "Alert Level 5"
+ALERT_LEVELS = (ALERT_NO_STRESS, ALERT_WATCH, ALERT_WARNING, ALERT_LEVEL_1, ALERT_LEVEL_2,
+                ALERT_LEVEL_3, ALERT_LEVEL_4, ALERT_LEVEL_5)
+
+# Alert levels by DHW floor, most severe first; the first floor the DHW reaches wins.
+_DHW_ALERTS = (
+    (DHW_ALERT_LEVEL_5, ALERT_LEVEL_5),
+    (DHW_ALERT_LEVEL_4, ALERT_LEVEL_4),
+    (DHW_ALERT_LEVEL_3, ALERT_LEVEL_3),
+    (DHW_ALERT_LEVEL_2, ALERT_LEVEL_2),
+    (DHW_ALERT_LEVEL_1, ALERT_LEVEL_1),
+)
 
 
 def bleaching_threshold(mmm: float) -> float:
@@ -66,7 +88,7 @@ def hotspot(sst: float, mmm: float) -> float:
 def alert_level(hs: float, dhw: float) -> str:
     """CRW Bleaching Alert Level from the current HotSpot and DHW.
 
-    Warning and both Alert levels require a *current* HotSpot ≥ 1 °C — if the water has cooled
+    Warning and every Alert level require a *current* HotSpot ≥ 1 °C — if the water has cooled
     below the threshold, accumulated DHW no longer raises the alert beyond Watch.
     """
     if hs <= 0.0:
@@ -74,10 +96,9 @@ def alert_level(hs: float, dhw: float) -> str:
     if hs < HOTSPOT_MIN_C:
         return ALERT_WATCH
     # hs ≥ 1 °C from here.
-    if dhw >= DHW_ALERT_LEVEL_2:
-        return ALERT_LEVEL_2
-    if dhw >= DHW_ALERT_LEVEL_1:
-        return ALERT_LEVEL_1
+    for floor, level in _DHW_ALERTS:
+        if dhw >= floor:
+            return level
     return ALERT_WARNING
 
 

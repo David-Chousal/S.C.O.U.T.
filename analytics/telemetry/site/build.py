@@ -33,6 +33,9 @@ _ALERT_CLASS = {
     "Bleaching Warning": "a-warning",
     "Alert Level 1": "a-alert1",
     "Alert Level 2": "a-alert2",
+    "Alert Level 3": "a-alert3",
+    "Alert Level 4": "a-alert4",
+    "Alert Level 5": "a-alert5",
 }
 
 _STATIC = Path(__file__).parent / "static"

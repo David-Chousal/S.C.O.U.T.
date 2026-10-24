@@ -156,8 +156,8 @@ def _css() -> str:
         *((f"status-{name}", hexval) for name, hexval in STATUS.items()),
         *DATA.items(),
         *((f"cat-{i}", hexval) for i, hexval in enumerate(CATEGORICAL, 1)),
-        *((f"alert-{lvl}-{part}", val) for lvl, (fill, on) in ALERTS.items()
-          for part, val in (("fill", fill), ("on", on), ("text", ALERT_TEXT[lvl]))),
+        *((f"alert-{lvl}-{part}", val) for lvl, (fill, _) in ALERTS.items()
+          for part, val in (("fill", fill), ("text", ALERT_TEXT[lvl]))),
         *((f"space-{i}", f"{px}px") for i, px in enumerate(_SPACE, 1)),
         ("radius-none", "0"), ("radius-xs", "4px"),
         ("shadow-0", "none"),
@@ -175,3 +175,6 @@ def _css() -> str:
 
 
 CSS = _css()
+# The label colour on a solid alert fill. Only the dashboard pages paint alert badges, so this
+# ships in their bundle alone (``theme.alert_labels``); the authored pages use text and fill.
+ALERT_ON_CSS = ":root{" + _declarations((f"alert-{lvl}-on", on) for lvl, (_, on) in ALERTS.items()) + "}"

@@ -101,8 +101,8 @@ Watch to Level 5, so the order survives greyscale printing and colour-vision def
 | Alert Level 5 | HotSpot ≥ 1, DHW ≥ 20 | `#351859` | foam | 14.41 |
 
 Source: [NOAA CRW Bleaching Alert Area](https://coralreefwatch.noaa.gov/product/5km/index_5km_baa-max-365d.php).
-⚠️ The pipeline (`bleaching.py`) currently stops at Alert Level 2 = DHW ≥ 8 — see
-[Design System → Contradictions](design-system.md#contradictions-surfaced-while-building-this).
+The pipeline (`bleaching.py`) computes all eight levels since 2026-10-23
+([SCO-212](https://linear.app/scout1/issue/SCO-212)); before that it stopped at Alert Level 2.
 
 Where a level is set **as text** — a stat value, a verdict, a badge label on its 12% tint —
 it uses `--alert-<level>-text`: the same hue darkened until it reads at ≥ 4.6:1 on the canvas,

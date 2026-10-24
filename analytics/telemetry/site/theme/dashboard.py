@@ -33,6 +33,7 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .s-batt{stroke:var(--data-instrument)}.chart-svg .line.s-batt{stroke-dasharray:6 3}
 .rl-mmm{stroke:var(--color-line-strong)}.rl-threshold{stroke:var(--alert-alert1-fill)}
 .band{opacity:0.16}.band-alert1{fill:var(--alert-alert1-fill)}.band-alert2{fill:var(--alert-alert2-fill)}
+.band-alert3{fill:var(--alert-alert3-fill)}.band-alert4{fill:var(--alert-alert4-fill)}.band-alert5{fill:var(--alert-alert5-fill)}
 /* Missing days: a hatched band, crisp because it is HTML rather than stretched SVG. */
 .gap{position:absolute;top:0;bottom:0;left:var(--x0);right:calc(100% - var(--x1));
   background:repeating-linear-gradient(45deg,transparent 0 5px,var(--p-stone-300) 5px 6px);
@@ -92,8 +93,9 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .sw-dhw{background:var(--color-text)}.sw-batt{background:var(--data-instrument)}
 .sw-est{background:repeating-linear-gradient(90deg,var(--color-text-subtle) 0 4px,transparent 4px 7px)}
 .legend i.sw-gap{height:0.7rem;background:repeating-linear-gradient(45deg,transparent 0 3px,var(--p-stone-400) 3px 4px)}
-.legend i.sw-alert1,.legend i.sw-alert2{height:0.7rem}
+.legend i.sw-alert1,.legend i.sw-alert2,.legend i.sw-alert3,.legend i.sw-alert4,.legend i.sw-alert5{height:0.7rem}
 .sw-alert1{background:var(--alert-alert1-fill)}.sw-alert2{background:var(--alert-alert2-fill)}
+.sw-alert3{background:var(--alert-alert3-fill)}.sw-alert4{background:var(--alert-alert4-fill)}.sw-alert5{background:var(--alert-alert5-fill)}
 .legend i.sw-ev{width:0.55rem;height:0.55rem;border-radius:50%;background:var(--status-warning)}
 .data-links{color:var(--color-text-subtle);font-size:var(--text-small);margin-top:1.8rem}
 .data-links a{font-weight:500}
@@ -115,6 +117,9 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .alert-badge.lvl-warning{background:var(--alert-warning-fill);color:var(--alert-warning-on)}
 .alert-badge.lvl-alert1{background:var(--alert-alert1-fill);color:var(--alert-alert1-on)}
 .alert-badge.lvl-alert2{background:var(--alert-alert2-fill);color:var(--alert-alert2-on)}
+.alert-badge.lvl-alert3{background:var(--alert-alert3-fill);color:var(--alert-alert3-on)}
+.alert-badge.lvl-alert4{background:var(--alert-alert4-fill);color:var(--alert-alert4-on)}
+.alert-badge.lvl-alert5{background:var(--alert-alert5-fill);color:var(--alert-alert5-on)}
 .spark{position:relative;width:100%;height:56px;display:block}
 .spark-empty{height:56px;border-radius:var(--radius-none);background:var(--color-canvas-sunken)}
 .tile-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem 1rem;margin:0}

@@ -33,6 +33,9 @@ _ALERT_CLASS = {
     bleaching.ALERT_WARNING: "a-warning",
     bleaching.ALERT_LEVEL_1: "a-alert1",
     bleaching.ALERT_LEVEL_2: "a-alert2",
+    bleaching.ALERT_LEVEL_3: "a-alert3",
+    bleaching.ALERT_LEVEL_4: "a-alert4",
+    bleaching.ALERT_LEVEL_5: "a-alert5",
 }
 # Biofouling verdict → the same severity palette. Distinct labels keep the two readable as
 # different things: a bleaching alert is about the reef, a drift verdict about the instrument.
