@@ -1090,7 +1090,7 @@ owners below are inferred from what was said.
 |---|---|
 | Turbidity sensor is on order at Mouser and delayed | [2026-10-23 journal](../hub/journal/2026-10-23.md) and [SCO-189](https://linear.app/scout1/issue/SCO-189): the Grove sensor has not been ordered |
 | Batteries are not ordered yet | 2026-10-21 team lunch (above): a larger cell of the same chemistry was ordered after the D-cell back-order |
-| David described the hydrophone data as "zip it and send it over" | Standing rule 2 and [EDD §10](../engineering/engineering-design-document.md): raw audio is stored on the SD card and never goes over LoRa. Probably meant SD-card recovery; recorded in [SCO-231](https://linear.app/scout1/issue/SCO-231) |
+| David described the hydrophone data as "zip it and send it over". Clarified 2026-10-25: he meant derived acoustic data in the LoRa packet, not raw audio | The as-built packet carries only an `audio_present` flag ([data schema](../engineering/data-schema.md)); all acoustic indices are computed on shore from the SD card, because the M0's 32 KB SRAM cannot analyse audio ([firmware README](../../firmware/README.md)). Raw audio never goes over LoRa (Standing rule 2). Whether to add derived acoustic values is open in [SCO-231](https://linear.app/scout1/issue/SCO-231) |
 | "Waterproofing is done" | [SCO-108](https://linear.app/scout1/issue/SCO-108) is In Test and [SCO-141](https://linear.app/scout1/issue/SCO-141) saltwater leak tests are Todo; no test log in the repo yet |
 
 ### Action items
