@@ -9,14 +9,17 @@
  *
  * Standby sleep wakes on the SAMD21 RTC (ArduinoLowPower), timed against the PCF8523 wall clock
  * (SCO-165/SCO-196); the watchdog is implemented; record_seq is retained across resets in a
- * no-init RAM section. The audio subsystem
- * and on-hardware driver verification remain Phase 1–2 bring-up (see notes inline).
+ * no-init RAM section. Each recording's acoustic summary (lib/scout_acoustic, ADR-0010) rides
+ * in the next transmit slot; the audio capture path itself (SCO-231) and on-hardware driver
+ * verification remain Phase 1–2 bring-up (see notes inline).
  */
 #include <Adafruit_SleepyDog.h>
 #include <Arduino.h>
 #include <ArduinoLowPower.h>
 
+#include "acoustic_config.h"
 #include "config.h"
+#include "drivers/audio_capture.h"
 #include "drivers/battery.h"
 #include "drivers/lora_link.h"
 #include "drivers/rtc.h"
@@ -24,6 +27,7 @@
 #include "drivers/sht40.h"
 #include "drivers/temperature.h"
 #include "drivers/turbidity.h"
+#include "scout_acoustic.h"
 #include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
@@ -33,7 +37,8 @@
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
     "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,"
-    "internal_humidity_pct";
+    "internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,"
+    "snap_count,clip_count";
 
 // Sequence counter, kept in a NO-INIT RAM section that the C startup does not clear. It
 // therefore survives a watchdog/system reset (the MCU stays powered), so record_seq stays
@@ -55,6 +60,10 @@ static Battery g_battery;
 static ScoutRtc g_rtc;
 static SdLogger g_sd;
 static LoraLink g_lora;
+static AudioCapture g_audio;
+static ScoutAcousticConfig g_acoustic_cfg;
+static ScoutAcoustic g_acoustic;           // streaming state for the recording in progress
+static ScoutAcousticSlot g_acoustic_slot;  // newest summary not yet handed to a transmit slot
 static bool g_rtc_ok = false;
 static bool g_sd_ok = false;
 static bool g_lora_ok = false;
@@ -226,6 +235,9 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);  // D13 LED off — it would draw more than the sleep floor
     digitalWrite(LED_BUILTIN, LOW);
 
+    g_acoustic_cfg = scout_acoustic_build_config();
+    g_acoustic_slot.valid = 0;
+
     g_battery.begin();
     g_temp.begin();
     g_turbidity.begin();
@@ -283,6 +295,48 @@ static void read_housing(uint16_t &flags, char *temp_s, size_t temp_cap, char *r
     snprintf(rh_s, rh_cap, "%.1f", rh_pct);
 }
 
+// Record one clip if the capture path can, summarising it as it streams (ADR-0010). Fills
+// `summary` and returns true only for a real recording; the newest one waits in
+// g_acoustic_slot for the next transmit slot. Today the capture hook (SCO-231) is not built,
+// so this always returns false and nothing is reported as recorded.
+static bool record_audio(uint32_t now, char *audio_file, size_t cap,
+                         ScoutAcousticSummary &summary) {
+    // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
+    DateTime dt(now);
+    snprintf(audio_file, cap, "%04u%02u%02u/%02u%02u%02uZ.WAV", dt.year(), dt.month(), dt.day(),
+             dt.hour(), dt.minute(), dt.second());
+    scout_acoustic_init(&g_acoustic, &g_acoustic_cfg);
+    if (!g_audio.record(audio_file, ACOUSTIC_CLIP_SECONDS, &g_acoustic)) {
+        audio_file[0] = '\0';
+        return false;
+    }
+    scout_acoustic_finalize(&g_acoustic, &summary);
+    scout_acoustic_slot_store(&g_acoustic_slot, &summary);
+    return true;
+}
+
+// The seven acoustic CSV cells: blank when there was no recording, like the turbidity cells
+// when the sensor is paused (the packet, which cannot be blank, carries zeros instead).
+static void format_acoustic(bool present, const ScoutAcousticSummary &s, char *buf, size_t cap) {
+    if (!present) {
+        snprintf(buf, cap, ",,,,,,");
+        return;
+    }
+    snprintf(buf, cap, "%d,%d,%d,%d,%d,%u,%u", s.lvl_anthro_cdb, s.lvl_mixed_cdb, s.lvl_bio_cdb,
+             s.lvl_broad_cdb, s.ndsi_e4, s.snap_count, s.clip_count);
+}
+
+static void apply_acoustic(ScoutReading &r, bool present, const ScoutAcousticSummary &s) {
+    r.audio_present = present ? 1 : 0;
+    r.lvl_anthro_cdb = present ? s.lvl_anthro_cdb : 0;
+    r.lvl_mixed_cdb = present ? s.lvl_mixed_cdb : 0;
+    r.lvl_bio_cdb = present ? s.lvl_bio_cdb : 0;
+    r.lvl_broad_cdb = present ? s.lvl_broad_cdb : 0;
+    r.ndsi_e4 = present ? s.ndsi_e4 : 0;
+    r.snap_count = present ? s.snap_count : 0;
+    r.clip_count = present ? s.clip_count : 0;
+}
+
 // Sample every sensor the power mode allows, log the row, and keep it for the next slot.
 static void sample_and_log() {
     uint16_t flags = 0;
@@ -321,11 +375,15 @@ static void sample_and_log() {
     read_housing(flags, housing_temp_s, sizeof(housing_temp_s), housing_rh_s,
                  sizeof(housing_rh_s));
 
-    // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
-    //    V1 stretch not on the confirmed build; this records the intent.
-    bool audio_present =
-        scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
-        scout_sense_audio(mode);
+    // 4. Audio: only when scheduled AND power allows (NORMAL only), and only reported when the
+    //    capture hook really recorded (SCO-231 not built yet, so not today).
+    char audio_file[32] = "";
+    ScoutAcousticSummary acoustic = ScoutAcousticSummary();
+    bool audio_present = false;
+    if (scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
+        scout_sense_audio(mode)) {
+        audio_present = record_audio(now, audio_file, sizeof(audio_file), acoustic);
+    }
 
     // 5. Power-mode flags, set before logging so the CSV row captures them.
     if (mode == SCOUT_POWER_CRITICAL) {
@@ -337,7 +395,7 @@ static void sample_and_log() {
     g_state.record_seq++;
 
     // 6. Log a CSV row (data-schema.md). Retry once on SD failure.
-    char timestamp[24];
+    char timestamp[32];  // room for any uint16 year, so -Wformat-truncation stays quiet
     if (g_rtc_ok) {
         DateTime dt((uint32_t)now);
         snprintf(timestamp, sizeof(timestamp), "%04u-%02u-%02uT%02u:%02u:%02uZ", dt.year(),
@@ -345,14 +403,6 @@ static void sample_and_log() {
     } else {
         snprintf(timestamp, sizeof(timestamp), "1970-01-01T00:00:00Z");
     }
-    // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
-    char audio_file[32] = "";
-    if (audio_present) {
-        DateTime dt((uint32_t)now);
-        snprintf(audio_file, sizeof(audio_file), "%04u%02u%02u/%02u%02u%02uZ.WAV", dt.year(),
-                 dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
-    }
-
     char flag_str[128];
     format_flags(flags, flag_str, sizeof(flag_str));
     char soh_str[80];
@@ -366,16 +416,19 @@ static void sample_and_log() {
         snprintf(turb_v_s, sizeof(turb_v_s), "%.3f", turbidity_v);
     }
 
-    char line[288];
+    char acoustic_s[64];
+    format_acoustic(audio_present, acoustic, acoustic_s, sizeof(acoustic_s));
+
+    char line[512];
     snprintf(line, sizeof(line),
-             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d,%s,%s",
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d,%s,%s,%s",
              SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
              temp_c, turb_adc_s, turb_v_s, battery_mv / 1000.0f,
              (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, flag_str, soh_str,
-             FW_MAJOR, FW_MINOR, FW_PATCH, housing_temp_s, housing_rh_s);
+             FW_MAJOR, FW_MINOR, FW_PATCH, housing_temp_s, housing_rh_s, acoustic_s);
 
     if (g_sd_ok) {
-        char date_ymd[9];
+        char date_ymd[12];
         if (g_rtc_ok) {
             DateTime dt((uint32_t)now);
             snprintf(date_ymd, sizeof(date_ymd), "%04u%02u%02u", dt.year(), dt.month(), dt.day());
@@ -399,10 +452,10 @@ static void sample_and_log() {
     r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
     r.flags = flags;
     r.soh = g_soh;
-    r.audio_present = audio_present ? 1 : 0;
     r.fw_major = FW_MAJOR;
     r.fw_minor = FW_MINOR;
     r.fw_patch = FW_PATCH;
+    apply_acoustic(r, audio_present, acoustic);
     g_last_reading = r;
     g_have_reading = true;
     g_last_mode = mode;
@@ -420,17 +473,21 @@ static void sample_and_log() {
     Serial.println(soh_str[0] ? soh_str : "-");
 }
 
-// Send the held reading in a transmit slot. A slot with nothing sent is simply missed — the
-// next slot carries a fresher reading, and the full record is on the SD card regardless.
-static void transmit_last_reading() {
+// Send the held reading in a transmit slot, with the acoustic summary of the most recent
+// recording since the previous slot (or zeros and audio_present = 0 if there was none). A slot
+// with nothing sent is simply missed — the next slot carries a fresher reading, and the full
+// record is on the SD card regardless.
+static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary &acoustic) {
     if (!g_lora_ok || !g_have_reading) {
         return;
     }
     // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s per copy).
     Watchdog.reset();
 
+    ScoutReading r = g_last_reading;
+    apply_acoustic(r, audio_present, acoustic);
     uint8_t packet[SCOUT_PACKET_SIZE];
-    size_t n = scout_packet_encode(&g_last_reading, packet);
+    size_t n = scout_packet_encode(&r, packet);
 
     // Copies per slot come from lib/scout_link (one since 2026-10-23; the three daily slots
     // give the time diversity). Never listen for an ACK: a lost packet costs timeliness, not
@@ -469,8 +526,14 @@ void loop() {
     if (TX_EVERY_SAMPLE && sampled) {
         slot = 0;  // bench build only: every sample is treated as a transmit slot
     }
-    if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
-        transmit_last_reading();
+    if (slot >= 0) {
+        // Every slot closes the window, sent or not: the next slot carries only recordings made
+        // after this one. CONSERVE and CRITICAL record nothing, and report zeros regardless.
+        ScoutAcousticSummary acoustic;
+        bool recorded = scout_acoustic_slot_take(&g_acoustic_slot, &acoustic) != 0;
+        if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
+            transmit_last_reading(recorded && g_last_mode == SCOUT_POWER_NORMAL, acoustic);
+        }
     }
 
     g_first_cycle = false;
