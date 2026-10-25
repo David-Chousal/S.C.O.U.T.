@@ -31,7 +31,9 @@ static const bool TX_EVERY_SAMPLE = false;
  * read, and the shore station listens on the same table. Change slot times here only. */
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
-static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
+// Audio: one 60 s clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
+// later carries the clip just before it. Clip length is ACOUSTIC_CLIP_SECONDS below.
+static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};
 /* Housing humidity alert (SCO-205). ⚠️ PROVISIONAL: a placeholder until the calibration in
  * SCO-204 (sealed chamber, known water added) gives a threshold from data. Rows at or above it
  * carry HUMIDITY_HIGH, which reaches the dashboard as a fault. */
@@ -139,18 +141,14 @@ static const float ADC_VREF_V = 3.3f;
  * EVERY VALUE HERE MUST EQUAL AcousticConfig / SECTIONS IN THAT FILE;
  * analytics/utils/tests/test_acoustic_summary.py parses this block and fails on drift.
  *
- * ⚠️ OPEN CONTRADICTIONS this block depends on (SCO-233, not reconciled here):
- *   - Audio ADC: built for the Feather's 12-bit ADC on A2 (build plan). The power budget and EDD
- *     assume a 24-bit PCM1808 over I²S. If that wins, ACOUSTIC_ADC_BITS, the clip margin and
- *     the snap floor change, and the 16x16 multiplies need revisiting.
- *   - Sample rate: 22,050 Hz (build plan, power budget, ADR-0010). The EDD's 16 kHz would put
- *     Nyquist on the bio band's 8 kHz upper edge; the filter coefficients are for 22,050 Hz
- *     only and must be regenerated (acoustic_summary.py --print-config) if it changes.
- *   - Schedule: AUDIO_HOURS_UTC above (3 clips/day) vs the power budget's midnight/dusk bursts
- *     and weekly diel day. Each transmit slot carries the most recent recording since the
- *     previous slot (ScoutAcousticSlot), which holds for any schedule. */
+ * Audio capture parameters are settled by ADR-0011 (2026-10-25): 3 × 60 s clips a day, 22,050 Hz,
+ * the Feather's 12-bit ADC on A2. The PCM1808 is the EDD's production-target ADC only; if a
+ * build ever moves to it, ACOUSTIC_ADC_BITS, the clip margin and the snap floor change, and the
+ * filter coefficients must be regenerated (acoustic_summary.py --print-config) for any other
+ * sample rate. Each transmit slot carries the most recent recording since the previous slot
+ * (ScoutAcousticSlot). */
 static const uint32_t ACOUSTIC_SAMPLE_RATE_HZ = 22050;  // the coefficients below assume this
-static const uint16_t ACOUSTIC_CLIP_SECONDS = 60;       // one recording (EDD §9), for SCO-231
+static const uint16_t ACOUSTIC_CLIP_SECONDS = 60;       // one recording (ADR-0011)
 static const uint8_t ACOUSTIC_ADC_BITS = ADC_RESOLUTION_BITS;
 // Centred sample << 3: a full-scale 12-bit swing becomes ±16,384, leaving the filters 6 dB of
 // headroom inside int16 before they saturate.
@@ -196,5 +194,22 @@ static const uint8_t ACOUSTIC_SNAP_WARMUP_SHIFT = 7;
 // SAMD21 ADC's few-LSB offset and gain error and a preamp that cannot quite reach the rails.
 // Counts in ADC codes, so it depends on ACOUSTIC_ADC_BITS.
 static const uint16_t ACOUSTIC_CLIP_MARGIN = 16;
+
+/* ── Audio capture (SCO-231, ADR-0011; drivers/audio_capture.h) ───────────────
+ * TC3 overflows at ACOUSTIC_SAMPLE_RATE_HZ (48 MHz / 2177 = 22,048.7 Hz, 59 ppm slow; the WAV
+ * header says 22,050), each overflow starts one ADC conversion on PIN_AUDIO_PREAMP through the
+ * event system, and the DMA moves every result into a ring of blocks. The main loop feeds each
+ * full block to the acoustic summary, converts it to 16-bit PCM and appends it to the WAV file.
+ * ⚠️ Written against the SAMD21 datasheet; not yet run on hardware (no hydrophone or preamp). */
+// 4 blocks of 2,048 samples (93 ms each, 16 KB of SRAM): up to 3 blocks (279 ms) can queue
+// while one SD write stalls before any sample is lost. Raise the block count, not the size, if
+// the bench shows longer SD stalls; the sample-count check reports any loss either way.
+static const uint16_t AUDIO_DMA_BLOCK_SAMPLES = 2048;
+static const uint8_t AUDIO_DMA_BLOCKS = 4;
+// Preamp settle time after the A3 gate turns it on, before the clip starts. ⚠️ PROVISIONAL:
+// set from the chosen amplifier's start-up (SCO-216) once it is on the bench.
+static const uint16_t AUDIO_PREAMP_WARMUP_MS = 200;
+// A recording is abandoned if no DMA block arrives for this long: the ADC or DMA is not running.
+static const uint16_t AUDIO_STALL_TIMEOUT_MS = 1000;
 
 #endif /* SCOUT_CONFIG_H */

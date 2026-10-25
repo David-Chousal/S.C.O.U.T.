@@ -46,6 +46,7 @@ _ROOT = Path(__file__).resolve().parents[3]
 _CONFIG_H = _ROOT / "firmware" / "src" / "config.h"
 _GOLDEN_H = _ROOT / "firmware" / "test" / "test_acoustic" / "golden_vectors.h"
 _INDICES = _ROOT / "analytics" / "utils" / "acoustic_indices.py"
+_CAPTURE_TEST = _ROOT / "firmware" / "test" / "test_capture" / "test_capture.cpp"
 
 
 def _tone(freq_hz: float, amplitude: int = 1000, n: int = 22050) -> AcousticSummary:
@@ -122,6 +123,25 @@ class LockstepTests(unittest.TestCase):
         expected = tuple(int(v) for v in levels.split(",")) + (snaps, clips)
         self.assertEqual(summarize(samples).as_tuple(), expected)
         self.assertGreater(snaps, 0, "the real excerpt should exercise the snap detector")
+
+
+class CaptureFileTests(unittest.TestCase):
+    """The WAV files the buoy writes (lib/scout_capture) must be files the shore pipeline reads."""
+
+    def test_firmware_wav_header_equals_the_wave_module(self):
+        import io
+        import wave
+
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(22050)
+            w.writeframes(bytes(2 * 22050 * 60))
+        text = _CAPTURE_TEST.read_text()
+        block = re.search(r"GOLDEN_WAV_HEADER\[[^\]]*\]\s*=\s*\{([^}]*)\}", text).group(1)
+        firmware = bytes(int(b, 16) for b in re.findall(r"0x([0-9a-fA-F]{2})", block))
+        self.assertEqual(firmware, buffer.getvalue()[:44])
 
 
 class LevelTests(unittest.TestCase):

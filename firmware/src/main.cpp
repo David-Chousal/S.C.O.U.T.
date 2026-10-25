@@ -10,8 +10,8 @@
  * Standby sleep wakes on the SAMD21 RTC (ArduinoLowPower), timed against the PCF8523 wall clock
  * (SCO-165/SCO-196); the watchdog is implemented; record_seq is retained across resets in a
  * no-init RAM section. Each recording's acoustic summary (lib/scout_acoustic, ADR-0010) rides
- * in the next transmit slot; the audio capture path itself (SCO-231) and on-hardware driver
- * verification remain Phase 1–2 bring-up (see notes inline).
+ * in the next transmit slot. On-hardware verification of every driver, including the audio
+ * capture driver (SCO-231), remains Phase 1–2 bring-up (see notes inline).
  */
 #include <Adafruit_SleepyDog.h>
 #include <Arduino.h>
@@ -295,10 +295,9 @@ static void read_housing(uint16_t &flags, char *temp_s, size_t temp_cap, char *r
     snprintf(rh_s, rh_cap, "%.1f", rh_pct);
 }
 
-// Record one clip if the capture path can, summarising it as it streams (ADR-0010). Fills
-// `summary` and returns true only for a real recording; the newest one waits in
-// g_acoustic_slot for the next transmit slot. Today the capture hook (SCO-231) is not built,
-// so this always returns false and nothing is reported as recorded.
+// Record one 60 s clip to the SD card, summarising it as it streams (ADR-0010/0011). Fills
+// `summary` and returns true only for a complete recording; the newest one waits in
+// g_acoustic_slot for the next transmit slot. A failed or short clip reports no audio.
 static bool record_audio(uint32_t now, char *audio_file, size_t cap,
                          ScoutAcousticSummary &summary) {
     // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
@@ -307,9 +306,15 @@ static bool record_audio(uint32_t now, char *audio_file, size_t cap,
              dt.hour(), dt.minute(), dt.second());
     scout_acoustic_init(&g_acoustic, &g_acoustic_cfg);
     if (!g_audio.record(audio_file, ACOUSTIC_CLIP_SECONDS, &g_acoustic)) {
+        Serial.print("audio: FAILED reason=");
+        Serial.print((int)g_audio.lastResult());
+        Serial.print(" samples=");
+        Serial.println(g_audio.lastSamples());
         audio_file[0] = '\0';
         return false;
     }
+    Serial.print("audio: ok samples=");
+    Serial.println(g_audio.lastSamples());
     scout_acoustic_finalize(&g_acoustic, &summary);
     scout_acoustic_slot_store(&g_acoustic_slot, &summary);
     return true;
@@ -376,11 +381,11 @@ static void sample_and_log() {
                  sizeof(housing_rh_s));
 
     // 4. Audio: only when scheduled AND power allows (NORMAL only), and only reported when the
-    //    capture hook really recorded (SCO-231 not built yet, so not today).
+    //    clip was captured complete. Needs the SD card, where the WAV goes.
     char audio_file[32] = "";
     ScoutAcousticSummary acoustic = ScoutAcousticSummary();
     bool audio_present = false;
-    if (scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
+    if (g_sd_ok && scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
         scout_sense_audio(mode)) {
         audio_present = record_audio(now, audio_file, sizeof(audio_file), acoustic);
     }
