@@ -1,5 +1,5 @@
 /*
- * scout_packet — LoRa telemetry packet encoder (buoy side).
+ * scout_packet — LoRa telemetry packet codec: encoder (buoy) and decoder (ESP32-S3 shore station).
  *
  * THE WIRE FORMAT MUST MATCH shore/scout_shore/packet.py byte-for-byte — that Python module
  * is the shore decoder. Layout (little-endian), 27-byte body + 2-byte CRC = 29 bytes:
@@ -70,6 +70,17 @@ uint16_t scout_crc16_ccitt(const uint8_t *data, size_t len);
 
 /* Encode `r` into `out` (must hold >= SCOUT_PACKET_SIZE). Returns bytes written (30). */
 size_t scout_packet_encode(const ScoutReading *r, uint8_t *out);
+
+/* Decode outcomes, checked in this order — same checks as decode() in packet.py. */
+typedef enum {
+    SCOUT_DECODE_OK = 0,
+    SCOUT_DECODE_BAD_LENGTH = 1,  /* not exactly SCOUT_PACKET_SIZE bytes */
+    SCOUT_DECODE_BAD_CRC = 2,     /* trailing CRC does not match the body */
+    SCOUT_DECODE_BAD_VERSION = 3, /* schema_version != SCOUT_PACKET_VERSION */
+} scout_decode_result_t;
+
+/* Decode a received payload into `out` (shore side, SCO-24). `out` is written only on OK. */
+scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutReading *out);
 
 /* Fixed-point helpers matching the Python scaling (round-half-away-from-zero). */
 static inline int16_t scout_temp_centi(float celsius) {
