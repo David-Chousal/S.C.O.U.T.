@@ -341,7 +341,7 @@ time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.p
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
 
-**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🔴 Firmware not written.
+**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🟡 Receive firmware written 2026-10-23 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`), never run on the board; the WiFi push is not written.
 Per the agreed design ([Shore Station](shore-station.md)) it receives with the same settings and
 erratum as 4a, listens in a **±2 min** window around each slot, and **pushes to the dashboard
 over WiFi**. Under ADR-0008 it will also transmit, so its transmit antenna must stay **≤ 2.15 dBi**
@@ -475,7 +475,7 @@ when any exist, the simulator otherwise. **PASS:** with real CSVs committed, the
 ### On every retrieval — merge the SD card back in
 
 The card is the **complete** record: every reading the radio missed exists only there, and
-`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the 30-byte packet.
+`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the packet.
 
 ```bash
 cd shore
