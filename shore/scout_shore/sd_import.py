@@ -6,7 +6,7 @@ exists only on the buoy's SD card. The analytics pipeline could already *read* a
 (:func:`telemetry.io.load_dir` takes any directory of CSVs), but nothing merged the two record
 sets, so a deployment ended with a gappy shore CSV and a complete card that never met.
 
-**The card is the better record, not merely an equal one.** A LoRa packet is a lossy 30-byte
+**The card is the better record, not merely an equal one.** A LoRa packet is a lossy 44-byte
 compression of a CSV row: `turbidity_v`, `turbidity_fau` and the audio filename do not fit and
 are dropped on the way out (see :mod:`scout_shore.packet` against ``COLUMNS``). So where both
 sides hold the same reading, the card's row wins and fills in what the packet could not carry.

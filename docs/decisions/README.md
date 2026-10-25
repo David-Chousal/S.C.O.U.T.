@@ -27,6 +27,8 @@ multiple subsystems.
 | [0007](0007-primary-cell-power-source.md) | Deployment power source — primary Li-SOCl₂ D cells, no solar | 🟡 Open — working: two D cells + standby (2026-10-06) |
 | [0008](0008-over-the-air-firmware-updates.md) | Over-the-air firmware updates — the LoRa link becomes two-way | 🟢 Accepted (2026-10-16); protocol design pending |
 | [0009](0009-tideline-design-system.md) | Tideline design system for the public site and dashboard | 🟡 Open — direction chosen 2026-10-19; migration awaiting approval |
+| [0010](0010-acoustic-summary-over-lora.md) | Acoustic summary over LoRa — band levels, NDSI, snap and clip counts | 🟢 Accepted (2026-10-25); FFT bands and L90/L50/L10 pending |
+| [0011](0011-audio-capture-parameters.md) | Audio capture — 3 × 60 s clips a day, 22.05 kHz, Feather 12-bit ADC on A2; shore indices at 22.05 kHz too | 🟢 Accepted (2026-10-25) |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 

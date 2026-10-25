@@ -2,7 +2,7 @@
 """Merge a retrieved buoy SD card into the shore station's record.
 
 Run this after physically recovering a card. Readings shore never received are added; readings
-it did receive are enriched with the columns a 30-byte packet could not carry (`turbidity_v`,
+it did receive are enriched with the columns a 44-byte packet could not carry (`turbidity_v`,
 `turbidity_fau`, the audio filename). Nothing is ever deleted, and running it twice is a no-op.
 
     # See what a card holds before touching anything:

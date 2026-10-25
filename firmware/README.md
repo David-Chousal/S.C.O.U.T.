@@ -32,12 +32,12 @@ See [ADR-0001](../docs/decisions/0001-mcu-and-radio-selection.md).
 
 Per [Engineering Design Document §12](../docs/engineering/engineering-design-document.md):
 
-- Sensor management — temperature (DS18B20, 1-Wire), turbidity (Seeed Grove 101020752, analog), audio (PCM1808, I²S)
+- Sensor management — temperature (DS18B20, 1-Wire), turbidity (Seeed Grove 101020752, analog), audio (hydrophone preamp on A2, SAMD21 12-bit ADC at 22.05 kHz via timer + DMA, [ADR-0011](../docs/decisions/0011-audio-capture-parameters.md))
 - Duty-cycle state machine — `Sleep → Wake → Sense → Log → Battery check → Transmit → Sleep`
 - Deep sleep scheduling and RTC alarm wake
 - Battery voltage monitoring, with transmission skipped below threshold
 - Local logging to microSD (Adalogger FeatherWing)
-- LoRa packet assembly and transmission (30-byte payload; 140 B is the ceiling, `SCOUT_LINK_PAYLOAD_CEILING_BYTES`)
+- LoRa packet assembly and transmission (44-byte payload in v3, including the 14-byte acoustic summary from `lib/scout_acoustic`; 140 B is the ceiling, `SCOUT_LINK_PAYLOAD_CEILING_BYTES`)
 - Watchdog timer and error recovery
 - State of Health telemetry — battery voltage, internal temperature, humidity
 
@@ -113,8 +113,10 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     guard that the repeat schedule cannot outrun the watchdog. Needs a real range test
     (SCO-14) to confirm the delivery gain over the air.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
-  on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
-  hook only — it's a V1 stretch, not on the confirmed Feather build.
+  on-hardware verification and pin confirmation. **Audio capture** (`drivers/audio_capture.h`,
+  [SCO-231](https://linear.app/scout1/issue/SCO-231)) is written and compiles but has never run:
+  there is no hydrophone or preamp yet. Its hardware-free half (`lib/scout_capture`: WAV header,
+  12→16-bit conversion, dropped-sample accounting) is unit-tested.
 
 ## Notes
 

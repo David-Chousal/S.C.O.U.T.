@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from pathlib import Path
 
-from . import bleaching, turbidity
+from . import acoustic, bleaching, turbidity
 from .aggregate import DailyAggregate, aggregate_daily, daily_temperature_series
 from .drift import DriftAssessment, assess_drift
 from .io import load_csv, load_dir
@@ -58,6 +58,8 @@ class TelemetryReport:
     latest_flags: frozenset[str] = frozenset()
     # schema_version of the newest packet: v2 and later carry the housing humidity flags.
     latest_schema_version: int = 0
+    # Per-recording acoustic summaries (schema v3, ADR-0010); None until one arrives.
+    acoustic: acoustic.AcousticReport | None = None
 
 
 def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> TelemetryReport:
@@ -106,6 +108,7 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
         received=tuple(sorted(r.timestamp for r in timed)),
         latest_flags=_latest_flags(timed),
         latest_schema_version=max(timed, key=lambda r: r.timestamp).schema_version if timed else 0,
+        acoustic=acoustic.summarize_acoustic(timed),
     )
 
 
@@ -198,6 +201,7 @@ def write_summary_json(report: TelemetryReport, path: str | Path) -> Path:
             "rationale": report.turbidity_drift.rationale,
             "note": report.turbidity_drift.note,
         },
+        "acoustic": acoustic.to_json(report.acoustic),
     }
     path.write_text(json.dumps(summary, indent=2))
     return path

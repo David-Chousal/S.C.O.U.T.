@@ -211,8 +211,9 @@ def _soundscape() -> str:
         "Okinawa</strong>: eight monthly sessions from August 2017 to July 2018, a stand-in "
         "until S.C.O.U.T. records its own audio.</p>"
         '<p class="callout"><strong>Raw audio never leaves the buoy.</strong> Waveform data is '
-        "far too large for a 30-byte LoRa packet, so the buoy stores recordings on board and "
-        "transmits only summary statistics.</p>"
+        "far too large for a 44-byte LoRa packet, so the buoy stores recordings on board and "
+        "transmits only a 14-byte summary of each one: three band levels, an NDSI estimate, a "
+        "snap count and a clip count.</p>"
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Full bioacoustic methodology</a></p>'
         "</div></div>",
         cls="section-sm",

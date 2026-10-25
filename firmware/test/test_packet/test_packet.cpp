@@ -7,8 +7,18 @@
 
 // From packet.py: Reading(buoy_id=1, ts=2027-03-01T00:00:00Z, seq=42, temp=26.44,
 // turb=514, batt=3.28, uptime=75600, flags={SD_RETRY,BATT_LOW_SKIP_TX},
-// soh={WATCHDOG_RESET,SD_INIT_FAIL}, audio=1, fw v0.1.0)
+// soh={WATCHDOG_RESET,SD_INIT_FAIL}, audio=1, fw v0.1.0, acoustic summary (v3) of the real
+// excerpt in test_acoustic: -3972, -3006, -1068, -995 cdB, ndsi 9975, 10 snaps, 24 clips)
 static const uint8_t GOLDEN[SCOUT_PACKET_SIZE] = {
+    0x03, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x2a, 0x00, 0x00,
+    0x00, 0x54, 0x0a, 0x02, 0x02, 0xd0, 0x0c, 0x50, 0x27, 0x01,
+    0x00, 0x09, 0x00, 0x05, 0x01, 0x00, 0x01, 0x00, 0x7c, 0xf0,
+    0x42, 0xf4, 0xd4, 0xfb, 0x1d, 0xfc, 0xf7, 0x26, 0x0a, 0x00,
+    0x18, 0x00, 0x78, 0x56};
+
+// The same reading as the v2 GOLDEN this test held before v3: 30 bytes, no acoustic summary.
+// Old frames and replayed logs must still decode.
+static const uint8_t GOLDEN_V2[SCOUT_PACKET_LEGACY_SIZE] = {
     0x02, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x2a, 0x00, 0x00,
     0x00, 0x54, 0x0a, 0x02, 0x02, 0xd0, 0x0c, 0x50, 0x27, 0x01,
     0x00, 0x09, 0x00, 0x05, 0x01, 0x00, 0x01, 0x00, 0xb1, 0x72};
@@ -29,6 +39,13 @@ static ScoutReading golden_reading() {
     r.fw_major = 0;
     r.fw_minor = 1;
     r.fw_patch = 0;
+    r.lvl_anthro_cdb = -3972;
+    r.lvl_mixed_cdb = -3006;
+    r.lvl_bio_cdb = -1068;
+    r.lvl_broad_cdb = -995;
+    r.ndsi_e4 = 9975;
+    r.snap_count = 10;
+    r.clip_count = 24;
     return r;
 }
 
@@ -40,7 +57,7 @@ void test_encode_matches_shore_golden(void) {
 }
 
 void test_crc_of_body_is_known(void) {
-    TEST_ASSERT_EQUAL_HEX16(0x72b1, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
+    TEST_ASSERT_EQUAL_HEX16(0x5678, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
 }
 
 void test_fixed_point_helpers(void) {
@@ -58,6 +75,62 @@ void test_decode_golden_round_trips(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(GOLDEN, reencoded, SCOUT_PACKET_SIZE);
     TEST_ASSERT_EQUAL_UINT32(want.record_seq, got.record_seq);
     TEST_ASSERT_EQUAL_INT16(want.temp_c_centi, got.temp_c_centi);
+    TEST_ASSERT_EQUAL_INT16(want.lvl_anthro_cdb, got.lvl_anthro_cdb);
+    TEST_ASSERT_EQUAL_INT16(want.ndsi_e4, got.ndsi_e4);
+    TEST_ASSERT_EQUAL_UINT16(want.snap_count, got.snap_count);
+    TEST_ASSERT_EQUAL_UINT16(want.clip_count, got.clip_count);
+}
+
+void test_decode_legacy_v2_frame_with_zero_acoustic_fields(void) {
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK,
+                          scout_packet_decode(GOLDEN_V2, SCOUT_PACKET_LEGACY_SIZE, &got));
+    TEST_ASSERT_EQUAL_UINT8(2, got.schema_version);
+    TEST_ASSERT_EQUAL_UINT32(42, got.record_seq);
+    TEST_ASSERT_EQUAL_UINT8(1, got.audio_present);
+    TEST_ASSERT_EQUAL_INT16(0, got.lvl_bio_cdb);
+    TEST_ASSERT_EQUAL_UINT16(0, got.snap_count);
+}
+
+void test_decode_legacy_v1_frame(void) {
+    uint8_t buf[SCOUT_PACKET_LEGACY_SIZE];
+    for (size_t i = 0; i < SCOUT_PACKET_LEGACY_SIZE; i++) {
+        buf[i] = GOLDEN_V2[i];
+    }
+    buf[0] = 1;
+    uint16_t crc = scout_crc16_ccitt(buf, SCOUT_PACKET_LEGACY_BODY_SIZE);
+    buf[28] = (uint8_t)(crc & 0xFF);
+    buf[29] = (uint8_t)(crc >> 8);
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(buf, sizeof(buf), &got));
+    TEST_ASSERT_EQUAL_UINT8(1, got.schema_version);
+}
+
+void test_decode_rejects_v3_version_in_a_legacy_length_frame(void) {
+    uint8_t buf[SCOUT_PACKET_LEGACY_SIZE];
+    for (size_t i = 0; i < SCOUT_PACKET_LEGACY_SIZE; i++) {
+        buf[i] = GOLDEN_V2[i];
+    }
+    buf[0] = SCOUT_PACKET_VERSION;
+    uint16_t crc = scout_crc16_ccitt(buf, SCOUT_PACKET_LEGACY_BODY_SIZE);
+    buf[28] = (uint8_t)(crc & 0xFF);
+    buf[29] = (uint8_t)(crc >> 8);
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_BAD_VERSION, scout_packet_decode(buf, sizeof(buf), &got));
+}
+
+void test_negative_acoustic_levels_round_trip(void) {
+    ScoutReading r = golden_reading();
+    r.lvl_broad_cdb = INT16_MIN;  // digital silence
+    r.ndsi_e4 = -10000;
+    r.snap_count = UINT16_MAX;
+    uint8_t buf[SCOUT_PACKET_SIZE];
+    scout_packet_encode(&r, buf);
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(buf, sizeof(buf), &got));
+    TEST_ASSERT_EQUAL_INT16(INT16_MIN, got.lvl_broad_cdb);
+    TEST_ASSERT_EQUAL_INT16(-10000, got.ndsi_e4);
+    TEST_ASSERT_EQUAL_UINT16(UINT16_MAX, got.snap_count);
 }
 
 void test_decode_negative_temperature(void) {
@@ -101,6 +174,10 @@ static void run_all() {
     RUN_TEST(test_crc_of_body_is_known);
     RUN_TEST(test_fixed_point_helpers);
     RUN_TEST(test_decode_golden_round_trips);
+    RUN_TEST(test_decode_legacy_v2_frame_with_zero_acoustic_fields);
+    RUN_TEST(test_decode_legacy_v1_frame);
+    RUN_TEST(test_decode_rejects_v3_version_in_a_legacy_length_frame);
+    RUN_TEST(test_negative_acoustic_levels_round_trip);
     RUN_TEST(test_decode_negative_temperature);
     RUN_TEST(test_decode_rejects_wrong_length);
     RUN_TEST(test_decode_rejects_corrupt_byte);

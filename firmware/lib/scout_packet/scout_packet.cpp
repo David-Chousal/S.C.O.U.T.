@@ -58,21 +58,31 @@ size_t scout_packet_encode(const ScoutReading *r, uint8_t *out) {
     put_u8(&p, r->fw_major);
     put_u8(&p, r->fw_minor);
     put_u8(&p, r->fw_patch);
+    put_u16(&p, (uint16_t)r->lvl_anthro_cdb);
+    put_u16(&p, (uint16_t)r->lvl_mixed_cdb);
+    put_u16(&p, (uint16_t)r->lvl_bio_cdb);
+    put_u16(&p, (uint16_t)r->lvl_broad_cdb);
+    put_u16(&p, (uint16_t)r->ndsi_e4);
+    put_u16(&p, r->snap_count);
+    put_u16(&p, r->clip_count);
 
-    size_t body_len = (size_t)(p - out); /* 27 */
+    size_t body_len = (size_t)(p - out); /* 42 */
     put_u16(&p, scout_crc16_ccitt(out, body_len));
-    return (size_t)(p - out); /* 29 */
+    return (size_t)(p - out); /* 44 */
 }
 
 scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutReading *out) {
-    if (len != SCOUT_PACKET_SIZE) {
+    bool legacy = (len == SCOUT_PACKET_LEGACY_SIZE);
+    if (len != SCOUT_PACKET_SIZE && !legacy) {
         return SCOUT_DECODE_BAD_LENGTH;
     }
-    const uint8_t *crc_at = buf + SCOUT_PACKET_BODY_SIZE;
-    if (get_u16(&crc_at) != scout_crc16_ccitt(buf, SCOUT_PACKET_BODY_SIZE)) {
+    size_t body_len = legacy ? SCOUT_PACKET_LEGACY_BODY_SIZE : SCOUT_PACKET_BODY_SIZE;
+    const uint8_t *crc_at = buf + body_len;
+    if (get_u16(&crc_at) != scout_crc16_ccitt(buf, body_len)) {
         return SCOUT_DECODE_BAD_CRC;
     }
-    if (buf[0] != SCOUT_PACKET_VERSION) {
+    bool version_ok = legacy ? (buf[0] == 1 || buf[0] == 2) : (buf[0] == SCOUT_PACKET_VERSION);
+    if (!version_ok) {
         return SCOUT_DECODE_BAD_VERSION;
     }
     const uint8_t *p = buf;
@@ -91,6 +101,13 @@ scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutR
     r.fw_major = get_u8(&p);
     r.fw_minor = get_u8(&p);
     r.fw_patch = get_u8(&p);
+    r.lvl_anthro_cdb = legacy ? 0 : (int16_t)get_u16(&p);
+    r.lvl_mixed_cdb = legacy ? 0 : (int16_t)get_u16(&p);
+    r.lvl_bio_cdb = legacy ? 0 : (int16_t)get_u16(&p);
+    r.lvl_broad_cdb = legacy ? 0 : (int16_t)get_u16(&p);
+    r.ndsi_e4 = legacy ? 0 : (int16_t)get_u16(&p);
+    r.snap_count = legacy ? 0 : get_u16(&p);
+    r.clip_count = legacy ? 0 : get_u16(&p);
     *out = r;
     return SCOUT_DECODE_OK;
 }

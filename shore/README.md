@@ -102,7 +102,7 @@ is never labelled as a simulation.
 The buoy transmits each daily packet a few times and never waits for an acknowledgement. If
 shore misses every copy — a power cut, a storm, the station down for maintenance — that reading
 exists **only** on the buoy's SD card. And even the readings that did arrive are lossy: a
-30-byte packet cannot carry `turbidity_v`, `turbidity_ntu` or the audio filename, so those cells
+44-byte packet cannot carry `turbidity_v`, `turbidity_ntu` or the audio filename, so those cells
 are empty in the shore CSV while the card has them.
 
 ```bash
@@ -126,7 +126,7 @@ prevent.
 
 ## Contract note
 
-`packet.py` is the **verified wire format** (30 bytes, under the 140-byte payload ceiling
+`packet.py` is the **verified wire format** (44 bytes in v3, under the 140-byte payload ceiling
 that `LORA_PAYLOAD_BUDGET_BYTES` shares with the firmware — see
 [`docs/hub/facts.md`](../docs/hub/facts.md)). It's mirrored byte-identical by the firmware C
 encoder, CI-enforced via a golden vector (`firmware/test/test_packet`). `turbidity_v` still

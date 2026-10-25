@@ -7,9 +7,10 @@ Both ends MUST agree on this layout — the firmware C encoder mirrors this modu
 > ✅ **Verified against the firmware encoder** — byte-identical, CI-enforced via a golden
 > vector (`firmware/test/test_packet`). No longer a proposal pending ECE sign-off.
 
-Layout (little-endian), 28-byte body + 2-byte CRC = **30 bytes** (under the 140-byte
-payload ceiling, derived from the firmware's send timeout, leaving room for future signals;
-see [`docs/hub/facts.md`](../../docs/hub/facts.md)):
+Layout (little-endian), v3: 42-byte body + 2-byte CRC = **44 bytes** (under the 140-byte
+payload ceiling, derived from the firmware's send timeout; see
+[`docs/hub/facts.md`](../../docs/hub/facts.md)). v1 and v2 were the first 28 body bytes alone
+(30 bytes); :func:`decode` still reads them, with the acoustic fields zero.
 
 | Field | Type | Encoding |
 |---|---|---|
@@ -25,7 +26,19 @@ see [`docs/hub/facts.md`](../../docs/hub/facts.md)):
 | soh | uint8 | device State-of-Health bitfield, see SOH_BITS |
 | audio_present | uint8 | 1 if a recording was taken this cycle |
 | fw_major/minor/patch | uint8 ×3 | firmware version |
+| lvl_anthro_cdb | int16 | RMS level 0–200 Hz, centi-dB re ADC full scale (v3) |
+| lvl_mixed_cdb | int16 | RMS level 200–1,000 Hz (v3) |
+| lvl_bio_cdb | int16 | RMS level 1–8 kHz (v3) |
+| lvl_broad_cdb | int16 | broadband RMS level (v3) |
+| ndsi_e4 | int16 | NDSI × 10,000 (v3) |
+| snap_count | uint16 | snaps in the bio band, saturating (v3) |
+| clip_count | uint16 | samples near the ADC rails, saturating (v3) |
 | crc | uint16 | CRC-16/CCITT-FALSE over the body |
+
+The v3 acoustic fields are the summary of the most recent recording since the previous transmit
+slot (ADR-0010, computed by ``firmware/lib/scout_acoustic``, specified by
+``analytics/utils/acoustic_summary.py``). They are all zero, with ``audio_present`` false, when
+there was no recording.
 """
 
 from __future__ import annotations
@@ -35,13 +48,32 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 # v2 (2026-10-23, SCO-205): HUMIDITY_HIGH / HUMIDITY_FAIL flags and two internal-sensor CSV
-# columns; byte layout unchanged. Must equal SCOUT_PACKET_VERSION in firmware/lib/scout_packet.
-PACKET_VERSION = 2
+# columns; byte layout unchanged. v3 (2026-10-25, ADR-0010 / SCO-233): the 14-byte acoustic
+# summary appended to the body. Must equal SCOUT_PACKET_VERSION in firmware/lib/scout_packet.
+PACKET_VERSION = 3
 
-_BODY_FORMAT = "<BHIIhHHIHBBBBB"  # 28 bytes (soh byte inserted after flags)
+_LEGACY_BODY_FORMAT = "<BHIIhHHIHBBBBB"  # v1/v2: 28 bytes
+_ACOUSTIC_FORMAT = "hhhhhHH"  # v3: 14 bytes, ADR-0010 order
+_BODY_FORMAT = _LEGACY_BODY_FORMAT + _ACOUSTIC_FORMAT  # 42 bytes
 _BODY_SIZE = struct.calcsize(_BODY_FORMAT)
+_LEGACY_BODY_SIZE = struct.calcsize(_LEGACY_BODY_FORMAT)
 _CRC_FORMAT = "<H"
 PACKET_SIZE = _BODY_SIZE + struct.calcsize(_CRC_FORMAT)
+LEGACY_PACKET_SIZE = _LEGACY_BODY_SIZE + struct.calcsize(_CRC_FORMAT)
+LEGACY_VERSIONS = (1, 2)
+
+# The v3 fields, in wire order. Also the CSV column names (schema.py).
+ACOUSTIC_FIELDS = (
+    "lvl_anthro_cdb",
+    "lvl_mixed_cdb",
+    "lvl_bio_cdb",
+    "lvl_broad_cdb",
+    "ndsi_e4",
+    "snap_count",
+    "clip_count",
+)
+_ACOUSTIC_RANGES = {name: (-32768, 32767) for name in ACOUSTIC_FIELDS[:5]}
+_ACOUSTIC_RANGES.update({"snap_count": (0, 65535), "clip_count": (0, 65535)})
 
 # Largest telemetry payload the buoy may send (SCO-97, 2026-10-23). Derived from the firmware's
 # 2 s send timeout: 140 B + RadioHead's 4 B header is 1,739 ms at BW500/SF12/CR4-8. Must equal
@@ -71,6 +103,9 @@ SOH_BITS = {
 }
 
 
+_LEGACY_FIELD_COUNT = len(_LEGACY_BODY_FORMAT) - 1  # one struct field per format char after '<'
+
+
 class PacketError(ValueError):
     """Raised when a payload cannot be decoded (bad length, CRC, or version)."""
 
@@ -94,6 +129,14 @@ class Reading:
     audio_present: bool = False
     fw_version: str = "v0.1.0"
     schema_version: int = PACKET_VERSION
+    # Acoustic summary (v3). Zero with audio_present False means no recording since the last slot.
+    lvl_anthro_cdb: int = 0
+    lvl_mixed_cdb: int = 0
+    lvl_bio_cdb: int = 0
+    lvl_broad_cdb: int = 0
+    ndsi_e4: int = 0
+    snap_count: int = 0
+    clip_count: int = 0
 
     def __post_init__(self) -> None:
         if self.timestamp.tzinfo is None:
@@ -104,6 +147,13 @@ class Reading:
         unknown_soh = set(self.soh) - set(SOH_BITS)
         if unknown_soh:
             raise ValueError(f"unknown soh bit(s): {sorted(unknown_soh)}")
+        for name, (low, high) in _ACOUSTIC_RANGES.items():
+            if not low <= getattr(self, name) <= high:
+                raise ValueError(f"{name}={getattr(self, name)} outside {low}..{high}")
+
+    def acoustic(self) -> tuple[int, ...]:
+        """The seven v3 fields in wire order."""
+        return tuple(getattr(self, name) for name in ACOUSTIC_FIELDS)
 
 
 def crc16_ccitt(data: bytes) -> int:
@@ -165,6 +215,7 @@ def encode(reading: Reading) -> bytes:
         fw_major,
         fw_minor,
         fw_patch,
+        *reading.acoustic(),
     )
     return body + struct.pack(_CRC_FORMAT, crc16_ccitt(body))
 
@@ -172,13 +223,20 @@ def encode(reading: Reading) -> bytes:
 def decode(payload: bytes) -> Reading:
     """Parse an on-wire payload back into a :class:`Reading`.
 
-    Raises :class:`PacketError` on wrong length, CRC mismatch, or version mismatch.
+    A 30-byte v1/v2 payload decodes with its own ``schema_version`` and the acoustic fields
+    zero. Raises :class:`PacketError` on wrong length, CRC mismatch, or version mismatch.
     """
-    if len(payload) != PACKET_SIZE:
-        raise PacketError(f"expected {PACKET_SIZE} bytes, got {len(payload)}")
-    body, (crc,) = payload[:_BODY_SIZE], struct.unpack(_CRC_FORMAT, payload[_BODY_SIZE:])
+    legacy = len(payload) == LEGACY_PACKET_SIZE
+    if len(payload) != PACKET_SIZE and not legacy:
+        raise PacketError(f"expected {PACKET_SIZE} (or legacy {LEGACY_PACKET_SIZE}) bytes, "
+                          f"got {len(payload)}")
+    body_size = _LEGACY_BODY_SIZE if legacy else _BODY_SIZE
+    body, (crc,) = payload[:body_size], struct.unpack(_CRC_FORMAT, payload[body_size:])
     if crc != crc16_ccitt(body):
         raise PacketError("CRC mismatch — corrupt or truncated packet")
+
+    fields = struct.unpack(_LEGACY_BODY_FORMAT if legacy else _BODY_FORMAT, body)
+    acoustic = (0,) * len(ACOUSTIC_FIELDS) if legacy else fields[-len(ACOUSTIC_FIELDS):]
 
     (
         schema_version,
@@ -195,11 +253,13 @@ def decode(payload: bytes) -> Reading:
         fw_major,
         fw_minor,
         fw_patch,
-    ) = struct.unpack(_BODY_FORMAT, body)
+    ) = fields[:_LEGACY_FIELD_COUNT]
 
-    if schema_version != PACKET_VERSION:
+    allowed = LEGACY_VERSIONS if legacy else (PACKET_VERSION,)
+    if schema_version not in allowed:
         raise PacketError(
-            f"unsupported schema_version {schema_version} (decoder is v{PACKET_VERSION})"
+            f"unsupported schema_version {schema_version} in a {len(payload)}-byte packet "
+            f"(decoder is v{PACKET_VERSION}, legacy v1/v2 at {LEGACY_PACKET_SIZE} bytes)"
         )
 
     return Reading(
@@ -215,4 +275,5 @@ def decode(payload: bytes) -> Reading:
         audio_present=bool(audio_present),
         fw_version=f"v{fw_major}.{fw_minor}.{fw_patch}",
         schema_version=schema_version,
+        **dict(zip(ACOUSTIC_FIELDS, acoustic)),
     )

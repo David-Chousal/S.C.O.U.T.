@@ -27,6 +27,12 @@ jobs:
         working-directory: analytics
         run: python -m unittest discover -s telemetry/tests -t . -v
 
+      # The acoustic summary reference (ADR-0010) is the spec the firmware ports; these tests
+      # also fail if config.h or the firmware's golden vectors drift from it.
+      - name: Acoustic summary reference tests
+        working-directory: analytics
+        run: python -m unittest discover -s utils/tests -t . -v
+
       - name: Packet contract guard (firmware GOLDEN == shore encoder)
         run: python scripts/check_packet_contract.py
 

@@ -160,7 +160,7 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 ### The cross-language packet contract
 
 `firmware/lib/scout_packet/` (C++) and `shore/scout_shore/packet.py` (Python) encode the **same
-30 bytes**. `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
+44 bytes** (schema v3). `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
 code that decodes frames must also match it. **Change one, change all, and bump
 `SCOUT_PACKET_VERSION`.**
 
@@ -341,7 +341,7 @@ time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.p
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
 
-**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🔴 Firmware not written.
+**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🟡 Receive firmware written 2026-10-23 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`), never run on the board; the WiFi push is not written.
 Per the agreed design ([Shore Station](shore-station.md)) it receives with the same settings and
 erratum as 4a, listens in a **±2 min** window around each slot, and **pushes to the dashboard
 over WiFi**. Under ADR-0008 it will also transmit, so its transmit antenna must stay **≤ 2.15 dBi**
@@ -403,13 +403,20 @@ power A7 reads the charger output, not a battery; don't tune thresholds against 
 
 ---
 
-### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-8](https://linear.app/scout1/issue/SCO-8) · parts not bought; firmware not written (G7)
+### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-231](https://linear.app/scout1/issue/SCO-231) · parts not bought; firmware written, never run (G7)
 
 Aquarian H2dM on 3.5 mm plug-in power, biased from 3.3 V through 1.1 kΩ, preamp out to **A2**,
 power switch Q2 on **A3** (LOW = on). Values in the [drawing set](electronics-drawing-set.md#hydrophone-front-end-values).
 Raw audio stays on the SD card and is **never** sent over LoRa.
 
-**PASS:** 1-min clips at 22.05 kHz on schedule; recording current ≤ ~76 mA; clips run cleanly
+Firmware: `drivers/audio_capture.h` records one 60 s clip at 00:00, 08:00 and 16:00 UTC to
+`/AUDIO/YYYYMMDD/HHMMSSZ.WAV` ([ADR-0011](../decisions/0011-audio-capture-parameters.md)). The
+serial log prints `audio: ok samples=1323000` or `audio: FAILED reason=<n>` (1 SD open, 2 DMA,
+3 stalled, 4 overrun, 5 SD write). Use the bench build to hit a recording hour quickly by
+setting the clock to 07:59 UTC.
+
+**PASS:** 1-min clips at 22.05 kHz on schedule with `samples=1323000` every time; a 1 kHz test
+tone reads 1 kHz in the WAV; recording current ≤ ~76 mA (estimate ≈ 56 mA); clips run cleanly
 through the acoustic pipeline; power budget re-run with the measured draw.
 
 ---
@@ -468,7 +475,7 @@ when any exist, the simulator otherwise. **PASS:** with real CSVs committed, the
 ### On every retrieval — merge the SD card back in
 
 The card is the **complete** record: every reading the radio missed exists only there, and
-`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the 30-byte packet.
+`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the packet.
 
 ```bash
 cd shore

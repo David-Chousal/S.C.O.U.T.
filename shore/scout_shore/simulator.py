@@ -31,6 +31,20 @@ _BATTERY_FULL_V = 3.35
 _BATTERY_MIN_V = 3.05
 _BATT_LOW_SKIP_TX_V = 3.10
 
+# Acoustic summary (ADR-0010). Centred on what the reference summary gives for one-minute Sesoko
+# Site A clips (docs/analysis/acoustic-summary-validation.md): a shrimp-dominated soundscape
+# with the bio band ~23 dB above the anthro band, so NDSI near +1, and ~2,800 snaps a clip.
+# Night is louder than day (the snapping-shrimp chorus peaks after dark); an occasional boat
+# lifts the anthro band and pulls NDSI down. Clipping is rare here, as it should be once the
+# amplifier gain is set (the Sesoko recordings themselves run hot, ~0.2% of samples near the
+# rails). Levels are dBFS, like the real field.
+_ACOUSTIC_LEVELS_CDB = {"anthro": -3800, "mixed": -3200, "bio": -1550}
+_ACOUSTIC_NIGHT_LIFT_CDB = 250
+_ACOUSTIC_SNAPS_PER_CLIP = 2800
+_ACOUSTIC_BOAT_CHANCE = 0.12
+_ACOUSTIC_BOAT_LIFT_CDB = 2200
+_ACOUSTIC_CLIP_CHANCE = 0.05
+
 
 def generate_reading(
     seq: int,
@@ -66,8 +80,9 @@ def generate_reading(
     if battery_v < _BATT_LOW_SKIP_TX_V:
         flags.add("BATT_LOW_SKIP_TX")
 
-    # Audio: 3 recordings/day (EDD) — roughly every 8th 30-min cycle.
+    # Audio: 3 recordings/day (ADR-0011) — roughly every 8th 30-min cycle.
     audio_present = seq % 16 == 0
+    acoustic = synthetic_acoustic(seq, hour) if audio_present else {}
 
     return Reading(
         buoy_id=buoy_id,
@@ -79,7 +94,37 @@ def generate_reading(
         uptime_s=seq * DEFAULT_INTERVAL_S,
         flags=frozenset(flags),
         audio_present=audio_present,
+        **acoustic,
     )
+
+
+def synthetic_acoustic(seq: int, hour: float) -> dict[str, int]:
+    """Plausible acoustic-summary fields for one recording.
+
+    Uses its own RNG seeded from ``seq`` so adding the summary leaves every other simulated
+    signal exactly as it was.
+    """
+    rng = random.Random(seq * 7919 + 17)
+    night = hour < 6 or hour >= 18
+    lift = _ACOUSTIC_NIGHT_LIFT_CDB if night else 0
+    boat = rng.random() < _ACOUSTIC_BOAT_CHANCE
+    anthro = _ACOUSTIC_LEVELS_CDB["anthro"] + rng.randint(-250, 250) + (
+        _ACOUSTIC_BOAT_LIFT_CDB if boat else 0)
+    mixed = _ACOUSTIC_LEVELS_CDB["mixed"] + rng.randint(-200, 200) + (900 if boat else 0)
+    bio = _ACOUSTIC_LEVELS_CDB["bio"] + lift + rng.randint(-150, 150)
+    e_bio, e_anthro = 10 ** (bio / 1000), 10 ** (anthro / 1000)
+    broad = round(1000 * math.log10(e_bio + e_anthro + 10 ** (mixed / 1000)))
+    snaps = int(_ACOUSTIC_SNAPS_PER_CLIP * (1.3 if night else 1.0) * rng.uniform(0.7, 1.3))
+    clipping = rng.random() < _ACOUSTIC_CLIP_CHANCE
+    return {
+        "lvl_anthro_cdb": anthro,
+        "lvl_mixed_cdb": mixed,
+        "lvl_bio_cdb": bio,
+        "lvl_broad_cdb": broad,
+        "ndsi_e4": round((e_bio - e_anthro) / (e_bio + e_anthro) * 10000),
+        "snap_count": snaps,
+        "clip_count": rng.randint(800, 6000) if clipping else rng.randint(0, 12),
+    }
 
 
 def generate_series(

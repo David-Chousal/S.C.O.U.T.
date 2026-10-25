@@ -40,6 +40,15 @@ class TelemetryRecord:
     # Housing sensor (SCO-205, schema v2). SD-card rows only; live rows and v1 rows have None.
     internal_temp_c: float | None = None
     internal_humidity_pct: float | None = None
+    # Acoustic summary of the cycle's recording (ADR-0010, schema v3). None on rows without a
+    # recording and on v1/v2 rows; telemetry/acoustic.py reads them.
+    lvl_anthro_cdb: int | None = None
+    lvl_mixed_cdb: int | None = None
+    lvl_bio_cdb: int | None = None
+    lvl_broad_cdb: int | None = None
+    ndsi_e4: int | None = None
+    snap_count: int | None = None
+    clip_count: int | None = None
 
 
 def has_valid_clock(record: TelemetryRecord) -> bool:
