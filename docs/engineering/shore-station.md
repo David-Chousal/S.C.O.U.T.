@@ -34,7 +34,7 @@ open is listed under [Open items](#open-items).
 ## Role
 
 1. **LoRa reception** from every buoy, matching their radio settings exactly.
-2. **Packet validation and decode** against the 30-byte packet contract (CRC, version).
+2. **Packet validation and decode** against the 44-byte (v3) packet contract, still accepting 30-byte v1/v2 frames (CRC, version).
 3. **Push to the dashboard over WiFi.**
 4. **Downlink (ADR-0008):** send firmware images and settings to the buoys in their listen windows.
 5. **Serve more than one buoy** (two planned), deduplicating any repeated reading on
@@ -73,7 +73,7 @@ The station must:
   does not need;
 - listen around the slot table, and later transmit downlink messages (ADR-0008) at ≤ +11 dBm
   through a ≤ 2.15 dBi antenna;
-- if it decodes frames itself, match the 30-byte layout in `firmware/lib/scout_packet/` and
+- if it decodes frames itself, match the 44-byte v3 layout in `firmware/lib/scout_packet/` and
   `shore/scout_shore/packet.py` — the contract `scripts/check_packet_contract.py` enforces.
 
 The bench receiver `firmware/src/bench_rx/` (a second Feather M0) already does the first two
@@ -93,7 +93,7 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
   sample every 30 min → SD card              LoRa RX task  ──►  validate + decode
         │                                         ▲                    │
         └── 3 slots/day: LoRa TX ─────────────────┘                    ▼
-            (30-byte packet, 1 copy per slot)                 WiFi task: push to the dashboard
+            (44-byte packet, 1 copy per slot)                 WiFi task: push to the dashboard
                                                                        │
         ◄── downlink in listen windows (ADR-0008, not built) ──        ▼
             firmware images, settings                          dashboard (back end: open item 1)

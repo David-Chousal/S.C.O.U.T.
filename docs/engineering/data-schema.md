@@ -1,4 +1,4 @@
-# On-Board CSV Data Schema (v2)
+# On-Board CSV Data Schema (v3)
 
 > **Summary** — The format of the CSV log the buoy writes to microSD: one row per sampling
 > event, fixed column order, UTC timestamps. This is the contract between the firmware
@@ -46,11 +46,11 @@ name could not be written by the buoy.
 
 Each daily CSV starts with the header row below.
 
-## Columns (v2)
+## Columns (v3)
 
 | # | Column | Type | Unit | Example | Notes |
 |---|---|---|---|---|---|
-| 1 | `schema_version` | int | — | `2` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns. |
+| 1 | `schema_version` | int | — | `3` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v3 (2026-10-25, [SCO-233](https://linear.app/scout1/issue/SCO-233), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))** added columns 17–23, the acoustic summary. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns, v2 files 16. Readers accept all three, and the shore store rewrites an older daily file's header before appending v3 rows. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the same reading can arrive twice (a re-received frame, or an SD-card import of a reading the radio already delivered), and must collapse to one row. |
@@ -60,12 +60,19 @@ Each daily CSV starts with the header row below.
 | 8 | `turbidity_fau` | float | FAU | `` | Formazin attenuation units. **Computed downstream, never on the buoy** ([SCO-13](https://linear.app/scout1/issue/SCO-13)). Populated by the analytics pipeline only once a calibration curve exists ([SCO-12](https://linear.app/scout1/issue/SCO-12)); empty until then. **FAU, not NTU:** the sensor measures light transmitted straight through the water, and ISO 7027-1 reports that method in FAU; NTU/FNU are for 90° scattered light. Named `turbidity_ntu` before 2026-10-23; readers accept the old name. |
 | 9 | `battery_v` | float | V | `3.28` | Pack voltage via the divider on an ADC pin. Drives the skip-TX threshold. |
 | 10 | `uptime_s` | uint32 | s | `172800` | Seconds since boot (State-of-Health). |
-| 11 | `audio_file` | string | — | `20260814/003000Z.WAV` | Path under `/AUDIO/` if a recording was taken this cycle, else empty. |
+| 11 | `audio_file` | string | — | `20260814/003000Z.WAV` | Path under `/AUDIO/` if a recording was actually captured this cycle, else empty. Since v3 firmware this means captured, not merely scheduled: until the capture path is built ([SCO-231](https://linear.app/scout1/issue/SCO-231)) it stays empty. |
 | 12 | `flags` | string | — | `TEMP_TIMEOUT` | `|`-separated per-cycle event codes; empty when clean. |
 | 13 | `soh` | string | — | `WATCHDOG_RESET` | `|`-separated device State-of-Health codes (set at boot); empty when healthy. |
 | 14 | `fw_version` | string | — | `v0.1.0` | Firmware tag that wrote the row. |
 | 15 | `internal_temp_c` | float | °C | `24.50` | Air temperature inside the electronics housing, SHT40, 2 dp. **SD card only**: the packet does not carry it, so live rows leave it empty. Empty when the read failed (`HUMIDITY_FAIL`). |
 | 16 | `internal_humidity_pct` | float | %RH | `41.2` | Relative humidity inside the housing, SHT40, 1 dp. **The leak early warning**: a sealed housing should stay low and steady, so a rise means water is getting in. SD card only, like column 15; the packet carries only the `HUMIDITY_HIGH` / `HUMIDITY_FAIL` flags. |
+| 17 | `lvl_anthro_cdb` | int16 | centi-dB | `-3972` | RMS level of the recording in 0–200 Hz (boats), centi-dB re a full-scale sine (dBFS × 100). **Columns 17–23 are the acoustic summary** ([ADR-0010](../decisions/0010-acoustic-summary-over-lora.md)), the same seven fields the packet carries; all empty when the cycle had no recording. `-32768` = digital silence. |
+| 18 | `lvl_mixed_cdb` | int16 | centi-dB | `-3006` | RMS level, 200–1,000 Hz (fish and small-boat overlap). |
+| 19 | `lvl_bio_cdb` | int16 | centi-dB | `-1068` | RMS level, 1,000–8,000 Hz (snapping shrimp). |
+| 20 | `lvl_broad_cdb` | int16 | centi-dB | `-995` | Broadband RMS level (DC-blocked signal). |
+| 21 | `ndsi_e4` | int16 | ×10⁻⁴ | `9975` | (E_bio − E_anthro) / (E_bio + E_anthro) × 10,000, from filtered time-domain energy. Tracks the shore NDSI, does not equal it. |
+| 22 | `snap_count` | uint16 | count | `10` | Bio-band impulses above 8× the running mean \|bio\|, one per 3.0 ms window; saturates at 65,535. |
+| 23 | `clip_count` | uint16 | samples | `24` | Samples within 16 ADC counts of either rail; saturates at 65,535. |
 
 ### Optional / future columns (append at the end when the hardware lands)
 
@@ -135,11 +142,11 @@ needed; keep them SCREAMING_SNAKE_CASE and documented here.
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct
-2,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2
-2,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3
-2,SCOUT-01,2026-08-14T06:00:00Z,13,26.51,498,1.61,,3.24,21660,20260814/060000Z.WAV,,,v0.1.0,25.02,38.9
-2,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,snap_count,clip_count
+3,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2,,,,,,,
+3,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3,,,,,,,
+3,SCOUT-01,2026-08-14T08:00:00Z,17,26.51,498,1.61,,3.24,30660,20260814/080000Z.WAV,,,v0.1.0,25.02,38.9,-3972,-3006,-1068,-995,9975,2310,24
+3,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,,,,,,,,
 ```
 
 ## Relationship to the LoRa daily packet
@@ -149,16 +156,75 @@ day — 00:10, 08:10 and 16:10 UTC — each packet carrying the latest reading**
 ([`facts.md`](../hub/facts.md), [SCO-196](https://linear.app/scout1/issue/SCO-196); it was one
 packet a day before). It carries at least `timestamp_utc`, `record_seq` (as the packet
 counter), the temperature and turbidity readings, and `battery_v`. The CSV is the full local record; the packet is what fits over radio. Raw audio is
-**never** transmitted — it stays in `/AUDIO/` on the card.
+**never** transmitted — it stays in `/AUDIO/` on the card. Since v3 the packet carries a
+14-byte summary of the most recent recording instead (below).
+
+### Packet layout (v3, 44 bytes)
+
+Little-endian; the firmware (`firmware/lib/scout_packet`) and the shore decoder
+(`shore/scout_shore/packet.py`) are byte-identical, and `scripts/check_packet_contract.py`
+fails CI if they drift.
+
+| Bytes | Field | Type | Encoding |
+|---|---|---|---|
+| 0 | `schema_version` | u8 | `3`; same number as the CSV |
+| 1–2 | `buoy_id` | u16 | numeric; CSV renders `SCOUT-%02d` |
+| 3–6 | `timestamp` | u32 | Unix epoch seconds, UTC |
+| 7–10 | `record_seq` | u32 | monotonic counter |
+| 11–12 | `temp_c` | i16 | °C × 100 |
+| 13–14 | `turbidity_adc` | u16 | raw counts |
+| 15–16 | `battery_mv` | u16 | millivolts |
+| 17–20 | `uptime_s` | u32 | seconds |
+| 21–22 | `flags` | u16 | per-cycle bits (`flags` vocabulary) |
+| 23 | `soh` | u8 | State-of-Health bits |
+| 24 | `audio_present` | u8 | 1 if the summary below is a real recording |
+| 25–27 | `fw_major/minor/patch` | u8 ×3 | firmware version |
+| 28–29 | `lvl_anthro_cdb` | i16 | centi-dB re full-scale sine, 0–200 Hz |
+| 30–31 | `lvl_mixed_cdb` | i16 | 200–1,000 Hz |
+| 32–33 | `lvl_bio_cdb` | i16 | 1–8 kHz |
+| 34–35 | `lvl_broad_cdb` | i16 | broadband |
+| 36–37 | `ndsi_e4` | i16 | NDSI × 10,000 |
+| 38–39 | `snap_count` | u16 | saturating |
+| 40–41 | `clip_count` | u16 | saturating |
+| 42–43 | `crc` | u16 | CRC-16/CCITT-FALSE over bytes 0–41 |
+
+v1 and v2 packets were bytes 0–27 plus a CRC (30 bytes). Both decoders still accept a 30-byte
+frame with version 1 or 2 and give the acoustic fields as zero.
+
+**Which recording a packet carries.** The most recent recording since the previous transmit
+slot. Today recordings start at 00:00, 08:00 and 16:00 UTC and the slots are 10 minutes later,
+so each packet carries the clip just before it. Every slot closes the window, sent or not, so a
+recording is never reported twice. With no recording since the last slot, or in CONSERVE or
+CRITICAL (which record nothing), the seven fields are zero and `audio_present` is 0. The CSV
+leaves them blank instead, like the turbidity cells when that sensor is paused.
+
+**How the summary is computed.** `analytics/utils/acoustic_summary.py` is the specification and
+`firmware/lib/scout_acoustic` a bit-exact port, checked by golden vectors in
+`firmware/test/test_acoustic`. 12-bit samples at 22,050 Hz are centred and scaled (×8), pass a
+DC blocker (≈ 6.9 Hz), then Q14 Butterworth biquads on the shore pipeline's bands (4th-order
+low-pass at 200 Hz; 2nd-order high- and low-pass pairs at 200/1,000 Hz and 1,000/8,000 Hz;
+bilinear-transform formulas from the [Audio EQ Cookbook](https://www.w3.org/TR/audio-eq-cookbook/)).
+Energies accumulate in 64 bits; levels come from an integer log2, referenced to a full-scale
+sine (0 cdB). The constants and their reasons are in `firmware/src/config.h` (`ACOUSTIC_*`):
+
+| Constant | Value | Meaning |
+|---|---|---|
+| Snap threshold | 8× running mean \|bio\| | Gaussian noise (mean \|x\| ≈ 0.8σ) never reaches 6.4σ; the louder, nearer snaps do |
+| Snap floor | 8 ADC LSB | near-silence does not count quantisation noise |
+| Refractory window | 66 samples (3.0 ms) | one snap counts once; caps the count at ≈ 334 snaps/s |
+| Noise floor | 2¹² samples (≈ 186 ms), not updated during a snap | tracks the chorus, not the snaps |
+| Warm-up | 2,048 samples (≈ 93 ms) | the floor settles before counting starts |
+| Clip margin | 16 ADC counts from either rail | allows the SAMD21's few-LSB offset and a preamp that cannot reach the rails |
+| Level reference | full-scale sine = 0 cdB | a square wave at full scale reads +3 dB; −32,768 = digital silence |
 
 **Two numbers, two meanings — do not use them interchangeably:**
 
 | Number | What it is | Where it lives |
 |---|---|---|
-| **30 bytes** | The **actual** encoded packet today — 28-byte body + 2-byte CRC | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
+| **44 bytes** | The **actual** encoded packet today (v3) — 42-byte body + 2-byte CRC. Was 30 B in v1/v2 | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
 | **140 bytes** | The **payload ceiling** — the most a packet may grow to (since 2026-10-23, [SCO-97](https://linear.app/scout1/issue/SCO-97)) | `SCOUT_LINK_PAYLOAD_CEILING_BYTES` (firmware), `LORA_PAYLOAD_BUDGET_BYTES` (shore); CI checks they match and that a ceiling-size frame fits the send timeout |
 
-The packet therefore has 110 bytes of headroom for future signals. Earlier revisions of this
+The packet therefore has 96 bytes of headroom for future signals (110 before the acoustic summary). Earlier revisions of this
 doc and `facts.md` quoted 82 B as though it were the packet size, which is what
 [SCO-40](https://linear.app/scout1/issue/SCO-40) corrected; until 2026-10-23 82 B was also the
 ceiling.
@@ -168,13 +234,13 @@ ceiling.
 RadioHead's 4-byte header takes 1,739 ms on air, under 90% of that timeout. The largest payload
 that fits at all is ~158 B; the radio's own 251 B frame would take ~3.0 s and time out. At three
 slots a day, one copy each (SCO-21, 2026-10-23), a full 140 B packet would cost about
-0.16 mAh/day, 1.2% of the 13.3 mAh/day power budget (30 B today: 0.4%). Reproduce with `scripts/lora_airtime.py`.
+0.16 mAh/day, 1.2% of the 13.3 mAh/day power budget (44 B today, 690 ms a send: 0.5%; it was 0.4% at 30 B). Reproduce with `scripts/lora_airtime.py`.
 
 **Where the old 82 came from, and why it was never a real limit.** EDD §10's
 82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a
 timestamp, **18 temperature values, 18 turbidity values**, battery voltage, status flags,
 firmware version, and a CRC. That is a multi-sample packet built for the ESP32-C3 production
-target. The as-built 30-byte packet is a different design: **one** reading per packet, three packets a
+target. The as-built packet (30 B in v1/v2, 44 B in v3) is a different design: **one** reading per packet, three packets a
 day, on
 the Feather M0 build platform ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)), plus
 fields the EDD layout never had (`record_seq`, `uptime_s`, `soh`, `audio_present`).

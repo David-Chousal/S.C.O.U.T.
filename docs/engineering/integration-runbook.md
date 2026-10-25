@@ -160,7 +160,7 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 ### The cross-language packet contract
 
 `firmware/lib/scout_packet/` (C++) and `shore/scout_shore/packet.py` (Python) encode the **same
-30 bytes**. `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
+44 bytes** (schema v3). `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
 code that decodes frames must also match it. **Change one, change all, and bump
 `SCOUT_PACKET_VERSION`.**
 

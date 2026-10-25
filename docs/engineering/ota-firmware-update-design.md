@@ -37,7 +37,7 @@
 |---|---|---|
 | Modem | 915 MHz · BW 500 kHz · SF12 · CR 4/8 · +11 dBm, on both buoy and shore | [facts.md](../hub/facts.md), `firmware/src/config.h` |
 | Frame ceiling | **140 B payload** (+4 B RadioHead header = 1,739 ms), from the 2 s send timeout | [SCO-97](https://linear.app/scout1/issue/SCO-97) |
-| Uplink | 30-byte packet in 3 fixed slots a day (00:10, 08:10, 16:10 UTC), never acknowledged | [SCO-165](https://linear.app/scout1/issue/SCO-165), [SCO-21](https://linear.app/scout1/issue/SCO-21) |
+| Uplink | 44-byte packet (v3) in 3 fixed slots a day (00:10, 08:10, 16:10 UTC), never acknowledged | [SCO-165](https://linear.app/scout1/issue/SCO-165), [SCO-21](https://linear.app/scout1/issue/SCO-21) |
 | Next wake after a slot | Sensor wake at :30, 20 min after the slot | `config.h` |
 | Watchdog | 16.4 s (`WDT_TIMEOUT_MS`) | `config.h` |
 | Flash | SAMD21G18: 256 KB. Arduino bootloader uses the first 8 KB | ADR-0001 |
@@ -193,7 +193,7 @@ but cannot hear the shore is detected by the application itself: after 3 slots i
 - **First boot after USB flashing:** the application copies its own flash area into `GOOD.BIN`,
   so a known-good image always exists without sending one over the air.
 - **The next uplink reports the outcome** (applied / rolled back + version). That needs a flag
-  bit in the 30-byte packet; allocating one is a packet-contract change made with the build.
+  bit in the 44-byte packet; allocating one is a packet-contract change made with the build.
 - **Remaining risk, accepted:** an image that runs, never resets, and has broken trial logic
   would stay. The trial logic lives in a shared library that changes rarely and is tested on the
   bench before every release.

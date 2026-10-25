@@ -177,9 +177,9 @@ static const int32_t ACOUSTIC_BIQUADS[6][5] = {
     {2, 17601, 13880, 4938, 15},
 };
 // Snap detector on the bio band (decision log 2026-10-25). A snap is a bio-band sample above
-// 8× the running mean |bio| (Q4: 128 = 8.0). Snapping-shrimp snaps are sub-millisecond
-// broadband clicks; 8× the mean of the background keeps Gaussian noise (mean |x| ≈ 0.8σ, so
-// 6.4σ) from ever counting while still catching the louder, nearer snaps in the chorus.
+// 8× the running mean |bio| (Q4: 128 = 8.0). 8× keeps Gaussian noise (mean |x| ≈ 0.8σ, so
+// 6.4σ) from ever counting while still catching the louder, nearer clicks in the chorus: on the
+// Sesoko clips it counts 26–70 snaps/s (docs/analysis/acoustic-summary-validation.md).
 static const uint8_t ACOUSTIC_SNAP_THRESHOLD_Q4 = 128;
 // Absolute floor on that threshold: 8 ADC LSB in working units, so near-silence (where the
 // running mean is a fraction of an LSB) does not count quantisation noise as snaps.

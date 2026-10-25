@@ -11,7 +11,7 @@
 
 ## The honesty principle
 
-The buoy samples every 30 minutes, keeps the full record on board, and sends **one 30-byte
+The buoy samples every 30 minutes, keeps the full record on board, and sends **one 44-byte
 packet with the latest reading in each of three fixed slots: 00:10, 08:10 and 16:10 UTC**
 ([`facts.md`](../hub/facts.md), `firmware/README.md`). Packets are repeated blindly and never
 acknowledged, so some will be lost. The dashboard is republished per publish, not streamed.

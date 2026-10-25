@@ -97,7 +97,7 @@ LED, keep off), SDA/SCL (RTC).
 
 **Benchmarks**
 
-- [ ] 30 B packets received with valid CRC, **< 1% loss** on the bench
+- [ ] 44 B packets received with valid CRC, **< 1% loss** on the bench
 - [ ] TX current **≤ 100 mA**; time on air ≈ **0.56 s**
 - [ ] Outdoor line-of-sight range test with spring antennas, RSSI logged (aim ≥ 500 m)
 - [ ] Never transmit without an antenna attached
