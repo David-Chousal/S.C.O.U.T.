@@ -107,8 +107,8 @@ static const int8_t LORA_TX_POWER_DBM = 11;
  * SF12's processing gain (−20 dB demodulator SNR limit vs SF7's −7.5) more than repays it,
  * leaving the compliant link ~6.5 dB MORE sensitive than the non-compliant one it replaces
  * — modelled −131.0 dBm vs −124.5 dBm, roughly 2× the free-space range. Airtime rises to
- * ~559 ms for a 30-byte frame, which is irrelevant at one packet per day: 0.0019% duty
- * cycle, ~20 mAh per YEAR. Reproduce with scripts/lora_airtime.py.
+ * ~559 ms for a 30-byte frame (690 ms for the 44-byte v3 packet), irrelevant at one packet
+ * a day: 0.0019% duty cycle, ~20 mAh per YEAR. Reproduce with scripts/lora_airtime.py.
  *
  * Wider bandwidth also widens LoRa's carrier-frequency-offset tolerance (roughly ±25% of
  * bandwidth), which is a quiet win for a buoy whose crystal will swing with sea-surface

@@ -51,6 +51,14 @@ CANONICAL = Reading(
     soh=frozenset({"WATCHDOG_RESET", "SD_INIT_FAIL"}),
     audio_present=True,
     fw_version="v0.1.0",
+    # v3 acoustic summary (ADR-0010): the 200 ms Sesoko excerpt in the firmware's golden vectors
+    lvl_anthro_cdb=-3972,
+    lvl_mixed_cdb=-3006,
+    lvl_bio_cdb=-1068,
+    lvl_broad_cdb=-995,
+    ndsi_e4=9975,
+    snap_count=10,
+    clip_count=24,
 )
 
 _TEST_CPP = _ROOT / "firmware" / "test" / "test_packet" / "test_packet.cpp"
