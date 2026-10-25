@@ -21,7 +21,7 @@ import html
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import bleaching, charts, drift, freshness
+from . import acoustic, bleaching, charts, drift, freshness
 from .aggregate import SAMPLES_PER_DAY
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
 from .site import layout
@@ -113,6 +113,66 @@ def housing_humidity(report: TelemetryReport) -> tuple[str, str]:
     return "OK", ""
 
 
+_BANDS = (("anthro_db", "anthro", "Boats · 0–200 Hz"), ("mixed_db", "mixed", "Fish · 0.2–1 kHz"),
+          ("bio_db", "bio", "Shrimp · 1–8 kHz"))
+_BAR_FLOOR_DB = -60.0  # the band bars run from −60 dBFS (empty) to 0 dBFS (full scale)
+
+
+def _db_text(value: float | None) -> str:
+    return "silent" if value is None else f"{value:.1f}"
+
+
+def acoustic_cards(report: TelemetryReport) -> str:
+    """NDSI, snaps and clipping for the newest recording (ADR-0010); one card until one arrives."""
+    a = report.acoustic
+    if a is None:
+        return _stat("Reef sound", "—", sub="no recording received yet")
+    latest = a.latest
+    clipping_cls = "a-warning" if a.recent_clipping else ""
+    return "".join([
+        _stat("Reef sound (NDSI)", f"{latest.ndsi:+.2f}", sub="buoy estimate · latest clip"),
+        _stat("Snaps / recording", f"{latest.snaps:,}" + ("+" if latest.snaps >= acoustic.COUNTER_MAX else ""),
+              sub=f"median {a.median_snaps:,.0f}"),
+        _stat("Hydrophone clipping", "Clipping" if a.recent_clipping else "OK", cls=clipping_cls,
+              sub=f"{a.recent_clipping} of last {a.recent_count} clips"),
+    ])
+
+
+def _band_bars(latest: acoustic.Recording) -> str:
+    rows, spoken = [], []
+    for attr, key, label in _BANDS:
+        value = getattr(latest, attr)
+        width = 0.0 if value is None else max(0.0, min(1.0, 1 - value / _BAR_FLOOR_DB)) * 100
+        rows.append(f'<div class="bd"><span>{html.escape(label)}</span>'
+                    '<svg class="bd-bar" viewBox="0 0 100 1" preserveAspectRatio="none" '
+                    f'aria-hidden="true" focusable="false"><rect class="bd-{key}" '
+                    f'width="{width:.1f}" height="1"/></svg>'
+                    f'<span class="mono">{_db_text(value)}</span></div>')
+        spoken.append(f"{label} {_db_text(value)} dBFS")
+    stamp = f"{latest.at:%Y-%m-%d %H:%M} UTC"
+    return (f'<div class="bands" role="img" aria-label="Band levels, recording of {stamp}: '
+            f'{html.escape("; ".join(spoken))}">{"".join(rows)}</div>')
+
+
+def _acoustic_panel(report: TelemetryReport) -> str:
+    a = report.acoustic
+    if a is None:
+        return ""
+    latest = a.latest
+    clip_note = (f'<span class="pn-verdict a-warning">Clipping: {latest.clips:,} samples near the '
+                 f"rails in the latest clip</span> — gain too high or a loud source close by; its "
+                 "levels and snap count read low. " if latest.clipping else "")
+    note = (f'<p class="panel-note">{clip_note}Latest recording {latest.at:%Y-%m-%d %H:%M} UTC: '
+            f"{latest.snaps:,} snaps (median {a.median_snaps:,.0f} per recording). Levels are dBFS, "
+            "relative until the hydrophone chain is calibrated. NDSI is the buoy's estimate from "
+            "the same bands as the shore index; it follows the shore value but does not equal it."
+            "</p>")
+    chart = charts.chart(list(a.ndsi_daily), series="ndsi", title="Daily mean buoy NDSI",
+                         unit="NDSI",
+                         legend_extra="<span>+1 = reef sound · −1 = boat noise</span>")
+    return _panel("Reef sound", "dBFS · uncalibrated", _band_bars(latest) + chart, note=note)
+
+
 def _cards(report: TelemetryReport) -> str:
     ts, tt = report.thermal_summary, report.temp_trend
     latest_alert = report.thermal[-1].alert if report.thermal else "n/a"
@@ -138,6 +198,7 @@ def _cards(report: TelemetryReport) -> str:
                sub="excluded from timing") if report.qc.clock_invalid else ""),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
         _stat("Housing humidity", humidity, cls=humidity_cls, sub="leak early warning"),
+        acoustic_cards(report),
     ])
 
 
@@ -173,6 +234,9 @@ def _panels(report: TelemetryReport) -> list[str]:
     panels.append(_panel("Battery (daily minimum)", "V", charts.chart(
         _points(daily, "battery_min_v"), series="batt", title="Daily minimum battery voltage",
         unit="V")))
+    acoustic_panel = _acoustic_panel(report)
+    if acoustic_panel:
+        panels.append(acoustic_panel)
     return panels
 
 
@@ -224,13 +288,15 @@ def render_html(
         "transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
         "gaps stay empty until the on-board record is retrieved. Thermal stress is computed "
         "with NOAA Coral Reef Watch Degree Heating Weeks from measured days only. Turbidity is "
-        "uncalibrated and reported as relative events, not NTU.</p>"
+        "uncalibrated and reported as relative events, not NTU. Reef sound is a short summary "
+        "the buoy computes from each recording; the recordings themselves stay on board.</p>"
         "</div></section>"
     )
     return layout.document(
         title=title,
         description=("Live environmental telemetry from the S.C.O.U.T. reef-monitoring buoy: "
-                     "temperature and Degree Heating Weeks, turbidity events, and battery health."),
+                     "temperature and Degree Heating Weeks, turbidity events, reef sound, and "
+                     "battery health."),
         active="analytics",
         body=body,
         base=base,

@@ -38,8 +38,9 @@ DHW_BANDS = (
     Band(16.0, 20.0, "alert4", "Alert Level 4"),
     Band(20.0, None, "alert5", "Alert Level 5"),
 )
-_DIGITS = {"temp": 1, "dhw": 1, "turb": 0, "batt": 2}
-_SERIES_LABEL = {"temp": "Daily mean", "dhw": "DHW", "turb": "Daily median", "batt": "Daily minimum"}
+_DIGITS = {"temp": 1, "dhw": 1, "turb": 0, "batt": 2, "ndsi": 2}
+_SERIES_LABEL = {"temp": "Daily mean", "dhw": "DHW", "turb": "Daily median", "batt": "Daily minimum",
+                 "ndsi": "Daily mean (buoy)"}
 
 
 def _calendar(points: list[tuple[date, float | None]]) -> list[tuple[date, float | None, bool]]:

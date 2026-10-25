@@ -22,6 +22,18 @@ REQUIRED_COLUMNS = (
 )
 
 
+# Schema v3 acoustic summary (ADR-0010). Optional: absent from v1/v2 files, blank without audio.
+ACOUSTIC_COLUMNS = (
+    "lvl_anthro_cdb",
+    "lvl_mixed_cdb",
+    "lvl_bio_cdb",
+    "lvl_broad_cdb",
+    "ndsi_e4",
+    "snap_count",
+    "clip_count",
+)
+
+
 class TelemetryFormatError(ValueError):
     """Raised when a CSV is missing required columns or a row cannot be parsed."""
 
@@ -65,6 +77,7 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             fw_version=row.get("fw_version", "").strip(),
             internal_temp_c=_opt_float(row.get("internal_temp_c", "")),
             internal_humidity_pct=_opt_float(row.get("internal_humidity_pct", "")),
+            **{name: _opt_int(row.get(name) or "") for name in ACOUSTIC_COLUMNS},
         )
     except (KeyError, ValueError) as exc:
         raise TelemetryFormatError(f"{source}:{line}: {exc}") from exc
