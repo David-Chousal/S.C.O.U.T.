@@ -6,7 +6,7 @@ Does the buoy's acoustic summary (ADR-0010) track the shore indices it approxima
 For each recording, the first ``--seconds`` (default 60, one buoy clip) is processed twice:
 
 * **Shore**: BI and NDSI exactly as ``utils/acoustic_indices.compute_all_indices`` computes them
-  (left channel at the file's own rate, the same spectrogram settings), on the same segment.
+  (left channel resampled to 22,050 Hz, the same spectrogram settings), on the same segment.
 * **Buoy**: resampled to 22,050 Hz, quantised to 12-bit ADC codes, and run through the reference
   summary in ``utils/acoustic_summary.py``, which the firmware matches bit for bit.
 
@@ -27,7 +27,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from maad import features, sound
+from maad import features
 from scipy.stats import pearsonr, spearmanr
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -36,6 +36,7 @@ from utils.acoustic_indices import (  # noqa: E402
     ANTHRO_BAND,
     BIO_BAND,
     compute_spectrograms,
+    load_audio,
     parse_timestamp,
 )
 from utils.acoustic_summary import load_clip, quantize_to_adc, summarize  # noqa: E402
@@ -44,7 +45,7 @@ DEFAULT_DIRS = ("data/longitudinal",)
 
 
 def _shore_indices(path: Path, seconds: float) -> dict:
-    signal, rate = sound.load(str(path), channel="left", detrend=True)
+    signal, rate = load_audio(str(path))
     segment = signal[: int(seconds * rate)]
     sxx_amp, sxx_pwr, _, fn = compute_spectrograms(segment, rate)
     bi = features.bioacoustics_index(sxx_amp, fn, flim=BIO_BAND)

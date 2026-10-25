@@ -27,7 +27,33 @@ S.C.O.U.T. monitors coral reef health using passive acoustic recordings and five
 
 ## Bioacoustic Indices
 
-All five indices are computed from WAV files resampled to 22,050 Hz using the [scikit-maad](https://scikit-maad.github.io/) Python library. ACI, BI, and ADI use the amplitude spectrogram; NDSI uses the power spectral density; H uses both the raw signal (temporal entropy) and the amplitude spectrogram (spectral entropy).
+All five indices are computed from the left channel of each WAV file, detrended and resampled to 22,050 Hz (polyphase, `scipy.signal.resample_poly`), using the [scikit-maad](https://scikit-maad.github.io/) Python library. 22,050 Hz is also the buoy's own sample rate ([ADR-0011](../decisions/0011-audio-capture-parameters.md)), so shore and buoy analyse the same bandwidth. ACI, BI, and ADI use the amplitude spectrogram; NDSI uses the power spectral density; H uses both the raw signal (temporal entropy) and the amplitude spectrogram (spectral entropy).
+
+### Sample rate (SCO-235)
+
+Until 2026-10-25 the resampling above did not happen. `load_audio` passed `sr=22050` and
+`mono=True` to `maad.sound.load`, which has no such arguments and ignored them, so every index
+was computed at the file's own 44.1 kHz ([SCO-235](https://linear.app/scout1/issue/SCO-235)).
+The fix resamples for real, and every committed result in `analytics/data/processed/` was
+regenerated. What changed:
+
+| | Before (44.1 kHz) | After (22.05 kHz) |
+|---|---|---|
+| Mean ACI, 20 dusk files (`results.csv`) | 501.4 | 407.3 |
+| Mean BI | 58.3 | 229.7 |
+| Mean NDSI | 0.807 | 0.903 |
+| Mean H | 0.152 | 0.086 |
+| Mean ADI | 2.79 | 2.97 |
+| Per-file health labels unchanged | — | 15 of 20 |
+| Files flagged as disturbances | 3 | 1 |
+| Longitudinal verdict (8 sessions) | STAGNANT, PC1 τ = −0.143, p = 0.71 | STAGNANT, PC1 τ = −0.143, p = 0.71 |
+
+Absolute values moved because the spectrogram uses 1,024-point windows: at 22.05 kHz a window
+spans twice the time, each bin is 21.5 Hz wide instead of 43 Hz, and the spectrum ends at 11 kHz
+instead of 22 kHz. Per-bin sums such as BI change scale (here about ×4), and ADI and H see a
+different set of bins. The PCA and the trend test work on relative changes across files, so the
+longitudinal conclusion holds. Compare
+values from before 2026-10-25 only with each other.
 
 ### Frequency Band Model
 
@@ -405,8 +431,8 @@ All baseline analyses use passive acoustic recordings from **Sesoko Island, Okin
 | Recording window | 00:00 – 00:20 local time (midnight) |
 | Files per session | 5 × 5-minute recordings |
 | Sessions | 8 (Aug 2017 – Jul 2018) |
-| Sample rate | 22,050 Hz (resampled from native) |
-| Filename format | `SSK_Site_A_YYYYMMDD_HHMMSS.wav` |
+| Sample rate | 22,050 Hz (resampled from the native 44.1 kHz since 2026-10-25; see [Sample rate](#sample-rate-sco-235)) |
+| Filename format | `SSK_Site_A_YYYYMMDD_HHMMSS.wav` (the buoy's own `YYYYMMDD/HHMMSSZ.WAV` is read too) |
 
 **Why midnight recordings?** The Aug 2017 – Jul 2018 continuous-recording months provide both midnight and dusk data, but the earlier sessions (Jun–Jul 2017) recorded only at dusk. Using midnight gives a consistent time-of-day baseline across all 8 sessions, avoiding confounds from diel variation in reef acoustic activity.
 

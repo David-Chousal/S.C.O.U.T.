@@ -2,8 +2,10 @@
 
 > **Summary** — Does the 14-byte acoustic summary the buoy sends ([ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))
 > track the shore indices it stands in for? On 38 one-minute Sesoko clips, buoy NDSI follows
-> shore NDSI closely (Spearman ρ = 0.91) and the bio-band level follows shore BI loosely
-> (ρ = 0.46). Good enough for a live trend indicator between SD-card recoveries; not a
+> shore NDSI closely (Spearman ρ = 0.90) and the bio-band level follows shore BI loosely
+> (ρ = 0.43). Re-run 2026-10-25 after the shore pipeline was fixed to really analyse at
+> 22.05 kHz ([SCO-235](https://linear.app/scout1/issue/SCO-235)); the first run, against the
+> 44.1 kHz shore indices, gave ρ = 0.91 and 0.46. Good enough for a live trend indicator between SD-card recoveries; not a
 > replacement for the shore indices. Also records the estimated CPU cost on the Feather M0.
 
 ---
@@ -20,7 +22,7 @@ Each clip is processed twice:
 
 | Path | What it does |
 |---|---|
-| **Shore** | BI and NDSI exactly as `utils/acoustic_indices.compute_all_indices` computes them: left channel, detrended, at the file's own rate, same spectrogram settings, same 60 s |
+| **Shore** | BI and NDSI exactly as `utils/acoustic_indices.compute_all_indices` computes them: left channel, detrended, resampled to 22,050 Hz, same spectrogram settings, same 60 s |
 | **Buoy** | Resampled to 22,050 Hz, quantised to 12-bit ADC codes (full scale = the file's full scale), then the reference summary [`utils/acoustic_summary.py`](../../analytics/utils/acoustic_summary.py), which the firmware matches bit for bit |
 
 Reproduce (about 2 minutes on 6 cores):
@@ -38,16 +40,16 @@ Per-clip results: [`acoustic-summary-validation-results.csv`](acoustic-summary-v
 
 | Pair | n | Pearson r | Spearman ρ | Reading |
 |---|---|---|---|---|
-| Buoy NDSI vs shore NDSI | 38 | 0.999 | 0.913 | Tracks closely. Pearson is inflated by one boat-noise clip (2018-01-01 00:05, shore NDSI 0.07); without it r = 0.994, ρ = 0.906 |
-| `lvl_bio` vs shore BI | 38 | 0.676 | 0.458 | Same direction, loose. Sessions separate cleanly, clips within a session do not |
-| `snap_count` vs shore BI | 38 | −0.524 | −0.463 | Inverse: see below |
+| Buoy NDSI vs shore NDSI | 38 | 0.999 | 0.898 | Tracks closely. Pearson is inflated by one boat-noise clip (2018-01-01 00:05, shore NDSI 0.09); without it r = 0.993, ρ = 0.890 |
+| `lvl_bio` vs shore BI | 38 | 0.636 | 0.432 | Same direction, loose. Sessions separate cleanly, clips within a session do not |
+| `snap_count` vs shore BI | 38 | −0.476 | −0.419 | Inverse: see below |
 
-All three are significant at p < 0.005.
+All three are significant at p < 0.01.
 
 **NDSI.** The buoy value runs slightly higher than the shore value on a shrimp-dominated reef
 (mean 0.96 vs 0.95) because it uses filtered time-domain energy rather than spectrogram power,
 but it moves with the shore value, including the one clip where a boat drove the shore NDSI to
-0.07 (buoy 0.17). This is what ADR-0010 expected: a trend, not the shore number.
+0.09 (buoy 0.17). This is what ADR-0010 expected: a trend, not the shore number.
 
 **Bio-band level vs BI.** BI is the area under the spectrum above its minimum in 1–8 kHz, so it
 measures how much the bio band stands out from the quietest bin, not only how loud it is. The
@@ -72,10 +74,8 @@ buoy's gain is set by the amplifier choice ([SCO-216](https://linear.app/scout1/
   are known.
 - **One site, midnight only, 38 clips.** No dusk or daytime clips and no second site, so the
   correlations describe this reef at night.
-- **The shore indices are computed at 44.1 kHz, not 22.05 kHz.** `acoustic_indices.load_audio`
-  passes `sr=22050` to `maad.sound.load`, which ignores it. The buoy path is resampled to
-  22.05 kHz. Not changed here: it would move every committed shore result
-  ([SCO-235](https://linear.app/scout1/issue/SCO-235)).
+- **Shore BI is on the 22.05 kHz scale** (79–215 on these clips) since SCO-235; values from before
+  2026-10-25 were on the 44.1 kHz scale (about a quarter of these) and are not comparable.
 - **The 12-bit quantisation maps the file's full scale to the ADC's full scale.** The real
   buoy's mapping depends on the preamp gain.
 

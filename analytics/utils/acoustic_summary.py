@@ -435,25 +435,16 @@ _REAL_EXCERPT = ("analytics/data/longitudinal/201708_20170801/SSK_Site_A_2017080
 def load_clip(path: str | Path, start_s: float = 0.0, seconds: float | None = None) -> list[float]:
     """A recording as the buoy would hear it: one channel at 22,050 Hz, floats in [−1, 1).
 
-    Reads the left channel like the shore pipeline (``maad.sound.load``) and resamples with a
-    polyphase filter. Note ``maad.sound.load`` ignores the ``sr`` the shore pipeline passes, so
-    shore indices are computed at the file's own rate (44.1 kHz for Sesoko); see
-    docs/analysis/acoustic-summary-validation.md. Needs numpy, scipy and scikit-maad.
+    Uses the shore pipeline's own loader (``acoustic_indices.load_audio``: left channel,
+    detrended, polyphase-resampled), so the buoy path and the shore indices start from the same
+    signal. Needs numpy, scipy and scikit-maad.
     """
-    from math import gcd
+    from utils.acoustic_indices import load_audio
 
-    from maad import sound
-    from scipy.signal import resample_poly
-
-    signal, rate = sound.load(str(path), channel="left", detrend=True)
+    signal, rate = load_audio(str(path), target_sr=SAMPLE_RATE_HZ)
     first = int(start_s * rate)
     last = len(signal) if seconds is None else first + int(seconds * rate)
-    signal = signal[first:last]
-    rate = int(rate)
-    if rate != SAMPLE_RATE_HZ:
-        common = gcd(rate, SAMPLE_RATE_HZ)
-        signal = resample_poly(signal, SAMPLE_RATE_HZ // common, rate // common)
-    return [float(v) for v in signal]
+    return [float(v) for v in signal[first:last]]
 
 
 def _real_excerpt(repo_root: Path) -> list[int]:
