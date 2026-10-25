@@ -49,6 +49,8 @@ class CsvStore:
             return None
 
         new_file = not path.exists()
+        if not new_file:
+            _upgrade_header(path)
         with path.open("a", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=COLUMNS)
             if new_file:
@@ -81,3 +83,22 @@ class CsvStore:
                         continue
         self._seen[path] = keys
         return keys
+
+
+def _upgrade_header(path: Path) -> None:
+    """Rewrite a daily file written under an older schema with the current header.
+
+    A shore station upgraded mid-day would otherwise append 23-column v3 rows under a 16-column
+    v2 header, and every reader would misalign them. Old rows keep their values and their own
+    ``schema_version``; the columns they never had are left blank.
+    """
+    with path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) == COLUMNS:
+            return
+        rows = list(reader)
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({column: row.get(column) or "" for column in COLUMNS})

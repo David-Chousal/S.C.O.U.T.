@@ -11,7 +11,7 @@ import csv
 from collections.abc import Iterable
 from pathlib import Path
 
-from .packet import Reading
+from .packet import ACOUSTIC_FIELDS, Reading
 
 # Canonical column order — matches docs/engineering/data-schema.md exactly.
 COLUMNS: tuple[str, ...] = (
@@ -33,7 +33,16 @@ COLUMNS: tuple[str, ...] = (
     # carries just the HUMIDITY_HIGH / HUMIDITY_FAIL flags, so live rows leave these blank.
     "internal_temp_c",
     "internal_humidity_pct",
+    # Acoustic summary of the cycle's recording (ADR-0010, schema v3), the same seven fields as
+    # the packet. Blank when there was no recording; the packet carries zeros instead.
+    *ACOUSTIC_FIELDS,
 )
+
+# Column sets of earlier schema versions. Their files stay readable and importable; a row is
+# valid if its columns are exactly one of these prefixes of COLUMNS.
+COLUMNS_V1 = COLUMNS[:14]  # before the internal humidity sensor (SCO-205)
+COLUMNS_V2 = COLUMNS[:16]  # before the acoustic summary (ADR-0010)
+ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V2, COLUMNS_V1)
 
 # Provisional analog front-end constants — SAMD21 12-bit ADC at 3.3 V Vref.
 # ⚠️ Pending the turbidity front-end design (hardware/README.md open item, ADR-0002 area).
@@ -86,14 +95,22 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "fw_version": reading.fw_version,
         "internal_temp_c": "",  # SD card only — not in the packet
         "internal_humidity_pct": "",
+        **acoustic_cells(reading),
     }
+
+
+def acoustic_cells(reading: Reading) -> dict[str, str]:
+    """The seven acoustic cells: the summary when the cycle had a recording, else blank."""
+    if not reading.audio_present:
+        return {name: "" for name in ACOUSTIC_FIELDS}
+    return {name: str(value) for name, value in zip(ACOUSTIC_FIELDS, reading.acoustic())}
 
 
 def validate_row(row: dict[str, str]) -> None:
     """Check one row against the schema. Raises :class:`SchemaError` on any violation."""
     keys = tuple(row.keys())
-    if keys != COLUMNS:
-        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS}")
+    if keys not in ACCEPTED_COLUMN_SETS:
+        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1/v2 prefix)")
 
     # Required (never-empty) fields and their parsers.
     required_numeric = {
@@ -118,6 +135,19 @@ def validate_row(row: dict[str, str]) -> None:
         raise SchemaError(f"timestamp_utc must be UTC ISO-8601 ('...Z'): {row['timestamp_utc']!r}")
     if not row["buoy_id"]:
         raise SchemaError("buoy_id is required but empty")
+
+    # Optional acoustic cells (v3): blank, or an integer in the packet field's range.
+    for name in ACOUSTIC_FIELDS:
+        value = row.get(name, "")
+        if value == "":
+            continue
+        try:
+            number = int(value)
+        except ValueError as exc:
+            raise SchemaError(f"{name}={value!r} is not a valid int") from exc
+        low, high = (0, 65535) if name in ("snap_count", "clip_count") else (-32768, 32767)
+        if not low <= number <= high:
+            raise SchemaError(f"{name}={number} outside {low}..{high}")
 
 
 def validate_csv(path: str | Path) -> int:
