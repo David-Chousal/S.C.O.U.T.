@@ -63,7 +63,8 @@ mode that ends a deployment. Tracked as
   firmware and shore changes.
 - **The analytics pipeline is unaffected** — it never had a DO path.
 - **Nothing about the hydrophone part number is resolved here.** H2a-XLR vs H2dM remains open
-  as [SCO-8](https://linear.app/scout1/issue/SCO-8).
+  as [SCO-8](https://linear.app/scout1/issue/SCO-8). *(Later: resolved 2026-10-12, the H2dM;
+  capture parameters in [ADR-0011](0011-audio-capture-parameters.md).)*
 
 ## Not permanent
 

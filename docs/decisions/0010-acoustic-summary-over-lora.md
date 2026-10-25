@@ -1,6 +1,6 @@
 # ADR-0010 — Acoustic Summary Over LoRa
 
-- **Status:** 🟢 Accepted — 2026-10-25 (field set fixed; additions pending in SCO-234). **Implemented in software 2026-10-25** ([SCO-233](https://linear.app/scout1/issue/SCO-233)): firmware library, packet and CSV v3, shore and dashboard; the audio capture path it plugs into ([SCO-231](https://linear.app/scout1/issue/SCO-231)) is not built yet, so the buoy reports no recordings until it is
+- **Status:** 🟢 Accepted — 2026-10-25 (field set fixed; additions pending in SCO-234). **Implemented in software 2026-10-25** ([SCO-233](https://linear.app/scout1/issue/SCO-233)): firmware library, packet and CSV v3, shore and dashboard; the audio capture path it plugs into ([SCO-231](https://linear.app/scout1/issue/SCO-231)) is written to [ADR-0011](0011-audio-capture-parameters.md) but has not run on hardware yet
 - **Date raised:** 2026-10-25 (David Chousal Cantu, after the 2026-10-23 weekly meeting)
 - **Owners:** CS lead (David Chousal Cantu); ECE lead (Isabella Rodriguez) for the analog chain and the pending additions
 - **Implements:** [SCO-233](https://linear.app/scout1/issue/SCO-233) · **Pending:** [SCO-234](https://linear.app/scout1/issue/SCO-234)
@@ -88,9 +88,9 @@ Two additions need bench data before they are accepted or rejected
 - The analog chain must pass the bio band: the anti-alias cutoff has to sit above 8 kHz and under
   the 11 kHz Nyquist of 22.05 kHz sampling. This is now a requirement on the amplifier choice
   ([SCO-216](https://linear.app/scout1/issue/SCO-216)).
-- Open contradictions this decision depends on, not reconciled here and listed in SCO-233: the
-  recording schedule (`config.h` vs the power budget vs the EDD), the sample rate (22.05 vs
-  16 kHz), and the audio ADC (Feather 12-bit vs PCM1808).
+- Open contradictions this decision depended on (recording schedule, sample rate, audio ADC)
+  were settled on 2026-10-25 by [ADR-0011](0011-audio-capture-parameters.md): 3 × 60 s a day,
+  22.05 kHz, the Feather's 12-bit ADC on A2.
 
 ## Implementation (2026-10-25)
 
@@ -104,8 +104,9 @@ Two additions need bench data before they are accepted or rejected
   [decision log](../hub/decision-log.md).
 - **Which recording a packet carries:** the most recent one since the previous transmit slot;
   zeros and `audio_present` = 0 otherwise, and in CONSERVE / CRITICAL.
-- **Validation:** on 38 one-minute Sesoko clips, buoy NDSI vs shore NDSI Spearman ρ = 0.91 and
-  `lvl_bio` vs shore BI ρ = 0.46 ([Acoustic Summary Validation](../analysis/acoustic-summary-validation.md)).
+- **Validation:** on 38 one-minute Sesoko clips, buoy NDSI vs shore NDSI Spearman ρ = 0.90 and
+  `lvl_bio` vs shore BI ρ = 0.43, against the shore pipeline at 22.05 kHz
+  ([Acoustic Summary Validation](../analysis/acoustic-summary-validation.md)).
 - **Not yet verified on hardware:** CPU headroom (estimated at 48–57% of the M0 at 22,050 Hz,
   in the validation doc), dropped samples, recording current, anti-alias filter, amplifier gain.
 
