@@ -49,11 +49,62 @@ void test_fixed_point_helpers(void) {
     TEST_ASSERT_EQUAL_UINT16(3280, scout_battery_mv(3.28f));
 }
 
+void test_decode_golden_round_trips(void) {
+    ScoutReading want = golden_reading();
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(GOLDEN, SCOUT_PACKET_SIZE, &got));
+    uint8_t reencoded[SCOUT_PACKET_SIZE];
+    scout_packet_encode(&got, reencoded);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(GOLDEN, reencoded, SCOUT_PACKET_SIZE);
+    TEST_ASSERT_EQUAL_UINT32(want.record_seq, got.record_seq);
+    TEST_ASSERT_EQUAL_INT16(want.temp_c_centi, got.temp_c_centi);
+}
+
+void test_decode_negative_temperature(void) {
+    ScoutReading r = golden_reading();
+    r.temp_c_centi = scout_temp_centi(-1.25f);
+    uint8_t buf[SCOUT_PACKET_SIZE];
+    scout_packet_encode(&r, buf);
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(buf, sizeof(buf), &got));
+    TEST_ASSERT_EQUAL_INT16(-125, got.temp_c_centi);
+}
+
+void test_decode_rejects_wrong_length(void) {
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_BAD_LENGTH,
+                          scout_packet_decode(GOLDEN, SCOUT_PACKET_SIZE - 1, &got));
+}
+
+void test_decode_rejects_corrupt_byte(void) {
+    uint8_t buf[SCOUT_PACKET_SIZE];
+    for (size_t i = 0; i < SCOUT_PACKET_SIZE; i++) {
+        buf[i] = GOLDEN[i];
+    }
+    buf[10] ^= 0x01;
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_BAD_CRC, scout_packet_decode(buf, sizeof(buf), &got));
+}
+
+void test_decode_rejects_other_schema_version(void) {
+    ScoutReading r = golden_reading();
+    r.schema_version = SCOUT_PACKET_VERSION + 1;
+    uint8_t buf[SCOUT_PACKET_SIZE];
+    scout_packet_encode(&r, buf);  // valid CRC, wrong version
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_BAD_VERSION, scout_packet_decode(buf, sizeof(buf), &got));
+}
+
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_encode_matches_shore_golden);
     RUN_TEST(test_crc_of_body_is_known);
     RUN_TEST(test_fixed_point_helpers);
+    RUN_TEST(test_decode_golden_round_trips);
+    RUN_TEST(test_decode_negative_temperature);
+    RUN_TEST(test_decode_rejects_wrong_length);
+    RUN_TEST(test_decode_rejects_corrupt_byte);
+    RUN_TEST(test_decode_rejects_other_schema_version);
     UNITY_END();
 }
 

@@ -54,7 +54,17 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 
 ## Software
 
-**On the S3 — not written.** It must:
+**On the S3 — receive half written, not yet run on the board** (`firmware/src/shore_rx/`, env
+`feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)). It copies the bench
+receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
+decodes it with `scout_packet_decode`, drops repeats on `(buoy_id, record_seq)`, and tags it in or
+out of the ±2 min window around a slot. It listens all the time, since it is mains-powered. The S3
+has no RTC: until NTP over WiFi exists, set its clock with `firmware/tools/set_rtc.py`. Its serial
+output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
+⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
+IRQ 9**, to be confirmed by ECE. **Not written:** the WiFi push (open item 1) and the downlink.
+
+The station must:
 
 - use **915.0 MHz · BW 500 kHz · SF12 · CR 4/8** (`ModemConfig {0x98, 0xC4, 0x04}`), exactly as
   the buoy's `firmware/src/config.h`;
