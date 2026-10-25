@@ -1,6 +1,6 @@
 # ADR-0010 — Acoustic Summary Over LoRa
 
-- **Status:** 🟢 Accepted — 2026-10-25 (field set fixed; implementation in SCO-233, additions pending in SCO-234)
+- **Status:** 🟢 Accepted — 2026-10-25 (field set fixed; additions pending in SCO-234). **Implemented in software 2026-10-25** ([SCO-233](https://linear.app/scout1/issue/SCO-233)): firmware library, packet and CSV v3, shore and dashboard; the audio capture path it plugs into ([SCO-231](https://linear.app/scout1/issue/SCO-231)) is not built yet, so the buoy reports no recordings until it is
 - **Date raised:** 2026-10-25 (David Chousal Cantu, after the 2026-10-23 weekly meeting)
 - **Owners:** CS lead (David Chousal Cantu); ECE lead (Isabella Rodriguez) for the analog chain and the pending additions
 - **Implements:** [SCO-233](https://linear.app/scout1/issue/SCO-233) · **Pending:** [SCO-234](https://linear.app/scout1/issue/SCO-234)
@@ -92,9 +92,27 @@ Two additions need bench data before they are accepted or rejected
   recording schedule (`config.h` vs the power budget vs the EDD), the sample rate (22.05 vs
   16 kHz), and the audio ADC (Feather 12-bit vs PCM1808).
 
+## Implementation (2026-10-25)
+
+- **Specification:** [`analytics/utils/acoustic_summary.py`](../../analytics/utils/acoustic_summary.py),
+  integer-only. **Firmware:** `firmware/lib/scout_acoustic`, matching it bit for bit on golden
+  vectors (`firmware/test/test_acoustic`). Constants with their reasons: `firmware/src/config.h`
+  (`ACOUSTIC_*`), checked against the Python by CI.
+- **Scaling chosen:** levels in centi-dB re a full-scale sine (−32,768 = digital silence); snap =
+  bio-band sample above 8× the running mean |bio| and above 8 ADC LSB, with a 3.0 ms (66-sample)
+  refractory window; clip = within 16 ADC counts of a rail. Logged in the
+  [decision log](../hub/decision-log.md).
+- **Which recording a packet carries:** the most recent one since the previous transmit slot;
+  zeros and `audio_present` = 0 otherwise, and in CONSERVE / CRITICAL.
+- **Validation:** on 38 one-minute Sesoko clips, buoy NDSI vs shore NDSI Spearman ρ = 0.91 and
+  `lvl_bio` vs shore BI ρ = 0.46 ([Acoustic Summary Validation](../analysis/acoustic-summary-validation.md)).
+- **Not yet verified on hardware:** CPU headroom (estimated at 48–57% of the M0 at 22,050 Hz,
+  in the validation doc), dropped samples, recording current, anti-alias filter, amplifier gain.
+
 ## References
 
 - [SCO-233](https://linear.app/scout1/issue/SCO-233), [SCO-234](https://linear.app/scout1/issue/SCO-234), [SCO-231](https://linear.app/scout1/issue/SCO-231)
 - [Power Budget Update, 2026-10-05](../engineering/power-budget-update-2026-10-05.md)
 - [Coral Bioacoustic Methodology](../analysis/coral-bioacoustic-methodology.md)
 - [Data Schema](../engineering/data-schema.md)
+- [Acoustic Summary Validation](../analysis/acoustic-summary-validation.md)
