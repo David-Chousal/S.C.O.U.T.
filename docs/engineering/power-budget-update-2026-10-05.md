@@ -28,6 +28,27 @@
 > - Bench parts ordered 2026-10-06. Full staged plan and benchmarks:
 >   [Electronics Build and Test Plan](electronics-build-and-test-plan.md).
 
+> **Update 2026-10-25** — audio capture parameters settled by
+> [ADR-0011](../decisions/0011-audio-capture-parameters.md); the hydrophone section below is
+> superseded on three points:
+> - **Schedule: 3 × 60 s clips a day** (00:00, 08:00, 16:00 UTC), not midnight 5 + dusk 5 + a
+>   weekly diel day. 180 s/day instead of 806 s. The "several files per window", "dusk window"
+>   and "diel day" rules in the table below are given up; see the ADR's consequences.
+> - **ADC: the Feather's 12-bit ADC on A2**, not the PCM1808. While recording (*estimate*):
+>   H2dM bias ≈ 2.3 mA + 3.3 V preamp ≈ 3 mA + SAMD21 active with ADC and DMA ≈ 11 mA + SD
+>   writing ≈ 40 mA ≈ **56 mA**, against ≈ 75 mA with the PCM1808.
+> - **Audio energy ≈ 56 mA × 180 s ≈ 2.8 mAh/day** (was 16.9). Storage 44.1 kB/s × 180 s ≈
+>   **7.9 MB/day ≈ 2.9 GB/year** (was 35.5 MB/day).
+>
+> Battery life recomputed the same way as the table below (11,900 mAh usable per D cell):
+>
+> | Scenario (hydrophone 3 min/day) | mAh/day | 1 D cell | 2 D cells |
+> |---|---|---|---|
+> | Best estimate, always-on board | 16.2 | 735 d (24.1 mo) | ≈ 4.0 yr |
+> | Pessimistic, always-on (hydrophone 100 mA) | 37.7 | 316 d (10.4 mo) | 631 d (20.7 mo) |
+>
+> Still estimates: recording current is measured at build-plan Stage 7.
+
 ## Status of this document
 
 | Item | State on 2026-10-05 |

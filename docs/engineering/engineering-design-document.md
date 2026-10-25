@@ -155,9 +155,16 @@ The S.C.O.U.T. buoy shall:
 
 - 16-bit PCM
 
-- 16 kHz
+- 22.05 kHz
 
-- Three 60-second recordings/day
+- Three 60-second recordings/day (00:00, 08:00, 16:00 UTC on the build)
+
+> **Reconciled 2026-10-25 ([ADR-0011](../decisions/0011-audio-capture-parameters.md)).** The sample
+> rate is **22.05 kHz** everywhere (this document said 16 kHz, whose 8 kHz Nyquist sits on the
+> edge of the 1–8 kHz bio band); storage figures below are recomputed for it. The schedule is
+> three 60 s clips a day, as here. On the **Feather M0 build** the audio ADC is the SAMD21's
+> 12-bit ADC on A2; the PCM1808 sections of this document describe the ESP32-C3 production
+> target only (Standing rule 3).
 
 #### Communications
 
@@ -1466,7 +1473,7 @@ Sampling Configuration:
 
 - Mono
 
-- 16 kHz
+- 22.05 kHz
 
 - 16-bit PCM
 
@@ -1657,11 +1664,11 @@ Reasons for Selection
 | **Parameter**      | **Value**  |
 |--------------------|------------|
 | Channels           | Mono       |
-| Sample Rate        | 16 kHz     |
+| Sample Rate        | 22.05 kHz  |
 | Bit Depth          | 16-bit PCM |
 | Recording Duration | 60 seconds |
 | Recordings per Day | 3          |
-| Daily Raw Audio    | 5.76 MB    |
+| Daily Raw Audio    | 7.94 MB    |
 
 ### Recording Schedule
 
@@ -1968,17 +1975,17 @@ Configuration:
 | **Parameter** | **Value** |
 |---------------|-----------|
 | Format        | PCM       |
-| Sample Rate   | 16 kHz    |
+| Sample Rate   | 22.05 kHz |
 | Bit Depth     | 16-bit    |
 | Channels      | Mono      |
 
 Generated data:
 
-- 1.92 MB per recording
+- 2.65 MB per recording
 
-- 5.76 MB per day
+- 7.94 MB per day
 
-- Approximately 172.8 MB over 30 days
+- Approximately 238.1 MB over 30 days
 
 Approximately 20% of flash capacity is reserved for metadata, wear management, erase alignment, and future expansion.
 
@@ -2511,7 +2518,7 @@ Aquarian H2dM
 | **Parameter** | **Value**  |
 |---------------|------------|
 | Channels      | Mono       |
-| Sample Rate   | 16 kHz     |
+| Sample Rate   | 22.05 kHz  |
 | Bit Depth     | 16-bit PCM |
 
 #### Daily Audio
@@ -2520,7 +2527,7 @@ Aquarian H2dM
 |---------------------|-------------|
 | Recordings          | 3           |
 | Recording Time      | 180 seconds |
-| Raw Audio Generated | 5.76 MB/day |
+| Raw Audio Generated | 7.94 MB/day |
 
 ### Daily Data Summary
 
@@ -2951,7 +2958,7 @@ in [`docs/engineering/buoy-structural/`](buoy-structural/).
 | Hydrophone         | Aquarian H2dM  |
 | ADC                | TI PCM1808     |
 | Channels           | Mono           |
-| Sample Rate        | 16 kHz         |
+| Sample Rate        | 22.05 kHz      |
 | Bit Depth          | 16-bit PCM     |
 | Recording Duration | 60 seconds     |
 | Recordings per Day | Three          |
@@ -3125,7 +3132,7 @@ Future hardware additions should utilize these rails whenever practical.
 
 Current mission profile:
 
-- 16 kHz
+- 22.05 kHz
 
 - 16-bit PCM
 

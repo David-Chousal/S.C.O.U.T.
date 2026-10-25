@@ -403,13 +403,20 @@ power A7 reads the charger output, not a battery; don't tune thresholds against 
 
 ---
 
-### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-8](https://linear.app/scout1/issue/SCO-8) · parts not bought; firmware not written (G7)
+### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-231](https://linear.app/scout1/issue/SCO-231) · parts not bought; firmware written, never run (G7)
 
 Aquarian H2dM on 3.5 mm plug-in power, biased from 3.3 V through 1.1 kΩ, preamp out to **A2**,
 power switch Q2 on **A3** (LOW = on). Values in the [drawing set](electronics-drawing-set.md#hydrophone-front-end-values).
 Raw audio stays on the SD card and is **never** sent over LoRa.
 
-**PASS:** 1-min clips at 22.05 kHz on schedule; recording current ≤ ~76 mA; clips run cleanly
+Firmware: `drivers/audio_capture.h` records one 60 s clip at 00:00, 08:00 and 16:00 UTC to
+`/AUDIO/YYYYMMDD/HHMMSSZ.WAV` ([ADR-0011](../decisions/0011-audio-capture-parameters.md)). The
+serial log prints `audio: ok samples=1323000` or `audio: FAILED reason=<n>` (1 SD open, 2 DMA,
+3 stalled, 4 overrun, 5 SD write). Use the bench build to hit a recording hour quickly by
+setting the clock to 07:59 UTC.
+
+**PASS:** 1-min clips at 22.05 kHz on schedule with `samples=1323000` every time; a 1 kHz test
+tone reads 1 kHz in the WAV; recording current ≤ ~76 mA (estimate ≈ 56 mA); clips run cleanly
 through the acoustic pipeline; power budget re-run with the measured draw.
 
 ---

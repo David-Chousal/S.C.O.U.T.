@@ -66,8 +66,9 @@ reach one base station) and floated **2–3** for parallel testing. This protoco
 
 Stages 1–4 are the electronics track in
 [Electronics Build and Test Plan](electronics-build-and-test-plan.md), which holds the full
-benchmark list. The hydrophone stage is left out here because the hydrophone part is still
-open ([SCO-8](https://linear.app/scout1/issue/SCO-8)).
+benchmark list. The hydrophone stage is left out here because the hydrophone is not bought yet
+(the part, the H2dM, was settled 2026-10-12 in [SCO-8](https://linear.app/scout1/issue/SCO-8);
+the order waits on funding, [SCO-158](https://linear.app/scout1/issue/SCO-158)).
 
 **Dropped:** the proof-load of the mooring attachment ([SCO-174](https://linear.app/scout1/issue/SCO-174))
 is cancelled. The foam-fill trials and the

@@ -80,7 +80,7 @@ def generate_reading(
     if battery_v < _BATT_LOW_SKIP_TX_V:
         flags.add("BATT_LOW_SKIP_TX")
 
-    # Audio: 3 recordings/day (EDD) — roughly every 8th 30-min cycle.
+    # Audio: 3 recordings/day (ADR-0011) — roughly every 8th 30-min cycle.
     audio_present = seq % 16 == 0
     acoustic = synthetic_acoustic(seq, hour) if audio_present else {}
 

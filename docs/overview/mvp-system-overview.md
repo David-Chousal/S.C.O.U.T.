@@ -80,7 +80,12 @@ Deploy a **battery-powered buoy adjacent to coral reefs** that:
 
 **Current recommendation:** **Temperature + Turbidity**, with light added if feasible.
 
-### 3. Hydrophone / Acoustic Monitoring (Optional / Stretch Goal)
+### 3. Hydrophone / Acoustic Monitoring
+
+> **Since superseded:** the hydrophone is part of the V1 payload
+> ([ADR-0005](../decisions/0005-v1-sensing-payload.md)), not a stretch goal. It records three
+> 60 s clips a day at 22.05 kHz ([ADR-0011](../decisions/0011-audio-capture-parameters.md)) and
+> sends a short summary of each over LoRa ([ADR-0010](../decisions/0010-acoustic-summary-over-lora.md)).
 
 **Purpose:** Record reef soundscapes.
 **Why:** Reef acoustic signatures vary with biodiversity, reef health, and stress.
