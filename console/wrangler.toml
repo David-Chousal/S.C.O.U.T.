@@ -2,6 +2,16 @@ name = "scout-console"
 main = "worker/index.js"
 compatibility_date = "2025-10-01"
 
+# The front end (console/web, a Next.js static export). Build it first: cd web && npm run build.
+# run_worker_first: every request reaches the Worker, which serves /api and /auth itself and
+# gives each HTML page a fresh script nonce and CSP before it leaves (worker/index.js).
+[assets]
+directory = "./web/out"
+binding = "ASSETS"
+run_worker_first = true
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+
 # Public config only. Secrets are set with `wrangler secret put` and never committed:
 #   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET
 [vars]

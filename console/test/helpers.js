@@ -1,4 +1,5 @@
-/* Test helpers: a fresh console with an in-memory D1, and a cookie-keeping browser. */
+/* Test helpers: a fresh console with an in-memory D1 and stub static assets, and a client that
+ * talks to the JSON API the way the front end does (session cookie + X-CSRF-Token). */
 
 import { fileURLToPath } from "node:url";
 
@@ -9,8 +10,21 @@ import { makeD1 } from "./d1-shim.js";
 export const APP_URL = "https://console.test";
 const MIGRATION = fileURLToPath(new URL("../migrations/0001-init.sql", import.meta.url));
 
+/** Stands in for the ASSETS binding: one HTML page with two scripts, and one stylesheet. */
+export const ASSET_HTML =
+  '<!DOCTYPE html><html><head><script src="/_next/static/a.js" async></script></head>' +
+  "<body><script>self.__next_f=[]</script></body></html>";
+
+const stubAssets = {
+  async fetch(request) {
+    const path = new URL(request.url).pathname;
+    if (path.endsWith(".css")) return new Response("body{}", { headers: { "Content-Type": "text/css" } });
+    return new Response(ASSET_HTML, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  },
+};
+
 export function makeEnv(extra = {}) {
-  return { APP_URL, DB: makeD1(MIGRATION), BOOTSTRAP_ADMIN_EMAIL: "admin@scout.test", ...extra };
+  return { APP_URL, DB: makeD1(MIGRATION), ASSETS: stubAssets, BOOTSTRAP_ADMIN_EMAIL: "admin@scout.test", ...extra };
 }
 
 export async function addUser(env, email, role, password = "correct horse battery") {
@@ -21,19 +35,20 @@ export async function addUser(env, email, role, password = "correct horse batter
   return { id, email, password };
 }
 
-/** A minimal browser: keeps cookies, sends forms with the page's CSRF token. */
-export class Browser {
+/** A browser on the console: keeps cookies and the session's CSRF token. */
+export class Client {
   constructor(env) {
     this.env = env;
     this.cookies = new Map();
+    this.csrf = "";
   }
 
-  async request(path, { method = "GET", form = null, headers = {} } = {}) {
+  async raw(path, { method = "GET", body, headers = {} } = {}) {
     const cookie = [...this.cookies].map(([k, v]) => `${k}=${v}`).join("; ");
     const init = { method, headers: { ...headers, ...(cookie ? { Cookie: cookie } : {}) } };
-    if (form) {
-      init.body = new URLSearchParams(form).toString();
-      init.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    if (body !== undefined) {
+      init.body = typeof body === "string" ? body : JSON.stringify(body);
+      init.headers["Content-Type"] ??= "application/json";
       // A browser always sends the length; Node's Request does not add it.
       init.headers["Content-Length"] ??= String(new TextEncoder().encode(init.body).length);
       init.headers.Origin ??= APP_URL;
@@ -45,27 +60,37 @@ export class Browser {
       if (attrs.some((a) => a.trim() === "Max-Age=0")) this.cookies.delete(name);
       else this.cookies.set(name, value);
     }
-    return { response, text: await response.text() };
+    return response;
   }
 
-  async csrf(path = "/settings") {
-    const { text } = await this.request(path);
-    return /name="csrf" value="([^"]+)"/.exec(text)?.[1];
+  /** GET a JSON route: { status, body }. */
+  async get(path) {
+    const response = await this.raw(path);
+    return { status: response.status, body: await response.json(), response };
   }
 
-  async post(path, fields, extra = {}) {
-    const csrf = await this.csrf();
-    return this.request(path, { method: "POST", form: { csrf, ...fields }, ...extra });
+  /** POST JSON with the session's CSRF token, as the front end's api client does. */
+  async post(path, body = {}, headers = {}) {
+    if (!this.csrf && this.cookies.has("__Host-scout_session")) await this.refreshCsrf();
+    const response = await this.raw(path, { method: "POST", body, headers: { "X-CSRF-Token": this.csrf, ...headers } });
+    return { status: response.status, body: await response.json().catch(() => ({})), response };
   }
 
-  async signIn(email, password) {
-    return this.request("/login", { method: "POST", form: { email, password } });
+  async refreshCsrf() {
+    const { body } = await this.get("/api/session");
+    this.csrf = body.csrf || "";
+  }
+
+  async signIn(email, password, headers = {}) {
+    this.csrf = "";
+    return this.post("/api/login", { email, password }, headers);
   }
 }
 
 export async function signedIn(env, role, email = `${role}@scout.test`) {
   const user = await addUser(env, email, role);
-  const browser = new Browser(env);
-  await browser.signIn(user.email, user.password);
-  return { browser, user };
+  const client = new Client(env);
+  await client.signIn(user.email, user.password);
+  await client.refreshCsrf();
+  return { client, user };
 }

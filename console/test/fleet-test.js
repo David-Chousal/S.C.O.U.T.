@@ -1,30 +1,31 @@
-/* Roles, the transmit-count setting, the device API, the audit log and escaping. */
+/* Roles, the transmit-count setting, the device API and the audit log, through the JSON API. */
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { countState, lifeFor } from "../worker/fleet.js";
 import { parseRow } from "../worker/device.js";
+import { countState, lifeFor } from "../worker/fleet.js";
 import { can } from "../worker/roles.js";
-import { APP_URL, Browser, makeEnv, signedIn } from "./helpers.js";
+import worker from "../worker/index.js";
+import { APP_URL, makeEnv, signedIn } from "./helpers.js";
 
 function row(seq, { tx = "3", flags = "", ts = "2026-03-01T00:00:00Z", buoy = "SCOUT-01" } = {}) {
   return { buoy_id: buoy, record_seq: String(seq), timestamp_utc: ts, tx_count: tx, flags };
 }
 
 async function deviceToken(env) {
-  const { browser } = await signedIn(env, "admin", "dev-admin@scout.test");
-  const { text } = await browser.post("/devices", { name: "Kaneohe shore" });
-  return /scd_[\w-]+/.exec(text)[0];
+  const { client } = await signedIn(env, "admin", "dev-admin@scout.test");
+  return (await client.post("/api/devices", { name: "Kaneohe shore" })).body.token;
 }
 
-function deviceCall(env, token, path, body, extraHeaders = {}) {
+function deviceCall(env, token, path, body) {
   const text = body ? JSON.stringify(body) : undefined;
-  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...extraHeaders };
-  if (text !== undefined) headers["Content-Length"] ??= String(new TextEncoder().encode(text).length);
-  return import("../worker/index.js").then(({ default: worker }) => worker.fetch(new Request(APP_URL + path, {
-    method: body ? "POST" : "GET", body: text, headers }), env));
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+  if (text !== undefined) headers["Content-Length"] = String(new TextEncoder().encode(text).length);
+  return worker.fetch(new Request(APP_URL + path, { method: body ? "POST" : "GET", body: text, headers }), env);
 }
+
+const buoy = async (client, id = 1) => (await client.get("/api/fleet")).body.buoys.find((b) => b.buoy_id === id);
 
 test("roles: guests change nothing, members change settings, only admins administer", () => {
   assert.equal(can({ role: "guest" }, "settings.write"), false);
@@ -49,19 +50,24 @@ test("estimates come from the Python model's export and fewer transmits never la
   assert.ok(lifeFor(3, 1).best.days > 700 && lifeFor(3, 1).best.days < 760);
 });
 
-test("a guest sees every page and every control, disabled, and cannot write", async () => {
+test("the fleet read carries buoys, the battery estimates and the slot labels", async () => {
   const env = makeEnv();
   env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
-  const { browser } = await signedIn(env, "guest");
-  for (const path of ["/settings", "/team", "/devices", "/audit", "/account"]) {
-    const { response, text } = await browser.request(path);
-    assert.equal(response.status, 200, path);
-    if (path !== "/audit" && path !== "/account") assert.match(text, /View only/, path);
+  const { client } = await signedIn(env, "guest");
+  const { body } = await client.get("/api/fleet");
+  assert.equal(body.buoys[0].state, "default");
+  assert.equal(body.estimates.estimate, true);
+  assert.equal(body.slotLabels["2"], "00:10 and 16:10 UTC");
+});
+
+test("a guest reads every page's data and writes nothing", async () => {
+  const env = makeEnv();
+  env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
+  const { client } = await signedIn(env, "guest");
+  for (const path of ["/api/session", "/api/fleet", "/api/team", "/api/devices", "/api/audit"]) {
+    assert.equal((await client.get(path)).status, 200, path);
   }
-  const { text } = await browser.request("/settings");
-  assert.match(text, /<select id="tx1" name="tx_count" disabled>/);
-  const write = await browser.post("/settings/buoys/1/tx-count", { tx_count: "1" });
-  assert.equal(write.response.status, 403);
+  assert.equal((await client.post("/api/fleet/buoys/1/tx-count", { tx_count: 1 })).status, 403);
   assert.equal(env.DB.raw.prepare("SELECT tx_count_requested FROM buoys").get().tx_count_requested, null);
 });
 
@@ -69,16 +75,16 @@ test("a member requests a count; it is pending until the buoy reports it, and au
   const env = makeEnv();
   const token = await deviceToken(env);
   await deviceCall(env, token, "/api/device/readings", { rows: [row(1)] });
-  const { browser } = await signedIn(env, "member");
-  await browser.post("/settings/buoys/1/tx-count", { tx_count: "1" });
-  assert.match((await browser.request("/settings")).text, /badge pending/);
+  const { client } = await signedIn(env, "member");
+  assert.equal((await client.post("/api/fleet/buoys/1/tx-count", { tx_count: 1 })).status, 200);
+  assert.equal((await buoy(client)).state, "pending");
 
   const settings = await (await deviceCall(env, token, "/api/device/settings")).json();
   assert.deepEqual(settings.buoys, [{ buoy_id: 1, tx_count_requested: 1 }]);
 
   await deviceCall(env, token, "/api/device/readings", { rows: [row(2, { tx: "1", ts: "2026-03-02T00:00:00Z" })] });
-  assert.match((await browser.request("/settings")).text, /badge confirmed/);
-  const audit = env.DB.raw.prepare("SELECT * FROM audit_log WHERE action = 'buoy.tx_count'").get();
+  assert.equal((await buoy(client)).state, "confirmed");
+  const audit = (await client.get("/api/audit")).body.entries.find((e) => e.action === "buoy.tx_count");
   assert.equal(audit.actor_label, "member@scout.test");
   assert.equal(audit.after_json, '{"requested":1}');
 });
@@ -86,20 +92,21 @@ test("a member requests a count; it is pending until the buoy reports it, and au
 test("a count outside 1-3 is refused", async () => {
   const env = makeEnv();
   env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
-  const { browser } = await signedIn(env, "member");
-  const { text } = await browser.post("/settings/buoys/1/tx-count", { tx_count: "4" });
-  assert.match(text, /must be 1, 2 or 3/);
+  const { client } = await signedIn(env, "member");
+  const { status, body } = await client.post("/api/fleet/buoys/1/tx-count", { tx_count: 4 });
+  assert.equal(status, 400);
+  assert.match(body.error, /must be 1, 2 or 3/);
 });
 
 test("CMD_REJECTED from the buoy shows as rejected", async () => {
   const env = makeEnv();
   const token = await deviceToken(env);
   await deviceCall(env, token, "/api/device/readings", { rows: [row(1)] });
-  const { browser } = await signedIn(env, "member");
-  await browser.post("/settings/buoys/1/tx-count", { tx_count: "2" });
+  const { client } = await signedIn(env, "member");
+  await client.post("/api/fleet/buoys/1/tx-count", { tx_count: 2 });
   await deviceCall(env, token, "/api/device/readings", {
     rows: [row(2, { tx: "3", flags: "CMD_REJECTED", ts: "2026-03-02T00:00:00Z" })] });
-  assert.match((await browser.request("/settings")).text, /badge rejected/);
+  assert.equal((await buoy(client)).state, "rejected");
 });
 
 test("device API: no token, a wrong token and a revoked token are all refused", async () => {
@@ -108,8 +115,8 @@ test("device API: no token, a wrong token and a revoked token are all refused", 
   assert.equal((await deviceCall(env, "scd_nope", "/api/device/settings")).status, 401);
   const token = await deviceToken(env);
   const id = env.DB.raw.prepare("SELECT id FROM devices").get().id;
-  const { browser } = await signedIn(env, "admin", "a2@scout.test");
-  await browser.post(`/devices/${id}/revoke`, {});
+  const { client } = await signedIn(env, "admin", "a2@scout.test");
+  await client.post(`/api/devices/${id}/revoke`);
   assert.equal((await deviceCall(env, token, "/api/device/settings")).status, 401);
 });
 
@@ -136,42 +143,18 @@ test("parseRow validates every field it uses", () => {
   assert.ok(parseRow(row(1, { ts: "2026-03-01T12:00:00Z" }), Date.parse("2026-03-01T00:00:00Z")));
 });
 
-test("names a user typed are escaped in every page", async () => {
+test("labels people type come back as data, never as markup the API renders", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "admin");
-  await browser.post("/settings/buoys", { buoy_id: "7", label: "<script>alert(1)</script>" });
-  const { text } = await browser.request("/settings");
-  assert.doesNotMatch(text, /<script>alert/);
-  assert.match(text, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  const { client } = await signedIn(env, "admin");
+  await client.post("/api/fleet/buoys", { buoy_id: 7, label: "<script>alert(1)</script>" });
+  const response = await client.raw("/api/fleet");
+  assert.match(response.headers.get("Content-Type"), /^application\/json/);
+  assert.equal((await response.json()).buoys[0].label, "<script>alert(1)</script>");
 });
 
 test("the last admin cannot be demoted", async () => {
   const env = makeEnv();
-  const { browser, user } = await signedIn(env, "admin");
-  const { text } = await browser.post(`/team/users/${user.id}/role`, { role: "member" });
-  assert.match(text, /at least one admin/);
-});
-
-test("pages fit a phone: every form control is labelled and tables scroll in their own box", async () => {
-  const env = makeEnv();
-  env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
-  const { browser } = await signedIn(env, "admin");
-  for (const path of ["/settings", "/team", "/devices"]) {
-    const { text } = await browser.request(path);
-    const ids = [...text.matchAll(/<(?:input|select) id="([^"]+)"/g)].map((m) => m[1]);
-    for (const id of ids) assert.match(text, new RegExp(`<label[^>]*for="${id}"`), `${path} #${id}`);
-    for (const table of text.matchAll(/<table>/g)) {
-      assert.ok(text.slice(0, table.index).endsWith('<div class="table-wrap">'), path);
-    }
-  }
-});
-
-test("a successful change redirects, so a reload cannot repeat it", async () => {
-  const env = makeEnv();
-  env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
-  const { browser } = await signedIn(env, "member");
-  const { response } = await browser.post("/settings/buoys/1/tx-count", { tx_count: "2" });
-  assert.equal(response.status, 303);
-  assert.equal(response.headers.get("Location"), "/settings?saved=1");
-  assert.match((await browser.request("/settings?saved=1")).text, /Saved\./);
+  const { client, user } = await signedIn(env, "admin");
+  const { body } = await client.post(`/api/team/users/${user.id}/role`, { role: "member" });
+  assert.match(body.error, /at least one admin/);
 });
