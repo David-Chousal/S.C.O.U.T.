@@ -7,6 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
+**Live at <https://scout-console.scout1.workers.dev>** since 2026-10-26 (deployed from the SCO-238 branch, before review).
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
@@ -123,13 +124,21 @@ Then:
 3. **Google:** Cloud Console → Credentials → OAuth client (Web). Redirect URI
    `<APP_URL>/auth/google/callback`. Set `GOOGLE_CLIENT_ID`, then run
    `npx wrangler secret put GOOGLE_CLIENT_SECRET`.
-4. Sign in as the bootstrap admin and invite the team.
+4. Create the first admin. With a password: `node scripts/create-admin.mjs` asks for your email,
+   name and password (typed hidden), hashes the password on your machine with the console's own
+   PBKDF2 and sends only the hash to D1; it refuses once an admin exists. Or with GitHub/Google:
+   set `BOOTSTRAP_ADMIN_EMAIL` and sign in with that verified email. Then invite the team from
+   the Team page.
 5. Create a shore-station token on Stations, and on the shore run:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
 
 ## Develop and test
+
+Local data is keyed by `database_id`, so `wrangler dev` uses its own local D1, separate from the
+live one. Apply the schema to it once (`npx wrangler d1 migrations apply scout-console --local`)
+and create a local admin with `node scripts/create-admin.mjs --local`.
 
 ```bash
 cd console
