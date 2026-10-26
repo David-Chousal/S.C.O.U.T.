@@ -36,6 +36,20 @@ jobs:
       - name: Packet contract guard (firmware GOLDEN == shore encoder)
         run: python scripts/check_packet_contract.py
 
+  console-tests:
+    # The S.C.O.U.T. Console (console/, ADR-0012): the real Worker and D1 migration against
+    # Node's built-in SQLite, with no npm install. node:sqlite needs Node 22.13 or later.
+    name: Console (Worker) tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Console tests
+        working-directory: console
+        run: npm test
+
   firmware-tests:
     # Do NOT rename: the "Protect main" ruleset matches required checks by this exact
     # string, and a rename silently leaves the PR waiting on a check that never reports.

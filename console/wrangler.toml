@@ -1,0 +1,18 @@
+name = "scout-console"
+main = "worker/index.js"
+compatibility_date = "2025-10-01"
+
+# Public config only. Secrets are set with `wrangler secret put` and never committed:
+#   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET
+[vars]
+APP_URL = "https://scout-console.example.workers.dev"   # set to the deployed URL (see README)
+BOOTSTRAP_ADMIN_EMAIL = ""                              # first admin; only used while no users exist
+GITHUB_CLIENT_ID = ""
+GOOGLE_CLIENT_ID = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "scout-console"
+# From `wrangler d1 create scout-console`. Not a secret, but specific to the owner's account.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

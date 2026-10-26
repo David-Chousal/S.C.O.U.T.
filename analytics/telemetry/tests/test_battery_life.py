@@ -89,5 +89,15 @@ class JsonExport(unittest.TestCase):
         self.assertAlmostEqual(e.months, e.days / 30.4375, places=9)
 
 
+class ConsoleExport(unittest.TestCase):
+    def test_the_consoles_copy_matches_the_model(self):
+        # The console (a Worker) reads this export; regenerate with scripts/export_battery_life.py.
+        spec = importlib.util.spec_from_file_location(
+            "export_battery_life", REPO / "scripts" / "export_battery_life.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertEqual(module.OUT.read_text(), module.render())
+
+
 if __name__ == "__main__":
     unittest.main()
