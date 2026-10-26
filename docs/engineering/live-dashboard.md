@@ -197,9 +197,34 @@ as Analytics. With a single buoy the page simply shows one tile, so it scales fr
 a whole network without changing shape. The per-buoy science is the multi-buoy backend from
 [`analytics/telemetry/fleet.py`](../../analytics/telemetry/fleet.py).
 
+### Transmit schedule and freshness (SCO-198)
+
+The buoy's daily transmit count is a setting since 2026-10-25: 1, 2 or 3 a day (pending ECE
+power sign-off), with 1 → 00:10, 2 → 00:10 + 16:10, 3 → all three UTC slots. The page follows
+the count **the newest packet reports** (schema v4 `tx_count`; a buoy that does not report one
+is on the default 3):
+
+- **Freshness and the slot rule schedule only the slots that count uses.** A buoy on 1 a day is
+  not shown missing its 08:10 and 16:10 slots, and *offline* means a full day of its own slots
+  missed (3 slots at 3 a day, 1 at 1 a day). A packet that arrived for a slot the current count no
+  longer uses still shows as received ([`freshness.py`](../../analytics/telemetry/freshness.py)).
+- **A Transmits card** says the count the buoy reports, or "3 a day · default" until it reports
+  one.
+- **A Transmit schedule panel** gives the estimated battery life for each option, two D cells,
+  best and pessimistic, from
+  [`analytics/telemetry/battery_life.py`](../../analytics/telemetry/battery_life.py), the one
+  model the console also reads. It is labelled an estimate. Its note says what the numbers show:
+  the radio is under half a percent of the daily draw, so the count trades data freshness, not
+  battery life. It reuses the theme's compact panel-table rule (`.viewdata`), so no CSS changed.
+
+**This page never changes the count.** It is public and static and holds no secret. The team
+requests a count in the signed-in **console** ([ADR-0012](../decisions/0012-authenticated-console.md),
+[`console/`](../../console/README.md)), which shows *requested* vs *reported* and "pending" until
+the buoy confirms.
+
 ## Why static, not a live server
 
-The buoy transmits **one summarized packet per day** ([EDD §10](engineering-design-document.md)).
+The buoy transmits **one to three summarized packets a day** ([`facts.md`](../hub/facts.md)).
 "Live" therefore means *republished when new data lands* — hourly is already far finer than the
 data changes. That makes a **static site** the right tool:
 

@@ -49,6 +49,16 @@
 >
 > Still estimates: recording current is measured at build-plan Stage 7.
 
+> **Update 2026-10-25 (later)** — the transmit count is a setting, 1–3 a day
+> ([SCO-198](https://linear.app/scout1/issue/SCO-198)), **pending Isabella's sign-off on the
+> range**. `analytics/telemetry/battery_life.py` takes the two scenarios above and replaces their
+> radio line with N sends of today's 44-byte packet (690 ms each at 100 + 11 mA). Going from 1 to 3
+> sends adds **0.043 mAh/day** (best case); one cell lasts 736 / 735 / 734 days at 1 / 2 / 3 a day.
+> The optional 1 s listen window after each send (settings downlink, off by default) adds
+> ≈ 0.019 mAh/day at 3 sends, as the [OTA design](ota-firmware-update-design.md) §2 estimates.
+> **For Isabella to confirm:** the range 1–3, the listen window as a budget line, and RX current
+> at BW 500 kHz on the bench. Still estimates.
+
 ## Status of this document
 
 | Item | State on 2026-10-05 |

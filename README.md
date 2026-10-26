@@ -59,6 +59,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
 | Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
 | Ask S.C.O.U.T. chat | 🟢 Live — "Fred" widget backed by a Cloudflare Worker proxy, answers from the published Hub context ([`chatbot/`](chatbot/README.md)) |
+| Team console | 🟡 Phase A built, not deployed — signed-in back end (Workers + D1): transmit-count setting, roles, invites, audit log, shore-station API ([`console/`](console/README.md), [ADR-0012](docs/decisions/0012-authenticated-console.md)) |
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); power source moving to **two primary lithium D cells, no solar** ([ADR-0007](docs/decisions/0007-primary-cell-power-source.md), open until the sleep floor is measured); bench bring-up and PCB pending |
 | Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Floatation family chosen 2026-08-17 (bolted wedge + bottom caps), first FEA pass complete ([`mechanical/test/`](mechanical/test/)). Open: buoyancy check, housing dimensions, chassis top-section access, mooring attachment hardware |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
@@ -100,6 +101,7 @@ S.C.O.U.T./
 ├── hardware/       Schematics, PCB, wiring diagrams — build platform + BOM confirmed, no schematics/PCB files yet
 ├── mechanical/     CAD, hull design, mooring specs — all five CAD categories documented
 ├── chatbot/        "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
+├── console/        Team console: sign-in, roles, fleet settings (Cloudflare Worker + D1) — Phase A, not deployed
 ├── assets/         Brand, diagrams, and presentations
 ├── scripts/        Repo-level helper scripts (e.g. cross-language packet-contract guard)
 └── data/           Raw audio archive (excluded from git — see Data below)

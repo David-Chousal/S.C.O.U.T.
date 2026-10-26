@@ -29,7 +29,7 @@
 | Boot stub and rollback | Proposed (§6). Arduino's SDU stub needs rebuilding for the Feather M0 RFM95 |
 | Power budget and ADR-0007 lifetime re-run | Figures in §7. Isabella's budget document not updated yet |
 | Shore transmit compliance | **Open.** The RFM95W FeatherWing's FCC authorization has not been checked (§8) |
-| Firmware | Not started. Build follows agreement on this design |
+| Firmware | **Settings slice built 2026-10-25, off by default** ([SCO-198](https://linear.app/scout1/issue/SCO-198)): the 1 s listen window, the `CMD` frame as `SET_TX_COUNT` (HMAC-SHA256, §5), and the shore side, all behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware**. Firmware OTA (offer, chunks, signatures, boot stub, rollback) not started |
 
 ## 1. Constraints this design has to fit
 
@@ -103,7 +103,7 @@ All downlink frames start with a 1-byte type and the 2-byte buoy ID (0 = all buo
 
 | Type | Direction | Payload | Size | Authenticated by |
 |---|---|---|---|---|
-| `CMD` | shore → buoy | 32-bit counter, setting ID, value, 16-byte HMAC tag | ≤ 40 B | HMAC-SHA256 (§5) |
+| `CMD` | shore → buoy | 32-bit counter, setting ID, value, 16-byte HMAC tag | 28 B as built | HMAC-SHA256 (§5) |
 | `OTA_OFFER` | shore → buoy | Signed manifest (below) | 124 B | Ed25519 (§5) |
 | `OTA_CHUNK` | shore → buoy | Session ID (2), chunk index (2), length (1), CRC-16 (2), data (≤ 128) | ≤ 136 B | Image hash at the end |
 | `OTA_ACK` | buoy → shore | Session ID, first chunk index of the burst, 16-bit received bitmap, battery tier | 12 B | None needed (§5) |
@@ -230,8 +230,26 @@ seconds a day. Under ADR-0008 and the FCC review:
 
 ## 9. What changes elsewhere when this is built
 
-- `LoraLink`: receive path, errata registers, `listen(ms)`, sleep on every exit.
-- SCO-165 schedule: "radio sleeps after every send" becomes "radio listens 1 s, then sleeps".
+Done for the settings slice (2026-10-25, [SCO-198](https://linear.app/scout1/issue/SCO-198)),
+everything behind `SCOUT_DOWNLINK` and off by default:
+
+- **`LoraLink`:** `listen(buf, cap, window_ms, frame_max_ms)` with the errata registers, kept on to
+  the end of a frame whose header arrived inside the window, and asleep on every exit. Done.
+- **SCO-165 schedule:** after each send the buoy listens `DOWNLINK_LISTEN_MS` (1 s), then sleeps.
+  Done, in `SCOUT_DOWNLINK` builds only.
+- **`CMD` as built** (`firmware/lib/scout_downlink`, `shore/scout_shore/downlink.py`): 28 bytes,
+  type 0xC1, version 1, buoy ID, counter, setting, value, a 16-byte tag over the first 10 bytes,
+  and a CRC-16. Two choices go beyond §5: **the counter is the shore's Unix time**, and the buoy
+  also requires it within `DOWNLINK_MAX_SKEW_S` (1 day) of its own clock, so a frame recorded
+  earlier cannot be replayed after a cold start resets the stored counter. **No separate ACK**:
+  the next uplink reports the count in use (packet v4, `flags` bits 8–9) and `CMD_REJECTED`
+  (bit 10) if a command failed its checks. Golden vector held by `check_packet_contract.py`.
+- **Keys:** per buoy, 32 bytes, in the gitignored `firmware/src/downlink_key.h` (template
+  `downlink_key_example.h`) and the shore's `SCOUT_CMD_KEY_<id>`. Never in the console or the
+  repo.
+
+Still to do for firmware OTA:
+
 - Packet contract: one status bit for update outcome (`scout_packet.h`, `shore/scout_shore/packet.py`,
   `check_packet_contract.py`).
 - Shore: transmit path, offer/burst scheduler, signed-bundle intake (the shore relays bundles that
