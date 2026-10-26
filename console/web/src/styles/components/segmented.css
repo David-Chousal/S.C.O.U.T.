@@ -1,0 +1,6 @@
+/* ───── Segmented: joined keys, one latched ───── */
+.sc-seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 -3px 0 var(--line); overflow: hidden; }
+.sc-seg button { height: 32px; padding: 0 var(--space-3) 2px; border: 0; background: none; color: var(--ink-muted); font: 500 13px/1 var(--font-sans); cursor: pointer; }
+.sc-seg button + button { border-left: 1px solid var(--line); }
+.sc-seg button[aria-pressed="true"] { color: var(--ink); background: var(--accent-soft); box-shadow: inset 0 2px 0 var(--accent); }
+.sc-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }

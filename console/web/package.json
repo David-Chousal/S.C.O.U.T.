@@ -1,0 +1,34 @@
+{
+  "name": "scout-console-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "S.C.O.U.T. Console front end: the COR design system in Tideline colour, as a static export the console Worker serves (ADR-0012, SCO-238)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "tokens": "node scripts/build-tokens.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2",
+    "jsdom": "^29.1.1",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.12"
+  }
+}
