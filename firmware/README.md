@@ -45,20 +45,34 @@ Per [Engineering Design Document §12](../docs/engineering/engineering-design-do
 
 ```
 firmware/
-├── platformio.ini          Feather M0 build + native (host) test envs
+├── platformio.ini          Buoy, bench, bench-receiver, shore-station and native (host) test envs
 ├── src/
 │   ├── main.cpp            Duty-cycle state machine: Sleep→Wake→Sense→Log→Battery→TX→Sleep
 │   ├── config.h            Pin map, cadence, thresholds  (⚠ confirm pins with ECE)
-│   └── drivers/            Thin hardware wrappers (DS18B20, turbidity, PCF8523, SD, RFM95, battery)
+│   ├── acoustic_config.h   Feeds config.h constants into scout_acoustic
+│   ├── drivers/            Thin hardware wrappers (DS18B20, turbidity, SHT40, PCF8523, SD, RFM95,
+│   │                       battery, audio capture)
+│   ├── bench_rx/           Bench LoRa receiver for a second Feather M0 (env feather_m0_rx)
+│   └── shore_rx/           ESP32-S3 shore-station receiver (env feather_esp32s3_shore)
 ├── lib/                    Hardware-free, host-testable libraries:
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
-│   ├── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
+│   ├── scout_scheduler/    Duty-cycle timing math (sample grid, TX slots, power modes, audio hours)
 │   ├── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
-│   └── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq)
-├── test/                   Unity unit tests (run on the host)
+│   ├── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq)
+│   ├── scout_acoustic/     14-byte acoustic summary — bit-exact port of acoustic_summary.py
+│   ├── scout_capture/      WAV header, 12→16-bit conversion, dropped-sample accounting
+│   ├── scout_sht4x/        SHT40 frame CRC + humidity/temperature conversion
+│   └── scout_timeset/      Bench clock-set command ("T<unix-epoch>") parser
+├── test/                   Unity unit tests (run on the host), one suite per library:
 │   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
-│   ├── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
-│   └── test_link/          Repeat counts by power mode, gap widening, watchdog headroom
+│   ├── test_scheduler/     Sample grid, TX slots, battery gate, power modes, audio scheduling
+│   ├── test_link/          Repeat counts by power mode, gap widening, watchdog headroom
+│   ├── test_dedupe/        Duplicate filter
+│   ├── test_acoustic/      Summary vs golden vectors written by the Python reference
+│   ├── test_capture/       WAV header and sample conversion
+│   ├── test_sht4x/         Frame CRC and conversion
+│   └── test_timeset/       Clock-set command parsing
+├── tools/set_rtc.py        Sets the PCF8523 to UTC over USB (SCO-201)
 └── docs/                   pin-assignments.md, flashing-guide.md
 ```
 
