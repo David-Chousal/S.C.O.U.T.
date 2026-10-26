@@ -1,8 +1,8 @@
 # Thesis LaTeX Source (Overleaf)
 
 > **Summary** — A snapshot of the S.C.O.U.T. thesis as it stands in Overleaf, in the SCU CSEN
-> senior design template. It sits next to the Markdown working draft in [`docs/thesis/`](../README.md).
-> The Overleaf project (`580_INTER`, owned by Michael Schimpf) is where the thesis is edited and
+> senior design template. It sits next to the Markdown working draft in
+> [`docs/thesis/`](../README.md). The Overleaf project (`580_INTER`, owned by Michael Schimpf) is where the thesis is edited and
 > compiled; this folder is a versioned copy. Snapshot taken 2026-10-26.
 
 ---
