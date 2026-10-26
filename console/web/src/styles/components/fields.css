@@ -1,0 +1,18 @@
+/* ───── Fields ───── */
+.sc-fieldset { display: grid; gap: 6px; min-width: 0; }
+.sc-fieldset__label { display: flex; justify-content: space-between; gap: var(--space-2); }
+.sc-input { box-sizing: border-box; width: 100%; height: 34px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface-sunken); color: var(--ink); font: 400 14px/1 var(--font-sans); }
+.sc-input::placeholder { color: var(--ink-muted); }
+.sc-input:focus, .sc-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--accent); background: var(--surface); }
+.sc-input--mono { font: 400 13px/1 var(--font-mono); }
+.sc-input--select { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); text-align: left; cursor: pointer; }
+.sc-input--select .sc-ico { color: var(--ink-muted); }
+.sc-input[aria-invalid="true"] { border-color: var(--negative); border-width: 1.5px; }
+.sc-input[readonly], .sc-input:disabled { background: transparent; border-style: dashed; color: var(--ink-muted); cursor: default; }
+.sc-input-wrap { position: relative; display: flex; align-items: center; }
+.sc-input-wrap > .sc-ico { position: absolute; left: 10px; color: var(--ink-muted); pointer-events: none; }
+.sc-input-wrap > .sc-input { padding-left: 34px; }
+.sc-input-wrap > kbd, .sc-input-wrap > .sc-input-wrap__end { position: absolute; right: 8px; font: 400 11px/1 var(--font-mono); color: var(--ink-muted); background: none; border: 0; }
+.sc-help { font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
+.sc-help--error { color: var(--negative); }
+.sc-help .sc-ico { width: 12px; height: 12px; vertical-align: -1px; margin-right: 4px; }

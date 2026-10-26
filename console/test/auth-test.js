@@ -1,4 +1,5 @@
-/* Sign-in, sessions, CSRF, rate limiting, passwords, invites and resets. */
+/* Sign-in, sessions, CSRF, rate limiting, passwords, invites, resets and OAuth, through the
+ * JSON API the front end calls. */
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -6,9 +7,11 @@ import { test } from "node:test";
 import { hashPassword, PBKDF2_ITERATIONS, verifyPassword } from "../worker/crypto.js";
 import { finish, startUrl } from "../worker/oauth.js";
 import { userForIdentity } from "../worker/users.js";
-import { addUser, APP_URL, Browser, makeEnv, signedIn } from "./helpers.js";
+import { addUser, APP_URL, Client, makeEnv, signedIn } from "./helpers.js";
 
-test("passwords are PBKDF2 at the Workers ceiling and verify only with the right password", async () => {
+const inviteToken = (link) => new URL(link).searchParams.get("token");
+
+test("passwords are PBKDF2 at the chosen cost and verify only with the right password", async () => {
   const stored = await hashPassword("correct horse battery");
   assert.match(stored, new RegExp(`^pbkdf2-sha256\\$${PBKDF2_ITERATIONS}\\$`));
   assert.equal(await verifyPassword("correct horse battery", stored), true);
@@ -16,96 +19,98 @@ test("passwords are PBKDF2 at the Workers ceiling and verify only with the right
   assert.equal(await verifyPassword("anything", "md5$abc"), false);
 });
 
-test("signed-out pages redirect to the login page", async () => {
-  const { response } = await new Browser(makeEnv()).request("/settings");
-  assert.equal(response.status, 303);
-  assert.equal(response.headers.get("Location"), "/login");
+test("without a session the API answers 401", async () => {
+  const { status } = await new Client(makeEnv()).get("/api/fleet");
+  assert.equal(status, 401);
 });
 
-test("password sign-in sets a __Host- session cookie and the database stores only its hash", async () => {
+test("sign-in sets a __Host- session cookie and the database stores only its hash", async () => {
   const env = makeEnv();
   const user = await addUser(env, "m@scout.test", "member");
-  const browser = new Browser(env);
-  const { response } = await browser.signIn(user.email, user.password);
-  assert.equal(response.status, 303);
-  const cookie = browser.cookies.get("__Host-scout_session");
+  const client = new Client(env);
+  assert.equal((await client.signIn(user.email, user.password)).status, 200);
+  const cookie = client.cookies.get("__Host-scout_session");
   assert.ok(cookie && cookie.length >= 40);
-  const row = env.DB.raw.prepare("SELECT token_hash FROM sessions").get();
-  assert.notEqual(row.token_hash, cookie);
-  assert.equal((await browser.request("/settings")).response.status, 200);
+  assert.notEqual(env.DB.raw.prepare("SELECT token_hash FROM sessions").get().token_hash, cookie);
+  const { status, body } = await client.get("/api/session");
+  assert.equal(status, 200);
+  assert.equal(body.user.email, user.email);
+  assert.ok(body.csrf);
 });
 
 test("a wrong password and an unknown email get the same answer", async () => {
   const env = makeEnv();
   await addUser(env, "m@scout.test", "member");
-  const a = await new Browser(env).signIn("m@scout.test", "wrong password!!");
-  const b = await new Browser(env).signIn("nobody@scout.test", "wrong password!!");
-  assert.equal(a.response.status, 401);
-  assert.match(a.text, /Wrong email or password/);
-  assert.match(b.text, /Wrong email or password/);
+  const a = await new Client(env).signIn("m@scout.test", "wrong password!!");
+  const b = await new Client(env).signIn("nobody@scout.test", "wrong password!!");
+  assert.equal(a.status, 401);
+  assert.equal(a.body.error, "Wrong email or password.");
+  assert.equal(b.body.error, "Wrong email or password.");
 });
 
-test("five failures lock the email for fifteen minutes, even with the right password", async () => {
+test("five failures from one address lock that email out there, even with the right password", async () => {
   const env = makeEnv();
   const user = await addUser(env, "m@scout.test", "member");
-  for (let i = 0; i < 5; i++) await new Browser(env).signIn(user.email, "wrong password!!");
-  const { text } = await new Browser(env).signIn(user.email, user.password);
-  assert.match(text, /Too many attempts/);
+  for (let i = 0; i < 5; i++) await new Client(env).signIn(user.email, "wrong password!!");
+  assert.match((await new Client(env).signIn(user.email, user.password)).body.error, /Too many attempts/);
 });
 
-test("a POST without the session's CSRF token, or from another origin, is refused", async () => {
+test("a write without the session's CSRF token, or from another origin, is refused", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "admin");
-  const noToken = await browser.request("/settings/buoys", { method: "POST", form: { buoy_id: "1" } });
-  assert.equal(noToken.response.status, 403);
-  const csrf = await browser.csrf();
-  const crossSite = await browser.request("/settings/buoys", {
-    method: "POST", form: { csrf, buoy_id: "1" }, headers: { Origin: "https://evil.example" } });
-  assert.equal(crossSite.response.status, 403);
+  const { client } = await signedIn(env, "admin");
+  const noToken = await client.raw("/api/fleet/buoys", { method: "POST", body: { buoy_id: 1 } });
+  assert.equal(noToken.status, 403);
+  const crossSite = await client.post("/api/fleet/buoys", { buoy_id: 1 }, { Origin: "https://evil.example" });
+  assert.equal(crossSite.status, 403);
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM buoys").get().n, 0);
+});
+
+test("a write that is not JSON is refused, so a cross-site HTML form cannot make one", async () => {
+  const env = makeEnv();
+  const { client } = await signedIn(env, "admin");
+  const form = await client.raw("/api/fleet/buoys", {
+    method: "POST", body: "buoy_id=1",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "X-CSRF-Token": client.csrf } });
+  assert.equal(form.status, 415);
 });
 
 test("sign out ends the session", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "member");
-  await browser.post("/logout", {});
-  assert.equal((await browser.request("/settings")).response.status, 303);
+  const { client } = await signedIn(env, "member");
+  await client.post("/api/logout");
+  assert.equal((await client.get("/api/fleet")).status, 401);
 });
 
 test("an invite link creates the account once, with the invited role", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "admin");
-  const { text } = await browser.post("/team/invites", { email: "new@scout.test", role: "guest" });
-  const link = /https:\/\/console\.test\/invite\/([\w-]+)/.exec(text);
-  assert.ok(link, "the invite link is shown once");
-  const guest = new Browser(env);
-  const accepted = await guest.request(`/invite/${link[1]}`, {
-    method: "POST", form: { name: "New", password: "a long enough password" } });
-  assert.equal(accepted.response.status, 303);
+  const { client } = await signedIn(env, "admin");
+  const { body } = await client.post("/api/team/invites", { email: "new@scout.test", role: "guest" });
+  const token = inviteToken(body.link);
+  assert.ok(body.link.startsWith(`${APP_URL}/invite/?token=`));
+  assert.deepEqual((await new Client(env).get(`/api/invites/${token}`)).body.invite, { email: "new@scout.test", role: "guest" });
+  const accepted = await new Client(env).post(`/api/invites/${token}/accept`, { name: "New", password: "a long enough password" });
+  assert.equal(accepted.status, 200);
+  assert.ok(accepted.response.headers.getSetCookie().some((c) => c.startsWith("__Host-scout_session=")));
   assert.equal(env.DB.raw.prepare("SELECT role FROM users WHERE email = 'new@scout.test'").get().role, "guest");
-  const again = await new Browser(env).request(`/invite/${link[1]}`);
-  assert.equal(again.response.status, 410);
+  assert.equal((await new Client(env).get(`/api/invites/${token}`)).status, 410);
 });
 
 test("a short password is refused on an invite", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "admin");
-  const { text } = await browser.post("/team/invites", { email: "new@scout.test", role: "member" });
-  const token = /\/invite\/([\w-]+)/.exec(text)[1];
-  const { text: page } = await new Browser(env).request(`/invite/${token}`, {
-    method: "POST", form: { password: "short" } });
-  assert.match(page, /at least 12 characters/);
+  const { client } = await signedIn(env, "admin");
+  const token = inviteToken((await client.post("/api/team/invites", { email: "n@scout.test", role: "member" })).body.link);
+  const { body } = await new Client(env).post(`/api/invites/${token}/accept`, { password: "short" });
+  assert.match(body.error, /at least 12 characters/);
 });
 
 test("a reset link sets a new password and signs out every session", async () => {
   const env = makeEnv();
-  const { browser: admin } = await signedIn(env, "admin");
-  const { browser: member, user } = await signedIn(env, "member");
-  const { text } = await admin.post(`/team/users/${user.id}/reset`, {});
-  const token = /\/reset\/([\w-]+)/.exec(text)[1];
-  await new Browser(env).request(`/reset/${token}`, { method: "POST", form: { password: "a brand new password" } });
-  assert.equal((await member.request("/settings")).response.status, 303);
-  assert.equal((await new Browser(env).signIn(user.email, "a brand new password")).response.status, 303);
+  const { client: admin } = await signedIn(env, "admin");
+  const { client: member, user } = await signedIn(env, "member");
+  const token = inviteToken((await admin.post(`/api/team/users/${user.id}/reset`)).body.link);
+  assert.equal((await new Client(env).post(`/api/resets/${token}`, { password: "a brand new password" })).status, 200);
+  assert.equal((await member.get("/api/fleet")).status, 401);
+  assert.equal((await new Client(env).signIn(user.email, "a brand new password")).status, 200);
 });
 
 test("OAuth: the state must match the cookie, and only a verified email is used", async () => {
@@ -136,19 +141,26 @@ test("OAuth: only the bootstrap email gets in on an empty console, and nobody el
 
 test("OAuth with an invite requires the invited email", async () => {
   const env = makeEnv();
-  const { browser } = await signedIn(env, "admin");
-  const { text } = await browser.post("/team/invites", { email: "new@scout.test", role: "member" });
-  const token = /\/invite\/([\w-]+)/.exec(text)[1];
+  const { client } = await signedIn(env, "admin");
+  const token = inviteToken((await client.post("/api/team/invites", { email: "new@scout.test", role: "member" })).body.link);
   const wrong = await userForIdentity(env.DB, { provider: "github", subject: "9", email: "other@scout.test", name: "" }, token, env);
   assert.match(wrong.error, /This invite is for new@scout.test/);
   const right = await userForIdentity(env.DB, { provider: "github", subject: "9", email: "NEW@scout.test", name: "" }, token, env);
   assert.equal(right.user.role, "member");
 });
 
-test("every HTML response carries a strict CSP with no scripts", async () => {
-  const { response } = await new Browser(makeEnv()).request("/login");
-  const csp = response.headers.get("Content-Security-Policy");
-  assert.match(csp, /default-src 'none'/);
-  assert.doesNotMatch(csp, /script-src/);
-  assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
+test("a failed OAuth sign-in returns to /login with a one-time message that is not in the URL", async () => {
+  const env = makeEnv({ GITHUB_CLIENT_ID: "id", GITHUB_CLIENT_SECRET: "secret" });
+  const client = new Client(env);
+  const response = await client.raw("/auth/github/callback?code=c&state=forged");
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("Location"), "/login/");
+  const first = await client.get("/api/flash");
+  assert.match(first.body.message, /expired/);
+  assert.equal((await client.get("/api/flash")).body.message, null);
+});
+
+test("the sign-in page lists only the providers that are set up", async () => {
+  const { body } = await new Client(makeEnv({ GOOGLE_CLIENT_ID: "id", GOOGLE_CLIENT_SECRET: "s" })).get("/api/providers");
+  assert.deepEqual({ github: body.github, google: body.google }, { github: false, google: true });
 });

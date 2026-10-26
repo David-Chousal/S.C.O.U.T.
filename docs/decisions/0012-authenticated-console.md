@@ -77,7 +77,11 @@ Decided by David, 2026-10-25:
    console's JSON API with the session cookie. That keeps the Free plan's 3 MB Worker limit out
    of play, at the cost of turning COR's server actions into client fetches. **Order:** Phase A
    ships first with the server-rendered pages in this PR; the COR front end replaces them in the
-   next PR and reuses the back end (auth, D1 schema, roles, device API) unchanged.
+   next PR and reuses the back end (auth, D1 schema, roles, device API) unchanged. **Built
+   2026-10-26** ([SCO-238](https://linear.app/scout1/issue/SCO-238)): the Worker now serves a JSON API and the export, each page with a
+   per-request script nonce (`script-src 'nonce-…' 'strict-dynamic'`); styles allow
+   `'unsafe-inline'` because React style props render as attributes. Colour tokens are generated
+   from Tideline's (`scripts/export_console_tokens.py`), with WCAG AA checked in both themes.
 
 ## Consequences
 

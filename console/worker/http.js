@@ -1,4 +1,4 @@
-/* Response helpers, security headers, cookies and HTML escaping for the console. */
+/* JSON responses, redirects, security headers and cookies for the console Worker. */
 
 const SECURITY_HEADERS = {
   "Content-Security-Policy":
@@ -15,24 +15,6 @@ const SECURITY_HEADERS = {
 export const SESSION_COOKIE = "__Host-scout_session";
 export const OAUTH_COOKIE = "__Host-scout_oauth";
 
-/** Escape text for HTML element content and quoted attributes. */
-export function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-export function html(body, { status = 200, headers = {} } = {}) {
-  return new Response(body, {
-    status,
-    headers: { "Content-Type": "text/html; charset=utf-8", ...SECURITY_HEADERS, ...headers },
-  });
-}
-
-/** JSON in the API envelope: { ok, ...data } or { ok: false, error }. */
 export function json(data, status = 200) {
   return new Response(JSON.stringify({ ok: status < 400, ...data }), {
     status,
@@ -49,13 +31,6 @@ export function redirect(location, headers = {}, cookies = []) {
   const out = new Headers({ Location: location, ...SECURITY_HEADERS, ...headers });
   for (const c of cookies) out.append("Set-Cookie", c);
   return new Response(null, { status: 303, headers: out });
-}
-
-export function css(body) {
-  return new Response(body, {
-    headers: { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=3600",
-      "X-Content-Type-Options": "nosniff" },
-  });
 }
 
 export function readCookie(request, name) {
@@ -76,8 +51,6 @@ export function clearCookie(name) {
   return setCookie(name, "", 0);
 }
 
-export const MAX_FORM_BYTES = 16_384;
-
 /** True when a request with a body declares a length within `max`. Checked before any body is
  * read, so an oversized or unlengthed upload is never buffered. */
 export function bodyWithin(request, max) {
@@ -87,16 +60,9 @@ export function bodyWithin(request, max) {
   return Number(header) <= max;
 }
 
-/** Form fields of a POST, or an empty map for anything else. */
-export async function formData(request) {
-  const type = request.headers.get("Content-Type") || "";
-  if (!type.startsWith("application/x-www-form-urlencoded")) return new Map();
-  return new Map(new URLSearchParams(await request.text()));
-}
-
-/** POSTs must come from this origin (a second CSRF guard, alongside the form token). Browsers
- * send Origin on every cross-site POST, so a missing header is a same-site or non-browser client,
- * which the form's CSRF token still has to satisfy. */
+/** POSTs must come from this origin (a CSRF guard alongside the session's X-CSRF-Token).
+ * Browsers send Origin on every cross-site POST, so a missing header is a same-site or
+ * non-browser client, which the CSRF token and the JSON-only body still have to satisfy. */
 export function sameOrigin(request, appUrl) {
   const origin = request.headers.get("Origin");
   return origin === null || origin === new URL(appUrl).origin;

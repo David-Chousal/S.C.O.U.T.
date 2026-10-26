@@ -1,111 +1,88 @@
-/* S.C.O.U.T. Console — a Cloudflare Worker + D1 (ADR-0012, Phase A, SCO-198).
+/* S.C.O.U.T. Console — a Cloudflare Worker + D1 (ADR-0012; Phase A, SCO-198; COR front end,
+ * SCO-238).
  *
- * The team's signed-in console: fleet settings (the daily transmit count), team and roles,
- * shore-station tokens and an audit log, plus the device API the shore station calls. The public
- * dashboard stays a static GitHub Pages site and never talks to this Worker.
+ * It serves three things:
+ *   /api/device/*  the shore station's API (bearer device token)           device.js
+ *   /api/*         the JSON API the front end calls (session + CSRF)         api.js
+ *   /auth/*        GitHub and Google sign-in redirects                       oauth.js
+ *   everything else: the static front end (console/web, a Next.js export) from the ASSETS
+ *   binding, each HTML page given a fresh script nonce and a strict CSP.
+ *
+ * The public dashboard stays a static GitHub Pages site and never talks to this Worker.
  *
  * Config (wrangler.toml [vars]; secrets set with `wrangler secret put`, never committed):
- *   APP_URL                — this console's origin, for OAuth callbacks and the Origin check
- *   BOOTSTRAP_ADMIN_EMAIL  — the first admin, honoured only while there are no users
- *   GITHUB_CLIENT_ID / GOOGLE_CLIENT_ID          — public OAuth client IDs (optional)
- *   GITHUB_CLIENT_SECRET / GOOGLE_CLIENT_SECRET  — secrets
- *   DB                     — the D1 binding */
+ *   APP_URL, BOOTSTRAP_ADMIN_EMAIL, GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID      vars
+ *   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET                             secrets
+ *   DB (D1), ASSETS (static assets)                                         bindings */
 
+import { handleApi } from "./api.js";
+import { FLASH_COOKIE, staticAsset } from "./assets.js";
+import { b64url, fromB64url } from "./crypto.js";
 import { handleDeviceApi } from "./device.js";
-import { constantTimeEqual } from "./crypto.js";
 import {
-  bodyWithin, clearCookie, clientIp, css, formData, MAX_FORM_BYTES, OAUTH_COOKIE, redirect, sameOrigin,
-  SESSION_COOKIE, setCookie,
+  apiError, bodyWithin, clearCookie, json, OAUTH_COOKIE, readCookie, redirect, SESSION_COOKIE, setCookie,
 } from "./http.js";
-import { configured, finish, PROVIDERS, startUrl } from "./oauth.js";
-import { handleSignedIn } from "./routes.js";
-import { createSession, destroySession, loadSession, passwordSignIn, SESSION_TTL_MS } from "./sessions.js";
-import { CONSOLE_CSS } from "./style.js";
-import { acceptInviteWithPassword, resetPassword, userForIdentity, validInvite, validReset } from "./users.js";
-import { errorPage, invitePage, loginPage, resetPage } from "./views.js";
+import { configured, finish, startUrl } from "./oauth.js";
+import { createSession, SESSION_TTL_MS } from "./sessions.js";
+import { userForIdentity } from "./users.js";
 
-async function signIn(env, user, extraCookies = []) {
-  const { token } = await createSession(env.DB, user.id);
-  return redirect("/settings", {}, [setCookie(SESSION_COOKIE, token, SESSION_TTL_MS / 1000), ...extraCookies]);
+const FLASH_TTL_S = 300;
+const MAX_BODY_BYTES = 256 * 1024;
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+/** Back to the sign-in page with a one-time message: kept in a cookie, never in the URL, since
+ * a message can name an email address. */
+function backToLogin(message) {
+  return redirect("/login/", {}, [
+    setCookie(FLASH_COOKIE, b64url(encoder.encode(message.slice(0, 300))), FLASH_TTL_S),
+    clearCookie(OAUTH_COOKIE),
+  ]);
 }
 
-function loginError(env, error, status) {
-  // Also drops a half-finished OAuth state, so a retry starts clean.
-  const response = loginPage(env, { error, status });
-  response.headers.append("Set-Cookie", clearCookie(OAUTH_COOKIE));
+async function oauthRoute(request, env, key, callback) {
+  if (!configured(key, env)) return backToLogin("That sign-in option is not set up.");
+  if (!callback) {
+    const invite = new URL(request.url).searchParams.get("invite") || "";
+    const { url, cookie } = startUrl(key, env, /^[\w-]{1,64}$/.test(invite) ? invite : "");
+    return redirect(url, {}, [cookie]);
+  }
+  const done = await finish(key, request, env);
+  if (done.error) return backToLogin(done.error);
+  const result = await userForIdentity(env.DB, done.identity, done.inviteToken, env);
+  if (result.error) return backToLogin(result.error);
+  if (result.user.disabled) return backToLogin("This account is disabled.");
+  const { token } = await createSession(env.DB, result.user.id);
+  return redirect("/fleet/", {}, [setCookie(SESSION_COOKIE, token, SESSION_TTL_MS / 1000), clearCookie(OAUTH_COOKIE)]);
+}
+
+function flash(request) {
+  const raw = readCookie(request, FLASH_COOKIE);
+  let message = null;
+  try {
+    message = raw ? decoder.decode(fromB64url(raw)) : null;
+  } catch {
+    message = null;
+  }
+  const response = json({ message });
+  response.headers.append("Set-Cookie", clearCookie(FLASH_COOKIE));
   return response;
-}
-
-async function signedOutRoutes(request, env, path) {
-  const method = request.method;
-  if (path === "/login" && method === "GET") return loginPage(env);
-  if (path === "/login" && method === "POST") {
-    if (!sameOrigin(request, env.APP_URL)) return loginPage(env, { error: "Sign in from this page.", status: 403 });
-    const form = await formData(request);
-    const email = (form.get("email") || "").trim();
-    const result = await passwordSignIn(env.DB, email, form.get("password") || "", clientIp(request));
-    return result.user ? signIn(env, result.user) : loginPage(env, { error: result.error, email, status: 401 });
-  }
-  const provider = /^\/auth\/(github|google)(\/callback)?$/.exec(path);
-  if (provider && method === "GET") {
-    const [, key, callback] = provider;
-    if (!configured(key, env)) return errorPage(404, `${PROVIDERS[key].label} sign-in is not set up.`);
-    if (!callback) {
-      const invite = new URL(request.url).searchParams.get("invite") || "";
-      const { url, cookie } = startUrl(key, env, /^[\w-]{1,64}$/.test(invite) ? invite : "");
-      return redirect(url, { "Set-Cookie": cookie });
-    }
-    const done = await finish(key, request, env);
-    if (done.error) return loginError(env, done.error, 400);
-    const result = await userForIdentity(env.DB, done.identity, done.inviteToken, env);
-    if (result.error) return loginError(env, result.error, 403);
-    if (result.user.disabled) return loginError(env, "This account is disabled.", 403);
-    return signIn(env, result.user, [clearCookie(OAUTH_COOKIE)]);
-  }
-  const invite = /^\/invite\/([\w-]{1,64})$/.exec(path);
-  if (invite) {
-    const token = invite[1];
-    if (method === "GET") return invitePage(env, await validInvite(env.DB, token), token);
-    if (!sameOrigin(request, env.APP_URL)) return errorPage(403, "Open the invite link and submit it from there.");
-    const form = await formData(request);
-    const result = await acceptInviteWithPassword(env.DB, token, (form.get("name") || "").trim(), form.get("password") || "");
-    if (result.error) return invitePage(env, await validInvite(env.DB, token), token, { error: result.error, status: 400 });
-    return signIn(env, result.user);
-  }
-  const reset = /^\/reset\/([\w-]{1,64})$/.exec(path);
-  if (reset) {
-    const token = reset[1];
-    if (method === "GET") return resetPage(await validReset(env.DB, token), token);
-    if (!sameOrigin(request, env.APP_URL)) return errorPage(403, "Open the reset link and submit it from there.");
-    const form = await formData(request);
-    const result = await resetPassword(env.DB, token, form.get("password") || "");
-    if (result.error) return resetPage(await validReset(env.DB, token), token, { error: result.error, status: 400 });
-    return signIn(env, result.user);
-  }
-  return null;
 }
 
 async function route(request, env) {
   const path = new URL(request.url).pathname;
-  if (path === "/console.css") return css(CONSOLE_CSS);
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
-  if (!bodyWithin(request, MAX_FORM_BYTES)) return errorPage(413, "That form was too large, or sent without a length.");
-
-  const signedOut = await signedOutRoutes(request, env, path);
-  if (signedOut) return signedOut;
-
-  const session = await loadSession(env.DB, request);
-  if (!session) return redirect("/login");
-  if (path === "/logout" && request.method === "POST") {
-    const form = await formData(request);
-    if (!constantTimeEqual(form.get("csrf") || "", session.csrf) || !sameOrigin(request, env.APP_URL)) {
-      return errorPage(403, "The form expired. Reload and try again.", session);
+  if (path.startsWith("/api/")) {
+    if (!bodyWithin(request, path === "/api/flash" ? 0 : MAX_BODY_BYTES)) {
+      return apiError("The request was too large, or sent without a length.", 413);
     }
-    await destroySession(env.DB, session.sessionHash);
-    return redirect("/login", {}, [clearCookie(SESSION_COOKIE)]);
+    return path === "/api/flash" ? flash(request) : handleApi(request, env, path);
   }
-  return handleSignedIn(request, env, path, session);
+  const oauth = /^\/auth\/(github|google)(\/callback)?\/?$/.exec(path);
+  if (oauth) return oauthRoute(request, env, oauth[1], Boolean(oauth[2]));
+  return staticAsset(request, env);
 }
 
 export default {
@@ -115,7 +92,7 @@ export default {
       return await route(request, env);
     } catch (error) {
       console.error("console: unhandled", error instanceof Error ? error.stack : error);
-      return errorPage(500, "Something failed on our side. It has been logged.");
+      return apiError("Something failed on our side. It has been logged.", 500);
     }
   },
 };

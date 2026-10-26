@@ -39,7 +39,7 @@ jobs:
   console-tests:
     # The S.C.O.U.T. Console (console/, ADR-0012): the real Worker and D1 migration against
     # Node's built-in SQLite, with no npm install. node:sqlite needs Node 22.13 or later.
-    name: Console (Worker) tests
+    name: Console (Worker + front end) tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +49,21 @@ jobs:
       - name: Console tests
         working-directory: console
         run: npm test
+
+      # The front end (console/web, the COR design system in Tideline colour): lint, component
+      # tests, and the static export the Worker serves.
+      - name: Install the front end
+        working-directory: console/web
+        run: npm ci
+      - name: Front-end lint
+        working-directory: console/web
+        run: npm run lint
+      - name: Front-end tests
+        working-directory: console/web
+        run: npm test
+      - name: Front-end build (static export)
+        working-directory: console/web
+        run: npm run build
 
   firmware-tests:
     # Do NOT rename: the "Protect main" ruleset matches required checks by this exact

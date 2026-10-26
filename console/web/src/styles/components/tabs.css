@@ -1,0 +1,8 @@
+/* ───── Tabs ───── */
+.sc-tabs { display: flex; flex-wrap: wrap; gap: var(--space-6); border-bottom: 1px solid var(--line); }
+.sc-tab { position: relative; padding: var(--space-2) 0 var(--space-3); border: 0; background: none; color: var(--ink-muted); font: 500 11px/14px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.sc-tab:hover { color: var(--ink); }
+.sc-tab[aria-selected="true"] { color: var(--ink); }
+.sc-tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--rail); }
+.sc-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-tab .count { margin-left: 6px; color: var(--ink-muted); }
