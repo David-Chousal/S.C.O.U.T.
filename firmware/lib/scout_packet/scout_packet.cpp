@@ -81,7 +81,9 @@ scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutR
     if (get_u16(&crc_at) != scout_crc16_ccitt(buf, body_len)) {
         return SCOUT_DECODE_BAD_CRC;
     }
-    bool version_ok = legacy ? (buf[0] == 1 || buf[0] == 2) : (buf[0] == SCOUT_PACKET_VERSION);
+    bool version_ok = legacy ? (buf[0] == 1 || buf[0] == 2)
+                             : (buf[0] == SCOUT_PACKET_VERSION ||
+                                buf[0] == SCOUT_PACKET_PREVIOUS_VERSION);
     if (!version_ok) {
         return SCOUT_DECODE_BAD_VERSION;
     }

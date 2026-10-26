@@ -105,6 +105,63 @@ void test_sensing_gates_by_mode(void) {
     TEST_ASSERT_FALSE(scout_sense_audio(SCOUT_POWER_CRITICAL));
 }
 
+void test_tx_count_range_is_one_to_three(void) {
+    TEST_ASSERT_FALSE(scout_tx_count_valid(0));
+    TEST_ASSERT_TRUE(scout_tx_count_valid(1));
+    TEST_ASSERT_TRUE(scout_tx_count_valid(3));
+    TEST_ASSERT_FALSE(scout_tx_count_valid(4));
+    TEST_ASSERT_TRUE(scout_tx_count_valid(SCOUT_TX_COUNT_DEFAULT));
+}
+
+void test_select_slots_follows_the_agreed_rule(void) {
+    uint32_t out[3];
+    TEST_ASSERT_EQUAL_UINT(1, scout_select_tx_slots(SLOTS, 3, 1, out));
+    TEST_ASSERT_EQUAL_UINT32(600u, out[0]);  // 00:10
+    TEST_ASSERT_EQUAL_UINT(2, scout_select_tx_slots(SLOTS, 3, 2, out));
+    TEST_ASSERT_EQUAL_UINT32(600u, out[0]);    // 00:10
+    TEST_ASSERT_EQUAL_UINT32(58200u, out[1]);  // 16:10
+    TEST_ASSERT_EQUAL_UINT(3, scout_select_tx_slots(SLOTS, 3, 3, out));
+    TEST_ASSERT_EQUAL_UINT32(29400u, out[1]);
+    TEST_ASSERT_EQUAL_UINT(0, scout_select_tx_slots(SLOTS, 3, 0, out));
+    TEST_ASSERT_EQUAL_UINT(0, scout_select_tx_slots(SLOTS, 3, 4, out));
+}
+
+void test_every_used_slot_follows_a_recording_by_ten_minutes(void) {
+    // ADR-0011: clips at 00/08/16 UTC, so each packet carries the clip just before it.
+    const uint8_t hours[] = {0, 8, 16};
+    uint32_t out[3];
+    for (uint8_t n = 1; n <= 3; n++) {
+        size_t used = scout_select_tx_slots(SLOTS, 3, n, out);
+        for (size_t i = 0; i < used; i++) {
+            TEST_ASSERT_TRUE(scout_should_record_audio(DAY0 + out[i] - 600u, hours, 3));
+        }
+    }
+}
+
+void test_conserve_never_sends_more_than_the_setting(void) {
+    // CONSERVE transmits in active slot 0 only, which is in every count's slot set.
+    uint32_t out[3];
+    for (uint8_t n = 1; n <= 3; n++) {
+        size_t used = scout_select_tx_slots(SLOTS, 3, n, out);
+        size_t normal = 0;
+        size_t conserve = 0;
+        for (size_t i = 0; i < used; i++) {
+            normal += scout_slot_transmits(SCOUT_POWER_NORMAL, (int)i, 3) ? 1 : 0;
+            conserve += scout_slot_transmits(SCOUT_POWER_CONSERVE, (int)i, 3) ? 1 : 0;
+        }
+        TEST_ASSERT_EQUAL_UINT(n, normal);
+        TEST_ASSERT_EQUAL_UINT(1, conserve);
+        TEST_ASSERT_EQUAL_UINT32(600u, out[0]);  // and that one send is 00:10
+    }
+}
+
+void test_listen_window_follows_the_selected_slots(void) {
+    uint32_t out[3];
+    size_t used = scout_select_tx_slots(SLOTS, 3, 2, out);
+    TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + 58200u, out, used, 120));   // 16:10 in
+    TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 + 29400u, out, used, 120));  // 08:10 out
+}
+
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_next_wake_aligns_to_grid);
@@ -120,6 +177,11 @@ static void run_all() {
     RUN_TEST(test_audio_only_on_scheduled_hours);
     RUN_TEST(test_power_mode_tiers);
     RUN_TEST(test_sensing_gates_by_mode);
+    RUN_TEST(test_tx_count_range_is_one_to_three);
+    RUN_TEST(test_select_slots_follows_the_agreed_rule);
+    RUN_TEST(test_every_used_slot_follows_a_recording_by_ten_minutes);
+    RUN_TEST(test_conserve_never_sends_more_than_the_setting);
+    RUN_TEST(test_listen_window_follows_the_selected_slots);
     UNITY_END();
 }
 

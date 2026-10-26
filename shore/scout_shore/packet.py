@@ -7,7 +7,7 @@ Both ends MUST agree on this layout — the firmware C encoder mirrors this modu
 > ✅ **Verified against the firmware encoder** — byte-identical, CI-enforced via a golden
 > vector (`firmware/test/test_packet`). No longer a proposal pending ECE sign-off.
 
-Layout (little-endian), v3: 42-byte body + 2-byte CRC = **44 bytes** (under the 140-byte
+Layout (little-endian), v3 and v4: 42-byte body + 2-byte CRC = **44 bytes** (under the 140-byte
 payload ceiling, derived from the firmware's send timeout; see
 [`docs/hub/facts.md`](../../docs/hub/facts.md)). v1 and v2 were the first 28 body bytes alone
 (30 bytes); :func:`decode` still reads them, with the acoustic fields zero.
@@ -22,7 +22,7 @@ payload ceiling, derived from the firmware's send timeout; see
 | turbidity_adc | uint16 | raw ADC counts |
 | battery_mv | uint16 | millivolts |
 | uptime_s | uint32 | seconds since boot |
-| flags | uint16 | per-cycle event bitfield, see FLAG_BITS |
+| flags | uint16 | per-cycle event bitfield, see FLAG_BITS; bits 8-9 = tx_count (v4) |
 | soh | uint8 | device State-of-Health bitfield, see SOH_BITS |
 | audio_present | uint8 | 1 if a recording was taken this cycle |
 | fw_major/minor/patch | uint8 ×3 | firmware version |
@@ -39,6 +39,10 @@ The v3 acoustic fields are the summary of the most recent recording since the pr
 slot (ADR-0010, computed by ``firmware/lib/scout_acoustic``, specified by
 ``analytics/utils/acoustic_summary.py``). They are all zero, with ``audio_present`` false, when
 there was no recording.
+
+v4 (SCO-198) keeps the v3 bytes and gives meaning to flags bits 8-10: bits 8-9 are the daily
+transmit count the buoy is using (1-3, so the shore can confirm a settings change took effect;
+0 in every older frame, decoded as ``None``) and bit 10 is ``CMD_REJECTED``.
 """
 
 from __future__ import annotations
@@ -50,7 +54,10 @@ from datetime import datetime, timezone
 # v2 (2026-10-23, SCO-205): HUMIDITY_HIGH / HUMIDITY_FAIL flags and two internal-sensor CSV
 # columns; byte layout unchanged. v3 (2026-10-25, ADR-0010 / SCO-233): the 14-byte acoustic
 # summary appended to the body. Must equal SCOUT_PACKET_VERSION in firmware/lib/scout_packet.
-PACKET_VERSION = 3
+# v4 (2026-10-25, SCO-198): tx_count in flags bits 8-9, CMD_REJECTED at bit 10, and a tx_count
+# CSV column; byte layout unchanged from v3, so 44-byte v3 frames still decode.
+PACKET_VERSION = 4
+PREVIOUS_VERSIONS = (3,)
 
 _LEGACY_BODY_FORMAT = "<BHIIhHHIHBBBBB"  # v1/v2: 28 bytes
 _ACOUSTIC_FORMAT = "hhhhhHH"  # v3: 14 bytes, ADR-0010 order
@@ -91,7 +98,13 @@ FLAG_BITS = {
     "POWER_CONSERVE": 5,
     "HUMIDITY_HIGH": 6,
     "HUMIDITY_FAIL": 7,
+    "CMD_REJECTED": 10,  # a settings command heard since the last packet failed its checks (v4)
 }
+
+# Bits 8-9 of flags: the daily transmit count in use (v4). Must equal SCOUT_TX_COUNT_SHIFT/MASK.
+TX_COUNT_SHIFT = 8
+TX_COUNT_MASK = 0x3 << TX_COUNT_SHIFT
+TX_COUNTS = (1, 2, 3)
 
 # Device State-of-Health bits (set at boot/init; persistent, distinct from the per-cycle
 # `flags`). See docs/engineering/data-schema.md soh vocabulary.
@@ -137,6 +150,8 @@ class Reading:
     ndsi_e4: int = 0
     snap_count: int = 0
     clip_count: int = 0
+    # Daily transmit count the buoy reports using (v4); None when not reported (v1-v3 frames).
+    tx_count: int | None = None
 
     def __post_init__(self) -> None:
         if self.timestamp.tzinfo is None:
@@ -150,6 +165,8 @@ class Reading:
         for name, (low, high) in _ACOUSTIC_RANGES.items():
             if not low <= getattr(self, name) <= high:
                 raise ValueError(f"{name}={getattr(self, name)} outside {low}..{high}")
+        if self.tx_count is not None and self.tx_count not in TX_COUNTS:
+            raise ValueError(f"tx_count={self.tx_count} not in {TX_COUNTS}")
 
     def acoustic(self) -> tuple[int, ...]:
         """The seven v3 fields in wire order."""
@@ -209,7 +226,7 @@ def encode(reading: Reading) -> bytes:
         reading.turbidity_adc,
         round(reading.battery_v * 1000),
         reading.uptime_s,
-        _flags_to_bits(reading.flags),
+        _flags_to_bits(reading.flags) | ((reading.tx_count or 0) << TX_COUNT_SHIFT),
         _soh_to_bits(reading.soh),
         1 if reading.audio_present else 0,
         fw_major,
@@ -255,11 +272,11 @@ def decode(payload: bytes) -> Reading:
         fw_patch,
     ) = fields[:_LEGACY_FIELD_COUNT]
 
-    allowed = LEGACY_VERSIONS if legacy else (PACKET_VERSION,)
+    allowed = LEGACY_VERSIONS if legacy else (PACKET_VERSION, *PREVIOUS_VERSIONS)
     if schema_version not in allowed:
         raise PacketError(
             f"unsupported schema_version {schema_version} in a {len(payload)}-byte packet "
-            f"(decoder is v{PACKET_VERSION}, legacy v1/v2 at {LEGACY_PACKET_SIZE} bytes)"
+            f"(decoder is v{PACKET_VERSION}/v3, legacy v1/v2 at {LEGACY_PACKET_SIZE} bytes)"
         )
 
     return Reading(
@@ -275,5 +292,6 @@ def decode(payload: bytes) -> Reading:
         audio_present=bool(audio_present),
         fw_version=f"v{fw_major}.{fw_minor}.{fw_patch}",
         schema_version=schema_version,
+        tx_count=((flag_bits & TX_COUNT_MASK) >> TX_COUNT_SHIFT) or None,
         **dict(zip(ACOUSTIC_FIELDS, acoustic)),
     )

@@ -11,7 +11,9 @@
  *   ndsi_e4 i16 | snap_count u16 | clip_count u16 | crc16 u16
  *
  * v1 and v2 were the first 28 body bytes alone (30 bytes with the CRC); the decoder still
- * accepts them, with the acoustic fields zero.
+ * accepts them, with the acoustic fields zero. v4 has the v3 byte layout; it gives meaning to
+ * flags bits 8-10 (the transmit count and CMD_REJECTED, below), so the decoder accepts 44-byte
+ * frames of either version.
  *
  * Hardware-free on purpose (only <stdint.h>) so it compiles and unit-tests off-target
  * (`pio test -e native`), and so the encoder can be verified against the Python encoder.
@@ -30,7 +32,12 @@
  * the packet and the CSV. */
 /* v3 (2026-10-25, ADR-0010 / SCO-233): the 14-byte acoustic summary appended to the body, and
  * the same seven columns appended to the CSV. */
-#define SCOUT_PACKET_VERSION 3
+/* v4 (2026-10-25, SCO-198): flags bits 8-9 carry the daily transmit count the buoy is using
+ * (1-3; 0 = not reported, as in every v1-v3 frame) and bit 10 is CMD_REJECTED; the CSV gains a
+ * tx_count column. Byte layout unchanged from v3. */
+#define SCOUT_PACKET_VERSION 4
+/* 44-byte frames older than v4 that still decode (tx_count reads 0). */
+#define SCOUT_PACKET_PREVIOUS_VERSION 3
 #define SCOUT_PACKET_SIZE 44
 #define SCOUT_PACKET_BODY_SIZE 42
 /* The v1/v2 layout: no acoustic summary. Decoded for old frames and replayed logs. */
@@ -46,6 +53,13 @@
 #define SCOUT_FLAG_POWER_CONSERVE (1u << 5)
 #define SCOUT_FLAG_HUMIDITY_HIGH (1u << 6)  /* housing RH at/above the alert threshold */
 #define SCOUT_FLAG_HUMIDITY_FAIL (1u << 7)  /* SHT40 read failed (no ACK or bad CRC) */
+/* A settings command heard since the last packet failed its checks (scout_downlink, v4). */
+#define SCOUT_FLAG_CMD_REJECTED (1u << 10)
+
+/* Bits 8-9 of flags: the daily transmit count in use (SCO-198, v4). Not a flag name, so it is
+ * kept out of the SCOUT_FLAG_ prefix that check_packet_contract.py compares with FLAG_BITS. */
+#define SCOUT_TX_COUNT_SHIFT 8u
+#define SCOUT_TX_COUNT_MASK (3u << SCOUT_TX_COUNT_SHIFT)
 
 /* Device State-of-Health bits (set at boot/init) — must equal SOH_BITS in packet.py. */
 #define SCOUT_SOH_WATCHDOG_RESET (1u << 0)
@@ -94,12 +108,21 @@ typedef enum {
     SCOUT_DECODE_OK = 0,
     SCOUT_DECODE_BAD_LENGTH = 1,  /* neither SCOUT_PACKET_SIZE nor SCOUT_PACKET_LEGACY_SIZE */
     SCOUT_DECODE_BAD_CRC = 2,     /* trailing CRC does not match the body */
-    SCOUT_DECODE_BAD_VERSION = 3, /* 44 B but not v3, or 30 B but not v1/v2 */
+    SCOUT_DECODE_BAD_VERSION = 3, /* 44 B but not v3/v4, or 30 B but not v1/v2 */
 } scout_decode_result_t;
 
 /* Decode a received payload into `out` (shore side, SCO-24). `out` is written only on OK.
  * A 30-byte v1/v2 frame decodes with its own schema_version and the acoustic fields zero. */
 scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutReading *out);
+
+/* Put `tx_count` (0-3) into bits 8-9 of `flags`, leaving every other bit as it was. */
+static inline uint16_t scout_flags_with_tx_count(uint16_t flags, uint8_t tx_count) {
+    return (uint16_t)((flags & ~SCOUT_TX_COUNT_MASK) |
+                      (((uint16_t)tx_count << SCOUT_TX_COUNT_SHIFT) & SCOUT_TX_COUNT_MASK));
+}
+static inline uint8_t scout_flags_tx_count(uint16_t flags) {
+    return (uint8_t)((flags & SCOUT_TX_COUNT_MASK) >> SCOUT_TX_COUNT_SHIFT);
+}
 
 /* Fixed-point helpers matching the Python scaling (round-half-away-from-zero). */
 static inline int16_t scout_temp_centi(float celsius) {
