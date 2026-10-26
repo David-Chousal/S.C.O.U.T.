@@ -78,6 +78,7 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             internal_temp_c=_opt_float(row.get("internal_temp_c", "")),
             internal_humidity_pct=_opt_float(row.get("internal_humidity_pct", "")),
             **{name: _opt_int(row.get(name) or "") for name in ACOUSTIC_COLUMNS},
+            tx_count=_opt_int(row.get("tx_count") or ""),
         )
     except (KeyError, ValueError) as exc:
         raise TelemetryFormatError(f"{source}:{line}: {exc}") from exc

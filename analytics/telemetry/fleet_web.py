@@ -93,8 +93,10 @@ def _tile(buoy_id: str, report: TelemetryReport, mmm: float | None,
     level = _ALERT_LEVEL.get(alert)
     badge_cls = f"alert-badge lvl-{level}" if level else "alert-badge"
     fresh = freshness.assess(report.received[-1] if report.received else None,
-                             now=generated_at, faults=report.latest_flags)
-    history = freshness.slot_history(report.received, now=generated_at)
+                             now=generated_at, faults=report.latest_flags,
+                             tx_count=report.tx_count)
+    history = freshness.slot_history(report.received, now=generated_at,
+                                     tx_count=report.tx_count)
     ts = report.thermal_summary
     stats = "".join([
         _pair("Latest temp", _fmt(_latest(temps), "°C", 1)),

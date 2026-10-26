@@ -21,10 +21,10 @@ import html
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import acoustic, bleaching, charts, drift, freshness
+from . import acoustic, battery_life, bleaching, charts, drift, freshness
 from .aggregate import SAMPLES_PER_DAY
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
-from .site import layout
+from .site import components, layout
 
 # Bleaching alert → CSS class (colour lives in the design tokens, theme-aware).
 _ALERT_CLASS = {
@@ -173,12 +173,46 @@ def _acoustic_panel(report: TelemetryReport) -> str:
     return _panel("Reef sound", "dBFS · uncalibrated", _band_bars(latest) + chart, note=note)
 
 
+def tx_count_text(report: TelemetryReport) -> tuple[str, str]:
+    """The transmit-count card's value and note: what the newest packet reports (SCO-198)."""
+    if report.tx_count is None:
+        return f"{freshness.DEFAULT_TX_COUNT} a day", "default · buoy does not report it yet"
+    return f"{report.tx_count} a day", "as the buoy last reported"
+
+
+def _schedule_panel(report: TelemetryReport) -> str:
+    """Battery life for each transmit count (SCO-198), from the power budget's own model.
+
+    Shows the plan of record, two D cells (ADR-0007), in months so it fits a half-width panel
+    at 375 px; one cell is half of each figure. Days and the one-cell case are in the model.
+    """
+    best, pessimistic = battery_life.SCENARIOS
+    in_use = report.tx_count or freshness.DEFAULT_TX_COUNT
+    rows = [[f"{n} a day" + (" · in use" if n == in_use else "")]
+            + [f"{battery_life.estimate(s, n, 2).months:.1f} mo" for s in (best, pessimistic)]
+            for n in battery_life.ALLOWED_TX_COUNTS]
+    table = components.data_table(
+        "Estimated battery life, two D cells", ["Transmits", "Best", "Pessimistic"], rows,
+        num_cols={1, 2})
+    radio = battery_life.daily_mah(best, 3) - battery_life.daily_mah(best, 1)
+    note = ('<p class="panel-note"><span class="pn-verdict">Estimate</span> — from the power '
+            "budget's datasheet figures (2026-10-25 update, hydrophone 3 min a day), not a "
+            "measurement; one cell lasts half as long. Going from 1 to 3 transmits a day costs "
+            f"{radio:.3f} mAh a day, under half a percent of the draw, so the count mostly trades how fresh this page is, not "
+            "battery life. The range 1–3 is pending the electrical lead's power sign-off. The "
+            "team changes the count in the S.C.O.U.T. Console; the buoy reports it back in its "
+            "next packet.</p>")
+    # .viewdata carries the theme's compact rule for short panel tables: no sideways scroll.
+    return _panel("Transmit schedule", "estimate", f'<div class="viewdata">{table}</div>', note=note)
+
+
 def _cards(report: TelemetryReport) -> str:
     ts, tt = report.thermal_summary, report.temp_trend
     latest_alert = report.thermal[-1].alert if report.thermal else "n/a"
     latest_batt = next((d.battery_min_v for d in reversed(report.daily)
                         if d.battery_min_v is not None), None)
     humidity, humidity_cls = housing_humidity(report)
+    tx_value, tx_note = tx_count_text(report)
     return "".join([
         _stat("Current alert", latest_alert, cls=_ALERT_CLASS.get(latest_alert, "")),
         _stat("Peak DHW", f"{ts.peak_dhw:g} °C-wk" if ts else "—"),
@@ -198,6 +232,7 @@ def _cards(report: TelemetryReport) -> str:
                sub="excluded from timing") if report.qc.clock_invalid else ""),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
         _stat("Housing humidity", humidity, cls=humidity_cls, sub="leak early warning"),
+        _stat("Transmits", tx_value, sub=tx_note),
         acoustic_cards(report),
     ])
 
@@ -237,17 +272,20 @@ def _panels(report: TelemetryReport) -> list[str]:
     acoustic_panel = _acoustic_panel(report)
     if acoustic_panel:
         panels.append(acoustic_panel)
+    panels.append(_schedule_panel(report))
     return panels
 
 
 def _head(report: TelemetryReport, generated_at: datetime, published: str) -> str:
     fresh = freshness.assess(report.received[-1] if report.received else None,
-                             now=generated_at, faults=report.latest_flags)
+                             now=generated_at, faults=report.latest_flags,
+                             tx_count=report.tx_count)
     span = (f"{report.qc.first:%Y-%m-%d %H:%M} → {report.qc.last:%Y-%m-%d %H:%M} UTC"
             if report.qc.first and report.qc.last else "no data")
     mmm_line = ("MMM %.2f °C" % report.mmm if report.mmm is not None
                 else "no MMM set, DHW disabled")
-    history = freshness.slot_history(report.received, now=generated_at)
+    history = freshness.slot_history(report.received, now=generated_at,
+                                     tx_count=report.tx_count)
     return (
         '<section class="page-head"><div class="wrap">'
         '<p class="eyebrow">From the buoy</p>'
@@ -284,8 +322,8 @@ def render_html(
         '<a href="telemetry_summary.json">summary JSON</a> · '
         '<a href="../science/">how these metrics are computed</a></p>'
         '<p class="data-links">Each point is one day. The buoy samples every 30 minutes and '
-        "keeps the full record on board; this page shows what reached shore by radio, in three "
-        "transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
+        "keeps the full record on board; this page shows what reached shore by radio, in one to "
+        "three transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
         "gaps stay empty until the on-board record is retrieved. Thermal stress is computed "
         "with NOAA Coral Reef Watch Degree Heating Weeks from measured days only. Turbidity is "
         "uncalibrated and reported as relative events, not NTU. Reef sound is a short summary "
