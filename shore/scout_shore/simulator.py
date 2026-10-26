@@ -94,6 +94,7 @@ def generate_reading(
         uptime_s=seq * DEFAULT_INTERVAL_S,
         flags=frozenset(flags),
         audio_present=audio_present,
+        tx_count=3,  # the default count, reported in every v4 packet (SCO-198)
         **acoustic,
     )
 

@@ -36,11 +36,14 @@ from __future__ import annotations
 import random
 from collections import deque
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Callable, Mapping
 
 from .link import LoRaLink
 from .packet import PacketError, Reading, decode
 from .schema import SchemaError, validate_row, reading_to_row
 from .store import CsvStore
+from .tx_schedule import tag
 
 
 class MockLoRaLink:
@@ -87,6 +90,10 @@ class ReceiverStats:
     duplicates: int = 0  # valid repeats of a reading already stored — expected, not an error
     decode_errors: int = 0
     schema_errors: int = 0
+    # Stored readings that arrived outside every slot of the count the buoy uses (SCO-198):
+    # a buoy clock that has drifted, or a buoy on a count the shore did not expect. Not a
+    # bucket of `accounted`; the reading is still stored.
+    out_of_window: int = 0
 
     @property
     def accounted(self) -> int:
@@ -97,9 +104,15 @@ class ReceiverStats:
 class Receiver:
     """Decodes payloads off a link, validates, and appends good readings to the store."""
 
-    def __init__(self, link: LoRaLink, store: CsvStore) -> None:
+    def __init__(self, link: LoRaLink, store: CsvStore, *,
+                 clock: Callable[[], datetime] | None = None,
+                 requested: Mapping[int, int] | None = None) -> None:
+        """``clock`` (arrival time, UTC) turns on the slot-window check; ``requested`` is the
+        transmit count asked of each buoy, used when a frame does not report its own."""
         self._link = link
         self._store = store
+        self._clock = clock
+        self._requested = requested if requested is not None else {}
         self.stats = ReceiverStats()
 
     def poll_once(self) -> Reading | None:
@@ -126,6 +139,9 @@ class Receiver:
             self.stats.duplicates += 1
             return None
         self.stats.stored += 1
+        if self._clock is not None and tag(
+                reading, self._clock(), self._requested.get(reading.buoy_id)) == "out":
+            self.stats.out_of_window += 1
         return reading
 
     def drain(self) -> int:
