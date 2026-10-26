@@ -184,7 +184,8 @@ def build_site(
     ribbon = None
     from .. import freshness
     fresh = freshness.assess(report.received[-1] if report.received else None,
-                             now=generated_at, faults=report.latest_flags)
+                             now=generated_at, faults=report.latest_flags,
+                             tx_count=report.tx_count)
     live = _live_stats(report, banner, web.status_line(fresh))
 
     def page(base: str, active: str, mod, body_html: str) -> str:

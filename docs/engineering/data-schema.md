@@ -1,4 +1,4 @@
-# On-Board CSV Data Schema (v3)
+# On-Board CSV Data Schema (v4)
 
 > **Summary** — The format of the CSV log the buoy writes to microSD: one row per sampling
 > event, fixed column order, UTC timestamps. This is the contract between the firmware
@@ -46,11 +46,11 @@ name could not be written by the buoy.
 
 Each daily CSV starts with the header row below.
 
-## Columns (v3)
+## Columns (v4)
 
 | # | Column | Type | Unit | Example | Notes |
 |---|---|---|---|---|---|
-| 1 | `schema_version` | int | — | `3` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v3 (2026-10-25, [SCO-233](https://linear.app/scout1/issue/SCO-233), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))** added columns 17–23, the acoustic summary. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns, v2 files 16. Readers accept all three, and the shore store rewrites an older daily file's header before appending v3 rows. |
+| 1 | `schema_version` | int | — | `4` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v4 (2026-10-25, [SCO-198](https://linear.app/scout1/issue/SCO-198))** added column 24, `tx_count`, and the `CMD_REJECTED` flag; v3 files have 23 columns. **v3 (2026-10-25, [SCO-233](https://linear.app/scout1/issue/SCO-233), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))** added columns 17–23, the acoustic summary. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns, v2 files 16. Readers accept all four, and the shore store rewrites an older daily file's header before appending new rows. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the same reading can arrive twice (a re-received frame, or an SD-card import of a reading the radio already delivered), and must collapse to one row. |
@@ -73,6 +73,7 @@ Each daily CSV starts with the header row below.
 | 21 | `ndsi_e4` | int16 | ×10⁻⁴ | `9975` | (E_bio − E_anthro) / (E_bio + E_anthro) × 10,000, from filtered time-domain energy. Tracks the shore NDSI, does not equal it. |
 | 22 | `snap_count` | uint16 | count | `10` | Bio-band impulses above 8× the running mean \|bio\|, one per 3.0 ms window; saturates at 65,535. |
 | 23 | `clip_count` | uint16 | samples | `24` | Samples within 16 ADC counts of either rail; saturates at 65,535. |
+| 24 | `tx_count` | int | transmits/day | `3` | The daily transmit count the buoy is using (1–3; [SCO-198](https://linear.app/scout1/issue/SCO-198)), so the shore and console can confirm a requested change took effect. Blank when not reported (rows from v1–v3 firmware). In the packet it rides in `flags` bits 8–9. |
 
 ### Optional / future columns (append at the end when the hardware lands)
 
@@ -130,36 +131,40 @@ Device State-of-Health, set at boot and carried in every row/packet (distinct fr
 per-cycle `flags`): `WATCHDOG_RESET` · `RTC_UNSET` · `SD_INIT_FAIL` · `LORA_INIT_FAIL`. A
 recurring `WATCHDOG_RESET` means a cycle is hanging. Matches `SOH_BITS` in the packet codec.
 
-### `flags` vocabulary (v2)
+### `flags` vocabulary (v4)
 
 `SD_RETRY` · `TEMP_TIMEOUT` · `TURBIDITY_RANGE` · `BATT_LOW_SKIP_TX` · `RTC_LOST` ·
 `POWER_CONSERVE` (battery-saving mode: audio off, transmit throttled) · `HUMIDITY_HIGH`
 (housing humidity at or above `HUMIDITY_ALERT_RH_PCT` in `config.h`; ⚠️ the 70 %RH value is a
 placeholder until the calibration in [SCO-204](https://linear.app/scout1/issue/SCO-204)) ·
-`HUMIDITY_FAIL` (the SHT40 did not answer or failed its CRC; added in v2) — extend as
-needed; keep them SCREAMING_SNAKE_CASE and documented here.
+`HUMIDITY_FAIL` (the SHT40 did not answer or failed its CRC; added in v2) · `CMD_REJECTED` (a
+settings command addressed to this buoy failed its checks since the last packet, e.g. a bad HMAC
+tag, a replayed counter or a count outside 1–3; bit 10, added in v4) — extend as needed; keep
+them SCREAMING_SNAKE_CASE and documented here. **Bits 8–9 of the packet's `flags` are not a
+flag**: they carry `tx_count` (0 = not reported), which the CSV writes as its own column.
 
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,snap_count,clip_count
-3,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2,,,,,,,
-3,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3,,,,,,,
-3,SCOUT-01,2026-08-14T08:00:00Z,17,26.51,498,1.61,,3.24,30660,20260814/080000Z.WAV,,,v0.1.0,25.02,38.9,-3972,-3006,-1068,-995,9975,2310,24
-3,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,,,,,,,,
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,snap_count,clip_count,tx_count
+4,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2,,,,,,,,3
+4,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3,,,,,,,,3
+4,SCOUT-01,2026-08-14T08:00:00Z,17,26.51,498,1.61,,3.24,30660,20260814/080000Z.WAV,,,v0.1.0,25.02,38.9,-3972,-3006,-1068,-995,9975,2310,24,3
+4,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,,,,,,,,1
 ```
 
 ## Relationship to the LoRa daily packet
 
-The packet is not a row dump. Since 2026-10-16 the buoy transmits in **three fixed slots a
-day — 00:10, 08:10 and 16:10 UTC — each packet carrying the latest reading**
+The packet is not a row dump. Since 2026-10-16 the buoy transmits in **fixed slots — 00:10,
+08:10 and 16:10 UTC by default, 1–3 a day by setting since SCO-198 — each packet carrying the
+latest reading**
 ([`facts.md`](../hub/facts.md), [SCO-196](https://linear.app/scout1/issue/SCO-196); it was one
 packet a day before). It carries at least `timestamp_utc`, `record_seq` (as the packet
 counter), the temperature and turbidity readings, and `battery_v`. The CSV is the full local record; the packet is what fits over radio. Raw audio is
 **never** transmitted — it stays in `/AUDIO/` on the card. Since v3 the packet carries a
 14-byte summary of the most recent recording instead (below).
 
-### Packet layout (v3, 44 bytes)
+### Packet layout (v4, 44 bytes; v3 has the same bytes)
 
 Little-endian; the firmware (`firmware/lib/scout_packet`) and the shore decoder
 (`shore/scout_shore/packet.py`) are byte-identical, and `scripts/check_packet_contract.py`
@@ -167,7 +172,7 @@ fails CI if they drift.
 
 | Bytes | Field | Type | Encoding |
 |---|---|---|---|
-| 0 | `schema_version` | u8 | `3`; same number as the CSV |
+| 0 | `schema_version` | u8 | `4` (or `3` from older firmware); same number as the CSV |
 | 1–2 | `buoy_id` | u16 | numeric; CSV renders `SCOUT-%02d` |
 | 3–6 | `timestamp` | u32 | Unix epoch seconds, UTC |
 | 7–10 | `record_seq` | u32 | monotonic counter |
@@ -175,7 +180,7 @@ fails CI if they drift.
 | 13–14 | `turbidity_adc` | u16 | raw counts |
 | 15–16 | `battery_mv` | u16 | millivolts |
 | 17–20 | `uptime_s` | u32 | seconds |
-| 21–22 | `flags` | u16 | per-cycle bits (`flags` vocabulary) |
+| 21–22 | `flags` | u16 | per-cycle bits (`flags` vocabulary); **bits 8–9 = `tx_count`** (v4) |
 | 23 | `soh` | u8 | State-of-Health bits |
 | 24 | `audio_present` | u8 | 1 if the summary below is a real recording |
 | 25–27 | `fw_major/minor/patch` | u8 ×3 | firmware version |
@@ -221,7 +226,7 @@ sine (0 cdB). The constants and their reasons are in `firmware/src/config.h` (`A
 
 | Number | What it is | Where it lives |
 |---|---|---|
-| **44 bytes** | The **actual** encoded packet today (v3) — 42-byte body + 2-byte CRC. Was 30 B in v1/v2 | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
+| **44 bytes** | The **actual** encoded packet today (v4, same bytes as v3) — 42-byte body + 2-byte CRC. Was 30 B in v1/v2 | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
 | **140 bytes** | The **payload ceiling** — the most a packet may grow to (since 2026-10-23, [SCO-97](https://linear.app/scout1/issue/SCO-97)) | `SCOUT_LINK_PAYLOAD_CEILING_BYTES` (firmware), `LORA_PAYLOAD_BUDGET_BYTES` (shore); CI checks they match and that a ceiling-size frame fits the send timeout |
 
 The packet therefore has 96 bytes of headroom for future signals (110 before the acoustic summary). Earlier revisions of this

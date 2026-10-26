@@ -17,6 +17,18 @@
  * replies as the buoy, any time after boot) until NTP over WiFi exists; before that the tag
  * reads win=unknown.
  *
+ * Daily transmit count (SCO-198). The station keeps the count requested for each buoy, set
+ * over USB with "N<buoy>:<count>" until the console reaches it over WiFi. The window tag uses
+ * the slots of the count the frame itself reports (v4), else the requested count, so it checks
+ * the buoy's clock against the slots that buoy is actually using. Every OK line ends with
+ * tx=<reported>/<requested> and "pending" until they match. Listening itself stays always on:
+ * the station is mains-powered, so no slot set closes the radio.
+ *
+ * With -DSCOUT_DOWNLINK (OFF by default) the station also SENDS: right after a buoy's packet,
+ * if its reported count differs from the requested one, one signed SET_TX_COUNT frame
+ * (lib/scout_downlink) in the buoy's 1 s listen window. ⚠️ Do not transmit off the bench until
+ * the RFM95W FeatherWing's FCC authorization is checked (OTA design §8, SCO-104).
+ *
  * Output, two lines per frame. The first is the bench_rx format, so
  * shore/scripts/decode_frames.py still reads it:
  *   RX len=30 rssi=-41 snr=9 n=3 hex=0201...
@@ -29,9 +41,13 @@
 
 #include "../config.h"
 #include "scout_dedupe.h"
+#include "scout_downlink.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
 #include "scout_timeset.h"
+#ifdef SCOUT_DOWNLINK
+#include "../downlink_key_select.h"
+#endif
 
 /* FeatherWing jumper pads → S3 Feather pins. ⚠️ PROVISIONAL: the FeatherWing has no default
  * wiring; these three pads must be soldered to match, and confirmed with ECE (Isabella). */
@@ -40,6 +56,7 @@
 #define PIN_SHORE_RFM95_INT 9
 
 static const uint32_t LISTEN_HALF_WIDTH_S = 120;  // ±2 min around each slot (SCO-165)
+static const uint16_t SHORE_MAX_BUOY_ID = 8;      // two planned per station (2026-09-24)
 
 static const uint8_t REG_HIGH_BW_OPTIMIZE_1 = 0x36;
 static const uint8_t REG_HIGH_BW_OPTIMIZE_2 = 0x3A;
@@ -50,6 +67,11 @@ static RH_RF95 g_rf95(PIN_SHORE_RFM95_CS, PIN_SHORE_RFM95_INT);
 static ScoutDedupe g_seen;
 static uint32_t g_frames = 0;
 static bool g_clock_set = false;
+// Count requested per buoy (index = buoy_id); 0 = nothing requested, follow the buoy.
+static uint8_t g_requested[SHORE_MAX_BUOY_ID + 1];
+#ifdef SCOUT_DOWNLINK
+static uint32_t g_last_counter[SHORE_MAX_BUOY_ID + 1];
+#endif
 static char g_line[24];
 static size_t g_line_len = 0;
 
@@ -67,6 +89,9 @@ static bool radio_begin() {
     g_rf95.spiWrite(REG_HIGH_BW_OPTIMIZE_1, HIGH_BW_OPTIMIZE_1_AT_500K);
     g_rf95.spiWrite(REG_HIGH_BW_OPTIMIZE_2, HIGH_BW_OPTIMIZE_2_AT_500K);
     g_rf95.setPromiscuous(true);  // accept every frame regardless of RadioHead addressing
+#ifdef SCOUT_DOWNLINK
+    g_rf95.setTxPower(LORA_TX_POWER_DBM, false);  // the same +11 dBm grant limit as the buoy
+#endif
     g_rf95.setModeRx();
     return true;
 }
@@ -80,14 +105,43 @@ static void print_rx_line(const uint8_t *buf, uint8_t len) {
     Serial.println();
 }
 
-static const char *window_tag() {
+static uint8_t requested_for(uint16_t buoy_id) {
+    return buoy_id <= SHORE_MAX_BUOY_ID ? g_requested[buoy_id] : 0;
+}
+
+static const char *window_tag(uint8_t tx_count) {
     if (!g_clock_set) {
         return "unknown";
     }
+    uint32_t slots[TX_SLOT_COUNT];
+    size_t n = scout_select_tx_slots(TX_SLOTS_SOD, TX_SLOT_COUNT, tx_count, slots);
     uint32_t now = (uint32_t)time(nullptr);
-    return scout_in_listen_window(now, TX_SLOTS_SOD, TX_SLOT_COUNT, LISTEN_HALF_WIDTH_S) ? "in"
-                                                                                         : "out";
+    return scout_in_listen_window(now, slots, n, LISTEN_HALF_WIDTH_S) ? "in" : "out";
 }
+
+#ifdef SCOUT_DOWNLINK
+// Sent straight after the buoy's packet: it listens for 1 s after every send (OTA design §2).
+static void send_tx_count(uint16_t buoy_id, uint8_t tx_count) {
+    const uint8_t *key = scout_downlink_key(buoy_id);
+    if (key == nullptr || !g_clock_set) {
+        Serial.printf("CMD skipped buoy=%u reason=%s\n", buoy_id, key ? "clock" : "no-key");
+        return;
+    }
+    uint32_t now = (uint32_t)time(nullptr);
+    ScoutCommand cmd;
+    cmd.buoy_id = buoy_id;
+    cmd.counter = now > g_last_counter[buoy_id] ? now : g_last_counter[buoy_id] + 1u;
+    cmd.setting = SCOUT_DL_SETTING_TX_COUNT;
+    cmd.value = tx_count;
+    uint8_t frame[SCOUT_DL_CMD_SIZE];
+    scout_dl_encode(&cmd, key, frame);
+    bool sent = g_rf95.send(frame, sizeof(frame)) && g_rf95.waitPacketSent(2000);
+    g_rf95.setModeRx();
+    g_last_counter[buoy_id] = cmd.counter;
+    Serial.printf("CMD buoy=%u tx_count=%u counter=%lu sent=%s\n", buoy_id, tx_count,
+                  (unsigned long)cmd.counter, sent ? "yes" : "no");
+}
+#endif
 
 static void handle_frame(const uint8_t *buf, uint8_t len) {
     g_frames++;
@@ -111,12 +165,25 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
         Serial.printf("DUP buoy=%u seq=%lu\n", r.buoy_id, (unsigned long)r.record_seq);
         return;
     }
-    Serial.printf("OK buoy=%u seq=%lu ts=%lu temp_c_centi=%d batt_mv=%u flags=0x%04X win=%s\n",
+    uint8_t reported = scout_flags_tx_count(r.flags);
+    uint8_t requested = requested_for(r.buoy_id);
+    uint8_t tagged = reported ? reported : (requested ? requested : SCOUT_TX_COUNT_DEFAULT);
+    bool pending = requested != 0 && reported != requested;
+    Serial.printf("OK buoy=%u seq=%lu ts=%lu temp_c_centi=%d batt_mv=%u flags=0x%04X win=%s "
+                  "tx=%u/%u%s%s\n",
                   r.buoy_id, (unsigned long)r.record_seq, (unsigned long)r.timestamp,
-                  r.temp_c_centi, r.battery_mv, r.flags, window_tag());
+                  r.temp_c_centi, r.battery_mv, r.flags, window_tag(tagged), reported, requested,
+                  pending ? " pending" : "",
+                  (r.flags & SCOUT_FLAG_CMD_REJECTED) ? " cmd_rejected" : "");
+#ifdef SCOUT_DOWNLINK
+    if (pending) {
+        send_tx_count(r.buoy_id, requested);
+    }
+#endif
 }
 
-/* Read "T<unix-epoch>" from USB, one character per call so the radio is never starved. */
+/* Read "T<unix-epoch>" or "N<buoy>:<count>" from USB, one character per call so the radio is
+ * never starved. */
 static void poll_time_command() {
     while (Serial.available()) {
         char c = (char)Serial.read();
@@ -126,9 +193,20 @@ static void poll_time_command() {
         }
         g_line[g_line_len] = '\0';
         g_line_len = 0;
+        uint16_t buoy = 0;
+        uint8_t count = 0;
+        if (scout_dl_parse_set_command(g_line, &buoy, &count)) {
+            if (buoy > SHORE_MAX_BUOY_ID) {
+                Serial.printf("tx: ignored, buoy %u above %u\n", buoy, SHORE_MAX_BUOY_ID);
+                continue;
+            }
+            g_requested[buoy] = count;
+            Serial.printf("tx: buoy=%u requested=%u\n", buoy, count);
+            continue;
+        }
         uint32_t epoch = 0;
         if (!scout_parse_time_command(g_line, MIN_VALID_EPOCH, &epoch)) {
-            Serial.println("time: ignored, expected T<unix-epoch>");
+            Serial.println("time: ignored, expected T<unix-epoch> or N<buoy>:<count>");
             continue;
         }
         struct timeval tv = {(time_t)epoch, 0};

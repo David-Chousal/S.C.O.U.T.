@@ -60,6 +60,9 @@ class TelemetryReport:
     latest_schema_version: int = 0
     # Per-recording acoustic summaries (schema v3, ADR-0010); None until one arrives.
     acoustic: acoustic.AcousticReport | None = None
+    # Daily transmit count the newest packet reports (schema v4, SCO-198); None = not reported,
+    # which freshness treats as the default 3.
+    tx_count: int | None = None
 
 
 def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> TelemetryReport:
@@ -109,7 +112,13 @@ def analyze(records: list[TelemetryRecord], *, mmm: float | None = None) -> Tele
         latest_flags=_latest_flags(timed),
         latest_schema_version=max(timed, key=lambda r: r.timestamp).schema_version if timed else 0,
         acoustic=acoustic.summarize_acoustic(timed),
+        tx_count=_latest_tx_count(timed),
     )
+
+
+def _latest_tx_count(timed: list[TelemetryRecord]) -> int | None:
+    reported = [r for r in timed if r.tx_count is not None]
+    return max(reported, key=lambda r: r.timestamp).tx_count if reported else None
 
 
 def _latest_flags(timed: list[TelemetryRecord]) -> frozenset[str]:

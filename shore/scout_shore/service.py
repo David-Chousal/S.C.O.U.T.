@@ -142,6 +142,8 @@ class ReceiverService:
     def _log_stats(self) -> None:
         s = self._receiver.stats
         log.info(
-            "received=%d stored=%d duplicates=%d decode_errors=%d schema_errors=%d link_errors=%d",
+            "received=%d stored=%d duplicates=%d decode_errors=%d schema_errors=%d link_errors=%d "
+            "out_of_window=%d",
             s.received, s.stored, s.duplicates, s.decode_errors, s.schema_errors, self.link_errors,
+            s.out_of_window,
         )

@@ -28,7 +28,10 @@ static const bool TX_EVERY_SAMPLE = false;
 #endif
 /* Fixed LoRa transmit slots, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
  * decided 2026-10-16). Each sits 10 min after a sample so the radio never overlaps a sensor
- * read, and the shore station listens on the same table. Change slot times here only. */
+ * read, and the shore station listens on the same table. Change slot times here only.
+ * How many are used is a runtime setting since SCO-198, the daily transmit count (1-3, default
+ * 3, held in retained RAM): scout_select_tx_slots picks 1 → 00:10, 2 → 00:10 + 16:10,
+ * 3 → all three. The range is pending ECE power-budget sign-off. */
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
 // Audio: one 60 s clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
@@ -53,7 +56,9 @@ static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a c
  * Provisional millivolts — depend on the final battery/charging path (ADR-0002). */
 static const uint16_t BATTERY_CONSERVE_MV = 3200;                  // drop into conserve below this
 static const uint16_t BATTERY_CRITICAL_MV = 3100;                  // drop into critical below this
-static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;                 // conserve: every 3rd slot (1/day)
+// conserve: every 3rd slot in use, so only the first (00:10), which every transmit count keeps:
+// CONSERVE never sends more than the setting (SCO-198).
+static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
@@ -127,6 +132,20 @@ static const int8_t LORA_TX_POWER_DBM = 11;
  * The SHORE STATION MUST MATCH these three bytes exactly, and additionally needs the
  * SX1276 500 kHz receiver-sensitivity erratum (reg 0x36 = 0x02, reg 0x3A = 0x64) which
  * does not apply to this transmit-only node. Tracked on SCO-24. */
+/* ── Settings downlink (SCO-198, OTA design §2-§3) ─────────────────────────────
+ * Built only with -DSCOUT_DOWNLINK, which is OFF in every shipped environment: the listen
+ * window is a power-budget line that needs Isabella's sign-off, and the shore must not transmit
+ * off the bench until the RFM95W FeatherWing's FCC authorization is checked (OTA §8).
+ * With it on, the radio listens DOWNLINK_LISTEN_MS after each send for one authenticated
+ * SET_TX_COUNT frame (lib/scout_downlink), keyed by src/downlink_key.h, which is never committed.
+ * ⚠️ Window length, RX current and shore turnaround are design figures, not bench-measured. */
+static const uint16_t DOWNLINK_LISTEN_MS = 1000;   // OTA §2: 1.0 s ≈ 0.019 mAh/day at 3 slots
+// A frame whose header arrived inside the window is received to its end: one ceiling airtime.
+static const uint16_t DOWNLINK_FRAME_MAX_MS = 1739;
+// A command's counter (the shore's clock) must be within a day of the buoy's, so a recorded
+// frame cannot be replayed after a cold start resets the stored counter.
+static const uint32_t DOWNLINK_MAX_SKEW_S = 86400;
+
 static const uint8_t LORA_MODEM_CONFIG1 = 0x98;
 static const uint8_t LORA_MODEM_CONFIG2 = 0xC4;
 static const uint8_t LORA_MODEM_CONFIG3 = 0x04;

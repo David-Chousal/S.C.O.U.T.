@@ -87,3 +87,6 @@ credentials.json
 
 # Claude Code local session settings (not shared)
 .claude/
+
+# Settings-downlink HMAC keys (SCO-198). Copy firmware/src/downlink_key_example.h; never commit.
+firmware/src/downlink_key.h

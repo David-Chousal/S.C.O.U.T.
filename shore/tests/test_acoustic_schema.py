@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scout_shore import CsvStore, Reading, SchemaError, reading_to_row, validate_row
-from scout_shore.packet import ACOUSTIC_FIELDS
+from scout_shore.packet import ACOUSTIC_FIELDS, PACKET_VERSION
 from scout_shore.schema import COLUMNS, COLUMNS_V1, COLUMNS_V2, validate_csv
 from scout_shore.sd_import import import_card
 from scout_shore.simulator import generate_series, synthetic_acoustic
@@ -55,8 +55,10 @@ def _read(path: Path) -> tuple[tuple[str, ...], list[dict[str, str]]]:
 
 class AcousticRowTests(unittest.TestCase):
     def test_v3_appends_the_seven_packet_fields_as_columns(self):
-        self.assertEqual(COLUMNS[16:], ACOUSTIC_FIELDS)
-        self.assertEqual(len(COLUMNS), 23)
+        # Updated for v4 (SCO-198): tx_count now follows the acoustic block, so the seven
+        # fields are columns 16-22 rather than the tail.
+        self.assertEqual(COLUMNS[16:23], ACOUSTIC_FIELDS)
+        self.assertEqual(len(COLUMNS), 24)
 
     def test_recording_fills_the_acoustic_cells(self):
         row = reading_to_row(_reading(audio_present=True, **_SUMMARY))
@@ -107,7 +109,8 @@ class LegacyFileTests(unittest.TestCase):
         store.append(_reading(record_seq=2, audio_present=True, **_SUMMARY))
         header, rows = _read(path)
         self.assertEqual(header, COLUMNS)
-        self.assertEqual([r["schema_version"] for r in rows], ["2", "3"])
+        # Appended rows carry the current version (4 since SCO-198), not a hard-coded 3.
+        self.assertEqual([r["schema_version"] for r in rows], ["2", str(PACKET_VERSION)])
         self.assertEqual(rows[0]["lvl_bio_cdb"], "")
         self.assertEqual(rows[0]["turbidity_v"], "2.659")  # old values kept
         self.assertEqual(rows[1]["lvl_bio_cdb"], "-1068")

@@ -127,6 +127,7 @@ S.C.O.U.T./
 ├── mechanical/            CAD, hull, mooring — all five CAD categories documented
 │   └── simulations/       Re-runnable calculators (code + dated results/; newest date = current)
 ├── chatbot/               "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
+├── console/               Team console (Cloudflare Worker + D1, ADR-0012) — Phase A, not deployed
 ├── assets/
 │   ├── diagrams/          Architecture and block diagrams
 │   ├── photos/            Build and field photos

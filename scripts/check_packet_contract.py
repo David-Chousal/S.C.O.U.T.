@@ -13,6 +13,10 @@ the shore's LORA_PAYLOAD_BUDGET_BYTES must agree, and a ceiling-size frame, time
 settings actually in `firmware/src/config.h`, must stay under 90% of the firmware's send timeout.
 A modem change that breaks that fails here rather than as missed slots in the water.
 
+The settings downlink (SCO-198) is held the same way: the shore's ``downlink.encode`` of a fixed
+command must equal the GOLDEN in ``firmware/test/test_downlink``, and the frame must fit the
+same 140-byte ceiling.
+
 Standard library only. Exit 0 on match, non-zero on drift.
 """
 
@@ -29,6 +33,7 @@ sys.path.insert(0, str(_ROOT / "shore"))
 sys.path.insert(0, str(_ROOT / "scripts"))
 
 from lora_airtime import PAYLOAD_CEILING_BYTES, airtime_ms  # noqa: E402
+from scout_shore import downlink  # noqa: E402
 from scout_shore.packet import (  # noqa: E402
     FLAG_BITS,
     LORA_PAYLOAD_BUDGET_BYTES,
@@ -59,9 +64,14 @@ CANONICAL = Reading(
     ndsi_e4=9975,
     snap_count=10,
     clip_count=24,
+    tx_count=2,  # v4 (SCO-198): flags bits 8-9
 )
 
 _TEST_CPP = _ROOT / "firmware" / "test" / "test_packet" / "test_packet.cpp"
+_DOWNLINK_TEST_CPP = _ROOT / "firmware" / "test" / "test_downlink" / "test_downlink.cpp"
+# Keep identical to GOLDEN's comment in test_downlink.cpp: buoy 1, tx_count 2, key 00..1f.
+_DOWNLINK_CANONICAL = downlink.set_tx_count(1, 2, now_epoch=1803859200)
+_DOWNLINK_TEST_KEY = bytes(range(32))
 _LINK_H = _ROOT / "firmware" / "lib" / "scout_link" / "scout_link.h"
 _PACKET_H = _ROOT / "firmware" / "lib" / "scout_packet" / "scout_packet.h"
 _CONFIG_H = _ROOT / "firmware" / "src" / "config.h"
@@ -133,11 +143,11 @@ def check_payload_ceiling() -> str:
     return f"payload ceiling OK — {ceiling} B, {on_air:.0f} ms of a {timeout} ms send timeout"
 
 
-def firmware_golden_hex() -> str:
-    text = _TEST_CPP.read_text()
+def firmware_golden_hex(path: pathlib.Path = _TEST_CPP) -> str:
+    text = path.read_text()
     match = re.search(r"GOLDEN\[[^\]]*\]\s*=\s*\{([^}]*)\}", text)
     if not match:
-        sys.exit(f"could not find GOLDEN[] array in {_TEST_CPP}")
+        sys.exit(f"could not find GOLDEN[] array in {path}")
     byte_values = [int(b, 16) for b in re.findall(r"0x([0-9a-fA-F]{2})", match.group(1))]
     return bytes(byte_values).hex()
 
@@ -155,6 +165,21 @@ def main() -> None:
     print(f"packet contract OK — {len(fw_hex) // 2} bytes: {python_hex}")
     print(check_bit_maps())
     print(check_payload_ceiling())
+    print(check_downlink())
+
+
+def check_downlink() -> str:
+    python_hex = downlink.encode(_DOWNLINK_CANONICAL, _DOWNLINK_TEST_KEY).hex()
+    fw_hex = firmware_golden_hex(_DOWNLINK_TEST_CPP)
+    if python_hex != fw_hex:
+        sys.exit(
+            "DOWNLINK CONTRACT DRIFT — firmware and shore disagree on the command frame:\n"
+            f"  shore (downlink.py) : {python_hex}\n"
+            f"  firmware GOLDEN     : {fw_hex}"
+        )
+    if downlink.CMD_SIZE > LORA_PAYLOAD_BUDGET_BYTES:
+        sys.exit(f"the {downlink.CMD_SIZE}-byte command exceeds the {LORA_PAYLOAD_BUDGET_BYTES}-byte ceiling")
+    return f"downlink contract OK — {downlink.CMD_SIZE} bytes: {python_hex}"
 
 
 if __name__ == "__main__":

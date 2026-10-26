@@ -29,6 +29,7 @@ multiple subsystems.
 | [0009](0009-tideline-design-system.md) | Tideline design system for the public site and dashboard | 🟡 Open — direction chosen 2026-10-19; migration awaiting approval |
 | [0010](0010-acoustic-summary-over-lora.md) | Acoustic summary over LoRa — band levels, NDSI, snap and clip counts | 🟢 Accepted (2026-10-25); FFT bands and L90/L50/L10 pending |
 | [0011](0011-audio-capture-parameters.md) | Audio capture — 3 × 60 s clips a day, 22.05 kHz, Feather 12-bit ADC on A2; shore indices at 22.05 kHz too | 🟢 Accepted (2026-10-25) |
+| [0012](0012-authenticated-console.md) | Authenticated console — Cloudflare Workers + D1, GitHub/Google/password sign-in, admin/member/guest; the public site stays static | 🟢 Accepted (2026-10-25); Phase A built, not deployed |
 
 **Status values:** 🟡 Open · 🟢 Accepted · 🔵 Superseded · ⚪ Deprecated
 

@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Allow running as a script without installing the package.
@@ -44,6 +45,17 @@ def _build_link(kind: str):
     return Rfm9xLink()
 
 
+def _tx_count(text: str) -> tuple[int, int]:
+    """``BUOY:COUNT`` → (buoy_id, count), count 1-3 (SCO-198)."""
+    try:
+        buoy, count = (int(part) for part in text.split(":"))
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"expected BUOY:COUNT, got {text!r}") from exc
+    if count not in (1, 2, 3) or buoy < 1:
+        raise argparse.ArgumentTypeError(f"count must be 1-3 and buoy >= 1, got {text!r}")
+    return buoy, count
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="SCOUT shore station receiver service")
     parser.add_argument(
@@ -56,6 +68,11 @@ def main() -> int:
     )
     parser.add_argument("--poll-interval", type=float, default=1.0, help="seconds between polls when idle")
     parser.add_argument("--stats-interval", type=float, default=3600.0, help="seconds between stats log lines")
+    parser.add_argument(
+        "--tx-count", type=_tx_count, action="append", default=[], metavar="BUOY:COUNT",
+        help="daily transmit count requested for a buoy, for the slot-window check when its "
+             "packets do not report one (repeatable; default 3)",
+    )
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args()
 
@@ -73,7 +90,8 @@ def main() -> int:
         return 1
 
     service = ReceiverService(
-        Receiver(link, CsvStore(args.out)),
+        Receiver(link, CsvStore(args.out), clock=lambda: datetime.now(timezone.utc),
+                 requested=dict(args.tx_count)),
         config=ServiceConfig(
             poll_interval_s=args.poll_interval,
             stats_interval_s=args.stats_interval,
@@ -85,9 +103,9 @@ def main() -> int:
     stats = service.run()
     log.info(
         "shore station down: received=%d stored=%d duplicates=%d "
-        "decode_errors=%d schema_errors=%d link_errors=%d",
+        "decode_errors=%d schema_errors=%d link_errors=%d out_of_window=%d",
         stats.received, stats.stored, stats.duplicates,
-        stats.decode_errors, stats.schema_errors, service.link_errors,
+        stats.decode_errors, stats.schema_errors, service.link_errors, stats.out_of_window,
     )
     return 0
 

@@ -8,8 +8,18 @@
 // From packet.py: Reading(buoy_id=1, ts=2027-03-01T00:00:00Z, seq=42, temp=26.44,
 // turb=514, batt=3.28, uptime=75600, flags={SD_RETRY,BATT_LOW_SKIP_TX},
 // soh={WATCHDOG_RESET,SD_INIT_FAIL}, audio=1, fw v0.1.0, acoustic summary (v3) of the real
-// excerpt in test_acoustic: -3972, -3006, -1068, -995 cdB, ndsi 9975, 10 snaps, 24 clips)
+// excerpt in test_acoustic: -3972, -3006, -1068, -995 cdB, ndsi 9975, 10 snaps, 24 clips),
+// tx_count=2 (v4, SCO-198: flags bits 8-9)
 static const uint8_t GOLDEN[SCOUT_PACKET_SIZE] = {
+    0x04, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x2a, 0x00, 0x00,
+    0x00, 0x54, 0x0a, 0x02, 0x02, 0xd0, 0x0c, 0x50, 0x27, 0x01,
+    0x00, 0x09, 0x02, 0x05, 0x01, 0x00, 0x01, 0x00, 0x7c, 0xf0,
+    0x42, 0xf4, 0xd4, 0xfb, 0x1d, 0xfc, 0xf7, 0x26, 0x0a, 0x00,
+    0x18, 0x00, 0x65, 0x4d};
+
+// The v3 GOLDEN this test held before v4: same reading, no transmit count. A v3 buoy's frames
+// must still decode, with tx_count 0 (not reported).
+static const uint8_t GOLDEN_V3[SCOUT_PACKET_SIZE] = {
     0x03, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x2a, 0x00, 0x00,
     0x00, 0x54, 0x0a, 0x02, 0x02, 0xd0, 0x0c, 0x50, 0x27, 0x01,
     0x00, 0x09, 0x00, 0x05, 0x01, 0x00, 0x01, 0x00, 0x7c, 0xf0,
@@ -33,7 +43,7 @@ static ScoutReading golden_reading() {
     r.turbidity_adc = 514;
     r.battery_mv = scout_battery_mv(3.28f);
     r.uptime_s = 75600;
-    r.flags = SCOUT_FLAG_SD_RETRY | SCOUT_FLAG_BATT_LOW_SKIP_TX;
+    r.flags = scout_flags_with_tx_count(SCOUT_FLAG_SD_RETRY | SCOUT_FLAG_BATT_LOW_SKIP_TX, 2);
     r.soh = SCOUT_SOH_WATCHDOG_RESET | SCOUT_SOH_SD_INIT_FAIL;
     r.audio_present = 1;
     r.fw_major = 0;
@@ -57,7 +67,7 @@ void test_encode_matches_shore_golden(void) {
 }
 
 void test_crc_of_body_is_known(void) {
-    TEST_ASSERT_EQUAL_HEX16(0x5678, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
+    TEST_ASSERT_EQUAL_HEX16(0x4D65, scout_crc16_ccitt(GOLDEN, SCOUT_PACKET_BODY_SIZE));
 }
 
 void test_fixed_point_helpers(void) {
@@ -143,6 +153,32 @@ void test_decode_negative_temperature(void) {
     TEST_ASSERT_EQUAL_INT16(-125, got.temp_c_centi);
 }
 
+void test_decode_v3_frame_reports_no_tx_count(void) {
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(GOLDEN_V3, SCOUT_PACKET_SIZE, &got));
+    TEST_ASSERT_EQUAL_UINT8(3, got.schema_version);
+    TEST_ASSERT_EQUAL_UINT8(0, scout_flags_tx_count(got.flags));
+    TEST_ASSERT_EQUAL_UINT16(10, got.snap_count);
+}
+
+void test_tx_count_bits_round_trip_and_leave_flags_alone(void) {
+    uint16_t flags = SCOUT_FLAG_SD_RETRY | SCOUT_FLAG_CMD_REJECTED;
+    for (uint8_t n = 0; n <= 3; n++) {
+        uint16_t with = scout_flags_with_tx_count(flags, n);
+        TEST_ASSERT_EQUAL_UINT8(n, scout_flags_tx_count(with));
+        TEST_ASSERT_EQUAL_HEX16(flags, with & ~SCOUT_TX_COUNT_MASK);
+    }
+    // Re-setting replaces, never ORs: 3 then 1 reads 1.
+    TEST_ASSERT_EQUAL_UINT8(1, scout_flags_tx_count(scout_flags_with_tx_count(
+                                   scout_flags_with_tx_count(0, 3), 1)));
+}
+
+void test_decode_reads_tx_count_from_golden(void) {
+    ScoutReading got;
+    TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_OK, scout_packet_decode(GOLDEN, SCOUT_PACKET_SIZE, &got));
+    TEST_ASSERT_EQUAL_UINT8(2, scout_flags_tx_count(got.flags));
+}
+
 void test_decode_rejects_wrong_length(void) {
     ScoutReading got;
     TEST_ASSERT_EQUAL_INT(SCOUT_DECODE_BAD_LENGTH,
@@ -179,6 +215,9 @@ static void run_all() {
     RUN_TEST(test_decode_rejects_v3_version_in_a_legacy_length_frame);
     RUN_TEST(test_negative_acoustic_levels_round_trip);
     RUN_TEST(test_decode_negative_temperature);
+    RUN_TEST(test_decode_v3_frame_reports_no_tx_count);
+    RUN_TEST(test_tx_count_bits_round_trip_and_leave_flags_alone);
+    RUN_TEST(test_decode_reads_tx_count_from_golden);
     RUN_TEST(test_decode_rejects_wrong_length);
     RUN_TEST(test_decode_rejects_corrupt_byte);
     RUN_TEST(test_decode_rejects_other_schema_version);

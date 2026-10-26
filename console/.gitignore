@@ -1,0 +1,4 @@
+# Wrangler local state (local D1, account id): never commit
+.wrangler/
+node_modules/
+.dev.vars

@@ -36,13 +36,16 @@ COLUMNS: tuple[str, ...] = (
     # Acoustic summary of the cycle's recording (ADR-0010, schema v3), the same seven fields as
     # the packet. Blank when there was no recording; the packet carries zeros instead.
     *ACOUSTIC_FIELDS,
+    # Daily transmit count the buoy reports using (SCO-198, schema v4). Blank when not reported.
+    "tx_count",
 )
 
 # Column sets of earlier schema versions. Their files stay readable and importable; a row is
 # valid if its columns are exactly one of these prefixes of COLUMNS.
 COLUMNS_V1 = COLUMNS[:14]  # before the internal humidity sensor (SCO-205)
 COLUMNS_V2 = COLUMNS[:16]  # before the acoustic summary (ADR-0010)
-ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V2, COLUMNS_V1)
+COLUMNS_V3 = COLUMNS[:23]  # before the transmit count (SCO-198)
+ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V3, COLUMNS_V2, COLUMNS_V1)
 
 # Provisional analog front-end constants — SAMD21 12-bit ADC at 3.3 V Vref.
 # ⚠️ Pending the turbidity front-end design (hardware/README.md open item, ADR-0002 area).
@@ -96,6 +99,7 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "internal_temp_c": "",  # SD card only — not in the packet
         "internal_humidity_pct": "",
         **acoustic_cells(reading),
+        "tx_count": "" if reading.tx_count is None else str(reading.tx_count),
     }
 
 
@@ -110,7 +114,7 @@ def validate_row(row: dict[str, str]) -> None:
     """Check one row against the schema. Raises :class:`SchemaError` on any violation."""
     keys = tuple(row.keys())
     if keys not in ACCEPTED_COLUMN_SETS:
-        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1/v2 prefix)")
+        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1-v3 prefix)")
 
     # Required (never-empty) fields and their parsers.
     required_numeric = {
@@ -148,6 +152,10 @@ def validate_row(row: dict[str, str]) -> None:
         low, high = (0, 65535) if name in ("snap_count", "clip_count") else (-32768, 32767)
         if not low <= number <= high:
             raise SchemaError(f"{name}={number} outside {low}..{high}")
+
+    tx_count = row.get("tx_count", "")
+    if tx_count not in ("", "1", "2", "3"):
+        raise SchemaError(f"tx_count={tx_count!r} must be blank or 1, 2 or 3")
 
 
 def validate_csv(path: str | Path) -> int:

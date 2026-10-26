@@ -83,5 +83,41 @@ class Describe(unittest.TestCase):
         self.assertIn("2 slots missed", text)
 
 
+class TransmitCount(unittest.TestCase):
+    """SCO-198: only the slots the buoy's count uses are scheduled."""
+
+    def test_one_a_day_does_not_miss_the_0810_and_1610_slots(self):
+        f = freshness.assess(_t(20, 0, 0), now=_t(20, 23, 0), tx_count=1)
+        self.assertEqual((f.status, f.missed), ("live", 0))
+
+    def test_one_a_day_is_stale_after_a_missed_day_and_offline_after_one_full_day(self):
+        # The only slot is 00:10; one missed is a whole day, which is offline at count 1.
+        self.assertEqual(freshness.assess(_t(20, 0, 0), now=_t(21, 0, 41), tx_count=1).status,
+                         "offline")
+        self.assertEqual(freshness.assess(_t(20, 0, 0), now=_t(21, 0, 39), tx_count=1).status,
+                         "live")
+
+    def test_two_a_day_skips_0810(self):
+        f = freshness.assess(_t(20, 0, 0), now=_t(20, 15, 0), tx_count=2)
+        self.assertEqual(f.missed, 0)
+        self.assertEqual(freshness.assess(_t(20, 0, 0), now=_t(20, 16, 41), tx_count=2).missed, 1)
+
+    def test_unreported_count_is_the_default_three(self):
+        self.assertEqual(freshness.slot_times(None), freshness.slot_times(3))
+
+    def test_counts_outside_one_to_three_are_refused(self):
+        with self.assertRaises(ValueError):
+            freshness.slot_times(4)
+
+    def test_history_lists_only_scheduled_slots(self):
+        history = freshness.slot_history([_t(20, 0, 0)], now=_t(20, 23, 0), days=1, tx_count=2)
+        self.assertEqual([(s.hour, state) for s, state in history], [(0, True), (16, False)])
+
+    def test_history_keeps_a_packet_from_before_the_count_was_lowered(self):
+        received = [_t(20, 0, 0), _t(20, 8, 0)]
+        history = freshness.slot_history(received, now=_t(20, 23, 0), days=1, tx_count=1)
+        self.assertEqual([(s.hour, state) for s, state in history], [(0, True), (8, True)])
+
+
 if __name__ == "__main__":
     unittest.main()

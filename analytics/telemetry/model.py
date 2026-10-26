@@ -49,6 +49,8 @@ class TelemetryRecord:
     ndsi_e4: int | None = None
     snap_count: int | None = None
     clip_count: int | None = None
+    # Daily transmit count the buoy reported using (SCO-198, schema v4). None on older rows.
+    tx_count: int | None = None
 
 
 def has_valid_clock(record: TelemetryRecord) -> bool:

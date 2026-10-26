@@ -253,7 +253,7 @@ def sparkline(points: list[tuple[date, float | None]], *, mmm: float | None) -> 
     return f'<div class="spark" role="img" aria-label="{html.escape(label)}">{"".join(parts)}</div>'
 
 
-def slot_rule(history: list, *, label: str) -> str:
+def slot_rule(history: list, *, label: str, days: int = 7) -> str:
     """The signature: one tick per transmit slot — filled received, hollow missed, faint not due."""
     if not history:
         return ""
@@ -265,7 +265,6 @@ def slot_rule(history: list, *, label: str) -> str:
         ticks.append(f'<rect class="tick {cls}" x="{x - 3:.1f}" y="6" width="6" height="28"/>')
     got = sum(1 for _, s in history if s)
     due = sum(1 for _, s in history if s is not None)
-    days = n // 3
     return (
         f'<div class="slot-rule" role="img" aria-label="{html.escape(label)}: {got} of {due} '
         f'transmit slots received in the last {days} days">'
