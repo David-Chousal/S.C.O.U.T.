@@ -3,7 +3,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import worker, { addNonce, pageCsp } from "../worker/index.js";
+import { addNonce, pageCsp } from "../worker/assets.js";
+import worker from "../worker/index.js";
 import { finish, startUrl } from "../worker/oauth.js";
 import { addUser, APP_URL, Client, makeEnv, signedIn } from "./helpers.js";
 
@@ -134,5 +135,12 @@ test("static files other than HTML pass through without a page CSP", async () =>
 
 test("the nonce rewrite touches script tags only", () => {
   assert.equal(addNonce("<script>a</script><scripts><noscript>", "N"), '<script nonce="N">a</script><scripts><noscript>');
+  assert.equal(addNonce('<link rel="preload" as="script" href="/a.js"/><link rel="stylesheet" href="/a.css"/>', "N"),
+    '<link nonce="N" rel="preload" as="script" href="/a.js"/><link rel="stylesheet" href="/a.css"/>');
   assert.match(pageCsp("N"), /script-src 'nonce-N' 'strict-dynamic'/);
+});
+
+test("the Worker entry module exports only its handler, as workerd requires", async () => {
+  const entry = await import("../worker/index.js");
+  assert.deepEqual(Object.keys(entry), ["default"]);
 });

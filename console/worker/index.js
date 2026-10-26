@@ -16,7 +16,8 @@
  *   DB (D1), ASSETS (static assets)                                         bindings */
 
 import { handleApi } from "./api.js";
-import { b64url, fromB64url, randomToken } from "./crypto.js";
+import { FLASH_COOKIE, staticAsset } from "./assets.js";
+import { b64url, fromB64url } from "./crypto.js";
 import { handleDeviceApi } from "./device.js";
 import {
   apiError, bodyWithin, clearCookie, json, OAUTH_COOKIE, readCookie, redirect, SESSION_COOKIE, setCookie,
@@ -25,7 +26,6 @@ import { configured, finish, startUrl } from "./oauth.js";
 import { createSession, SESSION_TTL_MS } from "./sessions.js";
 import { userForIdentity } from "./users.js";
 
-export const FLASH_COOKIE = "__Host-scout_flash";
 const FLASH_TTL_S = 300;
 const MAX_BODY_BYTES = 256 * 1024;
 
@@ -68,50 +68,6 @@ function flash(request) {
   const response = json({ message });
   response.headers.append("Set-Cookie", clearCookie(FLASH_COOKIE));
   return response;
-}
-
-/** The CSP for an HTML page: scripts only with this response's nonce (and what they load). */
-export function pageCsp(nonce) {
-  return [
-    "default-src 'none'",
-    `script-src 'nonce-${nonce}' 'strict-dynamic'`,
-    // React style props render as style="" attributes; nonces cannot cover attributes.
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
-    "font-src 'self'",
-    "connect-src 'self'",
-    "form-action 'self' https://github.com https://accounts.google.com",
-    "frame-ancestors 'none'",
-    "base-uri 'none'",
-  ].join("; ");
-}
-
-/** Give every <script> in our own build's HTML the nonce. The HTML is ours, so a tag match is
- * exact; a script injected later through the DOM gets no nonce and is blocked. */
-export function addNonce(html, nonce) {
-  return html.replace(/<script(?=[\s>])/g, `<script nonce="${nonce}"`);
-}
-
-const PAGE_HEADERS = {
-  "X-Content-Type-Options": "nosniff",
-  "Referrer-Policy": "same-origin",
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-  "Cross-Origin-Opener-Policy": "same-origin",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-};
-
-async function staticAsset(request, env) {
-  if (request.method !== "GET" && request.method !== "HEAD") return apiError("method not allowed", 405);
-  const asset = await env.ASSETS.fetch(request);
-  const type = asset.headers.get("Content-Type") || "";
-  const headers = new Headers(asset.headers);
-  for (const [name, value] of Object.entries(PAGE_HEADERS)) headers.set(name, value);
-  if (!type.startsWith("text/html")) return new Response(asset.body, { status: asset.status, headers });
-  const nonce = randomToken(18);
-  headers.set("Content-Security-Policy", pageCsp(nonce));
-  headers.set("Cache-Control", "no-store");
-  headers.delete("Content-Length");
-  return new Response(addNonce(await asset.text(), nonce), { status: asset.status, headers });
 }
 
 async function route(request, env) {

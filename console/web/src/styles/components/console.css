@@ -16,7 +16,31 @@
 /* A secret shown once (invite link, reset link, device token). */
 .sc-secret { display: block; padding: var(--space-3); border: 1px dashed var(--line-strong); background: var(--surface-sunken); font: 400 13px/18px var(--font-mono); word-break: break-all; }
 .sc-login__art h1 { margin: 0; font: 700 44px/46px var(--font-sans); letter-spacing: -.035em; }
-.sc-login__slots { position: absolute; right: var(--space-8); bottom: var(--space-8); left: var(--space-8); }
+.sc-login__slots { width: 100%; max-width: 520px; }
 .sc-login__slots svg { display: block; width: 100%; height: 40px; }
 .sc-login__slots rect { fill: var(--bg); opacity: .35; } .sc-login__slots rect.on { opacity: 1; }
 @media (max-width: 767px) { .sc-pair { grid-template-columns: minmax(0, 1fr); } }
+.sc-account__value { font: 500 15px/20px var(--font-sans); letter-spacing: 0; overflow-wrap: anywhere; }
+.sc-team-actions { justify-content: flex-end; gap: var(--space-2); flex-wrap: nowrap; }
+.sc-banner .sc-secret { margin-top: var(--space-2); }
+.sc-caption { caption-side: top; text-align: left; padding-bottom: var(--space-2); }
+/* Signed-out forms (login, invite, reset). */
+.sc-auth-form { display: grid; gap: var(--space-4); width: 100%; max-width: 380px; }
+.sc-auth-form__head { display: grid; gap: var(--space-1); }
+.sc-auth-form__head h2 { margin: 0; font: 700 24px/28px var(--font-sans); letter-spacing: -.02em; }
+.sc-auth-form__submit { justify-content: space-between; }
+.sc-login__lede { display: grid; gap: var(--space-4); max-width: 460px; position: relative; z-index: 1; }
+.sc-login__lede .sc-tag { margin: 0; color: var(--bg); opacity: .8; }
+.sc-providers { display: grid; gap: var(--space-2); }
+.sc-providers .sc-key { justify-content: center; text-decoration: none; }
+.sc-providers__or { text-align: center; padding-top: var(--space-2); }
+.sc-input--plain { padding-left: var(--space-3); }
+.sc-input-wrap__toggle { cursor: pointer; }
+/* Team: two keys sit in the actions column (reset link + hold to disable), wider than COR's one. */
+.sc-team-table .sc-team-table__actions { width: 252px; }
+/* Phones: the two action keys get their own row under role and sign-in method. */
+@media (max-width: 767px) {
+  .sc-team-table tr { grid-template-areas: "who who who" "role when when" "act act act"; row-gap: var(--space-2); }
+  .sc-team-table td:nth-child(4) { grid-area: act; padding-left: calc(28px + var(--space-3)); }
+  .sc-team-actions { justify-content: flex-start; flex-wrap: wrap; }
+}

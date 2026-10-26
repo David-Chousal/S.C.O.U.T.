@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "lint": "eslint --config eslint-config.mjs",
+    "test": "vitest run --config vitest-config.mts",
+    "test:watch": "vitest --config vitest-config.mts",
     "tokens": "node scripts/build-tokens.mjs"
   },
   "dependencies": {
