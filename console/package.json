@@ -5,7 +5,7 @@
   "description": "S.C.O.U.T. Console: the team's signed-in back end (Cloudflare Worker + D1, ADR-0012)",
   "engines": { "node": ">=22.13" },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/*-test.js",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   }
