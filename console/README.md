@@ -38,6 +38,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Stations | admin | When each buoy and shore station was last heard from; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Audit log | (read only) | Every change: who, what, before → after |
+| Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | How you sign in; hold to sign out everywhere |
 | Sign in, invite, reset | — | GitHub, Google or password; the invite and reset token is read from `?token=` |
 

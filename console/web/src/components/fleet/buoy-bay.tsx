@@ -5,8 +5,9 @@ import { useToast } from "@/components/feedback/toaster";
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
+import { useWhen } from "@/lib/preferences-context";
 import type { Buoy, Estimates } from "@/lib/api/types";
-import { COUNT_SIGNAL, lifeFor, months, utc } from "@/lib/format";
+import { COUNT_SIGNAL, lifeFor, months } from "@/lib/format";
 
 interface BuoyBayProps {
   buoy: Buoy;
@@ -18,6 +19,7 @@ interface BuoyBayProps {
 
 /** One buoy: what was asked, what it reports, and the 1/2/3 choice with each option's battery cost. */
 export function BuoyBay({ buoy, estimates, slotLabels, canChange, onChanged }: BuoyBayProps) {
+  const when = useWhen();
   const { show } = useToast();
   const titleId = useId();
   const current = buoy.tx_count_requested ?? 3;
@@ -50,13 +52,13 @@ export function BuoyBay({ buoy, estimates, slotLabels, canChange, onChanged }: B
         <div>
           <dt className="sc-tag">Requested</dt>
           <dd>{buoy.tx_count_requested ? `${buoy.tx_count_requested} a day` : "Nothing"}
-            <small>{buoy.requested_by ? `${buoy.requested_by} · ${utc(buoy.requested_at)}` : "the buoy runs its default"}</small>
+            <small>{buoy.requested_by ? `${buoy.requested_by} · ${when(buoy.requested_at)}` : "the buoy runs its default"}</small>
           </dd>
         </div>
         <div>
           <dt className="sc-tag">Buoy reports</dt>
           <dd>{buoy.tx_count_reported ? `${buoy.tx_count_reported} a day` : "Not yet"}
-            <small>newest packet {utc(buoy.reported_at)}</small>
+            <small>newest packet {when(buoy.reported_at)}</small>
           </dd>
         </div>
       </dl>

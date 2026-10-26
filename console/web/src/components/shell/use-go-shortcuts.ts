@@ -11,8 +11,9 @@ function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 /** "G then letter" navigation (G A → Analytics). Ignored while typing in a field. */
-export function useGoShortcuts(navigate: (href: string) => void) {
+export function useGoShortcuts(navigate: (href: string) => void, enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
     let prefixAt = 0;
 
     function onKeyDown(event: KeyboardEvent) {
@@ -34,5 +35,5 @@ export function useGoShortcuts(navigate: (href: string) => void) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [navigate]);
+  }, [navigate, enabled]);
 }

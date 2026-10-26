@@ -17,7 +17,7 @@ describe("Sidebar", () => {
   test("lists the console's five destinations in order", () => {
     const main = screen.getByRole("navigation", { name: "Main" });
     const names = [...main.querySelectorAll(".sc-nav a")].map((a) => a.textContent?.replace(/G .$/, ""));
-    expect(names).toEqual(["Fleet", "Stations", "Team", "Audit log", "Account"]);
+    expect(names).toEqual(["Fleet", "Stations", "Team", "Audit log", "Settings", "Account"]);
   });
 
   test("marks the current page, trailing slash or not", () => {

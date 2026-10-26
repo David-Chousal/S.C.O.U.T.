@@ -7,12 +7,13 @@
 
 import { record } from "./audit.js";
 import estimates from "./battery-life.json" with { type: "json" };
+import buoyConfig from "./buoy-config.json" with { type: "json" };
 
 export const TX_COUNTS = [1, 2, 3];
 export const DEFAULT_TX_COUNT = 3;
 export const SLOT_LABELS = { 1: "00:10 UTC", 2: "00:10 and 16:10 UTC", 3: "00:10, 08:10 and 16:10 UTC" };
 
-export { estimates };
+export { buoyConfig, estimates };
 
 /** confirmed | pending | rejected | unreported | default — see tx_schedule.CountStatus. */
 export function countState(buoy) {
@@ -44,6 +45,19 @@ export async function addBuoy(db, actor, buoyId, label) {
   if (existing) return { error: `Buoy ${id} is already listed.` };
   await db.prepare("INSERT INTO buoys (buoy_id, label) VALUES (?, ?)").bind(id, name).run();
   await record(db, { actor, action: "buoy.add", target: name });
+  return {};
+}
+
+/** Rename a buoy as the console shows it. The packet carries only the numeric ID, so this never
+ * reaches the buoy. */
+export async function renameBuoy(db, actor, buoyId, value) {
+  const label = String(value || "").trim();
+  if (!/^[\w .·()-]{1,40}$/u.test(label)) return { error: "Use 1–40 letters, numbers, spaces or - . ( )" };
+  const buoy = await db.prepare("SELECT * FROM buoys WHERE buoy_id = ?").bind(Number(buoyId)).first();
+  if (!buoy) return { error: "No such buoy." };
+  if (buoy.label === label) return {};
+  await db.prepare("UPDATE buoys SET label = ? WHERE buoy_id = ?").bind(label, buoy.buoy_id).run();
+  await record(db, { actor, action: "buoy.rename", target: String(buoy.buoy_id), before: { label: buoy.label }, after: { label } });
   return {};
 }
 

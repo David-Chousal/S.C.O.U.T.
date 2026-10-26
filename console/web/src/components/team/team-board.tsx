@@ -8,8 +8,9 @@ import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Member, Role, Team } from "@/lib/api/types";
-import { plural, utc } from "@/lib/format";
+import { plural } from "@/lib/format";
 import { can, ROLE_LABEL, useSession } from "@/lib/session";
+import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 import { InviteDialog } from "./invite-dialog";
 
@@ -20,6 +21,7 @@ function signsInWith(member: Member): string {
 /** The Team page: people, roles, reset links, offboarding, and open invites. Admins change it;
  * everyone else sees all of it, controls disabled. */
 export function TeamBoard() {
+  const when = useWhen();
   const { user } = useSession();
   const { show } = useToast();
   const { data, error, reload } = useApi<Team>(api.team);
@@ -121,7 +123,7 @@ export function TeamBoard() {
           <div className="sc-list">
             {data.invites.map((invite) => (
               <div key={invite.id} className="sc-list__row">
-                <span className="sc-list__main"><strong>{invite.email}</strong><span>{ROLE_LABEL[invite.role]} · expires {utc(invite.expires_at)}</span></span>
+                <span className="sc-list__main"><strong>{invite.email}</strong><span>{ROLE_LABEL[invite.role]} · expires {when(invite.expires_at)}</span></span>
                 <span className="sc-list__end">
                   <HoldKey size="sm" label="Hold to revoke" holdLabel={`Hold to revoke the invite for ${invite.email}`} disabled={!canManage}
                     onConfirm={() => run(() => api.revokeInvite(invite.id), `Revoked the invite for ${invite.email}`)} />

@@ -12,6 +12,8 @@ import { useGoShortcuts } from "./use-go-shortcuts";
 interface SidebarProps {
   user: User;
   onSignOut: () => void;
+  /** "G then letter" shortcuts and their hints; off in Settings → This browser. */
+  shortcuts?: boolean;
 }
 
 export function initials(user: Pick<User, "name" | "email">): string {
@@ -21,10 +23,10 @@ export function initials(user: Pick<User, "name" | "email">): string {
 }
 
 /** Desktop sidebar plus the phone bottom bar, with "G then letter" shortcuts. */
-export function Sidebar({ user, onSignOut }: SidebarProps) {
+export function Sidebar({ user, onSignOut, shortcuts = true }: SidebarProps) {
   const pathname = usePathname() ?? "";
   const router = useRouter();
-  useGoShortcuts(router.push);
+  useGoShortcuts(router.push, shortcuts);
 
   return (
     <>
@@ -35,7 +37,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             <Link key={item.href} href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
               <Icon name={item.icon} size={20} />
               {item.label}
-              <kbd>G {item.key.toUpperCase()}</kbd>
+              {shortcuts && <kbd>G {item.key.toUpperCase()}</kbd>}
             </Link>
           ))}
         </div>

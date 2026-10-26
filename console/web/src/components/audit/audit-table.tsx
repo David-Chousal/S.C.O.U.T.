@@ -3,7 +3,7 @@
 import { Banner } from "@/components/feedback/banner";
 import { api } from "@/lib/api/client";
 import type { AuditEntry } from "@/lib/api/types";
-import { utc } from "@/lib/format";
+import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 
 function change(entry: AuditEntry): string {
@@ -13,6 +13,7 @@ function change(entry: AuditEntry): string {
 
 /** Every change in the console, newest first: who, what, and the value before and after. */
 export function AuditTable() {
+  const when = useWhen();
   const { data, error } = useApi<{ entries: AuditEntry[] }>(api.audit);
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!data) return <span className="sc-tag" aria-busy="true">Loading the log…</span>;
@@ -26,7 +27,7 @@ export function AuditTable() {
             {data.entries.length === 0 && <tr><td colSpan={5} className="sc-help">Nothing yet.</td></tr>}
             {data.entries.map((entry) => (
               <tr key={entry.id}>
-                <td className="n">{utc(entry.at)}</td>
+                <td className="n">{when(entry.at)}</td>
                 <td>{entry.actor_label}</td>
                 <td><span className="sc-tag">{entry.action}</span></td>
                 <td>{entry.target}</td>

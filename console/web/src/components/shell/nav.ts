@@ -9,10 +9,11 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  { href: "/fleet/", label: "Fleet", icon: "settings", key: "f" },
+  { href: "/fleet/", label: "Fleet", icon: "analytics", key: "f" },
   { href: "/stations/", label: "Stations", icon: "connections", key: "s" },
   { href: "/team/", label: "Team", icon: "team", key: "t" },
   { href: "/audit/", label: "Audit log", icon: "reports", key: "l" },
+  { href: "/settings/", label: "Settings", icon: "settings", key: "p" },
   { href: "/account/", label: "Account", icon: "lock", key: "a" },
 ];
 
