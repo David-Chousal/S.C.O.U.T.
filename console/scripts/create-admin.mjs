@@ -23,11 +23,17 @@ const EMAIL = /^[^\s@'"]{1,64}@[^\s@'"]{1,190}\.[^\s@'"]{2,63}$/;
 
 // One reader for the whole session, read as a stream of lines: its iterator buffers every line
 // until it is asked for, so nothing typed or piped ahead of a prompt is lost. While a password
-// is typed, nothing is echoed.
-const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: Boolean(process.stdin.isTTY) });
-const lines = rl[Symbol.asyncIterator]();
+// is typed, nothing is echoed. It starts only after the database check, so nothing typed during
+// that check is echoed behind readline's default "> " prompt.
+let rl = null;
+let lines = null;
 let muted = false;
-rl._writeToOutput = (text) => { if (!muted) process.stdout.write(text); };
+
+function openReader() {
+  rl = createInterface({ input: process.stdin, output: process.stdout, terminal: Boolean(process.stdin.isTTY) });
+  lines = rl[Symbol.asyncIterator]();
+  rl._writeToOutput = (text) => { if (!muted) process.stdout.write(text); };
+}
 
 async function ask(question, { hidden = false } = {}) {
   process.stdout.write(question);
@@ -58,9 +64,11 @@ function adminCount() {
 const sql = (text) => `'${String(text).replaceAll("'", "''")}'`;
 
 async function main() {
+  console.log(`Checking the ${where.slice(2)} database…`);
   if (adminCount() > 0) {
     throw new Error("An admin already exists. Sign in and invite people from the Team page instead.");
   }
+  openReader();
   const email = (await ask("Admin email: ")).trim().toLowerCase();
   if (!EMAIL.test(email)) throw new Error("That does not look like an email address.");
   const name = (await ask("Your name: ")).trim().slice(0, 120);
@@ -87,4 +95,4 @@ main()
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   })
-  .finally(() => rl.close());
+  .finally(() => rl?.close());

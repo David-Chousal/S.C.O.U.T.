@@ -99,8 +99,9 @@ request a count in 1–3, which the buoy also range-checks.
 - Passwords: PBKDF2-HMAC-SHA256 with **100,000** iterations, 12–256 characters. Sign-in is limited
   to 5 failures per email and address, 20 per address and 50 per email in 15 minutes.
   **Accepted risk (ADR-0012):** this is below OWASP's 600,000, chosen for the Workers Free plan's
-  10 ms CPU limit. 100,000 took about 10–11 ms in local workerd, so measure sign-in CPU on the
-  deployed Worker ([SCO-239](https://linear.app/scout1/issue/SCO-239)).
+  10 ms CPU limit. **Measured live on 2026-10-26: a sign-in uses 22–96 ms of CPU (median 45 ms),**
+  2–10× that limit; Cloudflare let every one finish, but that is not guaranteed. Every other
+  request uses 0–2 ms. Decision pending ([SCO-239](https://linear.app/scout1/issue/SCO-239)).
 - Request bodies are refused before they are read when over the limit or sent without a length.
 
 ## Deploy (one-time, needs the account owner)

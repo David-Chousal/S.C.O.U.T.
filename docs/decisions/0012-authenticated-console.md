@@ -91,8 +91,10 @@ Decided by David, 2026-10-25:
   cannot do those steps.
 - The static site's "no server" property still holds for the public. Only the team depends on
   the Worker.
-- **Open:** sign-in CPU on the deployed free plan; if it exceeds the limit, the choice is Workers
-  Paid with argon2id, or fewer iterations (weaker). Email-based password reset needs a sending
+- **Open: sign-in CPU on the free plan.** **Measured 2026-10-26 on the live Worker** (`wrangler tail`, 9 sign-ins): **22–96 ms CPU, median 45 ms**, 2–10× the free plan's 10 ms; every one finished (`outcome ok`). Every other request used 0–2 ms. Cloudflare tolerated it, but nothing guarantees
+  that; under strict enforcement sign-in would fail while the rest of the console kept working.
+  The options: Workers Paid with argon2id, fewer iterations (weaker), or GitHub/Google sign-in
+  only. Decision pending ([SCO-239](https://linear.app/scout1/issue/SCO-239)). Email-based password reset needs a sending
   domain, so resets are admin-issued links for now.
 - SCO-120 (review Catherine's dashboard) is partly answered: the team console moves off static,
   the public dashboard does not.
