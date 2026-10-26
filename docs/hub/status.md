@@ -72,11 +72,13 @@ open Phase 0 issue. Full plan:
    concern ([SCO-47](https://linear.app/scout1/issue/SCO-47)) no longer applies; what remains is
    the bench check in [SCO-25](https://linear.app/scout1/issue/SCO-25). The Grove sensor itself is
    **not yet ordered** ([SCO-189](https://linear.app/scout1/issue/SCO-189)). *Updated 2026-10-23.*
-6. **Rev A pin map contradicts the firmware** — the schematic wires the DS18B20 to
-   `D5`; the firmware polls `D12` and needs `D5` for the RTC wake interrupt, whose wire is
-   absent from the schematic entirely. Flashed as-is, temperature never reads and the buoy
-   cannot wake from standby. Blocks all bench bring-up.
-   [Integration Runbook §2](../engineering/integration-runbook.md)
+6. **Rev A KiCad schematic puts the DS18B20 on the wrong pin** — it wires `TEMP_DATA` to
+   `D5`, while `config.h`, `pin-assignments.md` and the Rev B drawing set all use `D12`. A board
+   wired from the Rev A schematic never reads temperature; wiring from the Rev B drawing set
+   avoids it. The standby wake no longer needs a `D5` wire: it runs on the SAMD21's own RTC
+   since [SCO-165](https://linear.app/scout1/issue/SCO-165), so `D5` is free. Fix: update the
+   KiCad schematic (ECE). [Integration Runbook §2, G3](../engineering/integration-runbook.md)
+   *Updated 2026-10-25.*
 
 The dissolved-oxygen scope call ([SCO-11](https://linear.app/scout1/issue/SCO-11)) is closed —
 deferred past V1.5 — and no longer blocks the V1 sensor list.
