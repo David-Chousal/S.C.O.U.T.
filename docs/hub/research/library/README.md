@@ -16,10 +16,10 @@ the DOI link in the registry — a link never infringes.
 
 ## Present (committed)
 
-All 16 open-access sources are committed here as `<key>.pdf`:
+All 17 open-access sources are committed here as `<key>.pdf`:
 
 `adelantado-2017` (arXiv preprint) · `ali-2024` · `bohnenstiehl-2018` · `bouguera-2018` ·
-`droujko-2022` · `gutierrez-gomez-2021` · `harris-2020` · `hussain-mahmud-2019` ·
+`droujko-2022` · `eddy-2021` · `gutierrez-gomez-2021` · `harris-2020` · `hussain-mahmud-2019` ·
 `jovalekic-2018` · `liu-2014` · `margaritis-2025` · `parri-2019` · `qartod-optics-2017` ·
 `skirving-2020` · `sueur-2008` · `virtanen-2020`.
 
