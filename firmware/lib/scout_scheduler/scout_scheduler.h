@@ -59,6 +59,30 @@ uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
  * skipped slot is simply skipped — there are no retries outside a slot. */
 bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every);
 
+/* Daily transmit count (SCO-198): how many of the slot table's slots are used. Agreed range
+ * 1-3, pending ECE (Isabella) power-budget sign-off; the default is 3, today's schedule. */
+#define SCOUT_TX_COUNT_MIN 1u
+#define SCOUT_TX_COUNT_MAX 3u
+#define SCOUT_TX_COUNT_DEFAULT 3u
+
+bool scout_tx_count_valid(uint8_t tx_count);
+
+/* Which slots of a 3-slot table a count uses, as a bitmask of slot indices (decided
+ * 2026-10-25): 1 → slot 0 only (00:10), 2 → slots 0 and 2 (00:10, 16:10), 3 → all three.
+ * Slot 0 is always in, so CONSERVE (slot 0 only) never sends more than the setting. Each used
+ * slot still follows the recording 10 min before it (ADR-0011). 0 for an invalid count. */
+uint8_t scout_tx_slot_mask(uint8_t tx_count);
+
+/* Copy the slots `tx_count` uses from `slots_sod` (n entries) into `out` (room for n), in
+ * table order. Returns how many were copied; 0 for an invalid count. The buoy wakes, and the
+ * shore listens, only for these. */
+size_t scout_select_tx_slots(const uint32_t *slots_sod, size_t n, uint8_t tx_count, uint32_t *out);
+
+/* Shore side (SCO-24): true when `epoch` is within `half_width_s` of any slot, either side,
+ * counting across midnight. The shore station listens ±2 min around each slot. */
+bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,
+                            uint32_t half_width_s);
+
 /* Battery gate: true when the pack is at or above the skip-TX threshold. */
 bool scout_battery_ok(uint16_t battery_mv, uint16_t min_mv);
 

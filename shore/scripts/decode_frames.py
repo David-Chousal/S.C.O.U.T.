@@ -7,8 +7,8 @@ Pipe the receiver's serial monitor in, or pass a saved log:
     python3 scripts/decode_frames.py rx-log.txt --out bench-data
 
 Each frame is CRC-checked and decoded with the same codec the shore station uses. With
-``--out`` the readings also go through the shore CSV store, so the 3 blind copies of each
-transmission collapse to one row: the Stage 4c dedupe check. Use a scratch directory, never
+``--out`` the readings also go through the shore CSV store, so any reading received twice
+collapses to one row: the Stage 4c dedupe check. Use a scratch directory, never
 ``data-live``; bench readings are not deployment data.
 """
 

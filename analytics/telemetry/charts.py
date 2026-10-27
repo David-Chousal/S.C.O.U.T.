@@ -30,11 +30,17 @@ class Band:
     label: str
 
 
-# NOAA CRW Alert Levels 1 and 2 — the levels bleaching.py computes. Levels 3–5 (NOAA, 2023) are
-# deliberately not drawn until the pipeline adopts them (docs/hub/research/open-questions.md).
-DHW_BANDS = (Band(4.0, 8.0, "alert1", "Alert Level 1"), Band(8.0, None, "alert2", "Alert Level 2"))
-_DIGITS = {"temp": 1, "dhw": 1, "turb": 0, "batt": 2}
-_SERIES_LABEL = {"temp": "Daily mean", "dhw": "DHW", "turb": "Daily median", "batt": "Daily minimum"}
+# NOAA CRW Alert Levels 1–5 (the 2023 scale bleaching.py computes), one band per DHW range.
+DHW_BANDS = (
+    Band(4.0, 8.0, "alert1", "Alert Level 1"),
+    Band(8.0, 12.0, "alert2", "Alert Level 2"),
+    Band(12.0, 16.0, "alert3", "Alert Level 3"),
+    Band(16.0, 20.0, "alert4", "Alert Level 4"),
+    Band(20.0, None, "alert5", "Alert Level 5"),
+)
+_DIGITS = {"temp": 1, "dhw": 1, "turb": 0, "batt": 2, "ndsi": 2}
+_SERIES_LABEL = {"temp": "Daily mean", "dhw": "DHW", "turb": "Daily median", "batt": "Daily minimum",
+                 "ndsi": "Daily mean (buoy)"}
 
 
 def _calendar(points: list[tuple[date, float | None]]) -> list[tuple[date, float | None, bool]]:
@@ -247,7 +253,7 @@ def sparkline(points: list[tuple[date, float | None]], *, mmm: float | None) -> 
     return f'<div class="spark" role="img" aria-label="{html.escape(label)}">{"".join(parts)}</div>'
 
 
-def slot_rule(history: list, *, label: str) -> str:
+def slot_rule(history: list, *, label: str, days: int = 7) -> str:
     """The signature: one tick per transmit slot — filled received, hollow missed, faint not due."""
     if not history:
         return ""
@@ -259,7 +265,6 @@ def slot_rule(history: list, *, label: str) -> str:
         ticks.append(f'<rect class="tick {cls}" x="{x - 3:.1f}" y="6" width="6" height="28"/>')
     got = sum(1 for _, s in history if s)
     due = sum(1 for _, s in history if s is not None)
-    days = n // 3
     return (
         f'<div class="slot-rule" role="img" aria-label="{html.escape(label)}: {got} of {due} '
         f'transmit slots received in the last {days} days">'

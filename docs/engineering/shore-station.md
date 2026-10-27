@@ -29,15 +29,16 @@ open is listed under [Open items](#open-items).
 | 2026-10-16 | Shore station confirmed as the S3 + LoRa FeatherWing, **pushing to the dashboard over WiFi**, on FreeRTOS | Meeting notes (lab session) |
 | 2026-10-16 | It **knows the buoys' transmit-slot table** (00:10 / 08:10 / 16:10 UTC) and listens in a **±2 min** window around each slot; always-on listening is fine while it is mains-powered | [SCO-165](https://linear.app/scout1/issue/SCO-165) |
 | 2026-10-16 | **Over-the-air updates: go.** The shore station sends firmware and settings (starting with the daily transmit count) to the buoys | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [SCO-197](https://linear.app/scout1/issue/SCO-197), [SCO-198](https://linear.app/scout1/issue/SCO-198) |
+| 2026-10-25 | **The daily transmit count is a setting (1–3, pending ECE sign-off)** requested in the team console; the shore station follows the count each buoy reports for its slot tag, and relays the requested count to the buoy. **The console is the back end the shore pushes to** (Cloudflare Workers + D1); the public dashboard stays static | [SCO-198](https://linear.app/scout1/issue/SCO-198), [ADR-0012](../decisions/0012-authenticated-console.md) |
 | 2026-10-16 | FCC: a receive-only shore antenna is uncapped, but **whatever the shore transmits through must stay within the module limits (≤ 2.15 dBi)** | [FCC Review Brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16) |
 
 ## Role
 
 1. **LoRa reception** from every buoy, matching their radio settings exactly.
-2. **Packet validation and decode** against the 30-byte packet contract (CRC, version).
+2. **Packet validation and decode** against the 44-byte packet contract (v4, and v3 with the same bytes), still accepting 30-byte v1/v2 frames (CRC, version).
 3. **Push to the dashboard over WiFi.**
 4. **Downlink (ADR-0008):** send firmware images and settings to the buoys in their listen windows.
-5. **Serve more than one buoy** (two planned), deduplicating each buoy's blind repeats on
+5. **Serve more than one buoy** (two planned), deduplicating any repeated reading on
    `(buoy_id, record_seq)`.
 
 Raw audio never crosses the link; it stays on the buoy's SD card and is processed after retrieval.
@@ -54,27 +55,54 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 
 ## Software
 
-**On the S3 — not written.** It must:
+**On the S3 — receive half written, not yet run on the board** (`firmware/src/shore_rx/`, env
+`feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)). It copies the bench
+receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
+decodes it with `scout_packet_decode`, drops repeats on `(buoy_id, record_seq)`, and tags it in or
+out of the ±2 min window around a slot. **The slots it tags against follow the daily transmit
+count** ([SCO-198](https://linear.app/scout1/issue/SCO-198)): the count the frame reports (v4,
+flags bits 8–9), else the count requested for that buoy, else the default 3. 1 → 00:10,
+2 → 00:10 + 16:10, 3 → all. Each `OK` line ends `tx=<reported>/<requested>`, plus `pending` until
+they match and `cmd_rejected` if the buoy refused a command. The requested count is set over USB
+with `N<buoy>:<count>` (e.g. `N1:2`) until WiFi exists; `shore/scripts/sync_console.py` prints or
+writes those lines from the console. It listens all the time, since it is mains-powered, so the
+count changes the tag, not when the radio is on. The S3
+has no RTC: until NTP over WiFi exists, set its clock with `firmware/tools/set_rtc.py`. Its serial
+output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
+⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
+IRQ 9**, to be confirmed by ECE. **Settings downlink written, off by default:** built with
+`-DSCOUT_DOWNLINK` (env `feather_esp32s3_shore_downlink`, compile check with public example keys),
+the station sends one HMAC-signed `SET_TX_COUNT` frame (`lib/scout_downlink`, 28 bytes) straight
+after a buoy's packet whenever that buoy's reported count differs from the requested one, at the
+buoy's +11 dBm. ⚠️ **Do not transmit off the bench** until the FeatherWing's FCC authorization is
+checked (open item 3). Keys go in the gitignored `firmware/src/downlink_key.h`. **Not written:**
+the WiFi push (open item 1) and firmware OTA.
+
+The station must:
 
 - use **915.0 MHz · BW 500 kHz · SF12 · CR 4/8** (`ModemConfig {0x98, 0xC4, 0x04}`), exactly as
   the buoy's `firmware/src/config.h`;
 - apply the **SX1276 500 kHz erratum** on receive (`0x36` ← `0x02`, `0x3A` ← `0x64`;
   [reading note](../hub/research/notes/sx1276-errata-500khz.md)), which the transmit-only buoy
   does not need;
-- listen around the slot table, and later transmit downlink messages (ADR-0008) at ≤ +11 dBm
-  through a ≤ 2.15 dBi antenna;
-- if it decodes frames itself, match the 30-byte layout in `firmware/lib/scout_packet/` and
+- listen around the slots of each buoy's transmit count, and transmit downlink messages
+  (ADR-0008) at ≤ +11 dBm through a ≤ 2.15 dBi antenna;
+- if it decodes frames itself, match the 44-byte v4 layout in `firmware/lib/scout_packet/` and
   `shore/scout_shore/packet.py` — the contract `scripts/check_packet_contract.py` enforces.
 
 The bench receiver `firmware/src/bench_rx/` (a second Feather M0) already does the first two
 and is the reference for the S3's radio setup. It is a test instrument, not the shore station.
 
 **The Python package [`shore/`](../../shore/) — written and tested, runs on a computer.**
-It decodes and validates packets, deduplicates the blind repeats, writes the daily CSVs
+It decodes and validates packets, deduplicates repeated readings, writes the daily CSVs
 (`shore/data-live/`), merges a retrieved SD card back in, and feeds the static site that GitHub
 Pages publishes today ([Live Dashboard](live-dashboard.md)). On the bench it decodes the bench
 receiver's output (`scripts/decode_frames.py`). How it relates to the S3's WiFi push depends on
-which dashboard the S3 pushes to (open item 1).
+which dashboard the S3 pushes to (open item 1). Since SCO-198 it also checks each frame against
+the slots of the buoy's count (`tx_schedule.py`; `run_receiver.py --tx-count BUOY:COUNT`, counted
+as `out_of_window`), carries the downlink frame codec (`downlink.py`, keys from
+`SCOUT_CMD_KEY_<id>`), and talks to the team console (`console.py`, `scripts/sync_console.py`:
+push readings, pull requested counts) with a device token from `SCOUT_CONSOLE_TOKEN`.
 
 ## Data flow
 
@@ -82,11 +110,11 @@ which dashboard the S3 pushes to (open item 1).
 Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa FeatherWing, FreeRTOS)
   sample every 30 min → SD card              LoRa RX task  ──►  validate + decode
         │                                         ▲                    │
-        └── 3 slots/day: LoRa TX ─────────────────┘                    ▼
-            (30-byte packet, 3 copies)                        WiFi task: push to the dashboard
-                                                                       │
-        ◄── downlink in listen windows (ADR-0008, not built) ──        ▼
-            firmware images, settings                          dashboard (back end: open item 1)
+        └── 1-3 slots/day: LoRa TX ───────────────┘                    ▼
+            (44-byte packet, 1 copy per slot)                 WiFi task: push (not written;
+                                                              sync_console.py does it today)
+        ◄── SET_TX_COUNT in the 1 s listen window ──                   ▼
+            (built, off by default; firmware OTA not built)    team console (ADR-0012)
 
    raw audio and the full record stay on each buoy's SD card;
    a retrieved card is merged with shore/scripts/import_sd_card.py
@@ -94,20 +122,19 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
 
 ## Open items
 
-1. **Which dashboard the S3 pushes to, and in what form.** The meetings agree the S3 pushes to
-   the dashboard over WiFi, but not what receives it. Today's dashboard is a static GitHub Pages
-   site rebuilt from CSVs committed in `shore/data-live/`, which has no endpoint to push to; the
-   team was told to review Catherine's React + SQL dashboard before building one
-   ([SCO-120](https://linear.app/scout1/issue/SCO-120)). Deciding this fixes whether the S3 sends
-   raw frames or decoded rows, and whether the Python shore package stays in the live path.
-   Owner: CS lead.
+1. **The S3's own WiFi push.** *What* receives it is decided (2026-10-25,
+   [ADR-0012](../decisions/0012-authenticated-console.md)): the team console's device API, which
+   takes decoded schema rows. Still open: writing the S3's push, so the Python package can leave
+   the live path. Until then `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.
 3. **The RFM95W FeatherWing's own FCC authorization**, now that the station transmits (ADR-0008).
-   Owner: CS lead.
+   **Blocks switching on the SCO-198 downlink off the bench.** Owner: CS lead.
 4. **WiFi and power at each site** (Monterey or Santa Cruz test, Hawaii yacht-club slip). Owner:
    CS + GENG.
 5. **Downlink protocol** (listen windows, chunking, authentication, rollback):
-   [SCO-197](https://linear.app/scout1/issue/SCO-197).
+   [SCO-197](https://linear.app/scout1/issue/SCO-197). The settings slice is built (SCO-198);
+   the listen window's real current and timing and the downlink range are unmeasured, and the
+   window needs Isabella's sign-off.
 
 ## Timeline
 

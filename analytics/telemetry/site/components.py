@@ -166,7 +166,7 @@ def data_path() -> str:
                   "never leaves the buoy: the full archive, audio included, stays in on-board "
                   "storage and is retrieved by hand."),
         ("Transmit", "Three times a day, at 00:10, 08:10 and 16:10 UTC, the buoy sends its latest "
-                     "reading to shore as a 30-byte packet over a 915 MHz LoRa link, roughly 2 km "
+                     "reading to shore as a 44-byte packet over a 915 MHz LoRa link, roughly 2 km "
                      "line of sight. No cellular service or internet is used at the buoy."),
         ("Publish", "On shore, an ESP32-S3 base station receives each packet and forwards it "
                     "over WiFi. The telemetry pipeline validates it, runs quality control and NOAA "

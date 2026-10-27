@@ -133,12 +133,24 @@ class Accessibility(unittest.TestCase):
 
 
 class Bands(unittest.TestCase):
-    def test_dhw_bands_stop_at_the_levels_the_pipeline_computes(self):
-        html = charts.chart(_days([0.0, 3.0, 9.0, 13.0]), series="dhw",
+    def test_every_alert_level_gets_its_own_band_once_reached(self):
+        html = charts.chart(_days([0.0, 6.0, 13.0, 21.0]), series="dhw",
                             title="Degree Heating Weeks", unit="°C-weeks", bands=charts.DHW_BANDS)
-        self.assertIn("band-alert1", html)
-        self.assertIn("band-alert2", html)
-        self.assertNotIn("band-alert3", html)
+        for level in ("alert1", "alert2", "alert3", "alert4", "alert5"):
+            with self.subTest(level=level):
+                self.assertIn(f"band-{level}", html)
+
+    def test_bands_follow_noaa_boundaries(self):
+        spans = [(b.lo, b.hi, b.level) for b in charts.DHW_BANDS]
+        self.assertEqual(spans, [(4.0, 8.0, "alert1"), (8.0, 12.0, "alert2"),
+                                 (12.0, 16.0, "alert3"), (16.0, 20.0, "alert4"),
+                                 (20.0, None, "alert5")])
+
+    def test_a_peak_of_thirteen_draws_level_3_but_not_level_4(self):
+        html = charts.chart(_days([0.0, 9.0, 13.0]), series="dhw", title="Degree Heating Weeks",
+                            unit="°C-weeks", bands=charts.DHW_BANDS)
+        self.assertIn("band-alert3", html)
+        self.assertNotIn("band-alert4", html)
 
 
     def test_no_band_is_drawn_until_the_data_reaches_it(self):
@@ -180,7 +192,7 @@ class DashboardIntegration(unittest.TestCase):
                 records.append(TelemetryRecord(
                     timestamp=t0 + timedelta(days=d, minutes=30 * s), buoy_id="SCOUT-01",
                     record_seq=seq, temp_c=27.0, turbidity_adc=520, turbidity_v=None,
-                    turbidity_ntu=None, battery_v=3.6, uptime_s=seq * 1800, audio_file="",
+                    turbidity_fau=None, battery_v=3.6, uptime_s=seq * 1800, audio_file="",
                     flags=frozenset()))
         report = analyze(records, mmm=27.6)
         published = t0 + timedelta(days=5, hours=23, minutes=55)
@@ -214,6 +226,12 @@ class DashboardIntegration(unittest.TestCase):
 
 class MatplotlibExport(unittest.TestCase):
     """The PNG export draws from the same tokens and the same calendar as the web charts."""
+
+    def test_png_shades_the_same_bands_as_the_web_chart(self):
+        from telemetry import dashboard
+        self.assertEqual(dashboard.dhw_band_spans(13.0),
+                         [(4.0, 8.0, "alert1"), (8.0, 12.0, "alert2"), (12.0, 13.0, "alert3")])
+        self.assertEqual(dashboard.dhw_band_spans(3.0), [])
 
     def test_palette_comes_from_the_design_tokens(self):
         from telemetry import dashboard

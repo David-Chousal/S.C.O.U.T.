@@ -160,7 +160,7 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 ### The cross-language packet contract
 
 `firmware/lib/scout_packet/` (C++) and `shore/scout_shore/packet.py` (Python) encode the **same
-30 bytes**. `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
+44 bytes** (schema v3). `scripts/check_packet_contract.py` compares them and fails CI on drift. Any ESP32-S3
 code that decodes frames must also match it. **Change one, change all, and bump
 `SCOUT_PACKET_VERSION`.**
 
@@ -231,7 +231,10 @@ FAT32 · CR1220 in the Adalogger.
 
 1. Stack the Adalogger FeatherWing on the Feather M0 with stacking headers.
 2. DS18B20: red → 3V3, black → GND, yellow (data) → **D12**, **4.7 kΩ** between data and 3V3.
-3. Grove turbidity: VCC → **3V3** (not 5 V), GND → GND, signal → **A1**. For this stage power it
+3. Grove turbidity: set the switch on the Grove board to **A** (analog). Grove → male cable
+   (713-110990210): red VCC → **3V3** (not 5 V), black → GND, yellow → **A1** (no divider), white
+   not connected (cut short and insulate). The probe has its own cable to the board; only the probe
+   tip goes in water. For this stage power it
    straight from 3V3; the P-FET switch arrives in Stage 3.
 4. **Antenna on the RFM95** before the firmware runs — it can transmit at boot if a slot is due.
 
@@ -270,6 +273,7 @@ removed.
 | `lora=FAIL` | Radio not responding | On-board wiring is fixed (8/4/3); check the stack is not shorting pins |
 | `TEMP_TIMEOUT` every cycle | DS18B20 on the wrong pin or no pull-up | D12 + 4.7 kΩ |
 | Turbidity reads 0 | Sensor not powered | Stage 1 powers it from 3V3 directly |
+| Turbidity jumps between two values | Grove board switch on **D** (digital threshold) | Set it to **A**. The board's knob sets sensitivity (Isabella's sensor review): don't move it once calibrated, and record its position |
 
 ---
 
@@ -291,9 +295,11 @@ be accepted.
 
 ### Stage 3 — Sensor switching ⚠️ UNVERIFIED · [SCO-157](https://linear.app/scout1/issue/SCO-157), [SCO-186](https://linear.app/scout1/issue/SCO-186)
 
-**Wire (human):** Grove VCC now goes through **Q1** (DMG2305UX on its SOT-23 adapter): source to
-3V3, drain to the Grove VCC, gate to **D11** with a **100 kΩ pull-up to 3V3**. Add the 100 µF +
-0.1 µF decoupling on the switched side.
+**Wire (human)**, per the Rev B drawing set, sheet 7B: Grove VCC (red) now goes through **Q1**
+(DMG2305UX on its SOT-23 adapter): source to 3V3, drain to the `TURB_3V3` node and the Grove VCC,
+gate to **D11** with **R2 100 kΩ pull-up to 3V3**. C1 is a 100 µF 10 V electrolytic (watch the
+polarity) and C2 0.1 µF ceramic next to Q1, both on the switched side. If the 3V rail dips more
+than ~100 mV at turn-on, the drawing set says to change C1 to 10 µF †.
 
 **The logic is inverted:** gate **LOW = sensor ON**. The firmware drives `SENSOR_ON`/`SENSOR_OFF`,
 latches the gate off before making it an output, and re-asserts it off on every wake.
@@ -328,14 +334,14 @@ in RadioHead, no subclass needed). It prints `bench_rx: radio=ok … errata=appl
 `RX len=30 rssi=… snr=… hex=…` per frame. `feather_m0_bench` prints a warning at boot; **reflash
 `feather_m0` before anything leaves the bench.**
 
-**PASS:** frames decode and pass CRC in `decode_frames.py` · 3 copies per minute collapse to one
-row (`new_rows` vs `copies collapsed` in its summary) · on the bench, < 1% loss over 100+ frames ·
+**PASS:** frames decode and pass CRC in `decode_frames.py` · one frame per minute, one row each
+(the buoy sends one copy per slot since 2026-10-23) · on the bench, < 1% loss over 100+ frames ·
 time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.py`) · TX current
 ≤ 100 mA · RSSI and SNR recorded with the distance. **Record the results on SCO-155 and SCO-98**;
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
 
-**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🔴 Firmware not written.
+**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🟡 Receive firmware written 2026-10-23 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`), never run on the board; the WiFi push is not written.
 Per the agreed design ([Shore Station](shore-station.md)) it receives with the same settings and
 erratum as 4a, listens in a **±2 min** window around each slot, and **pushes to the dashboard
 over WiFi**. Under ADR-0008 it will also transmit, so its transmit antenna must stay **≤ 2.15 dBi**
@@ -345,10 +351,11 @@ and the FeatherWing's own FCC authorization needs checking
 **PASS:** the S3 receives the buoy's slot transmissions and the readings appear on the dashboard,
 one row per reading.
 
-**4c — Dedupe and the dashboard.** Each slot sends 3 blind copies; whatever stores readings
-must collapse them to **one** row on `(buoy_id, record_seq)`. Three rows means dedupe is broken,
-and QC completeness would read 100% while hiding real gaps. The Python store already does this
-(checked on the bench by `decode_frames.py --out`). Where the S3's pushes land, and so where this
+**4c — Dedupe and the dashboard.** Each slot sends one copy (SCO-21, 2026-10-23), but the same
+reading can still arrive twice: a re-received frame, or an SD-card import of a reading the radio
+already delivered. Whatever stores readings must collapse those to **one** row on
+`(buoy_id, record_seq)`; duplicate rows would inflate QC completeness and hide real gaps. The
+Python store already does this and is unit-tested. Where the S3's pushes land, and so where this
 check runs in the live system, waits on the dashboard decision (G2 open item).
 
 **4d — Outdoor range** with the spring antennas, line of sight, RSSI logged (aim ≥ 500 m). Real
@@ -377,7 +384,9 @@ monitor (USB drops in standby).
 ### Stage 6 — Run on the batteries ⚠️ UNVERIFIED · [SCO-159](https://linear.app/scout1/issue/SCO-159), [SCO-150](https://linear.app/scout1/issue/SCO-150) · parts not bought
 
 **Preconditions:** Stage 2 PASS (it justifies the battery order) · **the MCP73831 charger removed
-from the deployment Feather** (§2 safety rule).
+from the deployment Feather** (§2 safety rule). *When:* the Rev B drawing set (sheet 7) removes it
+at the end of Stage 3; the build plan lists it under Stage 6. Either is safe as long as it happens
+before any primary cell is connected.
 
 Two Saft LS33600 D cells in parallel, each through an ideal diode, then a PTC fuse and a keyed
 connector into `BAT` ([ADR-0007](../decisions/0007-primary-cell-power-source.md); packaging in the
@@ -394,13 +403,20 @@ power A7 reads the charger output, not a battery; don't tune thresholds against 
 
 ---
 
-### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-8](https://linear.app/scout1/issue/SCO-8) · parts not bought; firmware not written (G7)
+### Stage 7 — Hydrophone ⚠️ UNVERIFIED · [SCO-231](https://linear.app/scout1/issue/SCO-231) · parts not bought; firmware written, never run (G7)
 
 Aquarian H2dM on 3.5 mm plug-in power, biased from 3.3 V through 1.1 kΩ, preamp out to **A2**,
 power switch Q2 on **A3** (LOW = on). Values in the [drawing set](electronics-drawing-set.md#hydrophone-front-end-values).
 Raw audio stays on the SD card and is **never** sent over LoRa.
 
-**PASS:** 1-min clips at 22.05 kHz on schedule; recording current ≤ ~76 mA; clips run cleanly
+Firmware: `drivers/audio_capture.h` records one 60 s clip at 00:00, 08:00 and 16:00 UTC to
+`/AUDIO/YYYYMMDD/HHMMSSZ.WAV` ([ADR-0011](../decisions/0011-audio-capture-parameters.md)). The
+serial log prints `audio: ok samples=1323000` or `audio: FAILED reason=<n>` (1 SD open, 2 DMA,
+3 stalled, 4 overrun, 5 SD write). Use the bench build to hit a recording hour quickly by
+setting the clock to 07:59 UTC.
+
+**PASS:** 1-min clips at 22.05 kHz on schedule with `samples=1323000` every time; a 1 kHz test
+tone reads 1 kHz in the WAV; recording current ≤ ~76 mA (estimate ≈ 56 mA); clips run cleanly
 through the acoustic pipeline; power budget re-run with the measured draw.
 
 ---
@@ -459,7 +475,7 @@ when any exist, the simulator otherwise. **PASS:** with real CSVs committed, the
 ### On every retrieval — merge the SD card back in
 
 The card is the **complete** record: every reading the radio missed exists only there, and
-`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the 30-byte packet.
+`turbidity_v`, `turbidity_ntu` and the audio filename never fit in the packet.
 
 ```bash
 cd shore
@@ -502,7 +518,7 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 | Sensors read nothing | Gate polarity | LOW = on; a stale build with the old HIGH = on logic leaves them dark |
 | SD and radio work alone, not together | Shared SPI chip select | Only one of D10 / D8 may be active |
 | Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64`; `bench_rx` prints `errata=applied` |
-| Three CSV rows per transmission | Shore dedupe broken | Each slot sends 3 copies |
+| Duplicate CSV rows for one reading | Shore dedupe broken | Rows must be unique on `(buoy_id, record_seq)` |
 | Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (560 ms) |
 | SD import finds nothing | Card written by firmware older than PR #186 | Old builds wrote `YYYYMMDD.CSV` at the root; point the importer at the card root, and update the firmware |
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |

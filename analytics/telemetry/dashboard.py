@@ -1,4 +1,4 @@
-"""Multi-panel telemetry dashboard (temperature + DHW, turbidity, battery) as a PNG.
+"""Multi-panel telemetry dashboard (temperature + DHW, turbidity, battery, reef sound) as a PNG.
 
 Optional: needs ``matplotlib``. The rest of the pipeline runs without it — this import only
 happens when a dashboard is explicitly requested. Colours come from the site's design tokens and
@@ -12,7 +12,7 @@ import math
 from datetime import date, timedelta
 from pathlib import Path
 
-from . import bleaching
+from . import bleaching, charts
 from .pipeline import TelemetryReport
 from .site.theme import tokens
 
@@ -28,8 +28,23 @@ PALETTE = {
     "threshold": tokens.ALERTS["alert1"][0],
     "alert1": tokens.ALERTS["alert1"][0],
     "alert2": tokens.ALERTS["alert2"][0],
+    "alert3": tokens.ALERTS["alert3"][0],
+    "alert4": tokens.ALERTS["alert4"][0],
+    "alert5": tokens.ALERTS["alert5"][0],
     "event": tokens.STATUS["warning"],
+    "ndsi": tokens.CATEGORICAL[0],   # acoustic series: categorical hues (design-system-data-viz.md)
+    "snaps": tokens.CATEGORICAL[2],
 }
+
+
+def dhw_band_spans(peak: float) -> list[tuple[float, float, str]]:
+    """The alert bands the PNG shades, from the same ``charts.DHW_BANDS`` as the web chart.
+
+    A band is drawn only once DHW reaches it — an empty alert band would read as an alert that
+    never happened — and the highest one reached stops at the peak rather than running on.
+    """
+    return [(band.lo, peak if band.hi is None else min(band.hi, peak), band.level)
+            for band in charts.DHW_BANDS if peak >= band.lo]
 
 
 def calendar_series(points: list[tuple[date, float | None]]) -> tuple[list[date], list[float]]:
@@ -71,8 +86,10 @@ def plot_dashboard(report: TelemetryReport, output_path: str | Path) -> Path:
 def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
     p = PALETTE
     daily = report.daily
-    fig, axes = plt.subplots(3, 1, figsize=(12, 11), sharex=True)
-    fig.suptitle("SCOUT telemetry — thermal stress, turbidity, power", fontsize=14, weight="bold")
+    rows = 4 if report.acoustic else 3
+    fig, axes = plt.subplots(rows, 1, figsize=(12, 3.6 * rows + 0.2), sharex=True)
+    fig.suptitle("SCOUT telemetry — thermal stress, turbidity, power"
+                 + (", reef sound" if report.acoustic else ""), fontsize=14, weight="bold")
 
     # Panel 1 — daily mean temperature with MMM / bleaching threshold, DHW on a twin axis.
     ax = axes[0]
@@ -90,13 +107,8 @@ def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
         t_days, dhw = calendar_series([(t.day, t.dhw) for t in report.thermal])
         ax2.plot(t_days, dhw, color=p["dhw"], lw=1.2)
         peak = max((v for v in dhw if not math.isnan(v)), default=0.0)
-        # Like the web chart, a band is drawn only once DHW reaches it — an empty alert band
-        # would read as an alert that never happened.
-        if peak >= bleaching.DHW_ALERT_LEVEL_1:
-            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_1, bleaching.DHW_ALERT_LEVEL_2,
-                        color=p["alert1"], alpha=0.12)
-        if peak >= bleaching.DHW_ALERT_LEVEL_2:
-            ax2.axhspan(bleaching.DHW_ALERT_LEVEL_2, peak, color=p["alert2"], alpha=0.12)
+        for lo, hi, level in dhw_band_spans(peak):
+            ax2.axhspan(lo, hi, color=p[level], alpha=0.12)
         ax2.set_ylabel("DHW (°C-weeks)")
 
     # Panel 2 — turbidity (uncalibrated ADC; higher counts = clearer water) with events.
@@ -120,6 +132,9 @@ def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
     days, batt = calendar_series([(d.day, d.battery_min_v) for d in daily])
     ax.plot(days, batt, color=p["batt"], marker=".", lw=1.2, ls="--")
     ax.set_ylabel("Battery min (V)")
+    if report.acoustic:
+        _acoustic_panel(axes[3], report.acoustic)
+    ax = axes[-1]
     ax.set_xlabel("Date (UTC)")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
     fig.autofmt_xdate()
@@ -129,3 +144,25 @@ def _draw(plt, mdates, report: TelemetryReport, output_path: Path) -> Path:
     fig.savefig(output_path, dpi=130)
     plt.close(fig)
     return output_path
+
+
+def _acoustic_panel(ax, acoustic) -> None:
+    """Panel 4 — reef sound (ADR-0010): daily buoy NDSI, snaps per recording, clipping marked."""
+    p = PALETTE
+    days, ndsi = calendar_series(list(acoustic.ndsi_daily))
+    ax.plot(days, ndsi, color=p["ndsi"], marker=".", lw=1.6, label="Daily mean buoy NDSI")
+    ax.set_ylim(-1.05, 1.05)
+    ax.set_ylabel("NDSI (buoy)")
+    ax2 = ax.twinx()
+    recs = acoustic.recordings
+    ax2.scatter([r.at.date() for r in recs], [r.snaps for r in recs], s=10, color=p["snaps"],
+                label="Snaps per recording")
+    clipped = [r for r in recs if r.clipping]
+    if clipped:
+        ax2.scatter([r.at.date() for r in clipped], [r.snaps for r in clipped], s=40,
+                    facecolors="none", edgecolors=p["event"], label="Clipping")
+    ax2.set_ylabel("Snaps / recording")
+    handles = ax.get_legend_handles_labels()
+    extra = ax2.get_legend_handles_labels()
+    ax.legend(handles[0] + extra[0], handles[1] + extra[1], loc="lower left", fontsize=8)
+

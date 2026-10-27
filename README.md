@@ -59,6 +59,7 @@ complexity. See [Stakeholder Interviews](docs/research/stakeholder-interviews.md
 | Shore station | 🟡 In progress — simulated LoRa→CSV data path (packet codec, receiver, store) with tests ([`shore/`](shore/README.md)); real radio bring-up next |
 | Live dashboard | 🟢 Deployed — static [GitHub Pages telemetry dashboard](docs/engineering/live-dashboard.md) (sample data) |
 | Ask S.C.O.U.T. chat | 🟢 Live — "Fred" widget backed by a Cloudflare Worker proxy, answers from the published Hub context ([`chatbot/`](chatbot/README.md)) |
+| Team console | 🟡 Built, not deployed — signed-in console (Workers + D1, COR design system in Tideline colour): transmit-count setting, roles, invites, audit log, shore-station API ([`console/`](console/README.md), [ADR-0012](docs/decisions/0012-authenticated-console.md)) |
 | Electrical design | 🟡 In progress — build platform decided ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md)); power source moving to **two primary lithium D cells, no solar** ([ADR-0007](docs/decisions/0007-primary-cell-power-source.md), open until the sleep floor is measured); bench bring-up and PCB pending |
 | Mechanical design | 🟡 In progress — all five CAD categories documented ([SCO-50](https://linear.app/scout1/issue/SCO-50)): floatation, electronics housing, sensor/turbidity pod, stem, solar mount, in [`mechanical/cad/`](mechanical/cad/). Floatation family chosen 2026-08-17 (bolted wedge + bottom caps), first FEA pass complete ([`mechanical/test/`](mechanical/test/)). Open: buoyancy check, housing dimensions, chassis top-section access, mooring attachment hardware |
 | Field deployment | 🔴 Planned — Hawaii, Phase 6 (Mar–May 2027) |
@@ -100,6 +101,7 @@ S.C.O.U.T./
 ├── hardware/       Schematics, PCB, wiring diagrams — build platform + BOM confirmed, no schematics/PCB files yet
 ├── mechanical/     CAD, hull design, mooring specs — all five CAD categories documented
 ├── chatbot/        "Ask S.C.O.U.T." chat widget (Cloudflare Worker + Groq) — deployed
+├── console/        Team console: sign-in, roles, fleet settings (Cloudflare Worker + D1) — Phase A, not deployed
 ├── assets/         Brand, diagrams, and presentations
 ├── scripts/        Repo-level helper scripts (e.g. cross-language packet-contract guard)
 └── data/           Raw audio archive (excluded from git — see Data below)
@@ -151,14 +153,14 @@ full options, and the [live telemetry dashboard](docs/engineering/live-dashboard
    │                                        │                   │
    │                                        ▼                   │
    │  Temperature (DS18B20 ×1) ──┐    Microcontroller           │
-   │  Turbidity  (SEN0189 ×1) ───┼──►  duty-cycle state machine │
+   │  Turbidity  (Grove ×1)   ───┼──►  duty-cycle state machine │
    │  Hydrophone (Aquarian) ─────┘     sleep / sense / log / TX │
    │                                        │                   │
    │                          Onboard flash ┤                   │
    │                                        ▼                   │
    │                                   LoRa radio               │
    └────────────────────────────────────────┼───────────────────┘
-                                            │  30-byte packet, 1×/day
+                                            │  44-byte packet, 3×/day
                                             ▼
                         ┌─────────── SHORE STATION ───────────┐
                         │  Raspberry Pi receiver              │
@@ -179,7 +181,7 @@ periodically transmit. Under sustained cloud cover it degrades gracefully: trans
 frequency drops first, local logging continues, and nonessential sensing pauses before core
 operation is compromised.
 
-**Communications.** A single summarized 30-byte packet per day (82 B is the EDD budget ceiling). Raw audio is **stored onboard
+**Communications.** A single summarized 44-byte packet, sent in three fixed slots a day (140 B is the payload ceiling, set by the firmware's send timeout). Raw audio is **stored onboard
 and never transmitted** — moving waveform data over LoRa is not bandwidth-feasible, and this
 constraint is baked into the design.
 
@@ -281,7 +283,8 @@ than silently reconciled, since resolving each required a team decision.
 | ~~**Deployment depth**~~ ✅ Resolved | **2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated — PNG needs re-exporting |
 | ~~**LoRa range**~~ ✅ Resolved | Standardized to **~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd and 15–20 km figures corrected. Real over-saltwater range still to be measured in Phase 4 |
 | ~~**Sensor count**~~ ✅ Resolved | [ADR-0003](docs/decisions/0003-single-point-sensing.md): one sensor per modality deployed; extra DS18B20/SEN0189 are field spares; multi-depth string deferred |
-| **Hydrophone part** ⏳ ECE | Aquarian H2a-XLR (diagram) vs H2dM (BOM). **Owner: Isabella (ECE)** — [SCO-8](https://linear.app/scout1/issue/SCO-8), `Needs Decision` |
+| ~~**Audio capture parameters**~~ ✅ Resolved | `config.h`, the power budget, the EDD and the build plan disagreed on schedule, sample rate and ADC. Settled 2026-10-25 by [ADR-0011](docs/decisions/0011-audio-capture-parameters.md): 3 × 60 s/day, 22.05 kHz, Feather 12-bit ADC on A2 |
+| ~~**Hydrophone part**~~ ✅ Resolved | **Resolved 2026-10-12: Aquarian H2dM** (3.5 mm plug-in power, 6 m cable; [SCO-8](https://linear.app/scout1/issue/SCO-8) Done 2026-10-16). Not bought yet: waits on funding ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
 | **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — [SCO-11](https://linear.app/scout1/issue/SCO-11), `Needs Decision` |
 | ~~**Academic year**~~ ✅ Resolved | **2026–2027**. No stray 2025–2027 remains in the docs |
 | ~~**Project name**~~ ✅ Resolved | **"Oceanic Utilities Transmitter"** (plural) — used consistently across all docs; no "Utility" (singular) instances remain |

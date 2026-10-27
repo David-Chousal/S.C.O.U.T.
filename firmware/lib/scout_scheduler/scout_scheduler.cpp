@@ -71,6 +71,49 @@ bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t cons
     }
 }
 
+bool scout_tx_count_valid(uint8_t tx_count) {
+    return tx_count >= SCOUT_TX_COUNT_MIN && tx_count <= SCOUT_TX_COUNT_MAX;
+}
+
+uint8_t scout_tx_slot_mask(uint8_t tx_count) {
+    switch (tx_count) {
+        case 1:
+            return 0x1;  // 00:10
+        case 2:
+            return 0x5;  // 00:10, 16:10
+        case 3:
+            return 0x7;  // 00:10, 08:10, 16:10
+        default:
+            return 0;
+    }
+}
+
+size_t scout_select_tx_slots(const uint32_t *slots_sod, size_t n, uint8_t tx_count, uint32_t *out) {
+    uint8_t mask = scout_tx_slot_mask(tx_count);
+    size_t used = 0;
+    for (size_t i = 0; i < n && i < 8; i++) {
+        if (mask & (1u << i)) {
+            out[used++] = slots_sod[i];
+        }
+    }
+    return used;
+}
+
+bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,
+                            uint32_t half_width_s) {
+    uint32_t second_of_day = epoch % SCOUT_SECONDS_PER_DAY;
+    for (size_t i = 0; i < n; i++) {
+        uint32_t ahead =
+            (second_of_day + SCOUT_SECONDS_PER_DAY - slots_sod[i]) % SCOUT_SECONDS_PER_DAY;
+        uint32_t behind = SCOUT_SECONDS_PER_DAY - ahead;
+        uint32_t distance = ahead < behind ? ahead : behind;
+        if (distance <= half_width_s) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool scout_battery_ok(uint16_t battery_mv, uint16_t min_mv) {
     return battery_mv >= min_mv;
 }

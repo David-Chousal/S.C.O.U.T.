@@ -1,0 +1,145 @@
+/* Generated from design/tokens.json by `npm run tokens`. Do not edit by hand. */
+
+:root {
+  color-scheme: light;
+  --bg: #f8f3ef;
+  --surface: #fffcfa;
+  --surface-sunken: #ede7e1;
+  --line: #ddd6d0;
+  --line-strong: #867f78;
+  --rail: var(--ink);
+  --ink: #2b2520;
+  --ink-muted: #534c45;
+  --accent: #1f6763;
+  --accent-soft: #d6eeeb;
+  --on-accent: #fffcfa;
+  --focus: var(--accent);
+  --annotation: #c54a05;
+  --positive: #1b714c;
+  --positive-soft: #e4ebe5;
+  --negative: #a33e25;
+  --negative-soft: #f4e5e0;
+  --caution: #815b1f;
+  --caution-soft: #f0e9e0;
+  --scrim: rgba(43,37,32,0.48);
+  --series-1: #0068a7;
+  --series-2: #c54a05;
+  --series-3: #158561;
+  --series-4: #9e497d;
+  --series-5: #3292b3;
+  --series-temp: #b15f82;
+  --series-turb: #8a5e3a;
+  --series-other: var(--ink-muted);
+  --seq-0: #e7f8f6;
+  --seq-1: #b0dbd7;
+  --seq-2: #4a9c97;
+  --seq-3: #1f6763;
+  --seq-4: #0d3d3b;
+  --shadow-pop: 0 8px 24px rgba(43,37,32,0.12);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 999px;
+  --control-sm: 28px;
+  --control: 34px;
+  --control-touch: 44px;
+  --row: 40px;
+  --topbar: 56px;
+  --sidebar: 232px;
+  --drawer: 440px;
+  --dialog: 480px;
+  --icon: 16px;
+  --z-sticky: 10;
+  --z-drag: 20;
+  --z-drawer: 30;
+  --z-dialog: 40;
+  --z-menu: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+  --font-sans: var(--font-sans-face), "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-mono-face), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #09181f;
+    --surface: #15272f;
+    --surface-sunken: #050f14;
+    --line: #253842;
+    --line-strong: #6f7679;
+    --rail: var(--ink);
+    --ink: #fcf9f5;
+    --ink-muted: #cbccca;
+    --accent: #b0dbd7;
+    --accent-soft: #0d3d3b;
+    --on-accent: #050f14;
+    --focus: var(--accent);
+    --annotation: #fd9a73;
+    --positive: #73cd9f;
+    --positive-soft: #244241;
+    --negative: #f18b71;
+    --negative-soft: #38373a;
+    --caution: #e4b572;
+    --caution-soft: #363e3a;
+    --scrim: rgba(5,15,20,0.64);
+    --series-1: #72b8f2;
+    --series-2: #fd9a73;
+    --series-3: #75cca7;
+    --series-4: #e394c1;
+    --series-5: #7acae9;
+    --series-temp: #dd9ab9;
+    --series-turb: #bda48e;
+    --series-other: var(--ink-muted);
+    --seq-0: #0d3d3b;
+    --seq-1: #16524f;
+    --seq-2: #2c807c;
+    --seq-3: #4a9c97;
+    --seq-4: #b0dbd7;
+    --shadow-pop: 0 8px 24px rgba(0,0,0,0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #09181f;
+  --surface: #15272f;
+  --surface-sunken: #050f14;
+  --line: #253842;
+  --line-strong: #6f7679;
+  --rail: var(--ink);
+  --ink: #fcf9f5;
+  --ink-muted: #cbccca;
+  --accent: #b0dbd7;
+  --accent-soft: #0d3d3b;
+  --on-accent: #050f14;
+  --focus: var(--accent);
+  --annotation: #fd9a73;
+  --positive: #73cd9f;
+  --positive-soft: #244241;
+  --negative: #f18b71;
+  --negative-soft: #38373a;
+  --caution: #e4b572;
+  --caution-soft: #363e3a;
+  --scrim: rgba(5,15,20,0.64);
+  --series-1: #72b8f2;
+  --series-2: #fd9a73;
+  --series-3: #75cca7;
+  --series-4: #e394c1;
+  --series-5: #7acae9;
+  --series-temp: #dd9ab9;
+  --series-turb: #bda48e;
+  --series-other: var(--ink-muted);
+  --seq-0: #0d3d3b;
+  --seq-1: #16524f;
+  --seq-2: #2c807c;
+  --seq-3: #4a9c97;
+  --seq-4: #b0dbd7;
+  --shadow-pop: 0 8px 24px rgba(0,0,0,0.5);
+}
+

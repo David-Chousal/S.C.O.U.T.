@@ -24,7 +24,6 @@ CSS = """
   --measure:64ch;
   --space-gutter:clamp(1.4rem,0.8rem + 3vw,4rem);
   --space-stack:clamp(2.2rem,1.5rem + 2.2vw,3.8rem);
-  --space-section-sm:clamp(3.4rem,2.4rem + 4vw,6rem);
   --space-section:clamp(5rem,3.4rem + 8vw,11rem);
   --radius-pill:999px;
   --nav-h:68px;       /* .nav min-height; the hero pulls up by exactly this */

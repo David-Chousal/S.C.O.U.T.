@@ -97,7 +97,7 @@ plan is approved; the ADR moves to Accepted when PR 1 merges.
   `theme.py` into a package (it is 944 lines against a 400-line limit).
 - `--muted` is split by role, which is the one rename needing per-selector judgement.
 - The pipeline still stops at NOAA Alert Level 2; adopting Levels 3–5 in `bleaching.py` is a
-  separate decision this ADR does not make.
+  separate decision this ADR does not make. *(Update 2026-10-23: adopted, [SCO-212](https://linear.app/scout1/issue/SCO-212).)*
 - The hero keeps a stock reef photograph until a real photograph or labelled render of the buoy
   exists; that is the largest remaining gap in the system's own self-critique.
 

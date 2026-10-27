@@ -17,7 +17,9 @@ SNR_LIMIT_DB = {6: -5.0, 7: -7.5, 8: -10.0, 9: -12.5, 10: -15.0, 11: -17.5, 12: 
 
 NOISE_FIGURE_DB = 6.0
 RH_HEADER_BYTES = 4  # RadioHead RH_RF95 prepends to/from/id/flags
-SCOUT_PACKET_BYTES = 30  # firmware SCOUT_PACKET_SIZE / shore PACKET_SIZE
+SCOUT_PACKET_BYTES = 44  # firmware SCOUT_PACKET_SIZE / shore PACKET_SIZE (v3, ADR-0010)
+PAYLOAD_CEILING_BYTES = 140  # SCOUT_LINK_PAYLOAD_CEILING_BYTES / LORA_PAYLOAD_BUDGET_BYTES (SCO-97)
+SEND_TIMEOUT_MS = 2000  # SCOUT_LINK_TX_BUDGET_MS: how long send() waits
 FCC_DWELL_MS = 400.0  # 47 CFR 15.247(a)(1)(i), hopping systems only
 TX_CURRENT_MA = 120.0  # RFM95 at +14 dBm, datasheet typical
 
@@ -49,7 +51,7 @@ def main():
     baseline = sensitivity_dbm(7, 125_000)
 
     print(f"S.C.O.U.T. daily packet: {SCOUT_PACKET_BYTES} B "
-          f"(+{RH_HEADER_BYTES} B RadioHead header = {on_air} B on air), 1x/day, 3 blind repeats\n")
+          f"(+{RH_HEADER_BYTES} B RadioHead header = {on_air} B on air), 3 slots/day, one copy each\n")
 
     shipped = sensitivity_dbm(12, 500_000)
     print("SHIPPED — ModemConfig {0x98, 0xC4, 0x04}: BW500 / SF12 / CR4-8 @ +11 dBm")
@@ -57,6 +59,9 @@ def main():
           f"sensitivity {shipped:.1f} dBm (modelled)")
     print("  Compliant via 15.247(a)(2) digital modulation, and the mode the module's")
     print("  modular grant (FCC ID 2ASEORFM95C) is certified in: equipment class DTS.\n")
+    ceiling_on_air = airtime_ms(PAYLOAD_CEILING_BYTES + RH_HEADER_BYTES, 12, 500_000)
+    print(f"PAYLOAD CEILING — {PAYLOAD_CEILING_BYTES} B: {ceiling_on_air:.1f} ms on air, "
+          f"{ceiling_on_air / SEND_TIMEOUT_MS:.0%} of the {SEND_TIMEOUT_MS} ms send timeout (SCO-97)\n")
 
     print("WAS, until 2026-09-01 — {0x78, 0x74, 0x04}: BW125 / SF7 / CR4-8 @ +14 dBm")
     print(f"  airtime {airtime_ms(on_air, 7, 125_000):.0f} ms   "
@@ -84,8 +89,8 @@ def main():
         print(f"  BW500/SF{sf:<2} {s:>10.1f} dBm {delta:>+9.1f} {t:>7.0f} ms "
               f"{10 ** (-delta / 20):>6.2f}x")
 
-    print("\nDuty cycle and energy (3 blind repeats, once per day):")
-    for label, sf, bw in (("today  BW125/SF7", 7, 125_000), ("option BW500/SF12", 12, 500_000)):
+    print("\nDuty cycle and energy (3 sends a day: 3 slots, one copy each):")
+    for label, sf, bw in (("old    BW125/SF7", 7, 125_000), ("shipped BW500/SF12", 12, 500_000)):
         t = airtime_ms(on_air, sf, bw) * 3
         mah_year = TX_CURRENT_MA * (t / 1000) / 3600 * 365
         print(f"  {label}: {t:>7.0f} ms/day = {t / 864_000_00 * 100:.6f}%  ->  {mah_year:.1f} mAh/year")

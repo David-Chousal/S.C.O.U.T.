@@ -27,8 +27,43 @@ jobs:
         working-directory: analytics
         run: python -m unittest discover -s telemetry/tests -t . -v
 
+      # The acoustic summary reference (ADR-0010) is the spec the firmware ports; these tests
+      # also fail if config.h or the firmware's golden vectors drift from it.
+      - name: Acoustic summary reference tests
+        working-directory: analytics
+        run: python -m unittest discover -s utils/tests -t . -v
+
       - name: Packet contract guard (firmware GOLDEN == shore encoder)
         run: python scripts/check_packet_contract.py
+
+  console-tests:
+    # The S.C.O.U.T. Console (console/, ADR-0012): the real Worker and D1 migration against
+    # Node's built-in SQLite, with no npm install. node:sqlite needs Node 22.13 or later.
+    name: Console (Worker + front end) tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Console tests
+        working-directory: console
+        run: npm test
+
+      # The front end (console/web, the COR design system in Tideline colour): lint, component
+      # tests, and the static export the Worker serves.
+      - name: Install the front end
+        working-directory: console/web
+        run: npm ci
+      - name: Front-end lint
+        working-directory: console/web
+        run: npm run lint
+      - name: Front-end tests
+        working-directory: console/web
+        run: npm test
+      - name: Front-end build (static export)
+        working-directory: console/web
+        run: npm run build
 
   firmware-tests:
     # Do NOT rename: the "Protect main" ruleset matches required checks by this exact
@@ -65,4 +100,6 @@ jobs:
         working-directory: firmware
         # Also the bench build and the bench receiver (SCO-155): both are what the first
         # hardware tests flash, so a break there should fail CI, not the bench session.
-        run: pio run -e feather_m0 -e feather_m0_bench -e feather_m0_rx
+        # The two *_downlink envs compile the SCO-198 settings downlink, which is off in every
+        # shipped build, so the flagged code cannot rot unnoticed. Compile check only.
+        run: pio run -e feather_m0 -e feather_m0_bench -e feather_m0_rx -e feather_esp32s3_shore -e feather_m0_downlink -e feather_esp32s3_shore_downlink

@@ -9,28 +9,42 @@
  *
  * Standby sleep wakes on the SAMD21 RTC (ArduinoLowPower), timed against the PCF8523 wall clock
  * (SCO-165/SCO-196); the watchdog is implemented; record_seq is retained across resets in a
- * no-init RAM section. The audio subsystem
- * and on-hardware driver verification remain Phase 1–2 bring-up (see notes inline).
+ * no-init RAM section. Each recording's acoustic summary (lib/scout_acoustic, ADR-0010) rides
+ * in the next transmit slot. How many slots are used is the daily transmit count (SCO-198), a
+ * runtime setting kept next to record_seq; with SCOUT_DOWNLINK the shore can change it by
+ * radio. On-hardware verification of every driver, including the audio
+ * capture driver (SCO-231), remains Phase 1–2 bring-up (see notes inline).
  */
 #include <Adafruit_SleepyDog.h>
 #include <Arduino.h>
 #include <ArduinoLowPower.h>
 
+#include "acoustic_config.h"
 #include "config.h"
+#include "drivers/audio_capture.h"
 #include "drivers/battery.h"
 #include "drivers/lora_link.h"
 #include "drivers/rtc.h"
 #include "drivers/sd_logger.h"
+#include "drivers/sht40.h"
 #include "drivers/temperature.h"
 #include "drivers/turbidity.h"
+#include "scout_acoustic.h"
+#ifdef SCOUT_DOWNLINK
+#include "downlink_key_select.h"
+#include "scout_downlink.h"
+#endif
 #include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
+#include "scout_sht4x.h"
 #include "scout_timeset.h"
 
 static const char *CSV_HEADER =
     "schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,"
-    "turbidity_ntu,battery_v,uptime_s,audio_file,flags,soh,fw_version";
+    "turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,"
+    "internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,"
+    "snap_count,clip_count,tx_count";
 
 // Sequence counter, kept in a NO-INIT RAM section that the C startup does not clear. It
 // therefore survives a watchdog/system reset (the MCU stays powered), so record_seq stays
@@ -38,19 +52,33 @@ static const char *CSV_HEADER =
 // guard tells real retained state from garbage on a cold power-on. This is RAM, so a full
 // power loss still cold-starts — the PCF8523 has no user NVRAM to hold it, and we chose not
 // to add SD/flash wear for the rarer power-loss case.
+//
+// The daily transmit count (SCO-198) lives here too, for the same reason. After a full power
+// loss it falls back to SCOUT_TX_COUNT_DEFAULT; the next packet reports that, the shore sees it
+// differ from the requested count, and sends the setting again. So the SD card is not needed
+// to survive power loss, and the shore never believes a count the buoy is not using.
+// last_cmd_counter makes a command usable once; DOWNLINK_MAX_SKEW_S covers the cold-start case.
 struct RetainedState {
     uint32_t magic;
     uint32_t record_seq;
+    uint32_t last_cmd_counter;
+    uint8_t tx_count;
+    uint8_t cmd_rejected;  // a command failed its checks; reported by the next packet
 };
-static const uint32_t RETAINED_MAGIC = 0x5C002702u;  // bumped when the layout changes
+static const uint32_t RETAINED_MAGIC = 0x5C002703u;  // bumped when the layout changes
 __attribute__((section(".noinit"))) static RetainedState g_state;
 
 static TemperatureSensor g_temp;
 static TurbiditySensor g_turbidity;
+static HousingSensor g_housing;
 static Battery g_battery;
 static ScoutRtc g_rtc;
 static SdLogger g_sd;
 static LoraLink g_lora;
+static AudioCapture g_audio;
+static ScoutAcousticConfig g_acoustic_cfg;
+static ScoutAcoustic g_acoustic;           // streaming state for the recording in progress
+static ScoutAcousticSlot g_acoustic_slot;  // newest summary not yet handed to a transmit slot
 static bool g_rtc_ok = false;
 static bool g_sd_ok = false;
 static bool g_lora_ok = false;
@@ -64,6 +92,17 @@ static bool g_have_reading = false;
 static scout_power_mode_t g_last_mode = SCOUT_POWER_NORMAL;
 static bool g_first_cycle = true;  // sample immediately after boot, before the first sleep
 static uint32_t g_next_event = 0;
+
+// The slots the current transmit count uses, picked from TX_SLOTS_SOD (SCO-198).
+static uint32_t g_slots[TX_SLOT_COUNT];
+static size_t g_slot_count = 0;
+
+static void apply_tx_count() {
+    if (!scout_tx_count_valid(g_state.tx_count)) {
+        g_state.tx_count = SCOUT_TX_COUNT_DEFAULT;
+    }
+    g_slot_count = scout_select_tx_slots(TX_SLOTS_SOD, TX_SLOT_COUNT, g_state.tx_count, g_slots);
+}
 
 // Fallback clock for when the PCF8523 is unusable: advanced by hand across each sleep, since
 // millis() stops in standby. Coarse, but it keeps the sample/slot rhythm going instead of
@@ -89,6 +128,8 @@ static void format_flags(uint16_t flags, char *buf, size_t cap) {
     if (flags & SCOUT_FLAG_BATT_LOW_SKIP_TX) append_flag(buf, cap, first, "BATT_LOW_SKIP_TX");
     if (flags & SCOUT_FLAG_RTC_LOST) append_flag(buf, cap, first, "RTC_LOST");
     if (flags & SCOUT_FLAG_POWER_CONSERVE) append_flag(buf, cap, first, "POWER_CONSERVE");
+    if (flags & SCOUT_FLAG_HUMIDITY_HIGH) append_flag(buf, cap, first, "HUMIDITY_HIGH");
+    if (flags & SCOUT_FLAG_HUMIDITY_FAIL) append_flag(buf, cap, first, "HUMIDITY_FAIL");
 }
 
 static void format_soh(uint8_t soh, char *buf, size_t cap) {
@@ -142,7 +183,7 @@ static uint32_t sleep_until(uint32_t target) {
         if (target - now > SAMPLE_INTERVAL_S) {
             // No event is ever further away than one sample interval, so the clock moved
             // backwards (PCF8523 reset or re-set): re-plan from the new time.
-            target = scout_next_event_epoch(now, SAMPLE_INTERVAL_S, TX_SLOTS_SOD, TX_SLOT_COUNT);
+            target = scout_next_event_epoch(now, SAMPLE_INTERVAL_S, g_slots, g_slot_count);
         }
         sleep_seconds(target - now);
     }
@@ -205,7 +246,11 @@ void setup() {
     if (!warm_start) {
         g_state.magic = RETAINED_MAGIC;
         g_state.record_seq = 0;
+        g_state.last_cmd_counter = 0;
+        g_state.tx_count = SCOUT_TX_COUNT_DEFAULT;
+        g_state.cmd_rejected = 0;
     }
+    apply_tx_count();  // also repairs a garbage count that slipped past the magic
 
     // Guard initialization too — a hung driver init shouldn't brick the buoy. loop() re-arms
     // it each cycle and disables it before the long standby sleep.
@@ -220,9 +265,13 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);  // D13 LED off — it would draw more than the sleep floor
     digitalWrite(LED_BUILTIN, LOW);
 
+    g_acoustic_cfg = scout_acoustic_build_config();
+    g_acoustic_slot.valid = 0;
+
     g_battery.begin();
     g_temp.begin();
     g_turbidity.begin();
+    g_housing.begin();  // a missing sensor shows up as HUMIDITY_FAIL on every row
 
     g_rtc_ok = g_rtc.begin();
     accept_time_command();
@@ -250,10 +299,82 @@ void setup() {
     Serial.print(g_lora_ok ? "ok" : "FAIL");
     Serial.print(warm_start ? " start=warm resume_seq=" : " start=cold resume_seq=");
     Serial.println(g_state.record_seq);
+    Serial.print("tx_count=");
+    Serial.println(g_state.tx_count);
+#if defined(SCOUT_DOWNLINK) && defined(SCOUT_DOWNLINK_KEY_IS_EXAMPLE)
+    Serial.println("WARNING: downlink uses the PUBLIC example key; do not deploy");
+#endif
     if (TX_EVERY_SAMPLE) {
         Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
     }
     (void)startup_flags;  // folded into the first record below
+}
+
+// Housing humidity/temperature (SCO-205). Read every cycle in every power mode: it is the
+// early warning that the housing is taking on water, and costs ~10 ms. Fills the two CSV
+// fields (blank on a failed read) and sets HUMIDITY_HIGH or HUMIDITY_FAIL.
+static void read_housing(uint16_t &flags, char *temp_s, size_t temp_cap, char *rh_s,
+                         size_t rh_cap) {
+    temp_s[0] = '\0';
+    rh_s[0] = '\0';
+    float temp_c = 0.0f;
+    float rh_pct = 0.0f;
+    if (!g_housing.read(temp_c, rh_pct)) {
+        flags |= SCOUT_FLAG_HUMIDITY_FAIL;
+        return;
+    }
+    if (scout_humidity_high(rh_pct, HUMIDITY_ALERT_RH_PCT)) {
+        flags |= SCOUT_FLAG_HUMIDITY_HIGH;
+    }
+    snprintf(temp_s, temp_cap, "%.2f", temp_c);
+    snprintf(rh_s, rh_cap, "%.1f", rh_pct);
+}
+
+// Record one 60 s clip to the SD card, summarising it as it streams (ADR-0010/0011). Fills
+// `summary` and returns true only for a complete recording; the newest one waits in
+// g_acoustic_slot for the next transmit slot. A failed or short clip reports no audio.
+static bool record_audio(uint32_t now, char *audio_file, size_t cap,
+                         ScoutAcousticSummary &summary) {
+    // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
+    DateTime dt(now);
+    snprintf(audio_file, cap, "%04u%02u%02u/%02u%02u%02uZ.WAV", dt.year(), dt.month(), dt.day(),
+             dt.hour(), dt.minute(), dt.second());
+    scout_acoustic_init(&g_acoustic, &g_acoustic_cfg);
+    if (!g_audio.record(audio_file, ACOUSTIC_CLIP_SECONDS, &g_acoustic)) {
+        Serial.print("audio: FAILED reason=");
+        Serial.print((int)g_audio.lastResult());
+        Serial.print(" samples=");
+        Serial.println(g_audio.lastSamples());
+        audio_file[0] = '\0';
+        return false;
+    }
+    Serial.print("audio: ok samples=");
+    Serial.println(g_audio.lastSamples());
+    scout_acoustic_finalize(&g_acoustic, &summary);
+    scout_acoustic_slot_store(&g_acoustic_slot, &summary);
+    return true;
+}
+
+// The seven acoustic CSV cells: blank when there was no recording, like the turbidity cells
+// when the sensor is paused (the packet, which cannot be blank, carries zeros instead).
+static void format_acoustic(bool present, const ScoutAcousticSummary &s, char *buf, size_t cap) {
+    if (!present) {
+        snprintf(buf, cap, ",,,,,,");
+        return;
+    }
+    snprintf(buf, cap, "%d,%d,%d,%d,%d,%u,%u", s.lvl_anthro_cdb, s.lvl_mixed_cdb, s.lvl_bio_cdb,
+             s.lvl_broad_cdb, s.ndsi_e4, s.snap_count, s.clip_count);
+}
+
+static void apply_acoustic(ScoutReading &r, bool present, const ScoutAcousticSummary &s) {
+    r.audio_present = present ? 1 : 0;
+    r.lvl_anthro_cdb = present ? s.lvl_anthro_cdb : 0;
+    r.lvl_mixed_cdb = present ? s.lvl_mixed_cdb : 0;
+    r.lvl_bio_cdb = present ? s.lvl_bio_cdb : 0;
+    r.lvl_broad_cdb = present ? s.lvl_broad_cdb : 0;
+    r.ndsi_e4 = present ? s.ndsi_e4 : 0;
+    r.snap_count = present ? s.snap_count : 0;
+    r.clip_count = present ? s.clip_count : 0;
 }
 
 // Sample every sensor the power mode allows, log the row, and keep it for the next slot.
@@ -289,11 +410,20 @@ static void sample_and_log() {
     // 3. Sensors off.
     digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
 
-    // 4. Audio: only when scheduled AND power allows (NORMAL only). PCM1808/hydrophone is a
-    //    V1 stretch not on the confirmed build; this records the intent.
-    bool audio_present =
-        scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
-        scout_sense_audio(mode);
+    char housing_temp_s[12];
+    char housing_rh_s[12];
+    read_housing(flags, housing_temp_s, sizeof(housing_temp_s), housing_rh_s,
+                 sizeof(housing_rh_s));
+
+    // 4. Audio: only when scheduled AND power allows (NORMAL only), and only reported when the
+    //    clip was captured complete. Needs the SD card, where the WAV goes.
+    char audio_file[32] = "";
+    ScoutAcousticSummary acoustic = ScoutAcousticSummary();
+    bool audio_present = false;
+    if (g_sd_ok && scout_should_record_audio(now, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC)) &&
+        scout_sense_audio(mode)) {
+        audio_present = record_audio(now, audio_file, sizeof(audio_file), acoustic);
+    }
 
     // 5. Power-mode flags, set before logging so the CSV row captures them.
     if (mode == SCOUT_POWER_CRITICAL) {
@@ -305,7 +435,7 @@ static void sample_and_log() {
     g_state.record_seq++;
 
     // 6. Log a CSV row (data-schema.md). Retry once on SD failure.
-    char timestamp[24];
+    char timestamp[32];  // room for any uint16 year, so -Wformat-truncation stays quiet
     if (g_rtc_ok) {
         DateTime dt((uint32_t)now);
         snprintf(timestamp, sizeof(timestamp), "%04u-%02u-%02uT%02u:%02u:%02uZ", dt.year(),
@@ -313,15 +443,7 @@ static void sample_and_log() {
     } else {
         snprintf(timestamp, sizeof(timestamp), "1970-01-01T00:00:00Z");
     }
-    // Relative to /AUDIO/, one folder per UTC day so the names stay FAT 8.3-safe (SCO-202).
-    char audio_file[32] = "";
-    if (audio_present) {
-        DateTime dt((uint32_t)now);
-        snprintf(audio_file, sizeof(audio_file), "%04u%02u%02u/%02u%02u%02uZ.WAV", dt.year(),
-                 dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
-    }
-
-    char flag_str[80];
+    char flag_str[128];
     format_flags(flags, flag_str, sizeof(flag_str));
     char soh_str[80];
     format_soh(g_soh, soh_str, sizeof(soh_str));
@@ -334,16 +456,20 @@ static void sample_and_log() {
         snprintf(turb_v_s, sizeof(turb_v_s), "%.3f", turbidity_v);
     }
 
-    char line[224];
+    char acoustic_s[64];
+    format_acoustic(audio_present, acoustic, acoustic_s, sizeof(acoustic_s));
+
+    char line[512];
     snprintf(line, sizeof(line),
-             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d",
+             "%u,SCOUT-%02u,%s,%lu,%.2f,%s,%s,,%.2f,%lu,%s,%s,%s,v%d.%d.%d,%s,%s,%s,%u",
              SCOUT_PACKET_VERSION, (unsigned)BUOY_ID, timestamp, (unsigned long)g_state.record_seq,
              temp_c, turb_adc_s, turb_v_s, battery_mv / 1000.0f,
              (unsigned long)(g_state.record_seq * SAMPLE_INTERVAL_S), audio_file, flag_str, soh_str,
-             FW_MAJOR, FW_MINOR, FW_PATCH);
+             FW_MAJOR, FW_MINOR, FW_PATCH, housing_temp_s, housing_rh_s, acoustic_s,
+             (unsigned)g_state.tx_count);
 
     if (g_sd_ok) {
-        char date_ymd[9];
+        char date_ymd[12];
         if (g_rtc_ok) {
             DateTime dt((uint32_t)now);
             snprintf(date_ymd, sizeof(date_ymd), "%04u%02u%02u", dt.year(), dt.month(), dt.day());
@@ -367,10 +493,10 @@ static void sample_and_log() {
     r.uptime_s = g_state.record_seq * SAMPLE_INTERVAL_S;
     r.flags = flags;
     r.soh = g_soh;
-    r.audio_present = audio_present ? 1 : 0;
     r.fw_major = FW_MAJOR;
     r.fw_minor = FW_MINOR;
     r.fw_patch = FW_PATCH;
+    apply_acoustic(r, audio_present, acoustic);
     g_last_reading = r;
     g_have_reading = true;
     g_last_mode = mode;
@@ -388,23 +514,33 @@ static void sample_and_log() {
     Serial.println(soh_str[0] ? soh_str : "-");
 }
 
-// Send the held reading in a transmit slot. A slot with nothing sent is simply missed — the
-// next slot carries a fresher reading, and the full record is on the SD card regardless.
-static void transmit_last_reading() {
+// Send the held reading in a transmit slot, with the acoustic summary of the most recent
+// recording since the previous slot (or zeros and audio_present = 0 if there was none). A slot
+// with nothing sent is simply missed — the next slot carries a fresher reading, and the full
+// record is on the SD card regardless.
+static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary &acoustic) {
     if (!g_lora_ok || !g_have_reading) {
         return;
     }
     // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s per copy).
     Watchdog.reset();
 
+    ScoutReading r = g_last_reading;
+    apply_acoustic(r, audio_present, acoustic);
+    // Report the count in use, so the shore can confirm a change took effect (SCO-198).
+    r.flags = scout_flags_with_tx_count(r.flags, g_state.tx_count);
+    if (g_state.cmd_rejected) {
+        r.flags |= SCOUT_FLAG_CMD_REJECTED;
+        g_state.cmd_rejected = 0;
+    }
     uint8_t packet[SCOUT_PACKET_SIZE];
-    size_t n = scout_packet_encode(&g_last_reading, packet);
+    size_t n = scout_packet_encode(&r, packet);
 
-    // Blind repetition (lib/scout_link): send the same frame a few times, spaced, and
-    // never listen for an ACK. A lost packet costs timeliness, not data — the full
-    // record is on the SD card — so ACKed retransmit would buy little and risk an
-    // avalanche across a multi-buoy deployment. The shore station deduplicates on
-    // (buoy_id, record_seq), so the copies collapse to one row.
+    // Copies per slot come from lib/scout_link (one since 2026-10-23; the three daily slots
+    // give the time diversity). Never listen for an ACK: a lost packet costs timeliness, not
+    // data — the full record is on the SD card — so ACKed retransmit would buy little and risk
+    // an avalanche across a multi-buoy deployment. The shore station deduplicates on
+    // (buoy_id, record_seq), so any duplicate collapses to one row.
     uint8_t copies = scout_link_repeat_count(g_last_mode, SCOUT_LINK_REPEATS_NORMAL,
                                              SCOUT_LINK_REPEATS_CONSERVE);
     for (uint8_t i = 0; i < copies; i++) {
@@ -420,6 +556,41 @@ static void transmit_last_reading() {
     }
 }
 
+#ifdef SCOUT_DOWNLINK
+// After a send the shore knows this buoy is awake, so this is when it may send a settings
+// command (OTA design §2). One frame at most; the next packet reports the count it now uses.
+static void listen_for_command() {
+    const uint8_t *key = scout_downlink_key(BUOY_ID);
+    if (!g_lora_ok || key == nullptr) {
+        return;
+    }
+    Watchdog.reset();  // listen blocks up to DOWNLINK_LISTEN_MS + DOWNLINK_FRAME_MAX_MS ≈ 2.7 s
+    uint8_t frame[SCOUT_DL_CMD_SIZE + 4];
+    uint8_t len = g_lora.listen(frame, sizeof(frame), DOWNLINK_LISTEN_MS, DOWNLINK_FRAME_MAX_MS);
+    Watchdog.reset();
+    if (len == 0) {
+        return;
+    }
+    ScoutCommand cmd;
+    scout_dl_result_t result =
+        scout_dl_decode(frame, len, key, BUOY_ID, g_state.last_cmd_counter, clock_now(),
+                        g_rtc_ok ? DOWNLINK_MAX_SKEW_S : 0, &cmd);
+    Serial.print("downlink: result=");
+    Serial.println((int)result);
+    if (result != SCOUT_DL_OK) {
+        if (scout_dl_is_rejection(result)) {
+            g_state.cmd_rejected = 1;
+        }
+        return;
+    }
+    g_state.last_cmd_counter = cmd.counter;
+    g_state.tx_count = cmd.value;
+    apply_tx_count();
+    Serial.print("downlink: tx_count=");
+    Serial.println(g_state.tx_count);
+}
+#endif
+
 void loop() {
     // First pass after boot samples straight away; after that, sleep to the planned event.
     uint32_t event = g_first_cycle ? clock_now() : sleep_until(g_next_event);
@@ -433,15 +604,23 @@ void loop() {
     if (sampled) {
         sample_and_log();
     }
-    int slot = scout_tx_slot_index(event, TX_SLOTS_SOD, TX_SLOT_COUNT);
+    int slot = scout_tx_slot_index(event, g_slots, g_slot_count);
     if (TX_EVERY_SAMPLE && sampled) {
         slot = 0;  // bench build only: every sample is treated as a transmit slot
     }
-    if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
-        transmit_last_reading();
+    if (slot >= 0) {
+        // Every slot closes the window, sent or not: the next slot carries only recordings made
+        // after this one. CONSERVE and CRITICAL record nothing, and report zeros regardless.
+        ScoutAcousticSummary acoustic;
+        bool recorded = scout_acoustic_slot_take(&g_acoustic_slot, &acoustic) != 0;
+        if (scout_slot_transmits(g_last_mode, slot, TRANSMIT_CONSERVE_EVERY)) {
+            transmit_last_reading(recorded && g_last_mode == SCOUT_POWER_NORMAL, acoustic);
+#ifdef SCOUT_DOWNLINK
+            listen_for_command();
+#endif
+        }
     }
 
     g_first_cycle = false;
-    g_next_event = scout_next_event_epoch(clock_now(), SAMPLE_INTERVAL_S, TX_SLOTS_SOD,
-                                          TX_SLOT_COUNT);
+    g_next_event = scout_next_event_epoch(clock_now(), SAMPLE_INTERVAL_S, g_slots, g_slot_count);
 }

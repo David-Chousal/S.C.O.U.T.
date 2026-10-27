@@ -1,0 +1,121 @@
+\documentclass{scu-thesis}
+\usepackage{amsmath}	% for advanced typesetting of mathematics
+\usepackage{graphicx}	% for including graphics
+\usepackage{txfonts}	% for using the Times-Roman font
+\usepackage{xcolor}
+\usepackage{animate}
+
+\usepackage[most]{tcolorbox} % for boxed content
+\tcbset{
+  colback=white,
+  colframe=black,
+  fonttitle=\bfseries,
+  boxrule=0.5pt,
+  arc=2mm,
+  outer arc=1mm,
+  coltitle=black,
+  colbacktitle=gray!20,
+  left=2mm,
+  right=2mm,
+  top=1mm,
+  bottom=1mm,
+}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % utf8x is not supported by biblatex
+
+% Bibliography
+\usepackage[sorting=none, style=ieee, backend=biber]{biblatex}
+\addbibresource{1150-references.bib}
+
+% UML 
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\usepackage[most]{tcolorbox}
+\usepackage{fullpage}
+\usepackage{listings}
+
+% Clickable table of contents, figure list and citations (load last)
+\usepackage[hidelinks]{hyperref}
+
+% These must be set first ... the rest of the thesis commands rely on them.
+
+\author{David Chousal Cantu [CSEN]}
+\author{Isabella Rodriguez [ECEN]}
+\author{John Ryan Myrdal [GENG]}
+
+
+% --- Project Title --- Project Title --- Project Title --- Project Title --- Project Title --- Project Title --- Project Title --- Project Title ---
+\title{S.C.O.U.T.\texorpdfstring{\\}{ -- }Santa Clara Oceanic Utilities Transmitter}
+
+
+\department{Department of Computer Science and Engineering}
+\department{Department of Electrical and Computer Engineering}
+\department{Department of General Engineering}
+\degree{Bachelor of Science in Computer Science and Engineering}
+\degree{Bachelor of Science in Electrical and Computer Engineering}
+\degree{Bachelor of Science in General Engineering}
+
+% Only bachelor's theses should have multiple authors and/or be from
+% multiple departments.  Signatures required:
+%
+% Bachelor's theses: advisor(s), department chair(s)
+% Master's theses: advisor, reader, department chair
+% Doctoral theses: doctoral committee (including advisor), department chair
+
+\begin{document}
+\frontmatter
+% Advisors (left) and department chairs (right) side by side so all six fit on one page
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+\signature{Thesis Advisor Navid Shaghaghi [CSEN]}
+\signature{Thesis Advisor Shoba Krishnan [ECEN]}
+\signature{Thesis Advisor Jes Kuczenski [GENG]}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\signature{Department Chair Silvia Figueira [CSEN]}
+\signature{Department Chair Shoba Krishnan [ECEN]}
+\signature{Department Chair Matthew Gaudet [GENG]}
+\end{minipage}
+
+\maketitle
+\include{0050-abstract}
+
+\tableofcontents % --- tableofcontents --- tableofcontents --- tableofcontents --- tableofcontents --- tableofcontents --- tableofcontents --- tableofcontents
+
+\listoffigures % --- listoffigures --- listoffigures --- listoffigures --- listoffigures --- listoffigures --- listoffigures --- listoffigures --- listoffigures
+
+\begin{tcolorbox}[      % Delete me later
+    boxrule=0pt,        % Delete me later
+    colback=white,      % Delete me later
+    coltext=red         % Delete me later
+]                       % Delete me later
+    Overall, have at least 20 figures at the end of the senior design project. 
+    
+    \vspace{15pt}       % Delete me later
+    \begin{center}      % Delete me later
+    \textbf{Don't forget to delete this explanatory red text/block introduction, and replace it with your text in black.}
+    \end{center}        % Delete me later
+\end{tcolorbox}         % Delete me later
+
+\mainmatter
+\include{0100-introduction}
+\include{0200-research}
+\include{0300-design}
+\include{0400-technologies}
+\include{0500-evaluation}
+\include{0600-timeline}
+\include{0700-constraints}
+\include{0800-societal}
+\include{0900-conclusion}
+\include{1000-acknowledgments}
+\include{1100-references}
+\include{1200-appendices}
+
+\backmatter
+\end{document}

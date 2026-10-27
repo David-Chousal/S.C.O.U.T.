@@ -20,6 +20,8 @@ to be an airtime question in disguise, and airtime is cheap to compute and expen
 - **Is the packet size a real constraint?** No. At the shipped config a 30-byte frame is ~559 ms once
   per day — 0.0019% duty cycle, ~20 mAh per *year*. The 82 B "ceiling" was never where a limit sat
   ([SCO-40](https://linear.app/scout1/issue/SCO-40), [SCO-97](https://linear.app/scout1/issue/SCO-97)).
+  *Update 2026-10-23:* at three slots a day the packet now costs ~0.16 mAh/day (1.2% of the
+  budget), and the ceiling is 140 B, set by the 2 s send timeout, not the 251 B frame.
 - **Can we raise SF for range?** Only off the hopping route. Under §15.247's 400 ms dwell the formula
   says SF10 puts a 30-byte frame past one dwell — which is what made BW500 the better fix
   ([`cfr-15-247`](cfr-15-247-ism-band-rules.md)).

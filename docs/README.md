@@ -18,6 +18,7 @@ imported directly into Notion with formatting intact.
 | Find who to contact and which permits a deployment test needs | [Deployment Strategy](planning/deployment-strategy.md), [Monterey and Santa Cruz dock test](research/monterey-santa-cruz-dock-test-hosts-and-permissions.md), [Hawaii permitting](research/hawaii-deployment-permitting.md) |
 | Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
 | Write the thesis | [Thesis Working Draft](thesis/README.md) |
+| Edit or compile the thesis in LaTeX | [Thesis LaTeX Source](thesis/latex/README.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---
@@ -58,6 +59,7 @@ Technical design and component specification.
 | [Sensor String Architecture](engineering/sensor-string-architecture.md) | Vertical multi-depth sensor string layout and placement rationale |
 | [On-Board CSV Data Schema](engineering/data-schema.md) | The microSD log format — columns, units, timestamps; the firmware ↔ shore-station/analytics contract |
 | [Hardware/Software Integration Runbook](engineering/integration-runbook.md) | **How the software gets onto the hardware** — toolchain, what programs what, and the staged bring-up from bench to field, with a PASS gate at every step. Written to be executed by a Claude session. |
+| [Over-the-Air Firmware Update Design](engineering/ota-firmware-update-design.md) | Draft: listen windows, chunked transfer, signed images and rollback for ADR-0008; power figures for Isabella's sign-off |
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |
 | [Design System](engineering/design-system.md) | "Tideline" — brand foundations, voice, and every token for the site and dashboard, with computed contrast |
@@ -143,7 +145,7 @@ through with their resolution; the remaining open ones are marked ⏳ with an ow
 | ✅ ~~Deployment depth~~ | **Resolved: 2–8 m** max, confirmed against the actual Hawaii site (was 5–8 m). The ~30 m on the sensor-string diagram image is outdated and should be re-exported |
 | ✅ ~~LoRa range~~ | **Resolved: ~2 km line of sight** ([Adafruit RFM9x FAQ](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/radio-range-faq)); ~100 yd / 15–20 km corrected. Actual over-saltwater range to be measured in Phase 4 |
 | ✅ ~~Sensor count~~ | **Resolved** by [ADR-0003](decisions/0003-single-point-sensing.md): one sensor per modality deployed; extras are field spares; multi-depth deferred |
-| **Hydrophone part** ⏳ | Diagram cites Aquarian H2a-XLR; EDD BOM specifies H2dM. **Owner: Isabella (ECE)** — [SCO-8](https://linear.app/scout1/issue/SCO-8), `Needs Decision` |
+| ✅ ~~Hydrophone part~~ | **Resolved 2026-10-12: Aquarian H2dM** (3.5 mm plug-in power, 6 m cable; [SCO-8](https://linear.app/scout1/issue/SCO-8) Done 2026-10-16). Not bought yet: waits on funding ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
 | **Dissolved oxygen status** ⏳ | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — [SCO-11](https://linear.app/scout1/issue/SCO-11), `Needs Decision` |
 | ✅ ~~Academic year~~ | **Resolved: 2026–2027.** No stray 2025–2027 remains in the docs |
 | **Audio over LoRa** | EDD states raw audio is stored onboard and never transmitted. Any plan to transmit waveform data contradicts the design baseline and is not bandwidth-feasible |

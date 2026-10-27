@@ -31,8 +31,10 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .chart-svg .rl{stroke-width:1;stroke-dasharray:4 3}
 .s-temp{stroke:var(--data-temp)}.s-turb{stroke:var(--data-turb)}.s-dhw{stroke:var(--color-text)}
 .s-batt{stroke:var(--data-instrument)}.chart-svg .line.s-batt{stroke-dasharray:6 3}
+.s-ndsi{stroke:var(--cat-1)}
 .rl-mmm{stroke:var(--color-line-strong)}.rl-threshold{stroke:var(--alert-alert1-fill)}
 .band{opacity:0.16}.band-alert1{fill:var(--alert-alert1-fill)}.band-alert2{fill:var(--alert-alert2-fill)}
+.band-alert3{fill:var(--alert-alert3-fill)}.band-alert4{fill:var(--alert-alert4-fill)}.band-alert5{fill:var(--alert-alert5-fill)}
 /* Missing days: a hatched band, crisp because it is HTML rather than stretched SVG. */
 .gap{position:absolute;top:0;bottom:0;left:var(--x0);right:calc(100% - var(--x1));
   background:repeating-linear-gradient(45deg,transparent 0 5px,var(--p-stone-300) 5px 6px);
@@ -66,14 +68,6 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 /* Instrument status: the colour is on the glyph; the label stays readable text. */
 .freshness{display:flex;flex-wrap:wrap;gap:0.3rem 0.8rem;align-items:center;margin-bottom:0;
   font-size:var(--text-small);color:var(--color-text-muted)}
-.status{display:inline-flex;align-items:center;gap:0.45rem;font-family:var(--font-mono);
-  font-size:var(--text-micro);letter-spacing:0.08em;text-transform:uppercase;
-  color:var(--color-text-muted)}
-.status svg{width:11px;height:11px;flex:none}
-.status-live svg{fill:var(--status-live)}.status-stale svg{fill:var(--status-stale)}
-.status-offline svg{fill:var(--status-offline)}.status-fault svg{fill:var(--status-warning)}
-.status svg .ring{fill:none;stroke-width:1.5}
-.status-stale svg .ring{stroke:var(--status-stale)}.status-offline svg .ring{stroke:var(--status-offline)}
 /* The slot rule: one tick per transmit slot (00:10 · 08:10 · 16:10 UTC). */
 .slot-rule{margin-top:var(--space-3);max-width:36rem}
 .slot-rule svg{display:block;width:100%;height:24px}
@@ -89,12 +83,20 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .legend span{display:inline-flex;align-items:center;gap:0.4rem}
 .legend i{width:0.85rem;height:0.2rem;border-radius:2px;display:inline-block}
 .sw-temp{background:var(--data-temp)}.sw-turb{background:var(--data-turb)}
-.sw-dhw{background:var(--color-text)}.sw-batt{background:var(--data-instrument)}
+.sw-dhw{background:var(--color-text)}.sw-batt{background:var(--data-instrument)}.sw-ndsi{background:var(--cat-1)}
 .sw-est{background:repeating-linear-gradient(90deg,var(--color-text-subtle) 0 4px,transparent 4px 7px)}
 .legend i.sw-gap{height:0.7rem;background:repeating-linear-gradient(45deg,transparent 0 3px,var(--p-stone-400) 3px 4px)}
-.legend i.sw-alert1,.legend i.sw-alert2{height:0.7rem}
+.legend i.sw-alert1,.legend i.sw-alert2,.legend i.sw-alert3,.legend i.sw-alert4,.legend i.sw-alert5{height:0.7rem}
 .sw-alert1{background:var(--alert-alert1-fill)}.sw-alert2{background:var(--alert-alert2-fill)}
+.sw-alert3{background:var(--alert-alert3-fill)}.sw-alert4{background:var(--alert-alert4-fill)}.sw-alert5{background:var(--alert-alert5-fill)}
 .legend i.sw-ev{width:0.55rem;height:0.55rem;border-radius:50%;background:var(--status-warning)}
+/* Acoustic summary: the latest recording's band levels as bars on a fixed −60…0 dBFS scale,
+   categorical hues (acoustic indices, design-system-data-viz.md). */
+.bands{display:grid;gap:0.45rem;margin-bottom:1rem;font-size:var(--text-small)}
+.bd{display:grid;grid-template-columns:minmax(0,8.5rem) 1fr 3.4rem;align-items:center;gap:0.6rem}
+.bd-bar{display:block;width:100%;height:0.5rem;background:var(--color-surface-raised)}
+.bd-anthro{fill:var(--cat-2)}.bd-mixed{fill:var(--cat-3)}.bd-bio{fill:var(--cat-1)}
+.bd .mono{text-align:right}
 .data-links{color:var(--color-text-subtle);font-size:var(--text-small);margin-top:1.8rem}
 .data-links a{font-weight:500}
 
@@ -115,6 +117,9 @@ CSS = """/* ══ Analytics dashboard ═════════════�
 .alert-badge.lvl-warning{background:var(--alert-warning-fill);color:var(--alert-warning-on)}
 .alert-badge.lvl-alert1{background:var(--alert-alert1-fill);color:var(--alert-alert1-on)}
 .alert-badge.lvl-alert2{background:var(--alert-alert2-fill);color:var(--alert-alert2-on)}
+.alert-badge.lvl-alert3{background:var(--alert-alert3-fill);color:var(--alert-alert3-on)}
+.alert-badge.lvl-alert4{background:var(--alert-alert4-fill);color:var(--alert-alert4-on)}
+.alert-badge.lvl-alert5{background:var(--alert-alert5-fill);color:var(--alert-alert5-on)}
 .spark{position:relative;width:100%;height:56px;display:block}
 .spark-empty{height:56px;border-radius:var(--radius-none);background:var(--color-canvas-sunken)}
 .tile-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem 1rem;margin:0}

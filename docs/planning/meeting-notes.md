@@ -1026,3 +1026,83 @@ the advisors' feedback and side remarks are left out; the project content is her
 | Confirm budget status and hydrophone funding with Jes; confirm the new D-cell part | Team ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
 | One-page milestone and timeline handout for Wednesday | Owner not decided ([SCO-218](https://linear.app/scout1/issue/SCO-218)) |
 | Weekly report skill that builds a Sunday PDF | Owner not decided ([SCO-217](https://linear.app/scout1/issue/SCO-217)) |
+
+---
+
+## 2026-10-23 — SCOUT Weekly
+
+**Attendees:** David Chousal Cantu (CSEN), John Ryan Myrdal (GENG), Isabella Rodriguez (ECEN), Navid Shaghaghi (advisor).
+
+Only project content is recorded here. In the transcript, David is labelled "Me"; some other speaker labels are mixed up, so a few
+owners below are inferred from what was said.
+
+### Decisions and direction
+
+- **Housing temperature is logged, not alerted on.** Humidity is the leak signal. The SHT40's temperature comes with the humidity reading,
+  and it changes with duty cycle in a sealed box, so it is kept in the log and revisited only if calibration shows it matters (Navid,
+  Isabella; [SCO-204](https://linear.app/scout1/issue/SCO-204)). The firmware already behaves this way ([SCO-205](https://linear.app/scout1/issue/SCO-205)).
+- **Thesis is kept in Markdown and LaTeX with the same content.** John's running draft in [`docs/thesis/`](../thesis/README.md)
+  stays; David mirrors it into LaTeX for submission ([SCO-228](https://linear.app/scout1/issue/SCO-228)).
+- **The site keeps the buoy history as numbered versions.** The earlier buoy stays as V0 rather than being replaced. John's
+  iteration simulator goes on the site ([SCO-229](https://linear.app/scout1/issue/SCO-229)).
+- **Batteries ordered before Thanksgiving, with time for ground shipping** (lithium cells cannot fly). The hydrophone order still waits
+  on funding from Jes ([SCO-158](https://linear.app/scout1/issue/SCO-158)).
+- **Hydrophone amplifier, two options, not decided** ([SCO-216](https://linear.app/scout1/issue/SCO-216)). Option A is Dr. Wolfe's KiCad
+  design from an earlier underwater-hydrophone project. It filters noise before the gain stage, and he is sending it to Isabella, who
+  leans toward it. Option B is the purchased part from Jes's earlier thesis. Navid's point: filter before amplifying, or the noise is amplified too.
+
+### Status reported
+
+- **Electronics (Isabella):** circuit design is done. The block diagram has four sheets: sheet 1 shows all three disciplines on one page,
+  and a detailed electrical sheet has been checked by Shoba with Dr. Wolfe's input. Any further changes will come from bench measurements. Every part is in except the
+  turbidity sensor, which is delayed at Mouser (due 10-22, may slip into the week of 10-26;
+  [SCO-189](https://linear.app/scout1/issue/SCO-189) moved to Waiting on Parts), and the hydrophone. Most sensor interfaces are plain pull-ups.
+  The team has a lab locker and key. Bench order: temperature first (heat tests with a hair dryer, then send and receive on the M0), then the
+  housing humidity/temperature sensor, then turbidity when it arrives. Isabella is also building an electronics simulator, possibly for the site.
+- **Lab support:** Shoba leaves around 2026-11-20, which leaves about three weeks of bench work with her. Dr. Wolfe and two ECEN TAs remain
+  ([SCO-232](https://linear.app/scout1/issue/SCO-232)).
+- **Mechanical (John):** a new buoy shape, close to a mushroom profile, is designed to save filament and improve stability. Empty it is
+  unstable; with the payload it is expected to be stable, and that is not tested yet ([SCO-230](https://linear.app/scout1/issue/SCO-230)).
+  No foam: a custom G-code honeycomb infill with lengthwise air channels gives the buoyancy. John reports it is stronger than the large
+  buoy and costs about $15 in filament; the large buoy cost more once foam and structural parts are counted. He has switched to the right
+  filament and reports the printed housings pass his waterproof tests. The turbidity sensor pods work and get resized once the sensor arrives.
+  There are 11 complete CAD iterations in his simulator.
+- **Firmware and analytics (David):** waiting on electrical. The analytics side assumes waveform files already exist; how the buoy captures
+  and stores hydrophone audio is not designed yet ([SCO-231](https://linear.app/scout1/issue/SCO-231)).
+- **Permitting (John):** a Monterey marina replied with a formal process and a $500 fee; other marinas are being checked. The funding request
+  asked for twice the standard allowance plus $500 ([SCO-195](https://linear.app/scout1/issue/SCO-195)). The hazard form was revised with Jes and is meant to become
+  the team's overall form ([SCO-211](https://linear.app/scout1/issue/SCO-211)). For Hawaii the dock route still looks simplest. John is there over spring break,
+  and the plan is to snorkel the hydrophone down next to the reef and photograph it with a waterproof 360° camera.
+
+### Plan
+
+| When | What |
+|---|---|
+| Sun Oct 25 | Isabella in the lab: temperature sensor tests, M0 send and receive |
+| Mon/Tue before Wed advisor meeting | Isabella and John prepare handouts ([SCO-218](https://linear.app/scout1/issue/SCO-218)) |
+| Before Thanksgiving | Order batteries; all sensors on the bench |
+| After Thanksgiving | System assembled; 48 h run, then a one-week run; waterproofing tests in parallel |
+| After finals | Isabella stays about a week longer for testing |
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Turbidity sensor is on order at Mouser and delayed | [2026-10-23 journal](../hub/journal/2026-10-23.md) and [SCO-189](https://linear.app/scout1/issue/SCO-189): the Grove sensor has not been ordered |
+| Batteries are not ordered yet | 2026-10-21 team lunch (above): a larger cell of the same chemistry was ordered after the D-cell back-order |
+| David described the hydrophone data as "zip it and send it over". Clarified 2026-10-25: he meant derived acoustic data in the LoRa packet, not raw audio | The as-built packet carries only an `audio_present` flag ([data schema](../engineering/data-schema.md)); all acoustic indices are computed on shore from the SD card, because the M0's 32 KB SRAM cannot analyse audio ([firmware README](../../firmware/README.md)). Raw audio never goes over LoRa (Standing rule 2). Whether to add derived acoustic values is open in [SCO-231](https://linear.app/scout1/issue/SCO-231). **Since settled:** [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md) (2026-10-25) sends a 14-byte summary per recording, built in software in [SCO-233](https://linear.app/scout1/issue/SCO-233) |
+| "Waterproofing is done" | [SCO-108](https://linear.app/scout1/issue/SCO-108) is In Test and [SCO-141](https://linear.app/scout1/issue/SCO-141) saltwater leak tests are Todo; no test log in the repo yet |
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Temperature sensor bench tests, then housing humidity sensor | Isabella ([SCO-152](https://linear.app/scout1/issue/SCO-152), [SCO-204](https://linear.app/scout1/issue/SCO-204)) |
+| Choose the hydrophone amplifier (Dr. Wolfe's design or the purchased part) | Isabella ([SCO-216](https://linear.app/scout1/issue/SCO-216)) |
+| Get Shoba's bench assignment list and give her the team's dates | Isabella ([SCO-232](https://linear.app/scout1/issue/SCO-232)) |
+| Order batteries before Thanksgiving; confirm whether a cell was already ordered | Isabella ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
+| Mirror the thesis into LaTeX | David ([SCO-228](https://linear.app/scout1/issue/SCO-228)) |
+| Design the hydrophone capture path to the SD card | David ([SCO-231](https://linear.app/scout1/issue/SCO-231)) |
+| Float-test the mushroom-profile buoy with payload; record the large vs small buoy cost | John ([SCO-230](https://linear.app/scout1/issue/SCO-230)) |
+| Put the buoy simulator and versioned buoy history on the site | John ([SCO-229](https://linear.app/scout1/issue/SCO-229)) |
+| Keep looking for a marina host | John ([SCO-195](https://linear.app/scout1/issue/SCO-195)) |

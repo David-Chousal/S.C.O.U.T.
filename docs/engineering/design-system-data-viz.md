@@ -11,7 +11,7 @@
 
 ## The honesty principle
 
-The buoy samples every 30 minutes, keeps the full record on board, and sends **one 30-byte
+The buoy samples every 30 minutes, keeps the full record on board, and sends **one 44-byte
 packet with the latest reading in each of three fixed slots: 00:10, 08:10 and 16:10 UTC**
 ([`facts.md`](../hub/facts.md), `firmware/README.md`). Packets are repeated blindly and never
 acknowledged, so some will be lost. The dashboard is republished per publish, not streamed.
@@ -101,8 +101,8 @@ Watch to Level 5, so the order survives greyscale printing and colour-vision def
 | Alert Level 5 | HotSpot ≥ 1, DHW ≥ 20 | `#351859` | foam | 14.41 |
 
 Source: [NOAA CRW Bleaching Alert Area](https://coralreefwatch.noaa.gov/product/5km/index_5km_baa-max-365d.php).
-⚠️ The pipeline (`bleaching.py`) currently stops at Alert Level 2 = DHW ≥ 8 — see
-[Design System → Contradictions](design-system.md#contradictions-surfaced-while-building-this).
+The pipeline (`bleaching.py`) computes all eight levels since 2026-10-23
+([SCO-212](https://linear.app/scout1/issue/SCO-212)); before that it stopped at Alert Level 2.
 
 Where a level is set **as text** — a stat value, a verdict, a badge label on its 12% tint —
 it uses `--alert-<level>-text`: the same hue darkened until it reads at ≥ 4.6:1 on the canvas,
@@ -121,7 +121,7 @@ Follow [CONVENTIONS → Engineering data](../CONVENTIONS.md#engineering-data):
 - **Precision never exceeds the sensor.** DS18B20 is ±0.5 °C → one decimal. Daily means may
   carry one decimal; never two.
 - **Turbidity is raw ADC counts** (`turbidity_adc`), and **higher counts mean clearer water**
-  (the SEN0189 is a transmittance sensor). Every turbidity axis and readout states the direction:
+  (the turbidity sensor measures transmittance). Every turbidity axis and readout states the direction:
   "ADC counts (higher = clearer)". When a field chart maps turbidity to colour, the scale is
   inverted so that darker = murkier. NTU appears only after calibration
   ([SCO-12](https://linear.app/scout1/issue/SCO-12)).

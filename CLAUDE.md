@@ -26,6 +26,26 @@ already has it. What you need to know is in [Working with your Claude](#working-
 
 ---
 
+## ⏸️ Notion mirroring is paused (since 2026-10-23) — the repo is the only record
+
+The Notion workspace has hit the free plan's block limit, so **no new content can be added to
+Notion.** The existing pages stay up but are frozen as of 2026-10-23 and will go stale; do not
+treat anything there as current. Until a teammate says the mirror is back:
+
+- **Do not attempt Notion mirroring**, and do not offer to "push it to Notion". Wherever this
+  file or CONVENTIONS.md says to mirror to Notion, skip that step and say it is paused.
+- **The repo now carries everything the team knows, so keeping it current matters more than
+  ever.** Every fact, decision, status change and source lands in `docs/` and the
+  [Knowledge Hub](docs/hub/README.md) in the same session it comes up, through a PR, with no
+  "I'll write it up later". A decision that is only in a chat, a Granola transcript or a
+  teammate's head is lost, and there is no longer a second copy anywhere to catch it.
+- Teammates who read docs in Notion now read them on GitHub. Link GitHub paths, not Notion
+  URLs.
+- If anyone mentions an edit they made in Notion before the pause, back-port it to `docs/`
+  as usual.
+
+---
+
 ## 🚫 Absolute blocker — never commit or push anything that violates CONVENTIONS.md
 
 **This overrides speed, convenience, and "the user didn't ask me to check this."** It applies
@@ -113,7 +133,7 @@ Four tools. Each has exactly one job. Do not duplicate an artifact across two of
 |---|---|---|
 | **GitHub** | Code, CAD, schematics, and the versioned source of truth for all documentation | ✅ via `git` + SSH |
 | **Linear** | Every unit of work: tasks, bugs, decisions to make, roadmap | ✅ via MCP |
-| **Notion** | Human-readable mirror of docs; where non-code teammates read and comment | ✅ via MCP |
+| **Notion** | Human-readable mirror of docs; where non-code teammates read and comment. **⏸️ Paused since 2026-10-23: out of free-plan blocks, pages frozen** | ✅ via MCP (mirroring paused) |
 | **Granola** | Raw meeting capture — recordings, transcripts, live notes | ✅ via MCP |
 
 **Links**
@@ -153,7 +173,9 @@ If the user answers "nothing changed," proceed immediately. Do not belabor it.
 Before ending a work session, verify and report:
 
 - [ ] Code changes committed **and pushed**
-- [ ] Docs changed in `docs/` mirrored to the corresponding Notion page
+- [ ] ~~Docs changed in `docs/` mirrored to the corresponding Notion page~~ — **paused since
+      2026-10-23** (see the pause notice at the top of this file).
+      Instead: confirm every fact and decision from this session is in `docs/` or the Hub
 - [ ] Linear issues moved to their true status; new work captured as issues
 - [ ] Any decision made this session written down as an ADR or a Linear comment — never left
       only in the chat transcript
@@ -173,12 +195,11 @@ checklist or re-explain the four tools every time.
 **If your response already did the syncing** (filed the Linear issue, updated the Notion
 page, committed the doc), say what you updated instead of prompting for it:
 
-> _Updated: SCO-14 created, `docs/hub/facts.md` revised. Notion mirror still pending — say
-> the word and I'll push it._
+> _Updated: SCO-14 created, `docs/hub/facts.md` revised._
 
 **If it didn't**, use a light version of:
 
-> _Anything here that should land in Linear, Notion, or Granola? Keep the stack synced._
+> _Anything here that should land in Linear or the repo? With Notion paused, the repo is the only record._
 
 Skip the line only for purely conversational exchanges that touched no file, tool, or fact —
 answering "what does NDSI stand for?" doesn't need one. Everything else gets the nudge.
@@ -364,6 +385,9 @@ a month — the exact failure the August 2026 audit found across the documentati
 
 ## Notion conventions
 
+> ⏸️ **Paused since 2026-10-23** (free-plan block limit). These conventions apply again when
+> mirroring resumes; until then see the pause notice at the top of this file.
+
 Root page **S.C.O.U.T.** 🛰️ with six sections: Overview · Engineering · Research · Analysis ·
 Planning · Decisions.
 
@@ -475,8 +499,11 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    [Known inconsistencies](README.md#known-inconsistencies).
 2. **Raw audio never goes over LoRa.** This is settled design, not an open question
    ([EDD §10](docs/engineering/engineering-design-document.md)). Bandwidth makes it
-   infeasible; the buoy stores audio locally and transmits a **30-byte** daily packet (82 B is
-   the EDD §10 budget *ceiling*, not the actual size — see [`facts.md`](docs/hub/facts.md)).
+   infeasible; the buoy stores audio locally and transmits a **44-byte** packet carrying a
+   14-byte acoustic summary of each recording instead
+   ([ADR-0010](docs/decisions/0010-acoustic-summary-over-lora.md); 140 B is the payload
+   *ceiling*, derived from the send timeout, not the actual size — see
+   [`facts.md`](docs/hub/facts.md)).
 3. **The MCU/radio choice is settled** ([ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md),
    accepted 2026-08-14): **Feather M0 + RFM95** is the confirmed build platform (Arduino
    SAMD21 core, RadioHead `RH_RF95`); ESP32-C3 + SX1262 is the documented future production

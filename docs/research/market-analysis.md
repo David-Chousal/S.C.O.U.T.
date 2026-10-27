@@ -196,7 +196,7 @@ An honest inventory.
 
 | Asset | Defensible? | Why |
 |---|---|---|
-| Buoy electronics (Feather M0 + RFM95 + DS18B20 + SEN0189) | **No** | Well-trodden hobbyist stack; [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) chose it for availability, correctly, and availability is the opposite of scarcity |
+| Buoy electronics (Feather M0 + RFM95 + DS18B20 + Grove turbidity) | **No** | Well-trodden hobbyist stack; [ADR-0001](../decisions/0001-mcu-and-radio-selection.md) chose it for availability, correctly, and availability is the opposite of scarcity |
 | Printed PETG wedge hull | **No** | Good engineering, reproducible by anyone with a printer and the drawings |
 | 30-byte daily packet + duty-cycled scheduler | **No** | Disciplined, but standard practice for LPWAN telemetry |
 | **Reef bioacoustic pipeline** | **Plausibly yes** | See below |

@@ -55,8 +55,11 @@ analytics/
 ├── run_pipeline.py       Single-session analysis → dashboard + results CSV
 ├── run_longitudinal.py   Multi-session trend analysis → trend chart + results CSV
 ├── compare_sites.py      Side-by-side comparison of two recording sites
+├── validate_acoustic_summary.py  Buoy acoustic summary vs shore NDSI/BI (ADR-0010)
 ├── utils/
 │   ├── acoustic_indices.py   Index computation, PCA health score, abiotic filtering
+│   ├── acoustic_summary.py   The buoy's 14-byte acoustic summary: the spec the firmware ports
+│   ├── tests/                Reference tests (stdlib only); `python -m unittest discover -s utils/tests -t .`
 │   ├── trend_analysis.py     Session aggregation, Mann-Kendall tests, PC1 trend
 │   ├── visualize.py          Dashboard and chart generation
 │   └── download_sesoko.py    Dataset retrieval helper

@@ -32,12 +32,12 @@ See [ADR-0001](../docs/decisions/0001-mcu-and-radio-selection.md).
 
 Per [Engineering Design Document §12](../docs/engineering/engineering-design-document.md):
 
-- Sensor management — temperature (DS18B20, 1-Wire), turbidity (SEN0189, analog), audio (PCM1808, I²S)
+- Sensor management — temperature (DS18B20, 1-Wire), turbidity (Seeed Grove 101020752, analog), audio (hydrophone preamp on A2, SAMD21 12-bit ADC at 22.05 kHz via timer + DMA, [ADR-0011](../docs/decisions/0011-audio-capture-parameters.md))
 - Duty-cycle state machine — `Sleep → Wake → Sense → Log → Battery check → Transmit → Sleep`
 - Deep sleep scheduling and RTC alarm wake
 - Battery voltage monitoring, with transmission skipped below threshold
 - Local logging to microSD (Adalogger FeatherWing)
-- LoRa packet assembly and transmission (30-byte daily payload; 82 B is the EDD budget ceiling)
+- LoRa packet assembly and transmission (44-byte payload in v3, including the 14-byte acoustic summary from `lib/scout_acoustic`; 140 B is the ceiling, `SCOUT_LINK_PAYLOAD_CEILING_BYTES`)
 - Watchdog timer and error recovery
 - State of Health telemetry — battery voltage, internal temperature, humidity
 
@@ -45,19 +45,34 @@ Per [Engineering Design Document §12](../docs/engineering/engineering-design-do
 
 ```
 firmware/
-├── platformio.ini          Feather M0 build + native (host) test envs
+├── platformio.ini          Buoy, bench, bench-receiver, shore-station and native (host) test envs
 ├── src/
 │   ├── main.cpp            Duty-cycle state machine: Sleep→Wake→Sense→Log→Battery→TX→Sleep
 │   ├── config.h            Pin map, cadence, thresholds  (⚠ confirm pins with ECE)
-│   └── drivers/            Thin hardware wrappers (DS18B20, turbidity, PCF8523, SD, RFM95, battery)
+│   ├── acoustic_config.h   Feeds config.h constants into scout_acoustic
+│   ├── drivers/            Thin hardware wrappers (DS18B20, turbidity, SHT40, PCF8523, SD, RFM95,
+│   │                       battery, audio capture)
+│   ├── bench_rx/           Bench LoRa receiver for a second Feather M0 (env feather_m0_rx)
+│   └── shore_rx/           ESP32-S3 shore-station receiver (env feather_esp32s3_shore)
 ├── lib/                    Hardware-free, host-testable libraries:
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
-│   ├── scout_scheduler/    Duty-cycle timing math (next wake, daily TX, battery gate, audio hours)
-│   └── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
-├── test/                   Unity unit tests (run on the host)
+│   ├── scout_scheduler/    Duty-cycle timing math (sample grid, TX slots, power modes, audio hours)
+│   ├── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
+│   ├── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq)
+│   ├── scout_acoustic/     14-byte acoustic summary — bit-exact port of acoustic_summary.py
+│   ├── scout_capture/      WAV header, 12→16-bit conversion, dropped-sample accounting
+│   ├── scout_sht4x/        SHT40 frame CRC + humidity/temperature conversion
+│   └── scout_timeset/      Bench clock-set command ("T<unix-epoch>") parser
+├── test/                   Unity unit tests (run on the host), one suite per library:
 │   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
-│   ├── test_scheduler/     Wake grid, daily-TX cadence, battery gate, audio scheduling
-│   └── test_link/          Repeat counts by power mode, gap widening, watchdog headroom
+│   ├── test_scheduler/     Sample grid, TX slots, battery gate, power modes, audio scheduling
+│   ├── test_link/          Repeat counts by power mode, gap widening, watchdog headroom
+│   ├── test_dedupe/        Duplicate filter
+│   ├── test_acoustic/      Summary vs golden vectors written by the Python reference
+│   ├── test_capture/       WAV header and sample conversion
+│   ├── test_sht4x/         Frame CRC and conversion
+│   └── test_timeset/       Clock-set command parsing
+├── tools/set_rtc.py        Sets the PCF8523 to UTC over USB (SCO-201)
 └── docs/                   pin-assignments.md, flashing-guide.md
 ```
 
@@ -98,13 +113,13 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     still cold-starts (the PCF8523 has no user NVRAM; SD/flash persistence was declined to
     avoid wear for the rarer power-loss case). Verify by inducing a reset and confirming
     `resume_seq` continues in the boot log.
-  - **Daily-packet delivery reliability** — CR 4/8 forward error correction plus **blind
-    repetition**: the same frame goes out `SCOUT_LINK_REPEATS_NORMAL` times, spaced with
-    widening gaps, and the buoy never listens for an acknowledgement. A lost daily packet
-    costs timeliness, not data (the full record is on the SD card), so ACKed retransmit would
-    buy little and risks an avalanche across a multi-buoy deployment. Repeat count degrades
-    with the power mode like everything else (3 in NORMAL, 1 in CONSERVE, 0 in CRITICAL).
-    The shore station deduplicates on `(buoy_id, record_seq)`, so copies collapse to one row.
+  - **Packet delivery reliability** — CR 4/8 forward error correction, and **one copy per
+    transmit slot** (`SCOUT_LINK_REPEATS_NORMAL`; was 3 copies until 2026-10-23, SCO-21): the
+    three daily slots ~8 h apart give the time diversity, and the buoy never listens for an
+    acknowledgement. A lost packet costs timeliness, not data (the full record is on the SD
+    card), so ACKed retransmit would buy little and risks an avalanche across a multi-buoy
+    deployment. Copies by power mode: 1 in NORMAL, 1 in CONSERVE (slot 0 only), 0 in CRITICAL.
+    The shore station deduplicates on `(buoy_id, record_seq)`, so any duplicate collapses to one row.
     The modem runs **BW 500 kHz · SF12 · CR 4/8 · +11 dBm** — widened from BW125/SF7 on
     2026-09-01 because 47 CFR §15.247 requires either a ≥500 kHz bandwidth or ≥50-channel
     hopping, and the old single-channel BW125 config met neither (SCO-19). See the note in
@@ -112,8 +127,10 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     guard that the repeat schedule cannot outrun the watchdog. Needs a real range test
     (SCO-14) to confirm the delivery gain over the air.
 - **Scaffold (Phase 1 bench work):** the driver wrappers call the real libraries but need
-  on-hardware verification and pin confirmation; **audio** (PCM1808/hydrophone) is a scheduled
-  hook only — it's a V1 stretch, not on the confirmed Feather build.
+  on-hardware verification and pin confirmation. **Audio capture** (`drivers/audio_capture.h`,
+  [SCO-231](https://linear.app/scout1/issue/SCO-231)) is written and compiles but has never run:
+  there is no hydrophone or preamp yet. Its hardware-free half (`lib/scout_capture`: WAV header,
+  12→16-bit conversion, dropped-sample accounting) is unit-tested.
 
 ## Notes
 

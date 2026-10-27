@@ -6,8 +6,8 @@ exists only on the buoy's SD card, and nothing brought it back. The analytics pi
 already *read* a card (`load_dir` takes any directory of CSVs), but nothing merged the two
 record sets, so a deployment ended with a gappy shore CSV and a complete card that never met.
 
-The card is also the *better* record, not merely an equal one. A LoRa packet is a lossy 30-byte
-compression of a CSV row: `turbidity_v`, `turbidity_ntu` and the audio filename do not fit and
+The card is also the *better* record, not merely an equal one. A LoRa packet is a lossy 44-byte
+compression of a CSV row: `turbidity_v`, `turbidity_fau` and the audio filename do not fit and
 are dropped. So where both sides hold the same reading, the card's row wins.
 """
 
@@ -88,7 +88,7 @@ class SdImportTests(unittest.TestCase):
         self.assertEqual(len(_read(self.shore / "SCOUT-01_20260814.csv")), 2)
 
     def test_the_card_row_wins_because_the_packet_was_lossy(self) -> None:
-        """turbidity_v and the audio filename do not fit in 30 bytes, so the shore copy has
+        """turbidity_v and the audio filename do not fit in 44 bytes, so the shore copy has
         empty cells the card can fill."""
         _write(self.shore, "20260814", [_row(1)])  # arrived over LoRa: no turbidity_v, no audio
         _write(self.card, "20260814", [_row(1, turbidity_v="1.65", audio="SCOUT-01_x.wav")])
@@ -98,6 +98,16 @@ class SdImportTests(unittest.TestCase):
         self.assertEqual(stored["audio_file"], "SCOUT-01_x.wav")
         self.assertEqual(result.enriched, 1)
         self.assertEqual(result.added, 0, "an enriched row is not a new reading")
+
+    def test_the_card_fills_in_housing_humidity_the_packet_cannot_carry(self) -> None:
+        """Schema v2 (SCO-205): the packet carries only HUMIDITY_* flags, the card the values."""
+        _write(self.shore, "20260814", [_row(1)])
+        card_row = {**_row(1), "internal_temp_c": "24.50", "internal_humidity_pct": "41.2"}
+        _write(self.card, "20260814", [card_row])
+        import_card(self.card, self.shore)
+        stored = _read(self.shore / "SCOUT-01_20260814.csv")[0]
+        self.assertEqual((stored["internal_temp_c"], stored["internal_humidity_pct"]),
+                         ("24.50", "41.2"))
 
     def test_shore_rows_absent_from_the_card_survive(self) -> None:
         """A partial retrieval — a card pulled mid-deployment — must not delete history."""

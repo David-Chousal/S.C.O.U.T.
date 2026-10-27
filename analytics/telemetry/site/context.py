@@ -14,7 +14,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class LiveStats:
     current_alert: str
-    alert_class: str          # CSS class: a-nostress | a-watch | a-warning | a-alert1 | a-alert2
+    alert_class: str          # CSS class: a-nostress | a-watch | a-warning | a-alert1 … a-alert5
     latest_temp: str          # formatted, e.g. "26.8 °C" or "—"
     latest_batt: str
     completeness: str         # e.g. "100%"

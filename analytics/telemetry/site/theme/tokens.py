@@ -132,6 +132,12 @@ _MOTION = {
     "ease-exit": "cubic-bezier(0.4,0,1,1)",
 }
 
+# Tokens no authored page uses: chart series, categorical marks, and spare z/motion steps. They
+# ship in the dashboard bundle alone (``theme.dashboard_tokens``) to keep the site within budget.
+_DASHBOARD_ONLY = {"data-turb", "data-instrument", "z-base", "z-raised", "z-sticky",
+                   "dur-instant", "ease-exit"}
+
+
 def hex_of(name: str) -> str:
     """Resolve a primitive, a day role, or ``night-<role>`` to its opaque hex value."""
     if name.startswith("night-"):
@@ -154,17 +160,16 @@ def _css() -> str:
         *((name, hexval) for name, (_, hexval) in PRIMITIVES.items()),
         *((name, _value(ref)) for name, ref in SEMANTIC.items()),
         *((f"status-{name}", hexval) for name, hexval in STATUS.items()),
-        *DATA.items(),
-        *((f"cat-{i}", hexval) for i, hexval in enumerate(CATEGORICAL, 1)),
-        *((f"alert-{lvl}-{part}", val) for lvl, (fill, on) in ALERTS.items()
-          for part, val in (("fill", fill), ("on", on), ("text", ALERT_TEXT[lvl]))),
+        *((name, value) for name, value in DATA.items() if name not in _DASHBOARD_ONLY),
+        *((f"alert-{lvl}-{part}", val) for lvl, (fill, _) in ALERTS.items()
+          for part, val in (("fill", fill), ("text", ALERT_TEXT[lvl]))),
         *((f"space-{i}", f"{px}px") for i, px in enumerate(_SPACE, 1)),
         ("radius-none", "0"), ("radius-xs", "4px"),
         ("shadow-0", "none"),
         ("border-hairline", "1px solid var(--color-line)"),
         ("border-control", "1px solid var(--color-line-strong)"),
-        *((f"z-{name}", str(z)) for name, z in _Z.items()),
-        *_MOTION.items(),
+        *((f"z-{name}", str(z)) for name, z in _Z.items() if f"z-{name}" not in _DASHBOARD_ONLY),
+        *((name, value) for name, value in _MOTION.items() if name not in _DASHBOARD_ONLY),
     ])
     night = _declarations((name, _value(ref)) for name, ref in NIGHT.items())
     return (
@@ -175,3 +180,12 @@ def _css() -> str:
 
 
 CSS = _css()
+# The label colour on a solid alert fill. Only the dashboard pages paint alert badges, so this
+# ships in their bundle alone (``theme.alert_labels``); the authored pages use text and fill.
+DASHBOARD_CSS = ":root{" + _declarations([
+    *((name, DATA[name]) for name in ("data-turb", "data-instrument")),
+    *((f"cat-{i}", hexval) for i, hexval in enumerate(CATEGORICAL, 1)),
+    *((f"z-{name}", str(_Z[name])) for name in ("base", "raised", "sticky")),
+    *((name, _MOTION[name]) for name in ("dur-instant", "ease-exit")),
+]) + "--space-section-sm:clamp(3.4rem,2.4rem + 4vw,6rem);}"
+ALERT_ON_CSS = ":root{" + _declarations((f"alert-{lvl}-on", on) for lvl, (_, on) in ALERTS.items()) + "}"

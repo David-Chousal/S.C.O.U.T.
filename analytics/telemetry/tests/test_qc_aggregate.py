@@ -18,7 +18,7 @@ def _rec(minutes, temp=26.0, turb=500, batt=3.3, seq=0, flags=frozenset()):
         temp_c=temp,
         turbidity_adc=turb,
         turbidity_v=None,
-        turbidity_ntu=None,
+        turbidity_fau=None,
         battery_v=batt,
         uptime_s=seq * 1800,
         audio_file="",

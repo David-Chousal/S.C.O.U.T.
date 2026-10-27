@@ -11,7 +11,7 @@ import csv
 from collections.abc import Iterable
 from pathlib import Path
 
-from .packet import Reading
+from .packet import ACOUSTIC_FIELDS, Reading
 
 # Canonical column order — matches docs/engineering/data-schema.md exactly.
 COLUMNS: tuple[str, ...] = (
@@ -22,14 +22,30 @@ COLUMNS: tuple[str, ...] = (
     "temp_c",
     "turbidity_adc",
     "turbidity_v",
-    "turbidity_ntu",
+    "turbidity_fau",
     "battery_v",
     "uptime_s",
     "audio_file",
     "flags",
     "soh",
     "fw_version",
+    # Housing humidity sensor (SCO-205, schema v2). On the SD card only: the radio packet
+    # carries just the HUMIDITY_HIGH / HUMIDITY_FAIL flags, so live rows leave these blank.
+    "internal_temp_c",
+    "internal_humidity_pct",
+    # Acoustic summary of the cycle's recording (ADR-0010, schema v3), the same seven fields as
+    # the packet. Blank when there was no recording; the packet carries zeros instead.
+    *ACOUSTIC_FIELDS,
+    # Daily transmit count the buoy reports using (SCO-198, schema v4). Blank when not reported.
+    "tx_count",
 )
+
+# Column sets of earlier schema versions. Their files stay readable and importable; a row is
+# valid if its columns are exactly one of these prefixes of COLUMNS.
+COLUMNS_V1 = COLUMNS[:14]  # before the internal humidity sensor (SCO-205)
+COLUMNS_V2 = COLUMNS[:16]  # before the acoustic summary (ADR-0010)
+COLUMNS_V3 = COLUMNS[:23]  # before the transmit count (SCO-198)
+ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V3, COLUMNS_V2, COLUMNS_V1)
 
 # Provisional analog front-end constants — SAMD21 12-bit ADC at 3.3 V Vref.
 # ⚠️ Pending the turbidity front-end design (hardware/README.md open item, ADR-0002 area).
@@ -62,8 +78,8 @@ def turbidity_volts(adc: int) -> float:
 def reading_to_row(reading: Reading) -> dict[str, str]:
     """Render a :class:`Reading` as a schema-conformant CSV row (all values as strings).
 
-    ``turbidity_ntu`` is left empty by design: the buoy ships raw ADC only (SCO-13), and
-    NTU is computed downstream once a calibration curve exists (SCO-12).
+    ``turbidity_fau`` is left empty by design: the buoy ships raw ADC only (SCO-13), and
+    formazin attenuation units are computed downstream once a calibration curve exists (SCO-12).
     """
     return {
         "schema_version": str(reading.schema_version),
@@ -73,21 +89,32 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "temp_c": f"{reading.temp_c:.2f}",
         "turbidity_adc": str(reading.turbidity_adc),
         "turbidity_v": f"{turbidity_volts(reading.turbidity_adc):.3f}",
-        "turbidity_ntu": "",  # uncalibrated — intentionally blank
+        "turbidity_fau": "",  # uncalibrated — intentionally blank
         "battery_v": f"{reading.battery_v:.2f}",
         "uptime_s": str(reading.uptime_s),
         "audio_file": audio_filename(reading) if reading.audio_present else "",
         "flags": "|".join(sorted(reading.flags)),
         "soh": "|".join(sorted(reading.soh)),
         "fw_version": reading.fw_version,
+        "internal_temp_c": "",  # SD card only — not in the packet
+        "internal_humidity_pct": "",
+        **acoustic_cells(reading),
+        "tx_count": "" if reading.tx_count is None else str(reading.tx_count),
     }
+
+
+def acoustic_cells(reading: Reading) -> dict[str, str]:
+    """The seven acoustic cells: the summary when the cycle had a recording, else blank."""
+    if not reading.audio_present:
+        return {name: "" for name in ACOUSTIC_FIELDS}
+    return {name: str(value) for name, value in zip(ACOUSTIC_FIELDS, reading.acoustic())}
 
 
 def validate_row(row: dict[str, str]) -> None:
     """Check one row against the schema. Raises :class:`SchemaError` on any violation."""
     keys = tuple(row.keys())
-    if keys != COLUMNS:
-        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS}")
+    if keys not in ACCEPTED_COLUMN_SETS:
+        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1-v3 prefix)")
 
     # Required (never-empty) fields and their parsers.
     required_numeric = {
@@ -112,6 +139,23 @@ def validate_row(row: dict[str, str]) -> None:
         raise SchemaError(f"timestamp_utc must be UTC ISO-8601 ('...Z'): {row['timestamp_utc']!r}")
     if not row["buoy_id"]:
         raise SchemaError("buoy_id is required but empty")
+
+    # Optional acoustic cells (v3): blank, or an integer in the packet field's range.
+    for name in ACOUSTIC_FIELDS:
+        value = row.get(name, "")
+        if value == "":
+            continue
+        try:
+            number = int(value)
+        except ValueError as exc:
+            raise SchemaError(f"{name}={value!r} is not a valid int") from exc
+        low, high = (0, 65535) if name in ("snap_count", "clip_count") else (-32768, 32767)
+        if not low <= number <= high:
+            raise SchemaError(f"{name}={number} outside {low}..{high}")
+
+    tx_count = row.get("tx_count", "")
+    if tx_count not in ("", "1", "2", "3"):
+        raise SchemaError(f"tx_count={tx_count!r} must be blank or 1, 2 or 3")
 
 
 def validate_csv(path: str | Path) -> int:

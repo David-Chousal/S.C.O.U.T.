@@ -45,7 +45,7 @@
 | Week | Goal | Tasks | Closes |
 |---|---|---|---|
 | **Nov 2–8** | Stage 4–5 | Outdoor range test with spring antennas (RSSI vs distance). 24 h standby loop with David's schedule firmware. | SCO-24, SCO-160, SCO-165 |
-| **Nov 2–15** | Hydrophone (Stage 7) | Hydrophone + preamp + larger microSD ordered (Later 2) once it arrives in ~a month: plug-in-power bias from 3.3 V, preamp, 22.05 kHz 1-min clips to SD, recording current, clips through the pipeline | SCO-8, SCO-158 |
+| **Nov 2–15** | Hydrophone (Stage 7) | Hydrophone + preamp + larger microSD ordered (Later 2) once it arrives in ~a month: plug-in-power bias from 3.3 V, preamp, 22.05 kHz 1-min clips to SD at 00/08/16 UTC ([ADR-0011](../decisions/0011-audio-capture-parameters.md); capture firmware already written, [SCO-231](https://linear.app/scout1/issue/SCO-231)), recording current, clips through the pipeline | SCO-8, SCO-158 |
 | **Nov 9–15** | Battery safety | D cells arrive. Remove the charger IC on the deployment Feather; build ideal diodes + fuse + keyed JST plug. Verify 0 µA into the battery with USB on | SCO-150 |
 | **Nov 16–22** | Stage 6 start | Start the 7-day run on two D cells. Move the switch circuit from breadboard to the FeatherWing Proto | SCO-159 |
 | **Nov 23–29** | Stage 6 result (Thanksgiving) | Finish the 7-day run; extrapolate to 12 months; update ADR-0007 | SCO-159, SCO-10 |

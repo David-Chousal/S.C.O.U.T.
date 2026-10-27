@@ -1,0 +1,209 @@
+{
+  "estimate": true,
+  "source": "docs/engineering/power-budget-update-2026-10-05.md (2026-10-25 update), analytics/telemetry/battery_life.py",
+  "scenarios": {
+    "best": "Best estimate",
+    "pessimistic": "Pessimistic"
+  },
+  "allowed_tx_counts": [
+    1,
+    2,
+    3
+  ],
+  "without_listen_window": [
+    {
+      "scenario": "best",
+      "tx_per_day": 1,
+      "cells": 1,
+      "mah_per_day": 16.17,
+      "days": 736,
+      "months": 24.2
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 1,
+      "cells": 2,
+      "mah_per_day": 16.17,
+      "days": 1472,
+      "months": 48.4
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 2,
+      "cells": 1,
+      "mah_per_day": 16.191,
+      "days": 735,
+      "months": 24.1
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 2,
+      "cells": 2,
+      "mah_per_day": 16.191,
+      "days": 1470,
+      "months": 48.3
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 3,
+      "cells": 1,
+      "mah_per_day": 16.212,
+      "days": 734,
+      "months": 24.1
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 3,
+      "cells": 2,
+      "mah_per_day": 16.212,
+      "days": 1468,
+      "months": 48.2
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 1,
+      "cells": 1,
+      "mah_per_day": 37.667,
+      "days": 316,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 1,
+      "cells": 2,
+      "mah_per_day": 37.667,
+      "days": 632,
+      "months": 20.8
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 2,
+      "cells": 1,
+      "mah_per_day": 37.69,
+      "days": 316,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 2,
+      "cells": 2,
+      "mah_per_day": 37.69,
+      "days": 631,
+      "months": 20.7
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 3,
+      "cells": 1,
+      "mah_per_day": 37.713,
+      "days": 316,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 3,
+      "cells": 2,
+      "mah_per_day": 37.713,
+      "days": 631,
+      "months": 20.7
+    }
+  ],
+  "with_listen_window": [
+    {
+      "scenario": "best",
+      "tx_per_day": 1,
+      "cells": 1,
+      "mah_per_day": 16.176,
+      "days": 736,
+      "months": 24.2
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 1,
+      "cells": 2,
+      "mah_per_day": 16.176,
+      "days": 1471,
+      "months": 48.3
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 2,
+      "cells": 1,
+      "mah_per_day": 16.204,
+      "days": 734,
+      "months": 24.1
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 2,
+      "cells": 2,
+      "mah_per_day": 16.204,
+      "days": 1469,
+      "months": 48.3
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 3,
+      "cells": 1,
+      "mah_per_day": 16.231,
+      "days": 733,
+      "months": 24.1
+    },
+    {
+      "scenario": "best",
+      "tx_per_day": 3,
+      "cells": 2,
+      "mah_per_day": 16.231,
+      "days": 1466,
+      "months": 48.2
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 1,
+      "cells": 1,
+      "mah_per_day": 37.676,
+      "days": 316,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 1,
+      "cells": 2,
+      "mah_per_day": 37.676,
+      "days": 632,
+      "months": 20.8
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 2,
+      "cells": 1,
+      "mah_per_day": 37.708,
+      "days": 316,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 2,
+      "cells": 2,
+      "mah_per_day": 37.708,
+      "days": 631,
+      "months": 20.7
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 3,
+      "cells": 1,
+      "mah_per_day": 37.74,
+      "days": 315,
+      "months": 10.4
+    },
+    {
+      "scenario": "pessimistic",
+      "tx_per_day": 3,
+      "cells": 2,
+      "mah_per_day": 37.74,
+      "days": 631,
+      "months": 20.7
+    }
+  ]
+}

@@ -34,24 +34,40 @@
 extern "C" {
 #endif
 
-/* Shipped policy. Repeating is an energy cost, so it degrades with the pack exactly as
- * sensing and transmit cadence already do (scout_scheduler power modes). */
-#define SCOUT_LINK_REPEATS_NORMAL 3
+/* Shipped policy: ONE copy per transmit slot (decided 2026-10-23, SCO-21). Three copies a few
+ * seconds apart were chosen in August, when the buoy sent one packet a day. Since 2026-10-16 it
+ * transmits in three slots ~8 h apart, which gives far better time diversity than copies 2-4 s
+ * apart (a wave, heel or fade that kills one copy usually kills the next), and a missed slot
+ * only delays the dashboard: the SD card keeps every reading. Raise this again if the range
+ * test (SCO-14) shows high per-slot loss. Repeating is an energy cost, so it degrades with the
+ * pack exactly as sensing and transmit cadence already do (scout_scheduler power modes). */
+#define SCOUT_LINK_REPEATS_NORMAL 1
 #define SCOUT_LINK_REPEATS_CONSERVE 1
 #define SCOUT_LINK_REPEAT_BASE_DELAY_MS 2000u
 /* Worst-case time for one send, matching LoraLink::send's waitPacketSent timeout. This is
  * the blocking budget, not the airtime — see SCOUT_LINK_AIRTIME_MS for the real figure. */
 #define SCOUT_LINK_TX_BUDGET_MS 2000u
 
-/* Actual time on air for one 30-byte frame at the shipped modem config (BW500/SF12/CR4-8,
+/* Actual time on air for one 44-byte frame (packet v3) at the shipped modem config (BW500/SF12/CR4-8,
  * plus RadioHead's 4-byte header), per Semtech AN1200.13. Reproduce with
  * scripts/lora_airtime.py. Kept here so the budget above can be asserted against something
  * real: a modem-config change that pushed airtime past the budget would otherwise only show
- * up as a mid-transmit watchdog reboot in the water. Rounded up from 559 ms.
+ * up as a mid-transmit watchdog reboot in the water. Rounded up from 690.2 ms (was 559 ms for
+ * the 30-byte v2 packet; the acoustic summary added 14 bytes, ADR-0010).
  *
  * Was 111 ms at the previous BW125/SF7 config; raised 2026-09-01 for FCC compliance
  * (SCO-19 / SCO-98). Modelled, not yet measured on hardware. */
-#define SCOUT_LINK_AIRTIME_MS 560u
+#define SCOUT_LINK_AIRTIME_MS 691u
+
+/* Largest telemetry payload the buoy may send, in bytes (SCO-97, decided 2026-10-23). Derived
+ * from the send timeout above, not inherited: a 140-byte payload plus RadioHead's 4-byte
+ * header is 1,739 ms on air at BW500/SF12/CR4-8, under 90% of SCOUT_LINK_TX_BUDGET_MS. The old
+ * 82 B was the byte-sum of an abandoned EDD layout; the radio's own 251 B frame would take
+ * ~3.0 s and time out. shore/scout_shore/packet.py's LORA_PAYLOAD_BUDGET_BYTES must match, and
+ * scripts/check_packet_contract.py recomputes the airtime from config.h in CI. */
+#define SCOUT_LINK_PAYLOAD_CEILING_BYTES 140u
+/* Airtime of a ceiling-size frame (payload + 4 B header), rounded up from 1,738.8 ms. */
+#define SCOUT_LINK_CEILING_AIRTIME_MS 1739u
 
 /* How many copies of the daily packet to send in this power mode. CRITICAL returns 0. */
 uint8_t scout_link_repeat_count(scout_power_mode_t mode, uint8_t normal_repeats,

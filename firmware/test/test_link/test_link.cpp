@@ -2,6 +2,7 @@
 #include <unity.h>
 
 #include "scout_link.h"
+#include "scout_packet.h"
 
 void test_repeat_count_follows_power_mode(void) {
     // Repeating costs energy, so it degrades with the pack alongside everything else.
@@ -28,7 +29,7 @@ void test_longest_unpetted_stretch(void) {
 }
 
 void test_shipped_policy_leaves_watchdog_headroom(void) {
-    // The real numbers: 3 copies, 2 s base gap, 2 s TX budget, 16384 ms WDT.
+    // The real numbers: shipped copies per slot, 2 s base gap, 2 s TX budget, 16384 ms WDT.
     TEST_ASSERT_TRUE(scout_link_fits_watchdog(SCOUT_LINK_REPEATS_NORMAL,
                                               SCOUT_LINK_REPEAT_BASE_DELAY_MS,
                                               SCOUT_LINK_TX_BUDGET_MS, 16384));
@@ -55,6 +56,23 @@ void test_an_overreaching_policy_is_rejected(void) {
     TEST_ASSERT_FALSE(scout_link_fits_watchdog(3, 2000, 2000, 8000));  // halve the WDT
 }
 
+void test_packet_ceiling_fits_the_transmit_budget_with_margin(void) {
+    // SCO-97: the ceiling is derived from the send timeout, not inherited from the EDD's 82 B.
+    // A frame at the ceiling must stay under 90% of the time send() waits, or a full-size
+    // packet would time out and the slot would count as missed. Recompute
+    // SCOUT_LINK_CEILING_AIRTIME_MS (scripts/lora_airtime.py) whenever the modem changes;
+    // scripts/check_packet_contract.py also checks it against config.h in CI.
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(SCOUT_LINK_TX_BUDGET_MS * 9u / 10u,
+                                     SCOUT_LINK_CEILING_AIRTIME_MS);
+    TEST_ASSERT_TRUE(scout_link_fits_watchdog(SCOUT_LINK_REPEATS_NORMAL,
+                                              SCOUT_LINK_REPEAT_BASE_DELAY_MS,
+                                              SCOUT_LINK_CEILING_AIRTIME_MS, 16384));
+}
+
+void test_todays_packet_is_under_the_ceiling(void) {
+    TEST_ASSERT_LESS_OR_EQUAL_UINT32(SCOUT_LINK_PAYLOAD_CEILING_BYTES, SCOUT_PACKET_SIZE);
+}
+
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_repeat_count_follows_power_mode);
@@ -63,6 +81,8 @@ static void run_all() {
     RUN_TEST(test_shipped_policy_leaves_watchdog_headroom);
     RUN_TEST(test_shipped_airtime_fits_the_transmit_budget);
     RUN_TEST(test_an_overreaching_policy_is_rejected);
+    RUN_TEST(test_packet_ceiling_fits_the_transmit_budget_with_margin);
+    RUN_TEST(test_todays_packet_is_under_the_ceiling);
     UNITY_END();
 }
 

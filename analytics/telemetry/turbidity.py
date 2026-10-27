@@ -1,15 +1,17 @@
 """Turbidity anomaly detection.
 
-The SEN0189 ships **uncalibrated** — its output is raw ADC counts / volts, not NTU (see
-data-schema.md). Absolute water-quality thresholds are therefore not defensible yet, so this
-module deliberately detects **relative** turbidity events (runoff, resuspension, sediment
-plumes) against the deployment's own robust baseline, and says nothing about NTU.
+The turbidity sensor (Seeed Grove 101020752 since 2026-10-06; DFRobot SEN0189 before) ships
+**uncalibrated** — its output is raw ADC counts / volts. A formazin calibration of this
+transmitted-light sensor would give FAU, not NTU (ISO 7027-1; SCO-12), and none exists yet, so
+absolute water-quality thresholds are not defensible. This module deliberately detects
+**relative** turbidity events (runoff, resuspension, sediment plumes) against the deployment's
+own robust baseline, and says nothing about absolute units.
 
-**Polarity: a lower ADC count means dirtier water.** The SEN0189 is a transmittance sensor —
-suspended particles block light reaching its phototransistor, so its analog output *falls* as
-turbidity rises. The DFRobot datasheet states it directly: "Analog Signal Output, the output
-value will decrease when in liquids with a high turbidity." Clear water (< 0.5 NTU) reads
-≈ 4.1 V; the firmware logs that as raw ``analogRead`` with no inversion, so the ADC count
+**Polarity: a lower ADC count means dirtier water.** Both sensors are transmittance sensors —
+suspended particles block light reaching the phototransistor, so the analog output *falls* as
+turbidity rises. The SEN0189 datasheet states it directly: "Analog Signal Output, the output
+value will decrease when in liquids with a high turbidity" (clear water < 0.5 NTU ≈ 4.1 V), and
+the Seeed wiki says the same of the Grove sensor (bench confirmation pending, SCO-25); the firmware logs that as raw ``analogRead`` with no inversion, so the ADC count
 inherits the same direction. This module therefore flags **negative** excursions. Until
 2026-08-15 it flagged positive ones and was reporting each day's *clearest* water as a
 sediment plume.

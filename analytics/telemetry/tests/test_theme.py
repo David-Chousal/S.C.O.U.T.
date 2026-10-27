@@ -7,7 +7,11 @@ page within 3/255 per channel of the previous output), when the fonts changed (s
 accessibility pass (step 4), for shape, space and motion (step 5),
 for the chart rebuild (step 6), and for
 minified, bundled output (step 7), for the instrument layer
-(step 8), and for the view-data toggle and the sand mobile header and its height token (step 8 review).
+(step 8), and for the view-data toggle and the sand mobile header and its height token (step 8 review), and for NOAA
+Alert Levels 3–5 with the badge label colours moved to the dashboard bundle (SCO-212), and for the status
+glyph shared with the Home hero strip, paid for by moving dashboard-only tokens out of the site
+bundle, and for the Reef sound panel (acoustic summary series colour and band bars, SCO-233;
+dashboard bundle only, the site bundle is byte-identical).
 """
 
 import hashlib
@@ -24,19 +28,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "05351f3ebbfb8c181a92a6f2380cad6737d3714254c97444e4ac618d8cc01565",
+            "b86a896c972b4536e90e0239d715c46738050736fbc37298a4ca9b3238673d6e",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "8075d61f8d41fcf19e12e1f6624d1cc27df93f2cc32d6999b4f53c4145f6cb1d",
+            "3d46ed42106b51a046633ed24a4c5485631ff4a444e3f29924807844b27e8f84",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "fb47ee9b91fcf00faa17265598487a60fb69b7d5815f1994276abb0120632fd8",
+            "605f63c119e1220f52bbc2eb0db811b31f60a817d95cc1a6575024e226040f82",
         )
 
     def test_favicon_is_unchanged(self):

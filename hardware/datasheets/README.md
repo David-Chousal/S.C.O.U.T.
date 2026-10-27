@@ -26,10 +26,13 @@ any open issue. In particular:
   **[ADR-0002](../../docs/decisions/0002-lifepo4-charging-path.md)** remain open. The Rev A
   schematic's LiPo + external-charger path is evidence toward a decision, not the decision
   itself.
-- **[SCO-47](https://linear.app/scout1/issue/SCO-47)** (SEN0189 non-inverting front end)
-  remains open. The datasheet here confirms the sensor's raw polarity and the schematic
-  implements a non-inverting divider, but the issue's bench-test acceptance criterion has not
-  been performed.
+- **[SCO-47](https://linear.app/scout1/issue/SCO-47)** (SEN0189 non-inverting front end) is
+  largely moot since 2026-10-06: the prototype uses the **Seeed Grove 101020752** at 3.3 V with
+  no front end. Seeed publishes no PDF datasheet for it, only a
+  [wiki page](https://wiki.seeedstudio.com/Grove-Turbidity-Sensor-Meter-for-Arduino-V1.0/)
+  (registered as `grove-turbidity-wiki`). The SEN0189 files here remain the record of the
+  original choice; the polarity bench check now applies to the Grove sensor
+  ([SCO-25](https://linear.app/scout1/issue/SCO-25)).
 
 ## Excluded on purpose
 

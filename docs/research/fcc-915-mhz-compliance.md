@@ -13,7 +13,7 @@
 > Investigation for [SCO-19](https://linear.app/scout1/issue/SCO-19), 2026-08-31.
 >
 > **Current configuration (2026-10-16):** BW500 / SF12 / CR4-8 at **+11 dBm**, fixed 915.0 MHz,
-> 3 transmit slots a day × 3 blind repeats. Sections 1–3 describe the configuration *before* the
+> 3 transmit slots a day, one copy each (since 2026-10-23). Sections 1–3 describe the configuration *before* the
 > 2026-09-01 fix. The open questions for a qualified reviewer are in the
 > [FCC Review Brief](fcc-review-brief.md) ([SCO-104](https://linear.app/scout1/issue/SCO-104)).
 
@@ -270,3 +270,9 @@ from. This investigation answers it conditionally:
 Either way, **82 B is not where any real limit sits** — it is the byte-sum of an abandoned
 ESP32-C3 packet layout (see [SCO-40](https://linear.app/scout1/issue/SCO-40)). The ceiling should
 be re-derived once this decision lands.
+
+> **Resolved 2026-10-23 ([SCO-97](https://linear.app/scout1/issue/SCO-97)): 140 B, not 251 B.**
+> The FCC side is as above, but the firmware adds its own limit this analysis did not consider:
+> `send()` waits at most 2 s. A full 251 B frame takes ~3.0 s at BW500/SF12 and would time out.
+> The ceiling is 140 B (1,739 ms on air, under 90% of the timeout), shared by firmware and shore
+> and checked in CI.

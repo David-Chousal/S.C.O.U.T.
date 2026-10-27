@@ -31,15 +31,19 @@ _DOC_ENV = f"{_REPO}/blob/main/docs/analysis/telemetry-methodology.md"
 _ALERT_ROWS = [
     ["No Stress", "HotSpot ≤ 0", "At or below the climatological maximum"],
     ["Bleaching Watch", "0 < HotSpot < 1 °C", "Warm, not yet stressful"],
-    ["Bleaching Warning", "HotSpot ≥ 1 °C, DHW < 4", "Stress accumulating"],
-    ["Alert Level 1", "HotSpot ≥ 1 °C, 4 ≤ DHW < 8", "Significant bleaching likely"],
-    ["Alert Level 2", "HotSpot ≥ 1 °C, DHW ≥ 8", "Severe bleaching + mortality likely"],
+    ["Bleaching Warning", "HotSpot ≥ 1 °C, DHW < 4", "Risk of possible bleaching"],
+    ["Alert Level 1", "HotSpot ≥ 1 °C, 4 ≤ DHW < 8", "Risk of reef-wide bleaching"],
+    ["Alert Level 2", "HotSpot ≥ 1 °C, 8 ≤ DHW < 12",
+     "Reef-wide bleaching; heat-sensitive corals die"],
+    ["Alert Level 3", "HotSpot ≥ 1 °C, 12 ≤ DHW < 16", "Risk of multi-species mortality"],
+    ["Alert Level 4", "HotSpot ≥ 1 °C, 16 ≤ DHW < 20", "Severe mortality, over half of corals"],
+    ["Alert Level 5", "HotSpot ≥ 1 °C, DHW ≥ 20", "Near-complete mortality, over 80% of corals"],
 ]
 
 _TRACK_ROWS = [
     ["Water temperature", "Digital thermometer (DS18B20)",
      "Daily mean, HotSpot, Degree Heating Weeks, bleaching alert level"],
-    ["Turbidity", "Optical sensor (SEN0189)",
+    ["Turbidity", "Optical transmittance sensor (Seeed Grove)",
      "Daily median, relative anomaly events (runoff, resuspension, plumes)"],
     ["Battery & power", "Bus voltage",
      "Daily minimum, state-of-health, data completeness"],
@@ -152,8 +156,8 @@ def _alerts(ctx: SiteContext) -> str:
     figure = (
         '<figure class="hero-figure reveal stack-7 ratio-16-9">'
         f'{media}<div class="pill-scrim"></div>{credit}'
-        "<figcaption>Bleached staghorn coral, Great Barrier Reef, 2017 — the Alert Level 2 "
-        "outcome the thresholds above are meant to anticipate.</figcaption></figure>"
+        "<figcaption>Bleached staghorn coral, Great Barrier Reef, 2017 — the kind of severe "
+        "bleaching the thresholds above are meant to anticipate.</figcaption></figure>"
     ) if media else ""
     return c.section(
         c.head_block("Warning tiers", "Bleaching alert levels")
@@ -207,8 +211,9 @@ def _soundscape() -> str:
         "Okinawa</strong>: eight monthly sessions from August 2017 to July 2018, a stand-in "
         "until S.C.O.U.T. records its own audio.</p>"
         '<p class="callout"><strong>Raw audio never leaves the buoy.</strong> Waveform data is '
-        "far too large for a 30-byte LoRa packet, so the buoy stores recordings on board and "
-        "transmits only summary statistics.</p>"
+        "far too large for a 44-byte LoRa packet, so the buoy stores recordings on board and "
+        "transmits only a 14-byte summary of each one: three band levels, an NDSI estimate, a "
+        "snap count and a clip count.</p>"
         f'<p><a class="textlink" href="{_DOC_ACOUSTIC}">Full bioacoustic methodology</a></p>'
         "</div></div>",
         cls="section-sm",

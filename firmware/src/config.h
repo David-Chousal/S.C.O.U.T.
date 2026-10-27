@@ -28,10 +28,19 @@ static const bool TX_EVERY_SAMPLE = false;
 #endif
 /* Fixed LoRa transmit slots, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
  * decided 2026-10-16). Each sits 10 min after a sample so the radio never overlaps a sensor
- * read, and the shore station listens on the same table. Change slot times here only. */
+ * read, and the shore station listens on the same table. Change slot times here only.
+ * How many are used is a runtime setting since SCO-198, the daily transmit count (1-3, default
+ * 3, held in retained RAM): scout_select_tx_slots picks 1 → 00:10, 2 → 00:10 + 16:10,
+ * 3 → all three. The range is pending ECE power-budget sign-off. */
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
-static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};    // 3 recordings/day (EDD §9)
+// Audio: one 60 s clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
+// later carries the clip just before it. Clip length is ACOUSTIC_CLIP_SECONDS below.
+static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};
+/* Housing humidity alert (SCO-205). ⚠️ PROVISIONAL: a placeholder until the calibration in
+ * SCO-204 (sealed chamber, known water added) gives a threshold from data. Rows at or above it
+ * carry HUMIDITY_HIGH, which reaches the dashboard as a fault. */
+static const float HUMIDITY_ALERT_RH_PCT = 70.0f;
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
 /* Bench clock set (SCO-201): at boot, wait this long for USB and then for a "T<unix-epoch>"
  * line. Only at power-on/reset, never on a wake, so the battery cost is one ~8 s window. */
@@ -47,7 +56,9 @@ static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a c
  * Provisional millivolts — depend on the final battery/charging path (ADR-0002). */
 static const uint16_t BATTERY_CONSERVE_MV = 3200;                  // drop into conserve below this
 static const uint16_t BATTERY_CRITICAL_MV = 3100;                  // drop into critical below this
-static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;                 // conserve: every 3rd slot (1/day)
+// conserve: every 3rd slot in use, so only the first (00:10), which every transmit count keeps:
+// CONSERVE never sends more than the setting (SCO-198).
+static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
@@ -103,8 +114,8 @@ static const int8_t LORA_TX_POWER_DBM = 11;
  * SF12's processing gain (−20 dB demodulator SNR limit vs SF7's −7.5) more than repays it,
  * leaving the compliant link ~6.5 dB MORE sensitive than the non-compliant one it replaces
  * — modelled −131.0 dBm vs −124.5 dBm, roughly 2× the free-space range. Airtime rises to
- * ~559 ms for a 30-byte frame, which is irrelevant at one packet per day: 0.0019% duty
- * cycle, ~20 mAh per YEAR. Reproduce with scripts/lora_airtime.py.
+ * ~559 ms for a 30-byte frame (690 ms for the 44-byte v3 packet), irrelevant at one packet
+ * a day: 0.0019% duty cycle, ~20 mAh per YEAR. Reproduce with scripts/lora_airtime.py.
  *
  * Wider bandwidth also widens LoRa's carrier-frequency-offset tolerance (roughly ±25% of
  * bandwidth), which is a quiet win for a buoy whose crystal will swing with sea-surface
@@ -121,6 +132,20 @@ static const int8_t LORA_TX_POWER_DBM = 11;
  * The SHORE STATION MUST MATCH these three bytes exactly, and additionally needs the
  * SX1276 500 kHz receiver-sensitivity erratum (reg 0x36 = 0x02, reg 0x3A = 0x64) which
  * does not apply to this transmit-only node. Tracked on SCO-24. */
+/* ── Settings downlink (SCO-198, OTA design §2-§3) ─────────────────────────────
+ * Built only with -DSCOUT_DOWNLINK, which is OFF in every shipped environment: the listen
+ * window is a power-budget line that needs Isabella's sign-off, and the shore must not transmit
+ * off the bench until the RFM95W FeatherWing's FCC authorization is checked (OTA §8).
+ * With it on, the radio listens DOWNLINK_LISTEN_MS after each send for one authenticated
+ * SET_TX_COUNT frame (lib/scout_downlink), keyed by src/downlink_key.h, which is never committed.
+ * ⚠️ Window length, RX current and shore turnaround are design figures, not bench-measured. */
+static const uint16_t DOWNLINK_LISTEN_MS = 1000;   // OTA §2: 1.0 s ≈ 0.019 mAh/day at 3 slots
+// A frame whose header arrived inside the window is received to its end: one ceiling airtime.
+static const uint16_t DOWNLINK_FRAME_MAX_MS = 1739;
+// A command's counter (the shore's clock) must be within a day of the buoy's, so a recorded
+// frame cannot be replayed after a cold start resets the stored counter.
+static const uint32_t DOWNLINK_MAX_SKEW_S = 86400;
+
 static const uint8_t LORA_MODEM_CONFIG1 = 0x98;
 static const uint8_t LORA_MODEM_CONFIG2 = 0xC4;
 static const uint8_t LORA_MODEM_CONFIG3 = 0x04;
@@ -128,5 +153,82 @@ static const uint8_t LORA_MODEM_CONFIG3 = 0x04;
 /* ── ADC ──────────────────────────────────────────────────────────────────── */
 static const uint8_t ADC_RESOLUTION_BITS = 12;   // SAMD21 12-bit
 static const float ADC_VREF_V = 3.3f;
+
+/* ── Acoustic summary (ADR-0010, SCO-233) ─────────────────────────────────────
+ * The 14-byte summary of each recording that rides in the next packet. Computed by
+ * lib/scout_acoustic, a port of analytics/utils/acoustic_summary.py (the specification).
+ * EVERY VALUE HERE MUST EQUAL AcousticConfig / SECTIONS IN THAT FILE;
+ * analytics/utils/tests/test_acoustic_summary.py parses this block and fails on drift.
+ *
+ * Audio capture parameters are settled by ADR-0011 (2026-10-25): 3 × 60 s clips a day, 22,050 Hz,
+ * the Feather's 12-bit ADC on A2. The PCM1808 is the EDD's production-target ADC only; if a
+ * build ever moves to it, ACOUSTIC_ADC_BITS, the clip margin and the snap floor change, and the
+ * filter coefficients must be regenerated (acoustic_summary.py --print-config) for any other
+ * sample rate. Each transmit slot carries the most recent recording since the previous slot
+ * (ScoutAcousticSlot). */
+static const uint32_t ACOUSTIC_SAMPLE_RATE_HZ = 22050;  // the coefficients below assume this
+static const uint16_t ACOUSTIC_CLIP_SECONDS = 60;       // one recording (ADR-0011)
+static const uint8_t ACOUSTIC_ADC_BITS = ADC_RESOLUTION_BITS;
+// Centred sample << 3: a full-scale 12-bit swing becomes ±16,384, leaving the filters 6 dB of
+// headroom inside int16 before they saturate.
+static const uint8_t ACOUSTIC_INPUT_SHIFT = 3;
+// DC blocker y += Δx − y/2^9: pole at 1 − 1/512, −3 dB at ≈ 6.9 Hz. Removes the preamp's
+// mid-rail bias without touching the 0–200 Hz anthro band. 8 extra state bits keep its own
+// rounding from leaving a DC residue.
+static const uint8_t ACOUSTIC_DC_POLE_SHIFT = 9;
+static const uint8_t ACOUSTIC_DC_FRAC_BITS = 8;
+// Band filters: bilinear Butterworth biquads at 22,050 Hz, generated by
+// `python -m utils.acoustic_summary --print-config` (run from analytics/). Rows are
+// {c1, gain, a1, a2, shift}: c1 = +2 low-pass / −2 high-pass, a1 a2 in Q14, gain × 2^shift.
+//   0–1  anthro: 4th-order low-pass at 200 Hz (Q 0.541, 1.307)
+//   2–3  mixed:  2nd-order high-pass at 200 Hz, then low-pass at 1,000 Hz
+//   4–5  bio:    2nd-order high-pass at 1,000 Hz, then low-pass at 8,000 Hz
+// Bands equal analytics/utils/acoustic_indices.py (ANTHRO 0–200, MIXED 200–1,000, BIO
+// 1,000–8,000 Hz). The mixed band reads ≈ 0.4 dB low at its centre: two 2nd-order skirts.
+static const int32_t ACOUSTIC_BIQUADS[6][5] = {
+    {2, 26112, -31079, 14746, 25},
+    {2, 26624, -32017, 15685, 25},
+    {-2, 31474, -31448, 15115, 15},
+    {2, 17648, -26232, 10951, 20},
+    {-2, 26784, -26232, 10951, 15},
+    {2, 17601, 13880, 4938, 15},
+};
+// Snap detector on the bio band (decision log 2026-10-25). A snap is a bio-band sample above
+// 8× the running mean |bio| (Q4: 128 = 8.0). 8× keeps Gaussian noise (mean |x| ≈ 0.8σ, so
+// 6.4σ) from ever counting while still catching the louder, nearer clicks in the chorus: on the
+// Sesoko clips it counts 26–70 snaps/s (docs/analysis/acoustic-summary-validation.md).
+static const uint8_t ACOUSTIC_SNAP_THRESHOLD_Q4 = 128;
+// Absolute floor on that threshold: 8 ADC LSB in working units, so near-silence (where the
+// running mean is a fraction of an LSB) does not count quantisation noise as snaps.
+static const uint16_t ACOUSTIC_SNAP_MIN_ABS = 64;
+// Refractory window after a snap: 66 samples = 3.0 ms. Covers the click and its filter ringing
+// and early reflections, so one snap counts once; caps the count at ≈ 334 snaps/s.
+static const uint16_t ACOUSTIC_SNAP_REFRACTORY_SAMPLES = 66;
+// Running floor: time constant 2^12 samples ≈ 186 ms, not updated during a snap or its window.
+static const uint8_t ACOUSTIC_SNAP_FLOOR_SHIFT = 12;
+// First 2,048 samples (≈ 93 ms) only train the floor (faster, 2^7) and never count.
+static const uint16_t ACOUSTIC_SNAP_WARMUP_SAMPLES = 2048;
+static const uint8_t ACOUSTIC_SNAP_WARMUP_SHIFT = 7;
+// Clip counter: a sample within 16 counts (0.4% of full scale) of either rail. Allows for the
+// SAMD21 ADC's few-LSB offset and gain error and a preamp that cannot quite reach the rails.
+// Counts in ADC codes, so it depends on ACOUSTIC_ADC_BITS.
+static const uint16_t ACOUSTIC_CLIP_MARGIN = 16;
+
+/* ── Audio capture (SCO-231, ADR-0011; drivers/audio_capture.h) ───────────────
+ * TC3 overflows at ACOUSTIC_SAMPLE_RATE_HZ (48 MHz / 2177 = 22,048.7 Hz, 59 ppm slow; the WAV
+ * header says 22,050), each overflow starts one ADC conversion on PIN_AUDIO_PREAMP through the
+ * event system, and the DMA moves every result into a ring of blocks. The main loop feeds each
+ * full block to the acoustic summary, converts it to 16-bit PCM and appends it to the WAV file.
+ * ⚠️ Written against the SAMD21 datasheet; not yet run on hardware (no hydrophone or preamp). */
+// 4 blocks of 2,048 samples (93 ms each, 16 KB of SRAM): up to 3 blocks (279 ms) can queue
+// while one SD write stalls before any sample is lost. Raise the block count, not the size, if
+// the bench shows longer SD stalls; the sample-count check reports any loss either way.
+static const uint16_t AUDIO_DMA_BLOCK_SAMPLES = 2048;
+static const uint8_t AUDIO_DMA_BLOCKS = 4;
+// Preamp settle time after the A3 gate turns it on, before the clip starts. ⚠️ PROVISIONAL:
+// set from the chosen amplifier's start-up (SCO-216) once it is on the bench.
+static const uint16_t AUDIO_PREAMP_WARMUP_MS = 200;
+// A recording is abandoned if no DMA block arrives for this long: the ADC or DMA is not running.
+static const uint16_t AUDIO_STALL_TIMEOUT_MS = 1000;
 
 #endif /* SCOUT_CONFIG_H */

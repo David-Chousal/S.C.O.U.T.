@@ -8,7 +8,7 @@ from ..context import SiteContext
 TITLE = "Technology · S.C.O.U.T."
 DESCRIPTION = (
     "How the S.C.O.U.T. buoy works: battery power, a duty-cycled sensing state machine built to run "
-    "unattended for a year, a 30-byte LoRa packet in three fixed slots a day to a shore station, and a "
+    "unattended for a year, a 44-byte LoRa packet in three fixed slots a day to a shore station, and a "
     "self-contained telemetry pipeline that publishes the dashboard."
 )
 
@@ -191,8 +191,8 @@ def _platform(ctx: SiteContext) -> str:
                       "board, regulated 5 V system rail. Longer-term deployment battery "
                       "architecture remains under evaluation (ADR-0002)"),
             ("Temperature", "DS18B20 digital thermometer (±0.5 °C)"),
-            ("Turbidity", "DFRobot SEN0189 through a non-inverting level-safe divider — "
-                          "schematic/datasheet verified, bench validation pending"),
+            ("Turbidity", "Seeed Grove 101020752 optical transmittance sensor at 3.3 V, "
+                          "wired straight to the ADC — bench validation pending"),
             ("Acoustic", "Planned for a later electrical revision; hydrophone/interface "
                          "selection under review"),
             ("Enclosure", "4-inch Schedule 40 PVC, O-ring end caps"),
@@ -217,18 +217,19 @@ def _packet() -> str:
     return c.section(
         '<div class="bento align-start">'
         '<div class="col-3">'
-        + c.head_block("The packet", "30 bytes, three times a day")
+        + c.head_block("The packet", "44 bytes, three times a day")
         + '<div class="prose stack-5"><p>The binding constraint on a LoRa link '
         "is bandwidth. The buoy stores full data locally and transmits only its latest compact "
         "reading, three times a day, rather than raw waveforms. The packet layout is a versioned "
         "contract: the firmware encoder and the shore decoder are byte-identical, checked by a "
         "cross-language test so the two can never silently drift apart.</p>"
         '<p class="callout"><strong>Raw audio is never transmitted.</strong> There is not enough '
-        "LoRa bandwidth for waveform data, so the buoy stores audio on board and sends only the "
-        "30-byte packet. This is a settled design decision.</p></div></div>"
+        "LoRa bandwidth for waveform data, so the buoy stores audio on board and sends a 14-byte "
+        "summary of each recording in the 44-byte packet. This is a settled design decision.</p>"
+        "</div></div>"
         '<div class="col-3">'
         + c.spec([
-            ("Packet size", "30 bytes (82-byte budget ceiling)"),
+            ("Packet size", "44 bytes (140-byte ceiling)"),
             ("Cadence", "3 fixed slots / day: 00:10, 08:10 and 16:10 UTC"),
             ("Sampling", "1 record / 30 min (48 / day)"),
             ("Carries", "The latest temperature, turbidity &amp; battery reading"),

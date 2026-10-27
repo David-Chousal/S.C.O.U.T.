@@ -16,9 +16,11 @@ import re
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from math import gcd
 from typing import Optional
 from maad import sound, features
 from pathlib import Path
+from scipy.signal import resample_poly
 
 
 # ── Frequency band definitions (Hz) ──────────────────────────────────────────
@@ -70,12 +72,15 @@ MIXED_BAND  = (200, 1000)    # fish-vocal / small-vessel overlap — excluded fr
 
 def parse_timestamp(filename: str) -> Optional[datetime]:
     """
-    Extract datetime from Sesoko-style filenames:
-        SSK_Site_A_YYYYMMDD_HHMMSS.wav
+    Extract datetime from either recording layout:
+        SSK_Site_A_YYYYMMDD_HHMMSS.wav     Sesoko dataset
+        YYYYMMDD/HHMMSSZ.WAV               S.C.O.U.T. buoy SD card (/AUDIO/, UTC; SCO-231)
 
-    Returns a datetime object, or None if the pattern is not found.
+    Pass the buoy's day folder with the name ("20261025/080000Z.WAV"). Returns a datetime
+    object, or None if neither pattern is found.
     """
-    match = re.search(r"(\d{8})_(\d{6})", filename)
+    match = re.search(r"(\d{8})_(\d{6})", filename) or re.search(
+        r"(\d{8})[/\\](\d{6})Z\.wav$", filename, re.IGNORECASE)
     if not match:
         return None
     try:
@@ -85,9 +90,19 @@ def parse_timestamp(filename: str) -> Optional[datetime]:
 
 
 def load_audio(wav_path: str, target_sr: int = 22050):
-    """Load a WAV file. Returns (signal, sample_rate)."""
-    s, sr = sound.load(wav_path, sr=target_sr, mono=True)
-    return s, sr
+    """Load a WAV file's left channel, detrended, resampled to ``target_sr``.
+
+    Returns (signal, sample_rate). ``maad.sound.load`` has no resampling argument: until
+    2026-10-25 this passed it ``sr=`` and ``mono=``, which it silently ignored, so every index
+    was computed at the file's own rate (44.1 kHz for Sesoko) — SCO-235. The polyphase resample
+    makes the shore indices use the same 22.05 kHz the buoy records at (ADR-0011).
+    """
+    s, sr = sound.load(wav_path, channel="left", detrend=True)
+    sr = int(sr)
+    if sr != target_sr:
+        common = gcd(sr, target_sr)
+        s = resample_poly(s, target_sr // common, sr // common)
+    return s, target_sr
 
 
 def compute_spectrograms(s, sr: int):
@@ -153,7 +168,7 @@ def compute_all_indices(wav_path: str, target_sr: int = 22050) -> dict:
     # Returns: scalar
     adi = features.acoustic_diversity_index(Sxx_amp, fn)
 
-    ts = parse_timestamp(path.name)
+    ts = parse_timestamp(f"{path.parent.name}/{path.name}")
 
     return {
         "filename":   path.name,
@@ -173,14 +188,15 @@ def process_directory(audio_dir: str, output_csv: str = None) -> pd.DataFrame:
     Compute indices for all WAV files in a directory.
 
     Args:
-        audio_dir:  Path to folder containing .wav files.
+        audio_dir:  Folder of .wav files, searched recursively so a buoy card's /AUDIO/
+                    (one folder per UTC day) works as well as a flat Sesoko session.
         output_csv: If provided, saves results to this CSV path.
 
     Returns:
         DataFrame with one row per file.
     """
     audio_dir = Path(audio_dir)
-    wav_files = sorted(audio_dir.glob("*.wav")) + sorted(audio_dir.glob("*.WAV"))
+    wav_files = sorted({p for p in audio_dir.rglob("*") if p.suffix.lower() == ".wav"})
 
     if not wav_files:
         raise FileNotFoundError(f"No WAV files found in {audio_dir}")

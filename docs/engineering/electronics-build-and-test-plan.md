@@ -97,7 +97,7 @@ LED, keep off), SDA/SCL (RTC).
 
 **Benchmarks**
 
-- [ ] 30 B packets received with valid CRC, **< 1% loss** on the bench
+- [ ] 44 B packets received with valid CRC, **< 1% loss** on the bench
 - [ ] TX current **≤ 100 mA**; time on air ≈ **0.56 s**
 - [ ] Outdoor line-of-sight range test with spring antennas, RSSI logged (aim ≥ 500 m)
 - [ ] Never transmit without an antenna attached
@@ -131,17 +131,19 @@ LED, keep off), SDA/SCL (RTC).
 
 ## Stage 7 — Hydrophone
 
-**Goal:** record the scheduled clips and confirm their cost. Part choice in [SCO-8](https://linear.app/scout1/issue/SCO-8).
+**Goal:** record the scheduled clips and confirm their cost. Part: the Aquarian H2dM ([SCO-8](https://linear.app/scout1/issue/SCO-8), settled 2026-10-12). The capture firmware is already written ([SCO-231](https://linear.app/scout1/issue/SCO-231)) and waits for this hardware.
 
 | Part | Source | Buy |
 |---|---|---|
-| Aquarian hydrophone, **3.5 mm plug-in-power** version | Aquarian Audio | **Later order 2**, after [SCO-8](https://linear.app/scout1/issue/SCO-8) |
+| Aquarian hydrophone, **3.5 mm plug-in-power** version | Aquarian Audio | **Later order 2** (part settled in [SCO-8](https://linear.app/scout1/issue/SCO-8); waits on funding) |
 | 3.3 V microphone preamp board | Adafruit / DigiKey | Later order 2 |
 | 16–32 GB industrial microSD | DigiKey / Mouser | Later order 2 |
 
 **Benchmarks**
 
-- [ ] 1-min clips at **22.05 kHz** on schedule (midnight 5×, dusk 5×, weekly diel day)
+- [ ] 1-min clips at **22.05 kHz** on schedule: 00:00, 08:00 and 16:00 UTC ([ADR-0011](../decisions/0011-audio-capture-parameters.md); was midnight 5×, dusk 5×, weekly diel day)
+- [ ] **1,323,000 samples per clip, none dropped** (the firmware reports a short clip as no recording), and a test tone's frequency correct in the WAV
+- [ ] CPU headroom with the acoustic summary running alongside the SD writes
 - [ ] Recording current **≤ ~76 mA**
 - [ ] Clips process cleanly through the acoustic pipeline; otherwise add a 24-bit audio ADC
 - [ ] Battery budget re-run with the measured hydrophone draw

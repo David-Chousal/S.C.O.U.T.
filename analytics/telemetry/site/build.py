@@ -33,6 +33,9 @@ _ALERT_CLASS = {
     "Bleaching Warning": "a-warning",
     "Alert Level 1": "a-alert1",
     "Alert Level 2": "a-alert2",
+    "Alert Level 3": "a-alert3",
+    "Alert Level 4": "a-alert4",
+    "Alert Level 5": "a-alert5",
 }
 
 _STATIC = Path(__file__).parent / "static"
@@ -181,7 +184,8 @@ def build_site(
     ribbon = None
     from .. import freshness
     fresh = freshness.assess(report.received[-1] if report.received else None,
-                             now=generated_at, faults=report.latest_flags)
+                             now=generated_at, faults=report.latest_flags,
+                             tx_count=report.tx_count)
     live = _live_stats(report, banner, web.status_line(fresh))
 
     def page(base: str, active: str, mod, body_html: str) -> str:

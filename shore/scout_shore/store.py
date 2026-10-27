@@ -1,9 +1,10 @@
 """Append decoded readings to daily CSV files, one per buoy per UTC day, matching the
 ``/DATA/<buoy_id>_<YYYYMMDD>.csv`` layout in ``docs/engineering/data-schema.md``.
 
-Writes are **idempotent** on ``(buoy_id, record_seq)``. The buoy sends each daily packet
-several times without waiting for an acknowledgement (see ``firmware/lib/scout_link``), so
-the same reading legitimately arrives more than once and must collapse to a single row —
+Writes are **idempotent** on ``(buoy_id, record_seq)``. The same reading can legitimately
+arrive more than once (a re-received frame, extra copies per slot if
+``firmware/lib/scout_link`` is set to send them, an SD-card import) and must collapse to a
+single row —
 otherwise the duplicates would inflate the QC completeness figure in
 ``analytics/telemetry/qc.py`` and mask real gaps. ``record_seq`` survives buoy resets
 (retained no-init RAM), so the pair identifies a reading for the life of the deployment.
@@ -48,6 +49,8 @@ class CsvStore:
             return None
 
         new_file = not path.exists()
+        if not new_file:
+            _upgrade_header(path)
         with path.open("a", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=COLUMNS)
             if new_file:
@@ -80,3 +83,22 @@ class CsvStore:
                         continue
         self._seen[path] = keys
         return keys
+
+
+def _upgrade_header(path: Path) -> None:
+    """Rewrite a daily file written under an older schema with the current header.
+
+    A shore station upgraded mid-day would otherwise append 23-column v3 rows under a 16-column
+    v2 header, and every reader would misalign them. Old rows keep their values and their own
+    ``schema_version``; the columns they never had are left blank.
+    """
+    with path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) == COLUMNS:
+            return
+        rows = list(reader)
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({column: row.get(column) or "" for column in COLUMNS})

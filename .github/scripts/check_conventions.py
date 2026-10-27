@@ -40,6 +40,7 @@ ALLOW_BASENAMES = {
     "CODEOWNERS", "pull_request_template.md", "SECURITY.md", "CONTRIBUTING.md",
     ".gitignore", ".gitattributes", ".gitmodules", ".gitkeep",
     "requirements.txt", "platformio.ini", "Makefile",
+    "next.config.ts",  # Next.js reads only this exact name and has no --config flag (console/web)
     "OFL.txt",  # SIL Open Font License — the standard, upper-case name shipped with a font
 }
 

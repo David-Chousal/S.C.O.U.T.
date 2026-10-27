@@ -25,9 +25,10 @@ Everything conforms to the
 [On-Board CSV Data Schema](../docs/engineering/data-schema.md), so shore-decoded data and
 retrieved on-buoy data share one format and one analytics path.
 
-**Writes are idempotent.** The buoy transmits each daily packet several times without waiting
-for an acknowledgement (blind repetition — see `firmware/lib/scout_link`), so the same reading
-legitimately arrives more than once. `CsvStore` keys on `(buoy_id, record_seq)` and skips
+**Writes are idempotent.** The same reading can legitimately arrive more than once: a frame
+received twice, a buoy configured to send extra copies per slot (`SCOUT_LINK_REPEATS_NORMAL` in
+`firmware/lib/scout_link`; one copy since 2026-10-23), or an SD-card import of readings the radio
+already delivered. `CsvStore` keys on `(buoy_id, record_seq)` and skips
 copies it has already stored, seeding that key set from the daily file on disk so a restarted
 shore station does not re-admit them. `Receiver.stats.duplicates` counts the skips: they are
 expected traffic, not errors. Without this, repeats would triple every row and inflate the
@@ -101,7 +102,7 @@ is never labelled as a simulation.
 The buoy transmits each daily packet a few times and never waits for an acknowledgement. If
 shore misses every copy — a power cut, a storm, the station down for maintenance — that reading
 exists **only** on the buoy's SD card. And even the readings that did arrive are lossy: a
-30-byte packet cannot carry `turbidity_v`, `turbidity_ntu` or the audio filename, so those cells
+44-byte packet cannot carry `turbidity_v`, `turbidity_ntu` or the audio filename, so those cells
 are empty in the shore CSV while the card has them.
 
 ```bash
@@ -125,8 +126,8 @@ prevent.
 
 ## Contract note
 
-`packet.py` is the **verified wire format** (30 bytes, well under the 82-byte daily budget
-ceiling in EDD §10 — see [`docs/hub/facts.md`](../docs/hub/facts.md) for why those are two
-different numbers, not a contradiction). It's mirrored byte-identical by the firmware C
+`packet.py` is the **verified wire format** (44 bytes in v3, under the 140-byte payload ceiling
+that `LORA_PAYLOAD_BUDGET_BYTES` shares with the firmware — see
+[`docs/hub/facts.md`](../docs/hub/facts.md)). It's mirrored byte-identical by the firmware C
 encoder, CI-enforced via a golden vector (`firmware/test/test_packet`). `turbidity_v` still
 uses provisional ADC constants pending the analog front-end design.

@@ -21,10 +21,10 @@ import html
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import bleaching, charts, drift, freshness
+from . import acoustic, battery_life, bleaching, charts, drift, freshness
 from .aggregate import SAMPLES_PER_DAY
 from .pipeline import TelemetryReport, write_daily_csv, write_summary_json
-from .site import layout
+from .site import components, layout
 
 # Bleaching alert → CSS class (colour lives in the design tokens, theme-aware).
 _ALERT_CLASS = {
@@ -33,6 +33,9 @@ _ALERT_CLASS = {
     bleaching.ALERT_WARNING: "a-warning",
     bleaching.ALERT_LEVEL_1: "a-alert1",
     bleaching.ALERT_LEVEL_2: "a-alert2",
+    bleaching.ALERT_LEVEL_3: "a-alert3",
+    bleaching.ALERT_LEVEL_4: "a-alert4",
+    bleaching.ALERT_LEVEL_5: "a-alert5",
 }
 # Biofouling verdict → the same severity palette. Distinct labels keep the two readable as
 # different things: a bleaching alert is about the reef, a drift verdict about the instrument.
@@ -96,11 +99,120 @@ def _drift_note(drift) -> str:
     )
 
 
+def housing_humidity(report: TelemetryReport) -> tuple[str, str]:
+    """The housing-humidity card's value and class, from the newest packet's flags (SCO-205).
+
+    A buoy on schema v1 has no humidity sensor, so absent flags there mean "unknown", not OK.
+    """
+    if report.latest_schema_version < 2:
+        return "—", ""
+    if "HUMIDITY_FAIL" in report.latest_flags:
+        return "Sensor fault", "a-warning"
+    if "HUMIDITY_HIGH" in report.latest_flags:
+        return "Alert", "a-alert2"
+    return "OK", ""
+
+
+_BANDS = (("anthro_db", "anthro", "Boats · 0–200 Hz"), ("mixed_db", "mixed", "Fish · 0.2–1 kHz"),
+          ("bio_db", "bio", "Shrimp · 1–8 kHz"))
+_BAR_FLOOR_DB = -60.0  # the band bars run from −60 dBFS (empty) to 0 dBFS (full scale)
+
+
+def _db_text(value: float | None) -> str:
+    return "silent" if value is None else f"{value:.1f}"
+
+
+def acoustic_cards(report: TelemetryReport) -> str:
+    """NDSI, snaps and clipping for the newest recording (ADR-0010); one card until one arrives."""
+    a = report.acoustic
+    if a is None:
+        return _stat("Reef sound", "—", sub="no recording received yet")
+    latest = a.latest
+    clipping_cls = "a-warning" if a.recent_clipping else ""
+    return "".join([
+        _stat("Reef sound (NDSI)", f"{latest.ndsi:+.2f}", sub="buoy estimate · latest clip"),
+        _stat("Snaps / recording", f"{latest.snaps:,}" + ("+" if latest.snaps >= acoustic.COUNTER_MAX else ""),
+              sub=f"median {a.median_snaps:,.0f}"),
+        _stat("Hydrophone clipping", "Clipping" if a.recent_clipping else "OK", cls=clipping_cls,
+              sub=f"{a.recent_clipping} of last {a.recent_count} clips"),
+    ])
+
+
+def _band_bars(latest: acoustic.Recording) -> str:
+    rows, spoken = [], []
+    for attr, key, label in _BANDS:
+        value = getattr(latest, attr)
+        width = 0.0 if value is None else max(0.0, min(1.0, 1 - value / _BAR_FLOOR_DB)) * 100
+        rows.append(f'<div class="bd"><span>{html.escape(label)}</span>'
+                    '<svg class="bd-bar" viewBox="0 0 100 1" preserveAspectRatio="none" '
+                    f'aria-hidden="true" focusable="false"><rect class="bd-{key}" '
+                    f'width="{width:.1f}" height="1"/></svg>'
+                    f'<span class="mono">{_db_text(value)}</span></div>')
+        spoken.append(f"{label} {_db_text(value)} dBFS")
+    stamp = f"{latest.at:%Y-%m-%d %H:%M} UTC"
+    return (f'<div class="bands" role="img" aria-label="Band levels, recording of {stamp}: '
+            f'{html.escape("; ".join(spoken))}">{"".join(rows)}</div>')
+
+
+def _acoustic_panel(report: TelemetryReport) -> str:
+    a = report.acoustic
+    if a is None:
+        return ""
+    latest = a.latest
+    clip_note = (f'<span class="pn-verdict a-warning">Clipping: {latest.clips:,} samples near the '
+                 f"rails in the latest clip</span> — gain too high or a loud source close by; its "
+                 "levels and snap count read low. " if latest.clipping else "")
+    note = (f'<p class="panel-note">{clip_note}Latest recording {latest.at:%Y-%m-%d %H:%M} UTC: '
+            f"{latest.snaps:,} snaps (median {a.median_snaps:,.0f} per recording). Levels are dBFS, "
+            "relative until the hydrophone chain is calibrated. NDSI is the buoy's estimate from "
+            "the same bands as the shore index; it follows the shore value but does not equal it."
+            "</p>")
+    chart = charts.chart(list(a.ndsi_daily), series="ndsi", title="Daily mean buoy NDSI",
+                         unit="NDSI",
+                         legend_extra="<span>+1 = reef sound · −1 = boat noise</span>")
+    return _panel("Reef sound", "dBFS · uncalibrated", _band_bars(latest) + chart, note=note)
+
+
+def tx_count_text(report: TelemetryReport) -> tuple[str, str]:
+    """The transmit-count card's value and note: what the newest packet reports (SCO-198)."""
+    if report.tx_count is None:
+        return f"{freshness.DEFAULT_TX_COUNT} a day", "default · buoy does not report it yet"
+    return f"{report.tx_count} a day", "as the buoy last reported"
+
+
+def _schedule_panel(report: TelemetryReport) -> str:
+    """Battery life for each transmit count (SCO-198), from the power budget's own model.
+
+    Shows the plan of record, two D cells (ADR-0007), in months so it fits a half-width panel
+    at 375 px; one cell is half of each figure. Days and the one-cell case are in the model.
+    """
+    best, pessimistic = battery_life.SCENARIOS
+    in_use = report.tx_count or freshness.DEFAULT_TX_COUNT
+    rows = [[f"{n} a day" + (" · in use" if n == in_use else "")]
+            + [f"{battery_life.estimate(s, n, 2).months:.1f} mo" for s in (best, pessimistic)]
+            for n in battery_life.ALLOWED_TX_COUNTS]
+    table = components.data_table(
+        "Estimated battery life, two D cells", ["Transmits", "Best", "Pessimistic"], rows,
+        num_cols={1, 2})
+    radio = battery_life.daily_mah(best, 3) - battery_life.daily_mah(best, 1)
+    note = ('<p class="panel-note"><span class="pn-verdict">Estimate</span> — from the power '
+            "budget's datasheet figures (2026-10-25 update, hydrophone 3 min a day), not a "
+            "measurement; one cell lasts half as long. Going from 1 to 3 transmits a day costs "
+            f"{radio:.3f} mAh a day, under half a percent of the draw, so the count mostly trades how fresh this page is, not "
+            "battery life. The range 1–3 is pending the electrical lead's power sign-off. The "
+            "team changes the count in the S.C.O.U.T. Console; the buoy reports it back in its "
+            "next packet.</p>")
+    # .viewdata carries the theme's compact rule for short panel tables: no sideways scroll.
+    return _panel("Transmit schedule", "estimate", f'<div class="viewdata">{table}</div>', note=note)
+
+
 def _cards(report: TelemetryReport) -> str:
     ts, tt = report.thermal_summary, report.temp_trend
     latest_alert = report.thermal[-1].alert if report.thermal else "n/a"
     latest_batt = next((d.battery_min_v for d in reversed(report.daily)
                         if d.battery_min_v is not None), None)
+    humidity, humidity_cls = housing_humidity(report)
+    tx_value, tx_note = tx_count_text(report)
     return "".join([
         _stat("Current alert", latest_alert, cls=_ALERT_CLASS.get(latest_alert, "")),
         _stat("Peak DHW", f"{ts.peak_dhw:g} °C-wk" if ts else "—"),
@@ -119,6 +231,9 @@ def _cards(report: TelemetryReport) -> str:
         (_stat("Clock-invalid rows", str(report.qc.clock_invalid), cls="a-warning",
                sub="excluded from timing") if report.qc.clock_invalid else ""),
         _stat("Latest battery", f"{latest_batt:g} V" if latest_batt is not None else "—"),
+        _stat("Housing humidity", humidity, cls=humidity_cls, sub="leak early warning"),
+        _stat("Transmits", tx_value, sub=tx_note),
+        acoustic_cards(report),
     ])
 
 
@@ -154,17 +269,23 @@ def _panels(report: TelemetryReport) -> list[str]:
     panels.append(_panel("Battery (daily minimum)", "V", charts.chart(
         _points(daily, "battery_min_v"), series="batt", title="Daily minimum battery voltage",
         unit="V")))
+    acoustic_panel = _acoustic_panel(report)
+    if acoustic_panel:
+        panels.append(acoustic_panel)
+    panels.append(_schedule_panel(report))
     return panels
 
 
 def _head(report: TelemetryReport, generated_at: datetime, published: str) -> str:
     fresh = freshness.assess(report.received[-1] if report.received else None,
-                             now=generated_at, faults=report.latest_flags)
+                             now=generated_at, faults=report.latest_flags,
+                             tx_count=report.tx_count)
     span = (f"{report.qc.first:%Y-%m-%d %H:%M} → {report.qc.last:%Y-%m-%d %H:%M} UTC"
             if report.qc.first and report.qc.last else "no data")
     mmm_line = ("MMM %.2f °C" % report.mmm if report.mmm is not None
                 else "no MMM set, DHW disabled")
-    history = freshness.slot_history(report.received, now=generated_at)
+    history = freshness.slot_history(report.received, now=generated_at,
+                                     tx_count=report.tx_count)
     return (
         '<section class="page-head"><div class="wrap">'
         '<p class="eyebrow">From the buoy</p>'
@@ -201,17 +322,19 @@ def render_html(
         '<a href="telemetry_summary.json">summary JSON</a> · '
         '<a href="../science/">how these metrics are computed</a></p>'
         '<p class="data-links">Each point is one day. The buoy samples every 30 minutes and '
-        "keeps the full record on board; this page shows what reached shore by radio, in three "
-        "transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
+        "keeps the full record on board; this page shows what reached shore by radio, in one to "
+        "three transmit slots a day. A single missing day is bridged with a dashed estimate; longer "
         "gaps stay empty until the on-board record is retrieved. Thermal stress is computed "
         "with NOAA Coral Reef Watch Degree Heating Weeks from measured days only. Turbidity is "
-        "uncalibrated and reported as relative events, not NTU.</p>"
+        "uncalibrated and reported as relative events, not NTU. Reef sound is a short summary "
+        "the buoy computes from each recording; the recordings themselves stay on board.</p>"
         "</div></section>"
     )
     return layout.document(
         title=title,
         description=("Live environmental telemetry from the S.C.O.U.T. reef-monitoring buoy: "
-                     "temperature and Degree Heating Weeks, turbidity events, and battery health."),
+                     "temperature and Degree Heating Weeks, turbidity events, reef sound, and "
+                     "battery health."),
         active="analytics",
         body=body,
         base=base,

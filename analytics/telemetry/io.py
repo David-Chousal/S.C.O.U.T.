@@ -22,6 +22,18 @@ REQUIRED_COLUMNS = (
 )
 
 
+# Schema v3 acoustic summary (ADR-0010). Optional: absent from v1/v2 files, blank without audio.
+ACOUSTIC_COLUMNS = (
+    "lvl_anthro_cdb",
+    "lvl_mixed_cdb",
+    "lvl_bio_cdb",
+    "lvl_broad_cdb",
+    "ndsi_e4",
+    "snap_count",
+    "clip_count",
+)
+
+
 class TelemetryFormatError(ValueError):
     """Raised when a CSV is missing required columns or a row cannot be parsed."""
 
@@ -53,7 +65,9 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             temp_c=_opt_float(row.get("temp_c", "")),
             turbidity_adc=_opt_int(row.get("turbidity_adc", "")),
             turbidity_v=_opt_float(row.get("turbidity_v", "")),
-            turbidity_ntu=_opt_float(row.get("turbidity_ntu", "")),
+            # Formazin attenuation units (SCO-12). CSVs written before 2026-10-23 named this
+            # column turbidity_ntu; read it so they keep loading.
+            turbidity_fau=_opt_float(row.get("turbidity_fau", row.get("turbidity_ntu", ""))),
             battery_v=_opt_float(row.get("battery_v", "")),
             uptime_s=_opt_int(row.get("uptime_s", "")),
             audio_file=row.get("audio_file", "").strip(),
@@ -61,6 +75,10 @@ def _parse_row(row: dict[str, str], line: int, source: Path) -> TelemetryRecord:
             soh=frozenset(s for s in row.get("soh", "").split("|") if s),
             schema_version=int(row.get("schema_version", "1") or "1"),
             fw_version=row.get("fw_version", "").strip(),
+            internal_temp_c=_opt_float(row.get("internal_temp_c", "")),
+            internal_humidity_pct=_opt_float(row.get("internal_humidity_pct", "")),
+            **{name: _opt_int(row.get(name) or "") for name in ACOUSTIC_COLUMNS},
+            tx_count=_opt_int(row.get("tx_count") or ""),
         )
     except (KeyError, ValueError) as exc:
         raise TelemetryFormatError(f"{source}:{line}: {exc}") from exc

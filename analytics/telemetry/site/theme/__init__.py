@@ -29,16 +29,16 @@ and degrade to a static composition. Only `transform` and `opacity` animate, so 
 off the main thread.
 
 The CSS lives in one module per area (``tokens``, ``base``, ``navigation``, ``hero``,
-``content``, ``footer``, ``dashboard``, ``motion``, ``chat``, ``utilities``) and is joined in cascade
-order, so a later module still overrides an earlier one exactly as the single string did.
+``content``, ``footer``, ``dashboard``, ``dashboard_tokens``, ``status``, ``motion``, ``chat``,
+``utilities``) and is joined in cascade order, so a later module still overrides an earlier one exactly as the single string did.
 """
 
 from __future__ import annotations
 
 import re
 
-from . import (base, chat, content, dashboard, fonts, footer, hero, motion, navigation, surfaces,
-               tokens, utilities)
+from . import (alert_labels, base, chat, content, dashboard, dashboard_tokens, fonts, footer,
+               hero, motion, navigation, status, surfaces, tokens, utilities)
 
 # ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
 # the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
@@ -86,9 +86,11 @@ def _minify(css: str) -> str:
 
 # Each bundle lists its modules in cascade order — later sections override earlier ones.
 _COMMON_HEAD = (tokens, base, navigation)
-_COMMON_TAIL = (motion, chat, utilities)
+_COMMON_TAIL = (status, motion, chat, utilities)
 _BUNDLES = {
-    "all": (*_COMMON_HEAD, hero, surfaces, content, footer, dashboard, *_COMMON_TAIL),
+    "all": (*_COMMON_HEAD, alert_labels, dashboard_tokens, hero, surfaces, content, footer,
+            dashboard, *_COMMON_TAIL),
     "site": (*_COMMON_HEAD, hero, surfaces, content, footer, *_COMMON_TAIL),
-    "dashboard": (*_COMMON_HEAD, surfaces, footer, dashboard, *_COMMON_TAIL),
+    "dashboard": (*_COMMON_HEAD, alert_labels, dashboard_tokens, surfaces, footer, dashboard,
+                  *_COMMON_TAIL),
 }

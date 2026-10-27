@@ -29,7 +29,7 @@ class TelemetryRecord:
     temp_c: float | None
     turbidity_adc: int | None
     turbidity_v: float | None
-    turbidity_ntu: float | None
+    turbidity_fau: float | None  # formazin attenuation units, once calibrated (SCO-12)
     battery_v: float | None
     uptime_s: int | None
     audio_file: str
@@ -37,6 +37,20 @@ class TelemetryRecord:
     soh: frozenset[str] = field(default_factory=frozenset)  # device State-of-Health bits
     schema_version: int = 1
     fw_version: str = ""
+    # Housing sensor (SCO-205, schema v2). SD-card rows only; live rows and v1 rows have None.
+    internal_temp_c: float | None = None
+    internal_humidity_pct: float | None = None
+    # Acoustic summary of the cycle's recording (ADR-0010, schema v3). None on rows without a
+    # recording and on v1/v2 rows; telemetry/acoustic.py reads them.
+    lvl_anthro_cdb: int | None = None
+    lvl_mixed_cdb: int | None = None
+    lvl_bio_cdb: int | None = None
+    lvl_broad_cdb: int | None = None
+    ndsi_e4: int | None = None
+    snap_count: int | None = None
+    clip_count: int | None = None
+    # Daily transmit count the buoy reported using (SCO-198, schema v4). None on older rows.
+    tx_count: int | None = None
 
 
 def has_valid_clock(record: TelemetryRecord) -> bool:

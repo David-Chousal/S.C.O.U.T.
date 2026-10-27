@@ -13,6 +13,11 @@
 - Each chapter lists its source material at the top; pull from there instead of rewriting.
 - Mark a section done by replacing `_Draft here._`.
 
+## LaTeX source
+
+The thesis is compiled in Overleaf with the SCU CSEN template. A versioned copy of that source,
+with Chapter 1 written, is in [`latex/`](latex/README.md).
+
 ## Chapters
 
 | File | Chapter |

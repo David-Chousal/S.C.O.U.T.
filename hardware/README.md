@@ -7,6 +7,14 @@ Schematics, PCB layout, wiring diagrams, and electrical test records for the SCO
 > manufacturer documentation. **This is schematic verification only: the Rev A electrical
 > system has not yet been physically assembled or tested.** PCB layout and physical wiring
 > diagrams are still not started. See **Rev A prototype schematic** below.
+>
+> ⚠️ **Rev A is superseded for the prototype build (noted 2026-10-23).** The current wiring
+> reference is the **Rev B** [Electronics Drawing Set](../docs/engineering/electronics-drawing-set.md)
+> (2026-10-12). Two Rev A choices described below no longer apply: the turbidity sensor is the
+> **Seeed Grove 101020752 at 3.3 V, wired straight to A1 with no divider** (not the 5 V SEN0189),
+> and power is **two primary Li-SOCl₂ D cells** ([ADR-0007](../docs/decisions/0007-primary-cell-power-source.md),
+> working), not the LiPo + PID 6106 path. The Rev A sections are kept as the record of that
+> design and its verification.
 
 **Owner:** ECE lead
 
