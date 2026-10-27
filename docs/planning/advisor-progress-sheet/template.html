@@ -26,10 +26,6 @@
   h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 5px; }
   .sub { color: var(--muted); }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
-  .headline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-  .stat b { display: block; font-size: 21px; line-height: 1.1; }
-  .stat span { color: var(--muted); font-size: 12px; }
-  .stat.bad b { color: var(--fail); }
   .gantt-wrap { margin-bottom: 10px; }
   svg text { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
   svg .muted { fill: var(--muted); }
@@ -39,17 +35,21 @@
   .lane h3 { margin: 0 0 6px; font-size: 14px; display: flex; justify-content: space-between; }
   .lane h3 small { color: var(--muted); font-weight: 400; font-size: 11px; }
   .lane h2 { margin-top: 8px; }
-  .crit { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 4px 8px; margin-bottom: 4px; background: var(--untested-bg); border-left-color: var(--untested); }
-  .crit.pass { border-left-color: var(--pass); background: var(--pass-bg); }
-  .crit.partial { border-left-color: var(--partial); background: var(--partial-bg); }
-  .crit.fail { border-left-color: var(--fail); background: var(--fail-bg); }
-  .crit .t { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
-  .crit .badge { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; color: var(--untested); }
-  .crit.pass .badge { color: var(--pass); } .crit.partial .badge { color: var(--partial); } .crit.fail .badge { color: var(--fail); }
-  .crit .m { color: var(--muted); font-size: 11px; }
-  .crit .m b { color: var(--ink); font-weight: 600; }
-  .ms { color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; gap: 6px; }
   .late { color: var(--fail); font-weight: 600; }
+  .chip { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 2px; }
+  .chip span { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 10px; }
+  .chip .pass { background: var(--pass-bg); color: var(--pass); }
+  .chip .partial { background: var(--partial-bg); color: var(--partial); }
+  .chip .fail { background: var(--fail-bg); color: var(--fail); }
+  .chip .untested { background: var(--untested-bg); color: var(--untested); }
+  .wk { list-style: none; padding: 0; }
+  .wk li { border-left: 3px solid var(--accent); padding: 2px 0 2px 8px; margin-bottom: 6px; }
+  .wk .steps { margin: 2px 0 2px 0; padding-left: 16px; font-size: 12px; color: var(--ink); }
+  .wk .steps li { border: 0; padding: 0; margin: 0; }
+  .wk .did { font-weight: 600; }
+  .wk .made, .wk .adv { display: block; font-size: 12px; }
+  .wk .adv { color: var(--muted); }
+  .planline { color: var(--muted); font-size: 11px; margin-top: 4px; }
   ul { margin: 0; padding-left: 16px; }
   li { margin-bottom: 2px; }
   .tag { display: inline-block; font-size: 10.5px; padding: 0 5px; border-radius: 3px; background: var(--untested-bg); color: var(--muted); border: 1px solid var(--line); margin-left: 3px; white-space: nowrap; }
@@ -58,18 +58,15 @@
   .tag.sug { background: var(--partial-bg); color: var(--partial); border-color: var(--partial); }
   .why { display: block; color: var(--muted); font-size: 11px; }
   .unconfirmed { background: var(--partial-bg); border: 1px dashed var(--partial); color: var(--ink); border-radius: 5px; padding: 2px 6px; font-size: 11px; margin-bottom: 4px; }
-  .bottom { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .grey li { color: var(--muted); }
-  table { border-collapse: collapse; width: 100%; font-size: 12px; }
-  th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .bottom { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
   footer { margin-top: 8px; color: var(--muted); font-size: 11px; }
-  @media (max-width: 900px) { .headline { grid-template-columns: 1fr 1fr; } .lanes, .bottom { grid-template-columns: 1fr; } .gantt-wrap, .fb { overflow-x: auto; } }
+  @media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } .gantt-wrap { overflow-x: auto; } }
   @media print {
     @page { size: landscape; margin: 6mm; }
     body { background: #fff; font-size: 9.5px; }
     .page { padding: 0; max-width: none; zoom: .72; }
     .card { break-inside: avoid; }
+    .lanes { grid-template-columns: repeat(3, 1fr) !important; }
   }
 </style>
 </head>
@@ -79,8 +76,6 @@
     <h1>S.C.O.U.T. &middot; Advisor Progress Sheet</h1>
     <div class="sub" id="subtitle"></div>
   </header>
-
-  <section class="headline" id="headline"></section>
 
   <section class="card gantt-wrap">
     <h2>Where we are in the project</h2>
@@ -97,16 +92,7 @@
   <section class="lanes" id="lanes"></section>
 
   <section class="bottom">
-    <div class="card"><h2>Last week's plan vs. what happened</h2><div id="plan"></div></div>
-    <div class="card"><h2>Who is waiting on whom (Linear blocking relations)</h2><ul id="handoffs"></ul></div>
     <div class="card"><h2>Asks for the advisors</h2><ul id="asks"></ul></div>
-    <div class="card grey"><h2>Activity this week, no criterion moved</h2><ul id="activity"></ul></div>
-  </section>
-
-  <section class="card fb">
-    <h2>Advisor feedback and what we changed</h2>
-    <table><thead><tr><th>Advisor</th><th>Feedback</th><th>What we changed</th><th>Status</th></tr></thead>
-    <tbody id="feedback"></tbody></table>
   </section>
 
   <footer id="footer"></footer>
@@ -137,98 +123,82 @@ const DATA = {
     [5,"2027-03-05",25],[5,"2027-03-12",40],[5,"2027-03-19",0],
     [6,"2027-03-26",0],[6,"2027-04-23",0],[6,"2027-05-21",0],[6,"2027-05-28",0]
   ],
-  blocked: { count: 4, tracedToBench: 4 },
-  /* status: pass | partial | fail | untested. Evidence = test-register row or Linear issue. */
+  /* Criteria feed only the pass/partial/untested chip. status: pass | partial | fail | untested.
+     Evidence = test-register row or Linear issue (kept in r, shown on hover). */
+  /* week: 2-4 plain-English bullets per person. did = what they did, no jargon; steps = 2-3
+     short concrete actions in order (printed, soaked, measured...), from the person's own words; made = the
+     concrete completion or state change; adv = the subsystem/initiative it advances and why
+     that moves the project. id = Linear issue / PR as evidence. plan = last week's committed
+     steps scored, one line. */
   lanes: [
     { key: "ECEN", who: "Isabella Rodriguez",
       criteria: [
-        { t: "Bench breadboard reads DS18B20, PCF8523, microSD, SEN0189", target: "all four read correctly", s: "untested", r: "SCO-152 Todo" },
-        { t: "Sleep current", target: "< 5 mA", s: "untested", r: "SCO-23 Todo, nothing measured yet" },
-        { t: "Per-sensor power switching", target: "each sensor gates on and off", s: "untested", r: "SCO-87 Todo" },
-        { t: "RFM95 link on FCC-compliant config", target: "packet received by a second radio", s: "untested", r: "SCO-155 in progress; modem config SCO-98 blocked", shared: "CSEN" }
+        { t: "Bench breadboard reads DS18B20, PCF8523, microSD, SEN0189", s: "untested", r: "SCO-152 Todo" },
+        { t: "Sleep current < 5 mA", s: "untested", r: "SCO-23 Todo, nothing measured yet" },
+        { t: "Per-sensor power switching", s: "untested", r: "SCO-87 Todo" },
+        { t: "RFM95 link on FCC-compliant config", s: "untested", r: "SCO-155 in progress; modem config SCO-98" }
       ],
-      milestones: [["Electronics bench bring-up", 32, "2026-10-16"], ["Radio link (Stage 4)", 55, "2026-10-23"]],
-      moved: [
-        ["Ordered every part for one complete Scout + shore station", "SCO-115"],
-        ["Confirmed hydrophone part; took electronics design to Shoba", "SCO-8, SCO-116"],
-        ["Delivered final component list + dimensions for the housing", "SCO-70"]
+      week: [
+        { did: "Ordered every part needed for one complete buoy and its shore station.", steps: ["[person to add the steps taken]"], made: "Order placed.", adv: "Electronics bench bring-up: parts are in hand, so bench tests can start.", id: "SCO-115" },
+        { did: "Chose the hydrophone part and took the electronics design to Dr. Krishnan.", steps: ["[person to add the steps taken]"], made: "Part confirmed; design reviewed.", adv: "Sensing and power subsystems: the design is now reviewed rather than assumed.", id: "SCO-8, SCO-116" },
+        { did: "Gave the mechanical side the final component list and dimensions.", steps: ["[person to add the steps taken]"], made: "Delivered.", adv: "Housing design: lets the enclosure be sized around real parts.", id: "SCO-70" }
       ],
       stuck: [
-        ["Charging path undecided (SCO-10)", "Blocked", "by SCO-23 sleep-current measurement, not started"],
-        ["Battery-voltage telemetry (SCO-83)", "Blocked", "by SCO-10"]
+        ["Charging path undecided", "Blocked", "waits on the sleep-current measurement, not started (SCO-10, SCO-23)"],
+        ["Battery-voltage telemetry", "Blocked", "waits on the charging path (SCO-83)"]
       ],
       next: [
-        { t: "Design the SEN0189 front end as non-inverting", id: "SCO-47", who: "Isabella", done: "[team to add]", src: "ondeck" },
-        { t: "Add internal temp/humidity sensor for State-of-Health", id: "SCO-60", who: "Isabella", done: "[team to add]", src: "ondeck" },
-        { t: "Decide the LiFePO4 charging path", id: "SCO-10", who: "Isabella", done: "ADR-0002 Accepted and facts.md updated", src: "ondeck" },
         { t: "Bring up the bench breadboard", id: "SCO-152", who: "Isabella", done: "all four sensors read", src: "suggested" },
-        { t: "Measure sleep current", id: "SCO-23", who: "Isabella", done: "value recorded vs < 5 mA", src: "suggested" }
-      ] },
+        { t: "Measure sleep current", id: "SCO-23", who: "Isabella", done: "value recorded vs < 5 mA", src: "suggested" },
+        { t: "Design the SEN0189 front end as non-inverting", id: "SCO-47", who: "Isabella", done: "[team to add]", src: "ondeck" },
+        { t: "Decide the LiFePO4 charging path", id: "SCO-10", who: "Isabella", done: "ADR-0002 Accepted and facts.md updated", src: "ondeck" }
+      ],
+      plan: "First sheet: no commitments were recorded last week." },
     { key: "CSEN", who: "David Chousal Cantu",
       criteria: [
-        { t: "SAMD21 drivers validated on real hardware", target: "every driver passes on the bench", s: "untested", r: "SCO-25 blocked by SCO-152" },
-        { t: "Real shore LoRa receiver", target: "receives a buoy packet", s: "untested", r: "SCO-24 blocked by SCO-155" },
-        { t: "Shore data path and analytics", target: "LoRa to CSV to analytics runs", s: "partial", r: "passes in simulation, not on a real radio" },
-        { t: "RFM95 link on FCC-compliant config", target: "packet received by a second radio", s: "untested", r: "shared with ECEN", shared: "ECEN" }
+        { t: "SAMD21 drivers validated on real hardware", s: "untested", r: "SCO-25 blocked by SCO-152" },
+        { t: "Real shore LoRa receiver", s: "untested", r: "SCO-24 In Progress" },
+        { t: "Shore data path and analytics", s: "partial", r: "passes in simulation, not on a real radio" },
+        { t: "RFM95 link on FCC-compliant config", s: "untested", r: "shared with ECEN" }
       ],
-      milestones: [["Firmware & shore software", 85, "2026-10-21"], ["Radio link (Stage 4)", 55, "2026-10-23"]],
-      moved: [
-        ["Decided packet cadence and wake source", "SCO-196"],
-        ["Faculty/compliance review of the FCC 915 MHz findings", "SCO-104"],
-        ["Reconciled LoRa SF12 vs SF7 in facts.md", "SCO-213"]
+      week: [
+        { did: "Decided how often the buoy sends data and what wakes it up.", steps: ["[person to add the steps taken]"], made: "Decision recorded.", adv: "Firmware and power budget: fixes the daily schedule everything else is sized to.", id: "SCO-196" },
+        { did: "Reviewed the FCC 915 MHz findings with faculty and compliance.", steps: ["[person to add the steps taken]"], made: "Review done.", adv: "Radio link: confirms what settings the buoy may legally transmit with.", id: "SCO-104" },
+        { did: "Resolved the conflict between two LoRa settings (SF12 vs SF7) in the facts file.", steps: ["[person to add the steps taken]"], made: "facts.md reconciled.", adv: "Shore station: firmware and docs now agree on one radio setting.", id: "SCO-213" }
       ],
       stuck: [
-        ["Drivers on real hardware (SCO-25)", "Blocked", "by SCO-152 bench breadboard"],
-        ["Turbidity to NTU (SCO-12)", "Blocked", "by SCO-153 and SCO-47"]
+        ["Drivers on real hardware", "Blocked", "waits on the bench breadboard (SCO-25, SCO-152)"],
+        ["Turbidity to NTU calibration", "Blocked", "waits on sensor measurements and front-end design (SCO-12)"]
       ],
       next: [
         { t: "Bring up the real LoRa receiver on the shore station", id: "SCO-24", who: "David", done: "[team to add]", src: "ondeck" },
         { t: "Make analytics CLI flags consistent", id: "SCO-26", who: "David", done: "flags consistent or documented", src: "ondeck" }
-      ] },
+      ],
+      plan: "First sheet: no commitments were recorded last week." },
     { key: "GENG", who: "John Ryan Myrdal",
       criteria: [
-        { t: "Hull survives mooring and wave loads", target: "SF ≥ 4 (provisional)", s: "pass", r: "RR-04 SF 10–1450; v5 re-check RR-09" },
-        { t: "Buoy rights itself from any angle", target: "self-rights from any angle", s: "partial", r: "v6 with 24 in ballast passed (RR-11); the current no-stem printed float is not re-checked" },
-        { t: "Sensor-pod face seal stays dry", target: "dry after 24 h at ≥ 0.3 m, ~35 ppt salt water", s: "partial", r: "RR-18 passed in fresh water, no sensor, shallow; salt and depth untested; RR-12/14/15 failed earlier" },
-        { t: "Assembled buoy floats at modelled waterline", target: "freeboard within ±0.5 in", s: "partial", r: "RR-17 floated well; seams leaked slightly; run without foam" },
-        { t: "Test sites and permits", target: "written permit determinations", s: "partial", r: "research written; determinations not recorded in the repo" }
+        { t: "Hull survives mooring and wave loads", s: "pass", r: "RR-04 SF 10-1450; v5 re-check RR-09" },
+        { t: "Buoy rights itself from any angle", s: "partial", r: "v6 with 24 in ballast passed (RR-11); current no-stem printed float not re-checked" },
+        { t: "Sensor-pod face seal stays dry", s: "partial", r: "RR-18 passed in fresh water, shallow; salt and depth untested" },
+        { t: "Assembled buoy floats at modelled waterline", s: "partial", r: "RR-17 floated well; seams leaked slightly; run without foam" },
+        { t: "Test sites and permits", s: "partial", r: "research written; determinations not recorded in the repo" }
       ],
-      milestones: [["Buoy structure & fabrication", 94, "2026-10-09"], ["Sensor pod & sealing", 75, "2026-10-20"], ["Test sites & permits", 50, "2026-10-14"]],
-      moved: [
-        ["Validated the remodelled turbidity face seal", "SCO-91"],
-        ["Chassis top section: sealing + service-access port", "SCO-68"],
-        ["Sourced PETG for the second buoy", "SCO-167"]
+      week: [
+        { did: "Rebuilt and checked the seal where the turbidity sensor meets the buoy.", steps: ["[person to add the steps taken]"], made: "Validated.", adv: "Sensor pod and sealing: the water-tight joint the turbidity sensor depends on.", id: "SCO-91" },
+        { did: "Designed the top of the chassis with a sealed service-access port.", steps: ["[person to add the steps taken]"], made: "Section designed.", adv: "Enclosure: lets the electronics be reached without breaking the seal.", id: "SCO-68" },
+        { did: "Found a source for the plastic (PETG) for the second buoy.", steps: ["[person to add the steps taken]"], made: "Sourced.", adv: "Fabrication: the second unit can be printed.", id: "SCO-167" }
       ],
-      stuck: [["Foam-filled second unit (SCO-166, SCO-178)", "Deferred", "parked by choice"]],
+      stuck: [["Foam-filled second unit", "Deferred", "parked by choice (SCO-166, SCO-178)"]],
       next: [
         { t: "Start saltwater-bath leak tests on printed capsules (1, 2, 3 walls)", id: "SCO-141", who: "John Ryan", done: "capsules soaking with a moisture indicator", src: "ondeck" },
         { t: "Finish submersion re-test of the face-seal joint", id: "SCO-108", who: "John Ryan", done: "[team to add]", src: "suggested" }
-      ] }
+      ],
+      plan: "First sheet: no commitments were recorded last week." }
   ],
-  handoffs: [
-    "SCO-152 bench breadboard (ECEN) gates SCO-25 drivers on real hardware (CSEN)",
-    "SCO-155 link test (ECEN, in progress) is listed as a blocker of SCO-98 and SCO-24 (CSEN), both now In Progress",
-    "SCO-153 and SCO-47 (ECEN) gate SCO-12 turbidity to NTU (CSEN)",
-    "SCO-23 sleep current (ECEN) gates SCO-10 charging path, which gates SCO-83"
-  ],
-  plan: { priorCommitted: null, priorDone: null,
-          note: "First sheet: no commitments were recorded last week. The next steps above are saved now and scored at the next meeting." },
   asks: [
     "Decision: LiFePO4 charging path (SCO-10, ADR-0002), open since Phase 0.",
     "Signature: corrected hazard form (SCO-211).",
     "Review: permitting and tethering research (SCO-199)."
-  ],
-  activity: [
-    "Submitted the senior design budget (SCO-117)",
-    "Mapped the layered test protocol (SCO-140)",
-    "Sent the lab-space request (SCO-192)",
-    "Shared the updated system block diagram (SCO-187)"
-  ],
-  feedback: [
-    ["Dr. Krishnan", "Needs to be more systematic. Team works together to identify next steps and work through them.",
-     "Next steps are set by the team before each meeting, with an owner and a done-when. Each week is scored plan vs. actual.", "Starts this week"],
-    ["Dr. Kuczenski", "Trouble communicating progress vs. activities.",
-     "Progress is shown as pass / fail / untested against a target, with a test-register or Linear reference. Activity is grey.", "First sheet; ask if it answers this"]
   ]
 };
 
@@ -240,19 +210,9 @@ const fmt = s => new Date(D(s)).toLocaleDateString("en-US", { month: "short", da
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 const p = DATA.phases[DATA.currentPhase];
-const elapsed = Math.round((today - D(p.start)) / (D(p.end) - D(p.start)) * 100);
-const allMs = DATA.milestones.filter(m => m[0] === DATA.currentPhase);
-const late = allMs.filter(m => D(m[1]) < today && m[2] < 100);
-const crit = DATA.lanes.flatMap(l => l.criteria).filter((c, i, a) => a.findIndex(x => x.t === c.t) === i);
-const cnt = k => crit.filter(c => c.s === k).length;
+const elapsed = Math.min(100, Math.round((today - D(p.start)) / (D(p.end) - D(p.start)) * 100));
 document.getElementById("subtitle").textContent =
-  `Week of ${fmt(DATA.weekStart)} – ${fmt(DATA.today)}, 2026 · Phase ${p.n}: ${p.name}`;
-document.getElementById("headline").innerHTML = [
-  [`${cnt("pass")} of ${crit.length}`, `Phase ${p.n} criteria fully passed · ${cnt("partial")} partial · ${cnt("untested")} untested${cnt("fail") ? " · " + cnt("fail") + " failed" : ""}`, cnt("pass") < crit.length / 2],
-  [`${elapsed}% / ${p.progress}%`, `of Phase ${p.n} time elapsed / milestones done (ends ${fmt(p.end)})`, elapsed - p.progress > 20],
-  [`${late.length} of ${allMs.length}`, `Phase ${p.n} milestones past their target date`, late.length > 0],
-  [`${DATA.blocked.tracedToBench} of ${DATA.blocked.count}`, `blocked issues trace to unfinished ECEN bench tests`, DATA.blocked.tracedToBench > 0]
-].map(([b, s, bad]) => `<div class="card stat ${bad ? "bad" : ""}"><b>${b}</b><span>${s}</span></div>`).join("");
+  `Week of ${fmt(DATA.weekStart)} – ${fmt(DATA.today)}, 2026 · Phase ${p.n}: ${p.name} · ${elapsed >= 100 ? `phase window ended ${fmt(p.end)}` : elapsed + "% of phase time elapsed"}, ${p.progress}% of milestone issues done`;
 
 /* gantt */
 const svg = document.getElementById("gantt");
@@ -288,36 +248,29 @@ g += `<text x="${x(tMax) - 128}" y="${gTop + rowH * 7 + 20}" class="muted">Final
 svg.innerHTML = g;
 
 /* lanes */
-const label = { pass: "Pass", partial: "Partial", fail: "Fail", untested: "Untested" };
+const label = { pass: "pass", partial: "partial", fail: "fail", untested: "untested" };
+const chip = l => ["pass", "partial", "fail", "untested"].map(k => ({ k, n: l.criteria.filter(c => c.s === k).length }))
+  .filter(c => c.n).map(c => `<span class="${c.k}" title="${esc(l.criteria.filter(x => x.s === c.k).map(x => x.t + ": " + x.r).join("\n"))}">${c.n} ${label[c.k]}</span>`).join("");
 document.getElementById("lanes").innerHTML = DATA.lanes.map(l => `
   <div class="card lane">
-    <h3>${l.key}<small>${l.who}</small></h3>
-    <h2>Exit criteria (target · result)</h2>
-    ${l.criteria.map(c => `<div class="crit ${c.s}">
-      <div class="t"><span>${esc(c.t)}${c.shared ? ` <span class="tag">shared with ${c.shared}</span>` : ""}</span><span class="badge">${label[c.s]}</span></div>
-      <div class="m"><b>Target:</b> ${esc(c.target)} · ${esc(c.r)}</div></div>`).join("")}
-    <div style="margin-top:4px">${l.milestones.map(([n, pc, due]) => { const dl = Math.round((today - D(due)) / DAY);
-      return `<div class="ms"><span>${n} (issues): ${pc}%</span><span class="${dl > 0 && pc < 100 ? "late" : ""}">${dl > 0 && pc < 100 ? `${dl} d past ${fmt(due)}` : `due ${fmt(due)}`}</span></div>`; }).join("")}</div>
-    <h2>Moved this week <span class="tag ev">evidence</span></h2>
-    <ul>${l.moved.map(([t, id]) => `<li>${esc(t)} <span class="tag">${id}</span></li>`).join("")}</ul>
-    <h2>Stuck, and why</h2>
+    <h3>${l.who}<small>${l.key}</small></h3>
+    <div class="chip" aria-label="Phase exit criteria">${chip(l)}</div>
+    <h2>Last week <span class="tag ev">evidence</span></h2>
+    <ul class="wk">${l.week.map(w => `<li><span class="did">${esc(w.did)}</span> <span class="tag">${w.id}</span>
+      <ol class="steps">${w.steps.map(t => `<li>${esc(t)}</li>`).join("")}</ol>
+      <span class="made"><b>Result:</b> ${esc(w.made)}</span><span class="adv"><b>Advances:</b> ${esc(w.adv)}</span></li>`).join("")}</ul>
+    <div class="planline">Plan vs. actual: ${esc(l.plan)}</div>
+    <h2>Challenges</h2>
     <ul>${l.stuck.map(([t, s, why]) => `<li>${esc(t)} <span class="tag stuck">${s}</span><span class="why">${esc(why)}</span></li>`).join("")}</ul>
-    <h2>Next steps (owner · done when)</h2>
+    <h2>Next week (owner · done when)</h2>
     ${DATA.nextConfirmed ? "" : '<div class="unconfirmed">Not yet confirmed by the team. Set in the weekly sync before the meeting.</div>'}
     <ul>${l.next.map(n => `<li>${esc(n.t)} <span class="tag">${n.id}</span> <span class="tag ${n.src === "suggested" ? "sug" : ""}">${n.src === "suggested" ? "suggested by sheet" : "On Deck"}</span><span class="why">${n.who} · done when: ${esc(n.done)}</span></li>`).join("")}</ul>
   </div>`).join("");
 
-const li = a => a.map(t => `<li>${esc(t)}</li>`).join("");
-document.getElementById("plan").innerHTML = DATA.plan.priorCommitted === null
-  ? `<div class="sub">${esc(DATA.plan.note)}</div>`
-  : `<b>${DATA.plan.priorDone} of ${DATA.plan.priorCommitted}</b> committed steps finished. ${esc(DATA.plan.note)}`;
-document.getElementById("handoffs").innerHTML = li(DATA.handoffs);
-document.getElementById("asks").innerHTML = li(DATA.asks);
-document.getElementById("activity").innerHTML = li(DATA.activity);
-document.getElementById("feedback").innerHTML = DATA.feedback.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
+document.getElementById("asks").innerHTML = DATA.asks.map(t => `<li>${esc(t)}</li>`).join("");
 document.getElementById("footer").textContent =
-  "Sources: Linear (statuses, milestones, blocking relations), mechanical/test/risk-reduction-register.md. Generated " + DATA.today +
-  ". Milestone % is issue completion, not a result. Pass / partial / fail / untested reflects recorded tests only.";
+  "Sources: Linear (issues, milestones, blocking relations), git, mechanical/test/risk-reduction-register.md. Generated " + DATA.today +
+  ". Milestone % is issue completion, not a result. Chips count Phase exit criteria passed / partial / failed / untested from recorded tests only; hover a chip for the detail.";
 </script>
 </body>
 </html>
