@@ -57,7 +57,7 @@ open Phase 0 issue. Full plan:
    ([ADR-0002](../decisions/0002-lifepo4-charging-path.md),
    [SCO-10](https://linear.app/scout1/issue/SCO-10), now `Blocked` on SCO-23) all stay open.
    [Power Budget Update](../engineering/power-budget-update-2026-10-05.md)
-3. **Adafruit bench order placed 2026-10-07** (invoice 3758294, delivery est. 2026-10-13 to 10-16; Mouser order still to place; [Purchase Log](../planning/purchase-log.md)) (Adafruit + Mouser, including the shore-station ESP32-S3 + LoRa FeatherWing; hydrophone, D cells and outdoor antenna are planned follow-up orders — [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md)). Until they arrive, firmware driver validation
+3. **Adafruit bench order placed 2026-10-07** (invoice 3758294, delivery est. 2026-10-13 to 10-16; Mouser turbidity-kit order placed the week of 2026-10-19, $81.82, delayed in shipping and expected by the week of 2026-11-02; [Purchase Log](../planning/purchase-log.md)) (Adafruit + Mouser, including the shore-station ESP32-S3 + LoRa FeatherWing; hydrophone, D cells and outdoor antenna are planned follow-up orders — [Electronics Build and Test Plan](../engineering/electronics-build-and-test-plan.md)). Until they arrive, firmware driver validation
    ([SCO-25](https://linear.app/scout1/issue/SCO-25)) and shore-station radio bring-up
    ([SCO-24](https://linear.app/scout1/issue/SCO-24)) are both written and waiting on hardware.
    The staged Rev A order (SCO-88) was cancelled 2026-09-24 in favour of one order covering the
