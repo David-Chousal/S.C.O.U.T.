@@ -8,6 +8,8 @@ static/
 ├── fonts/        Self-hosted WOFF2 (optional): DM Sans (prose) and JetBrains Mono (measured
 │                 values), built by scripts/subset_site_fonts.py. If dmsans-latin.woff2 is
 │                 absent the pages fall back to the system sans and mono stacks.
+├── stability/    The buoy stability explorer (index.html), embedded on the Technology page. Generated, not
+│                 hand-edited: python3 -m telemetry.site.stability_embed <explorer.html> (from analytics/).
 └── img/          Curated reef photographs (optional). A photo appears on a pill card only
                   when the file is here AND its exact credit is recorded in imagery.py
                   (Ocean Image Bank licence: every photographer must be credited).
