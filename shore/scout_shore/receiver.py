@@ -2,9 +2,11 @@
 
 :class:`MockLoRaLink` stands in for the radio so the full path runs with no hardware —
 the buoy side calls :meth:`transmit`, the shore side calls :meth:`receive`. It can inject
-packet loss and bit corruption to exercise the receiver's error handling. When real
-hardware arrives, swap this for :class:`~scout_shore.radio.Rfm9xLink`, which implements the
-same :class:`~scout_shore.link.LoRaLink` protocol.
+packet loss and bit corruption to exercise the receiver's error handling. On the real
+shore station, swap this for :class:`~scout_shore.serial_link.SerialFrameLink`, which reads the
+ESP32-S3 receiver's output over USB (SCO-257); :class:`~scout_shore.radio.Rfm9xLink`, a radio
+wired to a Raspberry Pi, is an unrun fallback. All three implement the same
+:class:`~scout_shore.link.LoRaLink` protocol.
 
 **Radio settings the real backend must use** (SCO-24). These are not free choices — the
 buoy's modem configuration is set by FCC 15.247 compliance, and the receiver has to match
