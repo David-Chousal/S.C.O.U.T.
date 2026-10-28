@@ -398,3 +398,14 @@ v1–v9.
 
 **Native source:** see [`mechanical/cad/README.md`](../README.md#native-source) — one Onshape
 document covers the whole project, not a separate one per subsystem.
+
+## Printed-float drawings — DFM Assembly 3 and 4 (drawn 2026-10-28)
+
+John's dimensioned drawings of the two printed floats (size B, scale 1:3, inches; DWG NO and REV
+blank, so not released). These are the sheets the public site's gallery now shows.
+
+- [`float-a-dfm-assembly-3-drawing-2026-10-28.pdf`](float-a-dfm-assembly-3-drawing-2026-10-28.pdf) — Float A: Ø9.79 in at the top, 6.5 in tall, tapered sides with S.C.O.U.T. lettering, five bolt holes at 72°.
+- [`float-b-dfm-assembly-4-drawing-2026-10-28.pdf`](float-b-dfm-assembly-4-drawing-2026-10-28.pdf) — Float B: Ø9 in rounded float with a necked base (R3.46 in, 45° chamfer) and a bolted flange ring on top.
+
+The matching STEP files are not in the repo yet (the mushroom float STEP is
+[`float-mushroom.step`](float-mushroom.step) on the simulator branch, not on `main`).

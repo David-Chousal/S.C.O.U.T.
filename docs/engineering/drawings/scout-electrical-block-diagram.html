@@ -148,70 +148,103 @@ wire([[710, 460], [710, 480]], "gnd", 2); gnd(710, 480); lab(716, 500, "GND → 
 <section class="p2">
 <header>
   <h1>S.C.O.U.T. buoy · block diagram (overview)</h1>
-  <div class="meta">Each part and how they connect · 2026-10-27 · I. Rodriguez (ECEN)</div>
+  <div class="meta">Each part and the actual wires coming out of it · 2026-10-28 · I. Rodriguez (ECEN)</div>
 </header>
-<svg id="d2" viewBox="0 0 980 600" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
-  </defs>
-</svg>
+<svg id="d2" viewBox="0 0 980 600" xmlns="http://www.w3.org/2000/svg"></svg>
 <div class="key">
-  <span><b style="border-color:#111"></b>data</span>
-  <span><b style="border-color:#c62828"></b>battery power</span>
-  <span><b style="border-color:#9ca3af"></b>sensor power on/off</span>
-  <span><b style="border-color:#c2185b;border-top-style:dashed"></b>radio</span>
+  <span>Each line is one real wire, in its real color</span>
+  <span><b style="border-color:#d32f2f"></b>3.3 V (red)</span>
+  <span><b style="border-color:#111"></b>ground (black)</span>
+  <span><b style="border-color:#e0a100"></b>signal (yellow)</span>
+  <span><b style="border-color:#1f5fbf"></b>signal (blue)</span>
+  <span><b style="border-color:#7c3aed"></b>switch control</span>
+  <span>● = joined on the breadboard</span>
 </div>
 </section>
 
 <script>
 S = document.getElementById("d2");
+const RED = "#d32f2f", BLK = "#111", YEL = "#e0a100", BLU = "#1f5fbf", PUR = "#7c3aed", RF = "#c2185b";
 function blk(x, y, w, h, title, pn, k) {
   E("rect", { x, y, width: w, height: h, rx: 8, fill: FILL[k][0], stroke: FILL[k][1], "stroke-width": 2.2 });
-  E("text", { x: x + w / 2, y: y + h / 2 - 3, "text-anchor": "middle", style: "font:700 15px 'Segoe UI',Arial,sans-serif" }, title);
-  E("text", { x: x + w / 2, y: y + h / 2 + 15, "text-anchor": "middle", style: "font:12px Consolas,monospace;fill:#333" }, pn);
+  E("text", { x: x + w / 2, y: y + h / 2 - 2, "text-anchor": "middle", style: "font:700 14px 'Segoe UI',Arial,sans-serif" }, title);
+  if (pn) E("text", { x: x + w / 2, y: y + h / 2 + 14, "text-anchor": "middle", style: "font:11px Consolas,monospace;fill:#333" }, pn);
 }
-function arr(pts, color, dash, both) {
-  const a = { points: pts.map(p => p.join(",")).join(" "), fill: "none", stroke: color, "stroke-width": 2.6, "marker-end": "url(#a2)" };
-  if (dash) a["stroke-dasharray"] = dash;
-  if (both) a["marker-start"] = "url(#a2)";
-  E("polyline", a);
+function ln(pts, c, dash) {
+  E("polyline", { points: pts.map(p => p.join(",")).join(" "), fill: "none", stroke: c, "stroke-width": 2.6, "stroke-dasharray": dash || "none", "stroke-linejoin": "round" });
 }
-const DATA = "#111", PWR = "#c62828", SW = "#9ca3af", RF = "#c2185b";
+function dot(x, y, c) { E("circle", { cx: x, cy: y, r: 4, fill: c }); }
+function tag(x, y, s, c, anchor) { T(x, y, s, "wl", anchor || "start", c); }
 
-// sensors
-blk(240, 30, 190, 70, "Water temperature", "DS18B20 · Adafruit 381", "sen");
-blk(240, 130, 190, 74, "Turbidity", "Seeed Grove 101020752", "sen");
-blk(20, 262, 170, 70, "Hydrophone", "Aquarian H2dM", "sen");
-blk(240, 255, 190, 80, "Hydrophone preamp", "MCP6002", "sen");
-blk(240, 380, 190, 70, "Leak / humidity", "SHT40 · Adafruit 4885", "sen");
-// switches
-blk(470, 162, 110, 48, "Q1 switch", "Si2301CDS", "sw");
-blk(470, 290, 110, 48, "Q2 switch", "Si2301CDS", "sw");
-// controller + outputs
-blk(620, 30, 170, 420, "Feather M0 LoRa", "Adafruit 3178", "mcu");
-blk(830, 40, 150, 70, "Antenna", "Taoglas TI.89.B", "out");
-blk(830, 175, 150, 70, "Shore station", "ESP32-S3 5477", "out");
-blk(830, 330, 150, 80, "Clock + microSD", "Adalogger 2922", "mcu");
-// power
-blk(240, 490, 190, 70, "Battery pack", "2× Tadiran TL5930/T", "pw");
-blk(470, 490, 130, 70, "Ideal diodes", "4× MAX40200", "pw");
+const R3 = 480, RG = 510;            // x of the 3V3 and GND rails
+const GX = 640, FY = 20, FH = 480;   // Feather + Adalogger stack
 
-// data into the Feather
-arr([[430, 65], [618, 65]], DATA);
-arr([[430, 145], [618, 145]], DATA);
-arr([[190, 297], [238, 297]], DATA);
-arr([[430, 270], [618, 270]], DATA);
-arr([[430, 415], [618, 415]], DATA);
-// sensor power switches
-arr([[620, 186], [582, 186]], SW); arr([[470, 186], [432, 186]], SW);
-arr([[620, 314], [582, 314]], SW); arr([[470, 314], [432, 314]], SW);
-// outputs
-arr([[790, 75], [828, 75]], RF);
-arr([[905, 110], [905, 173]], RF, "7 5");
-arr([[792, 370], [828, 370]], DATA, null, true);
-// battery
-arr([[430, 525], [468, 525]], PWR);
-arr([[600, 525], [705, 525], [705, 452]], PWR);
+/* Feather + Adalogger */
+blk(GX, FY, 170, FH, "Feather M0", "3178", "mcu");
+T(GX + 85, FY + FH / 2 + 34, "+ Adalogger 2922", "pn", "middle");
+T(GX + 85, FY + FH / 2 + 48, "stacked on top:", "ws", "middle");
+T(GX + 85, FY + FH / 2 + 60, "no wires between them", "ws", "middle");
+[["3V", 40], ["GND", 60], ["12", 143], ["SCL", 228], ["SDA", 246], ["A1", 340], ["D11", 360], ["A2", 446], ["A3", 476]]
+  .forEach(([p, y]) => T(GX + 5, y + 3.5, p, "pin"));
+T(690, FY + FH - 5, "BAT", "pin", "middle");
+T(GX + 165, 63.5, "ANT", "pin", "end");
+
+/* power rails */
+ln([[GX, 40], [R3, 40], [R3, 570]], RED);
+ln([[GX, 60], [RG, 60], [RG, 582]], BLK);
+tag(R3 - 6, 34, "3V3 rail", RED, "end");
+tag(RG + 6, 78, "GND rail", BLK);
+
+/* water temperature probe: 3 wires + pull-up */
+blk(40, 88, 190, 70, "Water temperature", "DS18B20 probe", "sen");
+ln([[230, 103], [R3, 103]], RED); dot(R3, 103, RED); tag(236, 99, "red", RED);
+ln([[230, 123], [RG, 123]], BLK); dot(RG, 123, BLK); tag(236, 119, "black", BLK);
+ln([[230, 143], [GX, 143]], YEL); tag(236, 139, "yellow (data)", YEL);
+ln([[400, 143], [400, 103]], "#555"); dot(400, 143, YEL); dot(400, 103, RED);
+E("rect", { x: 394, y: 112, width: 12, height: 22, fill: "#fff", stroke: "#555", "stroke-width": 1.8 });
+T(400, 160, "4.7 kΩ pull-up", "ws", "middle");
+
+/* leak sensor SHT40: 4 wires */
+blk(40, 180, 190, 84, "Leak / humidity", "SHT40 · 4885", "sen");
+ln([[230, 192], [R3, 192]], RED); dot(R3, 192, RED); tag(236, 188, "VIN", RED);
+ln([[230, 210], [RG, 210]], BLK); dot(RG, 210, BLK); tag(236, 206, "GND", BLK);
+ln([[230, 228], [GX, 228]], YEL); tag(236, 224, "SCL", YEL);
+ln([[230, 246], [GX, 246]], BLU); tag(236, 242, "SDA", BLU);
+
+/* turbidity: 4-wire Grove cable, power through Q1 */
+blk(40, 286, 190, 84, "Turbidity", "Grove 101020752", "sen");
+T(135, 362, "white wire: not used", "ws", "middle");
+blk(290, 282, 110, 34, "Q1 switch", null, "sw");
+ln([[230, 298], [290, 298]], RED); tag(236, 294, "red", RED);
+ln([[400, 298], [R3, 298]], RED); dot(R3, 298, RED);
+ln([[230, 322], [RG, 322]], BLK); dot(RG, 322, BLK); tag(236, 334, "black", BLK);
+ln([[230, 340], [GX, 340]], YEL); tag(260, 352, "yellow (signal)", YEL);
+ln([[345, 316], [345, 360], [GX, 360]], PUR); tag(560, 356, "on/off", PUR, "middle");
+
+/* hydrophone + preamp, power through Q2 */
+blk(20, 396, 100, 62, "Hydrophone", "(planned)", "sen");
+blk(140, 394, 110, 66, "Preamp", "MCP6002", "sen");
+ln([[120, 427], [140, 427]], BLK);
+blk(290, 388, 110, 34, "Q2 switch", null, "sw");
+ln([[250, 404], [290, 404]], RED);
+ln([[400, 404], [R3, 404]], RED); dot(R3, 404, RED);
+ln([[250, 428], [RG, 428]], BLK); dot(RG, 428, BLK);
+ln([[250, 446], [GX, 446]], YEL); tag(262, 458, "audio out", YEL);
+ln([[345, 422], [345, 476], [GX, 476]], PUR); tag(560, 472, "on/off", PUR, "middle");
+
+/* battery */
+blk(40, 505, 170, 60, "Battery pack", "2× Tadiran D cell", "pw");
+blk(250, 505, 150, 60, "Ideal diodes", "4× MAX40200", "pw");
+ln([[210, 525], [250, 525]], RED); tag(214, 520, "+", RED);
+ln([[400, 525], [690, 525], [690, FY + FH]], RED); tag(560, 520, "to BAT pad", RED, "middle");
+ln([[125, 565], [125, 582], [RG, 582]], BLK); dot(RG, 582, BLK); tag(132, 595, "− to GND rail", BLK);
+
+/* antenna + shore station */
+blk(840, 30, 135, 62, "Antenna", "spring 4269", "out");
+ln([[GX + 170, 60], [840, 60]], RF);
+ln([[907, 92], [907, 150]], RF, "7 5"); tag(900, 125, "radio", RF, "end");
+blk(840, 150, 135, 70, "Shore station", "ESP32-S3 + LoRa", "out");
+ln([[907, 220], [907, 252]], "#555"); tag(907, 266, "USB-C → laptop", "#333", "middle");
 </script>
 </body>
 </html>

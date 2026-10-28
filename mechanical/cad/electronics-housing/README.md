@@ -283,3 +283,14 @@ Where the table says "not identified" or "not found", the repo does not say what
 Relevance: this is the revision SCO-49 (final dimensions) and SCO-53 (lid for cable glands) wait
 on. Gland count and placement are still to be confirmed against it. Still missing from the drawing:
 wall thickness, internal envelope, ring size and gland count.
+
+## Drawings — DFM Assembly 3 (drawn 2026-10-28)
+
+Updated housing and cap drawings from John (size B, scale 1:3, inches; DWG NO and REV blank, so not
+released). They supersede the DFM Assembly 2 sheet above for the public site.
+
+- [`electronics-housing-dfm-assembly-3-drawing-2026-10-28.pdf`](electronics-housing-dfm-assembly-3-drawing-2026-10-28.pdf) — flange Ø7.25 in, tube length 5.35 in, flange bolt pattern with the 5 × 72° and 10 × 36° callouts.
+- [`electronics-housing-cap-dfm-assembly-3-drawing-2026-10-28.pdf`](electronics-housing-cap-dfm-assembly-3-drawing-2026-10-28.pdf) — cap Ø6.99 in, 1.13 in raised cable-gland deck.
+
+Dimensions are read off the sheets; no STEP yet. The Ø6 flange in the 2026-10-06 table above is
+now Ø7.25 in on this revision.
