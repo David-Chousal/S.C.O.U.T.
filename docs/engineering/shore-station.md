@@ -63,11 +63,10 @@ out of the ±2 min window around a slot. **The slots it tags against follow the 
 count** ([SCO-198](https://linear.app/scout1/issue/SCO-198)): the count the frame reports (v4,
 flags bits 8–9), else the count requested for that buoy, else the default 3. 1 → 00:10,
 2 → 00:10 + 16:10, 3 → all. Each `OK` line ends `tx=<reported>/<requested>`, plus `pending` until
-they match and `cmd_rejected` if the buoy refused a command. The requested count is set over USB
-with `N<buoy>:<count>` (e.g. `N1:2`) until WiFi exists; `shore/scripts/sync_console.py` prints or
-writes those lines from the console. It listens all the time, since it is mains-powered, so the
-count changes the tag, not when the radio is on. The S3
-has no RTC: until NTP over WiFi exists, set its clock with `firmware/tools/set_rtc.py`. Its serial
+they match and `cmd_rejected` if the buoy refused a command. The requested count comes from the
+console over WiFi (below); without WiFi, `N<buoy>:<count>` over USB (e.g. `N1:2`) sets it, and
+`shore/scripts/sync_console.py` prints or writes those lines from the console. It listens all the time, since it is mains-powered, so the
+count changes the tag, not when the radio is on. Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
 ⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
 IRQ 9**, to be confirmed by ECE. **Settings downlink written, off by default:** built with
@@ -76,7 +75,49 @@ the station sends one HMAC-signed `SET_TX_COUNT` frame (`lib/scout_downlink`, 28
 after a buoy's packet whenever that buoy's reported count differs from the requested one, at the
 buoy's +11 dBm. ⚠️ **Do not transmit off the bench** until the FeatherWing's FCC authorization is
 checked (open item 3). Keys go in the gitignored `firmware/src/downlink_key.h`. **Not written:**
-the WiFi push (open item 1) and firmware OTA.
+firmware OTA.
+
+**WiFi push — written 2026-10-28, not yet run on the board**
+([SCO-237](https://linear.app/scout1/issue/SCO-237)). The S3 sends every reading to the console
+by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
+
+- **Its own FreeRTOS task on core 0**, so the LoRa loop on core 1 never waits on the network.
+- **Readings:** each new reading is queued (`lib/scout_upload_queue`, 256 readings, about six weeks
+  of two buoys offline; when full the oldest is dropped and counted) and pushed in batches of 20 to
+  `POST /api/device/readings` over HTTPS with the station's device token. A failed push is retried
+  with a backoff from 5 s to 10 min; a reading the console refuses as invalid is dropped so it
+  cannot block the rest. Re-sending is safe: the console stores each `(buoy_id, record_seq)` once.
+- **Rows match the Python to the character** (`lib/scout_console`): the console keeps rows as sent
+  and the computer bridge and SD import build the same rows in Python, so numbers are formatted
+  with exact rounding rather than `printf`. `firmware/test/test_console/row_vectors.h`, generated
+  from `shore/scout_shore/schema.py` (`python -m scout_shore.row_vectors --write`), checks every
+  column, every battery millivolt from 2.0 to 4.4 V and every turbidity count;
+  `shore/tests/test_row_vectors.py` fails if the header drifts.
+- **Requested transmit counts** are read from `GET /api/device/settings` every 10 min; the
+  console's answer replaces any `N<buoy>:<count>` typed over USB.
+- **Clock, best source first** (`lib/scout_shore_clock`): NTP over WiFi (`pool.ntp.org`,
+  `time.google.com`, `time.cloudflare.com`; SNTP re-syncs hourly). Without WiFi the S3's
+  **internal clock** keeps time between syncs, and across any reset except power-on, because the
+  ESP32's RTC timer survives resets
+  ([ESP-IDF System Time](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/system/system_time.html));
+  ⚠️ that survival is from the ESP-IDF docs, not yet seen on the board. `T<epoch>` over USB
+  (`firmware/tools/set_rtc.py`) sets it by hand. Only a power-on with no WiFi and no USB leaves it
+  unset, because the S3 has no battery-backed clock (open item 6). The clock only tags the slot
+  window and stamps downlink counters: **readings carry the buoy's own timestamp**, so an unset
+  shore clock never corrupts data.
+- **HTTPS trusts eight roots** (`src/shore_rx/console_ca.h`: Google Trust Services R1–R4, Let's
+  Encrypt X1/X2, SSL.com 2022 ECC/RSA), because Cloudflare can move the console's certificate
+  between those CAs; the bundle was checked against the live console on 2026-10-28.
+- **Credentials** go in the gitignored `src/shore_rx/shore_secrets.h` (copy
+  `shore_secrets_example.h`): WiFi name and password, console URL, device token from the console's
+  Stations page. Without it the station builds with WiFi off and works over USB exactly as before.
+  Env `feather_esp32s3_shore_link_check` builds with dummy values so CI links the network code.
+- **Footprint** with WiFi on: RAM 26.7 %, flash 64.3 % of the app partition.
+
+**Fallbacks stay** (David, 2026-10-28). The S3 still prints every frame over USB, so a computer
+can take over the push when the site has no usable WiFi (`shore/scripts/run_receiver.py
+--link serial`, [SCO-257](https://linear.app/scout1/issue/SCO-257)), and every reading is on the
+buoy's SD card, merged with `shore/scripts/import_sd_card.py` after retrieval.
 
 The station must:
 
@@ -111,8 +152,9 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
   sample every 30 min → SD card              LoRa RX task  ──►  validate + decode
         │                                         ▲                    │
         └── 1-3 slots/day: LoRa TX ───────────────┘                    ▼
-            (44-byte packet, 1 copy per slot)                 WiFi task: push (not written;
-                                                              sync_console.py does it today)
+            (44-byte packet, 1 copy per slot)                 WiFi task: push to the console
+                                                              (written; USB → computer and the
+                                                              SD card are the fallbacks)
         ◄── SET_TX_COUNT in the 1 s listen window ──                   ▼
             (built, off by default; firmware OTA not built)    team console (ADR-0012)
 
@@ -122,10 +164,11 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
 
 ## Open items
 
-1. **The S3's own WiFi push.** *What* receives it is decided (2026-10-25,
-   [ADR-0012](../decisions/0012-authenticated-console.md)): the team console's device API, which
-   takes decoded schema rows. Still open: writing the S3's push, so the Python package can leave
-   the live path. Until then `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
+1. **Bench-test the S3's WiFi push** ([SCO-237](https://linear.app/scout1/issue/SCO-237)):
+   written 2026-10-28 against the console's device API
+   ([ADR-0012](../decisions/0012-authenticated-console.md)). Still open: a frame from the bench
+   buoy showing up on the console end to end, NTP and the clock surviving a reset seen on the
+   board, and a site WiFi to run it on (item 4). Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.
 3. **The RFM95W FeatherWing's own FCC authorization**, now that the station transmits (ADR-0008).
    **Blocks switching on the SCO-198 downlink off the bench.** Owner: CS lead.
@@ -135,6 +178,10 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
    [SCO-197](https://linear.app/scout1/issue/SCO-197). The settings slice is built (SCO-198);
    the listen window's real current and timing and the downlink range are unmeasured, and the
    window needs Isabella's sign-off.
+6. **A battery-backed clock for the shore station?** After a power cut with no WiFi, the S3's
+   clock is unset until NTP or USB sets it, so slot-window tags read `unknown` and the downlink
+   holds off; readings are unaffected. An RTC add-on (e.g. a PCF8523 or DS3231 FeatherWing) would
+   close the gap. Owner: ECE (Isabella) to decide.
 
 ## Timeline
 
