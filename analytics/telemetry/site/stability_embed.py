@@ -23,7 +23,7 @@ _OUT = Path(__file__).parent / "static" / "stability" / "index.html"
 
 # The same warm tokens the rest of the site uses (theme/tokens.py), as literals because this
 # page is a separate document inside an iframe and cannot see the site's stylesheet.
-_STYLE = (Path(__file__).parent / "stability_theme.css").read_text(encoding="utf-8").strip()
+_STYLE = (Path(__file__).parent / "stability-theme.css").read_text(encoding="utf-8").strip()
 
 _INTRO = ('<p class="note">Step through every flotation design the team has modelled, oldest to newest. '
           'Each side view is a true cut through the CAD. The buoy is floated in a hydrostatic model '
