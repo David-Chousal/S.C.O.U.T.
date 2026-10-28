@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCOUT Lab Plan</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0.5in; }
+  :root { --ink: #111; --mute: #4b5563; --line: #d1d5db; --warn: #b91c1c; --ok: #1b7f3a; --bg: #fff; }
+  * { box-sizing: border-box; }
+  body { font: 11.5px/1.4 "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); margin: 0 auto; max-width: 7.5in; padding: 12px 16px; }
+  h1 { font-size: 19px; margin: 0 0 2px; }
+  .meta { color: var(--mute); font-size: 11px; border-bottom: 2px solid var(--ink); padding-bottom: 4px; margin-bottom: 8px; }
+  h2 { font-size: 13.5px; margin: 12px 0 4px; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+  ul, ol { margin: 2px 0 4px 18px; padding: 0; }
+  li { margin: 1px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 11px; margin: 3px 0; }
+  th, td { border: 1px solid var(--line); padding: 3px 5px; text-align: left; vertical-align: top; }
+  th { background: #f3f4f6; }
+  .box { border: 1.5px solid var(--warn); border-radius: 6px; padding: 5px 8px; margin: 6px 0; }
+  .box b.t { color: var(--warn); }
+  code { font: 10.5px Consolas, monospace; background: #f3f4f6; padding: 0 3px; border-radius: 3px; }
+  .ck { list-style: none; margin-left: 0; }
+  .ck li::before { content: "☐ "; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .two { grid-template-columns: 1fr; } }
+  @media print { body { padding: 0; } h2 { break-after: avoid; } table, .box { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<h1>S.C.O.U.T. electronics · lab log + Thursday bench plan</h1>
+<div class="meta">I. Rodriguez (ECEN) · logged 2026-10-27 · next bench session Thursday 2026-10-29 · meeting with Dr. Krishnan, Jes and JR on 2026-10-28</div>
+
+<h2>Done in the lab, 2026-10-27</h2>
+<ul class="ck" style="list-style:none">
+  <li>✔ Soldered stacking headers on the <b>Feather M0 RFM95 (3178)</b> and the <b>Adalogger (2922)</b>; the two boards are now stacked.</li>
+  <li>✔ <b>DS18B20 temperature probe (381):</b> soldered its 3 bare leads to 3 female jumper wires, twisted each joint, covered with heat-shrink and shrank it with the heat gun. These plug into male–male jumpers on the breadboard, where the 4.7 kΩ pull-up goes.</li>
+  <li>✔ <b>SHT40 leak sensor (4885):</b> header pins soldered. Ready to connect to the M0.</li>
+  <li>✔ <b>Shore station:</b> ESP32-S3 Feather (5477) + LoRa FeatherWing (3231) soldered.</li>
+  <li>✔ <b>Dr. Krishnan reviewed the electrical block diagram</b> (not yet approved).</li>
+</ul>
+<p style="margin:2px 0"><b>No second M0 is needed for the shore station.</b> The ESP32-S3 + LoRa FeatherWing <i>is</i> the shore station and runs its own firmware (<code>feather_esp32s3_shore</code>).</p>
+
+<h2>Thursday: what's left, in order</h2>
+<ol>
+  <li><b>Unpowered checks first</b> (USB unplugged, multimeter on continuity/Ω):
+    <ul>
+      <li>Feather <b>3V ↔ GND</b>: should <b>not</b> beep. A reading near 0 Ω means a solder bridge; find it before powering.</li>
+      <li>Probe: label which female jumper is <b>red (VDD)</b>, <b>yellow (data)</b>, <b>black (GND)</b>. Beep each one end to end through the splice.</li>
+      <li>Look over the header joints for bridges between neighbouring pins.</li>
+    </ul></li>
+  <li><b>Feather alone on USB:</b> meter the <b>3V</b> pin to GND → expect <b>≈ 3.3 V</b>. Upload a blink test.</li>
+  <li><b>Unplug</b> → wire the temperature probe: red → 3V rail, black → GND rail, yellow → <b>D12</b>, 4.7 kΩ between yellow and 3V. Plug in, <b>touch the probe for 10 s</b> (warm = unplug at once), read it in the Serial Monitor.</li>
+  <li><b>Unplug</b> → wire the SHT40: VIN → 3V, GND → GND, SDA → <b>SDA</b>, SCL → <b>SCL</b>. Plug in, read humidity.</li>
+  <li><b>Solder the antenna</b> (see below) → radio test with the shore station.</li>
+  <li>Current measurements, using whatever Dr. Krishnan recommends.</li>
+</ol>
+
+<div class="box"><b class="t">Rules that prevent damage</b>
+  <ul>
+    <li>Sensors only ever go to the Feather's <b>3V</b> pin and <b>GND</b>. Never <b>USB</b> (5 V) or <b>BAT</b>. The M0's pins are 3.3 V only.</li>
+    <li><b>Unplug USB before changing any wire.</b> Plug back in only after rechecking.</li>
+    <li><b>Never run the radio without an antenna.</b> The buoy firmware transmits, so attach the antenna before loading it. Simple sensor test sketches are fine without one.</li>
+  </ul>
+</div>
+
+<h2>What could go wrong when you connect them</h2>
+<table>
+  <tr><th>Mistake</th><th>What happens</th><th>How you'd notice / fix</th></tr>
+  <tr><td>Probe red and black swapped</td><td>DS18B20 runs backwards, gets hot, can die in seconds to minutes</td><td>Probe warm to the touch → unplug at once. This is why the wires get labeled</td></tr>
+  <tr><td>Sensor on <b>USB</b> or <b>BAT</b> instead of 3V</td><td>5 V on the SHT40 (rated 3.3 V) and 5 V signals into M0 pins can damage both</td><td>Avoided by only using the 3V rail</td></tr>
+  <tr><td>3V shorted to GND</td><td>The regulator current-limits, the board gets warm, the laptop may cut the USB port</td><td>Caught by the unplugged 3V↔GND check</td></tr>
+  <tr><td>Data wire in the wrong pin, or no pull-up</td><td>Nothing breaks; the reading just fails (e.g. −127 °C for the DS18B20)</td><td>Move the wire, check the 4.7 kΩ</td></tr>
+  <tr><td>Radio on with no antenna</td><td>Transmit power reflects back into the RFM95 and can damage it</td><td>Antenna on before the buoy firmware</td></tr>
+</table>
+<p style="margin:2px 0;color:var(--mute)">Everything here runs at 3.3 V from a USB port, so nothing can shock you, and the worst case is one cheap part. A spare DS18B20 is ≈ $10.</p>
+
+<div class="two">
+<div>
+<h2>Antenna (bench)</h2>
+<ul>
+  <li>Use the <b>915 MHz spring antenna (4269)</b>. Its straight leg goes in the <b>ANT</b> hole at the radio end of the M0; solder it from underneath.</li>
+  <li>Solder only the <b>ANT</b> hole, not the ground pads beside it. Keep the antenna straight and away from other metal.</li>
+  <li>A straight 78 mm (≈ 3 in) solid wire in ANT also works.</li>
+  <li>The uFL connector (1661) is for the outdoor antenna later. Ask Dr. Krishnan before adding it.</li>
+</ul>
+</div>
+<div>
+<h2>Getting data to your laptop</h2>
+<ul>
+  <li><b>Sensors:</b> no shore station needed. USB from the M0 to the laptop, then the Serial Monitor at 115200 baud prints every reading.</li>
+  <li><b>Radio test:</b> plug the M0 <i>and</i> the shore station into the laptop. The shore window prints <code>OK buoy=… temp_c_centi=…</code> for each packet. No WiFi needed.</li>
+  <li><b>No SD card or coin cell needed.</b> The firmware boots with <code>sd=FAIL</code> and the clock marked unset, and keeps going.</li>
+  <li>The <b>128 MB microSD (5250)</b> was in the Adafruit order, so check that box. The CR1220 is in the Mouser box.</li>
+</ul>
+</div>
+</div>
+
+<h2>Have ready on the laptop before Thursday</h2>
+<ul class="ck">
+  <li>VS Code + PlatformIO installed, repo pulled (<code>main</code>)</li>
+  <li><b>Data</b> USB cables, not charge-only: micro-USB for the M0, USB-C for the ESP32-S3</li>
+  <li>Buoy, bench build (samples and sends every minute): <code>cd firmware</code> → <code>pio run -e feather_m0_bench -t upload</code> → <code>pio device monitor</code></li>
+  <li>Shore station: <code>pio run -e feather_esp32s3_shore -t upload</code> → <code>pio device monitor</code></li>
+  <li>Multimeter, 4.7 kΩ resistor, jumper wires, breadboard, labels/tape</li>
+</ul>
+
+<h2>Questions for tomorrow's meeting</h2>
+<p style="margin:2px 0"><b>Dr. Krishnan</b></p>
+<ol>
+  <li>What should I measure before connecting the sensors the first time, and what values should I expect (3V↔GND resistance, 3V rail voltage)?</li>
+  <li>How should I measure current: meter in series on USB, or a bench supply on BAT? Which ranges for sleep (µA) versus transmit (≈ 120 mA)? Does the lab have a low-current meter or power profiler?</li>
+  <li>Can you look at my solder joints and heat-shrink splices before I power anything?</li>
+  <li>Is it fine to solder the spring antenna to ANT now and add the uFL later? Should only one be connected at a time?</li>
+  <li>Is the 4.7 kΩ pull-up OK on the breadboard end of the probe's long cable, or should it sit closer to the probe?</li>
+  <li>For the D-cell build later: do you agree with leaving off the fuse and plug?</li>
+  <li>For the Stage 2 bench supply: 3.6 V with what current limit?</li>
+</ol>
+<p style="margin:2px 0"><b>Jes and JR</b></p>
+<ol>
+  <li>Reimbursement: Mouser $27.27 each, Adafruit $47.53 each (in the purchase log).</li>
+  <li>Who can help on Thursday with flashing the firmware and reading the shore station output?</li>
+  <li>When will the hung buoy and lid be ready for an electronics fit check (antenna, SHT40 placement)?</li>
+</ol>
+</body>
+</html>
