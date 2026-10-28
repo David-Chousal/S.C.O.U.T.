@@ -9,27 +9,27 @@ Two sources, kept visually consistent but structurally separate so attribution n
   authoritative ``hardware/schematics/scout-reva-schematic.pdf`` export of
   ``scout-reva.kicad_sch``, unedited).
 
-**Current design, 2026-09-10.** These five parts are the bolted-wedge flotation system actually
-being built — see ``mechanical/cad/floatation/README.md``. They replace the three-part
-top/shell/bottom concept (v1–v9), which was superseded 2026-08-17 and never should have stayed
-live on the public site this long. The wedge bottom is the "lean" v5 re-model
-([SCO-111](https://linear.app/scout1/issue/SCO-111)); the other four are still the v4 drawings
-(``current/`` in the CAD folder) — the v5 wedge thinning changed wall thickness, not anything
-visible at this drawing's dimensioned callouts, so re-render when the v5 wedge gets its own
-dimensioned PDF.
+**Updated 2026-10-28.** The gallery now shows John's DFM Assembly 3/4 drawings of the printed
+floats (Float A, Float B), the electronics housing and its cap, copied from
+``mechanical/cad/floatation/`` and ``mechanical/cad/electronics-housing/``. They replace the five
+bolted-wedge v4/v5 sheets (wedge, wedge cap, wedge bottom, chassis, chassis cap), whose PNGs stay
+in ``static/img/mechanical/`` but are no longer linked.
 """
 
 from __future__ import annotations
 
-# (file, caption). Order: the five bolted-wedge flotation parts, then the sensor housing.
+# (file, caption). Order: the two printed floats, the electronics housing and its cap, then the sensor
+# housing. Sheets are size B (11 x 17 in) at 150 DPI, 1650 x 2550 px; the turbidity sheet is still the
+# older 1275 x 1650 render.
 DRAWINGS = (
-    ("floatation-wedge.png", "Flotation wedge"),
-    ("floatation-wedge-cap.png", "Flotation wedge cap"),
-    ("floatation-wedge-bottom.png", "Flotation wedge bottom"),
-    ("floatation-chassis.png", "Flotation chassis"),
-    ("floatation-chassis-cap.png", "Flotation chassis cap"),
+    ("float-a.png", "Float A"),
+    ("float-b.png", "Float B"),
+    ("electronics-housing.png", "Electronics housing"),
+    ("electronics-housing-cap.png", "Electronics housing cap"),
     ("turbidity-sensor.png", "Turbidity sensor housing"),
 )
+SIZES = {"turbidity-sensor.png": (1275, 1650)}
+DEFAULT_SIZE = (1650, 2550)
 
 
 def gallery(base: str, *, eyebrow: str, heading: str, sub: str) -> str:
@@ -37,7 +37,8 @@ def gallery(base: str, *, eyebrow: str, heading: str, sub: str) -> str:
     figs = "".join(
         '<figure class="drawing reveal">'
         f'<a href="{base}assets/img/mechanical/{file}" aria-label="{caption}, full drawing">'
-        f'<img src="{base}assets/img/mechanical/{file}" width="1275" height="1650" '
+        f'<img src="{base}assets/img/mechanical/{file}" width="{SIZES.get(file, DEFAULT_SIZE)[0]}" '
+        f'height="{SIZES.get(file, DEFAULT_SIZE)[1]}" '
         f'loading="lazy" decoding="async" alt="Engineering drawing, {caption}"></a>'
         f"<figcaption>{caption}</figcaption></figure>"
         for file, caption in DRAWINGS
