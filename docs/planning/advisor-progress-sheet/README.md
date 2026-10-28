@@ -16,28 +16,29 @@ tell from activities. The sheet answers each directly:
 | Feedback | What the sheet does |
 |---|---|
 | Systematic; team sets next steps together | The team sets next steps in a weekly sync **before** the sheet is made. Each has an owner and a done-when. The sheet scores last week's plan vs. what happened |
-| Progress vs. activities | Each exit criterion is pass, partial, fail or untested against a written target, with a test-register row or Linear issue as evidence. Activity that moved no criterion is greyed |
+| Progress vs. activities | Each person's bullets state what was produced and which subsystem it advances, with a Linear issue or PR as evidence. A criteria chip shows pass / partial / untested counts against written targets |
 
 ## What is on the page
 
 | Block | Shows | Source |
 |---|---|---|
-| Headline stats | Criteria passed, time elapsed vs work done, milestones past target, blocked count | Linear, test register |
 | Phase Gantt | Seven phase bars, today line, milestone diamonds, work-done fill | Linear projects and milestones |
-| Three lanes (ECEN, CSEN, GENG) | Criteria with target and result, moved this week, stuck and why, next steps | Linear, test register, git |
-| Plan vs. what happened | Last week's committed steps, finished or not, with the reason for each miss | Saved snapshot of last sheet |
-| Who is waiting on whom | Handoffs drawn only from Linear blocking relations | Linear relations |
+| One block per person (Isabella, David, John Ryan) | A criteria chip (pass / partial / untested counts), then the four parts below | Linear, git, PRs, test register, each person's own line |
+| Last week (2-4 bullets) | What they did in plain English, the 2-3 steps taken, what it produced, which subsystem or initiative it advances and why | Linear, PRs, git |
+| Challenges | What is stuck and what it waits on | Linear blocking relations, `Needs Decision` |
+| Next week | Tasks with owner and done-when | Linear `On Deck`, team sync |
+| Plan vs. actual | One line per person scoring last week's commitments | Saved snapshot of last sheet |
 | Asks for the advisors | Decisions only the advisors can unblock | Linear `Needs Decision`, open ADRs |
-| Activity, no criterion moved | Work done that moved no criterion | Linear |
-| Advisor feedback table | Each advisor comment, what changed, status | This README, meeting notes |
+
+The advisor-feedback record lives in the table above, not on the sheet.
 
 ## Weekly run
 
 1. **Team sync first (about 10 minutes).** The three of you set next steps by labelling Linear
    issues `On Deck` and agreeing an owner and a done-when for each. The skill never drafts the
    team's next steps as if they were agreed.
-2. Prompt Claude: "make the advisor sheet". It reads Linear and the test register, fills the
-   `DATA` block in [`template.html`](template.html), and saves the sheet outside the repo.
+2. Prompt Claude: "make the advisor sheet". It asks each person for one line on what they did,
+   cross-checks it against Linear, git and the test register, fills the `DATA` block in [`template.html`](template.html), and saves the sheet outside the repo.
 3. **Save the commitments** from the sheet (one line each in
    `docs/planning/advisor-sheets/commitments-YYYY-MM-DD.md`) so next week's sheet can score
    them. This is how plan vs. actual works.
@@ -46,8 +47,9 @@ tell from activities. The sheet answers each directly:
 
 ## Rules the skill follows
 
-- Every claim carries evidence: a test-register row, a Linear issue or a merged PR. A claim
-  with no evidence goes in the grey activity box, not in progress.
+- Every bullet carries evidence: a test-register row, a Linear issue or a merged PR, and states
+  an outcome and a subsystem. Work that moved nothing is said plainly, not dressed up.
+- Plain English: written for someone who has not seen Linear. 2-4 bullets per person.
 - A criterion is **pass** only when a recorded test meets its written target. Partial means a
   test passed under easier conditions than the target; say which conditions. Untested means
   nothing recorded.
