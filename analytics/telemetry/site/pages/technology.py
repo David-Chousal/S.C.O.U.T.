@@ -195,7 +195,7 @@ def _platform(ctx: SiteContext) -> str:
                           "wired straight to the ADC — bench validation pending"),
             ("Acoustic", "Planned for a later electrical revision; hydrophone/interface "
                          "selection under review"),
-            ("Enclosure", "4-inch Schedule 40 PVC, O-ring end caps"),
+            ("Enclosure", "3D-printed flange housing, large O-ring seal, 4.4 in bore"),
             ("Future PCB", "ESP32-C3 + SX1262"),
             ("Decision", "ADR-0001, accepted 2026-08-14"),
         ])
@@ -331,9 +331,10 @@ def _mechanical(ctx: SiteContext) -> str:
         + "</div>"
         '<div class="col-4 prose">'
         "<p>The electronics stay dry in a sealed housing above the waterline: a "
-        "<strong>4-inch Schedule 40 PVC</strong> body with O-ring end caps, cable glands, and "
-        "heat-set inserts for serviceable reassembly. The form is a simple cylinder at the "
-        "waterline, tapering to a mooring point below and an antenna above.</p>"
+        "<strong>3D-printed flange housing</strong> (4.4 in bore, 5 in tall) closed by a bolted lid "
+        "and sealed with a large off-the-shelf O-ring, with cable glands in the lid. It sits in a "
+        "printed float that holds it upright at the waterline, with the antenna above and the "
+        "mooring attached to the float.</p>"
         "<p>Below the housing, S.C.O.U.T. uses <strong>one sensor of each type at a single "
         "point</strong> rather than a multi-depth string (<a class=\"textlink\" "
         f'href="{_DOC}/decisions/0003-single-point-sensing.md">ADR-0003</a>); the extra units on '
