@@ -21,7 +21,7 @@ CSVs land; ``data/`` is gitignored scratch for loopback and demo runs. The regen
 targets the scratch directory by construction, so it has no path to overwrite real readings
 even if this logic were bypassed.
 
-Standard library only — this runs in CI and on a bare Raspberry Pi.
+Standard library only — this runs in CI and on a bare shore computer.
 """
 
 from __future__ import annotations

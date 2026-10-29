@@ -1,13 +1,14 @@
-# S.C.O.U.T. shore station — receives LoRa telemetry and writes daily CSVs.
+# S.C.O.U.T. shore station — reads the ESP32-S3 LoRa receiver over USB and writes daily CSVs.
 #
-# Install on the Raspberry Pi:
+# Install on the Linux computer the S3 is plugged into (a Raspberry Pi works):
 #   sudo cp shore/deploy/scout-shore.service /etc/systemd/system/
 #   sudo systemctl daemon-reload
 #   sudo systemctl enable --now scout-shore
 #   journalctl -u scout-shore -f
 #
 # Assumes the repo is cloned at /home/pi/S.C.O.U.T. and runs as the `pi` user. Adjust both
-# below if yours differs. See shore/README.md for the full bring-up.
+# below if yours differs. Point --serial at the S3's stable name under /dev/serial/by-id/
+# (`ls /dev/serial/by-id/`); /dev/ttyACM0 can change when another USB device is plugged in. See shore/README.md for the full bring-up.
 
 [Unit]
 Description=S.C.O.U.T. shore station (LoRa receiver)
@@ -18,15 +19,17 @@ After=network.target
 
 # Never give up restarting. Must live in [Unit]: systemd moved this out of [Service] in v230
 # and silently ignores it there, which would leave the unit dead after 5 restarts in 10s —
-# exactly what happens if the SPI bus is not ready yet at boot.
+# exactly what happens while the S3 is unplugged or still enumerating at boot.
 StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 User=pi
 Group=pi
+# Serial ports belong to the dialout group on Debian and Raspberry Pi OS.
+SupplementaryGroups=dialout
 WorkingDirectory=/home/pi/S.C.O.U.T./shore
-ExecStart=/usr/bin/python3 scripts/run_receiver.py --link rfm9x --out data-live
+ExecStart=/usr/bin/python3 scripts/run_receiver.py --link serial --serial /dev/ttyACM0 --out data-live
 
 # Always come back. An unattended station on a coastline is not going to be restarted by hand,
 # and the buoy transmits blind — if nothing is listening, neither end raises an alarm.
@@ -42,8 +45,8 @@ Environment=PYTHONUNBUFFERED=1
 StandardOutput=journal
 StandardError=journal
 
-# Modest hardening. Not a sandbox — the process needs /dev/spidev and /dev/gpiomem for the
-# radio, and write access to the repo's data-live/ directory.
+# Modest hardening. Not a sandbox — the process needs the S3's serial port and write access
+# to the repo's data-live/ directory.
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full

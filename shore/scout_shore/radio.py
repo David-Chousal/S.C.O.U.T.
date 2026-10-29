@@ -1,4 +1,9 @@
-"""Real SX1276 (RFM95) receive backend for the shore station.
+"""Fallback receive backend: an SX1276 (RFM95) wired straight to a Raspberry Pi.
+
+**This is not the shore station.** The shore station is the ESP32-S3 Feather with a LoRa
+FeatherWing (decided 2026-09-24, SCO-86; ``firmware/src/shore_rx/``), which a computer reads
+over USB with :class:`~scout_shore.serial_link.SerialFrameLink` (SCO-257). This backend predates
+that decision and is kept as a fallback in case the S3 cannot be used.
 
 ⚠️ **Written against datasheets and the buoy's firmware; never run against hardware.** No
 RFM95 has been connected to a Raspberry Pi on this project. Treat every value here as a
@@ -9,7 +14,7 @@ This module is deliberately the *only* place in ``scout_shore`` that needs third
 packages, and it imports them lazily inside :meth:`Rfm9xLink.__init__`. Importing this module
 on a machine with no radio libraries installed therefore succeeds — which matters because the
 rest of the shore station is standard-library only by design, so its test suite runs on a bare
-Pi with nothing installed.
+machine with nothing installed.
 
 Three things here are easy to get wrong and expensive to debug in the field:
 
@@ -48,7 +53,7 @@ _RECEIVE_TIMEOUT_S = 0.5             # short: the caller polls, and must not blo
 
 
 class Rfm9xLink:
-    """A :class:`~scout_shore.link.LoRaLink` backed by a real RFM95 on a Raspberry Pi.
+    """A :class:`~scout_shore.link.LoRaLink` backed by an RFM95 wired to a Raspberry Pi (fallback).
 
     Receive-only. :meth:`transmit` raises — the shore station listens; the buoy talks.
     """

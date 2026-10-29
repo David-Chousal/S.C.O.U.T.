@@ -1,6 +1,6 @@
 """The long-running receiver loop that keeps the shore station up.
 
-Without this there is no service at all: someone SSHes into the Pi and runs a script by hand,
+Without this there is no service at all: someone logs into the shore computer and runs a script by hand,
 and the next reboot or power cut ends the deployment silently. The buoy keeps transmitting into
 an empty room — and because it transmits blind, with no acknowledgement, nothing on the buoy
 notices either. The data is on its SD card, which is a boat trip away.
@@ -96,7 +96,7 @@ class ServiceTests(unittest.TestCase):
         self.assertGreater(link.calls, 0)
 
     def test_it_backs_off_instead_of_spinning_on_a_dead_radio(self) -> None:
-        """A permanently broken link must not pin the Pi's CPU at 100%."""
+        """A permanently broken link must not pin the CPU at 100%."""
         service = self._service(_ExplodingLink(), poll_interval_s=1.0, max_backoff_s=30.0)
         service.run(max_iterations=6)
         self.assertTrue(self.clock.slept, "a failing loop that never sleeps is a busy-wait")
