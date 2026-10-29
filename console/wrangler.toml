@@ -15,7 +15,7 @@ html_handling = "auto-trailing-slash"
 # Public config only. Secrets are set with `wrangler secret put` and never committed:
 #   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET
 [vars]
-APP_URL = "https://scout-console.example.workers.dev"   # set to the deployed URL (see README)
+APP_URL = "https://scout-console.scout1.workers.dev"
 BOOTSTRAP_ADMIN_EMAIL = ""                              # first admin; only used while no users exist
 GITHUB_CLIENT_ID = ""
 GOOGLE_CLIENT_ID = ""
@@ -24,5 +24,5 @@ GOOGLE_CLIENT_ID = ""
 binding = "DB"
 database_name = "scout-console"
 # From `wrangler d1 create scout-console`. Not a secret, but specific to the owner's account.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "7d99a9ad-151d-417f-9113-52490c04382e"
 migrations_dir = "migrations"

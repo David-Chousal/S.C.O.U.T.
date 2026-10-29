@@ -6,6 +6,7 @@ import {
   ApiError,
   type AuditEntry,
   type Device,
+  type BuoySettings,
   type Fleet,
   type Invite,
   type Providers,
@@ -67,6 +68,8 @@ export const api = {
   requestTxCount: (buoyId: number, txCount: number) =>
     call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/tx-count`, { tx_count: txCount }),
   addBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", "/api/fleet/buoys", { buoy_id: buoyId, label }),
+  settings: () => call<BuoySettings>("GET", "/api/settings"),
+  renameBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/label`, { label }),
 
   team: () => call<Team>("GET", "/api/team"),
   createInvite: (email: string, role: Role) => call<{ link: string }>("POST", "/api/team/invites", { email, role }),

@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
 import { ApiError, type Session } from "@/lib/api/types";
+import { applyTheme, DEFAULT_PREFERENCES, loadPreferences, savePreferences, type Preferences } from "@/lib/preferences";
+import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
@@ -22,6 +24,21 @@ type Load = { kind: "loading" } | { kind: "ready"; session: Session } | { kind: 
 export function AppShell({ title, actions, children }: AppShellProps) {
   const router = useRouter();
   const [load, setLoad] = useState<Load>({ kind: "loading" });
+  // The static HTML is prerendered with the defaults; nothing that reads preferences renders
+  // until the session loads, so reading storage here cannot cause a hydration mismatch. The
+  // theme itself was already applied before paint by the boot script in app/layout.tsx.
+  const [preferences, setPreferences] = useState<Preferences>(() =>
+    typeof window === "undefined" ? DEFAULT_PREFERENCES : loadPreferences(),
+  );
+  const [stored, setStored] = useState(true);
+
+  const update = useCallback((change: Partial<Preferences>) => {
+    const next = { ...preferences, ...change };
+    applyTheme(next.theme);
+    setStored(savePreferences(next));
+    setPreferences(next);
+  }, [preferences]);
+  const preferencesValue = useMemo(() => ({ preferences, update, stored }), [preferences, update, stored]);
 
   useEffect(() => {
     let live = true;
@@ -51,15 +68,17 @@ export function AppShell({ title, actions, children }: AppShellProps) {
   }
   return (
     <SessionContext value={load.session}>
+    <PreferencesContext value={preferencesValue}>
       <Toaster>
         <div className="sc-shell">
-          <Sidebar user={load.session.user} onSignOut={signOut} />
+          <Sidebar user={load.session.user} onSignOut={signOut} shortcuts={preferences.shortcuts} />
           <div className="sc-shell__page">
             <TopBar title={title} actions={actions} />
             <main className="sc-main">{children}</main>
           </div>
         </div>
       </Toaster>
+    </PreferencesContext>
     </SessionContext>
   );
 }

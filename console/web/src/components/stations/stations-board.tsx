@@ -8,8 +8,9 @@ import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Device, Fleet } from "@/lib/api/types";
-import { utc } from "@/lib/format";
+
 import { can, useSession } from "@/lib/session";
+import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 
 const HOUR = 3600 * 1000;
@@ -51,6 +52,7 @@ function NewToken({ onCreated, allowed }: { onCreated: (name: string, token: str
 
 /** Stations: when each buoy and each shore station was last heard from, and the shore's tokens. */
 export function StationsBoard() {
+  const when = useWhen();
   const { user } = useSession();
   const { show } = useToast();
   const fleet = useApi<Fleet>(api.fleet);
@@ -83,7 +85,7 @@ export function StationsBoard() {
               const signal = freshness(buoy.reported_at, now, 9 * HOUR);
               return (
                 <div key={buoy.buoy_id} className="sc-list__row">
-                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>newest packet {utc(buoy.reported_at)} · {buoy.tx_count_reported ?? "—"} a day</span></span>
+                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>newest packet {when(buoy.reported_at)} · {buoy.tx_count_reported ?? "—"} a day</span></span>
                   <span className="sc-list__end"><SignalMeter {...signal} /></span>
                 </div>
               );
@@ -106,9 +108,9 @@ export function StationsBoard() {
           {devices.data.devices.length === 0 && <p className="sc-help">No shore stations yet.</p>}
           {devices.data.devices.map((device) => (
             <div key={device.id} className="sc-list__row">
-              <span className="sc-list__main"><strong>{device.name}</strong><span>created {utc(device.created_at)} · last seen {utc(device.last_seen_at)}</span></span>
+              <span className="sc-list__main"><strong>{device.name}</strong><span>created {when(device.created_at)} · last seen {when(device.last_seen_at)}</span></span>
               <span className="sc-list__end">
-                {device.revoked_at ? <span className="sc-badge sc-badge--muted">Revoked {utc(device.revoked_at)}</span> : (
+                {device.revoked_at ? <span className="sc-badge sc-badge--muted">Revoked {when(device.revoked_at)}</span> : (
                   <>
                     <SignalMeter {...freshness(device.last_seen_at, now, 2 * HOUR)} />
                     <HoldKey size="sm" label="Hold to revoke" holdLabel={`Hold to revoke ${device.name}'s token`} disabled={!allowed} onConfirm={() => revoke(device)} />
