@@ -8,7 +8,7 @@
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, listDevices, revokeDevice } from "./device.js";
-import { addBuoy, estimates, listBuoys, requestTxCount, SLOT_LABELS } from "./fleet.js";
+import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, SLOT_LABELS } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
@@ -89,6 +89,8 @@ async function reads(env, path, session) {
       return json({ user: session.user, csrf: session.csrf });
     case "/api/fleet":
       return json({ buoys: await listBuoys(env.DB), estimates, slotLabels: SLOT_LABELS });
+    case "/api/settings":
+      return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig });
     case "/api/team":
       return json({ members: await listUsers(env.DB), invites: await openInvites(env.DB) });
     case "/api/devices":
@@ -103,6 +105,7 @@ async function reads(env, path, session) {
 /** [pattern, action needed, handler(db, body, match, actor, env) → { error?, ...reply }] */
 const WRITES = [
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/tx-count$/, "settings.write", (db, b, m, a) => requestTxCount(db, a, m[1], b.tx_count)],
+  [/^\/api\/fleet\/buoys\/(\d{1,5})\/label$/, "settings.write", (db, b, m, a) => renameBuoy(db, a, m[1], b.label)],
   [/^\/api\/fleet\/buoys$/, "buoys.add", (db, b, m, a) => addBuoy(db, a, b.buoy_id, String(b.label || "").trim())],
   [/^\/api\/team\/invites$/, "invites.write", async (db, b, m, a, env) => {
     const result = await createInvite(db, a, String(b.email || "").trim(), b.role);

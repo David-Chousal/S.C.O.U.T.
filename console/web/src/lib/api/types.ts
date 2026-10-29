@@ -58,6 +58,23 @@ export interface Fleet {
   slotLabels: Record<string, string>;
 }
 
+/** One firmware setting, from console/worker/buoy-config.json (scripts/export_buoy_config.py). */
+export interface FirmwareSetting {
+  key: string;
+  label: string;
+  value: string;
+  /** How it can be changed: by radio (only the transmit count) or by a firmware update. */
+  change: string;
+  status: "decided" | "provisional" | "pending sign-off";
+  note: string;
+  source: string;
+}
+
+export interface BuoySettings {
+  buoys: Buoy[];
+  firmware: { source: string; settings: FirmwareSetting[] };
+}
+
 export interface Member {
   id: string;
   email: string;

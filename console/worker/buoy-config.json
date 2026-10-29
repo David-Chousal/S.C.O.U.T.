@@ -1,0 +1,86 @@
+{
+  "source": "firmware/src/config.h and library headers, via scripts/export_buoy_config.py",
+  "settings": [
+    {
+      "key": "tx_count",
+      "label": "Transmits a day",
+      "value": "1–3 (default 3)",
+      "change": "By radio, from the Fleet page, once the settings downlink is switched on",
+      "status": "pending sign-off",
+      "note": "Range pending the electrical lead's power sign-off (SCO-198)",
+      "source": "firmware/lib/scout_scheduler/scout_scheduler.h"
+    },
+    {
+      "key": "tx_slots",
+      "label": "Transmit slots",
+      "value": "00:10 UTC · 08:10 UTC · 16:10 UTC",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "decided",
+      "note": "A count of 1 uses the first slot; 2 the first and last; 3 all three",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "sample_interval",
+      "label": "Sensor readings",
+      "value": "every 30 min",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "decided",
+      "note": "",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "audio",
+      "label": "Hydrophone recordings",
+      "value": "60 s at 00:00, 08:00, 16:00 UTC · 22,050 Hz",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "decided",
+      "note": "Normal power mode only (ADR-0011)",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "power_modes",
+      "label": "Power-saving thresholds",
+      "value": "conserve below 3.20 V · critical below 3.10 V",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "provisional",
+      "note": "Depends on the final battery pack (ADR-0007)",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "humidity_alert",
+      "label": "Housing humidity alert",
+      "value": "70 %RH",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "provisional",
+      "note": "Placeholder until the leak calibration (SCO-204)",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "radio",
+      "label": "Radio",
+      "value": "915 MHz · +11 dBm · BW 500 kHz · SF12 · CR 4/8",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "decided",
+      "note": "Set by the FCC grant; not a free choice (config.h)",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "downlink",
+      "label": "Settings downlink listen window",
+      "value": "1 s after each send · off in shipped builds",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "pending sign-off",
+      "note": "Built behind SCOUT_DOWNLINK; needs power sign-off and the FCC check",
+      "source": "firmware/src/config.h"
+    },
+    {
+      "key": "firmware",
+      "label": "Firmware",
+      "value": "v0.1.0 · packet v4",
+      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "status": "decided",
+      "note": "What the buoy reports is in its packets; this is the firmware in the repo",
+      "source": "firmware/src/config.h"
+    }
+  ]
+}

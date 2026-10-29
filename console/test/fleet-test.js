@@ -158,3 +158,28 @@ test("the last admin cannot be demoted", async () => {
   const { body } = await client.post(`/api/team/users/${user.id}/role`, { role: "member" });
   assert.match(body.error, /at least one admin/);
 });
+
+test("the settings read carries each buoy and the firmware's settings, from the export", async () => {
+  const env = makeEnv();
+  env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
+  const { client } = await signedIn(env, "guest");
+  const { status, body } = await client.get("/api/settings");
+  assert.equal(status, 200);
+  assert.equal(body.buoys[0].label, "SCOUT-01");
+  const keys = body.firmware.settings.map((s) => s.key);
+  assert.ok(keys.includes("tx_count") && keys.includes("humidity_alert"));
+  assert.equal(body.firmware.settings.find((s) => s.key === "sample_interval").value, "every 30 min");
+});
+
+test("a member renames a buoy, audited; a guest cannot; bad names are refused", async () => {
+  const env = makeEnv();
+  env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label) VALUES (1, 'SCOUT-01')").run();
+  const { client: guest } = await signedIn(env, "guest");
+  assert.equal((await guest.post("/api/fleet/buoys/1/label", { label: "Reef north" })).status, 403);
+  const { client } = await signedIn(env, "member");
+  assert.equal((await client.post("/api/fleet/buoys/1/label", { label: "<b>x</b>" })).status, 400);
+  assert.equal((await client.post("/api/fleet/buoys/1/label", { label: "Reef north (Kaneohe)" })).status, 200);
+  assert.equal(env.DB.raw.prepare("SELECT label FROM buoys").get().label, "Reef north (Kaneohe)");
+  const audit = env.DB.raw.prepare("SELECT * FROM audit_log WHERE action = 'buoy.rename'").get();
+  assert.equal(audit.before_json, '{"label":"SCOUT-01"}');
+});

@@ -7,6 +7,17 @@ export function utc(ms: number | null | undefined): string {
   return `${new Date(ms).toISOString().replace("T", " ").slice(0, 16)} UTC`;
 }
 
+/** A time in this browser's zone, labelled with the zone so it is never mistaken for UTC. */
+export function local(ms: number | null | undefined, timeZone?: string): string {
+  if (!ms) return "—";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
+    hourCycle: "h23", timeZoneName: "short",
+  }).formatToParts(new Date(ms));
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} ${get("timeZoneName")}`;
+}
+
 export function plural(count: number, word: string, many = `${word}s`): string {
   return `${count} ${count === 1 ? word : many}`;
 }

@@ -7,6 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
+**Live at <https://scout-console.scout1.workers.dev>** since 2026-10-26 (deployed from the SCO-238 branch, before review).
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
@@ -37,6 +38,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Stations | admin | When each buoy and shore station was last heard from; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Audit log | (read only) | Every change: who, what, before → after |
+| Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | How you sign in; hold to sign out everywhere |
 | Sign in, invite, reset | — | GitHub, Google or password; the invite and reset token is read from `?token=` |
 
@@ -98,8 +100,12 @@ request a count in 1–3, which the buoy also range-checks.
 - Passwords: PBKDF2-HMAC-SHA256 with **100,000** iterations, 12–256 characters. Sign-in is limited
   to 5 failures per email and address, 20 per address and 50 per email in 15 minutes.
   **Accepted risk (ADR-0012):** this is below OWASP's 600,000, chosen for the Workers Free plan's
-  10 ms CPU limit. 100,000 took about 10–11 ms in local workerd, so measure sign-in CPU on the
-  deployed Worker ([SCO-239](https://linear.app/scout1/issue/SCO-239)).
+  10 ms CPU limit. **Measured live on 2026-10-26: a sign-in uses 22–96 ms of CPU (median 45 ms),**
+  2–10× that limit; Cloudflare let every one finish, but that is not guaranteed. Every other
+  request uses 0–2 ms. **Decided (David, 2026-10-26): keep it and watch.** A sign-in that fails
+  with Cloudflare error 1102, or `outcome: exceededCpu` in `npx wrangler tail scout-console`,
+  means the limit is now enforced; then move to Workers Paid with argon2id
+  ([SCO-239](https://linear.app/scout1/issue/SCO-239)).
 - Request bodies are refused before they are read when over the limit or sent without a length.
 
 ## Deploy (one-time, needs the account owner)
@@ -123,13 +129,21 @@ Then:
 3. **Google:** Cloud Console → Credentials → OAuth client (Web). Redirect URI
    `<APP_URL>/auth/google/callback`. Set `GOOGLE_CLIENT_ID`, then run
    `npx wrangler secret put GOOGLE_CLIENT_SECRET`.
-4. Sign in as the bootstrap admin and invite the team.
+4. Create the first admin. With a password: `node scripts/create-admin.mjs` asks for your email,
+   name and password (typed hidden), hashes the password on your machine with the console's own
+   PBKDF2 and sends only the hash to D1; it refuses once an admin exists. Or with GitHub/Google:
+   set `BOOTSTRAP_ADMIN_EMAIL` and sign in with that verified email. Then invite the team from
+   the Team page.
 5. Create a shore-station token on Stations, and on the shore run:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
 
 ## Develop and test
+
+Local data is keyed by `database_id`, so `wrangler dev` uses its own local D1, separate from the
+live one. Apply the schema to it once (`npx wrangler d1 migrations apply scout-console --local`)
+and create a local admin with `node scripts/create-admin.mjs --local`.
 
 ```bash
 cd console
