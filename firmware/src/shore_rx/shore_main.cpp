@@ -3,8 +3,10 @@
  *
  * Runs on the ESP32-S3 Feather (5477) with a LoRa Radio FeatherWing RFM95W (3231) stacked on
  * it, which IS the shore station (docs/engineering/shore-station.md). This is the receive half:
- * radio setup, validation, decode and dedupe. The WiFi push to the dashboard is not written
- * yet; it waits on which back end receives it (SCO-120).
+ * radio setup, validation, decode and dedupe. Since SCO-237 it also pushes each reading to the
+ * console over WiFi on its own (shore_net.cpp, a separate FreeRTOS task), with no computer
+ * attached. Every frame is still printed over USB, so the computer bridge (SCO-257) and the
+ * buoy's SD card remain fallbacks.
  *
  * The radio setup is copied from the bench receiver (src/bench_rx/), and the modem settings
  * come from the buoy's own config.h, so the two ends cannot drift. At BW 500 kHz the receiver
@@ -13,12 +15,14 @@
  * Listening is always on: the station is mains-powered, so closing the radio outside the slots
  * would only lose frames (shore-station.md, 2026-10-16). Each frame is tagged with whether it
  * landed inside the ±2 min window around a slot, which checks the buoy's clock against the
- * table. The S3 has no RTC: run firmware/tools/set_rtc.py and press RESET (same prompt and
- * replies as the buoy, any time after boot) until NTP over WiFi exists; before that the tag
- * reads win=unknown.
+ * table. The clock comes from NTP over WiFi; without WiFi the S3's internal clock keeps time
+ * between syncs and across a reset, and firmware/tools/set_rtc.py sets it by hand over USB
+ * (lib/scout_shore_clock). Only a power-on with no WiFi and no USB leaves it unset (win=unknown):
+ * the S3 has no battery-backed clock.
  *
- * Daily transmit count (SCO-198). The station keeps the count requested for each buoy, set
- * over USB with "N<buoy>:<count>" until the console reaches it over WiFi. The window tag uses
+ * Daily transmit count (SCO-198). The station keeps the count requested for each buoy, read
+ * from the console every 10 min over WiFi; "N<buoy>:<count>" over USB sets it without WiFi (the
+ * next console read replaces it). The window tag uses
  * the slots of the count the frame itself reports (v4), else the requested count, so it checks
  * the buoy's clock against the slots that buoy is actually using. Every OK line ends with
  * tx=<reported>/<requested> and "pending" until they match. Listening itself stays always on:
@@ -45,6 +49,7 @@
 #include "scout_packet.h"
 #include "scout_scheduler.h"
 #include "scout_timeset.h"
+#include "shore_net.h"
 #ifdef SCOUT_DOWNLINK
 #include "../downlink_key_select.h"
 #endif
@@ -56,7 +61,6 @@
 #define PIN_SHORE_RFM95_INT 9
 
 static const uint32_t LISTEN_HALF_WIDTH_S = 120;  // ±2 min around each slot (SCO-165)
-static const uint16_t SHORE_MAX_BUOY_ID = 8;      // two planned per station (2026-09-24)
 
 static const uint8_t REG_HIGH_BW_OPTIMIZE_1 = 0x36;
 static const uint8_t REG_HIGH_BW_OPTIMIZE_2 = 0x3A;
@@ -66,9 +70,6 @@ static const uint8_t HIGH_BW_OPTIMIZE_2_AT_500K = 0x64;
 static RH_RF95 g_rf95(PIN_SHORE_RFM95_CS, PIN_SHORE_RFM95_INT);
 static ScoutDedupe g_seen;
 static uint32_t g_frames = 0;
-static bool g_clock_set = false;
-// Count requested per buoy (index = buoy_id); 0 = nothing requested, follow the buoy.
-static uint8_t g_requested[SHORE_MAX_BUOY_ID + 1];
 #ifdef SCOUT_DOWNLINK
 static uint32_t g_last_counter[SHORE_MAX_BUOY_ID + 1];
 #endif
@@ -96,21 +97,34 @@ static bool radio_begin() {
     return true;
 }
 
+/* One write per line: the network task prints from the other core, and a line split across
+ * writes could be interleaved and stop the computer bridge from parsing it. */
 static void print_rx_line(const uint8_t *buf, uint8_t len) {
-    Serial.printf("RX len=%u rssi=%d snr=%d n=%lu hex=", len, g_rf95.lastRssi(),
-                  g_rf95.lastSNR(), (unsigned long)g_frames);
-    for (uint8_t i = 0; i < len; i++) {
-        Serial.printf("%02X", buf[i]);
+    static const char HEX_DIGITS[] = "0123456789ABCDEF";
+    char line[64 + 2 * RH_RF95_MAX_MESSAGE_LEN];
+    int at = snprintf(line, sizeof(line), "RX len=%u rssi=%d snr=%d n=%lu hex=", len,
+                      g_rf95.lastRssi(), g_rf95.lastSNR(), (unsigned long)g_frames);
+    for (uint8_t i = 0; i < len && at + 3 < (int)sizeof(line); i++) {
+        line[at++] = HEX_DIGITS[buf[i] >> 4];
+        line[at++] = HEX_DIGITS[buf[i] & 0x0F];
     }
-    Serial.println();
+    line[at++] = '\n';
+    line[at] = '\0';
+    Serial.print(line);
 }
 
 static uint8_t requested_for(uint16_t buoy_id) {
-    return buoy_id <= SHORE_MAX_BUOY_ID ? g_requested[buoy_id] : 0;
+    ShoreLock lock;
+    return buoy_id <= SHORE_MAX_BUOY_ID ? g_shared.requested[buoy_id] : 0;
+}
+
+static bool clock_valid() {
+    ShoreLock lock;
+    return scout_clock_valid(&g_shared.clock);
 }
 
 static const char *window_tag(uint8_t tx_count) {
-    if (!g_clock_set) {
+    if (!clock_valid()) {
         return "unknown";
     }
     uint32_t slots[TX_SLOT_COUNT];
@@ -123,7 +137,7 @@ static const char *window_tag(uint8_t tx_count) {
 // Sent straight after the buoy's packet: it listens for 1 s after every send (OTA design §2).
 static void send_tx_count(uint16_t buoy_id, uint8_t tx_count) {
     const uint8_t *key = scout_downlink_key(buoy_id);
-    if (key == nullptr || !g_clock_set) {
+    if (key == nullptr || !clock_valid()) {
         Serial.printf("CMD skipped buoy=%u reason=%s\n", buoy_id, key ? "clock" : "no-key");
         return;
     }
@@ -165,6 +179,10 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
         Serial.printf("DUP buoy=%u seq=%lu\n", r.buoy_id, (unsigned long)r.record_seq);
         return;
     }
+    {
+        ShoreLock lock;
+        scout_upload_queue_push(&g_shared.queue, &r);  // the network task sends it on
+    }
     uint8_t reported = scout_flags_tx_count(r.flags);
     uint8_t requested = requested_for(r.buoy_id);
     uint8_t tagged = reported ? reported : (requested ? requested : SCOUT_TX_COUNT_DEFAULT);
@@ -200,7 +218,10 @@ static void poll_time_command() {
                 Serial.printf("tx: ignored, buoy %u above %u\n", buoy, SHORE_MAX_BUOY_ID);
                 continue;
             }
-            g_requested[buoy] = count;
+            {
+                ShoreLock lock;
+                g_shared.requested[buoy] = count;
+            }
             Serial.printf("tx: buoy=%u requested=%u\n", buoy, count);
             continue;
         }
@@ -211,7 +232,10 @@ static void poll_time_command() {
         }
         struct timeval tv = {(time_t)epoch, 0};
         settimeofday(&tv, nullptr);
-        g_clock_set = true;
+        {
+            ShoreLock lock;
+            scout_clock_set(&g_shared.clock, SCOUT_CLOCK_MANUAL, epoch);
+        }
         Serial.printf("time: set to %lu\n", (unsigned long)epoch);
     }
 }
@@ -221,12 +245,18 @@ void setup() {
     while (!Serial && millis() < 5000) {
         delay(10);
     }
+    shore_shared_begin((uint32_t)time(nullptr), MIN_VALID_EPOCH);
     scout_dedupe_init(&g_seen);
     bool ok = radio_begin();
     Serial.printf("shore_rx: radio=%s freq=%.1f modem=%X,%X,%X errata=applied\n",
                   ok ? "ok" : "FAIL", LORA_FREQUENCY_MHZ, LORA_MODEM_CONFIG1, LORA_MODEM_CONFIG2,
                   LORA_MODEM_CONFIG3);
-    Serial.println("time: send T<unix-epoch> (UTC) now to set the clock");
+    if (clock_valid()) {
+        Serial.printf("time: kept across the reset, now=%lu\n", (unsigned long)time(nullptr));
+    } else {
+        Serial.println("time: unset; WiFi sets it by NTP, or send T<unix-epoch> (UTC) now");
+    }
+    shore_net_begin();
 }
 
 void loop() {

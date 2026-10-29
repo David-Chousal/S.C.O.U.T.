@@ -4,7 +4,7 @@ The receiver used to be typed against ``MockLoRaLink`` — the concrete mock —
 nothing for a real backend to implement against and no check that a swap would work. These
 tests pin the contract instead.
 
-``Rfm9xLink`` cannot be exercised here: it needs an SX1276 on a Raspberry Pi. What *is*
+``Rfm9xLink`` cannot be exercised here: it needs an SX1276 wired to a Raspberry Pi (the fallback backend). What *is*
 testable without hardware is that it satisfies the interface, that importing it does not
 require the radio packages, and that its modem constants match the buoy's firmware exactly —
 which is the failure that would otherwise present as a silent, total inability to receive.
@@ -61,7 +61,7 @@ class RadioConfigTest(unittest.TestCase):
         self.assertEqual(radio._HIGH_BW_OPTIMIZE_2_AT_500K, 0x64)
 
     def test_importing_the_real_backend_needs_no_radio_packages(self):
-        # The shore station is stdlib-only so its suite runs on a bare Pi. Importing this
+        # The shore station is stdlib-only so its suite runs on a bare machine. Importing this
         # module must not break that; only constructing Rfm9xLink needs the packages.
         self.assertTrue(radio.FREQUENCY_MHZ)
 
