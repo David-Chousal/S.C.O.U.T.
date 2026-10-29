@@ -194,12 +194,29 @@ def make_figures(out, curves, cc, bd, sweep):
 
 def make_explorer(out, data, leads):
     """Embed the solver series (unchanged) and a true STEP cross section of every iteration in iterations.json."""
-    import iteration_sections
+    import iteration_sections, printed_hulls
     tpl = (HERE / "stability-explorer-template.html").read_text()
+    its = iteration_sections.build()
+    data = dict(data)
+    for it in its:                       # printed floats (no cap/ballast sweep): solve their own series from the STEP
+        h = it.get("hydro")
+        if h and h.get("kind") == "assembly":      # concept iterations: real 3D hull from the STEP parts
+            import assembly
+            reg = next(r for r in json.loads((HERE / "iterations.json").read_text())["iterations"] if r["id"] == it["id"])
+            data[h["cap"] + "_0"], info = assembly.series(reg)
+            h["top_in"], h["housing_g"] = info["top_in"], round(printed_hulls.HOUSING_NOMINAL_G)
+            by = {}
+            for n, k, m, z, r in info["masses"]:
+                c, g = by.get(k, (0, 0.0)); by[k] = (c + 1, g + m)
+            it["note"] = (it["note"] + f" Estimated float mass {info['float_g']} g, not weighed (" + "; ".join(
+                f"{c} x {k} {g:.0f} g" for k, (c, g) in by.items()) + ").").strip()
+        if h and h.get("kind") == "printed":
+            data[h["cap"] + "_0"], h["top_in"] = printed_hulls.series(h)
+            h["housing_g"] = round(printed_hulls.HOUSING_NOMINAL_G)
     lead_by = {"3.0": leads["3.0 in (v5 STEP)"], "1.5": leads["1.5 in (v6 STEP)"], "0": leads["none"]}
     html = (tpl.replace("__DATA__", json.dumps({f"{k.split('_')[0]}_{k.split('_')[1]}": v for k, v in data.items()},
                                                separators=(",", ":")))
-            .replace("__ITERS__", json.dumps(iteration_sections.build(), separators=(",", ":")))
+            .replace("__ITERS__", json.dumps(its, separators=(",", ":")))
             .replace("__LEAD__", json.dumps(lead_by)).replace("__DATE__", out.name))
     (out / "stability-explorer.html").write_text(html)
 

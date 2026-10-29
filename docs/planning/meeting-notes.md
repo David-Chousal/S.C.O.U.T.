@@ -1106,3 +1106,64 @@ owners below are inferred from what was said.
 | Float-test the mushroom-profile buoy with payload; record the large vs small buoy cost | John ([SCO-230](https://linear.app/scout1/issue/SCO-230)) |
 | Put the buoy simulator and versioned buoy history on the site | John ([SCO-229](https://linear.app/scout1/issue/SCO-229)) |
 | Keep looking for a marina host | John ([SCO-195](https://linear.app/scout1/issue/SCO-195)) |
+
+## 2026-10-28 — S.C.O.U.T Sr. Design GENG & ECEN meeting
+
+**Attendees** — John Ryan Myrdal · Isabella Rodriguez · Shoba Krishnan · Jes Kuczenski (David was not there). Source: Granola
+([transcript and notes](https://notes.granola.ai/t/8f7548d7-6097-4581-87a6-70f3695eb470)).
+
+### Decisions and direction
+
+- **Every sensor gets a one-page test protocol with explicit acceptance criteria** (is there a reading, is it reasonable, how it is checked
+  against a reference). The temperature sensor's protocol is written first and is the template for the rest ([SCO-258](https://linear.app/scout1/issue/SCO-258), [SCO-221](https://linear.app/scout1/issue/SCO-221)).
+- **Goal for the week: at least one sensor working.** Temperature first: hot water cooling to room temperature, tracked over time and spot-checked
+  against a digital thermometer ([SCO-259](https://linear.app/scout1/issue/SCO-259)). Draft protocol to Shoba and Jes within a day or two.
+- **Order the antenna and hydrophone this week through the department.** Send the links to Shoba; the department fronts the cost and is repaid when the
+  grant money arrives ([SCO-158](https://linear.app/scout1/issue/SCO-158)).
+- **The mooring load goes through the float, not the electronics housing** (already logged 2026-10-28): the V1 tests hang the buoy from a dock, and creep
+  could reduce the housing's O-ring clamp compression. The housing is also over-designed for the hung tests.
+
+### Status reported
+
+- **Isabella (electronics):** has 24/7 lab access. Headers and chips soldered and both boards assembled (buoy and shore station); the temperature probe wiring was
+  reviewed with Dr. Wolfe. Nothing powered yet; first power-up and temperature reading next. The leak sensor is assembled, with an enclosed humidity test next week.
+- **David (software, reported by John):** receiver console built and password protected; live data pipeline tested against the website; radio tests of packet size
+  limits and three transmissions a day. Naved's LoRa protocol is not integrated yet. The hydrophone work is collaborative; the filter was trained on a large public
+  reef-sound dataset.
+- **John (mechanical):** two buoy versions, one self-rights and is the likely final form; uncoated PETG showed no weight gain in soak tests; the turbidity pod
+  housing is done and the sensor is expected next week; desiccant layer in the housing; the buoyancy simulator runs from the STEP files.
+- **Permitting (John):** marina permits cost about $250 to review and $250+ plus insurance to deploy; Hawaii-based marinas look easier. Shoba offered to forward a
+  blurb to her NOAA contacts and a San Diego underwater-robotics company, and the Monterey Bay Aquarium reef tank was raised as the cheap option.
+
+### Plan
+
+| When | What |
+|---|---|
+| Wed Oct 28 to Thu Oct 29 | Isabella sends the temperature test protocol to Shoba and Jes |
+| Fri Oct 30 | Antenna and hydrophone ordered through the department; blurb to Shoba |
+| Wed Nov 4 | Next advisor meeting; Isabella's physical demo in the lab (advisors may come) |
+| Fri Nov 6, 6 PM (proposed) | System diagram walkthrough for Shoba and Jes, all three team members, with demos; Shoba cannot meet Oct 30 |
+| After Nov 18 | Shoba is away (reachable by Zoom); Dr. Wolfe supports the team next quarter |
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Order the antenna and hydrophone this week | [SCO-158](https://linear.app/scout1/issue/SCO-158) gates the audio and housing orders on Stage 2 sleep current, the hydrophone part decision and the lid design. Isabella to say which gates still apply |
+| The hydrophone amplifier is in Ben's earlier thesis | [Open question](../hub/research/open-questions.md) names the purchased part from Jes's earlier thesis. Same circuit or two? |
+| The simulator is "up to date on past four iterations" of about 12 | The registry holds 17 section views; only the v5/v6/v7 assemblies had solver numbers until the mushroom was added (2026-10-28, branch not yet merged) |
+| Shoba away "after November 18" | Garbled in the transcript; Granola's summary states it. Confirm the date |
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Temperature sensor test protocol to Shoba and Jes | Isabella ([SCO-258](https://linear.app/scout1/issue/SCO-258)) |
+| Run the temperature test and demo it in the lab Nov 4 | Isabella ([SCO-259](https://linear.app/scout1/issue/SCO-259)) |
+| Order antenna and hydrophone through the department | Isabella ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
+| Track down Ben's thesis and amplifier circuit | Isabella ([SCO-216](https://linear.app/scout1/issue/SCO-216)) |
+| Write the deployment blurb for Shoba to forward | John ([SCO-261](https://linear.app/scout1/issue/SCO-261)) |
+| Send the Friday system-diagram review invite and present it | John ([SCO-260](https://linear.app/scout1/issue/SCO-260)) |
+| Apply for Environmental Engineering storage space for the tub | John ([SCO-262](https://linear.app/scout1/issue/SCO-262)) |
+| Write up the coral and snapping-shrimp noise profile for the filter | David ([SCO-263](https://linear.app/scout1/issue/SCO-263)) |
+| Hazard form signature; School of Engineering to collect forms | John ([SCO-211](https://linear.app/scout1/issue/SCO-211)) |

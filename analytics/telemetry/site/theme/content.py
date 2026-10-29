@@ -117,6 +117,9 @@ CSS = """/* ── Grid / bento ────────────────
 .drawing figcaption{padding:0.85rem 1.1rem 1rem;border-top:1px solid var(--color-line);
   color:var(--color-text);font-weight:500;font-size:0.98rem}
 
+/* Stability explorer: the live simulator, framed like the drawings. */
+.sim-frame{width:100%;height:max(1080px,1750px - 130vw);border:0}
+
 /* The slot rule as a divider: the schedule only, every tick hollow. */
 .slot-divider{display:grid;gap:var(--space-2);padding-block:var(--space-6) 0}
 .slot-divider svg{display:block;width:100%;height:24px}

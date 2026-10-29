@@ -133,8 +133,8 @@ def _habitat(ctx: SiteContext) -> str:
         + '<div class="wrap">'
         + drawings.gallery(
             ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
-            sub="CAD drawings by John Ryan Myrdal. The flotation collar and the turbidity-sensor "
-                "housing, printed in PETG.")
+            sub="CAD drawings by John Ryan Myrdal. The two printed floats, the electronics housing and its "
+                "cap, and the turbidity-sensor housing, printed in PETG.")
         + "</div>",
         cls="section-sm",
         sid="habitat",

@@ -19,10 +19,8 @@ RDP_TOL = 0.15         # mm; polyline simplification, below drawing resolution
 GAP = 30.0             # mm between parts in layout "row"
 
 
-def _slice_solid(gmsh, dim_tag, size):
-    gmsh.model.mesh.clear()
-    gmsh.option.setNumber("Mesh.MeshSizeMax", size)
-    gmsh.model.mesh.generate(2)
+def _slice_solid(gmsh, dim_tag):
+    """Cut one solid of an already-meshed model (the caller meshes the file once, not once per solid)."""
     V, T = [], []
     off = 0
     for d, t in gmsh.model.getBoundary([dim_tag], oriented=False, recursive=False):
@@ -102,14 +100,27 @@ def build(registry_path=HERE / "iterations.json"):
     import gmsh
     gmsh.initialize(); gmsh.option.setNumber("General.Terminal", 0)
     out = []
+    import assembly
     for it in json.loads(Path(registry_path).read_text())["iterations"]:
         parts = []
+        if it.get("assembly"):           # stacked sections / wedges around the chassis, placed by assembly.py
+            A = assembly.build(it)
+            for pt in A["parts"]:
+                loops = [np.array(l) for l in _slice_solid(gmsh, pt["dimtag"]) if len(l) > 3]
+                if loops:
+                    parts.append(dict(file=pt["file"], z=(0, 0), loops=loops))
+            it = dict(it, files=[], keel_z_mm=A["keel"])
         for rel in it["files"]:
             gmsh.clear(); gmsh.model.occ.importShapes(str(CAD / rel)); gmsh.model.occ.synchronize()
-            for dt in gmsh.model.getEntities(3):
+            solids = gmsh.model.getEntities(3)
+            big = max((gmsh.model.getBoundingBox(*dt)[3] - gmsh.model.getBoundingBox(*dt)[0] for dt in solids), default=0)
+            gmsh.option.setNumber("Mesh.MeshSizeMax", 3.0 if big > 600 else 2.0)
+            gmsh.model.mesh.generate(2)          # once per file: generate(2) meshes every solid in the model
+            for dt in solids:
                 bb = gmsh.model.getBoundingBox(*dt)
-                size = 3.0 if max(bb[3] - bb[0], bb[4] - bb[1]) > 600 else 2.0
-                loops = [np.array(l) for l in _slice_solid(gmsh, dt, size) if len(l) > 3]
+                if not bb[0] - EPS <= 0.0 <= bb[3] + EPS:
+                    continue                     # solid does not reach the cut plane x = 0
+                loops = [np.array(l) for l in _slice_solid(gmsh, dt) if len(l) > 3]
                 if loops:
                     parts.append(dict(file=rel, z=(bb[2], bb[5]), loops=loops))
         allz = [l[:, 1] for p in parts for l in p["loops"]]
