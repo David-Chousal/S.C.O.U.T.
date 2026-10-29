@@ -341,7 +341,7 @@ time on air ≈ **0.56 s** (`SCOUT_LINK_AIRTIME_MS` 560; `scripts/lora_airtime.p
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
 
-**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🟡 Receive firmware written 2026-10-23 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`), never run on the board; the WiFi push is not written.
+**4b — The shore station: ESP32-S3 + LoRa FeatherWing** (SCO-24). 🟡 Receive firmware written 2026-10-23 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`), never run on the board. **WiFi push to the console written 2026-10-28** ([SCO-237](https://linear.app/scout1/issue/SCO-237)), also never run: to bench it, copy `src/shore_rx/shore_secrets_example.h` to `shore_secrets.h` (WiFi name and password, and a device token from the console's Stations page), flash `feather_esp32s3_shore`, and expect `wifi: connected`, `time: set by ntp`, then `console: pushed 1 readings` after the bench buoy's packet, with the buoy's "newest packet" updating on the console's Fleet page.
 Per the agreed design ([Shore Station](shore-station.md)) it receives with the same settings and
 erratum as 4a, listens in a **±2 min** window around each slot, and **pushes to the dashboard
 over WiFi**. Under ADR-0008 it will also transmit, so its transmit antenna must stay **≤ 2.15 dBi**
