@@ -195,7 +195,7 @@ def _platform(ctx: SiteContext) -> str:
                           "wired straight to the ADC — bench validation pending"),
             ("Acoustic", "Planned for a later electrical revision; hydrophone/interface "
                          "selection under review"),
-            ("Enclosure", "4-inch Schedule 40 PVC, O-ring end caps"),
+            ("Enclosure", "3D-printed flange housing, large O-ring seal, 4.4 in bore"),
             ("Future PCB", "ESP32-C3 + SX1262"),
             ("Decision", "ADR-0001, accepted 2026-08-14"),
         ])
@@ -277,6 +277,52 @@ def _link() -> str:
     )
 
 
+def _stability(ctx: SiteContext) -> str:
+    """The buoy stability explorer (static/stability/) with a plain-language write-up."""
+    src = f"{ctx.base}assets/stability/index.html"
+    return (
+        '<div class="drawings sim">'
+        '<div class="drawings-head reveal"><p class="eyebrow">Mechanical design</p>'
+        "<h3>Will it stay upright?</h3>"
+        '<p class="drawings-sub">A buoy that carries its battery, electronics and antenna above the '
+        "waterline is top-heavy by nature. Before printing anything, we float every flotation design "
+        "in software and check that waves and boat wakes cannot roll it over.</p></div>"
+        '<div class="prose reveal">'
+        "<p>The <strong>stability explorer</strong> takes the real CAD of each design, fills it with "
+        "water in 3 mm cubes, and loads it with the current payload: housing, battery, boards, "
+        "cabling, mooring hardware and sensor pod. For a given total mass it finds the "
+        "<strong>waterline</strong> where the water the buoy displaces weighs exactly as much as the "
+        "buoy. It then tilts the buoy in 5° steps and recomputes where the buoyancy acts. If the "
+        "buoyant force ends up pushing the buoy back upright, the design is stable at that angle.</p>"
+        "<p>Slide through the fifteen designs we have modelled, oldest to newest, and change the "
+        "housing weight to see what a heavier payload does. Each design shows the same readout:</p>"
+        + c.spec([
+            ("Draft", "How deep the buoy sits. Too deep and waves wash over the antenna and housing"),
+            ("Freeboard", "Height of the top above the waterline"),
+            ("GM", "Metacentric height: how stiffly the buoy resists a small tilt. Positive is stable; "
+                   "larger is stiffer"),
+            ("Max righting", "The strongest upright-restoring moment, in newton-metres, and the angle it peaks at"),
+            ("Tips over at", "The angle past which the buoy keeps rolling. \u201cNever\u201d means it "
+                             "rights itself from any angle"),
+        ])
+        + "</div>"
+        f'<iframe class="sim-frame reveal" src="{src}" title="Buoy stability explorer: draft, freeboard '
+        'and righting-arm curve for each flotation design" loading="lazy"></iframe>'
+        f'<p class="drawings-sub"><a class="textlink" href="{src}">Open the explorer full screen</a></p>'
+        '<div class="prose reveal">'
+        "<p>The solver was checked against a plain cylinder, where the answer is known "
+        "in closed form, and matches draft and stiffness to about 1%.</p>"
+        "<p><strong>What it does not tell us yet.</strong> Part masses for the concept designs are "
+        "estimated from their CAD volume, not weighed. Only parts that have been printed and weighed "
+        "(the bolted-wedge parts and the mushroom float) use measured weights, so those results are the "
+        "ones to trust most. Sealed chambers are assumed watertight, "
+        "and the model is still water only, with no waves, wind or mooring pull. Every "
+        "estimate is listed in the simulator's "
+        f'<a class="textlink" href="{_REPO}/blob/main/mechanical/simulations/buoy-stability/README.md">README</a>, '
+        "and measured weights replace them as parts are printed.</p></div></div>"
+    )
+
+
 def _mechanical(ctx: SiteContext) -> str:
     return c.section(
         '<div class="bento align-start">'
@@ -285,9 +331,10 @@ def _mechanical(ctx: SiteContext) -> str:
         + "</div>"
         '<div class="col-4 prose">'
         "<p>The electronics stay dry in a sealed housing above the waterline: a "
-        "<strong>4-inch Schedule 40 PVC</strong> body with O-ring end caps, cable glands, and "
-        "heat-set inserts for serviceable reassembly. The form is a simple cylinder at the "
-        "waterline, tapering to a mooring point below and an antenna above.</p>"
+        "<strong>3D-printed flange housing</strong> (4.4 in bore, 5 in tall) closed by a bolted lid "
+        "and sealed with a large off-the-shelf O-ring, with cable glands in the lid. It sits in a "
+        "printed float that holds it upright at the waterline, with the antenna above and the "
+        "mooring attached to the float.</p>"
         "<p>Below the housing, S.C.O.U.T. uses <strong>one sensor of each type at a single "
         "point</strong> rather than a multi-depth string (<a class=\"textlink\" "
         f'href="{_DOC}/decisions/0003-single-point-sensing.md">ADR-0003</a>); the extra units on '
@@ -295,8 +342,9 @@ def _mechanical(ctx: SiteContext) -> str:
         "hold station with minimal disturbance to what it is measuring.</p></div></div>"
         + drawings.gallery(
             ctx.base, eyebrow="Mechanical design", heading="The printed parts",
-            sub="John Ryan Myrdal's CAD for the flotation collar and the turbidity-sensor "
-                "housing, printed in PETG. Each drawing links to its full sheet."),
+            sub="John Ryan Myrdal's CAD for the two printed floats, the electronics housing "
+                "and its cap, and the turbidity-sensor housing, printed in PETG. Each drawing links to its full sheet.")
+        + _stability(ctx),
         cls="section-sm",
         sid="mechanical",
     )
