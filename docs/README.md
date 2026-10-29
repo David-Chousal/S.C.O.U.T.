@@ -18,6 +18,7 @@ imported directly into Notion with formatting intact.
 | Find who to contact and which permits a deployment test needs | [Deployment Strategy](planning/deployment-strategy.md), [Monterey and Santa Cruz dock test](research/monterey-santa-cruz-dock-test-hosts-and-permissions.md), [Hawaii permitting](research/hawaii-deployment-permitting.md) |
 | Find the thesis structure | [Thesis Outline](planning/thesis-outline.md) |
 | Write the thesis | [Thesis Working Draft](thesis/README.md) |
+| Edit or compile the thesis in LaTeX | [Thesis LaTeX Source](thesis/latex/README.md) |
 | See what's still undecided | [Decision Records](decisions/README.md) |
 
 ---

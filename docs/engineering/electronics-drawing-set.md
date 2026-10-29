@@ -24,6 +24,7 @@
 | [`drawings/scout-electronics-drawing-set.html`](drawings/scout-electronics-drawing-set.html) | Drawing set SCOUT-E-100 Rev B, interactive (light and dark) |
 | [`drawings/scout-electronics-drawing-set.pdf`](drawings/scout-electronics-drawing-set.pdf) | The same drawing set, print edition (US Letter landscape, light background) |
 | [`drawings/scout-sensor-interface-review.pdf`](drawings/scout-sensor-interface-review.pdf) | Sensor Interface Review SCOUT-E-110, the package for Dr. Krishnan |
+| [`drawings/scout-electrical-block-diagram.pdf`](drawings/scout-electrical-block-diagram.pdf) | Electrical block diagram (2026-10-27), 2 pages: page 1 every wire pin to pin with what it carries, page 2 a plain overview showing the actual wires coming out of each part (3V3 and GND rails, real wire colors). Source: [`.html`](drawings/scout-electrical-block-diagram.html). Leaves out fuse F1 and plug P1, which wiring schematic Draft C still shows |
 
 The drawing set has eight sheets:
 

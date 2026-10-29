@@ -90,3 +90,5 @@ credentials.json
 
 # Settings-downlink HMAC keys (SCO-198). Copy firmware/src/downlink_key_example.h; never commit.
 firmware/src/downlink_key.h
+# Shore station WiFi password and console device token (SCO-237). Copy the _example.h; never commit.
+firmware/src/shore_rx/shore_secrets.h

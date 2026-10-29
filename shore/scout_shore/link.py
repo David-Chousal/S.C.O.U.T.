@@ -8,7 +8,7 @@ receiver, and it is what a new backend implements *against* rather than guessing
 Structural typing, so nothing has to inherit from anything: any object with these three
 members satisfies it. ``MockLoRaLink`` already did, which is why the swap is safe.
 
-Standard library only — this module must stay importable on a bare Raspberry Pi with no
+Standard library only — this module must stay importable on a bare computer with no
 packages installed, because the shore test suite runs there.
 """
 

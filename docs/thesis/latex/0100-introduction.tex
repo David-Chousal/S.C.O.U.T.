@@ -1,0 +1,81 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction ---
+\chapter{Introduction} % --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- 
+%       --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- Introduction --- 
+
+Coral reefs are in steep decline. Global coverage of living coral has fallen by half since the 1950s, and catches of reef fish have been declining since 2002 even as fishing effort keeps rising \cite{eddy2021}. Record sea temperatures in 2015--2016 caused the third global mass bleaching event since the 1980s, and on the Great Barrier Reef, earlier bleaching did not make reefs any less vulnerable the next time \cite{hughes2017}. Sediment and nutrient runoff from the land adds additional stress to the reefs close to the shore \cite{fabricius2005}. Reef managers can only respond to the stress that they can see, making measuring the water around a reef the starting point of any protection effort.
+
+Today, most of that measuring is done from space. NOAA Coral Reef Watch uses satellite sea-surface temperature to warn of bleaching across the world's reefs \cite{liu2014}. Satellites cover the globe, but they are least reliable in shallow nearshore water, where land, the sea floor and coastal mixing distort the signal \cite{margaritis2025}. That nearshore water is exactly where many reefs live. In-water instruments close this gap, but they are expensive, and the data they record often reaches researchers only when someone travels out to collect the instrument.
+
+This thesis presents S.C.O.U.T.\ (Santa Clara Oceanic Utilities Transmitter), a low-cost, battery-powered and modular monitoring buoy. It is moored next to a shallow reef and left alone for a year or more. It measures water temperature and turbidity, stores everything on board, and sends a short summary to a shore station every day over long-range, low-power radio. Coral reef health is its first application, and its first deployment is planned for a reef in Hawai'i in spring 2027. The rest of this chapter states the problem, the objectives that break it into steps, and the approach the team took.
+
+%       --- Problem Statement --- Problem Statement --- Problem Statement --- Problem Statement --- Problem Statement ---
+\section{Problem Statement} % --- Problem Statement --- Problem Statement --- Problem Statement --- Problem Statement ---
+%       --- Problem Statement --- Problem Statement --- Problem Statement --- Problem Statement --- Problem Statement ---
+
+In the summer of 2026 the team interviewed three NOAA coral reef researchers about how reefs are monitored today and where that monitoring falls short. Their answers pointed to the same gap. Nearshore reef water is poorly measured, because satellite products are least accurate there and in-water instruments are too costly to deploy widely. Advanced monitoring buoys can cost tens of thousands of dollars. Simpler loggers are cheaper, but they store their data internally, so researchers see it only when a diver recovers the logger. At remote sites that can mean a wait of several years, which rules out responding to a bleaching event or a sediment plume while it is happening. Every service visit also costs boat time and dive time, so an instrument that needs frequent care is unlikely to stay in the water.
+
+The problem this project addresses can therefore be stated as follows. Coral reef researchers and managers need an affordable instrument that measures water conditions at a shallow reef and delivers those measurements to shore while the reef is still being watched, subject to the following criteria:
+\begin{enumerate}
+    \item \textbf{Cost.} The complete system must cost well below \$5{,}000 per buoy, the figure the interviewed researchers named as the practical limit for deploying instruments at many sites.
+    \item \textbf{Endurance.} The buoy must run unattended for at least one year, with no recharging, battery change or cleaning visit in that time.
+    \item \textbf{Data access.} Measurements must reach a shore station at least once a day, without relying on cellular coverage or an internet connection at the buoy.
+    \item \textbf{Measurements.} The buoy must measure, at minimum, water temperature and turbidity at reef depths of 2 to 8\,m, the two signals the researchers valued most, and must accept further sensors, starting with an underwater microphone for reef sound.
+    \item \textbf{Survival.} The buoy must stay afloat, moored and watertight in nearshore waves, salt water and biological growth for the full deployment.
+    \item \textbf{Usable output.} The data must arrive in a form researchers can use directly, such as the heat-stress measure used by NOAA Coral Reef Watch, rather than as raw sensor readings.
+\end{enumerate}
+These criteria define the scope of the work. A buoy that meets all six gives researchers in-water measurements from the places satellites see least clearly, at a cost that allows many buoys instead of one.
+
+%       --- Background or Related Work --- Background or Related Work --- Background or Related Work --- Background or Related Work ---
+\section{Background or Related Work} % --- Background or Related Work --- Background or Related Work --- Background or Related Work ---
+%       --- Background or Related Work --- Background or Related Work --- Background or Related Work --- Background or Related Work ---
+
+\begin{tcolorbox}[      % Delete me later
+    boxrule=0pt,        % Delete me later
+    colback=white,      % Delete me later
+    coltext=red         % Delete me later
+]                       % Delete me later
+    State who else has worked on this problem or similar problems (you should do most of your citations here). For applied projects, provide information on other existing programs which will use your program.
+    
+    Describe what systems already exist and why they are inadequate. 
+    
+    \vspace{15pt}       % Delete me later
+    \begin{center}      % Delete me later
+    \textbf{Don't forget to delete this explanatory red text/block introduction, and replace it with your text in black.}
+    \end{center}        % Delete me later
+\end{tcolorbox}         % Delete me later
+
+%       --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives
+\section{Objectives} % --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives
+%       --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives --- Objectives
+
+The project goals are broken into the following objectives. Each one produces a result that can be checked, and together they lead from requirements to a buoy working at a real reef. They follow the phases of the project timeline, which runs from August 2026 to May 2027.
+\begin{enumerate}
+    \item \textbf{Set the requirements.} Turn the researcher interviews into measurable requirements for cost, endurance, sensing, data delivery and survival, and record each design decision as it is made.
+    \item \textbf{Bring up each subsystem on the bench.} Get the microcontroller and radio, the temperature sensor, the turbidity sensor, the real-time clock and the memory card working one at a time, and measure how much current each one draws.
+    \item \textbf{Write the buoy firmware.} Build software that sleeps between readings, wakes about every 30 minutes to measure, saves every reading to the memory card, sends three short radio packets a day, and restarts itself if it ever freezes.
+    \item \textbf{Size the power system.} Use the measured currents to confirm that two non-rechargeable lithium D cells can run the buoy for at least one year, with margin.
+    \item \textbf{Build the shore side.} Build a shore station that receives the buoy's packets and forwards them over WiFi, and a dashboard that shows the data along with bleaching heat stress and turbidity alerts.
+    \item \textbf{Design the buoy body.} Design and 3D-print the floating hull, a sealed electronics housing and a sensor pod, and plan the mooring, then check that the housing stays dry under pressure equal to 5\,m of water.
+    \item \textbf{Integrate and test.} Combine the subsystems into one buoy and test it in stages: on the bench, submerged in a tank, at a local dock and in a field prototype deployment in early 2027.
+    \item \textbf{Deploy and evaluate.} Deploy the buoy at a reef in Hawai'i from March to May 2027 and compare its readings with established NOAA temperature records to judge how accurate they are.
+\end{enumerate}
+Objectives 2 to 6 are split among the three disciplines on the team: computer science and engineering for the firmware and shore software, electrical and computer engineering for the circuits and power, and general engineering for the hull, housing and mooring. Objectives 1, 7 and 8 are shared by the whole team.
+
+%       --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- 
+\section{Our approach} % --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- 
+%       --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- Our approach --- 
+
+The team's approach rests on one idea: if the buoy uses very little energy and needs no care, it can be built from inexpensive parts and still stay in the water for a year. Every design choice is judged first by how it affects power use and maintenance, and only then by features.
+
+\textbf{Low-cost, widely available parts.} The buoy is built around an Adafruit Feather M0 board with an RFM95 LoRa radio, a DS18B20 digital temperature sensor and an optical turbidity sensor. These are inexpensive parts with public documentation, so a damaged buoy can be repaired or copied without a specialist supplier. The hull and housings are 3D-printed, which keeps tooling costs at zero and lets the team change the design between tests.
+
+\textbf{Sleep most of the time.} The buoy spends nearly all of its life asleep. About every 30 minutes it wakes, takes its readings, saves them and goes back to sleep. The turbidity sensor is switched off completely between readings. This is what allows two non-rechargeable lithium D cells to replace the solar panel and rechargeable battery of earlier designs. Removing the panel also removes the part most exposed to waves and biological growth.
+
+\textbf{Send summaries, not raw data.} The buoy keeps its full record on a memory card and sends only a 44-byte summary over the radio, three times a day. LoRa radio was chosen because it reaches several kilometers on very little power and has been shown to work over seawater \cite{jovalekic2018}, including from antennas mounted at buoy height \cite{parri2019}. Small, infrequent packets keep the radio's share of the energy budget very low and need no cellular network or license fees.
+
+\textbf{Turn readings into reef information.} On shore, the software applies the same heat-stress calculation that NOAA Coral Reef Watch uses with satellite data \cite{liu2014}, but feeds it temperatures measured in the water at the reef. Researchers therefore see bleaching risk for their own site, measured where satellites are least accurate, alongside turbidity trends and alerts.
+
+\textbf{A platform, not a single instrument.} The sensors sit in a separate pod below the main electronics housing, so new sensors can be added without redesigning the hull or the electronics. An underwater microphone is the first planned addition, and the radio packet already carries a short summary of reef sound.
+
+Together these choices set S.C.O.U.T.\ apart from existing options. It costs far less than an advanced monitoring buoy, it reports every day instead of waiting for a diver to recover a logger, and it measures the nearshore water that satellite products describe least reliably. The goal is not to replace existing monitoring networks but to make in-water measurements cheap enough to place at many more reefs.

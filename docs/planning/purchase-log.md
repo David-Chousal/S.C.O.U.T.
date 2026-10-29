@@ -15,18 +15,18 @@
 
 | | Amount |
 |---|---|
-| Spent so far | **$142.58** |
-| Ordered but not yet charged / logged | Mouser (~$28 + shipping) |
+| Spent so far | **$224.40** (Adafruit $142.58 + Mouser $81.82) |
+| Ordered, not yet arrived | Mouser turbidity kit ($81.82), placed the week of 2026-10-19. Delayed in shipping; expected the week of 2026-10-26 or 2026-11-02 |
 | Still to buy, electronics (estimate, 2026-10-12) | ≈ $331–425 planned orders (hydrophone included) + up to ≈ $45 of small parts if the lab doesn't have them |
-| Prototype electronics total, required (spent + Mouser + planned) | ≈ $502–652 |
-| Per person so far (÷ 3) | **$47.53** |
+| Prototype electronics total, required (spent + planned) | ≈ $555–705 |
+| Per person so far (÷ 3) | **$74.80** ($47.53 Adafruit + $27.27 Mouser) |
 
 ## Orders
 
 | # | Date | Vendor | Order / invoice | Subtotal | Shipping | Tax | **Total** | Paid by | Split | Reimbursed | Delivery |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 2026-10-07 | Adafruit | Invoice 3758294 | $122.90 | $7.70 (USPS Ground Advantage) | $11.98 | **$142.58** | Isabella | ÷ 3 → $47.53 each | David ☐ · John Ryan ☐ | Est. 4–7 business days → **2026-10-13 to 2026-10-16**, to SCU |
-| 2 | — | Mouser | — | ~$28 | — | — | — | — | ÷ 3 | — | Not yet placed |
+| 2 | Week of 2026-10-19 | Mouser | Turbidity kit (order summary shared 2026-10-26) | $52.30 | $8.49 | $6.51 + $14.52 tariff | **$81.82** | Isabella | ÷ 3 → $27.27 each | David ☐ · John Ryan ☐ | Every line "Ships Now", but delayed in shipping. Expected end of the week of 2026-10-26 or the week of 2026-11-02 |
 
 ## Order 1 — Adafruit, invoice 3758294 (2026-10-07)
 
@@ -49,15 +49,23 @@
 | 1 | 2884 | FeatherWing Proto | $4.95 | $4.95 | Soldered sensor-switch circuit | Needed at Stage 6–8 |
 | 1 | 5719 | PCB coaster | $2.50 | $0.00 | Free promotion | — |
 
-## Order 2 — Mouser (to place)
+## Order 2 — Mouser, turbidity kit (placed the week of 2026-10-19)
 
-| Qty | Mouser # | Part | ≈ Price | Role |
-|---|---|---|---|---|
-| 1 | 713-101020752 | Seeed Grove Turbidity Sensor (3.3 V) | $20.80 | Turbidity |
-| 1 | 713-110990210 | Grove to male jumper cable (5-pack) | $3.19 | Grove → breadboard |
-| 1 | 658-CR1220 | Panasonic CR1220 coin cell | $1.01 | Adalogger RTC backup |
-| 2 | 621-DMG2305UX-7 | P-MOSFET, SOT-23 | ~$0.80 | Q1 turbidity and Q2 hydrophone power switches (gate LOW = on). Optional: 2 spares, +$0.80 |
-| 2 | SparkFun BOB-00717 | SOT-23 to DIP adapter (SparkFun if not on Mouser) | $2.50 | Breadboard / perfboard the two MOSFETs |
+Trimmed to the turbidity sensor, its power switches and the RTC coin cell. The batteries, battery
+diodes (MAX40200), MCP6002 op-amp, screw terminal and outdoor antenna were left out and are still to buy.
+
+| Qty | Mouser # | Part | Unit | Line | Role |
+|---|---|---|---|---|---|
+| 2 | 713-101020752 | Seeed Grove Turbidity Sensor (3.3 V) | $20.82 | $41.64 | Turbidity, plus one spare (SCO-189) |
+| 1 | 713-110990210 | Grove to male jumper cable (5-pack) | $2.13 | $2.13 | Grove → breadboard |
+| 3 | 781-SI2301CDS-T1-GE3 | Vishay Si2301CDS P-MOSFET, SOT-23 | $1.25 | $3.75 | Q1 turbidity and Q2 hydrophone power switches (gate LOW = on) + 1 spare. Replaces the backordered DMG2305UX; same G1/S2/D3 pinout |
+| 3 | 474-BOB-00717 | SparkFun SOT-23 to DIP adapter | $1.25 | $3.75 | For Q1, Q2 + spare |
+| 1 | 658-CR1220 | Panasonic CR1220 coin cell | $1.03 | $1.03 | Adalogger RTC backup |
+| | | **Merchandise** | | **$52.30** | |
+| | | Shipping | | $8.49 | |
+| | | Sales tax | | $6.51 | |
+| | | Tariff | | $14.52 | |
+| | | **Total** | | **$81.82** | ÷ 3 = $27.27 each |
 
 ## Still to buy
 
