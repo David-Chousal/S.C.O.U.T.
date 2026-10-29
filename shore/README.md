@@ -1,18 +1,21 @@
-# Shore — Raspberry Pi data path
+# Shore — data path
 
 Shore-station software: the LoRa packet codec, a hardware-free sensor simulator, a mock LoRa
 link, a schema-validated CSV store, and the receiver that ties them together.
 
 Runtime and role are documented in
 [docs/engineering/shore-station.md](../docs/engineering/shore-station.md). The buoy is a
-Feather M0; **this code runs on the Raspberry Pi** (see
-[ADR-0001](../docs/decisions/0001-mcu-and-radio-selection.md)).
+Feather M0. The shore station is an **ESP32-S3 Feather with a LoRa FeatherWing**
+(`firmware/src/shore_rx/`); **this code runs on the computer it is plugged into over USB**,
+until the S3 pushes readings over WiFi itself
+([SCO-237](https://linear.app/scout1/issue/SCO-237)). `serial_link.SerialFrameLink` reads the
+S3's `RX` lines ([SCO-257](https://linear.app/scout1/issue/SCO-257)).
 
-> **Status:** simulated end-to-end path working with **no hardware**, plus a real SX1276
-> backend (`radio.Rfm9xLink`) and a systemd service — both ⚠️ **written but never run against
-> hardware**. Both sides implement the `LoRaLink` protocol in
-> [`scout_shore/link.py`](scout_shore/link.py), so switching is a `--link` flag, not a code
-> change.
+> **Status:** simulated end-to-end path working with **no hardware**, the S3 serial link
+> (tested against a pseudo-terminal and saved logs), a fallback SX1276-on-a-Raspberry-Pi backend
+> (`radio.Rfm9xLink`) and a systemd service — ⚠️ **none yet run against the real boards**.
+> All three links implement the `LoRaLink` protocol in [`scout_shore/link.py`](scout_shore/link.py),
+> so switching is a `--link` flag, not a code change.
 
 ## The path
 
@@ -61,24 +64,26 @@ python scripts/run_loopback.py --count 48 --loss 0.05 --corrupt 0.02 --out ./dat
 python -m unittest discover -s tests -v
 ```
 
-## Deploying on the Pi
+## Deploying on the shore computer
+
+Plug the S3 in over USB, then on the computer (any Linux machine; a Raspberry Pi works):
 
 ```bash
-# One-time: the radio backend is the shore station's only third-party dependency.
-pip install adafruit-circuitpython-rfm9x
-
+ls /dev/serial/by-id/          # the S3's port; put it in the unit's --serial
 sudo cp shore/deploy/scout-shore.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now scout-shore
 journalctl -u scout-shore -f
 ```
 
-The unit assumes the repo is at `/home/pi/S.C.O.U.T.` and runs as `pi`; adjust
-`WorkingDirectory` and `User` if yours differs.
+The unit assumes the repo is at `/home/pi/S.C.O.U.T.` and runs as `pi` (in the `dialout`
+group, for the serial port); adjust `WorkingDirectory`, `User` and `--serial` if yours differs.
+No third-party packages are needed. A saved S3 log can be replayed into the store once with
+`--serial s3.log`; it exits when the log is done.
 
 **It restarts unconditionally, by design.** `Restart=always` with the start-limit disabled: an
 unattended station on a coastline will not be restarted by hand, and the buoy transmits blind,
-so if nothing is listening neither end raises an alarm. A radio that throws is caught, counted,
+so if nothing is listening neither end raises an alarm. A link that throws (including an unplugged S3) is caught, counted,
 and retried with a widening backoff capped at 60 s, so a dead link never pins the CPU and a
 recovered one is picked up promptly. `SIGTERM` is a clean stop, so `systemctl stop` and reboots
 never interrupt a CSV write.
@@ -86,7 +91,7 @@ never interrupt a CSV write.
 ### Where received data has to go
 
 ```bash
-python scripts/run_receiver.py --link rfm9x --out data-live   # what the unit runs
+python scripts/run_receiver.py --link serial --serial /dev/ttyACM0 --out data-live   # what the unit runs
 ```
 
 `data-live/` is **tracked in git** and is what the public dashboard publishes from — see

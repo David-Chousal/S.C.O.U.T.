@@ -135,11 +135,18 @@ The bench receiver `firmware/src/bench_rx/` (a second Feather M0) already does t
 and is the reference for the S3's radio setup. It is a test instrument, not the shore station.
 
 **The Python package [`shore/`](../../shore/) — written and tested, runs on a computer.**
-It decodes and validates packets, deduplicates repeated readings, writes the daily CSVs
+Since 2026-10-28 that computer reads the S3 over USB
+([SCO-257](https://linear.app/scout1/issue/SCO-257)): `serial_link.SerialFrameLink` takes the
+S3's `RX len=… hex=…` line for each frame, and the existing receiver re-validates it with the
+shore codec and stores it (`run_receiver.py --link serial --serial <port>`, also what the systemd
+unit runs; `--serial s3.log` replays a saved log once). The S3's own `OK`/`DUP`/`BAD` verdicts are
+ignored, so the computer's checks do not depend on the firmware's. Tested against a
+pseudo-terminal and saved logs; ⚠️ not yet run against the real S3. The older
+radio-on-a-Raspberry-Pi backend (`radio.Rfm9xLink`) is kept only as an unrun fallback. It decodes and validates packets, deduplicates repeated readings, writes the daily CSVs
 (`shore/data-live/`), merges a retrieved SD card back in, and feeds the static site that GitHub
 Pages publishes today ([Live Dashboard](live-dashboard.md)). On the bench it decodes the bench
-receiver's output (`scripts/decode_frames.py`). How it relates to the S3's WiFi push depends on
-which dashboard the S3 pushes to (open item 1). Since SCO-198 it also checks each frame against
+receiver's output (`scripts/decode_frames.py`). Now that the S3 pushes to the console itself
+(SCO-237), this package is the fallback path, not the live one. Since SCO-198 it also checks each frame against
 the slots of the buoy's count (`tx_schedule.py`; `run_receiver.py --tx-count BUOY:COUNT`, counted
 as `out_of_window`), carries the downlink frame codec (`downlink.py`, keys from
 `SCOUT_CMD_KEY_<id>`), and talks to the team console (`console.py`, `scripts/sync_console.py`:
@@ -153,8 +160,9 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
         │                                         ▲                    │
         └── 1-3 slots/day: LoRa TX ───────────────┘                    ▼
             (44-byte packet, 1 copy per slot)                 WiFi task: push to the console
-                                                              (written; USB → computer and the
-                                                              SD card are the fallbacks)
+                                                              (written). Fallbacks: USB → computer
+                                                              (run_receiver --link serial) →
+                                                              CSVs → sync_console.py; SD card
         ◄── SET_TX_COUNT in the 1 s listen window ──                   ▼
             (built, off by default; firmware OTA not built)    team console (ADR-0012)
 
@@ -168,7 +176,9 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
    written 2026-10-28 against the console's device API
    ([ADR-0012](../decisions/0012-authenticated-console.md)). Still open: a frame from the bench
    buoy showing up on the console end to end, NTP and the clock surviving a reset seen on the
-   board, and a site WiFi to run it on (item 4). Owner: CS lead.
+   board, and a site WiFi to run it on (item 4). Where the S3 cannot reach WiFi, a computer reads
+   it over USB (`run_receiver.py --link serial`, [SCO-257](https://linear.app/scout1/issue/SCO-257))
+   and `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.
 3. **The RFM95W FeatherWing's own FCC authorization**, now that the station transmits (ADR-0008).
    **Blocks switching on the SCO-198 downlink off the bench.** Owner: CS lead.

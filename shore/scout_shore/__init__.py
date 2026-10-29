@@ -1,8 +1,8 @@
 """SCOUT shore-station package: LoRa packet codec, sensor simulator, mock radio link,
 schema-validated CSV store, and a receiver that ties them together.
 
-Runs entirely without hardware today (via :class:`MockLoRaLink`); swap the link for an
-``adafruit-rfm9x`` backend on the Raspberry Pi. See ``docs/engineering/shore-station.md``.
+Runs without hardware via :class:`MockLoRaLink`. On the real shore station it reads the
+ESP32-S3 receiver over USB with ``serial_link.SerialFrameLink`` (SCO-257). See ``docs/engineering/shore-station.md``.
 """
 
 from .link import LoRaLink

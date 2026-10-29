@@ -32,6 +32,22 @@ tell from activities. The sheet answers each directly:
 
 The advisor-feedback record lives in the table above, not on the sheet.
 
+## Two views, one file (added 2026-10-28)
+
+The sheet ships as **one HTML file with a Simple / Detailed toggle** and a Print button for whichever
+view is showing. Both views carry the same facts, so a teammate can skim the short version and an
+advisor can open the evidence behind it.
+
+| View | Template | Data object | Shows |
+|---|---|---|---|
+| **Simple** (opens first) | [`template-simple.html`](template-simple.html) | `SIMPLE` | Phase Gantt, then per person 3-4 one-line Done items (result or caveat in grey), 1-2 Stuck, 2-3 Next, and the asks. No evidence IDs, steps or criteria chips |
+| **Detailed** | [`template.html`](template.html) | `DATA` | Everything in [What is on the page](#what-is-on-the-page) |
+
+[`build_combined.py`](build_combined.py) joins the two filled files:
+`python3 build_combined.py detailed.html simple.html out.html`. Fill `SIMPLE` from the same
+evidence as `DATA`, never add a fact to one view that the other lacks, and take `SIMPLE.phases`
+verbatim from `DATA.phases`.
+
 ## Weekly run
 
 1. **Team sync first (about 10 minutes).** The three of you set next steps by labelling Linear

@@ -10,7 +10,8 @@ This module is the piece that refuses to die. Its whole design goal is that no s
 takes the process down:
 
 - **A radio that throws** (SPI error, HAT knocked off the header) is caught, counted, and
-  retried with a widening backoff so a permanently dead link does not pin the Pi's CPU.
+  retried with a widening backoff so a permanently dead link does not pin the CPU. An unplugged
+  S3 is the same case: its serial link raises until the board is back.
 - **A corrupt or invalid packet** is already counted by :class:`~scout_shore.receiver.Receiver`;
   it never reaches this loop as an exception.
 - **SIGTERM** — what systemd sends on ``stop`` and on reboot — sets a flag and lets the loop
@@ -39,7 +40,7 @@ from .receiver import Receiver, ReceiverStats
 log = logging.getLogger("scout_shore.service")
 
 # One packet per buoy per day in normal operation, repeated a few times. There is nothing to
-# gain from a tight poll, and a Pi on a solar-charged battery has every reason not to.
+# gain from a tight poll, and a shore computer on a battery has every reason not to.
 DEFAULT_POLL_INTERVAL_S = 1.0
 DEFAULT_STATS_INTERVAL_S = 3600.0
 
