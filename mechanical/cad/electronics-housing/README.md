@@ -244,6 +244,18 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
   chassis rather than the housing sliding into it.
 - **The whole housing is larger** than the 2026-09-02 clamp. Dimensions: see the drawing below.
 - **Curved cable-penetration interface on top of the lid**, with room for cable glands.
+  - **Gland size decided 2026-10-29 (John): PG11** for all electronics-housing cable penetrators,
+    from lab stock. Lid hole ≈18.6 mm per gland; cable OD ≈5–10 mm (nominal — confirm against the
+    stock datasheet before cutting). Gland count and positions are set by the lid layout
+    ([SCO-250](https://linear.app/scout1/issue/SCO-250), [SCO-162](https://linear.app/scout1/issue/SCO-162)).
+  - **Lid design numbers for a PG11 (nominal, from the standard PG thread; confirm against the stock
+    gland before cutting):** through hole **Ø19.0 mm** (thread Ø18.6 mm, pitch 1.5 mm; print ~Ø18.6
+    and ream to 19.0); flat spot-face **≥ Ø25 mm** on both sides of each hole (the lid is curved, a
+    gland and its seal need a flat seat); **≥ 30 mm centre-to-centre** and ≥ 15 mm from any wall or
+    boss edge for the wrench; **wall at the gland 3–4 mm** (gland body thread is ~8–9 mm and the
+    lock nut takes ~4–5 mm, so the grip range is only ~2–4 mm; under ~2 mm the nut bottoms out on
+    the thread, over ~5 mm it will not engage). Use the gland's flat seal washer, tighten
+    finger-plus-quarter turn on printed PETG (it creeps), and add a metal washer under the nut.
 - **Gland interior radius and orientation point the cables to the side**, which leaves vertical
   room above the housing for a possible solar panel.
 
