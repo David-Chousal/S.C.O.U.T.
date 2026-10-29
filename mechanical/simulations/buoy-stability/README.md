@@ -30,6 +30,39 @@ Open **[`printed-float-tip-explorer.html`](printed-float-tip-explorer/printed-fl
 heel slider or press Play to tilt the buoy and see G, B, the righting arm and where it tips, with mass sliders. It has its own
 solver and float STEP, separate from the v5/v6 explorer below.
 
+## Every iteration has stability and buoyancy (updated 2026-10-28)
+
+All 15 iterations now show draft, freeboard, GM and the righting-arm curve. The 12 concept and assembly entries before the mushroom
+come from [`assembly.py`](assembly.py) (the v5/v6/v7 assemblies still use the original solver, untouched):
+
+- **Parts placed from the STEP files**, not sketched: sections stacked (v3 and v4: three; v5: bottom with top on it; v7: bottom with two on it), and
+  a wedge given once in the STEP copied to **six, 60 degrees apart** around the chassis (v9, wedge-snap v3, wedge-bolted v3 and v4).
+- **Real 3D hull**: a 3 mm voxel union of the parts. Each column is filled from its lowest to its highest surface crossing, so a cavity sealed
+  by the part above counts as displacement and an open cup or through-hole (v1, v2 centre; the top v4 cup) floods. The wedges are open tubes
+  that the real build fills with foam, so their whole plan outline counts as displacement. The electronics housing (127 mm body, flange on
+  top, from the mushroom STEP) is added the same way.
+- **Hydrostatics**: draft from displaced volume; at each heel angle the lowest voxels of the rotated hull are kept until their volume equals
+  the displaced volume, B is their centroid, GZ is the horizontal distance from B to G. Heel runs toward a wedge and toward a gap and the worse
+  GZ is shown. Checked against a plain cylinder with exact answers: volume +0.6%, draft +0.5%, KB -0.1%, GM +1% (3 mm voxels).
+- **Payload is the current one** (mushroom budget: housing and electronics 899 g, coating 330 g, mooring hardware, pod, hydrophone), placed
+  from the housing, which hangs flange-down from the top of each stack.
+
+### Masses are estimates, not weights
+
+No concept has a weighed or sliced mass. Each part's mass is its STEP volume times an effective density by kind, listed on the explorer:
+chassis 0.319 g/cm3 (808 g slicer / 2536 cm3), wedge shell 0.785 g/cm3 (measured cap slice) plus 104 g of foam per wedge,
+thin-walled sections 0.785 g/cm3, solid-modelled sections 0.217 g/cm3 (mushroom float). Replace with weights when known.
+
+### Data gaps (replace with measurements for accurate numbers)
+
+1. Mass of every concept (v1 to wedge-bolted v4).
+2. Whether each concept's chambers are sealed (assumed yes except where the STEP shows an open cup or hole).
+3. Stack joints: v3 uses the 25.4 mm stud in the 25 mm socket; v4's STEP has no connector (plain cup), so it is a butt joint; v5 and v7 butt.
+4. v1 and v2 real size (the STEPs are 825 mm across; used as exported).
+5. v9-bottom: the chassis and bottom ring may overlap in the STEP; mass could be double-counted.
+6. Foam in the wedge concepts is assumed (2 lb/ft3, as in the current wedge build).
+7. Housing position and payload heights for concepts that never had electronics (assumed flange on top, body hanging down).
+
 ## Every iteration, side by side (added 2026-10-07)
 
 The explorer has a slider (◀ ▶ or the arrow keys) that steps through **every floatation/buoy iteration,
@@ -55,6 +88,8 @@ hull profile, add a cap kind to `buoy_stability.py` and re-run the full `run_stu
 | `buoy_stability.py` | The calculator: STEP geometry → hull, mass budget, hydrostatic solve, GZ curve, self-righting check, minimum lead |
 | `run_studies.py` | Runs every study and writes CSVs, PNG figures, and the explorer to `results/<date>/` |
 | `iterations.json` | Chronological registry of every iteration (STEP files, date, solver cap). The explorer slider follows its order |
+| `assembly.py` | Places stacked sections and wedges-around-the-chassis from `iterations.json`, builds the 3D voxel hull and solves hydrostatics for the concepts |
+| `printed_hulls.py` | Same for printed floats with no ballast stem (the mushroom) |
 | `iteration_sections.py` | Cuts each registry entry's STEP files into side-view sections for the explorer |
 | `stability-explorer-template.html` | Template the explorer is generated from (the data is embedded at run time) |
 | `studies/mooring-attachment-height/` | Quasi-static heel versus mooring attachment height (2026-10-08): script, graph, CSV, summary. A one-off study, not a regenerated `results/` folder |
@@ -95,4 +130,5 @@ and the v5 wedge-bottom envelope from the mesh matches the 2026-09-25 STEP measu
 |---|---|
 | 2026-10-07 | Explorer rebuilt with an iteration slider: true STEP cross section of all 17 iterations; solver numbers unchanged (`explorer-data.json` now saved so the explorer can be rebuilt without re-solving). The "no caps" what-if is no longer in the explorer UI; its data is still in `housing-sweep.csv`. |
 | 2026-09-29 | First committed version. Consolidates the scratch calculators used for §12, and adds the `current` preset for the v6 assembly (1.5 in caps from STEP, 808 g chassis, steel pipe arm and rail mount). Regression vs §12: mass identical; draft and GM within 0.02 / 0.08 in, because the original first pass rounded the draft to the voxel grid while this version solves it continuously. |
+| 2026-10-28 | Added the mushroom-profile float (iteration, no ballast stem, 702 g). New `assembly.py` and `printed_hulls.py`: stacks and six-wedge rings placed from the STEP files, true 3D voxel hydrostatics for every concept, so every iteration now has draft, freeboard, GM and a GZ curve. Deleted v6, v8 and wedge-bolted v5 concepts. Fixed the section cutter re-meshing every solid per solid (rebuild 18+ min to 3 min). |
 | 2026-10-08 | Added `studies/mooring-attachment-height/`: heel and knockdown force versus mooring attachment height, using this solver (no solver changes) |
