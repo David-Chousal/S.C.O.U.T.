@@ -167,6 +167,7 @@ all use it.
   `firmware/test/`. **Name:** `rr-NN-subject-YYYY-MM-DD.md`, with `NN` the next free ID in the
   [risk-reduction register](../mechanical/test/risk-reduction-register.md). IDs are permanent and
   never reused. Photos: `rr-NN-subject-YYYY-MM-DD-NN.jpg`.
+- **Requirements matrix:** add the test's row to the [Requirements Test Matrix](engineering/requirements-test-matrix.md) in the same PR, in the section for its discipline (mechanical, electronics, software).
 - **Before the run:** write Part A and add the register row with its pass mark. A pass mark
   written after the result is not a test.
 - **Enforced:** `check_conventions.py` fails a PR that adds a test record without the one-page

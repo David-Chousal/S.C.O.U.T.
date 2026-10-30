@@ -59,6 +59,8 @@ Technical design and component specification.
 | [Sensor String Architecture](engineering/sensor-string-architecture.md) | Vertical multi-depth sensor string layout and placement rationale |
 | [On-Board CSV Data Schema](engineering/data-schema.md) | The microSD log format — columns, units, timestamps; the firmware ↔ shore-station/analytics contract |
 | [Hardware/Software Integration Runbook](engineering/integration-runbook.md) | **How the software gets onto the hardware** — toolchain, what programs what, and the staged bring-up from bench to field, with a PASS gate at every step. Written to be executed by a Claude session. |
+| [Requirements Test Matrix](engineering/requirements-test-matrix.md) | **Every core requirement with its parameter, pass mark, test, curve and Linear issue**, for mechanical, electronics and software tests; every new test adds a row ([SCO-221](https://linear.app/scout1/issue/SCO-221)) |
+| [Test Record Template](engineering/test-record-template.md) | The one format every test uses: a printable one-page summary, then plan, log and result |
 | [Over-the-Air Firmware Update Design](engineering/ota-firmware-update-design.md) | Draft: listen windows, chunked transfer, signed images and rollback for ADR-0008; power figures for Isabella's sign-off |
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |

@@ -201,4 +201,4 @@ standard. Any outlier and what was done with it.
 | How you will test it | A6 and A7 |
 | The curve that proves the result | A9 and C2 |
 | Know when to stop redesigning | C4 |
-| A table per requirement for [SCO-221](https://linear.app/scout1/issue/SCO-221) | the one-page summary's header and measurement table roll up into it |
+| A table per requirement for [SCO-221](https://linear.app/scout1/issue/SCO-221) | the [Requirements Test Matrix](requirements-test-matrix.md); the one-page summary's header and measurement table roll up into it, and every new test adds its row |

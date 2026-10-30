@@ -546,7 +546,8 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    one-page printable summary, then Part A (plan, with the pass mark written **before** the run),
    Part B (execution log) and Part C (results and decision). File it as
    `<discipline>/test/rr-NN-subject-YYYY-MM-DD.md`, add its row to the
-   [risk-reduction register](mechanical/test/risk-reduction-register.md), and link the Linear
+   [risk-reduction register](mechanical/test/risk-reduction-register.md) **and to the
+   [Requirements Test Matrix](docs/engineering/requirements-test-matrix.md)**, and link the Linear
    issue. When a teammate says they are about to run, ran, or planned a test, offer to start the
    record, and fill any field they did not record as `Not recorded`, never from inference.
    `check_conventions.py` enforces the structure. Applies to Isabella's bench tests and David's

@@ -21,6 +21,8 @@
 - **IDs are permanent.** `RR-NN`, numbered in order and never reused.
 - **Every test gets a record** in the [test record template](../../docs/engineering/test-record-template.md), named `rr-NN-subject-YYYY-MM-DD.md` in this folder. Write its Part A, with the pass mark, before the run.
 
+The requirement-by-requirement view of every test, for all disciplines, is the [Requirements Test Matrix](../../docs/engineering/requirements-test-matrix.md). A new test adds a row there and one here.
+
 ## Records in the test-record format
 
 Every test below has a record in the [Test Record Template](../../docs/engineering/test-record-template.md) format, with a one-page printable summary at the top. The older narrative records stay in this folder and are linked from each new record.
