@@ -27,8 +27,8 @@ a candidate proxy for reef health). On shore, our pipeline turns temperature int
 Watch style Degree Heating Weeks and bleaching alert levels, and screens data with QARTOD-style tests.
 
 **Design targets.** Total system cost under $5,000 · 1+ year unattended · 2 to 8 m depth · reef-safe
-mooring (no drilling, non-corroding hardware) · antifouling coating · fully 3D-printed hull (PETG) that
-self-rights from any angle.
+mooring (existing mooring points, or one mushroom anchor on sand) · copper-free antifouling coating ·
+3D-printed PETG hull designed and modeled to self-right.
 
 **Status (late October 2026).**
 - Done: system architecture, data pipeline and web dashboard, receiver console, radio link
@@ -37,8 +37,8 @@ self-rights from any angle.
   waterproofing tests of the electronics housing and sensor pod, assembly of the buoy and shore boards.
 - Not yet done: in-water field test, hydrophone purchase, salt-water and pressure testing.
 
-**Plan.** Bench tests this quarter, a short field prototype deployment January–February 2027, and a
-live deployment at a Hawaii reef site March–May 2027.
+**Plan.** Bench tests this quarter, a short local field prototype test January–February 2027, and a
+live deployment March–May 2027 targeted at a Hawaii reef site (site to be confirmed).
 
 **What we are asking.**
 1. A site: a dock, pier or marina where we can hang a prototype for a short pilot, in California or Hawaii.
