@@ -245,7 +245,7 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
 - **The whole housing is larger** than the 2026-09-02 clamp. Dimensions: see the drawing below.
 - **Curved cable-penetration interface on top of the lid**, with room for cable glands.
   - **Gland size decided 2026-10-29 (John): PG11** for all electronics-housing cable penetrators,
-    from lab stock. Lid hole ≈18.6 mm per gland; cable OD ≈5–10 mm (nominal — confirm against the
+    from lab stock. Thread Ø18.6 mm, lid through hole Ø19.0 mm per gland; cable OD ≈5–10 mm (nominal — confirm against the
     stock datasheet before cutting). Gland count and positions are set by the lid layout
     ([SCO-250](https://linear.app/scout1/issue/SCO-250), [SCO-162](https://linear.app/scout1/issue/SCO-162)).
   - **Lid design numbers for a PG11 (nominal, from the standard PG thread; confirm against the stock
