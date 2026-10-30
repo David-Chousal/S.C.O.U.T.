@@ -258,6 +258,13 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
     finger-plus-quarter turn on printed PETG (it creeps), and add a metal washer under the nut.
 - **Gland interior radius and orientation point the cables to the side**, which leaves vertical
   room above the housing for a possible solar panel.
+  - **Decided 2026-10-30 (John): glands point sideways from a raised gland deck on the cap, not
+    straight up.** The deck is one piece with the cap (no extra seal), each gland sits on a flat
+    facet, and each cable gets a drip loop and a bend of about 6× its outer diameter or more (a
+    rule of thumb, check against the cable datasheets). Vertical glands were rejected: they sit in
+    standing water on a buoy and the cable has to turn toward the pod below anyway. Open check: the
+    2026-10-28 drawing's 1.13 in (28.7 mm) deck leaves about 14 mm from a centred gland to each
+    edge, borderline against the ≥ 15 mm wrench rule above. John is uploading the cap STEP.
 
 ### Drawing — DFM Assembly 2 (drawn 2026-10-06, scale 1:3, size B, inches)
 
