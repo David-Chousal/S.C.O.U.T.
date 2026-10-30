@@ -1,6 +1,6 @@
-# S.C.O.U.T. Deployment Partner Blurb, October 2026
+# S.C.O.U.T. Partner Overview, October 2026
 
-> **Summary** — One-page introduction to S.C.O.U.T. for Dr. Krishnan to forward to NOAA contacts and
+> **Summary** — One-page overview of S.C.O.U.T. for Dr. Krishnan to forward to NOAA contacts and
 > the San Diego underwater-robotics contact ([SCO-261](https://linear.app/scout1/issue/SCO-261),
 > from the 2026-10-28 advisor meeting). It explains the project, where it stands, what we are
 > asking for, and where it could go. Print it on one US Letter page or paste it into an email.
