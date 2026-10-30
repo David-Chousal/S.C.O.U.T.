@@ -256,6 +256,9 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
     lock nut takes ~4–5 mm, so the grip range is only ~2–4 mm; under ~2 mm the nut bottoms out on
     the thread, over ~5 mm it will not engage). Use the gland's flat seal washer, tighten
     finger-plus-quarter turn on printed PETG (it creeps), and add a metal washer under the nut.
+  - **Same numbers in inches:** thread Ø0.732 in (pitch 0.059 in); through hole **Ø0.748 in**
+    (a 3/4 in drill, 0.750 in, also works); spot-face **≥ Ø1.00 in**; wall at the gland
+    **0.12–0.16 in**; ≥ 1.20 in centre-to-centre; ≥ 0.60 in from any wall or boss edge.
 - **Gland interior radius and orientation point the cables to the side**, which leaves vertical
   room above the housing for a possible solar panel.
 
