@@ -24,6 +24,11 @@ extern "C" {
  * for a value that fits in 32 bits and is >= min_epoch; otherwise leaves *out_epoch alone. */
 bool scout_parse_time_command(const char *line, uint32_t min_epoch, uint32_t *out_epoch);
 
+/* Whether a row's timestamp can be trusted, which decides its RTC_LOST flag: the RTC answers,
+ * has not lost power (a stopped oscillator leaves the time behind by an unknown amount), and
+ * reads a date on or after min_epoch (a PCF8523 that lost power restarts at 2000-01-01). */
+bool scout_clock_trusted(bool rtc_ok, bool lost_power, uint32_t now, uint32_t min_epoch);
+
 #ifdef __cplusplus
 }
 #endif

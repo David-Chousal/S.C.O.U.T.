@@ -40,6 +40,25 @@ void test_rejects_values_that_overflow_32_bits(void) {
     TEST_ASSERT_FALSE(scout_parse_time_command("T99999999999999", MIN_EPOCH, &epoch));
 }
 
+void test_a_clock_is_trusted_only_when_the_rtc_answers_kept_power_and_reads_a_real_date(void) {
+    const uint32_t now = 1803859200u; /* 2027-02-28 */
+    TEST_ASSERT_TRUE(scout_clock_trusted(true, false, now, MIN_EPOCH));
+}
+
+void test_a_clock_that_lost_power_is_not_trusted_even_if_its_date_looks_plausible(void) {
+    /* The oscillator stopped at some point, so the time is behind by an unknown amount. */
+    TEST_ASSERT_FALSE(scout_clock_trusted(true, true, 1803859200u, MIN_EPOCH));
+}
+
+void test_a_clock_reading_before_the_project_began_is_not_trusted(void) {
+    /* A PCF8523 that lost power restarts at 2000-01-01. */
+    TEST_ASSERT_FALSE(scout_clock_trusted(true, false, 946684800u, MIN_EPOCH));
+}
+
+void test_no_rtc_means_no_trusted_clock(void) {
+    TEST_ASSERT_FALSE(scout_clock_trusted(false, false, 1803859200u, MIN_EPOCH));
+}
+
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_accepts_a_unix_epoch_after_T);
@@ -47,6 +66,10 @@ static void run_all() {
     RUN_TEST(test_rejects_anything_that_is_not_the_command);
     RUN_TEST(test_rejects_times_before_the_project_began);
     RUN_TEST(test_rejects_values_that_overflow_32_bits);
+    RUN_TEST(test_a_clock_is_trusted_only_when_the_rtc_answers_kept_power_and_reads_a_real_date);
+    RUN_TEST(test_a_clock_that_lost_power_is_not_trusted_even_if_its_date_looks_plausible);
+    RUN_TEST(test_a_clock_reading_before_the_project_began_is_not_trusted);
+    RUN_TEST(test_no_rtc_means_no_trusted_clock);
     UNITY_END();
 }
 

@@ -97,8 +97,9 @@ static bool radio_begin() {
     return true;
 }
 
-/* One write per line: the network task prints from the other core, and a line split across
- * writes could be interleaved and stop the computer bridge from parsing it. */
+/* One write per line, here and everywhere in shore_rx (never println, which writes the text and
+ * the line ending separately): the network task prints from the other core, and a line split
+ * across writes could be interleaved and stop the computer bridge from parsing it. */
 static void print_rx_line(const uint8_t *buf, uint8_t len) {
     static const char HEX_DIGITS[] = "0123456789ABCDEF";
     char line[64 + 2 * RH_RF95_MAX_MESSAGE_LEN];
@@ -165,10 +166,10 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
         case SCOUT_DECODE_OK:
             break;
         case SCOUT_DECODE_BAD_LENGTH:
-            Serial.println("BAD length");
+            Serial.print("BAD length\n");
             return;
         case SCOUT_DECODE_BAD_CRC:
-            Serial.println("BAD crc");
+            Serial.print("BAD crc\n");
             return;
         case SCOUT_DECODE_BAD_VERSION:
         default:
@@ -227,7 +228,7 @@ static void poll_time_command() {
         }
         uint32_t epoch = 0;
         if (!scout_parse_time_command(g_line, MIN_VALID_EPOCH, &epoch)) {
-            Serial.println("time: ignored, expected T<unix-epoch> or N<buoy>:<count>");
+            Serial.print("time: ignored, expected T<unix-epoch> or N<buoy>:<count>\n");
             continue;
         }
         struct timeval tv = {(time_t)epoch, 0};
@@ -254,7 +255,7 @@ void setup() {
     if (clock_valid()) {
         Serial.printf("time: kept across the reset, now=%lu\n", (unsigned long)time(nullptr));
     } else {
-        Serial.println("time: unset; WiFi sets it by NTP, or send T<unix-epoch> (UTC) now");
+        Serial.print("time: unset; WiFi sets it by NTP, or send T<unix-epoch> (UTC) now\n");
     }
     shore_net_begin();
 }
@@ -270,6 +271,6 @@ void loop() {
     if (g_rf95.recv(buf, &len)) {
         handle_frame(buf, len);
     } else {
-        Serial.println("RX bad frame (CRC or header)");
+        Serial.print("RX bad frame (CRC or header)\n");
     }
 }
