@@ -11,6 +11,8 @@ structure. First category populated 2026-08-17 with the initial floatation FEA p
 risk-reduction test, run and planned, with its benchmark and result in one table.
 
 
+**Test records follow the [Test Record Template](../../docs/engineering/test-record-template.md).** The 19 `rr-NN-*` files are the standard-format records; the rows below are the older narrative write-ups they link to.
+
 | Record | Date | Summary |
 |---|---|---|
 | [`petg-water-absorption-soak-plan-2026-10-21.md`](petg-water-absorption-soak-plan-2026-10-21.md) | 2026-10-21 | Plan to weigh raw, uncoated PETG before and after a 24 hr soak, fresh then ~35 ppt salt water, with coupons as a control. **Not yet run** (RR-19, [SCO-219](https://linear.app/scout1/issue/SCO-219)) |

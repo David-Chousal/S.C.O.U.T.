@@ -14,6 +14,7 @@ The reference for "where does this go?" and "what do I call it?"
 | A task, bug, or decision to make | Linear | `firmware: implement DS18B20 read function` |
 | A written document | `docs/<section>/` + mirrored to Notion | `sensor-selection.md` |
 | Firmware or analysis code | `firmware/` or `analytics/` | `acoustic_indices.py` |
+| A test (bench, submersion, FEA, firmware, field) | `<discipline>/test/` | `rr-20-turbidity-calibration-2026-11-02.md` |
 | A schematic or PCB file | `hardware/` | `power-board-v1.kicad_sch` |
 | A CAD model or drawing | `mechanical/` | `hull-cross-section.step` |
 | A diagram or photo | `assets/diagrams/` or `assets/photos/` | `sensor-string-architecture.png` |
@@ -151,6 +152,27 @@ before adding your first file there.
 | Records a decision with alternatives considered | `decisions/` |
 
 ---
+
+## Test records
+
+**Every test, in every discipline, gets a record in the same format**, so the advisors' ask
+("what you measure, what counts as success, how you test it, the curve that proves it, and when
+to stop") is answered the same way each time. Hardware, firmware, mechanical and field tests
+all use it.
+
+- **Format:** copy the block in [`docs/engineering/test-record-template.md`](engineering/test-record-template.md).
+  It opens with a **one-page summary** that prints on one US Letter page, then Part A (plan,
+  written and dated **before** the run), Part B (execution log) and Part C (results and decision).
+- **Where:** `<discipline>/test/`, for example `mechanical/test/`, `hardware/test/`,
+  `firmware/test/`. **Name:** `rr-NN-subject-YYYY-MM-DD.md`, with `NN` the next free ID in the
+  [risk-reduction register](../mechanical/test/risk-reduction-register.md). IDs are permanent and
+  never reused. Photos: `rr-NN-subject-YYYY-MM-DD-NN.jpg`.
+- **Requirements matrix:** add the test's row to the [Requirements Test Matrix](engineering/requirements-test-matrix.md) in the same PR, in the section for its discipline (mechanical, electronics, software).
+- **Before the run:** write Part A and add the register row with its pass mark. A pass mark
+  written after the result is not a test.
+- **Enforced:** `check_conventions.py` fails a PR that adds a test record without the one-page
+  summary and Parts A, B and C. Tests run before 2026-10-30 were converted to this format; their
+  original narratives are linked from each record.
 
 ## File formats
 

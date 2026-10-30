@@ -12,6 +12,8 @@ violations against the current ``main`` tree before shipping):
   2. Forbidden files — files ADDED by this PR must not be .docx/.xlsx, a .wav outside the
      one sample session, an OS-noise file, a key/secret file, or >50 MB.
      (CONVENTIONS.md → "Never commit these".)
+  5. Test records — a new dated .md in a test/ folder, or any rr-NN-* file, must follow
+     docs/engineering/test-record-template.md. (CONVENTIONS.md → "Test records".)
   3. Markdown — files ADDED or MODIFIED by this PR must have exactly one H1 and no HTML
      tables. Lines over 100 chars are reported as WARNINGS only (the convention is "~100"
      and DOIs/tables legitimately exceed it). (CONVENTIONS.md → "Markdown rules".)
@@ -205,6 +207,45 @@ def check_source_registry() -> list[str]:
 
 # --- driver ----------------------------------------------------------------------------
 
+# --- check 5: test records follow the template ----------------------------------------
+
+TEST_DATED = re.compile(r"-\d{4}-\d{2}-\d{2}\.md$")
+TEST_REQUIRED = (
+    "## One-page summary",
+    "**Test ID / status**",
+    "## Part A",
+    "## Part B",
+    "## Part C",
+)
+
+
+def is_test_record(f: str, added: bool) -> bool:
+    """A new dated .md in a test/ or tests/ folder, or any rr-NN-* record, is a test record."""
+    parts = f.split("/")
+    base = parts[-1]
+    if not f.endswith(".md") or base == "README.md" or f.startswith(".github/"):
+        return False
+    if base.startswith("rr-"):
+        return True
+    in_test_dir = any(p in ("test", "tests") for p in parts[:-1])
+    return added and in_test_dir and bool(TEST_DATED.search(base))
+
+
+def check_test_records(added: list[str], modified: list[str]) -> list[str]:
+    fatal: list[str] = []
+    for f in sorted(set(added) | set(modified)):
+        if not is_test_record(f, f in added) or not os.path.exists(f):
+            continue
+        text = open(f, encoding="utf-8").read()
+        for need in TEST_REQUIRED:
+            if need not in text:
+                fatal.append(
+                    f"{f}: test record is missing '{need}' — "
+                    "copy docs/engineering/test-record-template.md"
+                )
+    return fatal
+
+
 def section(title: str, fatal: list[str], warn: list[str] | None = None) -> bool:
     ok = not fatal
     print(f"[{'OK ' if ok else 'FAIL'}] {title}")
@@ -235,6 +276,7 @@ def main() -> int:
     md_fatal, md_warn = check_markdown(md_files)
     all_ok &= section("Markdown (added+modified)", md_fatal, md_warn)
     all_ok &= section("Source registry ↔ notes", check_source_registry())
+    all_ok &= section("Test records follow the template", check_test_records(added, modified))
 
     print()
     if all_ok:

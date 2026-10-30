@@ -19,6 +19,35 @@
 - **Prototype type:** *coupon* (a small piece testing one feature), *looks-like* (form and
   fit), *works-like* (function), or *analysis* (closed-form or FEA, no hardware).
 - **IDs are permanent.** `RR-NN`, numbered in order and never reused.
+- **Every test gets a record** in the [test record template](../../docs/engineering/test-record-template.md), named `rr-NN-subject-YYYY-MM-DD.md` in this folder. Write its Part A, with the pass mark, before the run.
+
+The requirement-by-requirement view of every test, for all disciplines, is the [Requirements Test Matrix](../../docs/engineering/requirements-test-matrix.md). A new test adds a row there and one here.
+
+## Records in the test-record format
+
+Every test below has a record in the [Test Record Template](../../docs/engineering/test-record-template.md) format, with a one-page printable summary at the top. The older narrative records stay in this folder and are linked from each new record.
+
+| ID | Test | Status | Record |
+|---|---|---|---|
+| RR-01 | Flotation Wedges and Bottom Caps — Side-Load FEA, 2026-08-17 | Pass | [`rr-01-flotation-side-load-fea-2026-08-17.md`](rr-01-flotation-side-load-fea-2026-08-17.md) |
+| RR-02 | Print Weight Verification — Bolted-V4 Floatation Set, 2026-08-24 | Partial | [`rr-02-print-weight-verification-2026-08-24.md`](rr-02-print-weight-verification-2026-08-24.md) |
+| RR-03 | Bench Submersion of Three Printed Housings, 2026-08-24 | Partial | [`rr-03-bench-submersion-three-articles-2026-08-24.md`](rr-03-bench-submersion-three-articles-2026-08-24.md) |
+| RR-04 | Mooring and Structural Load-Case FEA, LC2–LC9 plus Service, 2026-08-29 | Pass | [`rr-04-mooring-load-case-fea-2026-08-29.md`](rr-04-mooring-load-case-fea-2026-08-29.md) |
+| RR-05 | Wedge Wall-Thickness Structural Check (closed form), 2026-09-07 | Pass | [`rr-05-wedge-wall-thickness-check-2026-09-07.md`](rr-05-wedge-wall-thickness-check-2026-09-07.md) |
+| RR-06 | Wedge Ring External-Pressure Buckling Check (closed form), 2026-09-09 | Pass | [`rr-06-wedge-ring-buckling-check-2026-09-09.md`](rr-06-wedge-ring-buckling-check-2026-09-09.md) |
+| RR-07 | Sensor Housing One-Week Soak, TPU-Printed O-Ring, 2026-09-12 | Fail | [`rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md`](rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md) |
+| RR-08 | Split Wedge-Bottom Print, Prusa Mini vs Larger Printer, 2026-09-23 | Partial | [`rr-08-wedge-bottom-split-print-2026-09-23.md`](rr-08-wedge-bottom-split-print-2026-09-23.md) |
+| RR-09 | v5 FEA Re-Check and Ring Buckling, 2026-09-25 | Pass | [`rr-09-v5-fea-recheck-2026-09-25.md`](rr-09-v5-fea-recheck-2026-09-25.md) |
+| RR-10 | Single-Wedge Drop Test, 2026-09-25 | Pass | [`rr-10-wedge-drop-2026-09-25.md`](rr-10-wedge-drop-2026-09-25.md) |
+| RR-11 | Large-Angle Stability and Self-Righting Calculation, 2026-09-29 | Pass | [`rr-11-large-angle-stability-2026-09-29.md`](rr-11-large-angle-stability-2026-09-29.md) |
+| RR-12 | Sensor Housing Coupon Run 1, Purchased O-Ring, 3 Bolts, 2026-10-01 | Fail | [`rr-12-sensor-housing-coupon-run-1-2026-10-01.md`](rr-12-sensor-housing-coupon-run-1-2026-10-01.md) |
+| RR-13 | v5 Chassis Print on the Dedicated Printer, 2026-09-30 | In progress | [`rr-13-v5-chassis-print-2026-09-30.md`](rr-13-v5-chassis-print-2026-09-30.md) |
+| RR-14 | Sensor Housing Coupon Run 2, PLA, 4 Bolts, Ribbed Cap, 2026-10-06 | Fail | [`rr-14-sensor-housing-coupon-run-2-2026-10-06.md`](rr-14-sensor-housing-coupon-run-2-2026-10-06.md) |
+| RR-15 | Sensor Housing Coupon Run 3, 6 Bolts, Thicker Cap and Ribs, 2026-10-06 | Fail | [`rr-15-sensor-housing-coupon-run-3-2026-10-06.md`](rr-15-sensor-housing-coupon-run-3-2026-10-06.md) |
+| RR-16 | Sensor Housing Coupon Run 4, Groove Matched to the Real Ring, 2026-10-08 | Planned | [`rr-16-sensor-housing-coupon-run-4-2026-10-08.md`](rr-16-sensor-housing-coupon-run-4-2026-10-08.md) |
+| RR-17 | Dry Float of the Assembled Foam-Version Buoy in a Bin, 2026-10-16 | Partial | [`rr-17-assembled-buoy-bin-float-2026-10-16.md`](rr-17-assembled-buoy-bin-float-2026-10-16.md) |
+| RR-18 | Sensor Pod Fresh-Water Seal Check, PETG, Inserts Pressed from Below, 2026-10-21 | Pass | [`rr-18-sensor-pod-petg-fresh-water-2026-10-21.md`](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md) |
+| RR-19 | Raw PETG Water Absorption Soak, Fresh then Salt, 2026-10-21 | Planned | [`rr-19-petg-water-absorption-soak-2026-10-21.md`](rr-19-petg-water-absorption-soak-2026-10-21.md) |
 
 ## Tests run
 
