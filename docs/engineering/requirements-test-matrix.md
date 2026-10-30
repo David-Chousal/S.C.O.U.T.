@@ -95,16 +95,16 @@ that is not a CI suite gets an `RR-NN` record like any other.
 
 ## Gaps and conflicts
 
-Gaps are rows with no numeric pass mark. Each needs an issue filed or an existing one
-extended ([SCO-221](https://linear.app/scout1/issue/SCO-221) asks for gaps to be filed).
+Gaps are rows with no numeric pass mark. Each has an issue
+([SCO-221](https://linear.app/scout1/issue/SCO-221) asks for gaps to be filed).
 
 | Gap | Rows | What is missing | Issue |
 |---|---|---|---|
-| G1 | R-03 | Turbidity has an ordering and a repeatability mark but no accuracy number or calibration standard | To file |
+| G1 | R-03 | Turbidity has an ordering and a repeatability mark but no accuracy number or calibration standard | [SCO-271](https://linear.app/scout1/issue/SCO-271) |
 | G2 | R-05 | Humidity alert threshold (70 %RH) is a placeholder; no calibration curve | [SCO-204](https://linear.app/scout1/issue/SCO-204) |
-| G3 | R-06 | Hydrophone noise floor and frequency response have no numbers | To file |
-| G4 | R-20 | Biofouling has no test or metric | To file |
-| G5 | R-15 | No physical load test behind the FEA | To file or accept |
+| G3 | R-06 | Hydrophone noise floor and frequency response have no numbers | [SCO-272](https://linear.app/scout1/issue/SCO-272) |
+| G4 | R-20 | Biofouling has no test or metric | [SCO-273](https://linear.app/scout1/issue/SCO-273) |
+| G5 | R-15 | No physical load test behind the FEA | [SCO-274](https://linear.app/scout1/issue/SCO-274) |
 
 Conflicts found while building the table (recorded, not reconciled, per
 [Standing rule 1](../../CLAUDE.md)):
