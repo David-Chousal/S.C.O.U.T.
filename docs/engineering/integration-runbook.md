@@ -99,7 +99,7 @@ Found in the 2026-10-19 rewrite and updated 2026-10-29. Each names the first sta
 | **G3** ⚠️ | **The Rev A KiCad schematic still says `TEMP_DATA = D5`.** The Rev B drawing set, `pin-assignments.md` and `config.h` all agree on **D12**. | Nothing, if you wire from the Rev B drawing set | Update the KiCad schematic (ECE) |
 | **G4** ✅ fixed in code | **SD file layout.** The firmware wrote `YYYYMMDD.CSV` at the card root and the importer matched `*.csv` case-sensitively, so a retrieved card merged nothing. Now `/DATA/YYYYMMDD.CSV` (8.3-safe), audio at `/AUDIO/YYYYMMDD/HHMMSSZ.WAV`, and a case-insensitive importer ([data-schema](data-schema.md#file-layout-on-the-sd-card)). | Card retrieval (§6) | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-202](https://linear.app/scout1/issue/SCO-202) — confirm with a real card |
 | **G5** ✅ fixed in code | **No receiver for the bench link test.** Now `feather_m0_rx` (a second Feather M0) and `shore/scripts/decode_frames.py`. | Stage 4a | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-155](https://linear.app/scout1/issue/SCO-155) |
-| **G6** ⚠️ | **No way to force a watchdog reset** for the Stage 5 test. | Stage 5 | A test-only build flag that hangs one cycle (CSEN) |
+| **G6** ✅ fixed in code | **Forcing a watchdog reset for the Stage 5 test.** Now: env `feather_m0_wdt_test` (the bench build plus `-DSCOUT_WDT_TEST`) logs one reading, then hangs on its second cycle without petting the watchdog. The watchdog fires (~16 s) and the next boot reports `watchdog_reset=yes`. A boot the watchdog caused never hangs, so there is one forced reset per power-on or reset-button press. | Stage 5 | Added 2026-10-30 ([SCO-160](https://linear.app/scout1/issue/SCO-160)) — confirm on hardware |
 | **G7** ⚠️ | **Audio capture is written but has never run.** `drivers/audio_capture.h` records a 60 s clip at 22.05 kHz three times a day ([ADR-0011](../decisions/0011-audio-capture-parameters.md)); the hydrophone has not been bought. (The 2026-10-19 version said no capture code existed; that was superseded.) | Stage 7 | Run it once the H2dM arrives (CSEN + ECE) |
 | **G8** ⚠️ | **The shore FeatherWing's CS/RST/IRQ jumpers have no default.** `shore_main.cpp` assumes **CS 10, RST 11, IRQ 9**; the pads must be soldered to match and confirmed with ECE. | Stage 4a (S3 as receiver), 4b | Isabella |
 | **G9** ⚠️ | **The shore station has no battery-backed clock.** After a power-on with no WiFi it has no time until NTP or `T<epoch>` over USB sets it: slot tags read `win=unknown` and the downlink holds off. Readings are unaffected (they carry the buoy's timestamp). | Nothing (a degraded mode) | ECE to decide on an RTC FeatherWing ([Shore Station](shore-station.md#open-items) item 6) |
@@ -464,6 +464,11 @@ monitor (USB drops in standby).
 - **48 samples and 3 transmit slots in 24 h**, at :00/:30 and 00:10/08:10/16:10 UTC, none missed.
 - `record_seq` increments by one per sample and **continues after a reset** (`resume_seq`).
 - **Watchdog:** a forced hang resets the buoy and the next boot says `watchdog_reset=yes` (G6).
+  Run it apart from the 24 h run, with the test build: `pio run -e feather_m0_wdt_test -t upload`.
+  About a minute after boot it hangs (it prints `wdt_test: hanging` if USB is still up); about
+  16 s later it resets. On the SD card, the next row's `soh` carries `WATCHDOG_RESET` and its
+  `record_seq` follows the row before the hang; no second hang follows. Reflash `feather_m0`
+  afterwards: the test build must never be deployed.
 - D13 LED stays off; the switched rail is ≈ 0 V between samples.
 - 24 h average current within budget (≈ 0.56 mA).
 
