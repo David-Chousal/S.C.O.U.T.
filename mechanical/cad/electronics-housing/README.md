@@ -264,7 +264,13 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
     rule of thumb, check against the cable datasheets). Vertical glands were rejected: they sit in
     standing water on a buoy and the cable has to turn toward the pod below anyway. Open check: the
     2026-10-28 drawing's 1.13 in (28.7 mm) deck leaves about 14 mm from a centred gland to each
-    edge, borderline against the ≥ 15 mm wrench rule above. John is uploading the cap STEP.
+    edge, borderline against the ≥ 15 mm wrench rule above.
+  - **Cap STEP uploaded 2026-10-30:**
+    [`electronics-housing-cap-sideways-glands-2026-10-30.step`](electronics-housing-cap-sideways-glands-2026-10-30.step)
+    (one solid, `Body1`, exported from Fusion in inches). A scan of its cylinders finds **three
+    Ø0.748 in (19.0 mm) holes**, matching the PG11 through hole above, and a Ø7.0 in outer diameter.
+    Gland positions, facet flatness and the real deck height were **not** checked (no CAD kernel
+    here), so confirm them in Fusion. John is printing it 2026-10-30; print result not recorded.
 
 ### Drawing — DFM Assembly 2 (drawn 2026-10-06, scale 1:3, size B, inches)
 
