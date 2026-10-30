@@ -5,7 +5,7 @@
 > step with Linear. The longer plan notes are in
 > [`john-weekly-itinerary-2026-10-27.md`](john-weekly-itinerary-2026-10-27.md).
 >
-> **Last updated:** 2026-10-28 (week of Oct 26 to Nov 6)
+> **Last updated:** 2026-10-30 (week of Oct 26 to Nov 6)
 
 **Status key:** Done · In Review (work finished, PR open) · In Progress · Todo · Waiting (on a person) · Canceled
 
@@ -22,11 +22,12 @@
 | Wed Oct 28 | SCO-256 | Website click-through | In Review |
 | Wed Oct 28 | SCO-264 | Advisor progress sheet | Done |
 | Wed Oct 28 | SCO-265 | File the Oct 28 meeting | Done |
-| Thu Oct 29 | SCO-266 | Housing CAD and print | Todo |
+| Thu Oct 29 | SCO-266 | Housing CAD and print | Done (housing printed 2026-10-30) |
+| Fri Oct 30 | SCO-269 | Housing cap CAD and print (split from SCO-266) | In Progress (printing today) |
 | Thu Oct 29 | SCO-221 | Parameter, metric and test per sensor (due Oct 30) | Todo |
-| Thu Oct 29 | SCO-246 | Choose and order the coating | Todo |
+| Thu Oct 29 | SCO-246 | Choose and order the coating | In Progress (choose Oct 30, buy tentative coating the weekend of Oct 31) |
 | Thu Oct 29 | SCO-243 | Start eye/attachment point CAD (due Oct 30) | Todo |
-| Fri Oct 30 | SCO-243 | Finish eye/attachment point CAD | Todo |
+| Fri Oct 30 | SCO-243 | Finish eye/attachment point CAD | In Progress (finishing Oct 30) |
 | Fri Oct 30 | SCO-261 | Deployment blurb for Dr. Krishnan | Todo |
 | Fri Oct 30 | SCO-147 | Decide the hung configuration (due Nov 3) | Todo |
 | Fri Oct 30 | SCO-185 | Kaneohe Bay permits follow-up (overdue since Oct 16) | Not checked |
