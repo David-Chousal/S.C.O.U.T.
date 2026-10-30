@@ -275,10 +275,6 @@ void setup() {
 
     g_rtc_ok = g_rtc.begin();
     accept_time_command();
-    uint16_t startup_flags = 0;
-    if (!g_rtc_ok || g_rtc.lostPower()) {
-        startup_flags |= SCOUT_FLAG_RTC_LOST;
-    }
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
 
@@ -307,7 +303,6 @@ void setup() {
     if (TX_EVERY_SAMPLE) {
         Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
     }
-    (void)startup_flags;  // folded into the first record below
 }
 
 // Housing humidity/temperature (SCO-205). Read every cycle in every power mode: it is the
@@ -381,7 +376,9 @@ static void apply_acoustic(ScoutReading &r, bool present, const ScoutAcousticSum
 static void sample_and_log() {
     uint16_t flags = 0;
     uint32_t now = clock_now();
-    if (!g_rtc_ok) {
+    // Checked on every sample, not just at boot: a clock that lost power, or never got set,
+    // must say so on every row until set_rtc.py fixes it (analytics excludes those rows).
+    if (!scout_clock_trusted(g_rtc_ok, g_rtc_ok && g_rtc.lostPower(), now, MIN_VALID_EPOCH)) {
         flags |= SCOUT_FLAG_RTC_LOST;
     }
 

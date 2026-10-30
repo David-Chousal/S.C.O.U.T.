@@ -29,3 +29,7 @@ bool scout_parse_time_command(const char *line, uint32_t min_epoch, uint32_t *ou
     *out_epoch = (uint32_t)value;
     return true;
 }
+
+bool scout_clock_trusted(bool rtc_ok, bool lost_power, uint32_t now, uint32_t min_epoch) {
+    return rtc_ok && !lost_power && now >= min_epoch;
+}

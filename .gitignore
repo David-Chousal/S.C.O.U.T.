@@ -92,3 +92,10 @@ credentials.json
 firmware/src/downlink_key.h
 # Shore station WiFi password and console device token (SCO-237). Copy the _example.h; never commit.
 firmware/src/shore_rx/shore_secrets.h
+
+# iCloud Drive "name 2", "name 3", ... conflict copies (the repo lives on an iCloud-synced Desktop). Repo paths
+# never contain spaces (CONVENTIONS.md), so these are always duplicates, never real files.
+* [0-9]
+* [0-9].*
+* [0-9][0-9]
+* [0-9][0-9].*

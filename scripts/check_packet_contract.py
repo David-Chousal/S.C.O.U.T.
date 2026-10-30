@@ -135,12 +135,19 @@ def check_payload_ceiling() -> str:
     if on_air > _TIMEOUT_MARGIN * timeout:
         problems.append(f"a {ceiling}-byte frame takes {on_air:.0f} ms at SF{sf}/BW{bw_hz // 1000}, "
                         f"over {_TIMEOUT_MARGIN:.0%} of the {timeout} ms send timeout")
+    packet_airtime = _c_number(_LINK_H, "SCOUT_LINK_AIRTIME_MS")
+    packet_on_air = airtime_ms(PACKET_SIZE + _RH_HEADER_BYTES, sf, bw_hz, coding_rate, crc=crc)
+    if math.ceil(packet_on_air) != packet_airtime:  # the real packet, used for the watchdog budget
+        problems.append(f"SCOUT_LINK_AIRTIME_MS = {packet_airtime} but a {PACKET_SIZE}-byte packet "
+                        f"takes {packet_on_air:.1f} ms (rounded up: {math.ceil(packet_on_air)}); "
+                        "recompute it")
     if math.ceil(on_air) != ceiling_airtime:  # the firmware stores it rounded up
         problems.append(f"SCOUT_LINK_CEILING_AIRTIME_MS = {ceiling_airtime} but the modem "
                         f"settings give {on_air:.1f} ms (rounded up: {math.ceil(on_air)}); recompute it")
     if problems:
         sys.exit("PAYLOAD CEILING DRIFT (SCO-97):\n  " + "\n  ".join(problems))
-    return f"payload ceiling OK — {ceiling} B, {on_air:.0f} ms of a {timeout} ms send timeout"
+    return (f"payload ceiling OK — {ceiling} B, {on_air:.0f} ms of a {timeout} ms send timeout; "
+            f"packet {PACKET_SIZE} B, {packet_on_air:.0f} ms")
 
 
 def firmware_golden_hex(path: pathlib.Path = _TEST_CPP) -> str:

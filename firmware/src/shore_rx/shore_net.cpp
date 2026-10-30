@@ -172,7 +172,7 @@ static void net_task(void *) {
                               WiFi.RSSI());
                 next_push = next_settings = now_ms;
             } else {
-                Serial.println("wifi: lost; readings queue until it is back");
+                Serial.print("wifi: lost; readings queue until it is back\n");
             }
             was_up = up;
         }
@@ -216,11 +216,11 @@ static void net_task(void *) {
 
 void shore_net_begin() {
     if (!SHORE_HAVE_SECRETS) {
-        Serial.println("wifi: off (no src/shore_rx/shore_secrets.h); USB only");
+        Serial.print("wifi: off (no src/shore_rx/shore_secrets.h); USB only\n");
         return;
     }
     if (strlen(SHORE_WIFI_SSID) == 0 || strlen(SHORE_CONSOLE_TOKEN) == 0) {
-        Serial.println("wifi: off (SSID or console token empty in shore_secrets.h); USB only");
+        Serial.print("wifi: off (SSID or console token empty in shore_secrets.h); USB only\n");
         return;
     }
     Serial.printf("wifi: joining %s; console %s\n", SHORE_WIFI_SSID, SHORE_CONSOLE_URL);
