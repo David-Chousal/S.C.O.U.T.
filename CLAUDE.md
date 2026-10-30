@@ -541,6 +541,17 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    one applies — a PR that touches nothing in the Hub is the exception, not the rule. A reviewer
    should reject a PR that changed a fact or a decision without updating the Hub.
 
+8. **Every test uses the test record template.** Any test, in any discipline, is written up in
+   [`docs/engineering/test-record-template.md`](docs/engineering/test-record-template.md): a
+   one-page printable summary, then Part A (plan, with the pass mark written **before** the run),
+   Part B (execution log) and Part C (results and decision). File it as
+   `<discipline>/test/rr-NN-subject-YYYY-MM-DD.md`, add its row to the
+   [risk-reduction register](mechanical/test/risk-reduction-register.md), and link the Linear
+   issue. When a teammate says they are about to run, ran, or planned a test, offer to start the
+   record, and fill any field they did not record as `Not recorded`, never from inference.
+   `check_conventions.py` enforces the structure. Applies to Isabella's bench tests and David's
+   firmware tests exactly as it does to John's.
+
 ---
 
 ## Working with your Claude
