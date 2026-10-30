@@ -15,16 +15,28 @@
 Team: Isabella Rodriguez (electrical), John Ryan Myrdal (mechanical and field), David Chousal Cantu (software)
 Advisors: Dr. Shoba Krishnan, Dr. Jes Kuczenski, Dr. Navid Shaghaghi
 
+**In short.** We are building an affordable, battery-powered buoy that watches a shallow reef for a
+year or more and reports back by radio. We are looking for a site to test it, early guidance on
+permits, and introductions to reef scientists.
+
 **The problem.** Reef monitoring buoys cost tens of thousands of dollars, and researchers we interviewed
 described sites where data is collected by hand only every few years. Shallow reefs, where bleaching
 and sedimentation start, are the least instrumented.
 
-**What we are building.** A small, battery-powered, modular buoy that sits next to a shallow reef and
-is left alone. It logs water temperature and turbidity, stores everything on board, and sends a
-44-byte summary packet to a shore station over LoRa, three times a day. It needs no cellular service
-or internet at the buoy. A hydrophone will add a reef soundscape summary (snapping-shrimp activity is
-a candidate proxy for reef health). On shore, our pipeline turns temperature into NOAA Coral Reef
-Watch style Degree Heating Weeks and bleaching alert levels, and screens data with QARTOD-style tests.
+**What we are building.** A small, modular buoy that sits next to a shallow reef and is left alone. It
+logs water temperature and turbidity, stores everything on board, and sends a small summary to a shore
+station over LoRa radio three times a day. It needs no cellular service or internet at the buoy. A
+hydrophone will add a reef soundscape summary (snapping-shrimp activity is a candidate proxy for reef
+health). On shore, our pipeline turns temperature into NOAA Coral Reef Watch style Degree Heating
+Weeks and bleaching alert levels, and screens data with QARTOD-style tests.
+
+**What we are asking.**
+1. A site: a dock, pier or marina where we can hang a prototype for a short pilot, in California or Hawaii.
+2. Early guidance on the permits and agencies that apply to a small instrumented buoy in 2 to 8 m of
+   nearshore water, and on realistic timelines. Marinas have quoted about $250 to review an application
+   and $250+ plus insurance to deploy.
+3. Introductions to reef scientists or monitoring programs who would use or comment on the data.
+4. Feedback on the sensors and data products you would want from a low-cost buoy.
 
 **Design targets.** Total system cost under $5,000 · 1+ year unattended · 2 to 8 m depth · reef-safe
 mooring (existing mooring points, or one mushroom anchor on sand) · copper-free antifouling coating ·
@@ -39,14 +51,6 @@ mooring (existing mooring points, or one mushroom anchor on sand) · copper-free
 
 **Plan.** Bench tests this quarter, a short local field prototype test January–February 2027, and a
 live deployment March–May 2027 targeted at a Hawaii reef site (site to be confirmed).
-
-**What we are asking.**
-1. A site: a dock, pier or marina where we can hang a prototype for a short pilot, in California or Hawaii.
-2. Guidance on the permits and agencies that apply to a small instrumented buoy in 2 to 8 m of
-   nearshore water. We have quotes from marinas of about $250 to review an application and $250+ plus
-   insurance to deploy, and we have been told NOAA approval can take months, so early direction matters.
-3. Introductions to reef scientists or monitoring programs who would use or comment on the data.
-4. Feedback on the sensors and data products you would want from a low-cost buoy.
 
 **Where it can go.** The sensing payload is modular, so the same buoy, power system and shore link can
 be re-tasked. Planned additions: light, chlorophyll and (as a stretch) dissolved oxygen, plus a
