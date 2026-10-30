@@ -31,7 +31,7 @@ health). On shore, our pipeline turns temperature into NOAA Coral Reef Watch sty
 Weeks and bleaching alert levels, and screens data with QARTOD-style tests.
 
 **What we are asking.**
-1. A site: a dock, pier or marina where we can hang a prototype for a short pilot, in California or Hawaii.
+1. A test site: a dock, pier or marina where we can hang a prototype for a short pilot, in California or Hawaii, or an aquarium reef tank (the Monterey Bay Aquarium's would be our first choice).
 2. Early guidance on the permits and agencies that apply to a small instrumented buoy in 2 to 8 m of
    nearshore water, and on realistic timelines. Marinas have quoted about $250 to review an application
    and $250+ plus insurance to deploy.
