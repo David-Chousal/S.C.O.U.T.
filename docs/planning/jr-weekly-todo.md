@@ -5,7 +5,7 @@
 > step with Linear. The longer plan notes are in
 > [`john-weekly-itinerary-2026-10-27.md`](john-weekly-itinerary-2026-10-27.md).
 >
-> **Last updated:** 2026-10-28 (week of Oct 26 to Nov 6)
+> **Last updated:** 2026-10-30, evening (week of Oct 26 to Nov 6)
 
 **Status key:** Done · In Review (work finished, PR open) · In Progress · Todo · Waiting (on a person) · Canceled
 
@@ -19,15 +19,18 @@
 | Wed Oct 28 | SCO-229 | Publish simulator on the site | Done |
 | Wed Oct 28 | SCO-255 | Drawings on the site | Done |
 | Wed Oct 28 | SCO-252 | Updated buoy drawings | Done |
-| Wed Oct 28 | SCO-256 | Website click-through | In Review |
+| Wed Oct 28 | SCO-256 | Website click-through | Done |
 | Wed Oct 28 | SCO-264 | Advisor progress sheet | Done |
 | Wed Oct 28 | SCO-265 | File the Oct 28 meeting | Done |
-| Thu Oct 29 | SCO-266 | Housing CAD and print | Todo |
-| Thu Oct 29 | SCO-221 | Parameter, metric and test per sensor (due Oct 30) | Todo |
-| Thu Oct 29 | SCO-246 | Choose and order the coating | Todo |
+| Thu Oct 29 | SCO-266 | Housing CAD and print | Done (housing printed 2026-10-30) |
+| Fri Oct 30 | SCO-269 | Housing cap CAD (split from SCO-266); cap STEP with sideways glands in the repo | Done |
+| Fri Oct 30 | SCO-270 | Print the housing cap; gland fit coupon first; log weight and seal fit | In Progress (printing today) |
+| Thu Oct 29 | SCO-221 | Requirements test matrix and gap issues (due Oct 30) | In Review (matrix drafted; Done when its PR merges) |
+| Thu Oct 29 | SCO-246 | Choose and order the coating | In Progress (choose Oct 30, buy tentative coating the weekend of Oct 31) |
 | Thu Oct 29 | SCO-243 | Start eye/attachment point CAD (due Oct 30) | Todo |
-| Fri Oct 30 | SCO-243 | Finish eye/attachment point CAD | Todo |
-| Fri Oct 30 | SCO-261 | Deployment blurb for Dr. Krishnan | Todo |
+| Fri Oct 30 | SCO-243 | Finish eye/attachment point CAD | In Progress (finishing Oct 30) |
+| Fri Oct 30 | SCO-261 | Partner overview for Dr. Krishnan (written and sent) | Done |
+| Fri Oct 30 | SCO-268 | PG11 lid hole size: thread vs through hole wording | Done |
 | Fri Oct 30 | SCO-147 | Decide the hung configuration (due Nov 3) | Todo |
 | Fri Oct 30 | SCO-185 | Kaneohe Bay permits follow-up (overdue since Oct 16) | Not checked |
 | Mon Nov 3 | SCO-246, SCO-147 | Buffer | Todo |
@@ -36,6 +39,9 @@
 | Fri Nov 6 | SCO-262 | Tub storage space | Todo |
 
 ## Open items
+
+- New gap issues from the requirements matrix: SCO-273 (biofouling test) and SCO-274 (FEA physical check) are John's; SCO-271 (turbidity accuracy) and SCO-272 (hydrophone marks) are Isabella's.
+- SCO-243 (eye/attachment CAD) is still open; John is finishing it.
 
 - SCO-172 (35 ppt float test) needs salt; the salt purchase was part of canceled SCO-168 and needs its own ticket.
 - Open PRs awaiting review: 228, 230, 232, 234, 236, 237.

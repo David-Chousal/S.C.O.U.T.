@@ -245,7 +245,7 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
 - **The whole housing is larger** than the 2026-09-02 clamp. Dimensions: see the drawing below.
 - **Curved cable-penetration interface on top of the lid**, with room for cable glands.
   - **Gland size decided 2026-10-29 (John): PG11** for all electronics-housing cable penetrators,
-    from lab stock. Lid hole ≈18.6 mm per gland; cable OD ≈5–10 mm (nominal — confirm against the
+    from lab stock. Thread Ø18.6 mm, lid through hole Ø19.0 mm per gland; cable OD ≈5–10 mm (nominal — confirm against the
     stock datasheet before cutting). Gland count and positions are set by the lid layout
     ([SCO-250](https://linear.app/scout1/issue/SCO-250), [SCO-162](https://linear.app/scout1/issue/SCO-162)).
   - **Lid design numbers for a PG11 (nominal, from the standard PG thread; confirm against the stock
@@ -256,8 +256,24 @@ John's description of the updated housing, from his CAD screenshot. The drawing 
     lock nut takes ~4–5 mm, so the grip range is only ~2–4 mm; under ~2 mm the nut bottoms out on
     the thread, over ~5 mm it will not engage). Use the gland's flat seal washer, tighten
     finger-plus-quarter turn on printed PETG (it creeps), and add a metal washer under the nut.
+  - **Same numbers in inches:** thread Ø0.732 in (pitch 0.059 in); through hole **Ø0.748 in**
+    (a 3/4 in drill, 0.750 in, also works); spot-face **≥ Ø1.00 in**; wall at the gland
+    **0.12–0.16 in**; ≥ 1.20 in centre-to-centre; ≥ 0.60 in from any wall or boss edge.
 - **Gland interior radius and orientation point the cables to the side**, which leaves vertical
   room above the housing for a possible solar panel.
+  - **Decided 2026-10-30 (John): glands point sideways from a raised gland deck on the cap, not
+    straight up.** The deck is one piece with the cap (no extra seal), each gland sits on a flat
+    facet, and each cable gets a drip loop and a bend of about 6× its outer diameter or more (a
+    rule of thumb, check against the cable datasheets). Vertical glands were rejected: they sit in
+    standing water on a buoy and the cable has to turn toward the pod below anyway. Open check: the
+    2026-10-28 drawing's 1.13 in (28.7 mm) deck leaves about 14 mm from a centred gland to each
+    edge, borderline against the ≥ 15 mm wrench rule above.
+  - **Cap STEP uploaded 2026-10-30:**
+    [`electronics-housing-cap-sideways-glands-2026-10-30.step`](electronics-housing-cap-sideways-glands-2026-10-30.step)
+    (one solid, `Body1`, exported from Fusion in inches). A scan of its cylinders finds **three
+    Ø0.748 in (19.0 mm) holes**, matching the PG11 through hole above, and a Ø7.0 in outer diameter.
+    Gland positions, facet flatness and the real deck height were **not** checked (no CAD kernel
+    here), so confirm them in Fusion. John is printing it 2026-10-30; print result not recorded.
 
 ### Drawing — DFM Assembly 2 (drawn 2026-10-06, scale 1:3, size B, inches)
 
