@@ -93,6 +93,7 @@ Data science methodology for the acoustic pipeline.
 |---|---|
 | [Coral Bioacoustic Methodology](analysis/coral-bioacoustic-methodology.md) | Full scientific methodology: index definitions, trend detection, seasonal normalization, disturbance detection, health classification, data sources, limitations, and citations |
 | [Environmental Telemetry Methodology](analysis/telemetry-methodology.md) | Temperature/turbidity/battery analysis: QC, daily aggregation, NOAA Coral Reef Watch DHW & bleaching alerts, Mann-Kendall trends, turbidity anomalies, with citations |
+| [Reef Noise Profile](analysis/reef-noise-profile.md) | What the hydrophone hears on a reef (snapping shrimp, fish, background and engine noise), how the buoy's filters and acoustic summary use those bands, where they overlap, and how to check it with synthetic signals |
 
 Implementation lives in [`analytics/`](../analytics/README.md).
 
