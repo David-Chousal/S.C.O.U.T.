@@ -39,15 +39,22 @@ _TEAM = [
      "https://www.linkedin.com/in/isabellarodriguez17/", "team/isabella.jpg"),
 ]
 
+# Each phase's state mirrors its Linear project: "done", "active" or "planned".
 _PHASES = [
-    ("Phase 0", "Kickoff", "Aug – Sep 2026", True),
-    ("Phase 1", "Subsystem bring-up", "Sep – Oct 2026", False),
-    ("Phase 2", "System integration", "Oct – Dec 2026", False),
-    ("Phase 3", "Enclosure &amp; waterproofing", "Nov 2026 – Jan 2027", False),
-    ("Phase 4", "Field prototype deployment", "Jan – Feb 2027", False),
-    ("Phase 5", "Hawaii deployment prep", "Mar 2027", False),
-    ("Phase 6", "Hawaii live deployment", "Mar – May 2027", False),
+    ("Phase 0", "Kickoff", "Aug – Sep 2026", "done"),
+    ("Phase 1", "Subsystem bring-up", "Sep – Oct 2026", "done"),
+    ("Phase 2", "System integration", "Oct – Dec 2026", "active"),
+    ("Phase 3", "Enclosure &amp; waterproofing", "Nov 2026 – Jan 2027", "planned"),
+    ("Phase 4", "Field prototype deployment", "Jan – Feb 2027", "planned"),
+    ("Phase 5", "Hawaii deployment prep", "Mar 2027", "planned"),
+    ("Phase 6", "Hawaii live deployment", "Mar – May 2027", "planned"),
 ]
+
+_PHASE_CHIPS = {
+    "done": '<span class="chip">Completed</span>',
+    "active": '<span class="chip info">In progress</span>',
+    "planned": '<span class="chip">Planned</span>',
+}
 
 
 def _overview() -> str:
@@ -156,9 +163,8 @@ def _institution() -> str:
 
 def _roadmap() -> str:
     rows = ""
-    for tag, name, window, active in _PHASES:
-        chip = '<span class="chip info">In progress</span>' if active else \
-               '<span class="chip">Planned</span>'
+    for tag, name, window, state in _PHASES:
+        chip = _PHASE_CHIPS[state]
         rows += (
             '<div class="spec-row spec-row-timeline">'
             f'<dt>{tag}</dt><dd>{name}</dd>'
