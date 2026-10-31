@@ -1,0 +1,52 @@
+/* ───── Layout editing (COR's, for dashboards, Phase C) ───── */
+.sc-editbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--ink); color: var(--bg); }
+.sc-editbar .sc-tag { color: var(--bg); }
+.sc-bay--edit { position: relative; border-top-style: dashed; outline: 1px dashed var(--line-strong); outline-offset: 6px; }
+.sc-bay__grip { display: inline-flex; color: var(--ink-muted); cursor: grab; }
+.sc-bay__resize { position: absolute; right: -6px; bottom: -6px; width: 10px; height: 10px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); cursor: nwse-resize; }
+.sc-bay--dragging { z-index: var(--z-drag); background: var(--surface); box-shadow: var(--shadow-pop); transform: rotate(-.6deg); }
+.sc-drop { display: grid; place-items: center; min-height: 96px; border: 2px dashed var(--accent); background: var(--accent-soft); }
+.sc-lib { display: grid; gap: 2px; }
+.sc-lib__item { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: var(--space-3); padding: var(--space-2); border-bottom: 1px solid var(--line); }
+.sc-lib__item svg.glyph { width: 40px; height: 28px; }
+.sc-layout-board { display: grid; gap: var(--space-6); }
+.sc-viewbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-3); border-bottom: 1px solid var(--line); }
+.sc-viewbar .sc-tabs { border-bottom: 0; }
+.sc-viewbar .sc-tab:disabled { opacity: .45; cursor: not-allowed; }
+.sc-viewbar > .sc-key { margin-bottom: var(--space-2); }
+.sc-editbar__dirty { color: var(--caution) !important; }
+.sc-editbar .sc-key { box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .28); }
+.sc-layout { display: grid; gap: var(--space-8); }
+.sc-layout--editing { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+.sc-lib-rail { position: sticky; top: var(--space-4); display: grid; gap: var(--space-3); }
+.sc-bay-slot { position: relative; min-width: 0; }
+.sc-bay-slot--edit { outline: 1px dashed var(--line-strong); outline-offset: 6px; }
+.sc-bay-slot--edit > .sc-bay-slot__content { pointer-events: none; user-select: none; }
+.sc-bay-slot__bar { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); min-width: 0; }
+.sc-bay-slot__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink) !important; }
+.sc-bay-slot__grip { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-muted); cursor: grab; touch-action: none; }
+.sc-bay-slot__grip:active { cursor: grabbing; }
+.sc-bay-slot__grip:focus-visible, .sc-bay-slot__resize:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-bay-slot.is-picked { outline: 2px solid var(--accent); }
+.sc-bay-slot.is-picked .sc-bay-slot__grip { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.sc-bay-slot.is-dragging { z-index: var(--z-drag); background: var(--surface); box-shadow: var(--shadow-pop); }
+.sc-bay-slot__resize { position: absolute; right: -8px; bottom: -8px; width: 14px; height: 14px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); cursor: ew-resize; touch-action: none; }
+@media (max-width: 1023px) { .sc-layout--editing { grid-template-columns: 1fr; } .sc-lib-rail { position: static; } }
+/* Dashboard bays: the trend chart and its hover readout. */
+.sc-trace { position: relative; }
+.sc-trace svg { display: block; width: 100%; height: 220px; overflow: visible; }
+.sc-trace__grid line { stroke: var(--line); stroke-width: 1; }
+.sc-trace__axis text { fill: var(--ink-muted); font: 400 11px/1 var(--font-mono); }
+.sc-trace__line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.sc-trace__end { font: 500 11px/1 var(--font-sans); fill: var(--ink); }
+.sc-trace__cross { stroke: var(--line-strong); stroke-width: 1; }
+.sc-trace__dot { stroke: var(--surface); stroke-width: 2; }
+.sc-trace__tip { position: absolute; top: 0; pointer-events: none; padding: var(--space-2) var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-pop); font: 400 12px/18px var(--font-sans); white-space: nowrap; }
+.sc-trace__tip b { font-weight: 500; }
+.sc-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+.sc-legend i { display: inline-block; width: 12px; height: 2px; margin-right: 6px; vertical-align: middle; border-radius: 1px; }
+.sc-dash-readout { font: 700 32px/36px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.sc-dash-readout small { margin-left: 4px; font: 500 14px/1 var(--font-sans); color: var(--ink-muted); }
+.sc-lib__item--pick { grid-template-columns: 1fr auto; }
+.sc-lib__choices { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-2); }
+.sc-lib__choices .sc-input { height: 28px; }

@@ -79,6 +79,8 @@ Decided by David, 2026-10-25:
    charge). The custom domain waits for a domain.
    **Phase D built 2026-10-30:** CSV reports in R2 behind one-hour links, through the same
    guardrails, and a printable report rendered in the browser (no storage).
+   **Phase C built 2026-10-30:** dashboards on COR's layout editor, personal and shared views in
+   D1 (members edit, guests view). With Phase E's custom domain (#261) every phase is built.
 
 7. **Front end: adopt and adapt the COR design system and web app** (David, 2026-10-25, decided
    after Phase A was built). COR is David's csen174 Next.js 16 / React 19 operator console. Its

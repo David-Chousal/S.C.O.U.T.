@@ -11,6 +11,7 @@ import { createDevice, listDevices, revokeDevice } from "./device.js";
 import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, setCommandStation, SLOT_LABELS } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
+import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { listReadings, readingsQuery } from "./readings.js";
 import { createReport, download, listReports, newLink, REPORT_COLUMNS } from "./reports.js";
@@ -119,6 +120,8 @@ async function reads(env, path, session, url) {
     case "/api/storage":
       if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
       return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES) });
+    case "/api/dashboards":
+      return json({ dashboards: await listDashboards(env.DB, session.user.id) });
     case "/api/reports":
       return json({ reports: await listReports(env.DB, session.user.id), columns: REPORT_COLUMNS });
     case "/api/tokens":
@@ -152,6 +155,9 @@ const WRITES = [
     return result.error ? result : { link: link(env, "reset", result.token), email: result.email };
   }],
   [/^\/api\/team\/users\/([\w-]{1,64})\/(disable|enable)$/, "users.disable", (db, b, m, a) => setDisabled(db, a, m[1], m[2] === "disable")],
+  [/^\/api\/dashboards$/, "dashboards.write", (db, b, m, a) => createDashboard(db, a, b)],
+  [/^\/api\/dashboards\/([\w-]{1,64})\/delete$/, "dashboards.write", (db, b, m, a) => deleteDashboard(db, a, m[1])],
+  [/^\/api\/dashboards\/([\w-]{1,64})$/, "dashboards.write", (db, b, m, a) => saveDashboard(db, a, m[1], b.bays)],
   [/^\/api\/reports$/, "reports.write", (db, b, m, a, env) => createReport(env, a, b)],
   [/^\/api\/reports\/([\w-]{1,64})\/link$/, "reports.write", (db, b, m, a, env) => newLink(env, a, m[1])],
   [/^\/api\/tokens$/, "tokens.write", (db, b, m, a) => createToken(db, a, b)],
