@@ -89,15 +89,12 @@ async function route(request, env) {
   const path = new URL(request.url).pathname;
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
-<<<<<<< HEAD
-  const elsewhere = otherHostRedirect(request, env.APP_URL);
-  if (elsewhere) return elsewhere;
-=======
   if (path.startsWith("/api/v1/")) {
     if (!bodyWithin(request, 16 * 1024)) return apiError("The request was too large, or sent without a length.", 413);
     return handleRest(request, env, path);
   }
->>>>>>> origin/console/command-station
+  const elsewhere = otherHostRedirect(request, env.APP_URL);
+  if (elsewhere) return elsewhere;
   if (path.startsWith("/api/")) {
     if (!bodyWithin(request, path === "/api/flash" ? 0 : MAX_BODY_BYTES)) {
       return apiError("The request was too large, or sent without a length.", 413);

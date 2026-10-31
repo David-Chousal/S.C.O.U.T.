@@ -163,38 +163,6 @@ Then:
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
 
-<<<<<<< HEAD
-## Custom domain: scoutscu.com (one-time, needs the account owners)
-
-The public site lives at `scoutscu.com` (still built and hosted by GitHub Pages) and the console at
-`console.scoutscu.com` (this Worker). The site's navbar links to the console. The code side is
-done (`wrangler.toml` route and `APP_URL`, the site's **Console** link, the chat Worker's origin).
-Claude cannot do the steps below: they need the Cloudflare account, the GitHub repo admin, and a
-purchase. Do them in this order, because the site links to the console as soon as it is
-deployed.
-
-1. **Buy the domain.** Cloudflare dashboard → **Domain Registration → Register Domains** →
-   `scoutscu.com`, in the same account that runs the console. Cloudflare then hosts its DNS.
-2. **Move the console.** From `console/`, on `main`: `npx wrangler deploy`. The `routes` entry
-   creates the `console.scoutscu.com` DNS record and certificate (a few minutes). Check
-   <https://console.scoutscu.com/healthz> says `ok`, then that
-   <https://scout-console.scout1.workers.dev/fleet/> forwards to it.
-3. **Point the site at GitHub Pages.** In Cloudflare DNS for `scoutscu.com`, add four `A`
-   records for `@` (185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153) and a
-   `CNAME` for `www` to `david-chousal.github.io`, all **DNS only** (grey cloud), so GitHub can
-   issue its own certificate.
-4. **Tell GitHub.** Signed in as `David-Chousal` (repo admin): repo **Settings → Pages → Custom
-   domain** → `scoutscu.com` → Save; once the check passes, tick **Enforce HTTPS**. The old
-   `david-chousal.github.io/S.C.O.U.T./` address then forwards to the new domain.
-5. **Redeploy the chat Worker** so it accepts the new site origin: from `chatbot/`,
-   `npx wrangler deploy`.
-6. **Re-point what holds the old console URL:** each shore station's `shore_secrets.h`
-   (`SHORE_CONSOLE_URL`, then re-flash) and any `SCOUT_CONSOLE_URL` used with `sync_console.py`.
-   Until then they keep working: the old address still takes device pushes.
-7. **When OAuth apps are set up**, use `https://console.scoutscu.com/auth/<github|google>/callback`.
-
-Sign-in sessions are per address, so everyone signs in once more on the new domain.
-=======
 ## Storage guardrails (R2) and backups
 
 Backups and reports live in the R2 bucket **`scout-console-files`** (binding `FILES`, created
@@ -228,8 +196,38 @@ npx wrangler d1 execute scout-console --remote --file backup.sql
 ```
 
 Everyone has to sign in again afterwards. Migration `0006-storage-budget.sql` adds the ledger.
-The custom domain (the rest of Phase E) waits until the team has a domain on Cloudflare.
->>>>>>> origin/console/phase-b-api
+The custom domain (the rest of Phase E) is `console.scoutscu.com`; see below.
+
+## Custom domain: scoutscu.com (one-time, needs the account owners)
+
+The public site lives at `scoutscu.com` (still built and hosted by GitHub Pages) and the console at
+`console.scoutscu.com` (this Worker). The site's navbar links to the console. The code side is
+done (`wrangler.toml` route and `APP_URL`, the site's **Console** link, the chat Worker's origin).
+Claude cannot do the steps below: they need the Cloudflare account, the GitHub repo admin, and a
+purchase. Do them in this order, because the site links to the console as soon as it is
+deployed.
+
+1. **Buy the domain.** Cloudflare dashboard → **Domain Registration → Register Domains** →
+   `scoutscu.com`, in the same account that runs the console. Cloudflare then hosts its DNS.
+2. **Move the console.** From `console/`, on `main`: `npx wrangler deploy`. The `routes` entry
+   creates the `console.scoutscu.com` DNS record and certificate (a few minutes). Check
+   <https://console.scoutscu.com/healthz> says `ok`, then that
+   <https://scout-console.scout1.workers.dev/fleet/> forwards to it.
+3. **Point the site at GitHub Pages.** In Cloudflare DNS for `scoutscu.com`, add four `A`
+   records for `@` (185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153) and a
+   `CNAME` for `www` to `david-chousal.github.io`, all **DNS only** (grey cloud), so GitHub can
+   issue its own certificate.
+4. **Tell GitHub.** Signed in as `David-Chousal` (repo admin): repo **Settings → Pages → Custom
+   domain** → `scoutscu.com` → Save; once the check passes, tick **Enforce HTTPS**. The old
+   `david-chousal.github.io/S.C.O.U.T./` address then forwards to the new domain.
+5. **Redeploy the chat Worker** so it accepts the new site origin: from `chatbot/`,
+   `npx wrangler deploy`.
+6. **Re-point what holds the old console URL:** each shore station's `shore_secrets.h`
+   (`SHORE_CONSOLE_URL`, then re-flash) and any `SCOUT_CONSOLE_URL` used with `sync_console.py`.
+   Until then they keep working: the old address still takes device pushes.
+7. **When OAuth apps are set up**, use `https://console.scoutscu.com/auth/<github|google>/callback`.
+
+Sign-in sessions are per address, so everyone signs in once more on the new domain.
 
 ## Develop and test
 
