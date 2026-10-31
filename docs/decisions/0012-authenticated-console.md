@@ -47,6 +47,12 @@ Decided by David, 2026-10-25:
    first admin is named by `BOOTSTRAP_ADMIN_EMAIL` and honoured only while there are no users.
    OAuth trusts only verified emails, and an invite accepted through OAuth must match the invited
    email.
+   **Amended 2026-10-30 (David): "Sign in as guest".** Anyone can open a view-only guest account
+   with just a name and an email, with no invite. Since nothing proves the email, such an account
+   never gets a role above guest, sees other people's emails masked (David chose this over the
+   invited guest's full view, after being told the full view would show the team's emails to
+   anyone), is rate-limited per address, cannot take an email a real account holds, and is taken
+   over by an invite or a verified OAuth sign-in for its email ([`console/worker/guests.js`](../../console/worker/guests.js)).
 3. **Passwords: PBKDF2-HMAC-SHA256, 100,000 iterations, on the Workers Free plan.** David chose
    this over Workers Paid with argon2id and over passkeys. **Accepted risk:** the count is below
    OWASP's 600,000 for this hash, and the global rule asks for bcrypt or argon2. Correction made

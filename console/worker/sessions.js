@@ -38,7 +38,7 @@ export async function loadSession(db, request, now = Date.now()) {
   const row = await db
     .prepare(
       "SELECT s.token_hash, s.csrf, s.expires_at, u.id, u.email, u.name, u.role, u.disabled, " +
-        "u.password_hash IS NOT NULL AS has_password, u.github_id, u.google_sub " +
+        "u.password_hash IS NOT NULL AS has_password, u.github_id, u.google_sub, u.self_signup " +
         "FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?",
     )
     .bind(await sha256Hex(token))
@@ -48,7 +48,8 @@ export async function loadSession(db, request, now = Date.now()) {
     sessionHash: row.token_hash,
     csrf: row.csrf,
     user: { id: row.id, email: row.email, name: row.name, role: row.role,
-      hasPassword: Boolean(row.has_password), github: Boolean(row.github_id), google: Boolean(row.google_sub) },
+      hasPassword: Boolean(row.has_password), github: Boolean(row.github_id), google: Boolean(row.google_sub),
+      selfSignup: Boolean(row.self_signup) },
   };
 }
 

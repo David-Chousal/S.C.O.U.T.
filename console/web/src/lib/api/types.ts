@@ -11,6 +11,8 @@ export interface User {
   hasPassword: boolean;
   github: boolean;
   google: boolean;
+  /** Signed in with just a name and an email: view only, other people's emails masked. */
+  selfSignup: boolean;
 }
 
 export interface Session {
@@ -86,6 +88,7 @@ export interface Member {
   has_password: number;
   has_github: number;
   has_google: number;
+  self_signup: number;
 }
 
 export interface Invite {

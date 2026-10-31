@@ -40,7 +40,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Audit log | (read only) | Every change: who, what, before → after |
 | Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | How you sign in; hold to sign out everywhere |
-| Sign in, invite, reset | — | GitHub, Google or password; the invite and reset token is read from `?token=` |
+| Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
 
 **Roles.** *Guest* sees every page and every setting, admin pages included, with the controls
 disabled and a "view only" banner. *Member* also changes buoy settings. *Admin* also manages
@@ -51,6 +51,15 @@ and a test fails if the two disagree.
 **Sign-in.** Accounts are **invite-only**. The one exception is the first admin, named by
 `BOOTSTRAP_ADMIN_EMAIL`, which works only while the database has no users. OAuth trusts only a
 verified email, and an invite accepted through GitHub or Google must match the invited email.
+
+**Sign in as guest** (since 2026-10-30, [`worker/guests.js`](worker/guests.js)). Anyone can open a
+view-only guest account with a name and an email. Nothing proves the email, so anyone who types it
+gets the same account, and that drives the rules: an email that already belongs to a real account
+is refused; one address can start five guest sessions per 15 minutes; **other people's emails are
+masked** for these guests (`i•••@scout.test`, applied to every API reply); the account **can never
+be promoted** or given a reset link; and an invite or a verified GitHub/Google sign-in for the same
+email takes it over and ends every session opened as a guest. The Team page marks them
+"Self-signed-up". D1 migration `0003-guest-sign-in.sql` adds the `self_signup` column.
 
 ## The design: COR, adapted
 
