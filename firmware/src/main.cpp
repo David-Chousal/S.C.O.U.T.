@@ -28,6 +28,9 @@
 #include "drivers/sd_logger.h"
 #include "drivers/sht40.h"
 #include "drivers/temperature.h"
+#ifdef SCOUT_WDT_TEST
+#include "scout_wdt_test.h"
+#endif
 #include "drivers/turbidity.h"
 #include "scout_acoustic.h"
 #ifdef SCOUT_DOWNLINK
@@ -84,6 +87,9 @@ static bool g_sd_ok = false;
 static bool g_lora_ok = false;
 static bool g_watchdog_reset = false;  // set if the last reset was the watchdog firing
 static uint8_t g_soh = 0;              // device State-of-Health bitfield, computed at boot
+#ifdef SCOUT_WDT_TEST
+static uint32_t g_cycle = 0;  // loop() passes since boot, for the forced hang (G6)
+#endif
 
 // The latest sample, held for the next transmit slot. Slots sit 10 min after a sample, so the
 // packet carries a fresh reading without a sensor read ever overlapping the radio (SCO-165).
@@ -303,6 +309,9 @@ void setup() {
     if (TX_EVERY_SAMPLE) {
         Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
     }
+#ifdef SCOUT_WDT_TEST
+    Serial.println("WARNING: watchdog test build, hangs once to force a reset; do not deploy");
+#endif
 }
 
 // Housing humidity/temperature (SCO-205). Read every cycle in every power mode: it is the
@@ -617,6 +626,17 @@ void loop() {
 #endif
         }
     }
+
+#ifdef SCOUT_WDT_TEST
+    // G6: stop petting after this cycle's sample is logged, so the watchdog fires (~16 s).
+    if (scout_wdt_test_should_hang(g_watchdog_reset, g_cycle, SCOUT_WDT_TEST_HANG_CYCLE)) {
+        Serial.println("wdt_test: hanging, expect watchdog_reset=yes on the next boot");
+        Serial.flush();
+        while (true) {
+        }
+    }
+    g_cycle++;
+#endif
 
     g_first_cycle = false;
     g_next_event = scout_next_event_epoch(clock_now(), SAMPLE_INTERVAL_S, g_slots, g_slot_count);
