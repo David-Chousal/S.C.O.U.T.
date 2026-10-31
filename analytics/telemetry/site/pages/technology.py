@@ -284,42 +284,27 @@ def _stability(ctx: SiteContext) -> str:
         '<div class="drawings sim">'
         '<div class="drawings-head reveal"><p class="eyebrow">Mechanical design</p>'
         "<h3>Will it stay upright?</h3>"
-        '<p class="drawings-sub">A buoy that carries its battery, electronics and antenna above the '
-        "waterline is top-heavy by nature. Before printing anything, we float every flotation design "
-        "in software and check that waves and boat wakes cannot roll it over.</p></div>"
-        '<div class="prose reveal">'
-        "<p>The <strong>stability explorer</strong> takes the real CAD of each design, fills it with "
-        "water in 3 mm cubes, and loads it with the current payload: housing, battery, boards, "
-        "cabling, mooring hardware and sensor pod. For a given total mass it finds the "
-        "<strong>waterline</strong> where the water the buoy displaces weighs exactly as much as the "
-        "buoy. It then tilts the buoy in 5° steps and recomputes where the buoyancy acts. If the "
-        "buoyant force ends up pushing the buoy back upright, the design is stable at that angle.</p>"
-        "<p>Slide through the fifteen designs we have modelled, oldest to newest, and change the "
-        "housing weight to see what a heavier payload does. Each design shows the same readout:</p>"
-        + c.spec([
-            ("Draft", "How deep the buoy sits. Too deep and waves wash over the antenna and housing"),
-            ("Freeboard", "Height of the top above the waterline"),
-            ("GM", "Metacentric height: how stiffly the buoy resists a small tilt. Positive is stable; "
-                   "larger is stiffer"),
-            ("Max righting", "The strongest upright-restoring moment, in newton-metres, and the angle it peaks at"),
-            ("Tips over at", "The angle past which the buoy keeps rolling. \u201cNever\u201d means it "
-                             "rights itself from any angle"),
+        '<p class="drawings-sub">Battery, electronics and antenna sit above the waterline, so a buoy is '
+        "top-heavy by nature. We float every design in software before printing it.</p></div>"
+        + c.steps([
+            ("Pick a design", "Slide through the fifteen we have modelled, oldest to newest."),
+            ("Change the weight", "Make the electronics housing heavier or lighter."),
+            ("Read the verdict", "Green means it rights itself. The numbers behind it are underneath."),
         ])
-        + "</div>"
-        f'<iframe class="sim-frame reveal" src="{src}" title="Buoy stability explorer: draft, freeboard '
+        + f'<iframe class="sim-frame reveal" src="{src}" title="Buoy stability explorer: draft, freeboard '
         'and righting-arm curve for each flotation design" loading="lazy"></iframe>'
         f'<p class="drawings-sub"><a class="textlink" href="{src}">Open the explorer full screen</a></p>'
         '<div class="prose reveal">'
-        "<p>The solver was checked against a plain cylinder, where the answer is known "
-        "in closed form, and matches draft and stiffness to about 1%.</p>"
-        "<p><strong>What it does not tell us yet.</strong> Part masses for the concept designs are "
-        "estimated from their CAD volume, not weighed. Only parts that have been printed and weighed "
-        "(the bolted-wedge parts and the mushroom float) use measured weights, so those results are the "
-        "ones to trust most. Sealed chambers are assumed watertight, "
-        "and the model is still water only, with no waves, wind or mooring pull. Every "
-        "estimate is listed in the simulator's "
-        f'<a class="textlink" href="{_REPO}/blob/main/mechanical/simulations/buoy-stability/README.md">README</a>, '
-        "and measured weights replace them as parts are printed.</p></div></div>"
+        "<p>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline is where the "
+        "water it displaces weighs as much as the buoy; then it is tilted in 5\u00b0 steps to see which way "
+        "the lift pushes. Checked against a plain cylinder, it matches draft and stiffness to about 1%.</p>"
+        '<details class="how-details"><summary>What it does not tell us yet</summary>'
+        "<p>Part masses for the concept designs are estimated from CAD volume, not weighed. Only printed "
+        "and weighed parts (the bolted-wedge parts and the mushroom float) use measured weights, so trust "
+        "those results most. The model is still water only: no waves, wind or mooring pull. Every "
+        "estimate is listed in the simulator\u2019s "
+        f'<a class="textlink" href="{_REPO}/blob/main/mechanical/simulations/buoy-stability/README.md">README</a>.'
+        "</p></details></div></div>"
     )
 
 
