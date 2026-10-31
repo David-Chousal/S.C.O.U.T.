@@ -1,0 +1,400 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "S.C.O.U.T. Console API",
+    "version": "1.0.0",
+    "description": "Read the buoys, their readings and settings; request a transmit count. Make a personal token on the console's Developer page and send it as `Authorization: Bearer sct_\u2026`. A token acts with its owner's current role, limited by its scopes."
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "security": [
+    {
+      "token": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "token": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A personal API token (sct_\u2026)."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "Buoy": {
+        "type": "object",
+        "properties": {
+          "buoy_id": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "tx_count_requested": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 3
+          },
+          "tx_count_reported": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 3
+          },
+          "reported_at": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Unix ms of the newest row's own timestamp"
+          },
+          "last_seen_at": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Unix ms the newest row arrived"
+          },
+          "clock_lost": {
+            "type": "integer",
+            "description": "1 while the newest row carried RTC_LOST"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "default",
+              "pending",
+              "unreported",
+              "rejected"
+            ]
+          }
+        }
+      },
+      "Reading": {
+        "type": "object",
+        "description": "One schema row as the shore station sent it (shore/scout_shore/schema.py); every value is a string, blank when not measured.",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "properties": {
+          "buoy_id": {
+            "type": "string"
+          },
+          "timestamp_utc": {
+            "type": "string"
+          },
+          "record_seq": {
+            "type": "string"
+          },
+          "temp_c": {
+            "type": "string"
+          },
+          "turbidity_fau": {
+            "type": "string"
+          },
+          "battery_v": {
+            "type": "string"
+          },
+          "internal_humidity_pct": {
+            "type": "string"
+          },
+          "flags": {
+            "type": "string"
+          },
+          "tx_count": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/buoys": {
+      "get": {
+        "summary": "Every buoy, its transmit count and freshness",
+        "description": "Scope: read:telemetry.",
+        "responses": {
+          "200": {
+            "description": "Buoys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buoys": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Buoy"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buoys/{buoy_id}/readings": {
+      "get": {
+        "summary": "A buoy's readings, newest first",
+        "description": "Scope: read:telemetry.",
+        "parameters": [
+          {
+            "name": "buoy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-10-30T00:00:00Z"
+            },
+            "description": "Earliest timestamp_utc, inclusive"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-10-31T00:00:00Z"
+            },
+            "description": "Latest timestamp_utc, inclusive"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Readings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "readings": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Reading"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "summary": "Each buoy and the firmware's settings (from config.h)",
+        "description": "Scope: read:telemetry.",
+        "responses": {
+          "200": {
+            "description": "Settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buoys": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Buoy"
+                      }
+                    },
+                    "firmware": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buoys/{buoy_id}/tx-count": {
+      "post": {
+        "summary": "Request a daily transmit count (1-3)",
+        "description": "Scope: write:settings, and the token's owner must be a member or admin. Stays pending until the buoy reports it.",
+        "parameters": [
+          {
+            "name": "buoy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tx_count"
+                ],
+                "properties": {
+                  "tx_count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Requested"
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "summary": "This file",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OpenAPI 3 document"
+          }
+        }
+      }
+    }
+  }
+}

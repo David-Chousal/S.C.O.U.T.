@@ -52,7 +52,7 @@ export function Sidebar({ user, onSignOut, shortcuts = true }: SidebarProps) {
         </div>}
       </nav>
       <nav className="sc-bottomnav" aria-label="Main, compact">
-        {NAV_ITEMS.map((item) => (
+        {NAV_ITEMS.filter((item) => !item.desktopOnly).map((item) => (
           <Link key={item.href} href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
             <Icon name={item.icon} size={20} />
             {item.label}

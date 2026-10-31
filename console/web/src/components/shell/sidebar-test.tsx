@@ -14,10 +14,10 @@ describe("Sidebar", () => {
     render(<Sidebar user={user} onSignOut={vi.fn()} />);
   });
 
-  test("lists the console's five destinations in order", () => {
+  test("lists the console's destinations in order", () => {
     const main = screen.getByRole("navigation", { name: "Main" });
     const names = [...main.querySelectorAll(".sc-nav a")].map((a) => a.textContent?.replace(/G .$/, ""));
-    expect(names).toEqual(["Fleet", "Stations", "Team", "Audit log", "Settings", "Account"]);
+    expect(names).toEqual(["Fleet", "Readings", "Stations", "Team", "Audit log", "Settings", "Developer", "Account"]);
   });
 
   test("marks the current page, trailing slash or not", () => {
@@ -31,10 +31,18 @@ describe("Sidebar", () => {
   });
 });
 
+describe("phone bottom bar", () => {
+  test("keeps to six destinations, leaving the audit log and developer page to the sidebar", () => {
+    render(<Sidebar user={user} onSignOut={vi.fn()} />);
+    const compact = screen.getByRole("navigation", { name: "Main, compact" });
+    expect([...compact.querySelectorAll("a")].map((a) => a.textContent)).toEqual(["Fleet", "Readings", "Stations", "Team", "Settings", "Account"]);
+  });
+});
+
 describe("Sidebar while the session loads", () => {
   test("keeps the nav up and leaves out the signed-in footer", () => {
     render(<Sidebar onSignOut={vi.fn()} />);
-    expect(screen.getByRole("navigation", { name: "Main" }).querySelectorAll(".sc-nav a")).toHaveLength(6);
+    expect(screen.getByRole("navigation", { name: "Main" }).querySelectorAll(".sc-nav a")).toHaveLength(8);
     expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
   });
 });
