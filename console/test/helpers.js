@@ -1,6 +1,7 @@
 /* Test helpers: a fresh console with an in-memory D1 and stub static assets, and a client that
  * talks to the JSON API the way the front end does (session cookie + X-CSRF-Token). */
 
+import { readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import worker from "../worker/index.js";
@@ -8,7 +9,10 @@ import { hashPassword } from "../worker/crypto.js";
 import { makeD1 } from "./d1-shim.js";
 
 export const APP_URL = "https://console.test";
-const MIGRATION = fileURLToPath(new URL("../migrations/0001-init.sql", import.meta.url));
+const MIGRATIONS_DIR = fileURLToPath(new URL("../migrations/", import.meta.url));
+// Every migration in order, the way `wrangler d1 migrations apply` runs them.
+const MIGRATIONS = readdirSync(MIGRATIONS_DIR).filter((name) => name.endsWith(".sql")).sort()
+  .map((name) => MIGRATIONS_DIR + name);
 
 /** Stands in for the ASSETS binding: one HTML page with two scripts, and one stylesheet. */
 export const ASSET_HTML =
@@ -24,7 +28,7 @@ const stubAssets = {
 };
 
 export function makeEnv(extra = {}) {
-  return { APP_URL, DB: makeD1(MIGRATION), ASSETS: stubAssets, BOOTSTRAP_ADMIN_EMAIL: "admin@scout.test", ...extra };
+  return { APP_URL, DB: makeD1(MIGRATIONS), ASSETS: stubAssets, BOOTSTRAP_ADMIN_EMAIL: "admin@scout.test", ...extra };
 }
 
 export async function addUser(env, email, role, password = "correct horse battery") {

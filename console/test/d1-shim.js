@@ -1,5 +1,5 @@
 /* A D1Database stand-in over Node's built-in SQLite (node:sqlite), so the console's real
- * migration and queries run under `node --test` with no npm dependencies. Implements only the
+ * migrations and queries run under `node --test` with no npm dependencies. Implements only the
  * D1 surface the console uses: prepare().bind().first()/all()/run(), and batch(). */
 
 import { readFileSync } from "node:fs";
@@ -30,10 +30,10 @@ class Statement {
   }
 }
 
-export function makeD1(migrationPath) {
+export function makeD1(migrationPaths) {
   const db = new DatabaseSync(":memory:");
   db.exec("PRAGMA foreign_keys = ON");
-  db.exec(readFileSync(migrationPath, "utf8"));
+  for (const path of migrationPaths) db.exec(readFileSync(path, "utf8"));
   return {
     raw: db,
     prepare: (sql) => new Statement(db, sql),

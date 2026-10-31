@@ -12,7 +12,7 @@ const SLOTS = { "1": "00:10 UTC", "2": "00:10 and 16:10 UTC", "3": "00:10, 08:10
 function buoy(overrides: Partial<Buoy> = {}): Buoy {
   return {
     buoy_id: 1, label: "SCOUT-01", tx_count_requested: 1, requested_by: "m@scout.test", requested_at: 0,
-    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, state: "pending", ...overrides,
+    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, state: "pending", ...overrides,
   };
 }
 

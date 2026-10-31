@@ -132,12 +132,42 @@ test("device API: repeats are ignored and a bad row rejects the whole push", asy
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM readings").get().n, 2);
 });
 
+test("device API: a sequence number reused after a power loss is a new reading", async () => {
+  const env = makeEnv();
+  const token = await deviceToken(env);
+  await deviceCall(env, token, "/api/device/readings", { rows: [row(0, { ts: "2026-03-01T00:00:00Z" })] });
+  // A cold start restarts record_seq at 0; this reading is later, so it is not a repeat.
+  const after = await (await deviceCall(env, token, "/api/device/readings",
+    { rows: [row(0, { ts: "2026-03-05T00:00:00Z" })] })).json();
+  assert.equal(after.stored, 1);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM readings").get().n, 2);
+});
+
+test("device API: a buoy whose clock was lost still updates its count and freshness", async () => {
+  const env = makeEnv();
+  const token = await deviceToken(env);
+  const { client } = await signedIn(env, "member", "m-clock@scout.test");
+  await deviceCall(env, token, "/api/device/readings", { rows: [row(5, { ts: "2026-03-01T00:00:00Z", tx: "2" })] });
+  // The RTC lost power: the buoy now stamps rows near 2000-01-01, far older than its last good row.
+  await deviceCall(env, token, "/api/device/readings",
+    { rows: [row(0, { ts: "2000-01-01T00:10:00Z", tx: "3", flags: "RTC_LOST" })] });
+  const lost = await buoy(client);
+  assert.equal(lost.tx_count_reported, 3);
+  assert.equal(lost.clock_lost, 1);
+  assert.equal(lost.reported_at, Date.parse("2026-03-01T00:00:00Z"), "an untrusted time never becomes 'newest packet'");
+  assert.ok(lost.last_seen_at > Date.parse("2026-03-01T00:00:00Z"));
+  // A trusted row clears the flag again.
+  await deviceCall(env, token, "/api/device/readings", { rows: [row(1, { ts: "2026-03-02T00:00:00Z" })] });
+  assert.equal((await buoy(client)).clock_lost, 0);
+});
+
 test("parseRow validates every field it uses", () => {
   assert.equal(parseRow(row(1)).buoyId, 1);
   assert.equal(parseRow({ ...row(1), buoy_id: "1" }), null);
   assert.equal(parseRow({ ...row(1), timestamp_utc: "2026-03-01 00:00" }), null);
   assert.equal(parseRow({ ...row(1), record_seq: "-1" }), null);
   assert.equal(parseRow(row(1, { tx: "" })).txCount, null);
+  assert.equal(parseRow(row(1, { flags: "RTC_LOST" })).clockLost, true);
   // More than a day ahead of now is refused, so a bad buoy clock cannot pin "newest packet".
   assert.equal(parseRow(row(1, { ts: "2026-03-03T00:00:00Z" }), Date.parse("2026-03-01T00:00:00Z")), null);
   assert.ok(parseRow(row(1, { ts: "2026-03-01T12:00:00Z" }), Date.parse("2026-03-01T00:00:00Z")));

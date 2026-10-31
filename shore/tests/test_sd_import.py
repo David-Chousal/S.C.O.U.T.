@@ -87,6 +87,16 @@ class SdImportTests(unittest.TestCase):
         self.assertEqual(result.added, 0)
         self.assertEqual(len(_read(self.shore / "SCOUT-01_20260814.csv")), 2)
 
+    def test_a_sequence_reused_after_a_power_loss_is_a_new_reading(self) -> None:
+        """A cold start restarts record_seq at 0, so the same number can name a later reading."""
+        _write(self.shore, "20260814", [_row(1)])
+        reused = _row(1)
+        reused["timestamp_utc"] = "2026-08-14T09:00:00Z"
+        _write(self.card, "20260814", [reused])
+        result = import_card(self.card, self.shore)
+        self.assertEqual(result.added, 1)
+        self.assertEqual(len(_read(self.shore / "SCOUT-01_20260814.csv")), 2)
+
     def test_the_card_row_wins_because_the_packet_was_lossy(self) -> None:
         """turbidity_v and the audio filename do not fit in 44 bytes, so the shore copy has
         empty cells the card can fill."""

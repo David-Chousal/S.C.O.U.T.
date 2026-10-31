@@ -58,7 +58,7 @@ firmware/
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
 │   ├── scout_scheduler/    Duty-cycle timing math (sample grid, TX slots, power modes, audio hours)
 │   ├── scout_link/         Blind-repetition delivery policy + watchdog-headroom guard
-│   ├── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq)
+│   ├── scout_dedupe/       Shore-side duplicate filter on (buoy_id, record_seq, timestamp)
 │   ├── scout_acoustic/     14-byte acoustic summary — bit-exact port of acoustic_summary.py
 │   ├── scout_capture/      WAV header, 12→16-bit conversion, dropped-sample accounting
 │   ├── scout_sht4x/        SHT40 frame CRC + humidity/temperature conversion
@@ -119,7 +119,7 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     acknowledgement. A lost packet costs timeliness, not data (the full record is on the SD
     card), so ACKed retransmit would buy little and risks an avalanche across a multi-buoy
     deployment. Copies by power mode: 1 in NORMAL, 1 in CONSERVE (slot 0 only), 0 in CRITICAL.
-    The shore station deduplicates on `(buoy_id, record_seq)`, so any duplicate collapses to one row.
+    The shore station deduplicates on `(buoy_id, record_seq, timestamp)`, so any duplicate collapses to one row.
     The modem runs **BW 500 kHz · SF12 · CR 4/8 · +11 dBm** — widened from BW125/SF7 on
     2026-09-01 because 47 CFR §15.247 requires either a ≥500 kHz bandwidth or ≥50-channel
     hopping, and the old single-channel BW125 config met neither (SCO-19). See the note in

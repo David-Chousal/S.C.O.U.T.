@@ -15,7 +15,7 @@ Merging happens at the CSV-row level rather than by decoding into
 :class:`~scout_shore.packet.Reading`, precisely because that type is the lossy one — round-tripping
 through it would discard the columns this import exists to recover.
 
-Identity is ``(buoy_id, record_seq)``, the same idempotency key
+Identity is ``(buoy_id, record_seq, timestamp_utc)``, the same idempotency key
 :class:`~scout_shore.store.CsvStore` uses for blind-repeat packets, so importing the same card
 twice is a no-op.
 
@@ -51,14 +51,14 @@ class ImportResult:
         return self.added
 
 
-def _key(row: dict[str, str]) -> tuple[str, int]:
+def _key(row: dict[str, str]) -> tuple[str, int, str]:
     """Identity of a reading. Raises ValueError with a usable message if the row cannot be keyed."""
     buoy = (row.get("buoy_id") or "").strip()
     seq = (row.get("record_seq") or "").strip()
     if not buoy:
         raise ValueError("empty buoy_id")
     try:
-        return buoy, int(seq)
+        return buoy, int(seq), (row.get("timestamp_utc") or "").strip()
     except ValueError:
         raise ValueError(f"record_seq is not an integer: {seq!r}") from None
 
@@ -139,7 +139,7 @@ def import_card(
 
     # Gather the card's rows keyed by the daily file they belong in, so each shore file is
     # read and rewritten once regardless of how the card happens to be split.
-    by_day: dict[str, dict[tuple[str, int], dict[str, str]]] = {}
+    by_day: dict[str, dict[tuple[str, int, str], dict[str, str]]] = {}
     for path in card_files:
         for line_no, row in enumerate(_read_csv(path), start=2):  # 1 is the header
             try:
@@ -154,7 +154,7 @@ def import_card(
         target = shore_dir / f"{stem}.csv"
         existing = _read_csv(target) if target.exists() else []
 
-        merged: dict[tuple[str, int], dict[str, str]] = {}
+        merged: dict[tuple[str, int, str], dict[str, str]] = {}
         unkeyed: list[dict[str, str]] = []
         for row in existing:
             try:
