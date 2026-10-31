@@ -34,10 +34,12 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 
 | Page | Who can change it | What it is |
 |---|---|---|
+| Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
 | Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Audit log | (read only) | Every change: who, what, before → after |
+| Developer | member, admin (guests view) | Personal API tokens (scopes `read:telemetry`, `write:settings`; 7–365 days; shown once, stored hashed, revocable) and how to call `/api/v1` |
 | Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | How you sign in; hold to sign out everywhere |
 | Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
@@ -89,7 +91,15 @@ none of that.
 | `/api/fleet` (buoys + battery estimates + slot labels) | `/api/fleet/buoys`, `/api/fleet/buoys/:id/tx-count` |
 | `/api/team` | `/api/team/invites`, `…/invites/:id/revoke`, `…/users/:id/role`, `…/users/:id/reset`, `…/users/:id/disable` and `/enable` |
 | `/api/devices`, `/api/audit` | `/api/devices`, `/api/devices/:id/revoke` |
+| `/api/readings?buoy=&from=&to=&limit=`, `/api/tokens` | `/api/tokens`, `/api/tokens/:id/revoke` |
 | `/api/invites/:token`, `/api/resets/:token` | `/api/invites/:token/accept`, `/api/resets/:token` |
+
+**REST API** (Phase B, [SCO-240](https://linear.app/scout1/issue/SCO-240)): `/api/v1/buoys`, `/api/v1/buoys/:id/readings`,
+`/api/v1/settings` (scope `read:telemetry`) and `POST /api/v1/buoys/:id/tx-count` (scope `write:settings`, owner
+must be a member or admin), with a personal token from the Developer page as `Authorization: Bearer sct_…`.
+A token acts with its owner's role at the time of use, so disabling or demoting someone limits
+their tokens at once. Described in [`worker/openapi.json`](worker/openapi.json), served publicly at
+`/api/v1/openapi.json`. Migration `0005-api-tokens.sql`.
 
 **Device API** (bearer token from the Stations page): `POST /api/device/readings`
 (`{"rows": [schema row, …]}`, ≤ 200 rows, ≤ 256 KB, repeats ignored) and `GET /api/device/settings`.

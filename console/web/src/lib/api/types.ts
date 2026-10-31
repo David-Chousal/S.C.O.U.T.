@@ -139,3 +139,24 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
+
+/** One stored reading: the schema row the shore station sent (shore/scout_shore/schema.py). */
+export type Reading = Record<string, string>;
+
+export interface ApiToken {
+  id: string;
+  name: string;
+  /** Space-separated: read:telemetry, write:settings. */
+  scopes: string;
+  created_at: number;
+  expires_at: number;
+  last_used_at: number | null;
+  revoked_at: number | null;
+}
+
+export interface TokenList {
+  tokens: ApiToken[];
+  scopes: string[];
+  expiryDays: number[];
+}
+

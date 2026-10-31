@@ -3,6 +3,7 @@
  *
  * It serves three things:
  *   /api/device/*  the shore station's API (bearer device token)           device.js
+ *   /api/v1/*      the REST API for scripts (bearer personal API token)    rest.js
  *   /api/*         the JSON API the front end calls (session + CSRF)         api.js
  *   /auth/*        GitHub and Google sign-in redirects                       oauth.js
  *   everything else: the static front end (console/web, a Next.js export) from the ASSETS
@@ -23,6 +24,7 @@ import {
   apiError, bodyWithin, clearCookie, json, OAUTH_COOKIE, readCookie, redirect, SESSION_COOKIE, setCookie,
 } from "./http.js";
 import { configured, finish, startUrl } from "./oauth.js";
+import { handleRest } from "./rest.js";
 import { createSession, SESSION_TTL_MS } from "./sessions.js";
 import { userForIdentity } from "./users.js";
 
@@ -84,8 +86,15 @@ async function route(request, env) {
   const path = new URL(request.url).pathname;
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
+<<<<<<< HEAD
   const elsewhere = otherHostRedirect(request, env.APP_URL);
   if (elsewhere) return elsewhere;
+=======
+  if (path.startsWith("/api/v1/")) {
+    if (!bodyWithin(request, 16 * 1024)) return apiError("The request was too large, or sent without a length.", 413);
+    return handleRest(request, env, path);
+  }
+>>>>>>> origin/console/command-station
   if (path.startsWith("/api/")) {
     if (!bodyWithin(request, path === "/api/flash" ? 0 : MAX_BODY_BYTES)) {
       return apiError("The request was too large, or sent without a length.", 413);

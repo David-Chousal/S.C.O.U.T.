@@ -144,6 +144,8 @@ that would justify paying or moving are different ones, worth deciding in
   measurements. Today the measurements are visible only on the public dashboard, which reads the
   shore station's CSVs. Worth knowing before the Nov 6 demo; tracked by the console's later phases
   ([SCO-240](https://linear.app/scout1/issue/SCO-240), [SCO-241](https://linear.app/scout1/issue/SCO-241)).
+  **Built 2026-10-30 (Phase B):** a Readings page shows each buoy's newest values and last 50
+  readings, and `/api/v1/buoys/:id/readings` serves them to scripts with a personal API token.
 - **The station token is compiled into the firmware** from the git-ignored `shore_secrets.h`.
   Anyone holding the board could read it; the defence is revoking it on the Stations page, which
   takes effect on the next request. A secret manager would not change this on a microcontroller.
