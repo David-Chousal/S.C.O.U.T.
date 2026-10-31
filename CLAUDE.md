@@ -350,6 +350,42 @@ central decision, [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md), la
 since 2026-10-30). Archived issues stay searchable and can be restored; never delete an issue to
 free space.
 
+### Archiving closed issues
+
+**Every `Done` and `Canceled` issue is archived, not left in the list** (decided 2026-10-30).
+The free plan caps the issues that are not archived, and on 2026-10-30 the workspace hit 110%
+of it: Linear refused to create any issue until all 145 closed issues were archived. Linear's
+own auto-archive cannot go below one month, so it is not enough on its own.
+
+- **Automatic:** [`linear-archive.yml`](.github/workflows/linear-archive.yml) runs
+  [`scripts/archive_linear_issues.py`](scripts/archive_linear_issues.py) every day at 06:00
+  Pacific and archives every `Done` and `Canceled` issue in the `SCO` team. It needs the
+  `LINEAR_API_KEY` repository secret.
+- **By hand** (e.g. when Linear refuses to create an issue): run the same script. The Linear
+  app has no bulk archive (only bulk *delete*, which is not allowed), and Claude's Linear
+  connector cannot archive either.
+
+**Setting it up (a human does this once; Claude must never type the key into a form):**
+
+1. **Create a Linear API key.** In Linear: **Settings → Account → Security & access → Personal
+   API keys → New key**. Name it `scout-archive`. It acts as you, so you need access to the
+   S.C.O.U.T. team. Copy it; Linear shows it once.
+2. **Store it as a repository secret.** On GitHub, signed in as `David-Chousal` (repo admin;
+   `davidchousal` cannot reach secrets): **Settings → Secrets and variables → Actions → New
+   repository secret**, name `LINEAR_API_KEY`, paste the key.
+3. **Test it.** **Actions → Archive closed Linear issues → Run workflow**, then read the log: it
+   lists what it archived.
+
+To run it locally instead, with the key in your shell only:
+
+```bash
+LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py --dry-run
+```
+
+Drop `--dry-run` to archive. To bring an issue back, open it from search and unarchive it. If
+the key is revoked or rotated, replace the secret; the daily run fails (exit 2, or a GraphQL
+auth error) until you do.
+
 ### Initiative and milestones
 
 Three layers, adopted 2026-10-19. Each answers a different question, so none duplicates another:
