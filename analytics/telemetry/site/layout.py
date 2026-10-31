@@ -27,13 +27,12 @@ CHAT_ENDPOINT = "https://scout-chat.scout1.workers.dev"
 CONSOLE_URL = "https://console.scoutscu.com"
 
 # (slug, label, optional-on-mobile, in-header). Home slug is "" (site root), and an absolute URL
-# is an external link. Fleet is in the footer only for now.
+# is an external link. The data itself lives in the console since 2026-10-30, so there is no
+# Analytics or Fleet page; guests can sign in there to see it.
 _NAV = (
     ("", "Home", False, True),
     ("technology/", "Technology", True, True),
     ("science/", "Science", True, True),
-    ("analytics/", "Analytics", False, True),
-    ("fleet/", "Fleet", True, False),
     ("about/", "About", True, True),
     (CONSOLE_URL, "Console", True, True),
 )
@@ -156,7 +155,6 @@ def footer(base: str, *, external: bool = True) -> str:
         (
             '<div class="footer-col"><h4>Resources</h4><ul>'
             f'<li><a href="{REPO_URL}">GitHub repository</a></li>'
-            f'<li><a href="{base}analytics/telemetry_daily.csv">Telemetry CSV</a></li>'
             f'<li><a href="{base}assets/credits.html">Image credits</a></li>'
             f'<li><a href="{SCU_URL}">SCU Engineering</a></li>'
             "</ul></div>"

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .. import components as c, drawings, imagery
 from ..context import SiteContext
+from ..layout import CONSOLE_URL
 
 TITLE = "S.C.O.U.T. · Nearshore Ocean Monitoring Buoy"
 DESCRIPTION = (
@@ -37,7 +38,7 @@ def _hero(ctx: SiteContext) -> str:
         '<h1 class="hero-title">S.C.O.U.T.</h1>'
         '<p class="hero-expand">Santa Clara Oceanic Utilities Transmitter</p>'
         '<div class="btn-row">'
-        f'<a class="btn btn-primary" href="analytics/">Explore the live data {_ARROW}</a>'
+        f'<a class="btn btn-primary" href="{CONSOLE_URL}">Explore the live data {_ARROW}</a>'
         '<a class="btn" href="technology/">How it works</a>'
         "</div>"
         f"{_strip(live)}"
@@ -156,7 +157,7 @@ def _live_band(ctx: SiteContext) -> str:
         '<h2>Current reef status</h2>'
         f'<p class="live-note">{note} Span {live.span}.</p>'
         '<div class="btn-row stack-5">'
-        f'<a class="btn btn-primary" href="analytics/">Open the dashboard {_ARROW}</a></div></div>'
+        f'<a class="btn btn-primary" href="{CONSOLE_URL}">Open the console {_ARROW}</a></div></div>'
         '<div class="col-3"><div class="cards flush">'
         + stat("Bleaching alert", live.current_alert, live.alert_class)
         + stat("Latest temp", live.latest_temp)

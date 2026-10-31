@@ -6,14 +6,11 @@ Layout emitted into ``out_dir``::
     technology/index.html      How it works
     science/index.html         Methodology
     about/index.html           Team & story
-    analytics/index.html       Live dashboard  (telemetry.web.write_site)
-    analytics/telemetry_daily.csv, telemetry_summary.json
-    fleet/index.html           Fleet overview  (telemetry.fleet_web, when records are supplied)
-    fleet/<buoy_id>/index.html per-buoy dashboards + fleet_summary.json
+    analytics/, fleet/         forwarding pages to the console (the data moved there 2026-10-30)
     assets/…                   copied static assets (fonts, images) + credits.html
 
-Every page is self-contained; the Analytics and per-buoy pages additionally satisfy the strict
-no-external-reference contract in ``telemetry/tests/test_web.py``.
+Every page is self-contained. The live data is shown only in the team console
+(``console.scoutscu.com``), where guests can sign in to read it.
 """
 
 from __future__ import annotations
@@ -23,6 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import imagery, layout
+from .layout import CONSOLE_URL
 from .context import LiveStats, SiteContext
 from .pages import about, home, science, technology
 
@@ -156,17 +154,10 @@ def build_site(
     *,
     banner: str | None = None,
     generated_at: datetime | None = None,
-    records=None,
-    mmm_by_buoy: dict[str, float] | None = None,
-    default_mmm: float | None = None,
 ) -> Path:
     """Build the whole site into ``out_dir`` and return the site root path.
 
-    ``report`` is the primary (single-stream) analysis that drives Home and the Analytics page.
-    When ``records`` are supplied, the **Fleet** page is additionally built: the records are
-    grouped by ``buoy_id`` and analysed per buoy (each with its own MMM from ``mmm_by_buoy``,
-    falling back to ``default_mmm``) — never blended, since that would corrupt daily means and
-    DHW. With a single buoy the Fleet page simply shows one tile.
+    ``report`` is the primary (single-stream) analysis behind Home's live status band.
     """
     from .. import web  # lazy: web imports this package's layout
 
@@ -179,8 +170,7 @@ def build_site(
     generated = generated_at.strftime("%Y-%m-%d %H:%M UTC")
     fonts_present = (assets_out / "fonts" / "dmsans-latin.woff2").exists()
     img_dir = assets_out / "img"
-    # No site-wide ribbon: the sample-data notice appears on the Home live band and the
-    # Analytics banner instead.
+    # No site-wide ribbon: the sample-data notice appears on the Home live band instead.
     ribbon = None
     from .. import freshness
     fresh = freshness.assess(report.received[-1] if report.received else None,
@@ -205,19 +195,9 @@ def build_site(
            page("../", "science", science, science.body(ctx_deep)))
     _write(out / "about" / "index.html", page("../", "about", about, about.body(ctx_deep)))
 
-    # Analytics — the data-driven page + raw data, held to the strict self-contained contract.
-    web.write_site(report, out / "analytics", banner=banner, generated_at=generated_at,
-                   base="../", fonts_present=fonts_present)
-
-    # Fleet — the network view: one overview page + a full dashboard per buoy. Built whenever
-    # the raw records are available (so buoys can be analysed in isolation, not blended).
-    if records is not None:
-        from .. import fleet as fleet_mod
-        from .. import fleet_web
-
-        fleet = fleet_mod.analyze_fleet(records, mmm_by_buoy=mmm_by_buoy, default_mmm=default_mmm)
-        fleet_web.write_fleet_site(fleet, out / "fleet", banner=banner,
-                                   generated_at=generated_at, base="../", fonts_present=fonts_present)
+    # The Analytics and Fleet pages moved to the console; links people already shared land here.
+    for old in ("analytics", "fleet"):
+        _write(out / old / "index.html", _forward_page(CONSOLE_URL))
 
     # Image-credits page (required by the Ocean Image Bank licence when photos are placed).
     _write(assets_out / "credits.html", layout.document(
@@ -229,6 +209,16 @@ def build_site(
     # Knowledge context for the "Ask S.C.O.U.T." chat proxy (chatbot/worker.js reads this).
     _write_chat_context(out)
     return out
+
+
+def _forward_page(url: str) -> str:
+    return (
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        f'<meta http-equiv="refresh" content="0; url={url}">'
+        '<meta name="robots" content="noindex"><title>Moved to the console · S.C.O.U.T.</title>'
+        f'</head><body><p>The live data is now in the <a href="{url}">S.C.O.U.T. console</a>.</p>'
+        "</body></html>"
+    )
 
 
 def _write(path: Path, content: str) -> None:
