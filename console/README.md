@@ -7,7 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
-**Live at <https://scout-console.scout1.workers.dev>** since 2026-10-26 (deployed from the SCO-238 branch, before review).
+**Live at <https://scout-console.scout1.workers.dev>** since 2026-10-26; last deployed from `main` on 2026-10-30. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
