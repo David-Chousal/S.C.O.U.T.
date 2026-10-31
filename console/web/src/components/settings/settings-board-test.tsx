@@ -13,7 +13,7 @@ import { SettingsBoard } from "./settings-board";
 
 const DATA = {
   buoys: [{ buoy_id: 1, label: "SCOUT-01", tx_count_requested: null, requested_by: null, requested_at: null,
-    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, state: "default" }],
+    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default" }],
   firmware,
 } as BuoySettings;
 

@@ -34,6 +34,8 @@ export interface Buoy {
   reported_at: number | null;
   last_seen_at: number | null;
   clock_lost: number;
+  /** The one shore station that sends this buoy's downlink commands; null until an admin picks. */
+  command_device_id: string | null;
   state: CountState;
 }
 
