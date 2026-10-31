@@ -1,6 +1,6 @@
 // Shared formatting: every time is UTC (the buoy and the shore keep UTC), every estimate says so.
 
-import type { CountState, Estimates, LifeRow } from "./api/types";
+import type { Buoy, CountState, Estimates, LifeRow } from "./api/types";
 
 export function utc(ms: number | null | undefined): string {
   if (!ms) return "—";
@@ -16,6 +16,16 @@ export function local(ms: number | null | undefined, timeZone?: string): string 
   }).formatToParts(new Date(ms));
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} ${get("timeZoneName")}`;
+}
+
+/** When a buoy was last heard from. A buoy whose clock lost power stamps its rows with a time
+ * it cannot vouch for, so its own timestamp is not shown; when the row arrived is. */
+export function lastHeard(buoy: Pick<Buoy, "clock_lost" | "reported_at" | "last_seen_at">): number | null {
+  return buoy.clock_lost ? buoy.last_seen_at : buoy.reported_at;
+}
+
+export function newestPacket(buoy: Pick<Buoy, "clock_lost" | "reported_at" | "last_seen_at">, when: (ms: number | null) => string): string {
+  return buoy.clock_lost ? `buoy clock lost · last heard ${when(buoy.last_seen_at)}` : `newest packet ${when(buoy.reported_at)}`;
 }
 
 export function plural(count: number, word: string, many = `${word}s`): string {

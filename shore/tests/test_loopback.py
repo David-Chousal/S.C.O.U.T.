@@ -2,7 +2,8 @@
 
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from scout_shore import CsvStore, MockLoRaLink, Receiver, encode, generate_series
@@ -83,6 +84,16 @@ class LoopbackTest(unittest.TestCase):
         self.assertEqual(receiver.stats.stored, 0)
         self.assertEqual(receiver.stats.duplicates, count)
         self.assertEqual(sum(validate_csv(p) for p in self.out.glob("*.csv")), count)
+
+    def test_a_sequence_reused_after_a_power_loss_is_stored(self):
+        # A cold start restarts record_seq at 0; a later reading reusing a number has a later
+        # timestamp and must not be mistaken for a repeat of the first.
+        store = CsvStore(self.out)
+        first = next(iter(generate_series(_START, 1, seed=0)))
+        later = replace(first, timestamp=first.timestamp + timedelta(hours=9))
+        self.assertIsNotNone(store.append(first))
+        self.assertIsNone(store.append(first))
+        self.assertIsNotNone(store.append(later))
 
     def test_corruption_is_caught_by_crc(self):
         count = 200

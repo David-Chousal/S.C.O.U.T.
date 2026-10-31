@@ -4,7 +4,8 @@
  *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested }] }
  *
  * Rows are validated field by field before anything is stored, and repeats of a
- * (buoy_id, record_seq) are ignored, so a shore station may push the same day again safely. */
+ * (buoy_id, record_seq, timestamp_utc) are ignored, so a shore station may push the same day
+ * again safely. The timestamp is in the key because a cold start resets record_seq to 0. */
 
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
@@ -57,7 +58,7 @@ async function authenticate(db, request) {
   return device;
 }
 
-/** A validated row → {buoyId, seq, timestamp, txCount, rejected}, or null. */
+/** A validated row → {buoyId, seq, timestamp, txCount, rejected, clockLost}, or null. */
 export function parseRow(row, now = Date.now()) {
   if (!row || typeof row !== "object") return null;
   const label = BUOY_LABEL.exec(String(row.buoy_id || ""));
@@ -69,7 +70,10 @@ export function parseRow(row, now = Date.now()) {
   if (!TIMESTAMP.test(timestamp) || !["", "1", "2", "3"].includes(txText)) return null;
   if (!(Date.parse(timestamp) <= now + MAX_FUTURE_MS)) return null;
   const flags = String(row.flags || "").split("|");
-  return { buoyId, seq, timestamp, txCount: txText ? Number(txText) : null, rejected: flags.includes("CMD_REJECTED") };
+  return {
+    buoyId, seq, timestamp, txCount: txText ? Number(txText) : null,
+    rejected: flags.includes("CMD_REJECTED"), clockLost: flags.includes("RTC_LOST"),
+  };
 }
 
 async function storeRows(db, parsed, rows) {
@@ -81,20 +85,40 @@ async function storeRows(db, parsed, rows) {
   return results.reduce((n, r) => n + (r.meta?.changes ?? 0), 0);
 }
 
-/** Newest row per buoy updates what that buoy reports (count, rejection, last seen). */
+/** Newest row per buoy updates what that buoy reports (count, rejection, last seen).
+ *
+ * A row flagged RTC_LOST carries a timestamp the buoy cannot vouch for, so it cannot be ordered
+ * against the others by time. Trusted rows are ordered by timestamp as before. When a buoy's rows
+ * in a push are all clock-lost, the last one in push order (the shore's arrival order) sets the
+ * count and marks the buoy clock_lost, and its timestamp is not used. */
 async function updateReported(db, parsed) {
-  const newest = new Map();
+  const trusted = new Map();
+  const clockLost = new Map();
   for (const p of parsed) {
-    if (!newest.has(p.buoyId) || p.timestamp > newest.get(p.buoyId).timestamp) newest.set(p.buoyId, p);
+    if (p.clockLost) clockLost.set(p.buoyId, p);
+    else if (!trusted.has(p.buoyId) || p.timestamp > trusted.get(p.buoyId).timestamp) trusted.set(p.buoyId, p);
   }
   const now = Date.now();
-  await db.batch([...newest.values()].flatMap((p) => [
-    db.prepare("INSERT OR IGNORE INTO buoys (buoy_id, label) VALUES (?, ?)")
-      .bind(p.buoyId, `SCOUT-${String(p.buoyId).padStart(2, "0")}`),
-    db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), cmd_rejected = ?, " +
-      "reported_at = ?, last_seen_at = ? WHERE buoy_id = ? AND (reported_at IS NULL OR reported_at <= ?)")
-      .bind(p.txCount, p.rejected ? 1 : 0, Date.parse(p.timestamp), now, p.buoyId, Date.parse(p.timestamp)),
-  ]));
+  const buoyIds = new Set([...trusted.keys(), ...clockLost.keys()]);
+  await db.batch([...buoyIds].flatMap((buoyId) => {
+    const statements = [
+      db.prepare("INSERT OR IGNORE INTO buoys (buoy_id, label) VALUES (?, ?)")
+        .bind(buoyId, `SCOUT-${String(buoyId).padStart(2, "0")}`),
+      db.prepare("UPDATE buoys SET last_seen_at = ? WHERE buoy_id = ?").bind(now, buoyId),
+    ];
+    const p = trusted.get(buoyId);
+    if (p) {
+      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), cmd_rejected = ?, " +
+        "reported_at = ?, clock_lost = 0 WHERE buoy_id = ? AND (reported_at IS NULL OR reported_at <= ?)")
+        .bind(p.txCount, p.rejected ? 1 : 0, Date.parse(p.timestamp), buoyId, Date.parse(p.timestamp)));
+    } else {
+      const lost = clockLost.get(buoyId);
+      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), cmd_rejected = ?, " +
+        "clock_lost = 1 WHERE buoy_id = ?")
+        .bind(lost.txCount, lost.rejected ? 1 : 0, buoyId));
+    }
+    return statements;
+  }));
 }
 
 export async function handleDeviceApi(request, env, path) {

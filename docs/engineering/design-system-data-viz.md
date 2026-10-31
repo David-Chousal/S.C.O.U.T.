@@ -147,7 +147,7 @@ Follow [CONVENTIONS → Engineering data](../CONVENTIONS.md#engineering-data):
 | One or more slots with no packet | Line breaks (separate path segments). A hatched band (45°, 1 px `stone-400`, 6 px pitch) spans the gap, labelled "no packet" when wider than 40 px |
 | Packet arrived but QC flagged *suspect* | Point drawn hollow; tooltip and table give the QARTOD test that flagged it |
 | Packet arrived but QC flagged *fail* | Point drawn as ▲ in `--status-warning`; excluded from the line and from daily means |
-| Duplicate copies of one packet | Collapsed by `(buoy_id, record_seq)` before drawing — one point |
+| Duplicate copies of one packet | Collapsed by `(buoy_id, record_seq, timestamp_utc)` before drawing — one point |
 | Data the buoy holds but has not sent (between slots) | Not drawn. The chart note says: "The buoy samples every 30 minutes; the full record is retrieved from the buoy." |
 
 Never draw a solid line across a gap, never fill a gap with zero, never smooth over one

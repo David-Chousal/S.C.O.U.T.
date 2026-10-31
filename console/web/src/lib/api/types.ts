@@ -31,6 +31,7 @@ export interface Buoy {
   cmd_rejected: number;
   reported_at: number | null;
   last_seen_at: number | null;
+  clock_lost: number;
   state: CountState;
 }
 

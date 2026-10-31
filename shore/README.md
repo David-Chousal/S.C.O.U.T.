@@ -31,7 +31,7 @@ retrieved on-buoy data share one format and one analytics path.
 **Writes are idempotent.** The same reading can legitimately arrive more than once: a frame
 received twice, a buoy configured to send extra copies per slot (`SCOUT_LINK_REPEATS_NORMAL` in
 `firmware/lib/scout_link`; one copy since 2026-10-23), or an SD-card import of readings the radio
-already delivered. `CsvStore` keys on `(buoy_id, record_seq)` and skips
+already delivered. `CsvStore` keys on `(buoy_id, record_seq, timestamp_utc)` (a power-cycled buoy restarts `record_seq` at 0) and skips
 copies it has already stored, seeding that key set from the daily file on disk so a restarted
 shore station does not re-admit them. `Receiver.stats.duplicates` counts the skips: they are
 expected traffic, not errors. Without this, repeats would triple every row and inflate the
@@ -118,7 +118,7 @@ python scripts/import_sd_card.py --card /Volumes/SCOUT --into data-live --dry-ru
 python scripts/import_sd_card.py --card /Volumes/SCOUT --into data-live
 ```
 
-Merging is on `(buoy_id, record_seq)` — the same idempotency key the receiver uses for blind
+Merging is on `(buoy_id, record_seq, timestamp_utc)` — the same idempotency key the receiver uses for blind
 repeats — so **running it twice is a no-op**. The card wins cell by cell where it holds more,
 but a blank cell on the card never overwrites a value shore received: a row half-written at the
 moment of power loss must not erase a reading that arrived intact over the radio. Existing shore

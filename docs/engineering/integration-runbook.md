@@ -441,8 +441,8 @@ until G10 is cleared ([FCC brief](../research/fcc-review-brief.md#outcome--revie
 **4c — Dedupe.** Each slot sends one copy (SCO-21, 2026-10-23), but the same reading can still
 arrive twice: a re-received frame, the S3 and the computer bridge both pushing, or an SD-card import
 of a reading the radio already delivered. Every layer collapses those to **one** row on
-`(buoy_id, record_seq)`: the S3's own dedupe (`lib/scout_dedupe`, recent readings), the console's
-store (`INSERT OR IGNORE` on that pair), and the Python CSV store. Duplicate rows would inflate QC
+`(buoy_id, record_seq, timestamp_utc)`: the S3's own dedupe (`lib/scout_dedupe`, recent readings), the console's
+store (`INSERT OR IGNORE` on that key), and the Python CSV store. Duplicate rows would inflate QC
 completeness and hide real gaps. **PASS:** the same frame received twice, and the same reading
 pushed by both the S3 and `sync_console.py`, each leave one row on the console.
 
@@ -680,7 +680,7 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 | Sensors read nothing | Gate polarity | LOW = on; a stale build with the old HIGH = on logic leaves them dark |
 | SD and radio work alone, not together | Shared SPI chip select | Only one of D10 / D8 may be active |
 | Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64`; `bench_rx` prints `errata=applied` |
-| Duplicate CSV rows for one reading | Shore dedupe broken | Rows must be unique on `(buoy_id, record_seq)` |
+| Duplicate CSV rows for one reading | Shore dedupe broken | Rows must be unique on `(buoy_id, record_seq, timestamp_utc)` |
 | Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (691 ms for the 44-byte packet) |
 | SD import finds nothing | Card written by firmware older than PR #186 | Old builds wrote `YYYYMMDD.CSV` at the root; point the importer at the card root, and update the firmware |
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |
