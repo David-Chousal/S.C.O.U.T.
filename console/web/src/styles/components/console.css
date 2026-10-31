@@ -28,6 +28,11 @@
 .sc-auth-form__head { display: grid; gap: var(--space-1); }
 .sc-auth-form__head h2 { margin: 0; font: 700 24px/28px var(--font-sans); letter-spacing: -.02em; }
 .sc-auth-form__submit { justify-content: space-between; }
+/* Guest sign-in sits under the team form, behind one key, so the team's path stays first. */
+.sc-auth-stack { display: grid; gap: var(--space-4); width: 100%; max-width: 380px; }
+.sc-auth-guest__divider { display: flex; align-items: center; gap: var(--space-3); }
+.sc-auth-guest__divider::before, .sc-auth-guest__divider::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.sc-auth-guest__open { justify-content: center; }
 .sc-login__lede { display: grid; gap: var(--space-4); max-width: 460px; position: relative; z-index: 1; }
 .sc-login__lede .sc-tag { margin: 0; color: var(--bg); opacity: .8; }
 .sc-providers { display: grid; gap: var(--space-2); }

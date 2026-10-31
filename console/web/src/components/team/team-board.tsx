@@ -15,6 +15,7 @@ import { useApi } from "@/lib/use-api";
 import { InviteDialog } from "./invite-dialog";
 
 function signsInWith(member: Member): string {
+  if (member.self_signup) return "Guest sign-in";
   return [member.has_password && "password", member.has_github && "GitHub", member.has_google && "Google"].filter(Boolean).join(" · ") || "—";
 }
 
@@ -82,14 +83,16 @@ export function TeamBoard() {
                       <span className="sc-person">
                         <span className="sc-avatar" aria-hidden="true">{initials(member)}</span>
                         <span className="sc-list__main">
-                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.disabled ? <span className="sc-badge sc-badge--muted">Disabled</span> : null}</strong>
+                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.disabled ? <span className="sc-badge sc-badge--muted">Disabled</span> : null} {member.self_signup ? <span className="sc-badge sc-badge--muted">Self-signed-up</span> : null}</strong>
                           <span>{member.email}</span>
                         </span>
                       </span>
                     </td>
                     <td>
                       <select className="sc-input sc-team-table__select" aria-label={`Role for ${member.email}`} value={member.role}
-                        disabled={!canManage} onChange={(event) => run(() => api.setRole(member.id, event.target.value as Role), `${member.email} is now ${ROLE_LABEL[event.target.value as Role]}`)}>
+                        disabled={!canManage || Boolean(member.self_signup)}
+                        title={member.self_signup ? "Signed in with just an email, so anyone could use it. Invite them to give them a role." : undefined}
+                        onChange={(event) => run(() => api.setRole(member.id, event.target.value as Role), `${member.email} is now ${ROLE_LABEL[event.target.value as Role]}`)}>
                         <option value="guest">Guest</option>
                         <option value="member">Member</option>
                         <option value="admin">Admin</option>
@@ -98,7 +101,7 @@ export function TeamBoard() {
                     <td><span className="sc-tag">{signsInWith(member)}</span></td>
                     <td className="n">
                       <span className="sc-row sc-team-actions">
-                        <Key size="sm" disabled={!canManage} onClick={() => makeResetLink(member)}>Reset link</Key>
+                        <Key size="sm" disabled={!canManage || Boolean(member.self_signup)} onClick={() => makeResetLink(member)}>Reset link</Key>
                         {member.disabled ? (
                           <Key size="sm" disabled={!canManage} onClick={() => run(() => api.setDisabled(member.id, false), `Re-enabled ${member.email}`)}>Enable</Key>
                         ) : (

@@ -19,7 +19,7 @@ const DATA = {
 
 function renderBoard(role: Role, update = vi.fn(), preferences: Preferences = DEFAULT_PREFERENCES) {
   vi.spyOn(api, "settings").mockResolvedValue(DATA);
-  const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role, hasPassword: true, github: false, google: false } };
+  const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role, hasPassword: true, github: false, google: false, selfSignup: false } };
   render(
     <SessionContext value={session}>
       <PreferencesContext value={{ preferences, update, stored: true }}>

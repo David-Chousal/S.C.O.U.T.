@@ -11,7 +11,7 @@ export function AccountPanel() {
   const { user } = useSession();
   const router = useRouter();
   const { show } = useToast();
-  const ways = [user.hasPassword && "password", user.github && "GitHub", user.google && "Google"].filter(Boolean).join(" · ") || "—";
+  const ways = user.selfSignup ? "guest sign-in (name and email)" : [user.hasPassword && "password", user.github && "GitHub", user.google && "Google"].filter(Boolean).join(" · ") || "—";
 
   async function signOutEverywhere() {
     try {
