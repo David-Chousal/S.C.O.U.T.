@@ -6,7 +6,9 @@
 .sc-key--primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: inset 0 -3px 0 rgba(0,0,0,.28); }
 .sc-key--primary.is-pressed { box-shadow: inset 0 -1px 0 rgba(0,0,0,.28); }
 .sc-key--primary kbd { border-color: currentColor; color: inherit; opacity: .75; }
-.sc-key--hold { overflow: hidden; color: var(--negative); border-color: var(--negative); }
+/* Neutral at rest so a row of them does not shout; red only once you reach for one. */
+.sc-key--hold { overflow: hidden; }
+.sc-key--hold:hover:not(:disabled), .sc-key--hold:focus-visible, .sc-key--hold.is-pressed { color: var(--negative); border-color: var(--negative); }
 .sc-key--hold::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--held, 0%); background: var(--negative-soft); z-index: 0; }
 .sc-key--hold > * { position: relative; z-index: 1; }
 .sc-link { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; color: var(--accent); font: 500 14px/1 var(--font-sans); cursor: pointer; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
@@ -15,5 +17,6 @@
 .sc-key--icon { width: 34px; padding: 0 0 2px; justify-content: center; }
 .sc-key--sm { height: 28px; padding: 0 var(--space-2) 2px; font-size: 13px; }
 .sc-key--sm.sc-key--icon { width: 28px; padding: 0 0 2px; }
-.sc-key:disabled { color: var(--ink-muted); background: var(--surface-sunken); border-color: var(--line); box-shadow: none; cursor: not-allowed; }
+/* Dashed like a disabled field, so it reads as off on the dark ground too. */
+.sc-key:disabled { color: var(--ink-muted); background: transparent; border-color: var(--line-strong); border-style: dashed; box-shadow: none; cursor: not-allowed; }
 .sc-key.is-busy { color: var(--ink-muted); cursor: progress; }
