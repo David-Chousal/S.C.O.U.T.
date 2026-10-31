@@ -4,7 +4,7 @@
 > and WBS PDF. Change the CSV (or ask Claude to resync it from Linear), rerun the script,
 > commit the new PDF.
 >
-> Part of the [docs index](../README.md). Built for the Oct 18, 2026 course assignment.
+> Part of the [docs index](../README.md). Built for the Oct 18, 2026 course assignment; resynced and extended to the end of fall quarter on 2026-10-30 (detail window set by `DETAIL_START` and `DETAIL_END` in the script). Each weekly report attaches the day-by-day pages.
 
 ## The pieces
 
