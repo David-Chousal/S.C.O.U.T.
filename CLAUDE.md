@@ -357,34 +357,33 @@ The free plan caps the issues that are not archived, and on 2026-10-30 the works
 of it: Linear refused to create any issue until all 145 closed issues were archived. Linear's
 own auto-archive cannot go below one month, so it is not enough on its own.
 
-- **Automatic:** [`linear-archive.yml`](.github/workflows/linear-archive.yml) runs
-  [`scripts/archive_linear_issues.py`](scripts/archive_linear_issues.py) every day at 06:00
-  Pacific and archives every `Done` and `Canceled` issue in the `SCO` team. It needs the
-  `LINEAR_API_KEY` repository secret.
-- **By hand** (e.g. when Linear refuses to create an issue): run the same script. The Linear
-  app has no bulk archive (only bulk *delete*, which is not allowed), and Claude's Linear
-  connector cannot archive either.
+**It is done manually, not on a schedule** (decided 2026-10-30): the team chose not to keep a
+standing Linear API key in a GitHub secret. The Linear app has no bulk archive (only bulk
+*delete*, which is not allowed), and Claude's Linear connector cannot archive, so the archive
+runs through [`scripts/archive_linear_issues.py`](scripts/archive_linear_issues.py), which
+archives every `Done` and `Canceled` issue in the `SCO` team.
 
-**Setting it up (a human does this once; Claude must never type the key into a form):**
+**When to run it:** whenever Linear refuses to create an issue ("exceeded the free issue
+limit"), and as a habit at the end of each phase. When Claude hits the limit, it says so and
+asks for a key rather than leaving the work out of Linear.
 
-1. **Create a Linear API key.** In Linear: **Settings → Account → Security & access → Personal
-   API keys → New key**. Name it `scout-archive`. It acts as you, so you need access to the
-   S.C.O.U.T. team. Copy it; Linear shows it once.
-2. **Store it as a repository secret.** On GitHub, signed in as `David-Chousal` (repo admin;
-   `davidchousal` cannot reach secrets): **Settings → Secrets and variables → Actions → New
-   repository secret**, name `LINEAR_API_KEY`, paste the key.
-3. **Test it.** **Actions → Archive closed Linear issues → Run workflow**, then read the log: it
-   lists what it archived.
+**How to run it:**
 
-To run it locally instead, with the key in your shell only:
+1. **Create a short-lived Linear API key.** In Linear: **Settings → Account → Security & access
+   → Personal API keys → New key**. It acts as you, so you need access to the S.C.O.U.T. team.
+   Copy it; Linear shows it once.
+2. **Run the script with the key in your shell only** (or give it to Claude in the chat, which
+   runs the same commands). Never commit the key or put it in a file:
 
-```bash
-LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py --dry-run
-```
+   ```bash
+   LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py --dry-run
+   LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py
+   ```
 
-Drop `--dry-run` to archive. To bring an issue back, open it from search and unarchive it. If
-the key is revoked or rotated, replace the secret; the daily run fails (exit 2, or a GraphQL
-auth error) until you do.
+   The dry run lists what would be archived; the second command archives it.
+3. **Revoke the key** in the same Linear settings page when done.
+
+To bring an issue back, open it from search and unarchive it.
 
 ### Initiative and milestones
 

@@ -3,11 +3,12 @@
 
 The workspace is on Linear's free plan, which caps the number of issues that are not archived.
 Linear's own auto-archive waits at least a month after a project completes, so closed issues are
-archived as soon as they close instead (decision log 2026-10-30). Archived issues stay searchable
+archived with this script instead (decision log 2026-10-30). Archived issues stay searchable
 and can be restored; nothing is deleted.
 
-Needs a Linear personal API key in ``$LINEAR_API_KEY`` (Linear → Settings → Security & access →
-Personal API keys). Run daily by ``.github/workflows/linear-archive.yml``; by hand:
+Run by hand (no schedule: CLAUDE.md → "Archiving closed issues") with a short-lived Linear
+personal API key in ``$LINEAR_API_KEY`` (Linear → Settings → Account → Security & access →
+Personal API keys), revoked afterwards:
 
     LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py --dry-run
     LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py
