@@ -176,7 +176,7 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
             Serial.printf("BAD version %u\n", buf[0]);
             return;
     }
-    if (!scout_dedupe_first_seen(&g_seen, r.buoy_id, r.record_seq)) {
+    if (!scout_dedupe_first_seen(&g_seen, r.buoy_id, r.record_seq, r.timestamp)) {
         Serial.printf("DUP buoy=%u seq=%lu\n", r.buoy_id, (unsigned long)r.record_seq);
         return;
     }

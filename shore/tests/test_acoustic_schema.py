@@ -119,7 +119,9 @@ class LegacyFileTests(unittest.TestCase):
     def test_store_still_dedupes_against_an_upgraded_file(self):
         store = CsvStore(self.root)
         _write(self.root / "SCOUT-01_20260814.csv", COLUMNS_V2, [_legacy_row(COLUMNS_V2, 1, "2")])
-        self.assertIsNone(store.append(_reading(record_seq=1)))
+        # The same reading: the legacy row for seq 1 is stamped 01:00 (see _legacy_row).
+        same = _reading(record_seq=1, timestamp=datetime(2026, 8, 14, 1, 0, 0, tzinfo=timezone.utc))
+        self.assertIsNone(store.append(same))
 
     def test_a_v2_card_imports_into_a_v3_shore_file(self):
         card, shore = self.root / "card" / "DATA", self.root / "shore"

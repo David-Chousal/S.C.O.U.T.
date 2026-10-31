@@ -5,14 +5,15 @@ void scout_dedupe_init(ScoutDedupe *d) {
     d->next = 0;
 }
 
-bool scout_dedupe_first_seen(ScoutDedupe *d, uint16_t buoy_id, uint32_t record_seq) {
+bool scout_dedupe_first_seen(ScoutDedupe *d, uint16_t buoy_id, uint32_t record_seq, uint32_t timestamp) {
     for (size_t i = 0; i < d->count; i++) {
-        if (d->buoy_id[i] == buoy_id && d->record_seq[i] == record_seq) {
+        if (d->buoy_id[i] == buoy_id && d->record_seq[i] == record_seq && d->timestamp[i] == timestamp) {
             return false;
         }
     }
     d->buoy_id[d->next] = buoy_id;
     d->record_seq[d->next] = record_seq;
+    d->timestamp[d->next] = timestamp;
     d->next = (d->next + 1) % SCOUT_DEDUPE_CAPACITY;
     if (d->count < SCOUT_DEDUPE_CAPACITY) {
         d->count++;

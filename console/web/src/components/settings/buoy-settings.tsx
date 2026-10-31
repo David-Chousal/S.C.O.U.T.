@@ -9,7 +9,7 @@ import { SignalMeter } from "@/components/status/signal-meter";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
-import { COUNT_SIGNAL } from "@/lib/format";
+import { COUNT_SIGNAL, newestPacket } from "@/lib/format";
 import { useWhen } from "@/lib/preferences-context";
 import { can, needs, useSession } from "@/lib/session";
 
@@ -60,7 +60,7 @@ function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean
             <strong>{buoy.tx_count_requested ? `${buoy.tx_count_requested} requested` : "Default (3)"}</strong>
             <SignalMeter state={signal.state} lit={signal.lit} word={signal.word} />
           </span>
-          <span className="sc-help">Buoy reports {buoy.tx_count_reported ?? "—"} a day · newest packet {when(buoy.reported_at)} ·{" "}
+          <span className="sc-help">Buoy reports {buoy.tx_count_reported ?? "—"} a day · {newestPacket(buoy, when)} ·{" "}
             <Link className="sc-link" href="/fleet/">change it on Fleet</Link></span>
         </div>
         <div className="sc-settings-form__foot">

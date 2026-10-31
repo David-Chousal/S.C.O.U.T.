@@ -213,7 +213,7 @@ Split into 6a and 6b if the diff is large.
   [Open decisions](#open-decisions-this-plan-does-not-make)).
 - `dashboard.py` adopts the same palette; Flat UI colours removed.
 - **Test first:** gaps produce separate path segments; a failed reading never joins a line;
-  freshness thresholds at their boundaries; duplicates collapse by `(buoy_id, record_seq)`.
+  freshness thresholds at their boundaries; duplicates collapse by `(buoy_id, record_seq, timestamp_utc)`.
 
 **Done** (step 6, 2026-10-20) as one step, not 6a/6b. Built: `telemetry/charts.py`,
 `telemetry/freshness.py`, the estimate rule (see Data Visualization), solid NOAA badge fills on
