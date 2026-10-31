@@ -34,6 +34,8 @@ export interface Buoy {
   reported_at: number | null;
   last_seen_at: number | null;
   clock_lost: number;
+  /** The one shore station that sends this buoy's downlink commands; null until an admin picks. */
+  command_device_id: string | null;
   state: CountState;
 }
 
@@ -136,4 +138,31 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
+}
+
+/** One stored reading: the schema row the shore station sent (shore/scout_shore/schema.py). */
+export type Reading = Record<string, string>;
+
+export interface ApiToken {
+  id: string;
+  name: string;
+  /** Space-separated: read:telemetry, write:settings. */
+  scopes: string;
+  created_at: number;
+  expires_at: number;
+  last_used_at: number | null;
+  revoked_at: number | null;
+}
+
+export interface TokenList {
+  tokens: ApiToken[];
+  scopes: string[];
+  expiryDays: number[];
+}
+
+export interface StorageReport {
+  usage: { month: string; writes: number; reads: number; storedBytes: number; objects: number };
+  budget: { writesPerMonth: number; readsPerMonth: number; storedBytes: number; maxObjectBytes: number };
+  lastBackup: { key: string; bytes: number } | null;
+  bound: boolean;
 }

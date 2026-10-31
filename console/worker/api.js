@@ -8,11 +8,15 @@
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, listDevices, revokeDevice } from "./device.js";
-import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, SLOT_LABELS } from "./fleet.js";
+import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, setCommandStation, SLOT_LABELS } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
+import { lastBackup } from "./backup.js";
 import { guestSignIn, maskReply } from "./guests.js";
+import { listReadings, readingsQuery } from "./readings.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
+import { BUDGET, usage } from "./storage.js";
+import { createToken, EXPIRY_DAYS, listTokens, revokeToken, SCOPES } from "./tokens.js";
 import {
   createSession, destroySession, destroyUserSessions, loadSession, passwordSignIn, SESSION_TTL_MS,
 } from "./sessions.js";
@@ -88,7 +92,7 @@ async function signedOut(request, env, path, body) {
   return null;
 }
 
-async function reads(env, path, session) {
+async function reads(env, path, session, url) {
   switch (path) {
     case "/api/session":
       return json({ user: session.user, csrf: session.csrf });
@@ -102,6 +106,18 @@ async function reads(env, path, session) {
       return json({ devices: await listDevices(env.DB) });
     case "/api/audit":
       return json({ entries: await recent(env.DB) });
+    case "/api/storage":
+      if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
+      return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES) });
+    case "/api/tokens":
+      return json({ tokens: await listTokens(env.DB, session.user.id), scopes: SCOPES, expiryDays: EXPIRY_DAYS });
+    case "/api/readings": {
+      const buoyId = Number(url.searchParams.get("buoy"));
+      const query = readingsQuery(url.searchParams);
+      if (!Number.isInteger(buoyId) || buoyId < 1) return apiError("Name a buoy: ?buoy=1", 400);
+      if (query.error) return apiError(query.error, 400);
+      return json({ readings: await listReadings(env.DB, buoyId, query) });
+    }
     default:
       return apiError("not found", 404);
   }
@@ -111,6 +127,7 @@ async function reads(env, path, session) {
 const WRITES = [
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/tx-count$/, "settings.write", (db, b, m, a) => requestTxCount(db, a, m[1], b.tx_count)],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/label$/, "settings.write", (db, b, m, a) => renameBuoy(db, a, m[1], b.label)],
+  [/^\/api\/fleet\/buoys\/(\d{1,5})\/command-station$/, "devices.write", (db, b, m, a) => setCommandStation(db, a, m[1], b.device_id)],
   [/^\/api\/fleet\/buoys$/, "buoys.add", (db, b, m, a) => addBuoy(db, a, b.buoy_id, String(b.label || "").trim())],
   [/^\/api\/team\/invites$/, "invites.write", async (db, b, m, a, env) => {
     const result = await createInvite(db, a, String(b.email || "").trim(), b.role);
@@ -123,6 +140,8 @@ const WRITES = [
     return result.error ? result : { link: link(env, "reset", result.token), email: result.email };
   }],
   [/^\/api\/team\/users\/([\w-]{1,64})\/(disable|enable)$/, "users.disable", (db, b, m, a) => setDisabled(db, a, m[1], m[2] === "disable")],
+  [/^\/api\/tokens$/, "tokens.write", (db, b, m, a) => createToken(db, a, b)],
+  [/^\/api\/tokens\/([\w-]{1,64})\/revoke$/, "tokens.write", (db, b, m, a) => revokeToken(db, a, m[1])],
   [/^\/api\/devices$/, "devices.write", (db, b, m, a) => createDevice(db, a, b.name)],
   [/^\/api\/devices\/([\w-]{1,64})\/revoke$/, "devices.write", (db, b, m, a) => revokeDevice(db, a, m[1])],
 ];
@@ -166,7 +185,7 @@ export async function handleApi(request, env, path) {
   const session = await loadSession(env.DB, request);
   if (!session) return apiError("Sign in first.", 401);
   if (request.method === "GET") {
-    const reply = await reads(env, path, session);
+    const reply = await reads(env, path, session, new URL(request.url));
     if (!session.user.selfSignup || !reply.ok) return reply;
     return json(maskReply(await reply.json(), session.user.email));
   }

@@ -3,6 +3,7 @@
  *
  * It serves three things:
  *   /api/device/*  the shore station's API (bearer device token)           device.js
+ *   /api/v1/*      the REST API for scripts (bearer personal API token)    rest.js
  *   /api/*         the JSON API the front end calls (session + CSRF)         api.js
  *   /auth/*        GitHub and Google sign-in redirects                       oauth.js
  *   everything else: the static front end (console/web, a Next.js export) from the ASSETS
@@ -13,9 +14,12 @@
  * Config (wrangler.toml [vars]; secrets set with `wrangler secret put`, never committed):
  *   APP_URL, BOOTSTRAP_ADMIN_EMAIL, GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID      vars
  *   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET                             secrets
- *   DB (D1), ASSETS (static assets)                                         bindings */
+ *   DB (D1), ASSETS (static assets), FILES (R2, guarded by storage.js)     bindings
+ *
+ * A cron trigger (wrangler.toml) runs the nightly backup to R2 (backup.js). */
 
 import { handleApi } from "./api.js";
+import { runBackup } from "./backup.js";
 import { FLASH_COOKIE, staticAsset } from "./assets.js";
 import { b64url, fromB64url } from "./crypto.js";
 import { handleDeviceApi } from "./device.js";
@@ -23,6 +27,7 @@ import {
   apiError, bodyWithin, clearCookie, json, OAUTH_COOKIE, readCookie, redirect, SESSION_COOKIE, setCookie,
 } from "./http.js";
 import { configured, finish, startUrl } from "./oauth.js";
+import { handleRest } from "./rest.js";
 import { createSession, SESSION_TTL_MS } from "./sessions.js";
 import { userForIdentity } from "./users.js";
 
@@ -84,6 +89,10 @@ async function route(request, env) {
   const path = new URL(request.url).pathname;
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
+  if (path.startsWith("/api/v1/")) {
+    if (!bodyWithin(request, 16 * 1024)) return apiError("The request was too large, or sent without a length.", 413);
+    return handleRest(request, env, path);
+  }
   const elsewhere = otherHostRedirect(request, env.APP_URL);
   if (elsewhere) return elsewhere;
   if (path.startsWith("/api/")) {
@@ -106,5 +115,10 @@ export default {
       console.error("console: unhandled", error instanceof Error ? error.stack : error);
       return apiError("Something failed on our side. It has been logged.", 500);
     }
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil?.(Promise.resolve());
+    await runBackup(env, event.scheduledTime);
   },
 };

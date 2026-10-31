@@ -77,7 +77,12 @@ What this does **not** cover yet:
    A replay counts as a rejection, so the buoy flags `CMD_REJECTED` and the console shows the
    change as refused even though it worked. **Not a problem today:** the downlink is off by
    default and has never run on hardware. Before two stations run a downlink build, one station
-   per buoy must be chosen to send commands (SCO-290).
+   per buoy must be chosen to send commands (SCO-290). **Built 2026-10-30:** an admin picks each
+   buoy's command station on the Stations page, and only that station is told the requested count
+   (a lone station needs no pick; with two and none picked, nobody sends). ⚠️ The S3's WiFi path
+   replaces its whole list each pull, so a dropped buoy stops at once; the USB bridge
+   (`sync_console.py`) only sends `N<buoy>:<count>` for listed buoys, so a count it set earlier
+   stays on the S3 until the S3 restarts or is sent a new one.
 4. **Two buoys flashed with the same ID would merge** into one buoy in the console, silently.
    Nothing detects it. The per-unit naming scheme
    ([SCO-121](https://linear.app/scout1/issue/SCO-121)) should assign IDs so this cannot happen.
@@ -139,6 +144,8 @@ that would justify paying or moving are different ones, worth deciding in
   measurements. Today the measurements are visible only on the public dashboard, which reads the
   shore station's CSVs. Worth knowing before the Nov 6 demo; tracked by the console's later phases
   ([SCO-240](https://linear.app/scout1/issue/SCO-240), [SCO-241](https://linear.app/scout1/issue/SCO-241)).
+  **Built 2026-10-30 (Phase B):** a Readings page shows each buoy's newest values and last 50
+  readings, and `/api/v1/buoys/:id/readings` serves them to scripts with a personal API token.
 - **The station token is compiled into the firmware** from the git-ignored `shore_secrets.h`.
   Anyone holding the board could read it; the defence is revoking it on the Stations page, which
   takes effect on the next request. A secret manager would not change this on a microcontroller.

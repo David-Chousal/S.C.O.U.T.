@@ -3,9 +3,11 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import { api } from "@/lib/api/client";
 import type { BuoySettings } from "@/lib/api/types";
+import { can, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
 import { BrowserSettingsPanel } from "./browser-settings";
 import { BuoySettingsPanel } from "./buoy-settings";
+import { StoragePanel } from "./storage-panel";
 
 const TABS = [
   { id: "buoys", label: "Buoys" },
@@ -16,6 +18,7 @@ type TabId = (typeof TABS)[number]["id"];
 /** The Settings page: buoy settings for the team, page settings for this browser. Tabs follow
  * the WAI-ARIA pattern: arrow keys move between them, Home and End jump to the ends. */
 export function SettingsBoard() {
+  const { user } = useSession();
   const [active, setActive] = useState<TabId>("buoys");
   const buttons = useRef<Record<string, HTMLButtonElement | null>>({});
   const buoys = useApi<BuoySettings>(api.settings);
@@ -45,7 +48,10 @@ export function SettingsBoard() {
         <div key={tab.id} id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} hidden={active !== tab.id}
           className="sc-tabpanel">
           {tab.id === "buoys"
-            ? <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
+            ? <>
+              <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
+              {can(user.role, "storage.read") && <StoragePanel />}
+            </>
             : <BrowserSettingsPanel />}
         </div>
       ))}

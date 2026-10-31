@@ -34,10 +34,12 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 
 | Page | Who can change it | What it is |
 |---|---|---|
+| Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
-| Stations | admin | When each buoy and shore station was last heard from; the shore stations' device tokens (shown once, stored hashed) |
+| Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Audit log | (read only) | Every change: who, what, before → after |
+| Developer | member, admin (guests view) | Personal API tokens (scopes `read:telemetry`, `write:settings`; 7–365 days; shown once, stored hashed, revocable) and how to call `/api/v1` |
 | Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | How you sign in; hold to sign out everywhere |
 | Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
@@ -89,10 +91,23 @@ none of that.
 | `/api/fleet` (buoys + battery estimates + slot labels) | `/api/fleet/buoys`, `/api/fleet/buoys/:id/tx-count` |
 | `/api/team` | `/api/team/invites`, `…/invites/:id/revoke`, `…/users/:id/role`, `…/users/:id/reset`, `…/users/:id/disable` and `/enable` |
 | `/api/devices`, `/api/audit` | `/api/devices`, `/api/devices/:id/revoke` |
+| `/api/readings?buoy=&from=&to=&limit=`, `/api/tokens` | `/api/tokens`, `/api/tokens/:id/revoke` |
 | `/api/invites/:token`, `/api/resets/:token` | `/api/invites/:token/accept`, `/api/resets/:token` |
+
+**REST API** (Phase B, [SCO-240](https://linear.app/scout1/issue/SCO-240)): `/api/v1/buoys`, `/api/v1/buoys/:id/readings`,
+`/api/v1/settings` (scope `read:telemetry`) and `POST /api/v1/buoys/:id/tx-count` (scope `write:settings`, owner
+must be a member or admin), with a personal token from the Developer page as `Authorization: Bearer sct_…`.
+A token acts with its owner's role at the time of use, so disabling or demoting someone limits
+their tokens at once. Described in [`worker/openapi.json`](worker/openapi.json), served publicly at
+`/api/v1/openapi.json`. Migration `0005-api-tokens.sql`.
 
 **Device API** (bearer token from the Stations page): `POST /api/device/readings`
 (`{"rows": [schema row, …]}`, ≤ 200 rows, ≤ 256 KB, repeats ignored) and `GET /api/device/settings`.
+A station is told a buoy's requested count only if it is that buoy's **command station** (picked by an
+admin on the Stations page), or if it is the only active station and none is picked; with two
+stations and none picked, nobody sends it. Two stations sending the same command in the buoy's 1 s
+listen window would collide, or one would be refused as a repeat and show as `CMD_REJECTED`.
+Revoking a station clears it as a command station. Migration `0004-command-station.sql`.
 The console never holds a buoy's command key, so it cannot forge a radio command; at worst it can
 request a count in 1–3, which the buoy also range-checks.
 
@@ -147,6 +162,41 @@ Then:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
+
+## Storage guardrails (R2) and backups
+
+Backups and reports live in the R2 bucket **`scout-console-files`** (binding `FILES`, created
+2026-10-30, location hint WNAM). R2 has a free tier (10 GB stored, 1 million writes and 10 million
+reads a month, free egress and deletes) but **Cloudflare offers no hard spending cap**, so the
+console caps itself. Layer by layer:
+
+| Guardrail | Where | What it stops |
+|---|---|---|
+| Storage class **Standard**, never Infrequent Access | bucket default | IA has no free tier, retrieval fees and a 30-day minimum charge |
+| Lifecycle rules: `backups/` deleted after 35 days, `reports/` after 2, anything else after 60, unfinished uploads after 1 | bucket (`wrangler r2 bucket lifecycle list scout-console-files`) | Files piling up, even if the Worker stops running |
+| Every R2 call goes through `worker/storage.js` and is counted in D1 first | Worker | A bug or a loop calling R2 without limit |
+| Monthly ceilings: **100,000 writes** (10% of free), **1,000,000 reads** (10%) | `BUDGET` in `worker/storage.js` | Operation charges; past the ceiling the call is refused and R2 is never reached |
+| **2 GB stored** (20% of free), summed from the console's own ledger, not a billable list call | same | Storage charges |
+| **25 MB** per object; writes only under `backups/` or `reports/` | same | One huge file; files no lifecycle rule would delete |
+| Admin-only **File storage** panel (Settings → Buoys) | front end | Use you can't see |
+
+At one backup a night the console uses about 30 writes a month. One thing only a person can add:
+a Cloudflare **billing notification** (dashboard → Notifications → Add → *Usage Based Billing*),
+which emails you if any usage is ever billed.
+
+**Nightly backup** (Phase E, [SCO-241](https://linear.app/scout1/issue/SCO-241)): a cron trigger at 10:30 UTC (`wrangler.toml`)
+writes `backups/YYYY-MM-DD.sql.gz`, a gzipped dump of every table as SQL `INSERT`s (sessions,
+failed sign-ins and the storage ledger left out). To restore into an empty database:
+
+```bash
+npx wrangler r2 object get scout-console-files/backups/2026-10-31.sql.gz --remote --file backup.sql.gz
+gunzip backup.sql.gz
+npx wrangler d1 migrations apply scout-console --remote     # the schema first
+npx wrangler d1 execute scout-console --remote --file backup.sql
+```
+
+Everyone has to sign in again afterwards. Migration `0006-storage-budget.sql` adds the ledger.
+The custom domain (the rest of Phase E) is `console.scoutscu.com`; see below.
 
 ## Custom domain: scoutscu.com (one-time, needs the account owners)
 
