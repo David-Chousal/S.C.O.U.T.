@@ -255,7 +255,7 @@ buoy ──LoRa──► shore Pi
                  │        the simulator otherwise — real data is never banner-labelled
                  │  4. run_telemetry.py builds the site; deploy-pages publishes it
                  ▼
-        GitHub Pages serves it  ──►  https://david-chousal.github.io/S.C.O.U.T./
+        GitHub Pages serves it  ──►  https://scoutscu.com (custom domain; github.io forwards there)
 ```
 
 > **The Pi publishes data, not HTML.** Two things make that the only workable split, and both

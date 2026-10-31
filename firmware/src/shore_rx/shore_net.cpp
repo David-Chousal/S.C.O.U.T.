@@ -19,7 +19,7 @@
  * build with no secrets drops as unreachable. Never flash it. */
 #define SHORE_WIFI_SSID "link-check"
 #define SHORE_WIFI_PASSWORD ""
-#define SHORE_CONSOLE_URL "https://scout-console.scout1.workers.dev"
+#define SHORE_CONSOLE_URL "https://console.scoutscu.com"
 #define SHORE_CONSOLE_TOKEN "scd_link_check"
 #define SHORE_HAVE_SECRETS 1
 #else
