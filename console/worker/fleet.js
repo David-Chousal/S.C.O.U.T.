@@ -75,3 +75,21 @@ export async function requestTxCount(db, actor, buoyId, value) {
     before: { requested: buoy.tx_count_requested, reported: buoy.tx_count_reported }, after: { requested: count } });
   return {};
 }
+
+/** Pick (or with null, unpick) the one shore station that sends a buoy's downlink commands. */
+export async function setCommandStation(db, actor, buoyId, deviceId) {
+  const buoy = await db.prepare("SELECT * FROM buoys WHERE buoy_id = ?").bind(Number(buoyId)).first();
+  if (!buoy) return { error: "No such buoy." };
+  let device = null;
+  if (deviceId !== null && deviceId !== undefined) {
+    device = await db.prepare("SELECT id, name FROM devices WHERE id = ? AND revoked_at IS NULL").bind(String(deviceId)).first();
+    if (!device) return { error: "Pick an active shore station." };
+  }
+  const previous = buoy.command_device_id
+    ? await db.prepare("SELECT name FROM devices WHERE id = ?").bind(buoy.command_device_id).first()
+    : null;
+  await db.prepare("UPDATE buoys SET command_device_id = ? WHERE buoy_id = ?").bind(device?.id ?? null, buoy.buoy_id).run();
+  await record(db, { actor, action: "buoy.command_station", target: buoy.label,
+    before: { station: previous?.name ?? null }, after: { station: device?.name ?? null } });
+  return {};
+}

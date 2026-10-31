@@ -34,7 +34,10 @@ export async function createDevice(db, actor, name) {
 export async function revokeDevice(db, actor, id) {
   const device = await db.prepare("SELECT * FROM devices WHERE id = ? AND revoked_at IS NULL").bind(id).first();
   if (!device) return { error: "That token is already revoked." };
-  await db.prepare("UPDATE devices SET revoked_at = ? WHERE id = ?").bind(Date.now(), id).run();
+  await db.batch([
+    db.prepare("UPDATE devices SET revoked_at = ? WHERE id = ?").bind(Date.now(), id),
+    db.prepare("UPDATE buoys SET command_device_id = NULL WHERE command_device_id = ?").bind(id),
+  ]);
   await record(db, { actor, action: "device.revoke", target: device.name });
   return {};
 }
@@ -125,8 +128,12 @@ export async function handleDeviceApi(request, env, path) {
   const device = await authenticate(env.DB, request);
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
+    // Only this buoy's command station hears about a request; a lone station is everyone's.
     const { results } = await env.DB
-      .prepare("SELECT buoy_id, tx_count_requested FROM buoys WHERE tx_count_requested IS NOT NULL ORDER BY buoy_id")
+      .prepare("SELECT buoy_id, tx_count_requested FROM buoys WHERE tx_count_requested IS NOT NULL AND " +
+        "(command_device_id = ? OR (command_device_id IS NULL AND " +
+        "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1)) ORDER BY buoy_id")
+      .bind(device.id)
       .all();
     return json({ buoys: results });
   }

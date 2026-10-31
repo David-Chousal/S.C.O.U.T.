@@ -7,6 +7,7 @@ const ACTIONS: Record<string, string> = {
   "buoy.add": "Added buoy",
   "buoy.rename": "Renamed buoy",
   "buoy.tx_count": "Requested transmit count",
+  "buoy.command_station": "Picked command station",
   "device.create": "Created station token",
   "device.revoke": "Revoked station token",
   "invite.create": "Invited",
@@ -27,6 +28,7 @@ const FIELDS: Record<string, string> = {
   role: "Role",
   requested: "Requested",
   reported: "Reported",
+  station: "Station",
 };
 
 export function actionLabel(action: string): string {

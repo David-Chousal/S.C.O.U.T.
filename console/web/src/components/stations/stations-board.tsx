@@ -14,6 +14,7 @@ import { lastHeard, packetLabel } from "@/lib/format";
 import { can, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
+import { CommandStation } from "./command-station";
 
 const HOUR = 3600 * 1000;
 
@@ -62,12 +63,14 @@ export function StationsBoard() {
   const [created, setCreated] = useState<{ name: string; token: string } | null>(null);
   const [now] = useState(() => Date.now());
   const allowed = can(user.role, "devices.write");
+  const active = (devices.data?.devices ?? []).filter((device) => !device.revoked_at);
 
   async function revoke(device: Device) {
     try {
       await api.revokeDevice(device.id);
       show({ tone: "ok", title: `Revoked ${device.name}'s token`, detail: "It can no longer push readings or read settings." });
       devices.reload();
+      fleet.reload();
     } catch (failure) {
       show({ tone: "failed", title: "Not revoked", detail: failure instanceof Error ? failure.message : undefined });
     }
@@ -87,7 +90,8 @@ export function StationsBoard() {
               const signal = freshness(lastHeard(buoy), now, 9 * HOUR);
               return (
                 <div key={buoy.buoy_id} className="sc-list__row">
-                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>{packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /> · {buoy.tx_count_reported ?? "—"} a day</span></span>
+                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>{packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /> · {buoy.tx_count_reported ?? "—"} a day</span>
+                    <CommandStation buoy={buoy} stations={active} canPick={allowed} onChanged={fleet.reload} /></span>
                   <span className="sc-list__end"><SignalMeter {...signal} /></span>
                 </div>
               );
