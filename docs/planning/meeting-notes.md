@@ -1167,3 +1167,73 @@ owners below are inferred from what was said.
 | Apply for Environmental Engineering storage space for the tub | John ([SCO-262](https://linear.app/scout1/issue/SCO-262)) |
 | Write up the coral and snapping-shrimp noise profile for the filter | David ([SCO-263](https://linear.app/scout1/issue/SCO-263)) |
 | Hazard form signature; School of Engineering to collect forms | John ([SCO-211](https://linear.app/scout1/issue/SCO-211)) |
+
+## 2026-10-30 — S.C.O.U.T. weekly meeting
+
+**Attendees** — David Chousal Cantu · John Ryan Myrdal · Isabella Rodriguez (first 15 minutes) · Navid Shaghaghi. Source: Granola
+([transcript and notes](https://notes.granola.ai/t/22ae96fa-068b-4acd-8595-6777f510ee22)).
+
+### Decisions and direction
+
+- **Next week's MVP is one LoRa hop:** the sensor unit sends to the shore station, which is plugged into a laptop over USB. No WiFi. David and Isabella
+  integrate on Thu Nov 5, before Shoba's Friday visit; David's backend comes after the link works ([SCO-155](https://linear.app/scout1/issue/SCO-155)).
+- **On campus the shore station uses a phone hotspot, not BroncoFi.** The campus firewall would need the device whitelisted. Navid: test the hotspot
+  beforehand, not on the day ([SCO-237](https://linear.app/scout1/issue/SCO-237)).
+- **The console device token stays compiled into the shore firmware for now** (from the git-ignored `shore_secrets.h`); a secret manager is deferred.
+- **The hydrophone is ordered through the department.** Shoba approved; the department admin (Cathy) places it and the cost moves from the senior design
+  budget when those funds arrive. Isabella orders Mon Nov 2 ([SCO-158](https://linear.app/scout1/issue/SCO-158)).
+- **Shoba's whole-team meeting takes the Fri Nov 6 weekly slot**, since John is travelling to a conference that week ([SCO-260](https://linear.app/scout1/issue/SCO-260)).
+
+### Status reported
+
+- **Isabella (electronics):** M0 + Adalogger and the shore station (LoRa FeatherWing + ESP32-S3) assembled. Temperature and leak (SHT40 humidity and
+  temperature) sensors soldered, with heat shrink on the probe leads, tested in a cup of water and passing; data read on her laptop over USB; both
+  temperature readings calibrated. Shore station not yet tested. Mouser order arrived today with the turbidity sensor. Aims for all three sensors working
+  by end of next week. Test protocols drafted and sent to Shoba (not yet reviewed); Wednesday's advisor meeting wants a temperature demo with cups of water.
+- **John (mechanical):** both buoys fully printed and current; electronics housing printed, cap printing (the oversized box will shrink once the electronics
+  are final). Buoyancy simulator live on the website; one bug needs STEP files re-uploaded. Permitting: Monterey charges $250 to review and $250 to proceed;
+  about 30 cold emails out, Shoba asking boat owners she knows.
+- **David (software):** demoed the team console: fleet and station management, buoys added by ID, admin roles for the team, audit log, dark mode, UTC
+  throughout. A station gets a one-time device token to paste into the firmware. Stack: React front end, Workers back end on Cloudflare's free plan.
+
+### Questions Navid raised
+
+- **Two buoys and two shore stations:** a broadcast heard by both stations could be double counted. David called deduplication not yet built and fine for one
+  buoy and one station. See the contradiction below.
+- **Free-plan limits:** will Cloudflare's free tier limit access once a lot of data arrives? He suggested a dedicated database (MySQL; David raised Supabase).
+- **Simulator usability:** not intuitive for non-engineers; needs labels and context. John agreed to fix it, David offered to help
+  ([SCO-229](https://linear.app/scout1/issue/SCO-229), reopened).
+- **Santa Cruz as a test site:** John has access to a yacht club there and can ask members in person ([SCO-195](https://linear.app/scout1/issue/SCO-195)).
+
+### Plan
+
+| When | What |
+|---|---|
+| Mon Nov 2 | Hydrophone ordered; Isabella at Shoba's office hours about the protocols; turbidity wiring starts |
+| Before Thu Nov 5 | Hotspot tested with the shore station |
+| Wed Nov 4 | Advisor meeting; temperature demo |
+| Thu Nov 5 | David + Isabella: LoRa one hop, sensor unit to shore station over USB |
+| Fri Nov 6 | Shoba meets the team in the weekly slot; John travelling |
+| Week of Nov 9 | John at the conference, on Zoom (Fri Nov 13 meeting) |
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Console storage is Cloudflare Workers + KV | Workers + **D1** (`console/wrangler.toml`, [ADR-0012](../decisions/0012-authenticated-console.md)) |
+| Deduplication is not built yet | The console stores readings with `INSERT OR IGNORE` on `(buoy_id, record_seq, timestamp_utc)` (decision log 2026-10-30), so a second station's copy should be dropped. Never tested with two stations, and which station heard a reading is not recorded |
+| Shoba's meeting replaces John's slot on Nov 6 | [SCO-260](https://linear.app/scout1/issue/SCO-260) wants all three members there, with John presenting |
+| "ESEN department" (Granola summary) | Probably ECEN; to confirm |
+
+### Action items
+
+| Item | Owner |
+|---|---|
+| Resend the GitHub and Linear invites to Navid and tell him to check spam | David (not in Linear: issue limit) |
+| Test the phone hotspot with the shore station before Thursday | David ([SCO-237](https://linear.app/scout1/issue/SCO-237)) |
+| LoRa one hop, sensor unit to shore station over USB, Thu Nov 5 | David + Isabella ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
+| Order the hydrophone Monday | Isabella ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
+| Push the testing protocols and merge them with John's version; file the temperature and leak test records | Isabella ([SCO-258](https://linear.app/scout1/issue/SCO-258), [SCO-259](https://linear.app/scout1/issue/SCO-259)) |
+| Make the buoyancy simulator understandable to non-engineers | John, David helping ([SCO-229](https://linear.app/scout1/issue/SCO-229)) |
+| Ask the Santa Cruz yacht club about a test site | John ([SCO-195](https://linear.app/scout1/issue/SCO-195)) |
+| Test two stations uploading the same reading; size data against the D1 free plan | David (not in Linear: issue limit; [open questions](../hub/research/open-questions.md)) |
