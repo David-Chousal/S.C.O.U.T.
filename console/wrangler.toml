@@ -2,6 +2,12 @@ name = "scout-console"
 main = "worker/index.js"
 compatibility_date = "2025-10-01"
 
+# The console's address (2026-10-30). Cloudflare creates the DNS record and certificate on deploy;
+# the scoutscu.com zone must already be in the same Cloudflare account. workers.dev stays on so
+# shore stations flashed with the old URL keep pushing; browsers there are sent here (index.js).
+routes = [{ pattern = "console.scoutscu.com", custom_domain = true }]
+workers_dev = true
+
 # The front end (console/web, a Next.js static export). Build it first: cd web && npm run build.
 # run_worker_first: every request reaches the Worker, which serves /api and /auth itself and
 # gives each HTML page a fresh script nonce and CSP before it leaves (worker/index.js).
@@ -15,7 +21,7 @@ html_handling = "auto-trailing-slash"
 # Public config only. Secrets are set with `wrangler secret put` and never committed:
 #   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET
 [vars]
-APP_URL = "https://scout-console.scout1.workers.dev"
+APP_URL = "https://console.scoutscu.com"
 BOOTSTRAP_ADMIN_EMAIL = ""                              # first admin; only used while no users exist
 GITHUB_CLIENT_ID = ""
 GOOGLE_CLIENT_ID = ""

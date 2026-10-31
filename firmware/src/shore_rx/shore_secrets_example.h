@@ -15,7 +15,7 @@
 
 #define SHORE_WIFI_SSID ""
 #define SHORE_WIFI_PASSWORD ""
-#define SHORE_CONSOLE_URL "https://scout-console.scout1.workers.dev"
+#define SHORE_CONSOLE_URL "https://console.scoutscu.com"
 #define SHORE_CONSOLE_TOKEN ""
 
 #endif /* SHORE_SECRETS_H */

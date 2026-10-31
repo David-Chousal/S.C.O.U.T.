@@ -144,3 +144,14 @@ test("the Worker entry module exports only its handler, as workerd requires", as
   const entry = await import("../worker/index.js");
   assert.deepEqual(Object.keys(entry), ["default"]);
 });
+
+test("another host sends browsers to APP_URL, but shore stations keep pushing on the old URL", async () => {
+  const env = makeEnv();
+  const old = "https://scout-console.scout1.workers.dev";
+  const page = await worker.fetch(new Request(`${old}/fleet/?b=2`), env);
+  assert.equal(page.status, 301);
+  assert.equal(page.headers.get("Location"), `${APP_URL}/fleet/?b=2`);
+  const device = await worker.fetch(new Request(`${old}/api/device/settings`), env);
+  assert.equal(device.status, 401, "reaches the device API, which wants a token");
+  assert.equal((await worker.fetch(new Request(`${old}/healthz`), env)).status, 200);
+});

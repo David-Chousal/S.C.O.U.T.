@@ -1,6 +1,7 @@
 /* Root certificates the shore station trusts for the console's HTTPS (SCO-237).
  *
- * The console runs on Cloudflare (scout-console.scout1.workers.dev), whose certificates come from
+ * The console runs on Cloudflare (console.scoutscu.com, a custom domain, and its old
+ * scout-console.scout1.workers.dev address), whose certificates come from
  * Google Trust Services, Let's Encrypt or SSL.com and can change between them on renewal, so the
  * station trusts all three roots rather than pinning today's chain (GTS WE1 -> GTS Root R4,
  * checked 2026-10-28). If the console ever moves to a CA outside this list, the push fails with a

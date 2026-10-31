@@ -22,8 +22,12 @@ CONTACT_EMAIL = "davidchousal@icloud.com"
 # and update ALLOWED_ORIGIN/CONTEXT_URL in chatbot/wrangler.toml to match.
 CHAT_ENDPOINT = "https://scout-chat.scout1.workers.dev"
 
-# (slug, label, optional-on-mobile, in-header). Home slug is "" (site root). Fleet is in the
-# footer only for now.
+# The team console (console/, ADR-0012): a separate, signed-in app on its own subdomain. The nav
+# links to it like any page; the site never loads anything from it.
+CONSOLE_URL = "https://console.scoutscu.com"
+
+# (slug, label, optional-on-mobile, in-header). Home slug is "" (site root), and an absolute URL
+# is an external link. Fleet is in the footer only for now.
 _NAV = (
     ("", "Home", False, True),
     ("technology/", "Technology", True, True),
@@ -31,12 +35,15 @@ _NAV = (
     ("analytics/", "Analytics", False, True),
     ("fleet/", "Fleet", True, False),
     ("about/", "About", True, True),
+    (CONSOLE_URL, "Console", True, True),
 )
 _ACTIVE_SLUG = {"home": "", "technology": "technology/", "science": "science/",
                 "analytics": "analytics/", "fleet": "fleet/", "about": "about/"}
 
 
 def _href(base: str, slug: str) -> str:
+    if slug.startswith("https://"):
+        return slug
     return (base + slug) or "./"
 
 

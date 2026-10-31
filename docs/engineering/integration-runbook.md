@@ -78,7 +78,7 @@ measuring current or continuity · putting sensors in water · siting antennas �
 | Settings downlink (`SET_TX_COUNT`, HMAC-signed) | ⚠️ Written, **off in every shipped build**; waits on Isabella's sign-off of the listen window and the FeatherWing's FCC check (G10) | [SCO-198](https://linear.app/scout1/issue/SCO-198) |
 | Bench tooling: clock set (`set_rtc.py`), bench receiver (`feather_m0_rx`), transmit-every-minute build (`feather_m0_bench`), frame decoder (`decode_frames.py`) | ⚠️ Written and built, never run on hardware | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186) |
 | Shore software on a computer (decode, dedupe, CSV store, SD import, publish, **USB bridge from the S3**, console sync) | ✅ 129 tests pass on simulated data and a pseudo-terminal; Python, stdlib only | [`shore/`](../../shore/), [SCO-257](https://linear.app/scout1/issue/SCO-257) |
-| Team console (Cloudflare Worker + D1): sign-in, roles, Fleet, Stations, Team, Audit, device API | ✅ **Live** at <https://scout-console.scout1.workers.dev> since 2026-10-26; 43 Worker and 41 front-end tests pass | [`console/`](../../console/README.md), [ADR-0012](../decisions/0012-authenticated-console.md) |
+| Team console (Cloudflare Worker + D1): sign-in, roles, Fleet, Stations, Team, Audit, device API | ✅ **Live** at <https://console.scoutscu.com> since 2026-10-26; 43 Worker and 41 front-end tests pass | [`console/`](../../console/README.md), [ADR-0012](../decisions/0012-authenticated-console.md) |
 | Analytics pipeline | ✅ 289 telemetry tests and 29 acoustic-reference tests pass on simulated data | [`analytics/`](../../analytics/) |
 | Public site + dashboard | ✅ Deployed (simulated data until real CSVs land in `shore/data-live/`) | [Live Dashboard](live-dashboard.md) |
 | Firmware over-the-air updates | 🔴 Decided, not built — reflashing still needs USB | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [SCO-197](https://linear.app/scout1/issue/SCO-197) |
@@ -561,7 +561,7 @@ leaks; battery use on track for 12 months.
 
 ### Connect a buoy to the console, so its readings update there automatically ⚠️ UNVERIFIED end to end
 
-The team console (<https://scout-console.scout1.workers.dev>, [`console/`](../../console/README.md))
+The team console (<https://console.scoutscu.com>, [`console/`](../../console/README.md))
 is where readings land live and where a buoy's transmit count is changed. Once these steps are
 done, every reading the shore station hears shows up on the console with no one running anything.
 
@@ -582,7 +582,7 @@ done, every reading the shore station hears shows up on the console with no one 
      cd shore
      python3 scripts/run_receiver.py --link serial --serial /dev/cu.usbmodem1101 --out data-live
      # in another terminal, every few minutes (e.g. from cron):
-     SCOUT_CONSOLE_URL=https://scout-console.scout1.workers.dev SCOUT_CONSOLE_TOKEN=scd_… \
+     SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… \
        python3 scripts/sync_console.py --data data-live
      ```
 

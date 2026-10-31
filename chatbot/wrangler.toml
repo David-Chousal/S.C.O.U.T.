@@ -5,6 +5,7 @@ compatibility_date = "2024-11-01"
 # Public config. The Groq API key is NOT here — it is a secret set with:
 #   wrangler secret put GROQ_API_KEY
 [vars]
-CONTEXT_URL = "https://david-chousal.github.io/S.C.O.U.T./chat-context.txt"
-ALLOWED_ORIGIN = "https://david-chousal.github.io"
+# The site moved to its custom domain on 2026-10-30; github.io now redirects there.
+CONTEXT_URL = "https://scoutscu.com/chat-context.txt"
+ALLOWED_ORIGIN = "https://scoutscu.com"
 MODEL = "openai/gpt-oss-120b"

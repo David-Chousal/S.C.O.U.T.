@@ -70,10 +70,22 @@ function flash(request) {
   return response;
 }
 
+/** The console lives at APP_URL. A browser that reaches it on another host the Worker answers on,
+ * such as the old workers.dev address, is sent there; shore stations flashed with the old URL keep
+ * using the device API on it until they are re-flashed. */
+function otherHostRedirect(request, appUrl) {
+  const url = new URL(request.url);
+  const home = new URL(appUrl);
+  if (url.host === home.host) return null;
+  return Response.redirect(new URL(url.pathname + url.search, home).toString(), 301);
+}
+
 async function route(request, env) {
   const path = new URL(request.url).pathname;
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
+  const elsewhere = otherHostRedirect(request, env.APP_URL);
+  if (elsewhere) return elsewhere;
   if (path.startsWith("/api/")) {
     if (!bodyWithin(request, path === "/api/flash" ? 0 : MAX_BODY_BYTES)) {
       return apiError("The request was too large, or sent without a length.", 413);
