@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import estimates from "../../../worker/battery-life.json";
 import { freshness } from "@/components/stations/stations-board";
 import type { Estimates } from "./api/types";
-import { lifeFor, months, plural, utc } from "./format";
+import { lastHeard, lifeFor, months, packetLabel, plural, utc } from "./format";
 import { can, needs } from "./session";
 
 const HOUR = 3600 * 1000;
@@ -52,5 +52,20 @@ describe("session roles mirror the Worker", () => {
     expect(can("member", "settings.write")).toBe(true);
     expect(can("member", "devices.write")).toBe(false);
     expect(can("admin", "users.disable")).toBe(true);
+  });
+});
+
+describe("a buoy whose clock was lost", () => {
+  const good = { clock_lost: 0, reported_at: Date.UTC(2026, 2, 1), last_seen_at: Date.UTC(2026, 2, 5) };
+  const lost = { ...good, clock_lost: 1 };
+
+  test("is judged by when its row arrived, not by its own timestamp", () => {
+    expect(lastHeard(good)).toBe(good.reported_at);
+    expect(lastHeard(lost)).toBe(lost.last_seen_at);
+  });
+
+  test("says so instead of showing a time it cannot vouch for", () => {
+    expect(packetLabel(good)).toBe("newest packet");
+    expect(packetLabel(lost)).toBe("buoy clock lost · last heard");
   });
 });

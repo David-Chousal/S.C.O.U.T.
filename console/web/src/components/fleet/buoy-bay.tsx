@@ -7,7 +7,7 @@ import { Ago } from "@/components/ui/ago";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, Estimates } from "@/lib/api/types";
-import { COUNT_SIGNAL, lifeFor, months } from "@/lib/format";
+import { COUNT_SIGNAL, lastHeard, lifeFor, months, packetLabel } from "@/lib/format";
 
 interface BuoyBayProps {
   buoy: Buoy;
@@ -59,7 +59,7 @@ export function BuoyBay({ buoy, estimates, slotLabels, canChange, onChanged }: B
         <div>
           <dt className="sc-tag">Buoy reports</dt>
           <dd>{buoy.tx_count_reported ? `${buoy.tx_count_reported} a day` : "Not yet"}
-            <small>newest packet <Ago ms={buoy.reported_at} /></small>
+            <small>{packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /></small>
           </dd>
         </div>
       </dl>

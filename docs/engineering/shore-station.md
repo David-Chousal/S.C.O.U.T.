@@ -39,7 +39,8 @@ open is listed under [Open items](#open-items).
 3. **Push to the dashboard over WiFi.**
 4. **Downlink (ADR-0008):** send firmware images and settings to the buoys in their listen windows.
 5. **Serve more than one buoy** (two planned), deduplicating any repeated reading on
-   `(buoy_id, record_seq)`.
+   `(buoy_id, record_seq, timestamp_utc)` (a buoy that loses power restarts `record_seq` at 0, so the timestamp is part of
+   the key; a repeat always carries its original's timestamp).
 
 Raw audio never crosses the link; it stays on the buoy's SD card and is processed after retrieval.
 
@@ -58,7 +59,7 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 **On the S3 — receive half written, not yet run on the board** (`firmware/src/shore_rx/`, env
 `feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)). It copies the bench
 receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
-decodes it with `scout_packet_decode`, drops repeats on `(buoy_id, record_seq)`, and tags it in or
+decodes it with `scout_packet_decode`, drops repeats on `(buoy_id, record_seq, timestamp)`, and tags it in or
 out of the ±2 min window around a slot. **The slots it tags against follow the daily transmit
 count** ([SCO-198](https://linear.app/scout1/issue/SCO-198)): the count the frame reports (v4,
 flags bits 8–9), else the count requested for that buoy, else the default 3. 1 → 00:10,
@@ -86,7 +87,7 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
   of two buoys offline; when full the oldest is dropped and counted) and pushed in batches of 20 to
   `POST /api/device/readings` over HTTPS with the station's device token. A failed push is retried
   with a backoff from 5 s to 10 min; a reading the console refuses as invalid is dropped so it
-  cannot block the rest. Re-sending is safe: the console stores each `(buoy_id, record_seq)` once.
+  cannot block the rest. Re-sending is safe: the console stores each `(buoy_id, record_seq, timestamp_utc)` once.
 - **Rows match the Python to the character** (`lib/scout_console`): the console keeps rows as sent
   and the computer bridge and SD import build the same rows in Python, so numbers are formatted
   with exact rounding rather than `printf`. `firmware/test/test_console/row_vectors.h`, generated

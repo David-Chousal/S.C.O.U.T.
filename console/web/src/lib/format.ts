@@ -1,6 +1,6 @@
 // Shared formatting: every time is UTC (the buoy and the shore keep UTC), every estimate says so.
 
-import type { CountState, Estimates, LifeRow } from "./api/types";
+import type { Buoy, CountState, Estimates, LifeRow } from "./api/types";
 
 export function utc(ms: number | null | undefined): string {
   if (!ms) return "—";
@@ -27,6 +27,17 @@ export function ago(ms: number | null | undefined, now: number = Date.now()): st
   const hours = Math.floor(minutes / 60);
   if (hours < 48) return `${hours} h ago`;
   return `${Math.floor(hours / 24)} d ago`;
+}
+
+/** When a buoy was last heard from. A buoy whose clock lost power stamps its rows with a time
+ * it cannot vouch for, so its own timestamp is not shown; when the row arrived is. */
+export function lastHeard(buoy: Pick<Buoy, "clock_lost" | "reported_at" | "last_seen_at">): number | null {
+  return buoy.clock_lost ? buoy.last_seen_at : buoy.reported_at;
+}
+
+/** The words before lastHeard's time, which the page shows as "… 12 min ago" (components/ui/ago.tsx). */
+export function packetLabel(buoy: Pick<Buoy, "clock_lost">): string {
+  return buoy.clock_lost ? "buoy clock lost · last heard" : "newest packet";
 }
 
 export function plural(count: number, word: string, many = `${word}s`): string {

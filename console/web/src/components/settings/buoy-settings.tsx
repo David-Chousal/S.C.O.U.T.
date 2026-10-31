@@ -10,7 +10,7 @@ import { Ago } from "@/components/ui/ago";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
-import { COUNT_SIGNAL } from "@/lib/format";
+import { COUNT_SIGNAL, lastHeard, packetLabel } from "@/lib/format";
 import { can, needs, useSession } from "@/lib/session";
 
 const STATUS_BADGE: Record<FirmwareSetting["status"], string> = {
@@ -59,7 +59,7 @@ function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean
             <strong>{buoy.tx_count_requested ? `${buoy.tx_count_requested} requested` : "Default (3)"}</strong>
             <SignalMeter state={signal.state} lit={signal.lit} word={signal.word} />
           </span>
-          <span className="sc-help">Buoy reports {buoy.tx_count_reported ?? "—"} a day · newest packet <Ago ms={buoy.reported_at} /> ·{" "}
+          <span className="sc-help">Buoy reports {buoy.tx_count_reported ?? "—"} a day · {packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /> ·{" "}
             <Link className="sc-link" href="/fleet/">change it on Fleet</Link></span>
         </div>
         <div className="sc-settings-form__foot">

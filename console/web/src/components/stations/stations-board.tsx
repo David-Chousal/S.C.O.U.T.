@@ -9,6 +9,7 @@ import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Device, Fleet } from "@/lib/api/types";
+import { lastHeard, packetLabel } from "@/lib/format";
 
 import { can, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
@@ -83,10 +84,10 @@ export function StationsBoard() {
         {fleet.data.buoys.length === 0 ? <p className="sc-help">No buoy has reported yet.</p> : (
           <div className="sc-list">
             {fleet.data.buoys.map((buoy) => {
-              const signal = freshness(buoy.reported_at, now, 9 * HOUR);
+              const signal = freshness(lastHeard(buoy), now, 9 * HOUR);
               return (
                 <div key={buoy.buoy_id} className="sc-list__row">
-                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>newest packet <Ago ms={buoy.reported_at} /> · {buoy.tx_count_reported ?? "—"} a day</span></span>
+                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>{packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /> · {buoy.tx_count_reported ?? "—"} a day</span></span>
                   <span className="sc-list__end"><SignalMeter {...signal} /></span>
                 </div>
               );
