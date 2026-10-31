@@ -32,3 +32,16 @@ database_name = "scout-console"
 # From `wrangler d1 create scout-console`. Not a secret, but specific to the owner's account.
 database_id = "7d99a9ad-151d-417f-9113-52490c04382e"
 migrations_dir = "migrations"
+
+# Files: nightly backups and downloadable reports (Phase E/D, SCO-241). Every call goes through
+# worker/storage.js, which caps operations and stored bytes well under R2's free tier. The bucket
+# (Standard storage class) has lifecycle rules deleting backups/ after 35 days, reports/ after 2,
+# anything else after 60, and unfinished uploads after 1 (console/README.md → Storage guardrails).
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "scout-console-files"
+
+# The nightly backup to R2, at 10:30 UTC (00:30 in Hawaii, after the buoys' 00:10 slot).
+[triggers]
+crons = ["30 10 * * *"]
+

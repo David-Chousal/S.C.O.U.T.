@@ -163,6 +163,7 @@ Then:
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
 
+<<<<<<< HEAD
 ## Custom domain: scoutscu.com (one-time, needs the account owners)
 
 The public site lives at `scoutscu.com` (still built and hosted by GitHub Pages) and the console at
@@ -193,6 +194,42 @@ deployed.
 7. **When OAuth apps are set up**, use `https://console.scoutscu.com/auth/<github|google>/callback`.
 
 Sign-in sessions are per address, so everyone signs in once more on the new domain.
+=======
+## Storage guardrails (R2) and backups
+
+Backups and reports live in the R2 bucket **`scout-console-files`** (binding `FILES`, created
+2026-10-30, location hint WNAM). R2 has a free tier (10 GB stored, 1 million writes and 10 million
+reads a month, free egress and deletes) but **Cloudflare offers no hard spending cap**, so the
+console caps itself. Layer by layer:
+
+| Guardrail | Where | What it stops |
+|---|---|---|
+| Storage class **Standard**, never Infrequent Access | bucket default | IA has no free tier, retrieval fees and a 30-day minimum charge |
+| Lifecycle rules: `backups/` deleted after 35 days, `reports/` after 2, anything else after 60, unfinished uploads after 1 | bucket (`wrangler r2 bucket lifecycle list scout-console-files`) | Files piling up, even if the Worker stops running |
+| Every R2 call goes through `worker/storage.js` and is counted in D1 first | Worker | A bug or a loop calling R2 without limit |
+| Monthly ceilings: **100,000 writes** (10% of free), **1,000,000 reads** (10%) | `BUDGET` in `worker/storage.js` | Operation charges; past the ceiling the call is refused and R2 is never reached |
+| **2 GB stored** (20% of free), summed from the console's own ledger, not a billable list call | same | Storage charges |
+| **25 MB** per object; writes only under `backups/` or `reports/` | same | One huge file; files no lifecycle rule would delete |
+| Admin-only **File storage** panel (Settings → Buoys) | front end | Use you can't see |
+
+At one backup a night the console uses about 30 writes a month. One thing only a person can add:
+a Cloudflare **billing notification** (dashboard → Notifications → Add → *Usage Based Billing*),
+which emails you if any usage is ever billed.
+
+**Nightly backup** (Phase E, [SCO-241](https://linear.app/scout1/issue/SCO-241)): a cron trigger at 10:30 UTC (`wrangler.toml`)
+writes `backups/YYYY-MM-DD.sql.gz`, a gzipped dump of every table as SQL `INSERT`s (sessions,
+failed sign-ins and the storage ledger left out). To restore into an empty database:
+
+```bash
+npx wrangler r2 object get scout-console-files/backups/2026-10-31.sql.gz --remote --file backup.sql.gz
+gunzip backup.sql.gz
+npx wrangler d1 migrations apply scout-console --remote     # the schema first
+npx wrangler d1 execute scout-console --remote --file backup.sql
+```
+
+Everyone has to sign in again afterwards. Migration `0006-storage-budget.sql` adds the ledger.
+The custom domain (the rest of Phase E) waits until the team has a domain on Cloudflare.
+>>>>>>> origin/console/phase-b-api
 
 ## Develop and test
 

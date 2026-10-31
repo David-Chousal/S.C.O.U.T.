@@ -74,6 +74,9 @@ Decided by David, 2026-10-25:
    **Phase B built 2026-10-30** ([SCO-240](https://linear.app/scout1/issue/SCO-240)): personal API tokens (scoped, always
    expiring, acting with the owner's current role), `/api/v1` with a public OpenAPI file, a
    Readings page and a Developer page.
+   **Phase E (backups) built 2026-10-30:** nightly D1 dump to R2 behind self-imposed ceilings well
+   under the free tier, since R2 has no hard spending cap (David asked for guardrails against any
+   charge). The custom domain waits for a domain.
 
 7. **Front end: adopt and adapt the COR design system and web app** (David, 2026-10-25, decided
    after Phase A was built). COR is David's csen174 Next.js 16 / React 19 operator console. Its

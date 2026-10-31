@@ -19,6 +19,7 @@ const NEEDS = {
   "users.reset": "admin",
   "users.disable": "admin",
   "devices.write": "admin",
+  "storage.read": "admin",
 };
 
 export function isRole(value) {
