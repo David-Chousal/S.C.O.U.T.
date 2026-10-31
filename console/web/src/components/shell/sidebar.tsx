@@ -10,7 +10,8 @@ import { NAV_ITEMS, isCurrent } from "./nav";
 import { useGoShortcuts } from "./use-go-shortcuts";
 
 interface SidebarProps {
-  user: User;
+  /** Absent while the session loads: the nav shows, the signed-in footer waits. */
+  user?: User;
   onSignOut: () => void;
   /** "G then letter" shortcuts and their hints; off in Settings → This browser. */
   shortcuts?: boolean;
@@ -41,14 +42,14 @@ export function Sidebar({ user, onSignOut, shortcuts = true }: SidebarProps) {
             </Link>
           ))}
         </div>
-        <div className="sc-side__foot">
+        {user && <div className="sc-side__foot">
           <span className="sc-avatar" aria-hidden="true">{initials(user)}</span>
           <span className="sc-list__main">
             <strong>{user.name || user.email}</strong>
             <span>{ROLE_LABEL[user.role]}</span>
           </span>
           <Key size="sm" iconOnly icon="logout" aria-label="Sign out" className="sc-side__signout" onClick={onSignOut} />
-        </div>
+        </div>}
       </nav>
       <nav className="sc-bottomnav" aria-label="Main, compact">
         {NAV_ITEMS.map((item) => (

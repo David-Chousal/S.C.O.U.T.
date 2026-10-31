@@ -2,7 +2,7 @@
 .sc-fieldset { display: grid; gap: 6px; min-width: 0; }
 .sc-fieldset__label { display: flex; justify-content: space-between; gap: var(--space-2); }
 .sc-input { box-sizing: border-box; width: 100%; height: 34px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface-sunken); color: var(--ink); font: 400 14px/1 var(--font-sans); }
-.sc-input::placeholder { color: var(--ink-muted); }
+.sc-input::placeholder { color: var(--ink-muted); font-style: italic; }
 .sc-input:focus, .sc-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--accent); background: var(--surface); }
 .sc-input--mono { font: 400 13px/1 var(--font-mono); }
 .sc-input--select { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); text-align: left; cursor: pointer; }
