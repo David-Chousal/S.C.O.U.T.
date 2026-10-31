@@ -35,7 +35,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Page | Who can change it | What it is |
 |---|---|---|
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
-| Stations | admin | When each buoy and shore station was last heard from; the shore stations' device tokens (shown once, stored hashed) |
+| Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Audit log | (read only) | Every change: who, what, before → after |
 | Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
@@ -93,6 +93,11 @@ none of that.
 
 **Device API** (bearer token from the Stations page): `POST /api/device/readings`
 (`{"rows": [schema row, …]}`, ≤ 200 rows, ≤ 256 KB, repeats ignored) and `GET /api/device/settings`.
+A station is told a buoy's requested count only if it is that buoy's **command station** (picked by an
+admin on the Stations page), or if it is the only active station and none is picked; with two
+stations and none picked, nobody sends it. Two stations sending the same command in the buoy's 1 s
+listen window would collide, or one would be refused as a repeat and show as `CMD_REJECTED`.
+Revoking a station clears it as a command station. Migration `0004-command-station.sql`.
 The console never holds a buoy's command key, so it cannot forge a radio command; at worst it can
 request a count in 1–3, which the buoy also range-checks.
 
