@@ -14,9 +14,12 @@
  * Config (wrangler.toml [vars]; secrets set with `wrangler secret put`, never committed):
  *   APP_URL, BOOTSTRAP_ADMIN_EMAIL, GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID      vars
  *   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET                             secrets
- *   DB (D1), ASSETS (static assets)                                         bindings */
+ *   DB (D1), ASSETS (static assets), FILES (R2, guarded by storage.js)     bindings
+ *
+ * A cron trigger (wrangler.toml) runs the nightly backup to R2 (backup.js). */
 
 import { handleApi } from "./api.js";
+import { runBackup } from "./backup.js";
 import { FLASH_COOKIE, staticAsset } from "./assets.js";
 import { b64url, fromB64url } from "./crypto.js";
 import { handleDeviceApi } from "./device.js";
@@ -100,5 +103,10 @@ export default {
       console.error("console: unhandled", error instanceof Error ? error.stack : error);
       return apiError("Something failed on our side. It has been logged.", 500);
     }
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil?.(Promise.resolve());
+    await runBackup(env, event.scheduledTime);
   },
 };

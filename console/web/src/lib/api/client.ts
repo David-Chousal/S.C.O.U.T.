@@ -13,6 +13,7 @@ import {
   type Reading,
   type Role,
   type Session,
+  type StorageReport,
   type Team,
   type TokenList,
 } from "./types";
@@ -78,6 +79,7 @@ export const api = {
   createInvite: (email: string, role: Role) => call<{ link: string }>("POST", "/api/team/invites", { email, role }),
   revokeInvite: (id: string) => call<{ ok: true }>("POST", `/api/team/invites/${encodeURIComponent(id)}/revoke`),
   readings: (buoyId: number, limit = 50) => call<{ readings: Reading[] }>("GET", `/api/readings?buoy=${buoyId}&limit=${limit}`),
+  storage: () => call<StorageReport>("GET", "/api/storage"),
   tokens: () => call<TokenList>("GET", "/api/tokens"),
   createToken: (name: string, scopes: string[], days: number) =>
     call<{ token: string; id: string }>("POST", "/api/tokens", { name, scopes, days }),
