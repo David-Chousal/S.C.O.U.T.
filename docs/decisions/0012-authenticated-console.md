@@ -77,6 +77,8 @@ Decided by David, 2026-10-25:
    **Phase E (backups) built 2026-10-30:** nightly D1 dump to R2 behind self-imposed ceilings well
    under the free tier, since R2 has no hard spending cap (David asked for guardrails against any
    charge). The custom domain waits for a domain.
+   **Phase D built 2026-10-30:** CSV reports in R2 behind one-hour links, through the same
+   guardrails, and a printable report rendered in the browser (no storage).
 
 7. **Front end: adopt and adapt the COR design system and web app** (David, 2026-10-25, decided
    after Phase A was built). COR is David's csen174 Next.js 16 / React 19 operator console. Its

@@ -17,7 +17,7 @@ describe("Sidebar", () => {
   test("lists the console's destinations in order", () => {
     const main = screen.getByRole("navigation", { name: "Main" });
     const names = [...main.querySelectorAll(".sc-nav a")].map((a) => a.textContent?.replace(/G .$/, ""));
-    expect(names).toEqual(["Fleet", "Readings", "Stations", "Team", "Audit log", "Settings", "Developer", "Account"]);
+    expect(names).toEqual(["Fleet", "Readings", "Reports", "Stations", "Team", "Audit log", "Settings", "Developer", "Account"]);
   });
 
   test("marks the current page, trailing slash or not", () => {
@@ -42,7 +42,7 @@ describe("phone bottom bar", () => {
 describe("Sidebar while the session loads", () => {
   test("keeps the nav up and leaves out the signed-in footer", () => {
     render(<Sidebar onSignOut={vi.fn()} />);
-    expect(screen.getByRole("navigation", { name: "Main" }).querySelectorAll(".sc-nav a")).toHaveLength(8);
+    expect(screen.getByRole("navigation", { name: "Main" }).querySelectorAll(".sc-nav a")).toHaveLength(9);
     expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
   });
 });

@@ -166,3 +166,27 @@ export interface StorageReport {
   lastBackup: { key: string; bytes: number } | null;
   bound: boolean;
 }
+
+export interface ReportRequest {
+  buoys: number[];
+  /** UTC, like 2026-10-30T00:00:00Z. */
+  from: string;
+  to: string;
+  columns: string[];
+}
+
+export interface ReportItem {
+  id: string;
+  params: ReportRequest;
+  rows: number;
+  bytes: number;
+  created_at: number;
+  link_expires_at: number;
+  /** When R2 deletes the file. */
+  expires_at: number;
+}
+
+export interface ReportList {
+  reports: ReportItem[];
+  columns: string[];
+}

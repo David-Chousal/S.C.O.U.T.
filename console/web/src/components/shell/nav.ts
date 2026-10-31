@@ -13,6 +13,7 @@ export interface NavItem {
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/fleet/", label: "Fleet", icon: "analytics", key: "f" },
   { href: "/readings/", label: "Readings", icon: "data", key: "r" },
+  { href: "/reports/", label: "Reports", icon: "export", key: "e", desktopOnly: true },
   { href: "/stations/", label: "Stations", icon: "connections", key: "s" },
   { href: "/team/", label: "Team", icon: "team", key: "t" },
   { href: "/audit/", label: "Audit log", icon: "reports", key: "l", desktopOnly: true },

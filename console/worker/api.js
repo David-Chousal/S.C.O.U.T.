@@ -13,6 +13,7 @@ import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setC
 import { lastBackup } from "./backup.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { listReadings, readingsQuery } from "./readings.js";
+import { createReport, download, listReports, newLink, REPORT_COLUMNS } from "./reports.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
 import { BUDGET, usage } from "./storage.js";
@@ -67,6 +68,15 @@ async function signedOut(request, env, path, body) {
     const result = await guestSignIn(env.DB, String(body.name || ""), String(body.email || ""), clientIp(request));
     return result.user ? withSession(env, result.user) : apiError(result.error, result.status);
   }
+  const file = /^\/api\/reports\/([\w-]{1,64})\/file$/.exec(path);
+  if (file && request.method === "GET") {
+    const got = await download(env, file[1], new URL(request.url).searchParams.get("t") || "");
+    if (got.error) return apiError(got.error, got.status);
+    return new Response(got.body, { headers: {
+      "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="${got.filename}"`,
+      "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
+    } });
+  }
   const invite = /^\/api\/invites\/([\w-]{1,64})(\/accept)?$/.exec(path);
   if (invite) {
     const [, token, accept] = invite;
@@ -109,6 +119,8 @@ async function reads(env, path, session, url) {
     case "/api/storage":
       if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
       return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES) });
+    case "/api/reports":
+      return json({ reports: await listReports(env.DB, session.user.id), columns: REPORT_COLUMNS });
     case "/api/tokens":
       return json({ tokens: await listTokens(env.DB, session.user.id), scopes: SCOPES, expiryDays: EXPIRY_DAYS });
     case "/api/readings": {
@@ -140,6 +152,8 @@ const WRITES = [
     return result.error ? result : { link: link(env, "reset", result.token), email: result.email };
   }],
   [/^\/api\/team\/users\/([\w-]{1,64})\/(disable|enable)$/, "users.disable", (db, b, m, a) => setDisabled(db, a, m[1], m[2] === "disable")],
+  [/^\/api\/reports$/, "reports.write", (db, b, m, a, env) => createReport(env, a, b)],
+  [/^\/api\/reports\/([\w-]{1,64})\/link$/, "reports.write", (db, b, m, a, env) => newLink(env, a, m[1])],
   [/^\/api\/tokens$/, "tokens.write", (db, b, m, a) => createToken(db, a, b)],
   [/^\/api\/tokens\/([\w-]{1,64})\/revoke$/, "tokens.write", (db, b, m, a) => revokeToken(db, a, m[1])],
   [/^\/api\/devices$/, "devices.write", (db, b, m, a) => createDevice(db, a, b.name)],
@@ -164,7 +178,7 @@ async function writes(request, env, path, session, body) {
     if (!match) continue;
     if (!can(session.user, action)) return apiError("Your role can view this but not change it.", 403);
     const result = await handler(env.DB, body, match, actorOf(session), env);
-    if (result.error) return apiError(result.error, 400);
+    if (result.error) return apiError(result.error, result.status ?? 400);
     return json(result);
   }
   return apiError("not found", 404);
