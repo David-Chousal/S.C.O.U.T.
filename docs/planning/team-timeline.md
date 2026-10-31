@@ -70,7 +70,7 @@ every member completes before the next phase begins.
 
 **Window:** Sep 7 – Oct 23, 2026 (7 weeks, Fall Quarter)
 
-**Status:** 🟡 In progress — the active phase since 2026-09-24.
+**Status:** ✅ Completed 2026-10-30. Its 27 open issues moved to Phase 2, the bench work into a carried-over *Electronics bench bring-up (Stages 1–3)* milestone.
 
 **Goal:** Subsystem Bring-Up — All Three Tracks Running in Parallel
 
@@ -118,6 +118,8 @@ every member completes before the next phase begins.
 ## PHASE 2
 
 **Window:** Oct 22 – Dec 6, 2026 (6.5 weeks, Fall Quarter). Overlaps Phase 1 by two days and Phase 3 by one week, as set in Linear
+
+**Status:** 🟡 In progress — the active phase since Phase 1 closed on 2026-10-30.
 
 **Goal:** System Integration — Full Duty-Cycle Loop Running
 

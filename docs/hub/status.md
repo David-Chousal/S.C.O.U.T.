@@ -10,11 +10,9 @@
 
 ## Phase
 
-**Phase 1 — Subsystem Bring-Up** (2026-09-07 – 2026-10-23), In Progress — the active phase since
-2026-09-24. **Phase 0 — Kickoff was closed that day**, with its two unresolved design decisions —
-hydrophone part ([SCO-8](https://linear.app/scout1/issue/SCO-8)) and charging path
-([SCO-10](https://linear.app/scout1/issue/SCO-10)) — carried into Phase 1 along with every other
-open Phase 0 issue. Full plan:
+**Phase 2 — System Integration** (2026-10-22 – 2026-12-06), In Progress. **Phase 1 — Subsystem
+Bring-Up was closed on 2026-10-30**, with its 27 open issues (most of them the electronics bench
+work, Stages 1–3) moved into Phase 2. Phase 0 — Kickoff was closed on 2026-09-24. Full plan:
 [Team Timeline](../planning/team-timeline.md).
 
 ## Subsystems
