@@ -1199,8 +1199,8 @@ owners below are inferred from what was said.
 ### Questions Navid raised
 
 - **Two buoys and two shore stations:** a broadcast heard by both stations could be double counted. David called deduplication not yet built and fine for one
-  buoy and one station. See the contradiction below.
-- **Free-plan limits:** will Cloudflare's free tier limit access once a lot of data arrives? He suggested a dedicated database (MySQL; David raised Supabase).
+  buoy and one station. See the contradiction below ([SCO-290](https://linear.app/scout1/issue/SCO-290)).
+- **Free-plan limits:** will Cloudflare's free tier limit access once a lot of data arrives? He suggested a dedicated database (MySQL; David raised Supabase) ([SCO-291](https://linear.app/scout1/issue/SCO-291)).
 - **Simulator usability:** not intuitive for non-engineers; needs labels and context. John agreed to fix it, David offered to help
   ([SCO-229](https://linear.app/scout1/issue/SCO-229), reopened).
 - **Santa Cruz as a test site:** John has access to a yacht club there and can ask members in person ([SCO-195](https://linear.app/scout1/issue/SCO-195)).
@@ -1229,11 +1229,11 @@ owners below are inferred from what was said.
 
 | Item | Owner |
 |---|---|
-| Resend the GitHub and Linear invites to Navid and tell him to check spam | David (not in Linear: issue limit) |
+| Resend the GitHub and Linear invites to Navid and tell him to check spam | David ([SCO-289](https://linear.app/scout1/issue/SCO-289)) |
 | Test the phone hotspot with the shore station before Thursday | David ([SCO-237](https://linear.app/scout1/issue/SCO-237)) |
 | LoRa one hop, sensor unit to shore station over USB, Thu Nov 5 | David + Isabella ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
 | Order the hydrophone Monday | Isabella ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
 | Push the testing protocols and merge them with John's version; file the temperature and leak test records | Isabella ([SCO-258](https://linear.app/scout1/issue/SCO-258), [SCO-259](https://linear.app/scout1/issue/SCO-259)) |
 | Make the buoyancy simulator understandable to non-engineers | John, David helping ([SCO-229](https://linear.app/scout1/issue/SCO-229)) |
 | Ask the Santa Cruz yacht club about a test site | John ([SCO-195](https://linear.app/scout1/issue/SCO-195)) |
-| Test two stations uploading the same reading; size data against the D1 free plan | David (not in Linear: issue limit; [open questions](../hub/research/open-questions.md)) |
+| Test two stations uploading the same reading; size data against the D1 free plan | David ([SCO-290](https://linear.app/scout1/issue/SCO-290), [SCO-291](https://linear.app/scout1/issue/SCO-291)) |
