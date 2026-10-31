@@ -26,8 +26,9 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "docs" / "planning" / "wbs-tasks.csv"
 PDF_PATH = ROOT / "docs" / "planning" / "gantt-fall-2026.pdf"
 
-DETAIL_START = date(2026, 10, 6)
-DETAIL_END = date(2026, 10, 18)
+DETAIL_START = date(2026, 10, 26)
+DETAIL_END = date(2026, 12, 11)
+DETAIL_LABEL = f"{DETAIL_START.strftime('%b')} {DETAIL_START.day} &ndash; {DETAIL_END.strftime('%b')} {DETAIL_END.day}, {DETAIL_END.year}"
 OVERVIEW_START = date(2026, 10, 5)  # a Monday
 OVERVIEW_END = date(2027, 1, 17)
 
@@ -304,6 +305,7 @@ def chunks(seq: list, n: int):
 
 
 def build_html(rows: list[dict]) -> str:
+    rows = [r for r in rows if r["status"] not in ("Canceled", "Duplicate")]
     p = []
     p.append(f"<html><head><meta charset='utf-8'><title>S.C.O.U.T. Gantt chart and WBS</title>"
              f"<style>{CSS}</style></head><body>")
@@ -316,7 +318,7 @@ def build_html(rows: list[dict]) -> str:
     p.append("<div class='page'>")
     p.append("<h1>S.C.O.U.T. Senior Design: Task Plan, Gantt Chart and WBS</h1>")
     p.append("<div class='sub'>Santa Clara Oceanic Utilities Transmitter &middot; whole team &middot; "
-             f"detailed plan Oct 6 &ndash; Oct 18, 2026, all known fall tasks through Jan 15, 2027 &middot; "
+             f"day-by-day detail {DETAIL_LABEL}, week overview through Jan 2027, milestones through May 2027 &middot; "
              f"built {date.today().isoformat()} from <code>docs/planning/wbs-tasks.csv</code> "
              "(synced from Linear)</div>")
     p.append("<h2>Team and ownership</h2><ul>")
@@ -332,13 +334,13 @@ def build_html(rows: list[dict]) -> str:
     p.append("<h2>How to read this</h2><ul>")
     p.append("<li><b>WBS:</b> 1 Project management &middot; 2 Electrical &middot; 3 Firmware &amp; software &middot; "
              "4 Mechanical &middot; 5 Deployment. Each task has a WBS number and, where one exists, its Linear issue.</li>")
-    p.append("<li><b>Pages 2&ndash;5:</b> the Oct 6&ndash;18 detail, one block per work area, with dependency arrows. "
+    p.append("<li><b>Pages 2&ndash;5:</b> the day-by-day detail ("+DETAIL_LABEL+"), one block per work area, with dependency arrows. "
              "<b>Then:</b> the fall overview to Jan 15, and the full table with owner, dates, duration, dependencies, "
              "outside constraints and milestones for every task.</li>")
     p.append("<li><b>Dates:</b> solid bars end on the issue's Linear due date (a start is Linear's when the issue has started, otherwise proposed). Dashed bars are estimates; the table marks the source of every date. "
              "Parts arrival on Fri Oct 9 is an assumption to confirm.</li></ul>")
     p.append(LEGEND)
-    p.append("<div class='note'>Outside constraints that drive the plan: SCU funding request and this chart due Oct 18; "
+    p.append("<div class='note'>Outside constraints that drive the plan: SCU deadlines and course milestones; "
              "weekly team meeting (Thu); parts arrival and vendor lead times; shared printer access (industrial printer, "
              "Prusa XL, lab printer); advisor and reviewer availability; saltwater soak times of 24 hours to 1 week.</div>")
     p.append("</div>")
@@ -368,7 +370,7 @@ def build_html(rows: list[dict]) -> str:
     for grp in pages:
         names = " / ".join(r["task"].split("  ")[0] for r in grp if r["kind"] == "header")
         p.append("<div class='page'>")
-        p.append(f"<h2>Detail: Oct 6 &ndash; Oct 18, 2026 &middot; WBS {esc(names)}</h2>")
+        p.append(f"<h2>Detail: {DETAIL_LABEL} &middot; WBS {esc(names)}</h2>")
         p.append(LEGEND)
         p.append(gantt_svg(grp, DETAIL_START, DETAIL_END, unit=41, label_w=470, row_h=19, scale="day"))
         p.append("</div>")
