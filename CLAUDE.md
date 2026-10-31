@@ -350,6 +350,41 @@ central decision, [ADR-0001](docs/decisions/0001-mcu-and-radio-selection.md), la
 since 2026-10-30). Archived issues stay searchable and can be restored; never delete an issue to
 free space.
 
+### Archiving closed issues
+
+**Every `Done` and `Canceled` issue is archived, not left in the list** (decided 2026-10-30).
+The free plan caps the issues that are not archived, and on 2026-10-30 the workspace hit 110%
+of it: Linear refused to create any issue until all 145 closed issues were archived. Linear's
+own auto-archive cannot go below one month, so it is not enough on its own.
+
+**It is done manually, not on a schedule** (decided 2026-10-30): the team chose not to keep a
+standing Linear API key in a GitHub secret. The Linear app has no bulk archive (only bulk
+*delete*, which is not allowed), and Claude's Linear connector cannot archive, so the archive
+runs through [`scripts/archive_linear_issues.py`](scripts/archive_linear_issues.py), which
+archives every `Done` and `Canceled` issue in the `SCO` team.
+
+**When to run it:** whenever Linear refuses to create an issue ("exceeded the free issue
+limit"), and as a habit at the end of each phase. When Claude hits the limit, it says so and
+asks for a key rather than leaving the work out of Linear.
+
+**How to run it:**
+
+1. **Create a short-lived Linear API key.** In Linear: **Settings → Account → Security & access
+   → Personal API keys → New key**. It acts as you, so you need access to the S.C.O.U.T. team.
+   Copy it; Linear shows it once.
+2. **Run the script with the key in your shell only** (or give it to Claude in the chat, which
+   runs the same commands). Never commit the key or put it in a file:
+
+   ```bash
+   LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py --dry-run
+   LINEAR_API_KEY=lin_api_... python3 scripts/archive_linear_issues.py
+   ```
+
+   The dry run lists what would be archived; the second command archives it.
+3. **Revoke the key** in the same Linear settings page when done.
+
+To bring an issue back, open it from search and unarchive it.
+
 ### Initiative and milestones
 
 Three layers, adopted 2026-10-19. Each answers a different question, so none duplicates another:
