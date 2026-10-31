@@ -77,3 +77,26 @@
 .sc-token-form { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4) var(--space-6); max-width: 760px; }
 .sc-token-form__wide { grid-column: 1 / -1; }
 @media (max-width: 767px) { .sc-token-form { grid-template-columns: minmax(0, 1fr); } }
+/* Reports: the composer, and the printable report (no shell, paper first). */
+.sc-report-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-6); }
+.sc-report-form__dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }
+.sc-report-form__wide { grid-column: 1 / -1; }
+.sc-report-form__columns { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-2) var(--space-6); }
+a.sc-key { text-decoration: none; }
+.sc-key.is-disabled { color: var(--ink-muted); border-style: dashed; box-shadow: none; pointer-events: none; }
+.sc-print { max-width: 1000px; margin: 0 auto; padding: var(--space-8) var(--space-6); display: grid; gap: var(--space-8); }
+.sc-print__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-4); border-bottom: 2px solid var(--rail); padding-bottom: var(--space-4); }
+.sc-print__head h1 { margin: var(--space-2) 0 0; font: 700 28px/32px var(--font-sans); }
+.sc-print__head p { margin: 0; color: var(--ink-muted); }
+.sc-print__buoy { display: grid; gap: var(--space-4); break-inside: avoid-page; }
+.sc-print__buoy h2 { margin: 0; font: 700 18px/24px var(--font-sans); }
+.sc-print__buoy h2 small { margin-left: var(--space-2); font: 400 13px/1 var(--font-sans); color: var(--ink-muted); }
+@media (max-width: 767px) { .sc-report-form { grid-template-columns: minmax(0, 1fr); } }
+@media print {
+  :root { color-scheme: light; }
+  body { background: #fff; }
+  .sc-print { padding: 0; max-width: none; }
+  .sc-print__button { display: none; }
+  .sc-table thead th { position: static; }
+  .sc-table tbody tr:hover > * { background: none; }
+}

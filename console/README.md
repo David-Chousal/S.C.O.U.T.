@@ -34,6 +34,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 
 | Page | Who can change it | What it is |
 |---|---|---|
+| Reports | members make CSVs; everyone prints | Pick buoys, whole UTC days and variables. **Download CSV** stores the file in R2 (`reports/`, deleted after 2 days) and hands back a link that works for an hour, no session needed; 20 a day per person, at most 50,000 readings each; cells that a spreadsheet would run as formulas are neutralised. **Printable report** renders a per-buoy summary (count, min, mean, max) and every reading in the browser, to print or save as PDF; nothing is stored. Recent reports can get a fresh link while their file is kept |
 | Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
 | Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
@@ -241,8 +242,12 @@ npm test                                      # the Worker: node --test, no inst
 cd web && npm ci
 npm run lint && npm test && npm run build     # the front end: ESLint, Vitest, static export
 cd .. && npx wrangler d1 migrations apply scout-console --local
-npx wrangler dev --var APP_URL:http://localhost:8787   # serves web/out through the Worker
+npx wrangler dev --local-upstream localhost:8787 --var APP_URL:http://localhost:8787   # serves web/out through the Worker
 ```
+
+`--local-upstream` matters since the custom domain: without it `wrangler dev` hands the Worker
+the route's host (`console.scoutscu.com`), which differs from `APP_URL`, so every page redirects
+to localhost and back. A browser caches that 301, so after hitting it use a different port.
 
 The Worker tests run the real migration against Node's built-in SQLite
 ([`test/d1-shim.js`](test/d1-shim.js)). The battery-life figures come from
