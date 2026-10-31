@@ -160,3 +160,9 @@ export interface TokenList {
   expiryDays: number[];
 }
 
+export interface StorageReport {
+  usage: { month: string; writes: number; reads: number; storedBytes: number; objects: number };
+  budget: { writesPerMonth: number; readsPerMonth: number; storedBytes: number; maxObjectBytes: number };
+  lastBackup: { key: string; bytes: number } | null;
+  bound: boolean;
+}

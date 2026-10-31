@@ -10,10 +10,12 @@ import { constantTimeEqual } from "./crypto.js";
 import { createDevice, listDevices, revokeDevice } from "./device.js";
 import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, setCommandStation, SLOT_LABELS } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
+import { lastBackup } from "./backup.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { listReadings, readingsQuery } from "./readings.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
+import { BUDGET, usage } from "./storage.js";
 import { createToken, EXPIRY_DAYS, listTokens, revokeToken, SCOPES } from "./tokens.js";
 import {
   createSession, destroySession, destroyUserSessions, loadSession, passwordSignIn, SESSION_TTL_MS,
@@ -104,6 +106,9 @@ async function reads(env, path, session, url) {
       return json({ devices: await listDevices(env.DB) });
     case "/api/audit":
       return json({ entries: await recent(env.DB) });
+    case "/api/storage":
+      if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
+      return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES) });
     case "/api/tokens":
       return json({ tokens: await listTokens(env.DB, session.user.id), scopes: SCOPES, expiryDays: EXPIRY_DAYS });
     case "/api/readings": {
