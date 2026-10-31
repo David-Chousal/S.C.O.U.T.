@@ -3,11 +3,11 @@
 import { useId, useState, type FormEvent } from "react";
 import { useToast } from "@/components/feedback/toaster";
 import { SignalMeter } from "@/components/status/signal-meter";
+import { Ago } from "@/components/ui/ago";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import { useWhen } from "@/lib/preferences-context";
 import type { Buoy, Estimates } from "@/lib/api/types";
-import { COUNT_SIGNAL, lifeFor, months, newestPacket } from "@/lib/format";
+import { COUNT_SIGNAL, lastHeard, lifeFor, months, packetLabel } from "@/lib/format";
 
 interface BuoyBayProps {
   buoy: Buoy;
@@ -19,13 +19,14 @@ interface BuoyBayProps {
 
 /** One buoy: what was asked, what it reports, and the 1/2/3 choice with each option's battery cost. */
 export function BuoyBay({ buoy, estimates, slotLabels, canChange, onChanged }: BuoyBayProps) {
-  const when = useWhen();
   const { show } = useToast();
   const titleId = useId();
   const current = buoy.tx_count_requested ?? 3;
   const [choice, setChoice] = useState(current);
   const [saving, setSaving] = useState(false);
   const signal = COUNT_SIGNAL[buoy.state];
+  // The options differ by a few days of battery, so the estimate is said once, not per option.
+  const life = lifeFor(estimates, choice, 2);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,34 +53,38 @@ export function BuoyBay({ buoy, estimates, slotLabels, canChange, onChanged }: B
         <div>
           <dt className="sc-tag">Requested</dt>
           <dd>{buoy.tx_count_requested ? `${buoy.tx_count_requested} a day` : "Nothing"}
-            <small>{buoy.requested_by ? `${buoy.requested_by} · ${when(buoy.requested_at)}` : "the buoy runs its default"}</small>
+            <small>{buoy.requested_by ? <>{buoy.requested_by} · <Ago ms={buoy.requested_at} /></> : "the buoy runs its default"}</small>
           </dd>
         </div>
         <div>
           <dt className="sc-tag">Buoy reports</dt>
           <dd>{buoy.tx_count_reported ? `${buoy.tx_count_reported} a day` : "Not yet"}
-            <small>{newestPacket(buoy, when)}</small>
+            <small>{packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /></small>
           </dd>
         </div>
       </dl>
-      <form onSubmit={onSubmit} className="sc-row">
+      <form onSubmit={onSubmit} className="sc-tx-form">
         <fieldset className="sc-tx-options">
-          <legend className="sc-tag">Transmits a day · battery life, two D cells (estimate)</legend>
-          {estimates.allowed_tx_counts.map((n) => {
-            const life = lifeFor(estimates, n, 2);
-            return (
-              <label key={n} className="sc-tx-option">
-                <input type="radio" name={`tx-${buoy.buoy_id}`} value={n} checked={choice === n}
-                  disabled={!canChange} onChange={() => setChoice(n)} />
-                <span><strong>{n} a day</strong><span className="sc-tx-option__slots">{slotLabels[String(n)]}</span></span>
-                <span className="sc-tx-option__life">{months(life.best)} best<span>{months(life.pessimistic)} pessimistic</span></span>
-              </label>
-            );
-          })}
+          <legend className="sc-label">Transmits a day</legend>
+          {estimates.allowed_tx_counts.map((n) => (
+            <label key={n} className="sc-tx-option">
+              <input type="radio" name={`tx-${buoy.buoy_id}`} value={n} checked={choice === n}
+                disabled={!canChange} onChange={() => setChoice(n)} />
+              <strong>{n} a day</strong>
+              <span className="sc-tx-option__slots">{slotLabels[String(n)]}</span>
+            </label>
+          ))}
         </fieldset>
-        <Key type="submit" variant="primary" disabled={!canChange || saving || choice === current}>
-          {saving ? "Requesting…" : `Request ${choice} a day`}
-        </Key>
+        <p className="sc-help">
+          Battery, two D cells: <span className="sc-num">{months(life.best)}</span> best,{" "}
+          <span className="sc-num">{months(life.pessimistic)}</span> pessimistic (estimate). The count changes how fresh the
+          data is far more than how long the cells last.
+        </p>
+        <div>
+          <Key type="submit" variant={choice === current ? undefined : "primary"} disabled={!canChange || saving || choice === current}>
+            {saving ? "Requesting…" : `Request ${choice} a day`}
+          </Key>
+        </div>
       </form>
     </section>
   );

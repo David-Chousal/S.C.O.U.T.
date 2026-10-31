@@ -31,6 +31,14 @@ describe("Sidebar", () => {
   });
 });
 
+describe("Sidebar while the session loads", () => {
+  test("keeps the nav up and leaves out the signed-in footer", () => {
+    render(<Sidebar onSignOut={vi.fn()} />);
+    expect(screen.getByRole("navigation", { name: "Main" }).querySelectorAll(".sc-nav a")).toHaveLength(6);
+    expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
+  });
+});
+
 describe("initials", () => {
   test("come from the name, else the email", () => {
     expect(initials({ name: "Isabella Rodriguez", email: "" })).toBe("IR");

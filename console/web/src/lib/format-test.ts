@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import estimates from "../../../worker/battery-life.json";
 import { freshness } from "@/components/stations/stations-board";
 import type { Estimates } from "./api/types";
-import { lastHeard, lifeFor, months, newestPacket, plural, utc } from "./format";
+import { lastHeard, lifeFor, months, packetLabel, plural, utc } from "./format";
 import { can, needs } from "./session";
 
 const HOUR = 3600 * 1000;
@@ -65,7 +65,7 @@ describe("a buoy whose clock was lost", () => {
   });
 
   test("says so instead of showing a time it cannot vouch for", () => {
-    expect(newestPacket(good, utc)).toBe("newest packet 2026-03-01 00:00 UTC");
-    expect(newestPacket(lost, utc)).toBe("buoy clock lost · last heard 2026-03-05 00:00 UTC");
+    expect(packetLabel(good)).toBe("newest packet");
+    expect(packetLabel(lost)).toBe("buoy clock lost · last heard");
   });
 });

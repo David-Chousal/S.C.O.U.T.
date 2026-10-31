@@ -33,11 +33,19 @@ describe("BuoyBay", () => {
     expect(screen.getByText(/3 a day/, { selector: "dd" })).toBeDefined();
   });
 
-  test("each option carries its slots and its two-cell battery estimate from the shared model", () => {
+  test("each option carries its slots; the two-cell battery estimate is said once, for the chosen count", () => {
     renderBay();
     expect(screen.getByText("00:10 and 16:10 UTC")).toBeDefined();
-    expect(screen.getAllByText(/mo best/)).toHaveLength(3);
-    expect(screen.getByText("48.4 mo best")).toBeDefined();
+    expect(screen.getAllByText(/ mo$/)).toHaveLength(2);
+    expect(screen.getByText("48.4 mo")).toBeDefined();
+  });
+
+  test("the request key sits after the options, not beside one", () => {
+    renderBay();
+    const options = screen.getByRole("group", { name: "Transmits a day" });
+    const key = screen.getByRole("button", { name: /Request/ });
+    expect(options.compareDocumentPosition(key) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(options.contains(key)).toBe(false);
   });
 
   test("a role that cannot change it sees every option disabled", () => {

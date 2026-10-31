@@ -47,7 +47,7 @@ export function HoldKey({ label, holdLabel, onConfirm, durationMs = 900, size = 
 
   useEffect(() => clearTimer, []);
 
-  const classes = ["sc-key", "sc-key--hold", size === "sm" && "sc-key--sm"].filter(Boolean).join(" ");
+  const classes = ["sc-key", "sc-key--hold", size === "sm" && "sc-key--sm", held > 0 && "is-pressed"].filter(Boolean).join(" ");
   return (
     <button
       type="button"
