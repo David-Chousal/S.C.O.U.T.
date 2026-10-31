@@ -64,6 +64,7 @@ Technical design and component specification.
 | [Over-the-Air Firmware Update Design](engineering/ota-firmware-update-design.md) | Draft: listen windows, chunked transfer, signed images and rollback for ADR-0008; power figures for Isabella's sign-off |
 | [Shore Station (Raspberry Pi)](engineering/shore-station.md) | The Raspberry Pi base station — LoRa reception, packet decode, storage, analytics; the canonical Pi reference |
 | [Live Dashboard (GitHub Pages)](engineering/live-dashboard.md) | How the shore Pi republishes a self-contained static telemetry dashboard to GitHub Pages — no server |
+| [Console Review: Multiple Buoys and Stations, Database and Storage](engineering/console-multi-station-and-storage-review.md) | Answers Navid's 2026-10-30 questions from the code: buoy and station linking, deduplication, D1 storage against the free plan, and the gaps found |
 | [Design System](engineering/design-system.md) | "Tideline" — brand foundations, voice, and every token for the site and dashboard, with computed contrast |
 | [Design System — Components](engineering/design-system-components.md) | Every component's anatomy, variants, states and accessibility notes; page templates |
 | [Design System — Data Visualization](engineering/design-system-data-viz.md) | Honest telemetry charts: colour scales, units, gaps, freshness, the three-slot packet |
