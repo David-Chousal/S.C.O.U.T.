@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { api } from "@/lib/api/client";
+import { GuestSignIn } from "./guest-sign-in";
 import { PasswordField } from "./password-field";
 import { ProviderLinks } from "./provider-links";
 
-/** Sign in with GitHub, Google or a password. A message left by a failed OAuth round trip (kept
+/** Sign in with GitHub, Google or a password, or look round as a guest. A message left by a failed OAuth round trip (kept
  * server-side in a one-time cookie, never in the URL) shows above the form. */
 export function LoginForm() {
   const router = useRouter();
@@ -36,10 +37,11 @@ export function LoginForm() {
   }
 
   return (
+    <div className="sc-auth-stack">
     <form className="sc-auth-form" onSubmit={onSubmit}>
       <div className="sc-auth-form__head">
         <h2>Sign in</h2>
-        <span className="sc-help">The S.C.O.U.T. team console. Accounts are by invitation.</span>
+        <span className="sc-help">The S.C.O.U.T. team console. Team accounts are by invitation.</span>
       </div>
       {error && <Banner tone="failed">{error}</Banner>}
       <ProviderLinks />
@@ -54,5 +56,8 @@ export function LoginForm() {
       </button>
       <span className="sc-help">Forgot it? Ask an admin for a reset link.</span>
     </form>
+    <div className="sc-auth-guest__divider"><span className="sc-help">Not on the team?</span></div>
+    <GuestSignIn />
+    </div>
   );
 }

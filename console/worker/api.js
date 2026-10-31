@@ -10,6 +10,7 @@ import { constantTimeEqual } from "./crypto.js";
 import { createDevice, listDevices, revokeDevice } from "./device.js";
 import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, SLOT_LABELS } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
+import { guestSignIn, maskReply } from "./guests.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
 import {
@@ -57,6 +58,10 @@ async function signedOut(request, env, path, body) {
     const email = String(body.email || "").trim();
     const result = await passwordSignIn(env.DB, email, String(body.password || ""), clientIp(request));
     return result.user ? withSession(env, result.user) : apiError(result.error, 401);
+  }
+  if (path === "/api/guest" && request.method === "POST") {
+    const result = await guestSignIn(env.DB, String(body.name || ""), String(body.email || ""), clientIp(request));
+    return result.user ? withSession(env, result.user) : apiError(result.error, result.status);
   }
   const invite = /^\/api\/invites\/([\w-]{1,64})(\/accept)?$/.exec(path);
   if (invite) {
@@ -160,7 +165,11 @@ export async function handleApi(request, env, path) {
 
   const session = await loadSession(env.DB, request);
   if (!session) return apiError("Sign in first.", 401);
-  if (request.method === "GET") return reads(env, path, session);
+  if (request.method === "GET") {
+    const reply = await reads(env, path, session);
+    if (!session.user.selfSignup || !reply.ok) return reply;
+    return json(maskReply(await reply.json(), session.user.email));
+  }
   if (!constantTimeEqual(request.headers.get("X-CSRF-Token") || "", session.csrf)) {
     return apiError("This page is out of date. Reload it and try again.", 403);
   }

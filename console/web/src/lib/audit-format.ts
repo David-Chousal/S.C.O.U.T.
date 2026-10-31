@@ -19,6 +19,7 @@ const ACTIONS: Record<string, string> = {
   "user.password_reset": "Reset password",
   "user.link": "Linked sign-in",
   "user.bootstrap_admin": "First admin",
+  "user.guest_signup": "Signed in as guest",
 };
 
 const FIELDS: Record<string, string> = {

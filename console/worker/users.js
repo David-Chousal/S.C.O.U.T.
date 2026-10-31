@@ -1,6 +1,7 @@
 /* Accounts, invites, roles and password resets. Invite-only: nobody gets an account without an
- * admin's invite, except the first admin named by BOOTSTRAP_ADMIN_EMAIL on an empty database.
- * Invite and reset links are single-use, expire, and are stored hashed. */
+ * admin's invite, except the first admin named by BOOTSTRAP_ADMIN_EMAIL on an empty database and
+ * view-only guests who sign themselves in (guests.js). Invite and reset links are single-use,
+ * expire, and are stored hashed. */
 
 import { record } from "./audit.js";
 import { hashPassword, passwordProblem, randomToken, sha256Hex } from "./crypto.js";
@@ -46,6 +47,15 @@ async function claimInvite(db, invite) {
   return meta.changes === 1;
 }
 
+/** A self-signed-up guest's email was proven (invite or verified OAuth): the account stops being
+ * one anyone can open by typing the email, and every session opened that way ends. */
+async function claimSelfSignup(db, user, changes = {}) {
+  const sets = ["self_signup = 0", ...Object.keys(changes).map((column) => `${column} = ?`)];
+  await db.prepare(`UPDATE users SET ${sets.join(", ")} WHERE id = ?`).bind(...Object.values(changes), user.id).run();
+  await destroyUserSessions(db, user.id);
+  return db.prepare("SELECT * FROM users WHERE id = ?").bind(user.id).first();
+}
+
 async function markAccepted(db, invite, user) {
   await record(db, { actor: user, action: "invite.accept", target: invite.email, after: { role: invite.role } });
 }
@@ -61,11 +71,13 @@ export async function userForIdentity(db, identity, inviteToken, env) {
       return { error: `This invite is for ${invite.email}; you signed in as ${identity.email}.` };
     }
     const existing = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
-    if (existing) return { error: "An account with this email already exists. Sign in instead." };
+    if (existing && !existing.self_signup) return { error: "An account with this email already exists. Sign in instead." };
     const linked = await db.prepare(`SELECT id FROM users WHERE ${column} = ?`).bind(identity.subject).first();
     if (linked) return { error: `That ${identity.provider} account already belongs to another console account.` };
     if (!(await claimInvite(db, invite))) return { error: "This invite was just used." };
-    const user = await insertUser(db, { email, name: identity.name, role: invite.role, column, subject: identity.subject });
+    const user = existing
+      ? await claimSelfSignup(db, existing, { role: invite.role, name: identity.name.slice(0, 120), [column]: identity.subject })
+      : await insertUser(db, { email, name: identity.name, role: invite.role, column, subject: identity.subject });
     await markAccepted(db, invite, user);
     return { user };
   }
@@ -73,9 +85,11 @@ export async function userForIdentity(db, identity, inviteToken, env) {
   if (bySubject) return { user: bySubject };
   const byEmail = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
   if (byEmail && !byEmail[column]) {
-    await db.prepare(`UPDATE users SET ${column} = ? WHERE id = ?`).bind(identity.subject, byEmail.id).run();
-    await record(db, { actor: byEmail, action: "user.link", target: identity.provider });
-    return { user: byEmail };
+    let user = byEmail;
+    if (byEmail.self_signup) user = await claimSelfSignup(db, byEmail, { [column]: identity.subject });
+    else await db.prepare(`UPDATE users SET ${column} = ? WHERE id = ?`).bind(identity.subject, byEmail.id).run();
+    await record(db, { actor: user, action: "user.link", target: identity.provider });
+    return { user };
   }
   const { n } = await db.prepare("SELECT COUNT(*) AS n FROM users").first();
   if (n === 0 && env.BOOTSTRAP_ADMIN_EMAIL && env.BOOTSTRAP_ADMIN_EMAIL.toLowerCase() === email) {
@@ -91,11 +105,13 @@ export async function acceptInviteWithPassword(db, token, name, password) {
   if (!invite) return { error: "This invite has expired, was revoked, or was already used." };
   const problem = passwordProblem(password);
   if (problem) return { error: problem };
-  const existing = await db.prepare("SELECT id FROM users WHERE email = ?").bind(invite.email).first();
-  if (existing) return { error: "An account with this email already exists. Sign in instead." };
+  const existing = await db.prepare("SELECT * FROM users WHERE email = ?").bind(invite.email).first();
+  if (existing && !existing.self_signup) return { error: "An account with this email already exists. Sign in instead." };
   if (!(await claimInvite(db, invite))) return { error: "This invite was just used." };
-  const user = await insertUser(db, { email: invite.email.toLowerCase(), name: name || "", role: invite.role,
-    passwordHash: await hashPassword(password) });
+  const passwordHash = await hashPassword(password);
+  const user = existing
+    ? await claimSelfSignup(db, existing, { role: invite.role, name: (name || existing.name).slice(0, 120), password_hash: passwordHash })
+    : await insertUser(db, { email: invite.email.toLowerCase(), name: name || "", role: invite.role, passwordHash });
   await markAccepted(db, invite, user);
   return { user };
 }
@@ -103,8 +119,9 @@ export async function acceptInviteWithPassword(db, token, name, password) {
 export async function createInvite(db, actor, email, role) {
   if (!validEmail(email)) return { error: "Enter a valid email address." };
   if (!isRole(role)) return { error: "Pick a role." };
-  const taken = await db.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
-  if (taken) return { error: `${email} already has an account.` };
+  // A self-signed-up guest proves nothing about the email, so an invite can still take it over.
+  const taken = await db.prepare("SELECT id, self_signup FROM users WHERE email = ?").bind(email).first();
+  if (taken && !taken.self_signup) return { error: `${email} already has an account.` };
   const token = randomToken(24);
   const id = crypto.randomUUID();
   const now = Date.now();
@@ -128,6 +145,9 @@ export async function setRole(db, actor, userId, role) {
   if (!isRole(role)) return { error: "Pick a role." };
   const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
   if (!user) return { error: "No such user." };
+  if (user.self_signup && role !== "guest") {
+    return { error: "This guest signed themselves in, so anyone with their email could use the account. Invite them instead." };
+  }
   if (role !== "admin" && (await lastActiveAdmin(db, user))) return { error: "The console needs at least one admin." };
   await db.prepare("UPDATE users SET role = ? WHERE id = ?").bind(role, userId).run();
   await record(db, { actor, action: "user.role", target: user.email, before: { role: user.role }, after: { role } });
@@ -197,7 +217,7 @@ export async function resetPassword(db, token, password) {
 export async function listUsers(db) {
   const { results } = await db
     .prepare("SELECT id, email, name, role, disabled, created_at, password_hash IS NOT NULL AS has_password, " +
-      "github_id IS NOT NULL AS has_github, google_sub IS NOT NULL AS has_google FROM users ORDER BY created_at")
+      "github_id IS NOT NULL AS has_github, google_sub IS NOT NULL AS has_google, self_signup FROM users ORDER BY created_at")
     .all();
   return results;
 }

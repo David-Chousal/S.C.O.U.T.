@@ -54,6 +54,7 @@ export const api = {
   },
   providers: () => call<Providers>("GET", "/api/providers"),
   signIn: (email: string, password: string) => call<{ ok: true }>("POST", "/api/login", { email, password }),
+  guestSignIn: (name: string, email: string) => call<{ ok: true }>("POST", "/api/guest", { name, email }),
   signOut: () => call<{ ok: true }>("POST", "/api/logout"),
   signOutEverywhere: () => call<{ ok: true }>("POST", "/api/account/sign-out-everywhere"),
 
