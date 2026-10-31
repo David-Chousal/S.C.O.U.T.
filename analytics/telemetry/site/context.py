@@ -25,7 +25,7 @@ class LiveStats:
     mmm: str
     is_sample: bool           # True while the banner (sample-data) is set
     # Freshness against the transmit slots, as rendered HTML; shown in the hero once real packets
-    # exist (telemetry.web.status_line).
+    # exist (``components.status_line``).
     status_html: str = ""
 
 

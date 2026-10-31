@@ -1,9 +1,9 @@
 # Design System — Data Visualization
 
 > **Summary** — How S.C.O.U.T. draws buoy telemetry honestly: colour scales, units, time axes,
-> gaps, freshness, uncertainty, and the three-slots-a-day packet. Applies to the web dashboard
-> (`analytics/telemetry/web.py`, `fleet_web.py`) **and** the matplotlib exports
-> (`analytics/telemetry/dashboard.py`), which today use a separate Flat UI palette.
+> gaps, freshness, uncertainty, and the three-slots-a-day packet. Applied to the site's web
+> dashboard (`web.py`, `fleet_web.py`, deleted 2026-10-31 after the data moved to the team
+> console) **and** the matplotlib exports (`analytics/telemetry/dashboard.py`).
 >
 > **Status** — Proposed 2026-10-19. Part of [Design System](design-system.md).
 

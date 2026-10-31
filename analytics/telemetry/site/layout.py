@@ -2,10 +2,9 @@
 
 Every page is one standalone HTML document with the design-system CSS inlined. Navigation and
 asset URLs are resolved through ``base`` (``""`` at the site root, ``"../"`` one level deep) so
-pretty directory URLs work on GitHub Pages. The footer's external resource links are gated off
-on the Analytics page, which is held to the self-contained contract enforced by
-``telemetry/tests/test_web.py``: it loads nothing cross-origin. External *hyperlinks* (the
-header GitHub icon) are user navigations, not loaded resources, so they appear on every page.
+pretty directory URLs work on GitHub Pages. Every page loads nothing cross-origin
+(``telemetry/tests/test_site.py``); external *hyperlinks* (the header GitHub icon, the footer
+resources) are user navigations, not loaded resources.
 """
 
 from __future__ import annotations
@@ -137,10 +136,10 @@ def _reveal_script(base: str) -> str:
     return f'<script defer src="{base}assets/js/reveal.js"></script>'
 
 
-def footer(base: str, *, external: bool = True) -> str:
+def footer(base: str) -> str:
     explore = "".join(
         f'<li><a href="{_href(base, slug)}">{label}</a></li>'
-        for slug, label, *_ in _NAV if slug  # skip Home; keeps Fleet in the footer
+        for slug, label, *_ in _NAV if slug  # skip Home
     )
     email = (
         '<div class="footer-social">'
@@ -149,31 +148,20 @@ def footer(base: str, *, external: bool = True) -> str:
         f'<a href="{REPO_URL}" aria-label="S.C.O.U.T. on GitHub">{assets.social_icon("github")}</a>'
         f'<a href="{base}about/#team" aria-label="The team on LinkedIn">'
         f'{assets.social_icon("linkedin")}</a></div>'
-        if external else ""
     )
     resources = (
-        (
-            '<div class="footer-col"><h4>Resources</h4><ul>'
-            f'<li><a href="{REPO_URL}">GitHub repository</a></li>'
-            f'<li><a href="{base}assets/credits.html">Image credits</a></li>'
-            f'<li><a href="{SCU_URL}">SCU Engineering</a></li>'
-            "</ul></div>"
-        )
-        if external
-        else (
-            '<div class="footer-col"><h4>Data</h4><ul>'
-            '<li><a href="telemetry_daily.csv">Daily CSV</a></li>'
-            '<li><a href="telemetry_summary.json">Summary JSON</a></li>'
-            "</ul></div>"
-        )
+        '<div class="footer-col"><h4>Resources</h4><ul>'
+        f'<li><a href="{REPO_URL}">GitHub repository</a></li>'
+        f'<li><a href="{base}assets/credits.html">Image credits</a></li>'
+        f'<li><a href="{SCU_URL}">SCU Engineering</a></li>'
+        "</ul></div>"
     )
     # The Home hero photograph's attribution lives here rather than on the image itself, so the
-    # frame stays clean. Gated with the other external links: the strict Analytics and per-buoy
-    # pages do not show that photograph, and keep their minimal footer.
+    # frame stays clean.
     hero_credit = (
         f'<span>Hero photograph: {imagery.HERO.photographer} / '
         f'<a href="{imagery.HERO.source_url}">{imagery.HERO.source}</a></span>'
-        if external and imagery.HERO.photographer else ""
+        if imagery.HERO.photographer else ""
     )
     return (
         '<footer class="site-footer"><div class="wrap footer-grid">'
@@ -245,11 +233,6 @@ def _font_preload(base: str) -> str:
             'type="font/woff2" crossorigin>\n')
 
 
-def _bundle(active: str) -> str:
-    # Analytics and Fleet carry no hero or content components; the authored pages no charts.
-    return "dashboard" if active in ("analytics", "fleet") else "site"
-
-
 def document(
     *,
     title: str,
@@ -261,7 +244,6 @@ def document(
     ribbon: str | None = None,
     generated: str | None = None,
     fonts_present: bool = False,
-    external: bool = True,
 ) -> str:
     """Assemble a full, self-contained HTML document."""
     ribbon_html = f'<div class="ribbon">{ribbon}</div>' if ribbon else ""
@@ -278,18 +260,17 @@ def document(
         f'<link rel="icon" href="{theme.FAVICON}">\n'
         f"{gen_meta}\n"
         f"{_font_preload(base) if fonts_present and active == 'home' else ''}"
-        f"<style>{theme.styles(base=base, fonts_present=fonts_present, bundle=_bundle(active))}"
+        f"<style>{theme.styles(base=base, fonts_present=fonts_present)}"
         "</style>\n"
         f"{_REVEAL_FLAG}\n"
         f'</head>\n<body class="page-{active}">\n'
         '<a class="skip" href="#main">Skip to content</a>\n'
         f"{ribbon_html}"
         # Header social icons appear on every page (they are hyperlinks, not loaded resources).
-        # The footer's external resource links stay gated on ``external``.
         f"{header(base, active, social=True)}\n"
         f"{banner_html}"
         f'<main id="main">\n{body}\n</main>\n'
-        f"{footer(base, external=external)}\n"
+        f"{footer(base)}\n"
         # Scroll reveals, on every page: same-origin, and the CSS that hides anything is gated
         # on a class only this script's head flag sets.
         f"{_reveal_script(base)}"

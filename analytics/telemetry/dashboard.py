@@ -2,19 +2,37 @@
 
 Optional: needs ``matplotlib``. The rest of the pipeline runs without it — this import only
 happens when a dashboard is explicitly requested. Colours come from the site's design tokens and
-missing calendar days are NaN, so the export matches the web charts: same palette, lines broken
-at gaps rather than drawn across them (docs/engineering/design-system-data-viz.md).
+missing calendar days are NaN: lines break at gaps rather than being drawn across them
+(docs/engineering/design-system-data-viz.md).
 """
 
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
-from . import bleaching, charts
+from . import bleaching
 from .pipeline import TelemetryReport
 from .site.theme import tokens
+
+
+@dataclass(frozen=True)
+class Band:
+    lo: float
+    hi: float | None
+    level: str          # alert token key: "alert1", "alert2", …
+
+
+# NOAA CRW Alert Levels 1–5 (the 2023 scale bleaching.py computes), one band per DHW range.
+DHW_BANDS = (
+    Band(4.0, 8.0, "alert1"),
+    Band(8.0, 12.0, "alert2"),
+    Band(12.0, 16.0, "alert3"),
+    Band(16.0, 20.0, "alert4"),
+    Band(20.0, None, "alert5"),
+)
 
 PALETTE = {
     "canvas": tokens.hex_of("color-canvas"),
@@ -38,13 +56,13 @@ PALETTE = {
 
 
 def dhw_band_spans(peak: float) -> list[tuple[float, float, str]]:
-    """The alert bands the PNG shades, from the same ``charts.DHW_BANDS`` as the web chart.
+    """The alert bands the PNG shades, from ``DHW_BANDS``.
 
     A band is drawn only once DHW reaches it — an empty alert band would read as an alert that
     never happened — and the highest one reached stops at the peak rather than running on.
     """
     return [(band.lo, peak if band.hi is None else min(band.hi, peak), band.level)
-            for band in charts.DHW_BANDS if peak >= band.lo]
+            for band in DHW_BANDS if peak >= band.lo]
 
 
 def calendar_series(points: list[tuple[date, float | None]]) -> tuple[list[date], list[float]]:

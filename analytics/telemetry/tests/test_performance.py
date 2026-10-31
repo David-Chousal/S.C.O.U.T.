@@ -38,39 +38,16 @@ class InlineCss(unittest.TestCase):
     def test_minifying_keeps_descendant_combinators(self):
         self.assertIn("main :where(p,li,dd,td) a:not([class])", self.css)
 
-    def test_each_page_type_transfers_within_the_budget(self):
+    def test_transfers_within_the_budget(self):
         # The budget that crosses the network: ≤ 9 KB gzip (GitHub Pages serves gzip). The raw
         # ceiling only catches regressions; raw size is parse cost, which is negligible here.
-        for bundle in ("site", "dashboard"):
-            with self.subTest(bundle=bundle):
-                css = theme.styles(base="", fonts_present=True, bundle=bundle).encode()
-                self.assertLessEqual(len(zlib.compress(css, 9)), 9 * 1024)
-                self.assertLessEqual(len(css), 40 * 1024)
-
-    def test_dashboard_pages_skip_the_hero_and_content_rules(self):
-        css = theme.styles(bundle="dashboard")
-        self.assertNotIn(".hero-scrim", css)
-        self.assertNotIn(".carousel-track", css)
-        self.assertIn(".chart-plot", css)
-
-    def test_authored_pages_skip_the_chart_rules(self):
-        css = theme.styles(bundle="site")
-        self.assertNotIn(".chart-plot", css)
-        self.assertIn(".hero-scrim", css)
-
-    def test_dashboard_only_tokens_ship_with_the_dashboard(self):
-        # No authored page references these, so they stay out of the site budget.
-        site, dash = theme.styles(bundle="site"), theme.styles(bundle="dashboard")
-        names = ("data-turb", "data-instrument", *(f"cat-{i}" for i in range(1, 6)), "z-base",
-                 "z-raised", "z-sticky", "dur-instant", "ease-exit", "space-section-sm")
-        for name in names:
-            with self.subTest(token=name):
-                self.assertIn(f"--{name}:", dash)
-                self.assertNotIn(f"--{name}:", site)
+        css = self.css.encode()
+        self.assertLessEqual(len(zlib.compress(css, 9)), 9 * 1024)
+        self.assertLessEqual(len(css), 40 * 1024)
 
     def test_authored_pages_size_and_colour_the_status_glyph(self):
-        # Home's hero strip renders web.status_line() once real packets exist.
-        css = theme.styles(bundle="site")
+        # Home's hero strip renders components.status_line() once real packets exist.
+        css = theme.styles()
         self.assertRegex(css, r"\.status svg\{[^}]*width:11px;height:11px")
         for status, token in (("live", "live"), ("stale", "stale"), ("offline", "offline"),
                               ("fault", "warning")):

@@ -29,16 +29,15 @@ and degrade to a static composition. Only `transform` and `opacity` animate, so 
 off the main thread.
 
 The CSS lives in one module per area (``tokens``, ``base``, ``navigation``, ``hero``,
-``content``, ``footer``, ``dashboard``, ``dashboard_tokens``, ``status``, ``motion``, ``chat``,
-``utilities``) and is joined in cascade order, so a later module still overrides an earlier one exactly as the single string did.
+``content``, ``footer``, ``status``, ``motion``, ``chat``, ``utilities``) and is joined in cascade order, so a later module still overrides an earlier one exactly as the single string did.
 """
 
 from __future__ import annotations
 
 import re
 
-from . import (alert_labels, base, chat, content, dashboard, dashboard_tokens, fonts, footer,
-               hero, motion, navigation, status, surfaces, tokens, utilities)
+from . import (base, chat, content, fonts, footer, hero, motion, navigation, status, surfaces,
+               tokens, utilities)
 
 # ── Favicon — the S.C.O.U.T. buoy mark on sand (base64 so the page carries no literal "http";
 # the sand backdrop keeps it visible on dark browser tab bars) ────────────────────────────────
@@ -64,14 +63,10 @@ SERIES = {
 }
 
 
-def styles(*, base: str = "", fonts_present: bool = False, bundle: str = "all") -> str:
-    """Return the minified design-system CSS for ``bundle``, with the fonts when bundled.
-
-    ``"site"`` is for the authored pages (no dashboard rules), ``"dashboard"`` for Analytics and
-    Fleet (no hero or content components), ``"all"`` for both.
-    """
+def styles(*, base: str = "", fonts_present: bool = False) -> str:
+    """Return the minified design-system CSS, with the fonts when bundled."""
     face = fonts.css(base) if fonts_present else ""
-    return _minify(face + "".join(m.CSS for m in _BUNDLES[bundle]))
+    return _minify(face + "".join(m.CSS for m in _MODULES))
 
 
 def _minify(css: str) -> str:
@@ -84,13 +79,6 @@ def _minify(css: str) -> str:
     return css.replace(";}", "}").strip()
 
 
-# Each bundle lists its modules in cascade order — later sections override earlier ones.
-_COMMON_HEAD = (tokens, base, navigation)
-_COMMON_TAIL = (status, motion, chat, utilities)
-_BUNDLES = {
-    "all": (*_COMMON_HEAD, alert_labels, dashboard_tokens, hero, surfaces, content, footer,
-            dashboard, *_COMMON_TAIL),
-    "site": (*_COMMON_HEAD, hero, surfaces, content, footer, *_COMMON_TAIL),
-    "dashboard": (*_COMMON_HEAD, alert_labels, dashboard_tokens, surfaces, footer, dashboard,
-                  *_COMMON_TAIL),
-}
+# Cascade order — later sections override earlier ones.
+_MODULES = (tokens, base, navigation, hero, surfaces, content, footer, status, motion, chat,
+            utilities)

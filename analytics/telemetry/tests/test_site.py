@@ -1,5 +1,6 @@
-"""Static dashboard generator: self-contained, correct, and data-bearing."""
+"""The static site build: self-contained, and honest about sample versus live data."""
 
+import re
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -10,7 +11,6 @@ from telemetry.model import TelemetryRecord
 from telemetry.site import theme
 from telemetry.site.layout import CHAT_ENDPOINT, CONSOLE_URL
 from telemetry.site import build_site
-from telemetry.web import render_html, write_site
 
 _T0 = datetime(2027, 3, 1, tzinfo=timezone.utc)
 
@@ -30,74 +30,22 @@ def _records(days=10, temp=30.0):
     return out
 
 
-def _fouling_records(days=30, per_day_drop=3.0):
-    """A deployment whose clean-water reading sinks — the fouling signature."""
-    out = []
-    seq = 0
-    for d in range(days):
-        for s in range(48):
-            seq += 1
-            out.append(TelemetryRecord(
-                timestamp=_T0 + timedelta(days=d, minutes=30 * s),
-                buoy_id="SCOUT-01", record_seq=seq, temp_c=26.0,
-                turbidity_adc=int(3000 - per_day_drop * d - (s % 7)),
-                turbidity_v=None, turbidity_fau=None, battery_v=3.3, uptime_s=seq * 1800,
-                audio_file="", flags=frozenset(),
-            ))
-    return out
-
-
-_FIXED = datetime(2027, 3, 11, 12, 0, tzinfo=timezone.utc)
-
-
-class DriftVerdictTest(unittest.TestCase):
-    """SCO-51 — a fouling warning nobody can see is not a warning."""
-
-    def _html(self, records):
-        return render_html(analyze(records, mmm=27.6), generated_at=_FIXED)
-
-    def test_drift_verdict_is_surfaced_on_the_page(self):
-        page = self._html(_fouling_records())
-        self.assertIn("Sensor drift", page)
-        self.assertIn("likely", page)
-
-    def test_the_rationale_is_shown_not_just_the_verdict(self):
-        # "likely" alone tells a reader nothing actionable; the why is the useful part.
-        page = self._html(_fouling_records())
-        self.assertIn("consistent with fouling", page)
-
-    def test_the_screen_not_proof_caveat_travels_with_it(self):
-        page = self._html(_fouling_records())
-        self.assertIn("Screen, not proof", page)
-
-    def test_a_healthy_deployment_reads_as_no_drift(self):
-        page = self._html(_records(days=30))
-        self.assertIn("no drift detected", page)
-        self.assertNotIn("consistent with fouling", page)
-
-    def test_severity_is_colour_coded(self):
-        fouled = self._html(_fouling_records())
-        healthy = self._html(_records(days=30))
-        self.assertIn("a-alert1", fouled)      # likely → the strongest treatment
-        self.assertIn("a-nostress", healthy)
-
-    def test_a_short_deployment_is_neutral_not_alarming(self):
-        # Too little data must not render as a warning — it is an absence of evidence.
-        page = self._html(_records(days=5))
-        self.assertIn("insufficient data", page)
-        self.assertNotIn("consistent with fouling", page)
-
-
-class WebDashboardTest(unittest.TestCase):
+class SelfContainedTest(unittest.TestCase):
     def test_loads_nothing_cross_origin(self):
-        """The page loads no cross-origin resource: no CDN, no remote fonts/images/scripts, no
+        """No page loads a cross-origin resource: no CDN, no remote fonts/images/scripts, no
         external stylesheet. Every *loaded* resource — ``src=``, ``<link href>``, CSS ``url()`` —
         is same-origin/relative. External *hyperlinks* (``<a href>``, e.g. the header GitHub
         icon) are user navigations, not loaded resources, and are allowed: the only external URLs
         in the document must all sit inside anchor tags."""
-        import re
+        with tempfile.TemporaryDirectory() as tmp:
+            build_site(analyze(_records(), mmm=28.0), Path(tmp))
+            pages = {str(f.relative_to(tmp)): f.read_text() for f in Path(tmp).rglob("*.html")
+                     if f.parent.name not in ("analytics", "fleet")}  # forwards: tested below
+        for name, html in pages.items():
+            with self.subTest(page=name):
+                self._assert_self_contained(html)
 
-        html = render_html(analyze(_records(), mmm=28.0), generated_at=_FIXED)
+    def _assert_self_contained(self, html):
         self.assertTrue(html.lstrip().startswith("<!doctype html>"))
 
         def is_external(url: str) -> bool:
@@ -119,42 +67,14 @@ class WebDashboardTest(unittest.TestCase):
         # one sanctioned exception: the chat proxy endpoint (the widget POSTs to it from chat.js).
         anchor_hrefs = set(re.findall(r'<a\b[^>]*\bhref="([^"]*)"', html))
         allowed = anchor_hrefs | {CHAT_ENDPOINT}
+        # XML namespace names (inline SVG's xmlns) are identifiers, never fetched. The URL match
+        # stops at "(", so a DOI with parentheses is checked as a prefix of its anchor's href.
         for url in re.findall(r'(?:https?:)?//[^\s"\'<>()]+', html):
-            self.assertIn(url, allowed,
-                          f"external URL {url!r} must be a hyperlink or the chat endpoint, "
-                          "not a loaded resource")
-
-    def test_shows_thermal_status_when_mmm_given(self):
-        html = render_html(analyze(_records(days=14), mmm=28.0), generated_at=_FIXED)
-        self.assertIn("Degree Heating Weeks", html)
-        self.assertIn("Peak alert", html)
-        self.assertIn("2027-03-11 12:00 UTC", html)  # generated timestamp
-
-    def test_gracefully_omits_dhw_without_mmm(self):
-        html = render_html(analyze(_records(days=5), mmm=None), generated_at=_FIXED)
-        self.assertIn("no MMM set", html)
-        self.assertNotIn("<h2>Degree Heating Weeks", html)  # DHW panel skipped (footer mention is fine)
-
-    def test_banner_is_rendered_when_provided(self):
-        html = render_html(analyze(_records(days=5), mmm=28.0), generated_at=_FIXED,
-                           banner="SAMPLE DATA — simulated")
-        self.assertIn('class="banner"', html)
-        self.assertIn("SAMPLE DATA — simulated", html)
-
-    def test_no_banner_by_default(self):
-        html = render_html(analyze(_records(days=5), mmm=28.0), generated_at=_FIXED)
-        self.assertNotIn('class="banner"', html)
-
-    def test_write_site_emits_index_and_raw_data(self):
-        report = analyze(_records(days=7), mmm=28.0)
-        with tempfile.TemporaryDirectory() as tmp:
-            index = write_site(report, tmp, generated_at=_FIXED)
-            self.assertTrue(index.exists())
-            self.assertTrue((Path(tmp) / "telemetry_daily.csv").exists())
-            self.assertTrue((Path(tmp) / "telemetry_summary.json").exists())
-            body = index.read_text()
-            self.assertIn('href="telemetry_daily.csv"', body)
-            self.assertIn("<svg", body)  # charts rendered inline
+            if url.startswith("http://www.w3.org/"):
+                continue
+            self.assertTrue(any(a.startswith(url) for a in allowed),
+                            f"external URL {url!r} must be a hyperlink or the chat endpoint, "
+                            "not a loaded resource")
 
     def test_layout_margin_invariants(self):
         """Guard the layout-margin rules whose absence caused visible bugs (folded into this one
@@ -163,8 +83,6 @@ class WebDashboardTest(unittest.TestCase):
         must stay scoped to ``main`` so it never touches the header/footer; the pill cards must
         keep ``width:100%`` so each fills its grid track (otherwise they mis-align); and the
         nearshore carousel-track gap is pinned to the value we set."""
-        import re
-
         css = re.sub(r"\s+", " ", theme.styles())          # keep single spaces: `main figure`
         tight = css.replace(" ", "")
 
@@ -190,10 +108,6 @@ class WebDashboardTest(unittest.TestCase):
         self.assertRegex(
             tight, r"\.carousel-track\{[^{}]*gap:12px",
             ".carousel-track gap must stay 12px")
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class SampleVsLivePresentationTests(unittest.TestCase):
@@ -247,3 +161,6 @@ class ConsoleHandoverTests(unittest.TestCase):
             page = (self.out / old / "index.html").read_text()
             self.assertIn(f'url={CONSOLE_URL}', page, old)
 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -12,7 +12,9 @@ Alert Levels 3–5 with the badge label colours moved to the dashboard bundle (S
 glyph shared with the Home hero strip, paid for by moving dashboard-only tokens out of the site
 bundle, and for the Reef sound panel (acoustic summary series colour and band bars, SCO-233;
 dashboard bundle only, the site bundle is byte-identical), and for the stability-explorer
-frame on the Technology page (``.sim-frame``).
+frame on the Technology page (``.sim-frame``), and for dropping the dashboard bundle once the
+Analytics and Fleet pages moved to the console (2026-10-30): the pins are now the site bundle,
+byte-identical to what the authored pages already shipped.
 """
 
 import hashlib
@@ -29,19 +31,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "04397e7d055df94ce2d62b3661ace6c3a0f427e73c514b0d67ab632c37b4cbc7",
+            "ce0e11c2aa9be8c1df1c64a5b5572a1d9c7bfd7bbf55590c71107a62b965cee9",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "b582702ff83cb23f0253ee98309d7fa69389a5ee5db9bf8696e94c6231a5328c",
+            "383034db36147b5ce567944714d7d56ddb2a456cfb6f5e06fb6e415e0c46c1fb",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "586b3c0cdc36764b0328d053914b262735fa9d78b806b65705eb1f377dfe15dc",
+            "37ef233b57008372ef2dbfcc71cc93879e54ed994497da36f7b737c3aa26a366",
         )
 
     def test_favicon_is_unchanged(self):
