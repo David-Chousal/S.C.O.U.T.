@@ -8,7 +8,26 @@ from __future__ import annotations
 
 import html
 
+from .. import freshness
 from . import assets
+
+
+_STATUS_GLYPH = {
+    "live": '<circle cx="6" cy="6" r="4.5"/>',
+    "stale": '<circle cx="6" cy="6" r="4" class="ring"/><path d="M6 2a4 4 0 0 1 0 8z"/>',
+    "offline": '<circle cx="6" cy="6" r="4" class="ring"/>',
+    "fault": '<path d="M6 1.5 11 10.5H1z"/>',
+}
+_STATUS_LABEL = {"live": "Live", "stale": "Stale", "offline": "Offline", "fault": "Fault"}
+
+
+def status_line(f: freshness.Freshness) -> str:
+    """Glyph + label + one sentence; the colour is on the glyph, the words stay readable."""
+    return (
+        f'<span class="status status-{f.status}"><svg viewBox="0 0 12 12" aria-hidden="true">'
+        f"{_STATUS_GLYPH[f.status]}</svg>{_STATUS_LABEL[f.status]}</span> "
+        f'<span class="status-text">{html.escape(freshness.describe(f))}</span>'
+    )
 
 
 def section(inner: str, *, cls: str = "", sid: str | None = None, wrap: str = "wrap") -> str:

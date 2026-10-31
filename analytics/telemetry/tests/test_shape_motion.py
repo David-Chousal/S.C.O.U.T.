@@ -13,8 +13,7 @@ from telemetry.site import theme
 
 _TELEMETRY = Path(__file__).resolve().parents[1]
 _BUILDERS = [*sorted((_TELEMETRY / "site").glob("*.py")),
-             *sorted((_TELEMETRY / "site" / "pages").glob("*.py")),
-             _TELEMETRY / "web.py", _TELEMETRY / "fleet_web.py"]
+             *sorted((_TELEMETRY / "site" / "pages").glob("*.py"))]
 
 # Retired in step 5; the chart and alert colours followed in step 6.
 _LEGACY = ("sand", "bg", "bg-2", "surface", "surface-2", "ink", "text", "muted", "line", "line-2",
@@ -79,23 +78,21 @@ class Shape(unittest.TestCase):
         self.assertIn("white-space:nowrap", body)
 
     def test_surfaces_are_square(self):
-        for sel in (".card", ".panel", ".stat", ".drawing", ".banner", ".table-scroll", ".member",
-                    ".pill", ".figure-card", ".spark-empty"):
+        for sel in (".card", ".stat", ".drawing", ".banner", ".table-scroll", ".member",
+                    ".pill", ".figure-card"):
             with self.subTest(selector=sel):
                 radius = re.search(r"border-radius:([^;]+)", self.rules[sel])
                 if radius:
                     self.assertIn(radius.group(1), ("var(--radius-none)", "0"))
 
     def test_instrument_plates_sit_flat_on_a_hairline(self):
-        for sel in (".stat", ".panel", ".table-scroll"):
+        for sel in (".stat", ".table-scroll"):
             with self.subTest(selector=sel):
                 self.assertIn("border:var(--border-hairline)", self.rules[sel])
                 self.assertIn("box-shadow:var(--shadow-0)", self.rules[sel])
 
     def test_plates_respond_to_their_container(self):
-        for sel in (".stat", ".panel"):
-            with self.subTest(selector=sel):
-                self.assertIn("container-type:inline-size", self.rules[sel])
+        self.assertIn("container-type:inline-size", self.rules[".stat"])
 
 
 class TypeTokens(unittest.TestCase):

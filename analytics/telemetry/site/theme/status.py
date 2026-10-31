@@ -1,5 +1,5 @@
-"""The instrument status glyph from ``web.status_line``: shared by the dashboard pages and the
-Home hero strip, which shows the buoy's live status once real packets exist."""
+"""The instrument status glyph from ``components.status_line``: the Home hero strip shows the
+buoy's live status once real packets exist."""
 
 CSS = """
 /* ── Status glyph: the colour is on the glyph; the label stays readable text. ── */

@@ -19,12 +19,12 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import imagery, layout
+from . import components, imagery, layout
 from .layout import CONSOLE_URL
 from .context import LiveStats, SiteContext
 from .pages import about, home, science, technology
 
-# Alert → CSS class, mirroring telemetry.web (kept local to avoid importing web at module load).
+# Alert → CSS class (colour lives in the design tokens, theme-aware).
 _ALERT_CLASS = {
     "No Stress": "a-nostress",
     "Bleaching Watch": "a-watch",
@@ -159,8 +159,6 @@ def build_site(
 
     ``report`` is the primary (single-stream) analysis behind Home's live status band.
     """
-    from .. import web  # lazy: web imports this package's layout
-
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     assets_out = out / "assets"
@@ -176,13 +174,12 @@ def build_site(
     fresh = freshness.assess(report.received[-1] if report.received else None,
                              now=generated_at, faults=report.latest_flags,
                              tx_count=report.tx_count)
-    live = _live_stats(report, banner, web.status_line(fresh))
+    live = _live_stats(report, banner, components.status_line(fresh))
 
     def page(base: str, active: str, mod, body_html: str) -> str:
         return layout.document(
             title=mod.TITLE, description=mod.DESCRIPTION, active=active, body=body_html,
             base=base, ribbon=ribbon, generated=generated, fonts_present=fonts_present,
-            external=True,
         )
 
     ctx_root = SiteContext(live, "", fonts_present, img_dir, ribbon, banner)
@@ -203,7 +200,7 @@ def build_site(
     _write(assets_out / "credits.html", layout.document(
         title="Image credits · S.C.O.U.T.", description="Photography attributions for the "
         "S.C.O.U.T. site.", active="", body=imagery.credits_page_body(img_dir), base="../",
-        fonts_present=fonts_present, external=True,
+        fonts_present=fonts_present,
     ))
 
     # Knowledge context for the "Ask S.C.O.U.T." chat proxy (chatbot/worker.js reads this).

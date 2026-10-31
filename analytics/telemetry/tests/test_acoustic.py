@@ -12,7 +12,6 @@ from telemetry import analyze, load_csv
 from telemetry.acoustic import CLIP_WARN_COUNT, COUNTER_MAX, summarize_acoustic, to_json
 from telemetry.model import TelemetryRecord
 from telemetry.pipeline import write_summary_json
-from telemetry.web import render_html
 
 _T0 = datetime(2027, 3, 1, tzinfo=timezone.utc)
 _FIXED = datetime(2027, 3, 4, 12, 0, tzinfo=timezone.utc)
@@ -94,34 +93,7 @@ class LoadTests(unittest.TestCase):
         self.assertIsNone(row.ndsi_e4)
 
 
-class DashboardTests(unittest.TestCase):
-    def test_reef_sound_panel_and_cards_render(self):
-        html = render_html(analyze(_records(), mmm=27.6), generated_at=_FIXED)
-        self.assertIn("<h3>Reef sound</h3>", html)
-        self.assertIn("Reef sound (NDSI)", html)
-        self.assertIn("+1.00", html)
-        self.assertIn("Snaps / recording", html)
-        self.assertIn("2,400", html)
-        self.assertIn('class="bd-bio"', html)
-        self.assertIn("Daily mean buoy NDSI", html)
-        self.assertIn("Hydrophone clipping", html)
-
-    def test_clipping_shows_a_warning(self):
-        html = render_html(analyze(_records(clip_count=5000), mmm=27.6), generated_at=_FIXED)
-        self.assertIn('class="stat-value a-warning">Clipping<', html)
-        self.assertIn("5,000 samples near the rails", html)
-
-    def test_saturated_snap_count_is_marked(self):
-        html = render_html(analyze(_records(snap_count=COUNTER_MAX), mmm=27.6),
-                           generated_at=_FIXED)
-        self.assertIn("65,535+", html)
-
-    def test_no_recordings_yet_shows_one_honest_card_and_no_panel(self):
-        rows = [replace(r, **{k: None for k in _SUMMARY}) for r in _records()]
-        html = render_html(analyze(rows, mmm=27.6), generated_at=_FIXED)
-        self.assertIn("no recording received yet", html)
-        self.assertNotIn("<h3>Reef sound</h3>", html)
-
+class SummaryJsonTests(unittest.TestCase):
     def test_summary_json_carries_the_acoustic_section(self):
         report = analyze(_records(), mmm=27.6)
         with tempfile.TemporaryDirectory() as tmp:
