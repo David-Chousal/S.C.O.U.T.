@@ -6,10 +6,19 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Fleet } from "@/lib/api/types";
+import type { Estimates, Fleet } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
 import { BatteryTable } from "./battery-table";
 import { BuoyBay } from "./buoy-bay";
+
+/** The most days the 1 s listen window costs any option, so one table can stand for both. */
+export function listenWindowCost(estimates: Estimates): number {
+  return Math.max(0, ...estimates.without_listen_window.map((row) => {
+    const twin = estimates.with_listen_window.find((other) =>
+      other.scenario === row.scenario && other.tx_per_day === row.tx_per_day && other.cells === row.cells);
+    return twin ? row.days - twin.days : 0;
+  }));
+}
 
 function AddBuoy({ onAdded, canAdd }: { onAdded: () => void; canAdd: boolean }) {
   const { show } = useToast();
@@ -38,7 +47,7 @@ function AddBuoy({ onAdded, canAdd }: { onAdded: () => void; canAdd: boolean }) 
       </label>
       <label className="sc-fieldset">
         <span className="sc-fieldset__label"><span className="sc-tag">Label</span></span>
-        <input className="sc-input" maxLength={40} placeholder="SCOUT-01" value={label}
+        <input className="sc-input" maxLength={40} placeholder="e.g. SCOUT-01" value={label}
           disabled={!canAdd} onChange={(event) => setLabel(event.target.value)} />
       </label>
       <div className="sc-settings-form__foot"><Key type="submit" disabled={!canAdd} icon="plus">Add buoy</Key></div>
@@ -88,9 +97,9 @@ export function FleetBoard() {
           <span className="sc-tag">Estimate</span>
         </div>
         <p className="sc-help">From the power budget&rsquo;s datasheet figures, not a measurement. The radio is under half a percent of
-          the daily draw, so the count mostly changes how fresh the data is, not how long the cells last.</p>
+          the daily draw, so the count mostly changes how fresh the data is, not how long the cells last. The 1 s listen
+          window after each send (off in shipped firmware) costs at most {listenWindowCost(fleet.estimates)} days.</p>
         <BatteryTable estimates={fleet.estimates} listenWindow={false} />
-        <BatteryTable estimates={fleet.estimates} listenWindow />
       </section>
       <section className="sc-bay" aria-labelledby="add-title">
         <div className="sc-bay__head">

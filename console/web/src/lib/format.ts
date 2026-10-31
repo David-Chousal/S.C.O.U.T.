@@ -18,6 +18,17 @@ export function local(ms: number | null | undefined, timeZone?: string): string 
   return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} ${get("timeZoneName")}`;
 }
 
+/** How long ago, for freshness at a glance ("12 min ago"); the full time goes in a title beside it. */
+export function ago(ms: number | null | undefined, now: number = Date.now()): string {
+  if (!ms) return "—";
+  const minutes = Math.floor((now - ms) / 60000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) return `${hours} h ago`;
+  return `${Math.floor(hours / 24)} d ago`;
+}
+
 export function plural(count: number, word: string, many = `${word}s`): string {
   return `${count} ${count === 1 ? word : many}`;
 }

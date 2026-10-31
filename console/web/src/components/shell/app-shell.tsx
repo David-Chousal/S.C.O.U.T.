@@ -20,10 +20,15 @@ interface AppShellProps {
 
 type Load = { kind: "loading" } | { kind: "ready"; session: Session } | { kind: "failed"; message: string };
 
+// Each page mounts its own AppShell, so moving between pages would re-check the session and
+// blank the shell every time. The last session answer is kept here: a page opened from another
+// one renders straight away and re-checks in the background. Only a full page load waits.
+let lastSession: Session | null = null;
+
 /** Every signed-in page: loads the session (or goes to sign-in), then sidebar, top bar, content. */
 export function AppShell({ title, actions, children }: AppShellProps) {
   const router = useRouter();
-  const [load, setLoad] = useState<Load>({ kind: "loading" });
+  const [load, setLoad] = useState<Load>(() => (lastSession ? { kind: "ready", session: lastSession } : { kind: "loading" }));
   // The static HTML is prerendered with the defaults; nothing that reads preferences renders
   // until the session loads, so reading storage here cannot cause a hydration mismatch. The
   // theme itself was already applied before paint by the boot script in app/layout.tsx.
@@ -43,8 +48,12 @@ export function AppShell({ title, actions, children }: AppShellProps) {
   useEffect(() => {
     let live = true;
     api.session().then(
-      (session) => live && setLoad({ kind: "ready", session }),
+      (session) => {
+        lastSession = session;
+        if (live) setLoad({ kind: "ready", session });
+      },
       (error: unknown) => {
+        if (error instanceof ApiError && error.status === 401) lastSession = null;
         if (!live) return;
         if (error instanceof ApiError && error.status === 401) router.replace("/login/");
         else setLoad({ kind: "failed", message: error instanceof Error ? error.message : "The console did not answer." });
@@ -57,14 +66,25 @@ export function AppShell({ title, actions, children }: AppShellProps) {
 
   async function signOut() {
     await api.signOut().catch(() => undefined);
+    lastSession = null;
     router.replace("/login/");
   }
 
-  if (load.kind === "loading") {
-    return <main className="sc-main" aria-busy="true"><span className="sc-tag">Checking your session…</span></main>;
-  }
-  if (load.kind === "failed") {
-    return <main className="sc-main"><Banner tone="failed">{load.message}</Banner></main>;
+  if (load.kind !== "ready") {
+    // The frame stays up while the session loads, so the page never flashes blank.
+    return (
+      <div className="sc-shell">
+        <Sidebar onSignOut={signOut} shortcuts={preferences.shortcuts} />
+        <div className="sc-shell__page">
+          <TopBar title={title} />
+          <main className="sc-main" aria-busy={load.kind === "loading"}>
+            {load.kind === "loading"
+              ? <span className="sc-tag">Checking your session…</span>
+              : <Banner tone="failed">{load.message}</Banner>}
+          </main>
+        </div>
+      </div>
+    );
   }
   return (
     <SessionContext value={load.session}>

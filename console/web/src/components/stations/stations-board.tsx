@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
 import { SignalMeter, type SignalState } from "@/components/status/signal-meter";
+import { Ago } from "@/components/ui/ago";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
@@ -42,7 +43,7 @@ function NewToken({ onCreated, allowed }: { onCreated: (name: string, token: str
     <form className="sc-settings-form" onSubmit={onSubmit}>
       <label className="sc-fieldset">
         <span className="sc-fieldset__label"><span className="sc-tag">Shore station name</span></span>
-        <input className="sc-input" maxLength={60} required placeholder="Kaneohe shore" value={name} disabled={!allowed}
+        <input className="sc-input" maxLength={60} required placeholder="e.g. Kaneohe shore" value={name} disabled={!allowed}
           onChange={(event) => setName(event.target.value)} />
       </label>
       <div className="sc-settings-form__foot"><Key type="submit" icon="plus" disabled={!allowed}>Create token</Key></div>
@@ -78,14 +79,14 @@ export function StationsBoard() {
   return (
     <>
       <section className="sc-bay" aria-labelledby="buoys-title">
-        <div className="sc-bay__head"><h2 className="sc-bay__title" id="buoys-title">Buoys</h2><span className="sc-tag">Last packet the shore pushed</span></div>
+        <div className="sc-bay__head"><h2 className="sc-bay__title" id="buoys-title">Buoys</h2><span className="sc-tag">Newest packet each shore station pushed</span></div>
         {fleet.data.buoys.length === 0 ? <p className="sc-help">No buoy has reported yet.</p> : (
           <div className="sc-list">
             {fleet.data.buoys.map((buoy) => {
               const signal = freshness(buoy.reported_at, now, 9 * HOUR);
               return (
                 <div key={buoy.buoy_id} className="sc-list__row">
-                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>newest packet {when(buoy.reported_at)} · {buoy.tx_count_reported ?? "—"} a day</span></span>
+                  <span className="sc-list__main"><strong>{buoy.label}</strong><span>newest packet <Ago ms={buoy.reported_at} /> · {buoy.tx_count_reported ?? "—"} a day</span></span>
                   <span className="sc-list__end"><SignalMeter {...signal} /></span>
                 </div>
               );
@@ -108,7 +109,7 @@ export function StationsBoard() {
           {devices.data.devices.length === 0 && <p className="sc-help">No shore stations yet.</p>}
           {devices.data.devices.map((device) => (
             <div key={device.id} className="sc-list__row">
-              <span className="sc-list__main"><strong>{device.name}</strong><span>created {when(device.created_at)} · last seen {when(device.last_seen_at)}</span></span>
+              <span className="sc-list__main"><strong>{device.name}</strong><span>created {when(device.created_at)} · last seen <Ago ms={device.last_seen_at} /></span></span>
               <span className="sc-list__end">
                 {device.revoked_at ? <span className="sc-badge sc-badge--muted">Revoked {when(device.revoked_at)}</span> : (
                   <>

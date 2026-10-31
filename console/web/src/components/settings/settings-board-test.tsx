@@ -4,10 +4,11 @@ import userEvent from "@testing-library/user-event";
 import firmware from "../../../../worker/buoy-config.json";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
-import type { BuoySettings, Role, Session } from "@/lib/api/types";
+import type { BuoySettings, FirmwareSetting, Role, Session } from "@/lib/api/types";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
+import { keepUnits, usualChange } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
 const DATA = {
@@ -66,5 +67,17 @@ describe("SettingsBoard", () => {
     expect(update).toHaveBeenCalledWith({ theme: "dark" });
     await userEvent.click(screen.getByRole("switch"));
     expect(update).toHaveBeenCalledWith({ shortcuts: false });
+  });
+});
+
+describe("firmware table helpers", () => {
+  test("a number keeps its unit and a code keeps its number", () => {
+    expect(keepUnits("critical below 3.10 V")).toBe("critical below 3.10\u00a0V");
+    expect(keepUnits("SF12 · CR 4/8")).toBe("SF12 · CR\u00a04/8");
+  });
+
+  test("the usual way a setting changes is the most common one", () => {
+    const rows = [{ change: "radio" }, { change: "firmware" }, { change: "firmware" }] as FirmwareSetting[];
+    expect(usualChange(rows)).toBe("firmware");
   });
 });
