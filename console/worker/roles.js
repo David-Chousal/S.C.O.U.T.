@@ -13,6 +13,8 @@ const RANK = { guest: 0, member: 1, admin: 2 };
 const NEEDS = {
   "settings.write": "member",
   "tokens.write": "member",
+  "reports.write": "member",
+  "dashboards.write": "member",
   "buoys.add": "admin",
   "invites.write": "admin",
   "users.role": "admin",

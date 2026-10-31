@@ -19,4 +19,12 @@ button:hover{background:var(--tint)}
 #it{flex:1}
 svg{background:var(--card);border:1px solid var(--line)}
 svg text{fill:var(--text);font-size:12px;font-family:'DM Sans',system-ui,sans-serif}svg text.h{font-size:14px;font-weight:600}
+
+.card .s{display:block;font-size:.68rem;color:var(--muted);margin-top:1px}
+.verdict{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;padding:.7rem 1rem;border-left:6px solid var(--border);background:var(--card);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.verdict b{font-size:1.15rem;font-weight:600}.verdict span{font-size:.88rem;color:var(--muted)}
+.verdict.good{border-left-color:#1D9E75;background:#e6f4ee}.verdict.warn{border-left-color:#BA7517;background:#fbf0dc}.verdict.bad{border-left-color:#E24B4A;background:#fbe7e6}
+.how{margin:0 0 6px;font-size:.85rem;color:var(--muted)}.how summary{cursor:pointer;color:var(--accent)}.how span{display:block;margin-top:4px;max-width:68ch}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:.82rem;color:var(--muted)}
+.key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.key b{color:var(--text)}.key .g{background:#BA7517}.key .b{background:#185FA5}.key .m{background:#534AB7}
 </style>

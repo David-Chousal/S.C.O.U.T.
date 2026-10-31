@@ -11,12 +11,15 @@ import {
   type Invite,
   type Providers,
   type Reading,
+  type ReportList,
+  type ReportRequest,
   type Role,
   type Session,
   type StorageReport,
   type Team,
   type TokenList,
 } from "./types";
+import type { BayConfig, SavedView } from "../dashboard/layout";
 
 let csrfToken = "";
 
@@ -79,6 +82,15 @@ export const api = {
   createInvite: (email: string, role: Role) => call<{ link: string }>("POST", "/api/team/invites", { email, role }),
   revokeInvite: (id: string) => call<{ ok: true }>("POST", `/api/team/invites/${encodeURIComponent(id)}/revoke`),
   readings: (buoyId: number, limit = 50) => call<{ readings: Reading[] }>("GET", `/api/readings?buoy=${buoyId}&limit=${limit}`),
+  dashboards: () => call<{ dashboards: SavedView[] }>("GET", "/api/dashboards"),
+  createDashboard: (name: string, shared: boolean, bays: BayConfig[]) => call<{ id: string }>("POST", "/api/dashboards", { name, shared, bays }),
+  saveDashboard: (id: string, bays: BayConfig[]) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}`, { bays }),
+  deleteDashboard: (id: string) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}/delete`),
+  reports: () => call<ReportList>("GET", "/api/reports"),
+  createReport: (request: ReportRequest) => call<{ id: string; link: string; rows: number }>("POST", "/api/reports", request),
+  reportLink: (id: string) => call<{ link: string }>("POST", `/api/reports/${encodeURIComponent(id)}/link`),
+  readingsBetween: (buoyId: number, from: string, to: string) =>
+    call<{ readings: Reading[] }>("GET", `/api/readings?buoy=${buoyId}&from=${from}&to=${to}&limit=1000`),
   storage: () => call<StorageReport>("GET", "/api/storage"),
   tokens: () => call<TokenList>("GET", "/api/tokens"),
   createToken: (name: string, scopes: string[], days: number) =>

@@ -22,3 +22,4 @@ import "./components/login.css";
 import "./components/connections.css";
 import "./components/settings.css";
 import "./components/console.css";
+import "./components/layout-editing.css";

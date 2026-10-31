@@ -7,7 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
-**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed from `main` on 2026-10-30. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
+**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed from `main` (7fd7544) on 2026-10-30, with D1 migrations 0003–0006 applied. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
@@ -34,6 +34,8 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 
 | Page | Who can change it | What it is |
 |---|---|---|
+| Dashboard | members and admins arrange; guests view | The built-in **Overview** (the first buoy's water temperature, turbidity and battery; a 7-day water-temperature trend for every buoy; fleet freshness; the latest readings), plus the team's **shared views** and **your own**. **Customize** (key E) is COR's layout editor: drag or use the keyboard to move bays, resize them on the 12-column grid, add readouts, trends, fleet or latest-readings bays, remove them, save (⌘S). Saving the Overview makes your own copy. Trend lines use one colour per buoy in a fixed order checked with the dataviz validator for colour-blind separation, with a legend, end labels, a hover crosshair and a table view; silence over 26 hours shows as a gap. Migration `0008-dashboards.sql` |
+| Reports | members make CSVs; everyone prints | Pick buoys, whole UTC days and variables. **Download CSV** stores the file in R2 (`reports/`, deleted after 2 days) and hands back a link that works for an hour, no session needed; 20 a day per person, at most 50,000 readings each; cells that a spreadsheet would run as formulas are neutralised. **Printable report** renders a per-buoy summary (count, min, mean, max) and every reading in the browser, to print or save as PDF; nothing is stored. Recent reports can get a fresh link while their file is kept |
 | Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
 | Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
@@ -241,8 +243,12 @@ npm test                                      # the Worker: node --test, no inst
 cd web && npm ci
 npm run lint && npm test && npm run build     # the front end: ESLint, Vitest, static export
 cd .. && npx wrangler d1 migrations apply scout-console --local
-npx wrangler dev --var APP_URL:http://localhost:8787   # serves web/out through the Worker
+npx wrangler dev --local-upstream localhost:8787 --var APP_URL:http://localhost:8787   # serves web/out through the Worker
 ```
+
+`--local-upstream` matters since the custom domain: without it `wrangler dev` hands the Worker
+the route's host (`console.scoutscu.com`), which differs from `APP_URL`, so every page redirects
+to localhost and back. A browser caches that 301, so after hitting it use a different port.
 
 The Worker tests run the real migration against Node's built-in SQLite
 ([`test/d1-shim.js`](test/d1-shim.js)). The battery-life figures come from

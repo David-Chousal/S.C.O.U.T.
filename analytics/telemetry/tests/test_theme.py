@@ -31,19 +31,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "ce0e11c2aa9be8c1df1c64a5b5572a1d9c7bfd7bbf55590c71107a62b965cee9",
+            "7cb521dd5796f393dea575b7fc45f8f8a43fb79670315aa7314d1450967e8a49",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "383034db36147b5ce567944714d7d56ddb2a456cfb6f5e06fb6e415e0c46c1fb",
+            "70083e593a66cb24d1859fab23fa7d376bb313ca83e2322646fb76670df5be46",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "37ef233b57008372ef2dbfcc71cc93879e54ed994497da36f7b737c3aa26a366",
+            "3f1aece2565603943792e7cd386786d27b67054714100c5743aa49c2a59b07da",
         )
 
     def test_favicon_is_unchanged(self):
