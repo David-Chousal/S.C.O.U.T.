@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .. import assets, components as c, docnav, imagery
 from ..context import SiteContext
+from ..layout import CONSOLE_URL
 
 TITLE = "Science · S.C.O.U.T."
 DESCRIPTION = (
@@ -317,7 +318,7 @@ def body(ctx: SiteContext) -> str:
         + _caveats()
         + _refs()
         + c.cta("See it live", "The metrics on live data",
-                '<a class="btn btn-primary" href="../analytics/">Open the dashboard</a>'
+                f'<a class="btn btn-primary" href="{CONSOLE_URL}">Open the console</a>'
                 '<a class="btn" href="../technology/">How the data gets there</a>')
     )
     return docnav.page(title="Science", items=_NAV, content=content, base=ctx.base)

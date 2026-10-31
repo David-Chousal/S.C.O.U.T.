@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .. import components as c, docnav
 from ..context import SiteContext
-from ..layout import REPO_URL
+from ..layout import CONSOLE_URL, REPO_URL
 
 # (section id, sidebar label) — ids must match the `sid=` on each section below.
 _NAV = [
@@ -194,6 +194,6 @@ def body(ctx: SiteContext) -> str:
         + _roadmap()
         + c.cta("Open source", "The project is open source under the MIT License",
                 f'<a class="btn btn-primary" href="{REPO_URL}">View on GitHub</a>'
-                '<a class="btn" href="../analytics/">See the live data</a>')
+                f'<a class="btn" href="{CONSOLE_URL}">See the live data</a>')
     )
     return docnav.page(title="About", items=_NAV, content=content, base=ctx.base)

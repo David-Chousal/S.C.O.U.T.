@@ -8,7 +8,7 @@ from pathlib import Path
 from telemetry import analyze
 from telemetry.model import TelemetryRecord
 from telemetry.site import theme
-from telemetry.site.layout import CHAT_ENDPOINT
+from telemetry.site.layout import CHAT_ENDPOINT, CONSOLE_URL
 from telemetry.site import build_site
 from telemetry.web import render_html, write_site
 
@@ -211,7 +211,7 @@ class SampleVsLivePresentationTests(unittest.TestCase):
         records = _records(days=10)
         report = analyze(records, mmm=28.0)
         with tempfile.TemporaryDirectory() as tmp:
-            build_site(report, Path(tmp), banner=banner, records=records)
+            build_site(report, Path(tmp), banner=banner)
             return (Path(tmp) / "index.html").read_text()
 
     def test_real_data_presents_as_a_live_publish(self):
@@ -223,3 +223,27 @@ class SampleVsLivePresentationTests(unittest.TestCase):
         home = self._home("Sample data: simulated telemetry for demonstration.")
         self.assertIn("simulated until the buoy is deployed", home)
         self.assertNotIn("Latest publish.", home)
+
+
+class ConsoleHandoverTests(unittest.TestCase):
+    """The data moved to the team console on 2026-10-30: the site links there instead of
+    publishing its own Analytics and Fleet pages, and their old addresses forward."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self._tmp.name)
+        build_site(analyze(_records(days=3), mmm=28.0), self.out)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_the_nav_links_the_console_and_no_analytics_page(self):
+        home = (self.out / "index.html").read_text()
+        self.assertIn(f'href="{CONSOLE_URL}"', home)
+        self.assertNotIn('href="analytics/"', home)
+
+    def test_old_data_addresses_forward_to_the_console(self):
+        for old in ("analytics", "fleet"):
+            page = (self.out / old / "index.html").read_text()
+            self.assertIn(f'url={CONSOLE_URL}', page, old)
+

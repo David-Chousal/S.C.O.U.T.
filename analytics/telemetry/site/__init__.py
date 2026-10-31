@@ -6,9 +6,9 @@ scripts, fonts, stylesheets, or network requests. It renders offline, passes a s
 the light/dark themes follow ``prefers-color-scheme``. Motion is pure CSS and always degrades
 to "content visible" under ``prefers-reduced-motion``.
 
-The **Analytics** page stays data-driven: it is rendered by :mod:`telemetry.web` from a live
-:class:`~telemetry.pipeline.TelemetryReport` on every publish. The static pages (home,
-technology, science, about) are authored content emitted alongside it.
+The live data is shown in the team console (``console.scoutscu.com``), not here: Home carries a
+status band computed from a :class:`~telemetry.pipeline.TelemetryReport` on every publish, and
+the old Analytics and Fleet addresses forward to the console.
 
 Entry point: :func:`telemetry.site.build.build_site`.
 """
