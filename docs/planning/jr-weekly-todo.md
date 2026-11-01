@@ -19,7 +19,7 @@
 |---|---|---|---|---|
 | SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided: fresh-water float and 24 h salt float both start Mon Nov 2** | Oct 30 | Mon Nov 2: fresh-water float, log draft and freeboard. Read the salt float Tue Nov 3. Linear re-dated to Nov 3 |
 | SCO-277 | Buy salt for the tub float test | **Done Nov 1:** plain salt on hand (product and price not recorded) | Nov 2 | None. Record product and price in the purchase log |
-| SCO-270 | Print the housing cap, gland fit coupon first | Cap is printed; fit, weight and seal still to log | Oct 30 | Mon Nov 2: test fit, log weight and seal fit. Linear re-dated to Nov 2 |
+| SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
 | SCO-211 | Hazard form, advisor signature | Overdue 6 days; Needs Decision, waiting on Dr. Krishnan | Oct 26 | Mon Nov 2: ask for the signature; Wed Nov 4 advisor meeting is the backstop |
 | SCO-185 | Kaneohe Bay permit determinations | Was overdue 16 days and stale; **moved to Jan 4, 2027 (winter break)** | Oct 16 | None this week. Re-date done in Linear Nov 1 |
 | SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Tue Nov 3. Re-date in Linear |
@@ -37,14 +37,18 @@
 | Mon Nov 2 | SCO-292 | Send the RR-21 plan to Jes (A10); ask to confirm the 0.1 in pass mark | 0.5 h | Todo |
 | Mon Nov 2 | SCO-211 | Ask Dr. Krishnan for the signature | 0.5 h | Waiting |
 | Mon Nov 2 | SCO-172, SCO-292 | **Fresh-water float** AM; weigh the tub's water; compute salt mass = water kg × 35/965 (40 kg needs 1.45 kg; 100 kg needs 3.63 kg); dissolve in the same tub; settle 15 min; read freeboard at three marks; **start the 24 h salt float** (RR-21 steps 1 to 6) | 3.5 h | Todo |
-| Mon Nov 2 | SCO-270 | Test the printed cap: gland coupon fit (PG11, nut), weight, O-ring seal fit; log as a test record | 1.5 h | In Progress (due today) |
+| Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
 | Tue Nov 3 | SCO-171 | Self-righting tilt test 90° and 180°; log in the register and matrix row R-18 | 3 h | Todo (re-dated from Nov 17) |
+| Tue Nov 3 | SCO-294 | RR-23 Stage 1: cap and O-ring seal, gland bores blocked, towel inside; submerge in the second tub 24 h; lock Part A first | 1 h | Todo (due Nov 6) |
 | Tue Nov 3 | SCO-172 | Read the 24 h salt float: draft, freeboard, seam leaks. Then clean and rinse | 1 h | Todo (re-dated to Nov 3) |
 | Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
 | Tue Nov 3 | SCO-195 | Message the Santa Cruz yacht club | 0.5 h | Todo |
 | Wed Nov 4 | n/a | Advisor meeting; Isabella's temperature demo (SCO-259) | fixed | Todo |
+| Wed Nov 4 | SCO-294 | RR-23: read Stage 1; start Stage 2, the three PG11 glands with real cable (24 h) | 1 h | Todo |
 | Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
 | Thu Nov 5 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6) |
+| Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
+| Thu Nov 5 | SCO-293 | Redesign the cap with larger bolt clearance holes, merged with the SMA bulkhead and D-cell bay (SCO-162, SCO-250); one cap revision | 3 h | Todo (due Nov 13) |
 | Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
 | Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
 | Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
@@ -58,7 +62,7 @@
 | SCO-242 | Dock/boat attachment decision | Done | Done |
 | SCO-254, SCO-229, SCO-255, SCO-252, SCO-256, SCO-264, SCO-265 | Simulator, drawings, website, advisor sheet, meeting filed | Done | Done; **SCO-229 reopened** Oct 30 |
 | SCO-266, SCO-269 | Housing CAD and print; cap CAD | Done | Done |
-| SCO-270 | Print the housing cap | In Progress (printing Oct 30) | Moved: confirm Mon Nov 2 |
+| SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
 | SCO-221 | Requirements test matrix | In Review | Not in Linear's open lists; confirm Done |
 | SCO-246 | Choose and order the coating | In Progress | Moved: confirm Mon Nov 2 |
 | SCO-243 | Eye/attachment point CAD | In Progress | Canceled Nov 1: rope through the floatation through-holes instead |
@@ -103,6 +107,7 @@
 - Test standard: `docs/engineering/test-record-template.md` now merges John's and Isabella's standards (SCO-258). Isabella's own draft still needs to be checked against it.
 - Hawaii: John plans to take one buoy to Hawaii; dates, which buoy and which test (attended, hung) not set. SCO-183, SCO-185, SCO-195 and SCO-180 will change once they are.
 - Santa Cruz seawater trip tentative for the weekend of Nov 7 to 8 (SCO-292); may be dropped.
+- Housing: SCO-293 (cap redesign, due Nov 13) and SCO-294 (seal tests, due Nov 6) filed Nov 1 from the first assembly (RR-22). SCO-245 (submersion re-test with the top attachment) is obsolete now the top attachment is canceled: rescope or cancel.
 - Open PR awaiting review: #273 (prototype coating decision).
 - New this branch: RR-20 (hang-hole FEA record), its two Fusion reports, and `float-hang-holes-2026-11-01.step`. The FEA still models the housing as steel and loads +Z; a physical hang check is SCO-274.
 - Gap issues from the requirements matrix: SCO-273 (biofouling test) and SCO-274 (FEA physical check) are John's; SCO-271 (turbidity accuracy) and SCO-272 (hydrophone marks) are Isabella's.

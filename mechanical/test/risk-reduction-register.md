@@ -50,6 +50,8 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-19 | Raw PETG Water Absorption Soak, Fresh then Salt, 2026-10-21 | Planned | [`rr-19-petg-water-absorption-soak-2026-10-21.md`](rr-19-petg-water-absorption-soak-2026-10-21.md) |
 | RR-20 | Hang-Hole Static FEA, Through-Hole Floatation, 2026-10-30 | Pass (analysis only) | [`rr-20-hang-hole-fea-2026-10-30.md`](rr-20-hang-hole-fea-2026-10-30.md) |
 | RR-21 | Tub Plain-Salt Water vs Santa Cruz Seawater, Float Waterline, 2026-11-01 | Planned | [`rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md`](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) |
+| RR-22 | Electronics Housing Cap Assembly and Gland Fit, 2026-11-01 | Partial | [`rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md`](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md) |
+| RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Planned | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
 
 ## Tests run
 
@@ -84,6 +86,8 @@ recovered.
 | RR-19 | 2026-10-21 | **Raw PETG water absorption soak, fresh then salt** | Uncoated PETG takes up water and gains mass with no leak, lowering the waterline and clouding leak tests | looks-like + coupons | Mass gain ≤ scale resolution after 24 hr fully submerged, fresh and ~35 ppt (provisional) | Not yet run | [plan](petg-water-absorption-soak-plan-2026-10-21.md), [SCO-219](https://linear.app/scout1/issue/SCO-219) |
 | RR-20 | 2026-10-30 | Hang-hole static FEA, through-hole floatation (322 N each hole; 644 N one hole) | Hang holes tear out under the dock or boat load | analysis | SF ≥ 4 | **Pass** (analysis only) — min SF about 12.4; steel housing and coarse mesh limit it | [record](rr-20-hang-hole-fea-2026-10-30.md), [SCO-276](https://linear.app/scout1/issue/SCO-276) |
 | RR-21 | 2026-11-01 | Tub plain-salt water vs Santa Cruz seawater (fresh, plain salt at 35 g per kg, seawater tentative) | Tub tests use a water that does not match the ocean, or waste money on salt | looks-like | Plain-salt freeboard within 0.1 in of seawater (proposed) | Not yet run | [record](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md), [SCO-292](https://linear.app/scout1/issue/SCO-292) |
+| RR-22 | 2026-11-01 | Housing cap assembly and gland fit (inserts, cap bolts, 3 PG11 glands) | Cap and gland CAD does not fit when printed | looks-like | Screws drop through; glands seat, nut engages | **Partial** — assembled and clamped, but cap bolt holes too narrow (forced threads); gland fit values not recorded | [record](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md), [SCO-270](https://linear.app/scout1/issue/SCO-270), [SCO-293](https://linear.app/scout1/issue/SCO-293) |
+| RR-23 | 2026-11-01 | Housing cap seal and PG11 gland seal tests (two stages, fresh then plain salt) | Water reaches the dry chamber through the cap or glands | works-like | Towel dry after 24 h at 0.3 m or deeper, then 1 week in salt water | Not yet run | [record](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md), [SCO-294](https://linear.app/scout1/issue/SCO-294) |
 | RR-13 | 2026-09-30 | v5 chassis print on the dedicated printer | Chassis can't be printed round and flat enough to seal | manufacturing | Seal faces flat and round within ±0.2 mm | Printing | [SCO-93](https://linear.app/scout1/issue/SCO-93) |
 
 ## Tests still to do
