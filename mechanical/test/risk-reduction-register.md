@@ -48,6 +48,8 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-17 | Dry Float of the Assembled Foam-Version Buoy in a Bin, 2026-10-16 | Partial | [`rr-17-assembled-buoy-bin-float-2026-10-16.md`](rr-17-assembled-buoy-bin-float-2026-10-16.md) |
 | RR-18 | Sensor Pod Fresh-Water Seal Check, PETG, Inserts Pressed from Below, 2026-10-21 | Pass | [`rr-18-sensor-pod-petg-fresh-water-2026-10-21.md`](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md) |
 | RR-19 | Raw PETG Water Absorption Soak, Fresh then Salt, 2026-10-21 | Planned | [`rr-19-petg-water-absorption-soak-2026-10-21.md`](rr-19-petg-water-absorption-soak-2026-10-21.md) |
+| RR-20 | Hang-Hole Static FEA, Through-Hole Floatation, 2026-10-30 | Pass (analysis only) | [`rr-20-hang-hole-fea-2026-10-30.md`](rr-20-hang-hole-fea-2026-10-30.md) |
+| RR-21 | Tub Plain-Salt Water vs Santa Cruz Seawater, Float Waterline, 2026-11-01 | Planned | [`rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md`](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) |
 
 ## Tests run
 
@@ -80,6 +82,8 @@ recovered.
 | RR-17 | 2026-10-16 | **Dry float of the assembled foam-version buoy in a bin** | The built buoy floats at the modelled waterline | looks-like | Freeboard within ±0.5 in of the model | **Floated well, leaked slightly** through the marine-epoxy seams. The buoy was built to rely on flotation foam and was tested empty (no foam) and without its outermost complete seam coats. Waterline and freeboard numbers not recorded | [SCO-170](https://linear.app/scout1/issue/SCO-170) |
 | RR-18 | 2026-10-21 | **Sensor-pod fresh-water seal check: PETG print, heat-set inserts pressed from the bottom** | Printing in PETG and inserting from the bottom keeps the flange face flat, so clamping stays even around the ring | pod, no sensor | Dry paper towel inside after 24 hr submerged | **Passed 2026-10-21** (fresh water, negligible depth, no sensor) | [record](sensor-housing-petg-pass-2026-10-21.md), [SCO-91](https://linear.app/scout1/issue/SCO-91), [SCO-108](https://linear.app/scout1/issue/SCO-108) |
 | RR-19 | 2026-10-21 | **Raw PETG water absorption soak, fresh then salt** | Uncoated PETG takes up water and gains mass with no leak, lowering the waterline and clouding leak tests | looks-like + coupons | Mass gain ≤ scale resolution after 24 hr fully submerged, fresh and ~35 ppt (provisional) | Not yet run | [plan](petg-water-absorption-soak-plan-2026-10-21.md), [SCO-219](https://linear.app/scout1/issue/SCO-219) |
+| RR-20 | 2026-10-30 | Hang-hole static FEA, through-hole floatation (322 N each hole; 644 N one hole) | Hang holes tear out under the dock or boat load | analysis | SF ≥ 4 | **Pass** (analysis only) — min SF about 12.4; steel housing and coarse mesh limit it | [record](rr-20-hang-hole-fea-2026-10-30.md), [SCO-276](https://linear.app/scout1/issue/SCO-276) |
+| RR-21 | 2026-11-01 | Tub plain-salt water vs Santa Cruz seawater (fresh, plain salt at 35 g per kg, seawater tentative) | Tub tests use a water that does not match the ocean, or waste money on salt | looks-like | Plain-salt freeboard within 0.1 in of seawater (proposed) | Not yet run | [record](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md), [SCO-292](https://linear.app/scout1/issue/SCO-292) |
 | RR-13 | 2026-09-30 | v5 chassis print on the dedicated printer | Chassis can't be printed round and flat enough to seal | manufacturing | Seal faces flat and round within ±0.2 mm | Printing | [SCO-93](https://linear.app/scout1/issue/SCO-93) |
 
 ## Tests still to do
