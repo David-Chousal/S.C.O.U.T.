@@ -153,6 +153,7 @@ Mean freeboard per water over the three marks. Spread across marks against 0.05 
 
 Open questions:
 
+- **Mushroom hypothesis (John, 2026-11-02):** the unweighted mushroom is unstable, which makes its reading unreliable. Planned: a repeat with a lot more weight (a heavier load stands it upright). Predicted drafts / freeboard from the top for the 702 g float plus added mass (voxel model, 35 ppt, estimates, unverified): +429 g 3.43 / 3.35 in; +800 g 3.90 / 2.88 in; +1200 g 4.49 / 2.29 in; +1600 g 4.96 / 1.82 in; +2000 g 5.55 / 1.23 in. Record the mass and where it sits each time. Owner John, date not set.
 - Weights: John will add weights to the floats later, in the same salt water. Record each float's added mass and re-read freeboard at three marks. Compare with the model's 4.27 in (M5) only if the added mass matches the model's payload mass for that float (Not recorded). Owner John.
 - Is 0.1 in the right tolerance for M2? Owner John with Jes, before locking.
 - Tub water mass: measured Mon Nov 2 in step 2; salt mass computed from it. Owner John.
