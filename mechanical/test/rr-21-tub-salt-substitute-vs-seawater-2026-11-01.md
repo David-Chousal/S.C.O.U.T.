@@ -166,7 +166,7 @@ Open questions:
 
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
-| 2026-11-02, time Not recorded | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub; mass in g Not recorded | 725 g for 20 L (35 g per kg) | Water amount (20 L) and its measurement method Not recorded |
+| 2026-11-02 11:00 | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub: **725 g exactly** (John). Water at room temperature (value Not recorded) | 725 g for 20 L (35 g per kg) | M1 met on the stated amounts: 725 g is 35 g per kg of 20 kg. Water amount (20 L) and its measurement method Not recorded. 24 h read due 2026-11-03 11:00 |
 
 ### B3. Deviations
 
