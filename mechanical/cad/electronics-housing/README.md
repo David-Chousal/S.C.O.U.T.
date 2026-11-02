@@ -322,3 +322,20 @@ released). They supersede the DFM Assembly 2 sheet above for the public site.
 
 Dimensions are read off the sheets; no STEP yet. The Ø6 flange in the 2026-10-06 table above is
 now Ø7.25 in on this revision.
+
+## Gland test pegs (2026-11-02)
+
+For the cap and gland seal tests ([RR-23](../../test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md),
+[SCO-294](https://linear.app/scout1/issue/SCO-294)), John printed three pegs that stand in for cable
+in the PG11 glands (the glands are the lab-stock PG11 type recorded in
+[`facts.md`](../../../docs/hub/facts.md)).
+
+| Item | Value |
+|---|---|
+| File | [`gland-peg-test-2026-11-02.step`](gland-peg-test-2026-11-02.step) (inches) |
+| Shaft | Ø6.35 mm (0.250 in), 19.05 mm long, inside the nominal 5 to 10 mm PG11 cable range |
+| Head | Ø10.16 mm (0.400 in), 6.35 mm tall, 1.27 mm 45° chamfers top and bottom; overall length 25.4 mm |
+| Print | PETG, 2 walls, 15% infill, with a handle (the STEP shows the head only) |
+| Use | Pushed in from the outside through the gland's diaphragm hole, then clamped by the gland nut |
+| Limit | A rigid peg is not a cable: a pass shows the cap and gland body seal, not the gland on cable (Stage 2 of RR-23) |
+

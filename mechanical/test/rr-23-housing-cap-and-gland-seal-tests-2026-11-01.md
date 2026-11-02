@@ -77,7 +77,8 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Design revision / file | RR-22 assembly: [cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step), [body STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Not recorded |
 | Configuration | O-ring (size and material Not recorded), stainless torx screws (count and torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
-| Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Print material and settings Not recorded; the file's "Steel" label is a CAD default |
+| Gland (all three) | PG11 from the lab stock bag Navid supplied (brand and datasheet not recorded); logged nominal values: thread Ø18.6 mm, lid through hole Ø19.0 mm, cable range about 5 to 10 mm ([facts.md](../../docs/hub/facts.md), decision log 2026-10-29); glands point sideways from the raised gland deck on the cap (decision log 2026-10-30) |
+| Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Printed in PETG, 2 walls, 15% infill, with a handle (John, 2026-11-02); the file's "Steel" label is a CAD default. Method: each peg goes in from the outside through the gland's diaphragm hole, then the gland nut clamps it |
 | Conditions | Fresh water first, room temperature; then plain salt water mixed by mass (35 g per kg) |
 | Sample size and replication | 1 assembly; Stage 1 and Stage 2 run in order, not in parallel |
 | Control / reference article | None; Stage 1 isolates the cap |
@@ -98,6 +99,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Gland nut under-tightened or cable too small | Leak at a gland | Wet towel near the glands | Check cable diameter against the gland range (Not recorded); retighten once, log it |
 | Electronics inside | Not applicable | n/a | Test with the towel only, no electronics |
 | Peg does not seal like a cable | Stage 1 passes but real cable leaks | Wet towel in Stage 2 | Treat Stage 1 as a cap and gland-body check only; Stage 2 is the gland verdict |
+| Clamping crushes or ovalizes a PETG peg (2 walls, 15% infill) | Peg deforms, nut loosens, leak at the gland | Peg looks oval after clamping; nut turns easily; wet towel | Tighten to the same feel on all three, recheck at 1 h, record the condition of each peg afterwards |
 | Peg shaft too small or too large for the diaphragm hole | Leak around the peg or a torn diaphragm | Wet towel near a gland; peg loose or hard to seat | Check the fit dry first; record which glands, replace the diaphragm if torn |
 | Salt left on the housing | Corrosion of screws, crust | White residue | Rinse with fresh water and dry |
 
@@ -116,7 +118,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Step | Action | Record | Expected | Done |
 |---|---|---|---|---|
 | 1 | Go/no-go checks; weigh the housing with the towel inside. | Mass | Stable reading | ☐ |
-| 2 | Stage 1: fit a peg through each gland's diaphragm hole, tighten the gland nuts, close the cap. | Configuration photo, peg orientation | Pegs seated, nuts tight | ☐ |
+| 2 | Stage 1: push a peg in from the outside through each gland's diaphragm hole, then clamp it by tightening the gland nut; close the cap. | Configuration photo, peg orientation | Pegs seated, nuts tight | ☐ |
 | 3 | Submerge below 0.3 m in fresh water; record start time and depth. | Time, depth | Fully under | ☐ |
 | 4 | Quick check at 1 h for streaming bubbles. | Observation | None | ☐ |
 | 5 | After 24 h: remove, dry the outside, weigh, then open and inspect the towel. | Mass, photo | Towel dry; mass unchanged (M1, M4) | ☐ |
@@ -142,7 +144,8 @@ Open questions:
 
 - O-ring size and material, screw count and torque, cable diameter, gland range: all Not recorded. Owner John, before locking.
 - Is 24 h at 0.3 m the right first mark, or should Stage 1 go straight to the R-13 depth ([SCO-177](https://linear.app/scout1/issue/SCO-177))? Owner John.
-- Gland brand, cable clamping range and diaphragm hole size are Not recorded. The 6.35 mm peg shaft is inside the 5 to 10 mm range typical for a PG11 gland (typical value, check the datasheet). Which end of the peg goes in, and does the head sit inside or outside? Owner John.
+- Gland brand and datasheet are not known (the glands come from the lab stock bag Navid supplied, with a range of sizes; [facts.md](../../docs/hub/facts.md)). The logged PG11 values are nominal: thread Ø18.6 mm, lid hole Ø19.0 mm, cable range about 5 to 10 mm. Diaphragm hole size: Not recorded. Owner John, at the first dry fit.
+- The peg handle: the STEP shows a 10.16 mm head only. If the printed pegs have a longer handle than the STEP, update the file or note the difference. Owner John.
 - If Stage 1 leaks and the source is unclear, is a Stage 1b with the gland nuts sealed externally wanted? Owner John.
 - Schedule: which days this week; the tub is also used for the float test on Mon and Tue. Owner John.
 

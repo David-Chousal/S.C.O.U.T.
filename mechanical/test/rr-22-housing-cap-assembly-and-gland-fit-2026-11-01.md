@@ -21,7 +21,7 @@
 | Cap clamps on the O-ring | Hand tool | Cap draws down evenly | Clamping achieved with the forced screws | Pass with workaround |
 | PG11 glands thread into the cap | Hand | Seat and nut engages on the 3 to 4 mm wall | Glands threaded in; seating and nut engagement Not recorded | Not measured |
 
-**How.** Heat-set inserts pressed into the printed body's flange with a soldering iron, O-ring placed, cap screwed down with stainless torx screws, three PG11 glands threaded into the printed gland block on the cap ([cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step)). A paper towel is inside for the leak test (RR-23).
+**How.** Heat-set inserts pressed into the printed body's flange with a soldering iron, O-ring placed, cap screwed down with stainless torx screws, three PG11 glands (lab stock, nominal values in [facts.md](../../docs/hub/facts.md)) threaded into the printed gland block on the cap ([cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step)). A paper towel is inside for the leak test (RR-23).
 
 **Result.** Assembled and clamped, but the cap's bolt holes were dimensioned too narrow, so the screws were forced through and cut their own threads in the cap. The cap is double-threaded: forced threads on top, heat-set insert threads below. No water test yet.
 
