@@ -5,7 +5,7 @@
 |  |  |
 |---|---|
 | **Test ID / status** | RR-21 · Planned |
-| **Date, duration, who** | Plain-salt part planned Tue 2026-11-03 to Wed 2026-11-04 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
+| **Date, duration, who** | Plain-salt part started Mon 2026-11-02, read Tue 2026-11-03 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
 | **Requirement tested** | Floats at the modelled waterline (R-17), here: does cheap plain salt give the same waterline as real seawater |
 | **Tracking issue** | [SCO-292](https://linear.app/scout1/issue/SCO-292); runs with [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 | **Record kind** | Prospective |

@@ -17,7 +17,7 @@
 
 | Issue | Task | Why flagged | Was due | Action this week |
 |---|---|---|---|---|
-| SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided; buoy float starts Tue after the housing dunk is read** | Oct 30 | Tue Nov 3: fresh float, then salt float. Read the salt float Wed Nov 4 (salt waits for the housing test). Linear re-dated to Nov 4 |
+| SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided; buoy float starts Mon Nov 2 in its own container** | Oct 30 | Tue Nov 3: fresh float, then salt float. Read the salt float Wed Nov 4 (salt waits for the housing test). Linear re-dated to Nov 4 |
 | SCO-277 | Buy salt for the tub float test | **Done Nov 1:** plain salt on hand (product and price not recorded) | Nov 2 | None. Record product and price in the purchase log |
 | SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
 | SCO-211 | Hazard form, advisor signature | **Done Nov 2:** signed by Shoba Krishnan and submitted | Oct 26 | None. Check the signed form covers the salt-water tub tests and the housing dunk |
@@ -38,12 +38,12 @@
 | Mon Nov 2 | SCO-211 | Hazard form signed by Shoba and submitted; log it | 0 h | Done |
 | Mon Nov 2 | SCO-294, SCO-292 | RR-23 Stage 1 **started 2026-11-02 10:47 PST**: housing (518 g, pegs in, towel inside) in a bucket of fresh water just below the surface with weights. The buoy float uses a separate container | 1.5 h | Running (due Nov 6) |
 | Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
+| Mon Nov 2 | SCO-172, SCO-292 | **Buoy float test now** in its own container: weigh the water, fresh-water float (freeboard at three marks), salt = water kg × 35/965, dissolve, settle 15 min, read, **start the 24 h salt float**; record times (RR-21 steps 1 to 6) | 3.5 h | Running (SCO-172 due Nov 3) |
 | Tue Nov 3 | SCO-294 | Read RR-23 Stage 1 at 24 h (towel, mass vs 518 g); take the housing and weights out of the bucket. Dry: start Stage 2 (real cable) in the second tub. Wet: isolation plan (A6b) | 1 h | Todo |
-| Tue Nov 3 | SCO-172, SCO-292 | **Buoy float test starts** in its own container: fill it, weigh the water, fresh-water float, freeboard at three marks (RR-21 steps 1 to 3); then salt = water kg × 35/965, dissolve, settle 15 min, read, **start the 24 h salt float** (steps 4 to 6) | 3.5 h | Todo (SCO-172 due Nov 4) |
+| Tue Nov 3 | SCO-172, SCO-292 | Read the 24 h salt float: freeboard at three marks, seams, water temperature; clean and rinse | 1 h | Todo (due Nov 3) |
 | Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
 | Tue Nov 3 | SCO-195 | Message the Santa Cruz yacht club | 0.5 h | Todo |
 | Wed Nov 4 | n/a | Advisor meeting; Isabella's temperature demo (SCO-259) | fixed | Todo |
-| Wed Nov 4 | SCO-172 | Read the 24 h salt float: freeboard, seams; clean and rinse (weights too) | 1 h | Todo (due Nov 4) |
 | Wed Nov 4 | SCO-294 | Read RR-23 Stage 2 (second tub) if started Tue | 0.5 h | Todo |
 | Wed Nov 4 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6; moved from Thu to fit capacity) |
 | Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
