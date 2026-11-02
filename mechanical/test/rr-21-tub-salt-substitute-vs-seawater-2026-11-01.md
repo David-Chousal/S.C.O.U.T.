@@ -90,7 +90,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 | Before you start (go/no-go) | Buoy dry outside and weighed (if mass changed since the last float, reweigh and stop to find out why). Tub clean, no residue. Salt label read: no iodine, no anti-caking agent |
 | Data path | Handwritten sheet or a notes file in the repo, photographed ruler readings; enter into B2 the same day |
 | Stop and abort conditions | Buoy leaks (weeping seam); water cloudy after stirring; seawater has visible growth or smell |
-| Safety | Salt-water spills (slip), carrying buckets, tub weight. Seawater collection hazards below. Hazard form: [SCO-211](https://linear.app/scout1/issue/SCO-211) (signature pending) |
+| Safety | Salt-water spills (slip), carrying buckets, tub weight. Seawater collection hazards below. Hazard form: [SCO-211](https://linear.app/scout1/issue/SCO-211) (signed by Shoba Krishnan and submitted, per John 2026-11-02; whether it covers this test is unchecked) |
 
 ### A6a. Hazards, damage risks and failure modes
 
@@ -114,7 +114,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 - ☐ Tub (two on hand), clean; towels; fresh water for rinsing
 - ☐ For the seawater part (tentative): clean food-grade buckets or jugs with lids, rinsed with fresh water, labeled with date and site; enough volume to float the buoy in the tub (volume Not recorded)
 - ☐ Camera for the ruler readings; the buoy weighed and its configuration recorded
-- ☐ Hazard form signed or its scope confirmed ([SCO-211](https://linear.app/scout1/issue/SCO-211))
+- ☐ Hazard form signed (done, per John 2026-11-02); confirm its scope covers this test ([SCO-211](https://linear.app/scout1/issue/SCO-211))
 
 | Step | Action | Record | Expected | Done |
 |---|---|---|---|---|
