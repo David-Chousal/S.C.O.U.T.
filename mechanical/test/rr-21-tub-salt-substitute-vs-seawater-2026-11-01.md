@@ -167,6 +167,8 @@ Open questions:
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
 | 2026-11-02 11:00 | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub: **725 g exactly** (John). Water at room temperature (value Not recorded) | 725 g for 20 L (35 g per kg) | M1 met on the stated amounts: 725 g is 35 g per kg of 20 kg. Water amount (20 L) and its measurement method Not recorded. 24 h read due 2026-11-03 11:00 |
+| 2026-11-02, time Not recorded (after the salt) | Mushroom float, salt water | Waterline one smallest ruler tick above 1 in: about 1 1/16 in (1.0625 in) if the smallest tick is 1/16 in. Single reading, not three marks. What it is measured from (freeboard or draft) Not recorded | Raw float, no model value | John, verbal; smallest tick size and reference Not recorded |
+| 2026-11-02, time Not recorded (after the salt) | Regular float, salt water | Waterline one smallest ruler tick below 1 3/4 in: about 1 11/16 in (1.6875 in) if the smallest tick is 1/16 in. Single reading, not three marks | Raw float, no model value | As above. Which regular float (wedge/ring) Not recorded |
 
 ### B3. Deviations
 
