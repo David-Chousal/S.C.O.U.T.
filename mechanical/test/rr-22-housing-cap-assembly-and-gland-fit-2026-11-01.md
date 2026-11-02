@@ -49,7 +49,7 @@ If the cap's bolt holes are clearance holes and the gland bores match PG11, then
 | Parameter | Unit | Instrument / method | Resolution | Uncertainty | Calibrated / checked (date) |
 |---|---|---|---|---|---|
 | Cap bolt hole diameter | mm | Not recorded | Not recorded | Not recorded | Not recorded |
-| Screw size (thread, length) | mm | Not recorded | Not recorded | Not recorded | Not recorded |
+| Screw size (thread, length) | mm | M4 heat-set inserts per the housing README; screw length Not recorded | Not recorded | Not recorded | Not recorded |
 | Assembly observations | n/a | Visual, photos | n/a | n/a | n/a |
 
 ### A4. Variables
@@ -75,7 +75,7 @@ Locked on: Not recorded (retroactive record)
 |---|---|
 | Design revision / file | [Cap STEP, sideways glands, 2026-10-30](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step); body [STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Grey print, material and settings Not recorded (PETG assumed elsewhere in the repo) |
-| Configuration | O-ring in the cap (largest size from the O-ring assortment pack bought earlier; AS568 size and material Not recorded), stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; screw count and torque Not recorded |
+| Configuration | O-ring in the cap (AS568-247, ID 4.609 in × CS 0.139 in, the largest ring in the assortment pack; per [facts.md](../../docs/hub/facts.md); elastomer Not recorded), 10 stainless torx screws into M4 heat-set inserts, stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; torque Not recorded |
 | Conditions | Bench, room temperature |
 | Sample size and replication | 1 assembly |
 | Control / reference article | None |

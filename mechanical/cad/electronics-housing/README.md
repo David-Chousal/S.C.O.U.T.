@@ -354,7 +354,7 @@ whether other changes are needed.
 | Three PG11 gland holes | Ø19.0 mm | Ø19.0 mm, unchanged |
 | Cable outlet cavity | Standard gland deck | Extended triangular cavity on top: larger cable bend radius, less wear and crimping (John's description; not measured here) |
 
-The first cap's holes match an M3 clearance hole; 4.5 mm is the usual clearance for an M4 screw. That
-suggests the screws are M4, but the screw size is not recorded: confirm it. One large cylindrical
+The housing uses M4 heat-set inserts (logged above), and the cap has 10 bolts. The first cap's 3.40 mm
+holes were M3-size, too small for M4; 4.50 mm is the usual M4 clearance. One large cylindrical
 face also changed from Ø5.0 in to Ø6.0 in between the two files; check that is intended.
 

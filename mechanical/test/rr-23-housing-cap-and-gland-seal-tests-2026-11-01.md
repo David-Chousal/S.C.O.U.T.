@@ -76,7 +76,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 |---|---|
 | Design revision / file | RR-22 assembly: [cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step), [body STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Not recorded |
-| Configuration | O-ring (largest size from the O-ring assortment pack bought earlier (AS568 size and material not recorded; photo of the pack to be added)), stainless torx screws (count and torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
+| Configuration | O-ring (AS568-247, ID 4.609 in × CS 0.139 in (117.07 × 3.53 mm), the largest ring in the assortment pack John bought earlier; logged in [facts.md](../../docs/hub/facts.md) and the [housing README](../cad/electronics-housing/README.md#current-seal--large-as568-247-o-ring-2026-10-16). The size came from a secondary chart, to confirm against a supplier table ([SCO-137](https://linear.app/scout1/issue/SCO-137)); elastomer of this pack ring Not recorded), 10 stainless torx screws into M4 heat-set inserts (torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
 | Gland (all three) | PG11 from the lab stock bag Navid supplied (brand and datasheet not recorded); logged nominal values: thread Ø18.6 mm, lid through hole Ø19.0 mm, cable range about 5 to 10 mm ([facts.md](../../docs/hub/facts.md), decision log 2026-10-29); glands point sideways from the raised gland deck on the cap (decision log 2026-10-30) |
 | Pegs installed | Seat well in all three glands, "work great" (John, 2026-11-02, dry fit); [photo](housing-glands-with-pegs-2026-11-02-01.jpg) |
 | Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Printed in PETG, 2 walls, 15% infill, with a handle (John, 2026-11-02); the file's "Steel" label is a CAD default. Method: each peg goes in from the outside through the gland's diaphragm hole, then the gland nut clamps it |
@@ -156,7 +156,7 @@ None, pass/fail test. No quantitative curve: a leak rate would need a pressure o
 
 Open questions:
 
-- O-ring AS568 size and material (it is the largest in the assortment pack; add the pack photo), screw count and torque, cable diameter: Not recorded. Owner John, before locking.
+- Torque on the screws, cable diameter, and the elastomer of the pack O-ring: Not recorded. Owner John, before locking. The O-ring size (AS568-247) and screw count (10) are now recorded.
 - Is 24 h at 0.3 m the right first mark, or should Stage 1 go straight to the R-13 depth ([SCO-177](https://linear.app/scout1/issue/SCO-177))? Owner John.
 - Gland brand and datasheet are not known (the glands come from the lab stock bag Navid supplied, with a range of sizes; [facts.md](../../docs/hub/facts.md)). The logged PG11 values are nominal: thread Ø18.6 mm, lid hole Ø19.0 mm, cable range about 5 to 10 mm. Diaphragm hole size: Not recorded. Owner John, at the first dry fit.
 - The peg handle: the STEP shows a 10.16 mm head only. If the printed pegs have a longer handle than the STEP, update the file or note the difference. Owner John.
