@@ -167,8 +167,8 @@ Open questions:
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
 | 2026-11-02 11:00 | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub: **725 g exactly** (John). Water at room temperature (value Not recorded) | 725 g for 20 L (35 g per kg) | M1 met on the stated amounts: 725 g is 35 g per kg of 20 kg. Water amount (20 L) and its measurement method Not recorded. 24 h read due 2026-11-03 11:00 |
-| 2026-11-02, time Not recorded (after the salt) | Mushroom float (702 g), salt water | **Draft (measured from the very bottom of the float up to the waterline): mean of three readings, one smallest ruler tick above 1 in, about 1 1/16 in (1.0625 in)** if the smallest tick is 1/16 in. The three individual readings are Not recorded | Raw float, no model value | John, verbal. Smallest tick size Not recorded |
-| 2026-11-02, time Not recorded (after the salt) | Regular float (951 g), salt water | **Draft (very bottom up to the waterline): mean of three readings, one smallest ruler tick below 1 3/4 in, about 1 11/16 in (1.6875 in)** if the smallest tick is 1/16 in. The three individual readings are Not recorded | Raw float, no model value | As above |
+| 2026-11-02, time Not recorded (after the salt) | Mushroom float (702 g), salt water | **Draft (measured from the very bottom of the float up to the waterline): mean of three readings, one smallest ruler tick above 1 in, about 1 1/16 in (1.0625 in)** if the smallest tick is 1/16 in. Free-floating it tilts (the tilted dome float in the photos); John held it vertical with a side-only force, at maximum draft, and recorded that. The three individual readings are Not recorded | Raw float, no model value | John, verbal. Smallest tick size Not recorded |
+| 2026-11-02, time Not recorded (after the salt) | Regular float (951 g), salt water | **Draft (very bottom up to the waterline): mean of three readings, one smallest ruler tick below 1 3/4 in, about 1 11/16 in (1.6875 in)** if the smallest tick is 1/16 in. Floats upright unaided (the upright engraved float in the photos). The three individual readings are Not recorded | Raw float, no model value | As above |
 
 ### B3. Deviations
 
@@ -200,10 +200,20 @@ Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright
 
 Notes:
 
+- **Which is which (John, 2026-11-02):** the mushroom is the dome-shaped float that tilts when free; the regular float is the upright one with the engraved band.
 - **STEP check:** `mushroomFloat.step` holds two solids: the float, and a second solid of about 337 cm3 (184 x 182 x 136 mm) from 101.6 to 237.5 mm above the file's origin. It looks like the electronics housing seated in the float; it is not part of the raw float and was excluded. The float's own profile has no radius jumps above 6 mm, so no geometric artifacts were found in it. `RegularFloat.step` is a single solid.
-- **Mushroom:** at 1.06 in the envelope displaces only 461 mL, about 473 g, against a 702 g float. A free float must displace its own mass, so one of these is off: the mass, the reading, or the shape (not resolved).
-- **Regular:** at 1.69 in the envelope displaces about 1587 mL, 1627 g, against 951 g. A tilted float reads deeper at its lowest point than upright; if the tilted float in the photos is the regular one, that would explain it. Water inside the float would also deepen it. Neither is confirmed.
-- The two readings fit each other's float better than their own (regular STEP at 951 g predicts 1.08 in against the mushroom's 1.06 in reading; mushroom STEP at 702 g predicts 1.57 in against the regular's 1.69 in), so the readings may be swapped between floats. Resolve before using these numbers.
+- **Mushroom:** at 1.06 in the envelope displaces only 461 mL, about 473 g, against a 702 g float. With a side-only force the float should sit at its free-float draft, so the mass, the reading or the shape is off (not resolved).
+- **Regular:** it floats upright and unaided, yet at 1.69 in the envelope displaces about 1587 mL, 1627 g, against 951 g. Likely candidates: water inside the float, or a mass above 951 g (not confirmed). Check inside it for water before adding ballast.
+- Each float's reading fits the other float's prediction better, which may be coincidence.
+- **Weighted run planned for 2026-11-03** (John: fill both floats with water to weigh them down, which should steady the mushroom). Record the water mass added (weigh the water before filling) and read draft at three marks. Predicted drafts from the STEP envelope for added water, sealed, 35 ppt (estimates):
+
+| Added water | Mushroom (702 g) | Regular (951 g) |
+|---|---|---|
+| 0 g | 1.57 in | 1.08 in |
+| 500 g | 2.56 in | 1.54 in |
+| 1000 g | 3.29 in | 1.99 in |
+| 1500 g | 3.82 in | 2.44 in |
+| 2000 g | 4.29 in | 2.87 in |
 
 ### C3. Validity and limits
 
