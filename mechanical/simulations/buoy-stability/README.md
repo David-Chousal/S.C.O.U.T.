@@ -30,6 +30,10 @@ Open **[`printed-float-tip-explorer.html`](printed-float-tip-explorer/printed-fl
 heel slider or press Play to tilt the buoy and see G, B, the righting arm and where it tips, with mass sliders. It has its own
 solver and float STEP, separate from the v5/v6 explorer below.
 
+## Float displacement charts and running log (added 2026-11-02)
+
+For printed-float buoyancy tests: [`float-displacement/`](float-displacement/README.md) turns a float STEP into a displaced-mass-versus-draft chart and plots every logged test run on it. Add a run for every future buoyancy test.
+
 ## Every iteration has stability and buoyancy (updated 2026-10-28)
 
 All 15 iterations now show draft, freeboard, GM and the righting-arm curve. The 12 concept and assembly entries before the mushroom

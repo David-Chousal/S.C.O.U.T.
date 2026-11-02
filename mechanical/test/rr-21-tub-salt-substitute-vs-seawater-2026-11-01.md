@@ -16,13 +16,14 @@
 
 | Parameter (unit) | Instrument | Pass if | Measured | Verdict |
 |---|---|---|---|---|
-| Salt mass vs target (g) | Scale | Within 1% of 35 g per kg of the weighed water mass | Not yet run | Not measured |
-| Draft of the same float (in), from the very bottom up to the waterline, mean of three readings | Ruler | Plain-salt water within 0.1 in of seawater (proposed, lock before the run) | Not yet run | Not measured |
-| Reading spread across three marks (in) | Same | 0.05 in or less | Not yet run | Not measured |
+| M1 salt mass (g) | Scale | Within 1% of 35 g per kg of the water | 725 g for 20 kg (target 725 g) | Pass |
+| M5 freeboard of each float with 429 g inside vs the model (in) | Ruler, from the top to the waterline | Within ±0.5 in of the model | Regular: 4.5 in vs 4.66 in (-0.16 in). Mushroom: 4.5 in vs 3.38 in (+1.12 in) | Regular pass; mushroom fail (unverified, under check) |
+| M3 24 h drift of each raw draft (in) | Ruler, bottom up to the waterline | Within 0.1 in of today's | Due 2026-11-03 about 11:00 | Not measured |
+| M2 plain salt vs Santa Cruz seawater (in) | Ruler | Within 0.1 in | Seawater run not done (tentative) | Not measured |
 
-**How and steps.** Raw floats (mushroom and wedge/ring), no payload or ballast, same floats throughout. Measure the tub's water mass, float the buoy in fresh water (control), dissolve salt in the same tub at 35 g per kg of solution, settle 15 min, read draft and freeboard at three marks, hold 24 h for the seam-leak check. If Santa Cruz seawater is collected, rinse the tub and repeat in seawater as collected. There is no salinity meter: salinity is set by mass and the seawater is not metered.
+**How and steps.** Raw floats (mushroom and regular), own container, 20 L of water, no fresh-water reading taken. At 11:00 on 2026-11-02, 725 g of salt (weighed in a cup on a scale) was dissolved; draft was read bottom up for each float (mean of three); at 11:40 a 429 g breadcrumb can was placed in each float's bore and freeboard read from the top (mean); the can was removed and the raw floats soak for 24 h. Results are compared with the simulator's displacement tool ([charts and log](../simulations/buoy-stability/float-displacement/README.md)).
 
-**Result.** Not yet run.
+**Result.** The salt mass is on target. The regular float agrees with the model under load (-0.16 in); the mushroom sits about 1.1 to 1.3 in shallower than the model both raw and under load, with its 702 g mass confirmed, so the mushroom model or reading is under check. The 24 h read is still to come.
 
 **Does not establish.**
 
@@ -30,7 +31,7 @@
 - The actual salinity of the seawater (not metered; typically near 35 ppt, lower near runoff or after rain).
 - Anything about waves, currents or biofouling.
 
-**Decision.** Run the plain-salt part with SCO-172 on Mon Nov 2. Add the seawater part only if the Santa Cruz trip happens.
+**Decision.** Read the 24 h drift on 2026-11-03, then run a heavier-load mushroom run (and check its height and base against the STEP). Add the seawater part only if the Santa Cruz trip happens.
 
 ---
 
@@ -166,10 +167,10 @@ Open questions:
 
 | Item | Value |
 |---|---|
-| Start / end (date, time) | To be recorded |
+| Start / end (date, time) | Salt added 2026-11-02 11:00; weighted readings 11:40; 24 h read due 2026-11-03 about 11:00 |
 | Operator | John Ryan Myrdal |
-| Ambient conditions | To be recorded |
-| Instrument serials / IDs | To be recorded |
+| Ambient conditions | Outdoors, daylight; room-temperature water (value Not recorded) |
+| Instrument serials / IDs | Scale (model and resolution Not recorded); ruler (smallest tick assumed 1/16 in, Not recorded) |
 
 ### B2. Raw data
 
@@ -196,32 +197,39 @@ Open questions:
 | M2 plain salt vs seawater | Not yet run | — | Not measured |
 | M3 24 h drift | Due 2026-11-03 | — | Not measured |
 | M4 fresh lowest | Dropped: no fresh reading | — | Not measured |
-| M5 weighted vs model | Regular: 4.5 in measured vs 4.61 in predicted (-0.11 in). Mushroom: 4.5 in vs 3.35 in (+1.15 in) | ±0.5 in | Regular **Pass**; mushroom **Fail** (unverified, under check) |
+| M5 weighted vs model | Regular: 4.5 in measured vs 4.66 in predicted (-0.16 in). Mushroom: 4.5 in vs 3.38 in (+1.12 in) | ±0.5 in | Regular **Pass**; mushroom **Fail** (unverified, under check) |
 
 **Overall:** Partial so far: M1 pass; M5 pass on the regular float and fail on the mushroom; M3 due tomorrow; M2 not run.
 
 ### C2. Curve and analysis
-Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections (unverified, errors being checked): [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
+Preliminary (2026-11-02, before the 24 h read; not a verdict). **Unverified, under check.** Predictions come from the float displacement tool ([README, charts and method](../simulations/buoy-stability/float-displacement/README.md); running log [float-displacement-log.csv](float-displacement-log.csv)): true 3D hull from the STEP, open bore not counted, 1.025 g/mL for 35 ppt (an estimate). Geometry: [mushroom (corrected)](../cad/floatation/float-mushroom-corrected-2026-11-02.step) and [regular](../cad/floatation/float-regular-2026-11-02.step). Section diagrams: [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
 
-| Run | Mass | Predicted freeboard (top to water) | Measured | Difference |
+**The two displacement charts (kept running for future buoyancy tests):**
+
+![Mushroom displacement chart](../simulations/buoy-stability/float-displacement/mushroom-displacement-chart.png)
+
+![Regular displacement chart](../simulations/buoy-stability/float-displacement/regular-displacement-chart.png)
+
+| Run | Mass | Reading (John, mean) | Predicted | Measured minus predicted draft |
 |---|---|---|---|---|
-| Mushroom + 429 g | 1131 g | 3.35 in (draft 3.43 in) | about 4.5 in (draft 2.28 in) | +1.15 in |
-| Regular + 429 g | 1577 g (1148 + 429) | 4.61 in (draft 1.89 in) | about 4.5 in (draft 2.00 in) | -0.11 in |
-
-Earlier bottom-up drafts, unweighted: mushroom 1.06 in against 2.36 in predicted (-1.30 in); regular 1.69 in against 1.30 in predicted with the corrected 1148 g (+0.39 in).
+| Mushroom, raw | 702 g | draft 1.06 in (held vertical by a side-only force) | draft 2.33 in | -1.27 in |
+| Regular, raw | 1148 g (weighed) | draft 1.69 in | draft 1.31 in | +0.37 in |
+| Mushroom + 429 g can | 1131 g | freeboard 4.5 in (draft 2.28 in) | freeboard 3.38 in (draft 3.40 in) | -1.12 in |
+| Regular + 429 g can | 1577 g | freeboard 4.5 in (draft 2.00 in) | freeboard 4.66 in (draft 1.84 in) | +0.16 in |
 
 Notes:
 
-- **Which is which (John):** the mushroom is the dome-shaped float that tilts when free (held vertical by a side-only force for the reading); the regular float is the upright one with the engraved band.
-- **Correction:** an earlier version of this section used a body-of-revolution envelope that counted the open central bore as displacing water (mushroom 1.57 in, regular 1.08 in). The voxel method does not, and it widens the mushroom gap.
-- **Sections:** both floats have a central bore of about 58 mm radius from the top down to a floor 25.4 mm above the keel (about 107 g of water per 10 mm of depth). The regular float is not axisymmetric: its section shows a hollow wedge on one side and a plain wall on the other.
-- **Regular float:** with its weighed mass the weighted run agrees with the model within 0.11 in. The earlier 951 g was the slicer value, not the weighed mass, and explains most of the first gap.
-- **Mushroom:** its mass is confirmed (702 g), yet it reads about 1.2 to 1.3 in less draft than predicted both unweighted (-1.30 in) and weighted (-1.15 in). A near-constant offset points to the reference or the geometry (for example the real overall height or the base differing from the STEP: 6.78 in tall, 1.06 in base), not the mass. Check the printed mushroom's overall height and base.
-- **Weighted run planned for 2026-11-03** (John: fill both floats with water to weigh them down). Record the water mass added and read draft at three marks after each step (for example 0, 250, 500, 1000 g). Plot displaced mass (from the STEP volume at each measured draft) against added water: the slope should be 1 and the intercept is the float's effective mass, including any hidden water.
+- **Which is which (John):** the mushroom is the dome-shaped float that tilts when free; the regular float is the upright one with the engraved band.
+- **Corrections made during the session** (kept here so they are not lost): an early version used a body-of-revolution envelope that counted the open central bore as displacing water, then the wrong STEP files (one held the housing, one was assumed to be the regular float), and the regular float's mass was the slicer's 951 g before it was weighed at about 1148 g. Only the voxel method and the weighed masses are used now.
+- **Sections:** both floats have a central bore of about 58 mm radius from the top down to a floor 25.4 mm above the keel (about 107 g of water per 10 mm of depth). The regular float is not axisymmetric: one side shows a hollow wedge, the other a plain wall.
+- **Regular float:** with its weighed mass the weighted run agrees with the model within 0.16 in; the raw run is 0.37 in deeper than predicted (a single low-draft reading).
+- **Mushroom:** mass confirmed (702 g), yet it reads about 1.1 to 1.3 in shallower than predicted raw and weighted. A near-constant offset points to the reference or the geometry (for example the real overall height or base differing from the STEP: 6.78 in tall, 1.06 in base), not the mass; two points cannot separate an offset from a proportional error. Check the printed mushroom's overall height and base.
+- **Mushroom hypothesis (John):** its instability makes the unweighted reading unreliable; it needs a lot more weight. Predicted drafts / freeboard from the top for the 702 g float plus added mass (35 ppt, estimates, unverified): +429 g 3.43 / 3.35 in; +800 g 3.90 / 2.88 in; +1200 g 4.49 / 2.29 in; +1600 g 4.96 / 1.82 in; +2000 g 5.55 / 1.23 in.
 
 ### C3. Validity and limits
 
-- Does establish: nothing yet.
+- Does establish (so far): the salt mass was on target; the regular float's weighted freeboard matches the model within 0.16 in.
+- Not established: the 24 h drift, the mushroom model, and equivalence with seawater.
 - Will not establish: that plain salt matches seawater for material, seal, corrosion or fouling tests; the seawater's actual salinity.
 
 ### C4. Decision

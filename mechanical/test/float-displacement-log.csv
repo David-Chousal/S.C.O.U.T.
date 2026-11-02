@@ -1,0 +1,5 @@
+date,run_id,test,float,step_file,float_mass_g,added_g,total_g,rho_g_per_ml,basis,measured_in,predicted_draft_in,predicted_freeboard_in,diff_in,displaced_g_at_reading,status,notes
+2026-11-02,2026-11-02-raw,RR-21,mushroom,../../cad/floatation/float-mushroom-corrected-2026-11-02.step,702.0,0.0,702.0,1.025,draft_bottom_up,1.0625,2.33,4.45,-1.27,440,unverified,held vertical by a side-only force; mean of three
+2026-11-02,2026-11-02-raw,RR-21,regular,../../cad/floatation/float-regular-2026-11-02.step,1148.0,0.0,1148.0,1.025,draft_bottom_up,1.6875,1.31,5.19,0.37,1452,unverified,floated upright unaided; mean of three; weighed 1148 g (951 g was the slicer value)
+2026-11-02,2026-11-02-wtd,RR-21,mushroom,../../cad/floatation/float-mushroom-corrected-2026-11-02.step,702.0,429.0,1131.0,1.025,freeboard_from_top,4.5,3.4,3.38,-1.12,687,unverified,breadcrumb can 429 g in the bore; mean
+2026-11-02,2026-11-02-wtd,RR-21,regular,../../cad/floatation/float-regular-2026-11-02.step,1148.0,429.0,1577.0,1.025,freeboard_from_top,4.5,1.84,4.66,0.16,1709,unverified,breadcrumb can 429 g in the bore; mean
