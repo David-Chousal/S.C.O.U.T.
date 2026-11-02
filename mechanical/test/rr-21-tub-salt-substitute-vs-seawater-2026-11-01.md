@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-21 · Planned |
+| **Test ID / status** | RR-21 · Running (Part A locked 2026-11-02) |
 | **Date, duration, who** | Plain-salt part started Mon 2026-11-02, read Tue 2026-11-03 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
 | **Requirement tested** | Floats at the modelled waterline (R-17), here: does cheap plain salt give the same waterline as real seawater |
 | **Tracking issue** | [SCO-292](https://linear.app/scout1/issue/SCO-292); runs with [SCO-172](https://linear.app/scout1/issue/SCO-172) |
@@ -73,7 +73,7 @@ Expected size of the difference (estimate, to be checked, not a measurement): Na
 | M4 | Fresh water is lower than the salt water | Plausible | Dropped 2026-11-02 (John): no fresh-water reading was taken before the salt was added, so this cannot be judged. A fresh baseline may be taken after the 24 h salt read | n/a | n/a |
 | M5 | Matches the model | Accurate vs reference | Not judged for raw floats. Applies to the whole buoy with payload ([SCO-230](https://linear.app/scout1/issue/SCO-230), [SCO-248](https://linear.app/scout1/issue/SCO-248)): within ±0.5 in of the model's 4.27 in. For raw floats, compare with the simulator's no-payload prediction only if it is run | The R-17 requirement | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 
-Locked on: Not yet locked. Lock this section (date it here) before step 1 of the procedure.
+Locked on: 2026-11-02 (John Ryan Myrdal), as written, after the salt was added (11:00) and the first waterline readings were taken, before the 24 h read. M4 was dropped before the lock. M3 cannot be judged because only averages were recorded, and M5 does not apply to raw floats; both are noted here instead of changed. Any later change goes in the deviation log (B3).
 
 ### A6. Article, setup and sampling
 
