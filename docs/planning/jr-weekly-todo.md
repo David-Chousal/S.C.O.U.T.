@@ -45,8 +45,8 @@
 | Wed Nov 4 | n/a | Advisor meeting; Isabella's temperature demo (SCO-259) | fixed | Todo |
 | Wed Nov 4 | SCO-172 | Read the 24 h salt float: freeboard, seams; clean and rinse (weights too) | 1 h | Todo (due Nov 4) |
 | Wed Nov 4 | SCO-294 | Read RR-23 Stage 2 (second tub) if started Tue | 0.5 h | Todo |
+| Wed Nov 4 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6; moved from Thu to fit capacity) |
 | Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
-| Thu Nov 5 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6) |
 | Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
 | Thu Nov 5 | SCO-293 | Cap v2 CAD exists (Nov 2: Ø4.5 mm holes, extended cable outlet). Decide after the RR-23 result whether more changes are needed; merge the SMA bulkhead and D-cell bay (SCO-162, SCO-250) if not yet in; then print | 2 h | In Progress (due Nov 13) |
 | Thu Nov 5 | SCO-171 | Self-righting tilt test 90° and 180° (buoy is in the tub Tue to Wed); log in the register and matrix row R-18 | 3 h | Todo (moved from Nov 3; Linear re-dated to Nov 5) |
