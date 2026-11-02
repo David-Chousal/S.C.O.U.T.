@@ -191,7 +191,14 @@ Open questions:
 **Overall:** Planned.
 
 ### C2. Curve and analysis
-Not yet run.
+Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's STEP loader (`printed_hulls.py`: body-of-revolution envelope, sealed, 1.025 g/mL for 35 ppt salt water at room temperature, an estimate) against John's mean-of-three drafts (very bottom up to the waterline):
+
+| Float (mass) | STEP used | Predicted draft | Measured draft | Difference |
+|---|---|---|---|---|
+| Mushroom (702 g) | [float-mushroom.step](../cad/floatation/float-mushroom.step) | 1.57 in | 1.06 in | -0.51 in |
+| Regular (951 g), geometry assumed to be the hang-hole float | [float-hang-holes-2026-11-01.step](../cad/electronics-housing/../floatation/float-hang-holes-2026-11-01.step) | 1.08 in | 1.69 in | +0.61 in |
+
+The signs are opposite and the swapped pairing fits better (hang-hole STEP at 951 g predicts 1.08 in against the 1.06 in reading; mushroom STEP at 702 g predicts 1.57 in against the 1.69 in reading). Possible causes, none confirmed: the labels or masses are swapped between the two floats; the mushroom floated tilted (so a vertical reading is not its upright draft); the regular float is not the hang-hole STEP; ruler reference or STEP differences. Resolve before using these numbers.
 
 ### C3. Validity and limits
 
