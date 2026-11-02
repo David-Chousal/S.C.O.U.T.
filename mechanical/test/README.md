@@ -7,7 +7,7 @@ structure. First category populated 2026-08-17 with the initial floatation FEA p
 
 ## Contents
 
-**Latest session:** [`test-session-log-2026-11-02.md`](test-session-log-2026-11-02.md) ties together RR-20 to RR-23, the decisions, corrections and every saved photo. Float buoyancy runs are charted in [`float-displacement/`](../simulations/buoy-stability/float-displacement/README.md).
+**Latest session:** [`test-session-log-2026-11-02.md`](../../docs/engineering/test-session-log-2026-11-02.md) ties together RR-20 to RR-23, the decisions, corrections and every saved photo. Float buoyancy runs are charted in [`float-displacement/`](../simulations/buoy-stability/float-displacement/README.md).
 
 **Start with the [risk-reduction register](risk-reduction-register.md)**: every prototype and
 risk-reduction test, run and planned, with its benchmark and result in one table.
