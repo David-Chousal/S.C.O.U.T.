@@ -16,11 +16,11 @@
 
 | Parameter (unit) | Instrument | Pass if | Measured | Verdict |
 |---|---|---|---|---|
-| Stage 1: water inside, cap seal (towel and visual) | Dry paper towel, photo | Dry after 24 h fully submerged, fresh water | Not yet run | Not measured |
+| Stage 1: water inside, cap and glands with 3 printed pegs (towel and visual) | Dry paper towel, photo | Dry after 24 h fully submerged, fresh water | Not yet run | Not measured |
 | Stage 2: water inside, glands with cable (towel and visual) | Dry paper towel, photo | Dry after 24 h fully submerged, fresh water | Not yet run | Not measured |
 | Mass change of the closed housing (g) | Scale | Within scale resolution after each stage | Not yet run | Not measured |
 
-**How and steps.** Same assembled housing, O-ring in the cap, a dry paper towel inside. Stage 1: gland bores blocked so only the cap seal is tested; submerge below 0.3 m for 24 h; open and inspect the towel. Stage 2: the three glands carry real cable (or a sealed dummy), cap sealed; same 24 h; inspect. If either passes, repeat in plain salt water, then extend to one week.
+**How and steps.** Same assembled housing, O-ring in the cap, a dry paper towel inside. Stage 1: the three glands each hold a printed peg through the diaphragm hole (a rigid stand-in for cable, so no cable is needed); submerge below 0.3 m for 24 h; open and inspect the towel. Stage 2: the same glands with real cable instead of pegs; same 24 h; inspect. If either passes, repeat in plain salt water, then extend to one week.
 
 **Result.** Not yet run.
 
@@ -28,6 +28,7 @@
 
 - Depth or pressure behavior ([SCO-177](https://linear.app/scout1/issue/SCO-177)).
 - That a redesigned cap seals; this tests only the forced-thread cap from RR-22.
+- That a gland seals on real cable from a pass with pegs: a rigid printed peg does not compress like a cable jacket, and it carries no conductors.
 
 **Decision.** Run Stage 1, then Stage 2. A leak sends the fix to the next cap ([SCO-293](https://linear.app/scout1/issue/SCO-293)).
 
@@ -36,7 +37,7 @@
 ## Part A — Plan (write and date before the run)
 
 ### A1. Purpose and risk retired
-The seal tests the team has run so far cover coupons, pods and an earlier housing ([RR-03](rr-03-bench-submersion-three-articles-2026-08-24.md), [RR-07](rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md), [RR-18](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md)). This is the first test of the current cap, its O-ring and PG11 glands. Splitting it in two stages traces any leak to the cap or the glands.
+The seal tests the team has run so far cover coupons, pods and an earlier housing ([RR-03](rr-03-bench-submersion-three-articles-2026-08-24.md), [RR-07](rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md), [RR-18](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md)). This is the first test of the current cap, its O-ring and PG11 glands. Stage 1 uses three printed pegs (John designed them on 2026-11-02) in place of cable, so the cap and the gland seals are tested before any cable is cut; Stage 2 repeats with real cable. A leak in Stage 1 is located by where the towel is wettest.
 
 ### A2. Hypothesis
 If the assembled housing is submerged for 24 h in fresh water, then the paper towel inside stays dry in both stages, because the O-ring is compressed by the clamped cap and the glands compress on the cable. The forced bolt threads in the cap may be a leak path or may have lifted the sealing face; that is the main risk.
@@ -62,8 +63,8 @@ If the assembled housing is submerged for 24 h in fresh water, then the paper to
 
 | # | Metric | Check | Pass if | Why this number | Source (spec, standard, model) |
 |---|---|---|---|---|---|
-| M1 | Cap seal holds (Stage 1) | Present | Towel dry after 24 h at 0.3 m or deeper, fresh water | The R-12 benchmark | [Requirements matrix R-12](../../docs/engineering/requirements-test-matrix.md) |
-| M2 | Glands hold (Stage 2) | Present | Towel dry after 24 h at 0.3 m or deeper, fresh water | The R-14 benchmark | [Requirements matrix R-14](../../docs/engineering/requirements-test-matrix.md) |
+| M1 | Cap and glands hold with pegs (Stage 1) | Present | Towel dry after 24 h at 0.3 m or deeper, fresh water | The R-12 benchmark | [Requirements matrix R-12](../../docs/engineering/requirements-test-matrix.md) |
+| M2 | Glands hold with real cable (Stage 2) | Present | Towel dry after 24 h at 0.3 m or deeper, fresh water | The R-14 benchmark | [Requirements matrix R-14](../../docs/engineering/requirements-test-matrix.md) |
 | M3 | Holds in plain salt water | Present | Towel dry after 24 h in plain salt water, then 1 week | R-12: salt water, 24 h then 1 week | [Requirements matrix R-12](../../docs/engineering/requirements-test-matrix.md) |
 | M4 | Mass does not rise | Plausible | Mass change within scale resolution | A rise means water got in, even if the towel looks dry | This plan |
 
@@ -75,7 +76,8 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 |---|---|
 | Design revision / file | RR-22 assembly: [cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step), [body STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Not recorded |
-| Configuration | O-ring (size and material Not recorded), stainless torx screws (count and torque Not recorded), 3 PG11 glands |
+| Configuration | O-ring (size and material Not recorded), stainless torx screws (count and torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
+| Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Print material and settings Not recorded; the file's "Steel" label is a CAD default |
 | Conditions | Fresh water first, room temperature; then plain salt water mixed by mass (35 g per kg) |
 | Sample size and replication | 1 assembly; Stage 1 and Stage 2 run in order, not in parallel |
 | Control / reference article | None; Stage 1 isolates the cap |
@@ -95,6 +97,8 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Forced threads lifted the cap or cracked it | Leak or crack | Gap at the cap; wet towel | Inspect the sealing face before the run; photograph |
 | Gland nut under-tightened or cable too small | Leak at a gland | Wet towel near the glands | Check cable diameter against the gland range (Not recorded); retighten once, log it |
 | Electronics inside | Not applicable | n/a | Test with the towel only, no electronics |
+| Peg does not seal like a cable | Stage 1 passes but real cable leaks | Wet towel in Stage 2 | Treat Stage 1 as a cap and gland-body check only; Stage 2 is the gland verdict |
+| Peg shaft too small or too large for the diaphragm hole | Leak around the peg or a torn diaphragm | Wet towel near a gland; peg loose or hard to seat | Check the fit dry first; record which glands, replace the diaphragm if torn |
 | Salt left on the housing | Corrosion of screws, crust | White residue | Rinse with fresh water and dry |
 
 ### A7. Procedure
@@ -103,7 +107,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 
 - ☐ The assembled housing from RR-22, cap on, O-ring in place
 - ☐ Dry paper towel, folded, weighed
-- ☐ Blanking plugs or sealed dummy rods for the gland bores (type Not recorded)
+- ☐ Three printed gland pegs ([gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)), checked to fit each gland's diaphragm hole
 - ☐ Real cable of the diameter the glands are meant for (diameter Not recorded)
 - ☐ A tub of fresh water at least 0.3 m deeper than the housing; a way to hold it down
 - ☐ Scale, ruler, camera, clock
@@ -112,7 +116,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Step | Action | Record | Expected | Done |
 |---|---|---|---|---|
 | 1 | Go/no-go checks; weigh the housing with the towel inside. | Mass | Stable reading | ☐ |
-| 2 | Stage 1: block the gland bores; close the cap. | Configuration photo | Sealed | ☐ |
+| 2 | Stage 1: fit a peg through each gland's diaphragm hole, tighten the gland nuts, close the cap. | Configuration photo, peg orientation | Pegs seated, nuts tight | ☐ |
 | 3 | Submerge below 0.3 m in fresh water; record start time and depth. | Time, depth | Fully under | ☐ |
 | 4 | Quick check at 1 h for streaming bubbles. | Observation | None | ☐ |
 | 5 | After 24 h: remove, dry the outside, weigh, then open and inspect the towel. | Mass, photo | Towel dry; mass unchanged (M1, M4) | ☐ |
@@ -138,7 +142,8 @@ Open questions:
 
 - O-ring size and material, screw count and torque, cable diameter, gland range: all Not recorded. Owner John, before locking.
 - Is 24 h at 0.3 m the right first mark, or should Stage 1 go straight to the R-13 depth ([SCO-177](https://linear.app/scout1/issue/SCO-177))? Owner John.
-- How are the gland bores blocked in Stage 1? Owner John.
+- Gland brand, cable clamping range and diaphragm hole size are Not recorded. The 6.35 mm peg shaft is inside the 5 to 10 mm range typical for a PG11 gland (typical value, check the datasheet). Which end of the peg goes in, and does the head sit inside or outside? Owner John.
+- If Stage 1 leaks and the source is unclear, is a Stage 1b with the gland nuts sealed externally wanted? Owner John.
 - Schedule: which days this week; the tub is also used for the float test on Mon and Tue. Owner John.
 
 ## Part B — Execution log (fill during the run)
