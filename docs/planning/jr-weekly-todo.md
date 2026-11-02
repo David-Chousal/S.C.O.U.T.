@@ -39,7 +39,7 @@
 | Mon Nov 2 | SCO-172, SCO-292 | **Fresh-water float** AM; weigh the tub's water; compute salt mass = water kg × 35/965 (40 kg needs 1.45 kg; 100 kg needs 3.63 kg); dissolve in the same tub; settle 15 min; read freeboard at three marks; **start the 24 h salt float** (RR-21 steps 1 to 6) | 3.5 h | Todo |
 | Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
 | Tue Nov 3 | SCO-171 | Self-righting tilt test 90° and 180°; log in the register and matrix row R-18 | 3 h | Todo (re-dated from Nov 17) |
-| Tue Nov 3 | SCO-294 | RR-23 Stage 1: cap, O-ring and the three PG11 glands fitted with the printed gland pegs, towel inside; submerge in the second tub 24 h; lock Part A first | 1 h | Todo (due Nov 6) |
+| Tue Nov 3 | SCO-294 | RR-23 Stage 1 initial dunk: the whole assembly (cap, O-ring, 3 PG11 glands with the printed pegs, towel inside) thrown in the second tub 24 h; lock Part A first. If it leaks, the per-component isolation plan (A6b) starts | 1 h | Todo (due Nov 6) |
 | Tue Nov 3 | SCO-172 | Read the 24 h salt float: draft, freeboard, seam leaks. Then clean and rinse | 1 h | Todo (re-dated to Nov 3) |
 | Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
 | Tue Nov 3 | SCO-195 | Message the Santa Cruz yacht club | 0.5 h | Todo |

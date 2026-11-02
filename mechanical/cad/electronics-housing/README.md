@@ -336,6 +336,7 @@ in the PG11 glands (the glands are the lab-stock PG11 type recorded in
 | Shaft | Ø6.35 mm (0.250 in), 19.05 mm long, inside the nominal 5 to 10 mm PG11 cable range |
 | Head | Ø10.16 mm (0.400 in), 6.35 mm tall, 1.27 mm 45° chamfers top and bottom; overall length 25.4 mm |
 | Print | PETG, 2 walls, 15% infill, with a handle (the STEP shows the head only) |
+| Photo | [pegs clamped in the three glands, 2026-11-02](../../test/housing-glands-with-pegs-2026-11-02-01.jpg); fit is good in all three |
 | Use | Pushed in from the outside through the gland's diaphragm hole, then clamped by the gland nut |
 | Limit | A rigid peg is not a cable: a pass shows the cap and gland body seal, not the gland on cable (Stage 2 of RR-23) |
 

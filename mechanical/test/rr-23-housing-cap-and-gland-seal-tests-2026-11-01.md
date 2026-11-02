@@ -20,7 +20,7 @@
 | Stage 2: water inside, glands with cable (towel and visual) | Dry paper towel, photo | Dry after 24 h fully submerged, fresh water | Not yet run | Not measured |
 | Mass change of the closed housing (g) | Scale | Within scale resolution after each stage | Not yet run | Not measured |
 
-**How and steps.** Same assembled housing, O-ring in the cap, a dry paper towel inside. Stage 1: the three glands each hold a printed peg through the diaphragm hole (a rigid stand-in for cable, so no cable is needed); submerge below 0.3 m for 24 h; open and inspect the towel. Stage 2: the same glands with real cable instead of pegs; same 24 h; inspect. If either passes, repeat in plain salt water, then extend to one week.
+**How and steps.** An initial screening test, deliberately simple: assemble the housing as built (O-ring in the cap, a dry paper towel inside, the three printed pegs clamped in the PG11 glands, which "work great" per John, 2026-11-02; [photo](housing-glands-with-pegs-2026-11-02-01.jpg)), put the whole thing in a tub below 0.3 m for 24 h in fresh water, open it and look at the towel. Dry: go on to real cable (Stage 2) and plain salt water. Wet: do not guess; run the isolation tests in A6b, one leak path at a time.
 
 **Result.** Not yet run.
 
@@ -30,14 +30,14 @@
 - That a redesigned cap seals; this tests only the forced-thread cap from RR-22.
 - That a gland seals on real cable from a pass with pegs: a rigid printed peg does not compress like a cable jacket, and it carries no conductors.
 
-**Decision.** Run Stage 1, then Stage 2. A leak sends the fix to the next cap ([SCO-293](https://linear.app/scout1/issue/SCO-293)).
+**Decision.** Run the Stage 1 dunk. Dry: Stage 2 with real cable, then plain salt water. Wet: the per-component isolation plan in A6b, and the cap fix goes to the next cap ([SCO-293](https://linear.app/scout1/issue/SCO-293)).
 
 ---
 
 ## Part A — Plan (write and date before the run)
 
 ### A1. Purpose and risk retired
-The seal tests the team has run so far cover coupons, pods and an earlier housing ([RR-03](rr-03-bench-submersion-three-articles-2026-08-24.md), [RR-07](rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md), [RR-18](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md)). This is the first test of the current cap, its O-ring and PG11 glands. Stage 1 uses three printed pegs (John designed them on 2026-11-02) in place of cable, so the cap and the gland seals are tested before any cable is cut; Stage 2 repeats with real cable. A leak in Stage 1 is located by where the towel is wettest.
+The seal tests the team has run so far cover coupons, pods and an earlier housing ([RR-03](rr-03-bench-submersion-three-articles-2026-08-24.md), [RR-07](rr-07-sensor-housing-tpu-oring-soak-2026-09-12.md), [RR-18](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md)). This is the first test of the current cap, its O-ring and PG11 glands. Stage 1 is a quick screen: the whole assembly with three printed pegs (John designed them on 2026-11-02) in place of cable, thrown in a tub. It is cheap and says only pass or leak. If it leaks, the deeper dive into each component and failure mode (A6b) starts from where the towel is wettest; if it is dry, Stage 2 repeats with real cable.
 
 ### A2. Hypothesis
 If the assembled housing is submerged for 24 h in fresh water, then the paper towel inside stays dry in both stages, because the O-ring is compressed by the clamped cap and the glands compress on the cable. The forced bolt threads in the cap may be a leak path or may have lifted the sealing face; that is the main risk.
@@ -78,6 +78,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Material and print settings | Not recorded |
 | Configuration | O-ring (size and material Not recorded), stainless torx screws (count and torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
 | Gland (all three) | PG11 from the lab stock bag Navid supplied (brand and datasheet not recorded); logged nominal values: thread Ø18.6 mm, lid through hole Ø19.0 mm, cable range about 5 to 10 mm ([facts.md](../../docs/hub/facts.md), decision log 2026-10-29); glands point sideways from the raised gland deck on the cap (decision log 2026-10-30) |
+| Pegs installed | Seat well in all three glands, "work great" (John, 2026-11-02, dry fit); [photo](housing-glands-with-pegs-2026-11-02-01.jpg) |
 | Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Printed in PETG, 2 walls, 15% infill, with a handle (John, 2026-11-02); the file's "Steel" label is a CAD default. Method: each peg goes in from the outside through the gland's diaphragm hole, then the gland nut clamps it |
 | Conditions | Fresh water first, room temperature; then plain salt water mixed by mass (35 g per kg) |
 | Sample size and replication | 1 assembly; Stage 1 and Stage 2 run in order, not in parallel |
@@ -103,6 +104,19 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 | Peg shaft too small or too large for the diaphragm hole | Leak around the peg or a torn diaphragm | Wet towel near a gland; peg loose or hard to seat | Check the fit dry first; record which glands, replace the diaphragm if torn |
 | Salt left on the housing | Corrosion of screws, crust | White residue | Rinse with fresh water and dry |
 
+### A6b. If Stage 1 leaks: leak paths and isolation tests
+
+Run only if Stage 1 is wet. Change one thing at a time and retest; each isolation test gets its own record (RR-24 onward) and Linear issue when it is run. Where the towel is wettest (photograph it) picks the first row.
+
+| Candidate leak path | Why it could leak | How to isolate (one change) | What a result means |
+|---|---|---|---|
+| Cap O-ring face seal | O-ring twisted or not seated; sealing land lifted by the forced bolt threads (RR-22) | Reseat or replace the O-ring, thin film of grease, same screws and feel; retest | Dry: the O-ring seating was the cause. Still wet: the land is distorted or the path is elsewhere |
+| Cap bolt holes and threads | The screws were forced through undersized holes, so threads are cut through the cap and may open a path along the screws | Seal the screw heads externally (for example a bead of sealant on each head) and retest | Dry: the bolt holes leak; the next cap's larger clearance holes need their own seal (O-ring or gasket washers) |
+| Each of the 3 glands (body-to-cap thread and face) | The thread or the flat under the gland flange does not seal on a printed facet | Seal two glands externally and test the third; rotate which one is open | Wet only when one gland is open: that gland's thread or face is the path |
+| Peg-to-gland diaphragm | The rigid peg does not compress the diaphragm like a cable | Compare a peg gland with a real-cable gland (Stage 2) | Wet with pegs, dry with cable: the peg interface, not the gland, leaked |
+| Printed cap, gland deck and body walls (PETG layer porosity) | Layer lines wick water; thin walls or the sideways facets seep | Photograph where the towel is wettest; coat one suspected face with sealant and retest; or a bubble test (small air pressure, submerged) if a test port is added (Not built) | Dry after coating one face: that face is porous |
+| Heat-set insert bosses in the body flange | The insert hole may reach the dry chamber and pass water along the screw | Check from the inside whether insert holes are blind (Not recorded); seal the screw heads as above | Insert holes open to the chamber would explain a leak at the screws |
+
 ### A7. Procedure
 
 **Prerequisites checklist.**
@@ -117,15 +131,15 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1.
 
 | Step | Action | Record | Expected | Done |
 |---|---|---|---|---|
-| 1 | Go/no-go checks; weigh the housing with the towel inside. | Mass | Stable reading | ☐ |
+| 1 | Go/no-go checks; weigh the housing with the towel inside and the pegs installed. | Mass | Stable reading | ☐ |
 | 2 | Stage 1: push a peg in from the outside through each gland's diaphragm hole, then clamp it by tightening the gland nut; close the cap. | Configuration photo, peg orientation | Pegs seated, nuts tight | ☐ |
-| 3 | Submerge below 0.3 m in fresh water; record start time and depth. | Time, depth | Fully under | ☐ |
+| 3 | Throw it in: submerge below 0.3 m in fresh water; record start time and depth. | Time, depth | Fully under | ☐ |
 | 4 | Quick check at 1 h for streaming bubbles. | Observation | None | ☐ |
-| 5 | After 24 h: remove, dry the outside, weigh, then open and inspect the towel. | Mass, photo | Towel dry; mass unchanged (M1, M4) | ☐ |
-| 6 | Stage 2: fit the three glands with real cable; replace the towel; close the cap. | Configuration photo | Sealed | ☐ |
-| 7 | Repeat steps 3 to 5. | Mass, photo | Towel dry (M2, M4) | ☐ |
-| 8 | If both pass: repeat Stage 1 and Stage 2 together in plain salt water for 24 h, then continue to 1 week. | Mass, photo | Towel dry (M3) | ☐ |
-| 9 | Rinse, dry, photograph; record the screws' condition. | Photo | No crust or crack | ☐ |
+| 5 | After 24 h: remove, dry the outside, weigh, then open and inspect the towel; photograph it. | Mass, photo | Towel dry; mass unchanged (M1, M4) | ☐ |
+| 6 | If wet: stop; go to A6b, starting with the row nearest the wettest spot. | Where it is wet | A named candidate path | ☐ |
+| 7 | If dry: Stage 2: replace the pegs with real cable; new towel; close the cap; repeat steps 3 to 5. | Mass, photo | Towel dry (M2, M4) | ☐ |
+| 8 | If both pass: repeat in plain salt water for 24 h, then continue to 1 week. | Mass, photo | Towel dry (M3) | ☐ |
+| 9 | Rinse, dry, photograph; record the screws' and pegs' condition. | Photo | No crust, crack or oval peg | ☐ |
 
 ### A8. Analysis plan
 Towel state and mass change per stage against M1 to M4. On a leak, record where the towel is wettest to point to the cap or a gland.
