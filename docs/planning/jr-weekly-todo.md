@@ -22,7 +22,7 @@
 | SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
 | SCO-211 | Hazard form, advisor signature | **Done Nov 2:** signed by Shoba Krishnan and submitted | Oct 26 | None. Check the signed form covers the salt-water tub tests and the housing dunk |
 | SCO-185 | Kaneohe Bay permit determinations | Was overdue 16 days and stale; **moved to Jan 4, 2027 (winter break)** | Oct 16 | None this week. Re-date done in Linear Nov 1 |
-| SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Tue Nov 3. Re-date in Linear |
+| SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Thu Nov 5. Re-date in Linear |
 | SCO-246 | Choose and source the waterproof coating | Coating decided (Home Depot solution); not yet bought | Nov 3 | Buy Tue Nov 3. Linear re-dated to Nov 6 |
 | SCO-147 | Decide the hung (boat/pier) configuration | **Done Nov 1:** rope is fed through the floatation through-holes as a small hanging harness | Nov 3 | None. SCO-243, 244 and 251 (eye points on top) canceled Nov 1 |
 | SCO-229 | Simulator usable by non-engineers (labels, context) | Reopened at the 10/30 meeting; no due date | none | Thu Nov 5; give it a date |
@@ -38,7 +38,6 @@
 | Mon Nov 2 | SCO-211 | Hazard form signed by Shoba and submitted; log it | 0 h | Done |
 | Mon Nov 2 | SCO-294, SCO-292 | Fill the tub with fresh water and **weigh the water** (needed for the salt later). RR-23 Stage 1: lock Part A, put the housing (518 g, pegs in, towel inside) in just below the surface with weights; record the start time. Buoy float starts tomorrow | 1.5 h | Todo (due Nov 6) |
 | Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
-| Tue Nov 3 | SCO-171 | Self-righting tilt test 90° and 180°; log in the register and matrix row R-18 | 3 h | Todo (re-dated from Nov 17) |
 | Tue Nov 3 | SCO-294 | Read RR-23 Stage 1 at 24 h (towel, mass vs 518 g); take the housing and weights out. Dry: start Stage 2 (real cable) in the second tub. Wet: isolation plan (A6b) | 1 h | Todo |
 | Tue Nov 3 | SCO-172, SCO-292 | **Buoy float test starts:** fresh-water float, freeboard at three marks (RR-21 steps 1 to 3); then salt = water kg × 35/965, dissolve, settle 15 min, read, **start the 24 h salt float** (steps 4 to 6) | 3.5 h | Todo (SCO-172 due Nov 4) |
 | Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
@@ -50,6 +49,7 @@
 | Thu Nov 5 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6) |
 | Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
 | Thu Nov 5 | SCO-293 | Cap v2 CAD exists (Nov 2: Ø4.5 mm holes, extended cable outlet). Decide after the RR-23 result whether more changes are needed; merge the SMA bulkhead and D-cell bay (SCO-162, SCO-250) if not yet in; then print | 2 h | In Progress (due Nov 13) |
+| Thu Nov 5 | SCO-171 | Self-righting tilt test 90° and 180° (buoy is in the tub Tue to Wed); log in the register and matrix row R-18 | 3 h | Todo (moved from Nov 3; Linear re-dated to Nov 5) |
 | Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
 | Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
 | Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
