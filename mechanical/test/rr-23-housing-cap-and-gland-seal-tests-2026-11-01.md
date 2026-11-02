@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-23 · Planned |
+| **Test ID / status** | RR-23 · Running (Stage 1 started 2026-11-02 10:47 PST) |
 | **Date, duration, who** | Part A locked 2026-11-02; run dates Not set (this week, see the weekly plan); 24 h per stage; John Ryan Myrdal |
 | **Requirement tested** | Cap seals and glands stay dry (R-14); housing stays dry in salt water (R-12) |
 | **Tracking issue** | [SCO-294](https://linear.app/scout1/issue/SCO-294); related [SCO-270](https://linear.app/scout1/issue/SCO-270), [SCO-293](https://linear.app/scout1/issue/SCO-293) |
@@ -79,7 +79,7 @@ Locked on: 2026-11-02 (John Ryan Myrdal), before the Stage 1 dunk. Any later cha
 | Configuration | O-ring (AS568-247, ID 4.609 in × CS 0.139 in (117.07 × 3.53 mm), the largest ring in the assortment pack John bought earlier; logged in [facts.md](../../docs/hub/facts.md) and the [housing README](../cad/electronics-housing/README.md#current-seal--large-as568-247-o-ring-2026-10-16). The size came from a secondary chart, to confirm against a supplier table ([SCO-137](https://linear.app/scout1/issue/SCO-137)); elastomer of this pack ring Not recorded), 10 stainless torx screws into M4 heat-set inserts (torque Not recorded), 3 PG11 glands, each fitted in Stage 1 with a printed peg through its diaphragm hole |
 | Gland (all three) | PG11 from the lab stock bag Navid supplied (brand and datasheet not recorded); logged nominal values: thread Ø18.6 mm, lid through hole Ø19.0 mm, cable range about 5 to 10 mm ([facts.md](../../docs/hub/facts.md), decision log 2026-10-29); glands point sideways from the raised gland deck on the cap (decision log 2026-10-30) |
 | Closed housing mass before the test | 518 g, including hardware, pegs and the paper towel inside (John, 2026-11-02); scale model and resolution Not recorded |
-| Water | Same fresh tub water as the RR-21 buoy float; salt is added to the tub only after this stage is read ([RR-21](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md)). Keep the weights clear of the buoy |
+| Water | Fresh water in a bucket separate from the RR-21 buoy float container (changed 2026-11-02, see B3) |
 | Pegs installed | Seat well in all three glands, "work great" (John, 2026-11-02, dry fit); [photo](housing-glands-with-pegs-2026-11-02-01.jpg) |
 | Gland pegs (3, printed; [gland peg STEP](../cad/electronics-housing/gland-peg-test-2026-11-02.step)) | Shaft 6.35 mm (0.250 in) diameter by 19.05 mm (0.750 in) long; head 10.16 mm (0.400 in) diameter, 6.35 mm (0.250 in) tall, 1.27 mm (0.050 in) 45° chamfers top and bottom; overall length 25.4 mm (1.000 in). Read from the STEP (file is in inches). Printed in PETG, 2 walls, 15% infill, with a handle (John, 2026-11-02); the file's "Steel" label is a CAD default. Method: each peg goes in from the outside through the gland's diaphragm hole, then the gland nut clamps it |
 | Conditions | Fresh water first, room temperature, 1:1 scale model submerged just below the surface and held down with weights; then plain salt water mixed by mass (35 g per kg) |
@@ -172,18 +172,22 @@ Open questions:
 
 | Item | Value |
 |---|---|
-| Start / end (date, time) | To be recorded |
+| Start / end (date, time) | Start 2026-11-02 10:47 PST (John: housing put in the water; time recorded when the entry was made). End: due 24 h later, 2026-11-03 at the same time |
 | Operator | John Ryan Myrdal |
-| Ambient conditions | To be recorded |
+| Ambient conditions | Indoors, room temperature (water temperature Not recorded) |
 | Instrument serials / IDs | To be recorded |
 
 ### B2. Raw data
 
-Not yet run.
+| Time | Run / sample | Reading or observation | Reference value | Note |
+|---|---|---|---|---|
+| 10:47 PST 2026-11-02 | Stage 1 start | Housing (518 g dry, pegs in, towel inside) placed just below the surface in a bucket of fresh water, held down with weights | Fully under | Water mass not weighed |
 
 ### B3. Deviations
 
-Not yet run.
+| Time | What differed from A7 | Why | Effect on validity |
+|---|---|---|---|
+| 10:47 PST 2026-11-02 | Fresh water in a bucket separate from the buoy float tub (the plan had a shared tub); the water was not weighed | The housing test does not need the water mass; the float test uses its own container | None for this test. The float container's water is weighed Tuesday for the salt calculation |
 
 ## Part C — Results and decision (fill after)
 

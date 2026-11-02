@@ -87,7 +87,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 | Control / reference article | Fresh water is the control; real seawater is the reference (tentative) |
 | Reference instrument or standard | Seawater (tentative). No salinity meter: salinity comes from mass |
 | Expected values | Fresh: lowest freeboard. Plain salt: freeboard near the model's 4.27 in ([SCO-172](https://linear.app/scout1/issue/SCO-172)) |
-| Shared water | The tub is also used for the RR-23 housing dunk in fresh water. The buoy float starts Tue Nov 3, after the housing is read and removed; weigh the water before the housing and weights go in |
+| Water | The buoy float has its own container, separate from the RR-23 housing bucket. Weigh this container's water before adding salt |
 | Before you start (go/no-go) | Buoy dry outside and weighed (if mass changed since the last float, reweigh and stop to find out why). Tub clean, no residue. Salt label read: no iodine, no anti-caking agent |
 | Data path | Handwritten sheet or a notes file in the repo, photographed ruler readings; enter into B2 the same day |
 | Stop and abort conditions | Buoy leaks (weeping seam); water cloudy after stirring; seawater has visible growth or smell |
