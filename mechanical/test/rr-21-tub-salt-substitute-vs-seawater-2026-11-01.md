@@ -69,11 +69,11 @@ Expected size of the difference (estimate, to be checked, not a measurement): Na
 |---|---|---|---|---|---|
 | M1 | Salt mass is right | Present | Salt mass within 1% of 35 g per kg × (solution mass) | Scale resolution; 1% of 35 ppt is about 0.35 ppt, a few thousandths of an inch of draft (estimate) | This plan |
 | M2 | Freeboard in plain salt vs seawater (if collected) | Accurate vs reference | Within 0.1 in of the seawater freeboard | One fifth of the ±0.5 in model tolerance in R-17, above the ruler resolution; proposed, John and Jes to confirm | [Requirements matrix R-17](../../docs/engineering/requirements-test-matrix.md) |
-| M3 | Reading noise | Plausible | Three marks agree within 0.05 in | Sets the noise floor; if it fails, M2 cannot be judged | This plan |
+| M3 | 24 h drift (replaces the three-mark noise check, 2026-11-02) | Plausible | Tomorrow's draft, read the same way as today's (bottom up to the waterline, mean), is within 0.1 in of today's for each float. The mushroom was held vertical by hand for its reading, so it is judged with that caveat | Only averages were recorded, so reading noise cannot be judged; drift shows leaks, absorption or a settling error | John, 2026-11-02 |
 | M4 | Fresh water is lower than the salt water | Plausible | Dropped 2026-11-02 (John): no fresh-water reading was taken before the salt was added, so this cannot be judged. A fresh baseline may be taken after the 24 h salt read | n/a | n/a |
-| M5 | Matches the model | Accurate vs reference | Not judged for raw floats. Applies to the whole buoy with payload ([SCO-230](https://linear.app/scout1/issue/SCO-230), [SCO-248](https://linear.app/scout1/issue/SCO-248)): within ±0.5 in of the model's 4.27 in. For raw floats, compare with the simulator's no-payload prediction only if it is run | The R-17 requirement | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
+| M5 | Matches the model, weighted floats (changed 2026-11-02) | Accurate vs reference | Freeboard (top to waterline) of each float with the 429 g can inside is within ±0.5 in of the voxel model (`assembly.py`, 35 ppt, 1.025 g/mL) | The R-17 tolerance; raw floats carry no model value, so the weighted run is the comparison | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 
-Locked on: 2026-11-02 (John Ryan Myrdal), as written, after the salt was added (11:00) and the first waterline readings were taken, before the 24 h read. M4 was dropped before the lock. M3 cannot be judged because only averages were recorded, and M5 does not apply to raw floats; both are noted here instead of changed. Any later change goes in the deviation log (B3).
+Locked on: 2026-11-02 (John Ryan Myrdal), after the salt was added (11:00), the first waterline readings and the weighted run (11:40) had been taken, before the 24 h read. Changes made at the lock: M4 dropped; M3 replaced by a 24 h drift check; M5 moved to the weighted floats. **The M5 results were already known when it was written**, so its verdicts are not blind. Any later change goes in the deviation log (B3).
 
 ### A6. Article, setup and sampling
 
@@ -192,13 +192,13 @@ Open questions:
 
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
-| M1 salt mass | Not yet run | — | Not measured |
+| M1 salt mass | 725 g for 20 kg (target 725 g) | on target | **Pass** |
 | M2 plain salt vs seawater | Not yet run | — | Not measured |
-| M3 reading noise | Not yet run | — | Not measured |
+| M3 24 h drift | Due 2026-11-03 | — | Not measured |
 | M4 fresh lowest | Dropped: no fresh reading | — | Not measured |
-| M5 vs model | Not yet run | — | Not measured |
+| M5 weighted vs model | Regular: 4.5 in measured vs 4.61 in predicted (-0.11 in). Mushroom: 4.5 in vs 3.35 in (+1.15 in) | ±0.5 in | Regular **Pass**; mushroom **Fail** (unverified, under check) |
 
-**Overall:** Planned.
+**Overall:** Partial so far: M1 pass; M5 pass on the regular float and fail on the mushroom; M3 due tomorrow; M2 not run.
 
 ### C2. Curve and analysis
 Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections (unverified, errors being checked): [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
