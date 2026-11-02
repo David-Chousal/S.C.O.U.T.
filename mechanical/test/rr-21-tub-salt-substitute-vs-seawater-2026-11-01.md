@@ -164,7 +164,9 @@ Open questions:
 
 ### B2. Raw data
 
-Not yet run.
+| Time | Run / sample | Reading or observation | Reference value | Note |
+|---|---|---|---|---|
+| 2026-11-02, time Not recorded | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub; mass in g Not recorded | 725 g for 20 L (35 g per kg) | Water amount (20 L) and its measurement method Not recorded |
 
 ### B3. Deviations
 

@@ -181,7 +181,7 @@ Open questions:
 
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
-| 10:47 PST 2026-11-02 | Stage 1 start | Housing (518 g dry, pegs in, towel inside) placed just below the surface in a bucket of fresh water, held down with weights | Fully under | Water mass not weighed |
+| 10:47 PST 2026-11-02 | Stage 1 start | Housing (518 g dry, pegs in, towel inside) placed cap end down in a bowl of fresh water, held down with weights; the seal is fully submerged and the body stands above the water | Seal fully under | Water mass not weighed |
 
 ### B3. Deviations
 
@@ -222,7 +222,7 @@ Not yet run.
 
 ### C5. Evidence and traceability
 
-- Photos, 2026-11-02 (Stage 1 setup in a bowl of fresh water): [wide](housing-dunk-rr-23-2026-11-02-01.jpg), [closer](housing-dunk-rr-23-2026-11-02-02.jpg), [closest](housing-dunk-rr-23-2026-11-02-03.jpg). They show the cap end down with the body standing above the water and the water level near the flange; confirm this against A5's "just below the surface" and log any difference in B3
+- Photos, 2026-11-02 (Stage 1 setup in a bowl of fresh water): [wide](housing-dunk-rr-23-2026-11-02-01.jpg), [closer](housing-dunk-rr-23-2026-11-02-02.jpg), [closest](housing-dunk-rr-23-2026-11-02-03.jpg). They show the cap end down with the body standing above the water and the water level near the flange. John confirms the housing seal (cap, O-ring, glands) is fully submerged; the body walls are not under water, so this stage tests the cap end only
 - Requirements R-12, R-14 → this test → [SCO-294](https://linear.app/scout1/issue/SCO-294); related: [RR-22](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md)
 
 Format: [Test Record Template](../../docs/engineering/test-record-template.md). Index: [risk-reduction register](risk-reduction-register.md).
