@@ -10,17 +10,17 @@
 | **Tracking issue** | [SCO-292](https://linear.app/scout1/issue/SCO-292); runs with [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 | **Record kind** | Prospective |
 
-**Question.** Does the same buoy float at the same waterline in cheap plain salt water (non-iodized or kosher NaCl, mixed by mass to 35 g per kg) as in real Santa Cruz seawater? Retires the risk that the tub float tests use a water that does not match the ocean (Jes Kuczenski's ask). John decided on 2026-11-01 to use plain salt for waterline tests, so the seawater comparison checks that choice and is tentative.
+**Question.** Does the same raw float (no payload) float at the same waterline in cheap plain salt water (non-iodized or kosher NaCl, mixed by mass to 35 g per kg) as in real Santa Cruz seawater? Retires the risk that the tub float tests use a water that does not match the ocean (Jes Kuczenski's ask). John decided on 2026-11-01 to use plain salt for waterline tests, so the seawater comparison checks that choice and is tentative.
 
 **What we measured and the pass mark.**
 
 | Parameter (unit) | Instrument | Pass if | Measured | Verdict |
 |---|---|---|---|---|
 | Salt mass vs target (g) | Scale | Within 1% of 35 g per kg of the weighed water mass | Not yet run | Not measured |
-| Freeboard of the same buoy (in) | Ruler or calipers, fixed reference mark | Plain-salt water within 0.1 in of seawater (proposed, lock before the run) | Not yet run | Not measured |
+| Freeboard of the same float (in) | Ruler or calipers, fixed reference mark | Plain-salt water within 0.1 in of seawater (proposed, lock before the run) | Not yet run | Not measured |
 | Reading spread across three marks (in) | Same | 0.05 in or less | Not yet run | Not measured |
 
-**How and steps.** One assembled buoy, same ballast and payload throughout. Measure the tub's water mass, float the buoy in fresh water (control), dissolve salt in the same tub at 35 g per kg of solution, settle 15 min, read draft and freeboard at three marks, hold 24 h for the seam-leak check. If Santa Cruz seawater is collected, rinse the tub and repeat in seawater as collected. There is no salinity meter: salinity is set by mass and the seawater is not metered.
+**How and steps.** Raw floats (mushroom and wedge/ring), no payload or ballast, same floats throughout. Measure the tub's water mass, float the buoy in fresh water (control), dissolve salt in the same tub at 35 g per kg of solution, settle 15 min, read draft and freeboard at three marks, hold 24 h for the seam-leak check. If Santa Cruz seawater is collected, rinse the tub and repeat in seawater as collected. There is no salinity meter: salinity is set by mass and the seawater is not metered.
 
 **Result.** Not yet run.
 
@@ -71,7 +71,7 @@ Expected size of the difference (estimate, to be checked, not a measurement): Na
 | M2 | Freeboard in plain salt vs seawater (if collected) | Accurate vs reference | Within 0.1 in of the seawater freeboard | One fifth of the ±0.5 in model tolerance in R-17, above the ruler resolution; proposed, John and Jes to confirm | [Requirements matrix R-17](../../docs/engineering/requirements-test-matrix.md) |
 | M3 | Reading noise | Plausible | Three marks agree within 0.05 in | Sets the noise floor; if it fails, M2 cannot be judged | This plan |
 | M4 | Fresh water is lower than the salt water | Plausible | Freeboard in fresh water is smaller than in salt water | Denser water floats the buoy higher; if not, something is wrong with the setup | Archimedes |
-| M5 | Matches the model | Accurate vs reference | Plain-salt freeboard within ±0.5 in of the model's 4.27 in | The R-17 requirement | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
+| M5 | Matches the model | Accurate vs reference | Not judged for raw floats. Applies to the whole buoy with payload ([SCO-230](https://linear.app/scout1/issue/SCO-230), [SCO-248](https://linear.app/scout1/issue/SCO-248)): within ±0.5 in of the model's 4.27 in. For raw floats, compare with the simulator's no-payload prediction only if it is run | The R-17 requirement | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 
 Locked on: Not yet locked. Lock this section (date it here) before step 1 of the procedure.
 
@@ -79,14 +79,14 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 
 | Item | Value |
 |---|---|
-| Design revision / file | The assembled buoy as floated in [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md) (record which float, and the total mass) |
+| Design revision / file | Raw floats as printed, no payload, no ballast (John, 2026-11-02): the mushroom float and the wedge/ring float. This is a raw float test, not the loaded buoy of [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md); record each float's mass when weighed (Not recorded) |
 | Material and print settings | As built; do not recoat or change anything between waters |
 | Configuration | Sealed, payload and ballast fixed; lid screws and glands as in RR-17 |
 | Conditions | Room-temperature water; depth enough to float freely |
 | Sample size and replication | 1 buoy; fresh then plain salt in the same tub; seawater run if collected |
 | Control / reference article | Fresh water is the control; real seawater is the reference (tentative) |
 | Reference instrument or standard | Seawater (tentative). No salinity meter: salinity comes from mass |
-| Expected values | Fresh: lowest freeboard. Plain salt: freeboard near the model's 4.27 in ([SCO-172](https://linear.app/scout1/issue/SCO-172)) |
+| Expected values | Fresh: lowest freeboard. Plain salt: higher than fresh. The model's 4.27 in assumes the whole buoy with payload and does not apply to raw floats; an empty float may sit tilted (the mushroom did) |
 | Water | The buoy float has its own container, separate from the RR-23 housing bucket. Weigh this container's water before adding salt |
 | Before you start (go/no-go) | Buoy dry outside and weighed (if mass changed since the last float, reweigh and stop to find out why). Tub clean, no residue. Salt label read: no iodine, no anti-caking agent |
 | Data path | Handwritten sheet or a notes file in the repo, photographed ruler readings; enter into B2 the same day |
