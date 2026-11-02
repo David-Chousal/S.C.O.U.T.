@@ -79,7 +79,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 
 | Item | Value |
 |---|---|
-| Design revision / file | Raw floats as printed, no payload, no ballast (John, 2026-11-02): the mushroom float and the wedge/ring float. This is a raw float test, not the loaded buoy of [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md); dry masses from the slicer (John, 2026-11-02): mushroom 702 g (logged in the [simulator README](../simulations/buoy-stability/README.md), consistent with John's 600 to 800 g), wedge/ring about 1200 g (exact slicer value Not recorded) |
+| Design revision / file | Raw floats as printed, no payload, no ballast (John, 2026-11-02): the mushroom float and the wedge/ring float. This is a raw float test, not the loaded buoy of [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md); dry masses from the slicer (John, 2026-11-02): mushroom 702 g (also logged in the [simulator README](../simulations/buoy-stability/README.md)), regular float 951 g (John, 2026-11-02; replaces the earlier 'about 1200 g') |
 | Material and print settings | As built; do not recoat or change anything between waters |
 | Configuration | Sealed, payload and ballast fixed; lid screws and glands as in RR-17 |
 | Conditions | Room-temperature water; depth enough to float freely |
