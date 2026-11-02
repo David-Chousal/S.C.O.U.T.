@@ -5,7 +5,7 @@
 |  |  |
 |---|---|
 | **Test ID / status** | RR-23 · Planned |
-| **Date, duration, who** | Planned 2026-11-01; run dates Not set (this week, see the weekly plan); 24 h per stage; John Ryan Myrdal |
+| **Date, duration, who** | Part A locked 2026-11-02; run dates Not set (this week, see the weekly plan); 24 h per stage; John Ryan Myrdal |
 | **Requirement tested** | Cap seals and glands stay dry (R-14); housing stays dry in salt water (R-12) |
 | **Tracking issue** | [SCO-294](https://linear.app/scout1/issue/SCO-294); related [SCO-270](https://linear.app/scout1/issue/SCO-270), [SCO-293](https://linear.app/scout1/issue/SCO-293) |
 | **Record kind** | Prospective |
@@ -68,7 +68,7 @@ If the assembled housing is submerged for 24 h in fresh water, then the paper to
 | M3 | Holds in plain salt water | Present | Towel dry after 24 h in plain salt water, then 1 week | R-12: salt water, 24 h then 1 week | [Requirements matrix R-12](../../docs/engineering/requirements-test-matrix.md) |
 | M4 | Mass does not rise | Plausible | Mass change within scale resolution | A rise means water got in, even if the towel looks dry | This plan |
 
-Locked on: Not yet locked. Lock this section (date it here) before step 1.
+Locked on: 2026-11-02 (John Ryan Myrdal), before the Stage 1 dunk. Any later change goes in the deviation log (B3), not over this text.
 
 ### A6. Article, setup and sampling
 
