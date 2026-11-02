@@ -93,6 +93,12 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 | Stop and abort conditions | Buoy leaks (weeping seam); water cloudy after stirring; seawater has visible growth or smell |
 | Safety | Salt-water spills (slip), carrying buckets, tub weight. Seawater collection hazards below. Hazard form: [SCO-211](https://linear.app/scout1/issue/SCO-211) (signed by Shoba Krishnan and submitted, per John 2026-11-02; whether it covers this test is unchecked) |
 
+Article sections (vertical cut through each float's axis, from the STEP files; dashed lines mark the predicted and measured drafts):
+
+![Mushroom float section](mushroom-float-cross-section-2026-11-02.png)
+
+![Regular float section](regular-float-cross-section-2026-11-02.png)
+
 ### A6a. Hazards, damage risks and failure modes
 
 | What could go wrong | What happens | How you would notice | Fix or prevention |
@@ -223,6 +229,7 @@ Notes:
 
 ### C5. Evidence and traceability
 
+- Section diagrams: [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png); CAD: [mushroom (corrected)](../cad/floatation/float-mushroom-corrected-2026-11-02.step), [regular](../cad/floatation/float-regular-2026-11-02.step)
 - Photos, 2026-11-02 (fresh-water float, then salt; readings not yet taken from them): floats [side view](float-salt-test-2026-11-02-01.jpg), [waterline on the engraved side](float-salt-test-2026-11-02-02.jpg), [second float tilted](float-salt-test-2026-11-02-03.jpg), [front](float-salt-test-2026-11-02-04.jpg), [top-down in the tub](float-salt-test-2026-11-02-05.jpg); salt [in the mixing cup](salt-mixing-rr-21-2026-11-02-01.jpg), [pouring water](salt-mixing-rr-21-2026-11-02-02.jpg), [pouring salt](salt-mixing-rr-21-2026-11-02-03.jpg)
 - Requirement R-17 (floats at the modelled waterline) → this test → [SCO-292](https://linear.app/scout1/issue/SCO-292); related: [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md), [RR-19](rr-19-petg-water-absorption-soak-2026-10-21.md)
 
