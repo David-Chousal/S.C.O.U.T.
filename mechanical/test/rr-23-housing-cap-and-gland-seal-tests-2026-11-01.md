@@ -222,6 +222,7 @@ Not yet run.
 
 ### C5. Evidence and traceability
 
+- Photos, 2026-11-02 (Stage 1 setup in a bowl of fresh water): [wide](housing-dunk-rr-23-2026-11-02-01.jpg), [closer](housing-dunk-rr-23-2026-11-02-02.jpg), [closest](housing-dunk-rr-23-2026-11-02-03.jpg). They show the cap end down with the body standing above the water and the water level near the flange; confirm this against A5's "just below the surface" and log any difference in B3
 - Requirements R-12, R-14 → this test → [SCO-294](https://linear.app/scout1/issue/SCO-294); related: [RR-22](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md)
 
 Format: [Test Record Template](../../docs/engineering/test-record-template.md). Index: [risk-reduction register](risk-reduction-register.md).

@@ -203,6 +203,7 @@ Not yet run.
 
 ### C5. Evidence and traceability
 
+- Photos, 2026-11-02 (fresh-water float, then salt; readings not yet taken from them): floats [side view](float-salt-test-2026-11-02-01.jpg), [waterline on the engraved side](float-salt-test-2026-11-02-02.jpg), [second float tilted](float-salt-test-2026-11-02-03.jpg), [front](float-salt-test-2026-11-02-04.jpg), [top-down in the tub](float-salt-test-2026-11-02-05.jpg); salt [in the mixing cup](salt-mixing-rr-21-2026-11-02-01.jpg), [pouring water](salt-mixing-rr-21-2026-11-02-02.jpg), [pouring salt](salt-mixing-rr-21-2026-11-02-03.jpg)
 - Requirement R-17 (floats at the modelled waterline) → this test → [SCO-292](https://linear.app/scout1/issue/SCO-292); related: [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md), [RR-19](rr-19-petg-water-absorption-soak-2026-10-21.md)
 
 Format: [Test Record Template](../../docs/engineering/test-record-template.md). Index: [risk-reduction register](risk-reduction-register.md).
