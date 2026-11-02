@@ -7,9 +7,7 @@
 >
 > **Last updated:** 2026-11-01, afternoon (week of Nov 2 to Nov 6, tail Nov 9 to Nov 13)
 >
-> **Capacity assumed:** 4 to 6 h a day Mon to Thu. **Travel is not confirmed:** the 10/30 meeting says John is
-> travelling to a conference on Fri Nov 6 and the week of Nov 9 (Zoom for the Fri Nov 13 meeting). Fri Nov 6
-> and the Nov 9 tail are planned as remote or light until the dates are confirmed.
+> **Capacity assumed:** 4 to 6 h a day Mon to Thu. **No travel:** John is not going to the conference (confirmed 2026-11-02), so Fri Nov 6 and the week of Nov 9 are normal working days.
 
 **Status key:** Done · In Review (work finished, PR open) · In Progress · Todo · Waiting (on a person) · Canceled · Moved
 
@@ -52,7 +50,7 @@
 | Thu Nov 5 | SCO-171 | Self-righting tilt test 90° and 180° (buoy is in the tub Tue to Wed); log in the register and matrix row R-18 | 3 h | Todo (moved from Nov 3; Linear re-dated to Nov 5) |
 | Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
 | Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
-| Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
+| Fri Nov 6 | n/a | Buffer | | |
 
 ## Carried over from last week
 
@@ -79,19 +77,19 @@
 - **Mon Nov 2:** WAR due. Isabella orders the hydrophone (SCO-158).
 - **Wed Nov 4:** advisor meeting, temperature demo.
 - **Thu Nov 5:** David and Isabella run the LoRa one-hop (SCO-155, due Nov 5). Not John's, but the buoy electronics for SCO-182 depend on it.
-- **Fri Nov 6:** Shoba's team meeting and the SCO-260 review (6 PM, not confirmed). The 10/30 notes record a contradiction: SCO-260 wants John presenting, while the meeting plan says John is travelling.
-- **Nov 9 to Nov 13:** conference; Fri Nov 13 meeting on Zoom.
+- **Fri Nov 6:** Shoba's team meeting and the SCO-260 review (6 PM, not confirmed). John presents; no travel.
+- **Nov 9 to Nov 13:** a normal working week (no conference); the Fri Nov 13 meeting is in person.
 - **Needs from others:** Isabella's wiring and Rev A current numbers for the lid layout (SCO-250); David's help on the simulator (SCO-229).
 
 ## Phase 2 check
 
 - **Float soak moved out of the MVP chain.** The 4-week soak (SCO-180) now runs in real seawater or at a marina over winter break, so it no longer sets the Dec 4 MVP date. The Float soak and battery endurance milestone (Dec 2) and exit criterion 9 need new dates; propose Jan 2027 once the site is known. Until then the MVP chain is the electronics: SCO-155 LoRa hop (Nov 5), SCO-25, SCO-182 (Dec 4).
 - **Buoy proof tests milestone (Oct 30) is past due at 31%:** open SCO-171, 172, 243, 246, 147, 250, 277 and others. Re-date it or finish the tests; do not leave it showing a past date.
-- **Next milestones:** Duty-cycle firmware on the bench and bench bring-up, Nov 6 (David and Isabella); Buoy-to-shore link Nov 10; Power and housing integration Nov 13 (SCO-162 is John's, due Nov 13 during the conference).
+- **Next milestones:** Duty-cycle firmware on the bench and bench bring-up, Nov 6 (David and Isabella); Buoy-to-shore link Nov 10; Power and housing integration Nov 13 (SCO-162 is John's, due Nov 13).
 - **Exit criteria advanced this week:** 3 (salt-water float: SCO-172), 2 (self-righting: SCO-171), 9 (float soak: moved to winter break, SCO-180). Criteria 1, 4 and 8 are not touched this week.
-- **Risk:** SCO-247, 248, 162 and 183/195 are all due Nov 13, the conference week, and need the physical lab. Plan to re-date them Friday.
+- **Risk:** SCO-247, 248, 162 and 183/195 are all due Nov 13 and need the physical lab; it is a full working week, so they are schedulable but dense.
 
-## Next week tail (Nov 9 to Nov 13, conference)
+## Next week tail (Nov 9 to Nov 13)
 
 | Issue | Task | Due |
 |---|---|---|
