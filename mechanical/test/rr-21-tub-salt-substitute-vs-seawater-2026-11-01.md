@@ -93,6 +93,8 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 | Stop and abort conditions | Buoy leaks (weeping seam); water cloudy after stirring; seawater has visible growth or smell |
 | Safety | Salt-water spills (slip), carrying buckets, tub weight. Seawater collection hazards below. Hazard form: [SCO-211](https://linear.app/scout1/issue/SCO-211) (signed by Shoba Krishnan and submitted, per John 2026-11-02; whether it covers this test is unchecked) |
 
+> **Unverified, under check (2026-11-02):** the diagrams and the predicted drafts built from these STEP files may contain errors. The measured drafts do not match the predictions (see C2), and the cause is not yet known: it could be the CAD, the printed masses, water inside a float, or the reading method. They are saved as the working record and will be corrected once checked.
+
 Article sections (vertical cut through each float's axis, from the STEP files; dashed lines mark the predicted and measured drafts):
 
 ![Mushroom float section](mushroom-float-cross-section-2026-11-02.png)
@@ -197,7 +199,7 @@ Open questions:
 **Overall:** Planned.
 
 ### C2. Curve and analysis
-Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections: [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
+Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections (unverified, errors being checked): [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
 
 | Float (mass) | Predicted draft | Measured draft | Displaced at the reading |
 |---|---|---|---|
@@ -229,7 +231,7 @@ Notes:
 
 ### C5. Evidence and traceability
 
-- Section diagrams: [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png); CAD: [mushroom (corrected)](../cad/floatation/float-mushroom-corrected-2026-11-02.step), [regular](../cad/floatation/float-regular-2026-11-02.step)
+- Section diagrams (**unverified, errors being checked; see A6 and C2**): [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png); CAD: [mushroom (corrected)](../cad/floatation/float-mushroom-corrected-2026-11-02.step), [regular](../cad/floatation/float-regular-2026-11-02.step)
 - Photos, 2026-11-02 (fresh-water float, then salt; readings not yet taken from them): floats [side view](float-salt-test-2026-11-02-01.jpg), [waterline on the engraved side](float-salt-test-2026-11-02-02.jpg), [second float tilted](float-salt-test-2026-11-02-03.jpg), [front](float-salt-test-2026-11-02-04.jpg), [top-down in the tub](float-salt-test-2026-11-02-05.jpg); salt [in the mixing cup](salt-mixing-rr-21-2026-11-02-01.jpg), [pouring water](salt-mixing-rr-21-2026-11-02-02.jpg), [pouring salt](salt-mixing-rr-21-2026-11-02-03.jpg)
 - Requirement R-17 (floats at the modelled waterline) → this test → [SCO-292](https://linear.app/scout1/issue/SCO-292); related: [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md), [RR-19](rr-19-petg-water-absorption-soak-2026-10-21.md)
 
