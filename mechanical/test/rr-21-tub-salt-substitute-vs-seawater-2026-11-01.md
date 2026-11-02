@@ -17,7 +17,7 @@
 | Parameter (unit) | Instrument | Pass if | Measured | Verdict |
 |---|---|---|---|---|
 | Salt mass vs target (g) | Scale | Within 1% of 35 g per kg of the weighed water mass | Not yet run | Not measured |
-| Freeboard of the same float (in) | Ruler or calipers, fixed reference mark | Plain-salt water within 0.1 in of seawater (proposed, lock before the run) | Not yet run | Not measured |
+| Draft of the same float (in), from the very bottom up to the waterline, mean of three readings | Ruler | Plain-salt water within 0.1 in of seawater (proposed, lock before the run) | Not yet run | Not measured |
 | Reading spread across three marks (in) | Same | 0.05 in or less | Not yet run | Not measured |
 
 **How and steps.** Raw floats (mushroom and wedge/ring), no payload or ballast, same floats throughout. Measure the tub's water mass, float the buoy in fresh water (control), dissolve salt in the same tub at 35 g per kg of solution, settle 15 min, read draft and freeboard at three marks, hold 24 h for the seam-leak check. If Santa Cruz seawater is collected, rinse the tub and repeat in seawater as collected. There is no salinity meter: salinity is set by mass and the seawater is not metered.
@@ -167,8 +167,8 @@ Open questions:
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
 | 2026-11-02 11:00 | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub: **725 g exactly** (John). Water at room temperature (value Not recorded) | 725 g for 20 L (35 g per kg) | M1 met on the stated amounts: 725 g is 35 g per kg of 20 kg. Water amount (20 L) and its measurement method Not recorded. 24 h read due 2026-11-03 11:00 |
-| 2026-11-02, time Not recorded (after the salt) | Mushroom float, salt water | Waterline one smallest ruler tick above 1 in: about 1 1/16 in (1.0625 in) if the smallest tick is 1/16 in. Single reading, not three marks. What it is measured from (freeboard or draft) Not recorded | Raw float, no model value | John, verbal; smallest tick size and reference Not recorded |
-| 2026-11-02, time Not recorded (after the salt) | Regular float, salt water | Waterline one smallest ruler tick below 1 3/4 in: about 1 11/16 in (1.6875 in) if the smallest tick is 1/16 in. Single reading, not three marks | Raw float, no model value | As above. Which regular float (wedge/ring) Not recorded |
+| 2026-11-02, time Not recorded (after the salt) | Mushroom float (702 g), salt water | **Draft (measured from the very bottom of the float up to the waterline): mean of three readings, one smallest ruler tick above 1 in, about 1 1/16 in (1.0625 in)** if the smallest tick is 1/16 in. The three individual readings are Not recorded | Raw float, no model value | John, verbal. Smallest tick size Not recorded |
+| 2026-11-02, time Not recorded (after the salt) | Regular float (951 g), salt water | **Draft (very bottom up to the waterline): mean of three readings, one smallest ruler tick below 1 3/4 in, about 1 11/16 in (1.6875 in)** if the smallest tick is 1/16 in. The three individual readings are Not recorded | Raw float, no model value | As above |
 
 ### B3. Deviations
 
