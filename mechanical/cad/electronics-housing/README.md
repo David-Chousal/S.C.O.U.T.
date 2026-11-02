@@ -322,3 +322,46 @@ released). They supersede the DFM Assembly 2 sheet above for the public site.
 
 Dimensions are read off the sheets; no STEP yet. The Ø6 flange in the 2026-10-06 table above is
 now Ø7.25 in on this revision.
+
+## Gland test pegs (2026-11-02)
+
+For the cap and gland seal tests ([RR-23](../../test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md),
+[SCO-294](https://linear.app/scout1/issue/SCO-294)), John printed three pegs that stand in for cable
+in the PG11 glands (the glands are the lab-stock PG11 type recorded in
+[`facts.md`](../../../docs/hub/facts.md)).
+
+| Item | Value |
+|---|---|
+| File | [`gland-peg-test-2026-11-02.step`](gland-peg-test-2026-11-02.step) (inches) |
+| Shaft | Ø6.35 mm (0.250 in), 19.05 mm long, inside the nominal 5 to 10 mm PG11 cable range |
+| Head | Ø10.16 mm (0.400 in), 6.35 mm tall, 1.27 mm 45° chamfers top and bottom; overall length 25.4 mm |
+| Print | PETG, 2 walls, 15% infill, with a handle (the STEP shows the head only) |
+| Photo | [pegs clamped in the three glands, 2026-11-02](../../test/housing-glands-with-pegs-2026-11-02-01.jpg); fit is good in all three |
+| Use | Pushed in from the outside through the gland's diaphragm hole, then clamped by the gland nut |
+| Limit | A rigid peg is not a cable: a pass shows the cap and gland body seal, not the gland on cable (Stage 2 of RR-23) |
+
+## Cap v2: corrected through-holes and an extended cable outlet (2026-11-02)
+
+New cap CAD after the first printed cap's bolt holes were too narrow
+([RR-22](../../test/rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md),
+[SCO-293](https://linear.app/scout1/issue/SCO-293)). **Not printed yet:** John is waiting for the
+[RR-23](../../test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) dunk on the first cap, to see
+whether other changes are needed.
+
+| Item | First cap (2026-10-30) | Cap v2 ([`electronics-housing-cap-fixed-2026-11-02.step`](electronics-housing-cap-fixed-2026-11-02.step)) |
+|---|---|---|
+| Ten small cylindrical faces (bolt through-holes) | Ø3.40 mm (0.134 in) | Ø4.50 mm (0.177 in), read from the STEP |
+| Three PG11 gland holes | Ø19.0 mm | Ø19.0 mm, unchanged |
+| Cable outlet cavity | Standard gland deck | Extended triangular cavity on top: larger cable bend radius, less wear and crimping (John's description; not measured here) |
+
+The housing uses M4 heat-set inserts (logged above), and the cap has 10 bolts. The first cap's 3.40 mm
+holes were M3-size, too small for M4; 4.50 mm is the usual M4 clearance. One large cylindrical
+face also changed from Ø5.0 in to Ø6.0 in between the two files; check that is intended.
+
+## Gland fit coupons (logged 2026-11-02)
+
+Before the cap print John printed several small PG11 fit coupons (flat plate, three PG11-size holes, a raised border
+and a recessed gland section) to check room to tighten the nuts and that the wall allowed a solid thread clamp. After a
+test or two the wall in the gland section was thinned for more thread contact. The numbers were not recorded; see
+[RR-24](../../test/rr-24-gland-fit-coupon-2026-11-02.md) and the [photo](../../test/gland-fit-coupon-2026-11-02-01.jpg).
+

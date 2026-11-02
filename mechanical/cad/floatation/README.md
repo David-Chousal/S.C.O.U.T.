@@ -409,3 +409,11 @@ blank, so not released). These are the sheets the public site's gallery now show
 
 The matching STEP files are not in the repo yet (the mushroom float STEP is
 [`float-mushroom.step`](float-mushroom.step) on the simulator branch, not on `main`).
+
+## Float files from the 2026-11-02 salt float test (unverified)
+
+`float-mushroom-corrected-2026-11-02.step` and `float-regular-2026-11-02.step` were exported by John for the
+[RR-21](../../test/rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) float test. The drafts predicted from them
+do not match the measured drafts, so these files and the section diagrams made from them are **unverified and under
+check**. They are saved as the working record and will be corrected once the cause is found.
+
