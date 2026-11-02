@@ -191,14 +191,19 @@ Open questions:
 **Overall:** Planned.
 
 ### C2. Curve and analysis
-Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's STEP loader (`printed_hulls.py`: body-of-revolution envelope, sealed, 1.025 g/mL for 35 ppt salt water at room temperature, an estimate) against John's mean-of-three drafts (very bottom up to the waterline):
+Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's STEP loader (`printed_hulls.py`: body-of-revolution envelope, sealed, 1.025 g/mL for 35 ppt salt water at room temperature, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: John's `mushroomFloat.step` (same float as [float-mushroom.step](../cad/floatation/float-mushroom.step): 349.5 mm diameter, 172 mm tall, envelope 4866 mL) and `RegularFloat.step` ([float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step): 248 mm diameter, 167 mm tall, envelope 7006 mL).
 
-| Float (mass) | STEP used | Predicted draft | Measured draft | Difference |
-|---|---|---|---|---|
-| Mushroom (702 g) | [float-mushroom.step](../cad/floatation/float-mushroom.step) | 1.57 in | 1.06 in | -0.51 in |
-| Regular (951 g), geometry assumed to be the hang-hole float | [float-hang-holes-2026-11-01.step](../cad/electronics-housing/../floatation/float-hang-holes-2026-11-01.step) | 1.08 in | 1.69 in | +0.61 in |
+| Float (mass) | Predicted draft | Measured draft | Difference |
+|---|---|---|---|
+| Mushroom (702 g) | 1.57 in | 1.06 in | -0.51 in |
+| Regular (951 g) | 1.08 in | 1.69 in | +0.61 in |
 
-The signs are opposite and the swapped pairing fits better (hang-hole STEP at 951 g predicts 1.08 in against the 1.06 in reading; mushroom STEP at 702 g predicts 1.57 in against the 1.69 in reading). Possible causes, none confirmed: the labels or masses are swapped between the two floats; the mushroom floated tilted (so a vertical reading is not its upright draft); the regular float is not the hang-hole STEP; ruler reference or STEP differences. Resolve before using these numbers.
+Notes:
+
+- **STEP check:** `mushroomFloat.step` holds two solids: the float, and a second solid of about 337 cm3 (184 x 182 x 136 mm) from 101.6 to 237.5 mm above the file's origin. It looks like the electronics housing seated in the float; it is not part of the raw float and was excluded. The float's own profile has no radius jumps above 6 mm, so no geometric artifacts were found in it. `RegularFloat.step` is a single solid.
+- **Mushroom:** at 1.06 in the envelope displaces only 461 mL, about 473 g, against a 702 g float. A free float must displace its own mass, so one of these is off: the mass, the reading, or the shape (not resolved).
+- **Regular:** at 1.69 in the envelope displaces about 1587 mL, 1627 g, against 951 g. A tilted float reads deeper at its lowest point than upright; if the tilted float in the photos is the regular one, that would explain it. Water inside the float would also deepen it. Neither is confirmed.
+- The two readings fit each other's float better than their own (regular STEP at 951 g predicts 1.08 in against the mushroom's 1.06 in reading; mushroom STEP at 702 g predicts 1.57 in against the regular's 1.69 in), so the readings may be swapped between floats. Resolve before using these numbers.
 
 ### C3. Validity and limits
 
