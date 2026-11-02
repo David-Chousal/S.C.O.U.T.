@@ -191,30 +191,20 @@ Open questions:
 **Overall:** Planned.
 
 ### C2. Curve and analysis
-Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's STEP loader (`printed_hulls.py`: body-of-revolution envelope, sealed, 1.025 g/mL for 35 ppt salt water at room temperature, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: John's `mushroomFloat.step` (same float as [float-mushroom.step](../cad/floatation/float-mushroom.step): 349.5 mm diameter, 172 mm tall, envelope 4866 mL) and `RegularFloat.step` ([float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step): 248 mm diameter, 167 mm tall, envelope 7006 mL).
+Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections: [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
 
-| Float (mass) | Predicted draft | Measured draft | Difference |
+| Float (mass) | Predicted draft | Measured draft | Displaced at the reading |
 |---|---|---|---|
-| Mushroom (702 g) | 1.57 in | 1.06 in | -0.51 in |
-| Regular (951 g) | 1.08 in | 1.69 in | +0.61 in |
+| Mushroom (702 g) | 2.36 in | 1.06 in | 431 g |
+| Regular (951 g) | 1.06 in | 1.69 in | 1472 g |
 
 Notes:
 
-- **Which is which (John, 2026-11-02):** the mushroom is the dome-shaped float that tilts when free; the regular float is the upright one with the engraved band.
-- **STEP check:** `mushroomFloat.step` holds two solids: the float, and a second solid of about 337 cm3 (184 x 182 x 136 mm) from 101.6 to 237.5 mm above the file's origin. It looks like the electronics housing seated in the float; it is not part of the raw float and was excluded. The float's own profile has no radius jumps above 6 mm, so no geometric artifacts were found in it. `RegularFloat.step` is a single solid.
-- **Section of `mushroomFloat.step`** ([image](mushroom-float-cross-section-2026-11-02.png)): a central bore of radius about 58 mm runs from the top (172 mm above the keel) down to a socket floor 25.4 mm above the keel. Water poured into the bore adds about 107 g per 10 mm of depth. The outer body is a Ø147 mm base (0 to 27 mm), flaring to a Ø229 mm cap near 98 mm, tapering to the top. The housing solid sits in the bore, with its bottom 45 to 49 mm above the keel.
-- **Mushroom:** at 1.06 in the envelope displaces only 461 mL, about 473 g, against a 702 g float. With a side-only force the float should sit at its free-float draft, so the mass, the reading or the shape is off (not resolved).
-- **Regular:** it floats upright and unaided, yet at 1.69 in the envelope displaces about 1587 mL, 1627 g, against 951 g. Likely candidates: water inside the float, or a mass above 951 g (not confirmed). Check inside it for water before adding ballast.
-- Each float's reading fits the other float's prediction better, which may be coincidence.
-- **Weighted run planned for 2026-11-03** (John: fill both floats with water to weigh them down, which should steady the mushroom). Record the water mass added (weigh the water before filling) and read draft at three marks. Predicted drafts from the STEP envelope for added water, sealed, 35 ppt (estimates):
-
-| Added water | Mushroom (702 g) | Regular (951 g) |
-|---|---|---|
-| 0 g | 1.57 in | 1.08 in |
-| 500 g | 2.56 in | 1.54 in |
-| 1000 g | 3.29 in | 1.99 in |
-| 1500 g | 3.82 in | 2.44 in |
-| 2000 g | 4.29 in | 2.87 in |
+- **Which is which (John):** the mushroom is the dome-shaped float that tilts when free (held vertical by a side-only force for the reading); the regular float is the upright one with the engraved band.
+- **Correction:** an earlier version of this section used a body-of-revolution envelope that counted the open central bore as displacing water (mushroom 1.57 in, regular 1.08 in). The voxel method does not, and it widens the mushroom gap.
+- **Sections:** both floats have a central bore of about 58 mm radius from the top down to a floor 25.4 mm above the keel (about 107 g of water per 10 mm of depth). The regular float is not axisymmetric: its section shows a hollow wedge on one side and a plain wall on the other.
+- **Gaps:** a free float displaces its own mass, so the mushroom reads as if it were about 431 g and the regular as if about 1472 g. Likely causes, none confirmed: the printed masses differ from the slicer values; water inside the regular float; the reading method. Weigh both floats dry before the weighted run.
+- **Weighted run planned for 2026-11-03** (John: fill both floats with water to weigh them down). Record the water mass added and read draft at three marks after each step (for example 0, 250, 500, 1000 g). Plot displaced mass (from the STEP volume at each measured draft) against added water: the slope should be 1 and the intercept is the float's effective mass, including any hidden water.
 
 ### C3. Validity and limits
 
