@@ -358,3 +358,10 @@ The housing uses M4 heat-set inserts (logged above), and the cap has 10 bolts. T
 holes were M3-size, too small for M4; 4.50 mm is the usual M4 clearance. One large cylindrical
 face also changed from Ø5.0 in to Ø6.0 in between the two files; check that is intended.
 
+## Gland fit coupons (logged 2026-11-02)
+
+Before the cap print John printed several small PG11 fit coupons (flat plate, three PG11-size holes, a raised border
+and a recessed gland section) to check room to tighten the nuts and that the wall allowed a solid thread clamp. After a
+test or two the wall in the gland section was thinned for more thread contact. The numbers were not recorded; see
+[RR-24](../../test/rr-24-gland-fit-coupon-2026-11-02.md) and the [photo](../../test/gland-fit-coupon-2026-11-02-01.jpg).
+

@@ -9,13 +9,14 @@
 
 ---
 
-## The four records
+## The records
 
 | Record | What | Status at end of 2026-11-02 |
 |---|---|---|
 | [RR-20](../../mechanical/test/rr-20-hang-hole-fea-2026-10-30.md) | Hang-hole static FEA, through-hole floatation | Pass (analysis only); limits recorded |
 | [RR-21](../../mechanical/test/rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) | Raw floats in plain-salt water (24 h), weighted run, displacement comparison | Running; Part A locked 2026-11-02; 24 h read due 2026-11-03 about 11:00 |
 | [RR-22](../../mechanical/test/rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md) | First housing and cap assembly, gland fit | Partial: cap bolt holes undersized, forced threads |
+| [RR-24](../../mechanical/test/rr-24-gland-fit-coupon-2026-11-02.md) | PG11 gland fit coupons (earlier, retroactive): room to tighten, wall thinned for thread contact | Partial; values not recorded |
 | [RR-23](../../mechanical/test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) | Cap and PG11 gland seal tests (initial dunk, then isolation plan if it leaks) | Running; Part A locked 2026-11-02; Stage 1 started 10:47, 24 h read due 2026-11-03 |
 
 The reusable displacement tool, charts and running log are in
@@ -73,6 +74,7 @@ arrive and is not saved. One blurry patio photo was not kept.
 | File | What it shows |
 |---|---|
 | `housing-cap-assembly-2026-11-01-01.jpg` to `-03.jpg` | The first assembled housing and cap; the cap off with the gland block; heat-set inserts going into the body flange (RR-22) |
+| `gland-fit-coupon-2026-11-02-01.jpg` | The final PG11 gland fit coupon: flat plate, three PG11-size holes, raised border, thinned recessed gland section (RR-24) |
 | `housing-glands-with-pegs-2026-11-02-01.jpg` | The three printed pegs clamped in the PG11 glands (RR-23) |
 | `housing-dunk-rr-23-2026-11-02-01.jpg` to `-05.jpg` | RR-23 Stage 1: housing cap end down in a bowl of fresh water, body above the water, seal submerged, weights near the flange |
 | `float-salt-test-2026-11-02-01.jpg` to `-10.jpg` | RR-21 floats in the clear tub in salt water: the upright regular float with its bore (side and engraved band at the waterline), the dome-shaped mushroom floating tilted, and a top-down view of both |
