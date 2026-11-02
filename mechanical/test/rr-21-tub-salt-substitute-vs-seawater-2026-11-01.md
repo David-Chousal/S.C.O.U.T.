@@ -145,6 +145,7 @@ Mean freeboard per water over the three marks. Spread across marks against 0.05 
 
 Open questions:
 
+- Weights: John will add weights to the floats later, in the same salt water. Record each float's added mass and re-read freeboard at three marks. Compare with the model's 4.27 in (M5) only if the added mass matches the model's payload mass for that float (Not recorded). Owner John.
 - Is 0.1 in the right tolerance for M2? Owner John with Jes, before locking.
 - Tub water mass: measured Mon Nov 2 in step 2; salt mass computed from it. Owner John.
 - Santa Cruz seawater trip: tentative for the weekend of Nov 7–8; may be dropped. Owner John.
