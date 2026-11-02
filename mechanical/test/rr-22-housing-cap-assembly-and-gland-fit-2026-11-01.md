@@ -21,7 +21,7 @@
 | Cap clamps on the O-ring | Hand tool | Cap draws down evenly | Clamping achieved with the forced screws | Pass with workaround |
 | PG11 glands thread into the cap | Hand | Seat and nut engages on the 3 to 4 mm wall | Glands threaded in; seating and nut engagement Not recorded | Not measured |
 
-**How.** Heat-set inserts pressed into the printed body's flange with a soldering iron, O-ring placed, cap screwed down with stainless torx screws, three PG11 glands threaded into the printed gland block on the cap ([cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step)). A paper towel is inside for the leak test (RR-23).
+**How.** Heat-set inserts pressed into the printed body's flange with a soldering iron, O-ring placed, cap screwed down with stainless torx screws, three PG11 glands (lab stock, nominal values in [facts.md](../../docs/hub/facts.md)) threaded into the printed gland block on the cap ([cap STEP](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step)). A paper towel is inside for the leak test (RR-23).
 
 **Result.** Assembled and clamped, but the cap's bolt holes were dimensioned too narrow, so the screws were forced through and cut their own threads in the cap. The cap is double-threaded: forced threads on top, heat-set insert threads below. No water test yet.
 
@@ -49,7 +49,7 @@ If the cap's bolt holes are clearance holes and the gland bores match PG11, then
 | Parameter | Unit | Instrument / method | Resolution | Uncertainty | Calibrated / checked (date) |
 |---|---|---|---|---|---|
 | Cap bolt hole diameter | mm | Not recorded | Not recorded | Not recorded | Not recorded |
-| Screw size (thread, length) | mm | Not recorded | Not recorded | Not recorded | Not recorded |
+| Screw size (thread, length) | mm | M4 heat-set inserts per the housing README; screw length Not recorded | Not recorded | Not recorded | Not recorded |
 | Assembly observations | n/a | Visual, photos | n/a | n/a | n/a |
 
 ### A4. Variables
@@ -75,7 +75,7 @@ Locked on: Not recorded (retroactive record)
 |---|---|
 | Design revision / file | [Cap STEP, sideways glands, 2026-10-30](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step); body [STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Grey print, material and settings Not recorded (PETG assumed elsewhere in the repo) |
-| Configuration | O-ring in the cap, stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; screw count and torque Not recorded |
+| Configuration | O-ring in the cap (AS568-247, ID 4.609 in × CS 0.139 in, the largest ring in the assortment pack; per [facts.md](../../docs/hub/facts.md); elastomer Not recorded), 10 stainless torx screws into M4 heat-set inserts, stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; torque Not recorded |
 | Conditions | Bench, room temperature |
 | Sample size and replication | 1 assembly |
 | Control / reference article | None |

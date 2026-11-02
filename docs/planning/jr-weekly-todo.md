@@ -17,12 +17,12 @@
 
 | Issue | Task | Why flagged | Was due | Action this week |
 |---|---|---|---|---|
-| SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided: fresh-water float and 24 h salt float both start Mon Nov 2** | Oct 30 | Mon Nov 2: fresh-water float, log draft and freeboard. Read the salt float Tue Nov 3. Linear re-dated to Nov 3 |
+| SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided; buoy float starts Mon Nov 2 in its own container** | Oct 30 | Tue Nov 3: fresh float, then salt float. Read the salt float Wed Nov 4 (salt waits for the housing test). Linear re-dated to Nov 4 |
 | SCO-277 | Buy salt for the tub float test | **Done Nov 1:** plain salt on hand (product and price not recorded) | Nov 2 | None. Record product and price in the purchase log |
 | SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
-| SCO-211 | Hazard form, advisor signature | Overdue 6 days; Needs Decision, waiting on Dr. Krishnan | Oct 26 | Mon Nov 2: ask for the signature; Wed Nov 4 advisor meeting is the backstop |
+| SCO-211 | Hazard form, advisor signature | **Done Nov 2:** signed by Shoba Krishnan and submitted | Oct 26 | None. Check the signed form covers the salt-water tub tests and the housing dunk |
 | SCO-185 | Kaneohe Bay permit determinations | Was overdue 16 days and stale; **moved to Jan 4, 2027 (winter break)** | Oct 16 | None this week. Re-date done in Linear Nov 1 |
-| SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Tue Nov 3. Re-date in Linear |
+| SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Thu Nov 5. Re-date in Linear |
 | SCO-246 | Choose and source the waterproof coating | Coating decided (Home Depot solution); not yet bought | Nov 3 | Buy Tue Nov 3. Linear re-dated to Nov 6 |
 | SCO-147 | Decide the hung (boat/pier) configuration | **Done Nov 1:** rope is fed through the floatation through-holes as a small hanging harness | Nov 3 | None. SCO-243, 244 and 251 (eye points on top) canceled Nov 1 |
 | SCO-229 | Simulator usable by non-engineers (labels, context) | Reopened at the 10/30 meeting; no due date | none | Thu Nov 5; give it a date |
@@ -35,20 +35,21 @@
 | Mon Nov 2 | n/a | WAR due at ENGR 194 class | fixed | Todo |
 | Mon Nov 2 | SCO-277 | Plain salt on hand; record the product, label check (no iodine, no anti-caking) and price in the purchase log | 0.1 h | Done (Nov 1) |
 | Mon Nov 2 | SCO-292 | Send the RR-21 plan to Jes (A10); ask to confirm the 0.1 in pass mark | 0.5 h | Todo |
-| Mon Nov 2 | SCO-211 | Ask Dr. Krishnan for the signature | 0.5 h | Waiting |
-| Mon Nov 2 | SCO-172, SCO-292 | **Fresh-water float** AM; weigh the tub's water; compute salt mass = water kg × 35/965 (40 kg needs 1.45 kg; 100 kg needs 3.63 kg); dissolve in the same tub; settle 15 min; read freeboard at three marks; **start the 24 h salt float** (RR-21 steps 1 to 6) | 3.5 h | Todo |
+| Mon Nov 2 | SCO-211 | Hazard form signed by Shoba and submitted; log it | 0 h | Done |
+| Mon Nov 2 | SCO-294, SCO-292 | RR-23 Stage 1 **started 2026-11-02 10:47 PST**: housing (518 g, pegs in, towel inside) in a bucket of fresh water just below the surface with weights. The buoy float uses a separate container | 1.5 h | Running (due Nov 6) |
 | Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
-| Tue Nov 3 | SCO-171 | Self-righting tilt test 90° and 180°; log in the register and matrix row R-18 | 3 h | Todo (re-dated from Nov 17) |
-| Tue Nov 3 | SCO-294 | RR-23 Stage 1: cap and O-ring seal, gland bores blocked, towel inside; submerge in the second tub 24 h; lock Part A first | 1 h | Todo (due Nov 6) |
-| Tue Nov 3 | SCO-172 | Read the 24 h salt float: draft, freeboard, seam leaks. Then clean and rinse | 1 h | Todo (re-dated to Nov 3) |
+| Mon Nov 2 | SCO-172, SCO-292 | **Buoy float test now** in its own container: weigh the water, fresh-water float (freeboard at three marks), salt = water kg × 35/965, dissolve, settle 15 min, read, **start the 24 h salt float**; record times (RR-21 steps 1 to 6) | 3.5 h | Running (SCO-172 due Nov 3) |
+| Tue Nov 3 | SCO-294 | Read RR-23 Stage 1 at 24 h (towel, mass vs 518 g); take the housing and weights out of the bucket. Dry: start Stage 2 (real cable) in the second tub. Wet: isolation plan (A6b) | 1 h | Todo |
+| Tue Nov 3 | SCO-172, SCO-292 | Read the 24 h salt float: freeboard at three marks, seams, water temperature; clean and rinse | 1 h | Todo (due Nov 3) |
 | Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
 | Tue Nov 3 | SCO-195 | Message the Santa Cruz yacht club | 0.5 h | Todo |
 | Wed Nov 4 | n/a | Advisor meeting; Isabella's temperature demo (SCO-259) | fixed | Todo |
-| Wed Nov 4 | SCO-294 | RR-23: read Stage 1; start Stage 2, the three PG11 glands with real cable (24 h) | 1 h | Todo |
+| Wed Nov 4 | SCO-294 | Read RR-23 Stage 2 (second tub) if started Tue | 0.5 h | Todo |
+| Wed Nov 4 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6; moved from Thu to fit capacity) |
 | Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
-| Thu Nov 5 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6) |
 | Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
-| Thu Nov 5 | SCO-293 | Redesign the cap with larger bolt clearance holes, merged with the SMA bulkhead and D-cell bay (SCO-162, SCO-250); one cap revision | 3 h | Todo (due Nov 13) |
+| Thu Nov 5 | SCO-293 | Cap v2 CAD exists (Nov 2: Ø4.5 mm holes, extended cable outlet). Decide after the RR-23 result whether more changes are needed; merge the SMA bulkhead and D-cell bay (SCO-162, SCO-250) if not yet in; then print | 2 h | In Progress (due Nov 13) |
+| Thu Nov 5 | SCO-171 | Self-righting tilt test 90° and 180° (buoy is in the tub Tue to Wed); log in the register and matrix row R-18 | 3 h | Todo (moved from Nov 3; Linear re-dated to Nov 5) |
 | Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
 | Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
 | Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
@@ -57,7 +58,7 @@
 
 | Issue | Task | Last week | Now |
 |---|---|---|---|
-| SCO-211 | Hazard form, advisor signature | Waiting (Tue Oct 27) | Moved: still waiting; Mon Nov 2 |
+| SCO-211 | Hazard form, advisor signature | Waiting (Tue Oct 27) | Done Nov 2 (signed by Shoba, submitted) |
 | SCO-219 | PETG soak, pilot stage | Done | Done (longer soak continues) |
 | SCO-242 | Dock/boat attachment decision | Done | Done |
 | SCO-254, SCO-229, SCO-255, SCO-252, SCO-256, SCO-264, SCO-265 | Simulator, drawings, website, advisor sheet, meeting filed | Done | Done; **SCO-229 reopened** Oct 30 |
@@ -80,7 +81,7 @@
 - **Thu Nov 5:** David and Isabella run the LoRa one-hop (SCO-155, due Nov 5). Not John's, but the buoy electronics for SCO-182 depend on it.
 - **Fri Nov 6:** Shoba's team meeting and the SCO-260 review (6 PM, not confirmed). The 10/30 notes record a contradiction: SCO-260 wants John presenting, while the meeting plan says John is travelling.
 - **Nov 9 to Nov 13:** conference; Fri Nov 13 meeting on Zoom.
-- **Needs from others:** Dr. Krishnan's signature (SCO-211); Isabella's wiring and Rev A current numbers for the lid layout (SCO-250); David's help on the simulator (SCO-229).
+- **Needs from others:** Isabella's wiring and Rev A current numbers for the lid layout (SCO-250); David's help on the simulator (SCO-229).
 
 ## Phase 2 check
 
