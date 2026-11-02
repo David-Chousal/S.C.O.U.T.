@@ -79,7 +79,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 
 | Item | Value |
 |---|---|
-| Design revision / file | Raw floats as printed, no payload, no ballast (John, 2026-11-02): the mushroom float and the wedge/ring float. This is a raw float test, not the loaded buoy of [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md); dry masses from the slicer (John, 2026-11-02): mushroom 702 g (also logged in the [simulator README](../simulations/buoy-stability/README.md)), regular float 951 g (John, 2026-11-02; replaces the earlier 'about 1200 g') |
+| Design revision / file | Raw floats as printed, no payload, no ballast (John, 2026-11-02): the mushroom float and the wedge/ring float. This is a raw float test, not the loaded buoy of [RR-17](rr-17-assembled-buoy-bin-float-2026-10-16.md); dry masses from the slicer (John, 2026-11-02): mushroom 702 g (also logged in the [simulator README](../simulations/buoy-stability/README.md)), regular float about 1148 g (weighed by John, 2026-11-02; the earlier 951 g was the slicer value) |
 | Material and print settings | As built; do not recoat or change anything between waters |
 | Configuration | Sealed, payload and ballast fixed; lid screws and glands as in RR-17 |
 | Conditions | Room-temperature water; depth enough to float freely |
@@ -176,7 +176,8 @@ Open questions:
 |---|---|---|---|---|
 | 2026-11-02 11:00 | Salt addition | Salt measured by mass: poured into a cup standing on a scale, then added to the tub: **725 g exactly** (John). Water at room temperature (value Not recorded) | 725 g for 20 L (35 g per kg) | M1 met on the stated amounts: 725 g is 35 g per kg of 20 kg. Water amount (20 L) and its measurement method Not recorded. 24 h read due 2026-11-03 11:00 |
 | 2026-11-02, time Not recorded (after the salt) | Mushroom float (702 g), salt water | **Draft (measured from the very bottom of the float up to the waterline): mean of three readings, one smallest ruler tick above 1 in, about 1 1/16 in (1.0625 in)** if the smallest tick is 1/16 in. Free-floating it tilts (the tilted dome float in the photos); John held it vertical with a side-only force, at maximum draft, and recorded that. The three individual readings are Not recorded | Raw float, no model value | John, verbal. Smallest tick size Not recorded |
-| 2026-11-02, time Not recorded (after the salt) | Regular float (951 g), salt water | **Draft (very bottom up to the waterline): mean of three readings, one smallest ruler tick below 1 3/4 in, about 1 11/16 in (1.6875 in)** if the smallest tick is 1/16 in. Floats upright unaided (the upright engraved float in the photos). The three individual readings are Not recorded | Raw float, no model value | As above |
+| 2026-11-02, time Not recorded (after the salt) | Regular float (951 g slicer; weighed about 1148 g later), salt water | **Draft (very bottom up to the waterline): mean of three readings, one smallest ruler tick below 1 3/4 in, about 1 11/16 in (1.6875 in)** if the smallest tick is 1/16 in. Floats upright unaided (the upright engraved float in the photos). The three individual readings are Not recorded | Raw float, no model value | As above |
+| 2026-11-02, time Not recorded (after the first readings) | Weighted run, both floats, salt water | **429 g of mass placed inside each float** (John; what the mass is and where it sits Not recorded). Waterline measured from the top of each float down to the water: **both about 4.5 in**. Single value each, individual readings Not recorded. Regular float alone weighed about 1148 g; mushroom 702 g confirmed correct | See C2 | John, verbal |
 
 ### B3. Deviations
 
@@ -201,17 +202,20 @@ Open questions:
 ### C2. Curve and analysis
 Preliminary (2026-11-02, before the 24 h read; not a verdict). Predicted upright draft from the simulator's own 3D voxel hydrostatics (`assembly.py`: true volume of the STEP, sealed hull, open bore not counted, 1.025 g/mL for 35 ppt, an estimate) against John's mean-of-three drafts (very bottom up to the waterline). Geometry: corrected mushroom [float-mushroom-corrected-2026-11-02.step](../cad/floatation/float-mushroom-corrected-2026-11-02.step) (one solid) and [float-regular-2026-11-02.step](../cad/floatation/float-regular-2026-11-02.step). Sections (unverified, errors being checked): [mushroom](mushroom-float-cross-section-2026-11-02.png), [regular](regular-float-cross-section-2026-11-02.png).
 
-| Float (mass) | Predicted draft | Measured draft | Displaced at the reading |
-|---|---|---|---|
-| Mushroom (702 g) | 2.36 in | 1.06 in | 431 g |
-| Regular (951 g) | 1.06 in | 1.69 in | 1472 g |
+| Run | Mass | Predicted freeboard (top to water) | Measured | Difference |
+|---|---|---|---|---|
+| Mushroom + 429 g | 1131 g | 3.35 in (draft 3.43 in) | about 4.5 in (draft 2.28 in) | +1.15 in |
+| Regular + 429 g | 1577 g (1148 + 429) | 4.61 in (draft 1.89 in) | about 4.5 in (draft 2.00 in) | -0.11 in |
+
+Earlier bottom-up drafts, unweighted: mushroom 1.06 in against 2.36 in predicted (-1.30 in); regular 1.69 in against 1.30 in predicted with the corrected 1148 g (+0.39 in).
 
 Notes:
 
 - **Which is which (John):** the mushroom is the dome-shaped float that tilts when free (held vertical by a side-only force for the reading); the regular float is the upright one with the engraved band.
 - **Correction:** an earlier version of this section used a body-of-revolution envelope that counted the open central bore as displacing water (mushroom 1.57 in, regular 1.08 in). The voxel method does not, and it widens the mushroom gap.
 - **Sections:** both floats have a central bore of about 58 mm radius from the top down to a floor 25.4 mm above the keel (about 107 g of water per 10 mm of depth). The regular float is not axisymmetric: its section shows a hollow wedge on one side and a plain wall on the other.
-- **Gaps:** a free float displaces its own mass, so the mushroom reads as if it were about 431 g and the regular as if about 1472 g. Likely causes, none confirmed: the printed masses differ from the slicer values; water inside the regular float; the reading method. Weigh both floats dry before the weighted run.
+- **Regular float:** with its weighed mass the weighted run agrees with the model within 0.11 in. The earlier 951 g was the slicer value, not the weighed mass, and explains most of the first gap.
+- **Mushroom:** its mass is confirmed (702 g), yet it reads about 1.2 to 1.3 in less draft than predicted both unweighted (-1.30 in) and weighted (-1.15 in). A near-constant offset points to the reference or the geometry (for example the real overall height or the base differing from the STEP: 6.78 in tall, 1.06 in base), not the mass. Check the printed mushroom's overall height and base.
 - **Weighted run planned for 2026-11-03** (John: fill both floats with water to weigh them down). Record the water mass added and read draft at three marks after each step (for example 0, 250, 500, 1000 g). Plot displaced mass (from the STEP volume at each measured draft) against added water: the slope should be 1 and the intercept is the float's effective mass, including any hidden water.
 
 ### C3. Validity and limits
