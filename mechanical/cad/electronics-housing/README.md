@@ -340,3 +340,21 @@ in the PG11 glands (the glands are the lab-stock PG11 type recorded in
 | Use | Pushed in from the outside through the gland's diaphragm hole, then clamped by the gland nut |
 | Limit | A rigid peg is not a cable: a pass shows the cap and gland body seal, not the gland on cable (Stage 2 of RR-23) |
 
+## Cap v2: corrected through-holes and an extended cable outlet (2026-11-02)
+
+New cap CAD after the first printed cap's bolt holes were too narrow
+([RR-22](../../test/rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md),
+[SCO-293](https://linear.app/scout1/issue/SCO-293)). **Not printed yet:** John is waiting for the
+[RR-23](../../test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) dunk on the first cap, to see
+whether other changes are needed.
+
+| Item | First cap (2026-10-30) | Cap v2 ([`electronics-housing-cap-fixed-2026-11-02.step`](electronics-housing-cap-fixed-2026-11-02.step)) |
+|---|---|---|
+| Ten small cylindrical faces (bolt through-holes) | Ø3.40 mm (0.134 in) | Ø4.50 mm (0.177 in), read from the STEP |
+| Three PG11 gland holes | Ø19.0 mm | Ø19.0 mm, unchanged |
+| Cable outlet cavity | Standard gland deck | Extended triangular cavity on top: larger cable bend radius, less wear and crimping (John's description; not measured here) |
+
+The first cap's holes match an M3 clearance hole; 4.5 mm is the usual clearance for an M4 screw. That
+suggests the screws are M4, but the screw size is not recorded: confirm it. One large cylindrical
+face also changed from Ø5.0 in to Ø6.0 in between the two files; check that is intended.
+

@@ -75,7 +75,7 @@ Locked on: Not recorded (retroactive record)
 |---|---|
 | Design revision / file | [Cap STEP, sideways glands, 2026-10-30](../cad/electronics-housing/electronics-housing-cap-sideways-glands-2026-10-30.step); body [STEP](../cad/electronics-housing/electronics-housing-body.step) |
 | Material and print settings | Grey print, material and settings Not recorded (PETG assumed elsewhere in the repo) |
-| Configuration | O-ring in the cap, stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; screw count and torque Not recorded |
+| Configuration | O-ring in the cap (largest size from the O-ring assortment pack bought earlier; AS568 size and material Not recorded), stainless torx screws into heat-set inserts, 3 PG11 glands in the side wall of the gland block; screw count and torque Not recorded |
 | Conditions | Bench, room temperature |
 | Sample size and replication | 1 assembly |
 | Control / reference article | None |

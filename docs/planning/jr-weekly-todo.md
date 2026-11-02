@@ -48,7 +48,7 @@
 | Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
 | Thu Nov 5 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6) |
 | Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
-| Thu Nov 5 | SCO-293 | Redesign the cap with larger bolt clearance holes, merged with the SMA bulkhead and D-cell bay (SCO-162, SCO-250); one cap revision | 3 h | Todo (due Nov 13) |
+| Thu Nov 5 | SCO-293 | Cap v2 CAD exists (Nov 2: Ø4.5 mm holes, extended cable outlet). Decide after the RR-23 result whether more changes are needed; merge the SMA bulkhead and D-cell bay (SCO-162, SCO-250) if not yet in; then print | 2 h | In Progress (due Nov 13) |
 | Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
 | Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
 | Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
