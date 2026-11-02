@@ -70,7 +70,7 @@ Expected size of the difference (estimate, to be checked, not a measurement): Na
 | M1 | Salt mass is right | Present | Salt mass within 1% of 35 g per kg × (solution mass) | Scale resolution; 1% of 35 ppt is about 0.35 ppt, a few thousandths of an inch of draft (estimate) | This plan |
 | M2 | Freeboard in plain salt vs seawater (if collected) | Accurate vs reference | Within 0.1 in of the seawater freeboard | One fifth of the ±0.5 in model tolerance in R-17, above the ruler resolution; proposed, John and Jes to confirm | [Requirements matrix R-17](../../docs/engineering/requirements-test-matrix.md) |
 | M3 | Reading noise | Plausible | Three marks agree within 0.05 in | Sets the noise floor; if it fails, M2 cannot be judged | This plan |
-| M4 | Fresh water is lower than the salt water | Plausible | Freeboard in fresh water is smaller than in salt water | Denser water floats the buoy higher; if not, something is wrong with the setup | Archimedes |
+| M4 | Fresh water is lower than the salt water | Plausible | Dropped 2026-11-02 (John): no fresh-water reading was taken before the salt was added, so this cannot be judged. A fresh baseline may be taken after the 24 h salt read | n/a | n/a |
 | M5 | Matches the model | Accurate vs reference | Not judged for raw floats. Applies to the whole buoy with payload ([SCO-230](https://linear.app/scout1/issue/SCO-230), [SCO-248](https://linear.app/scout1/issue/SCO-248)): within ±0.5 in of the model's 4.27 in. For raw floats, compare with the simulator's no-payload prediction only if it is run | The R-17 requirement | [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 
 Locked on: Not yet locked. Lock this section (date it here) before step 1 of the procedure.
@@ -121,15 +121,15 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 |---|---|---|---|---|
 | 1 | Weigh the buoy dry; check the go/no-go items in A6. | Mass, date | Equal to the last float's mass | ☐ |
 | 2 | Fill the tub with fresh water; measure the water mass. | kg of water | Plausible for the tub size | ☐ |
-| 3 | Float the buoy in fresh water; settle 15 min; read draft and freeboard at three marks. | in at each mark, water temperature | The lowest freeboard (M4) | ☐ |
+| 3 | Float the buoy in fresh water; settle 15 min; read draft and freeboard at three marks. | Not done: no fresh reading taken (John, 2026-11-02) | n/a | ☐ |
 | 4 | Compute salt mass = water mass × 35/965 (for example 40 kg of water needs 1.45 kg of salt; 100 kg needs 3.63 kg). Weigh the salt. | Salt mass, arithmetic | Within 1% of target (M1) | ☐ |
-| 5 | Dissolve the salt in the same tub, stirring until clear; settle 15 min; read draft and freeboard at three marks. | in at each mark | Higher than fresh; near 4.27 in (M5) | ☐ |
+| 5 | Dissolve the salt in the same tub, stirring until clear; settle 15 min; read draft and freeboard at three marks. | in at each mark | Not compared to fresh (M4 dropped); the 4.27 in model does not apply to raw floats | ☐ |
 | 6 | Leave the buoy floating 24 h; check seams and hardware for weeping or leaks; read again. | Leak yes/no, in | No weeping at the seams | ☐ |
 | 7 | Seawater part (tentative): rinse and dry the buoy and tub; fill with seawater as collected; settle 15 min; read at three marks. | in at each mark | Close to the plain-salt run (M2) | ☐ |
 | 8 | Rinse and dry the buoy and hardware; photograph; weigh it again. | Mass | Equal to step 1 | ☐ |
 
 ### A8. Analysis plan
-Mean freeboard per water over the three marks. Spread across marks against 0.05 in (M3). Fresh below salt (M4). Plain-salt freeboard against the model's 4.27 in (M5). If seawater was run, the difference from plain salt against 0.1 in (M2).
+Mean freeboard per water over the three marks. Spread across marks against 0.05 in (M3). Plain-salt freeboard against the model's 4.27 in (M5). If seawater was run, the difference from plain salt against 0.1 in (M2).
 
 ### A9. Curve required
 
@@ -170,7 +170,9 @@ Open questions:
 
 ### B3. Deviations
 
-Not yet run.
+| Time | What differed from A7 | Why | Effect on validity |
+|---|---|---|---|
+| 2026-11-02 | No fresh-water freeboard reading was taken before the salt was added (step 3 not done); M4 dropped from A5 before the lock | John did not measure it | The fresh-to-salt waterline shift cannot be derived from this run. What remains: salt-water freeboard of the raw floats, reading noise (M3) and the 24 h seam-leak check. Option: float them in fresh water after the salt read to get the baseline |
 
 ## Part C — Results and decision (fill after)
 
@@ -181,7 +183,7 @@ Not yet run.
 | M1 salt mass | Not yet run | — | Not measured |
 | M2 plain salt vs seawater | Not yet run | — | Not measured |
 | M3 reading noise | Not yet run | — | Not measured |
-| M4 fresh lowest | Not yet run | — | Not measured |
+| M4 fresh lowest | Dropped: no fresh reading | — | Not measured |
 | M5 vs model | Not yet run | — | Not measured |
 
 **Overall:** Planned.
