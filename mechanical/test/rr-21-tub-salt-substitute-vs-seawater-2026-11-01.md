@@ -5,7 +5,7 @@
 |  |  |
 |---|---|
 | **Test ID / status** | RR-21 · Planned |
-| **Date, duration, who** | Plain-salt part planned Mon 2026-11-02 to Tue 2026-11-03 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
+| **Date, duration, who** | Plain-salt part planned Tue 2026-11-03 to Wed 2026-11-04 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
 | **Requirement tested** | Floats at the modelled waterline (R-17), here: does cheap plain salt give the same waterline as real seawater |
 | **Tracking issue** | [SCO-292](https://linear.app/scout1/issue/SCO-292); runs with [SCO-172](https://linear.app/scout1/issue/SCO-172) |
 | **Record kind** | Prospective |
@@ -87,7 +87,7 @@ Locked on: Not yet locked. Lock this section (date it here) before step 1 of the
 | Control / reference article | Fresh water is the control; real seawater is the reference (tentative) |
 | Reference instrument or standard | Seawater (tentative). No salinity meter: salinity comes from mass |
 | Expected values | Fresh: lowest freeboard. Plain salt: freeboard near the model's 4.27 in ([SCO-172](https://linear.app/scout1/issue/SCO-172)) |
-| Shared water | The tub is also used for the RR-23 housing dunk in fresh water. Add salt only after that is read (Tue); weigh the water before the housing and weights go in; keep the weights clear of the buoy |
+| Shared water | The tub is also used for the RR-23 housing dunk in fresh water. The buoy float starts Tue Nov 3, after the housing is read and removed; weigh the water before the housing and weights go in |
 | Before you start (go/no-go) | Buoy dry outside and weighed (if mass changed since the last float, reweigh and stop to find out why). Tub clean, no residue. Salt label read: no iodine, no anti-caking agent |
 | Data path | Handwritten sheet or a notes file in the repo, photographed ruler readings; enter into B2 the same day |
 | Stop and abort conditions | Buoy leaks (weeping seam); water cloudy after stirring; seawater has visible growth or smell |
