@@ -1,0 +1,10 @@
+# Test 11 SHT40 at room temperature, untouched, 2026-10-29. One reading every 10 s (scout_t11_sht40).
+# DS18B20 read 22.44 C just before (last line of the previous sketch).
+s,temp_c,rh_pct
+1,22.83,33.57
+11,22.83,33.58
+21,22.86,33.58
+31,22.86,33.55
+41,22.84,35.38
+51,22.83,34.03
+61,22.82,33.74

@@ -53,6 +53,8 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-22 | Electronics Housing Cap Assembly and Gland Fit, 2026-11-01 | Partial | [`rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md`](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md) |
 | RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Fail (Stage 1) | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
 | RR-24 | PG11 Gland Fit Coupon, Cap Gland Interface, 2026-11-02 | Partial | [`rr-24-gland-fit-coupon-2026-11-02.md`](rr-24-gland-fit-coupon-2026-11-02.md) |
+| RR-25 | Electronics Bench — Controller, Sensor and Clock Bring-Up, 2026-10-29 | Pass | [`rr-25-controller-and-sensor-bring-up-2026-10-29.md`](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md) |
+| RR-26 | Water-Temperature Probe — Step Response in Water, 2026-11-03 | Partial | [`rr-26-ds18b20-water-step-response-2026-11-03.md`](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md) |
 
 ## Tests run
 
@@ -69,6 +71,8 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-09 | 2026-09-25 | v5 FEA re-check + ring buckling at v5 | v5 geometry change breaks load margins | analysis | SF ≥ ~3.5 | **Pass** — min real SF ~3.5 PETG unfoamed | [record](fea-mooring-load-cases.md#results--v5-re-check-2026-09-25) |
 | RR-10 | 2026-09-25 | Single-wedge drop | Wedge cracks on handling or impact | coupon | No visible damage | **Pass** — 1 sample, height not recorded | [record](wedge-drop-test-2026-09-25.md) |
 | RR-11 | 2026-09-29 | Large-angle stability calculation (STEP geometry) | Buoy stable upside down / capsizes | analysis | Rights itself from any angle | **v5 fails** (stable inverted) → **v6 with 24 in ballast passes** | [calculator](../simulations/buoy-stability/README.md) |
+| RR-25 | 2026-10-29 | Electronics bench bring-up: Feather M0 + Adalogger, DS18B20, SHT40, clock (retroactive record from TR-001) | First electronics dead or wired wrong | works-like (bench) | Each device answers and follows its stimulus (bench plan Tests 1, 3, 3b, 4, 11) | **Pass** — 5 of 5 on USB; one loose DQ jumper found and fixed; accuracy, power and clock backup untested | [record](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md), [SCO-152](https://linear.app/scout1/issue/SCO-152) |
+| RR-26 | 2026-11-03 | DS18B20 probe in water: hot, room and ice-water steps | Probe misbehaves wet; its lag matters at 30 min sampling | works-like (bench) | 1 Hz, 0 dropouts; ice point 0.0 ± 0.5 °C | **Partial** — 0 dropouts, steady to 1 step, τ ≈ 12–13 s in water (vs 150–170 s in air); ice point inconclusive (bath not at 0 °C) | [record](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md), [SCO-259](https://linear.app/scout1/issue/SCO-259) |
 
 ⚠️ **Not yet recorded:** John has run several informal "is the paper towel wet inside the
 capsule" checks and more drop tests than RR-10. Add them as rows if dates and outcomes can be

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>SCOUT WBS, Gantt, RACI</title>
+<style>
+@page { size: letter landscape; margin: 0.35in; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; color: #1a1a1a; margin: 0; font-size: 10px; background: #fff; }
+.page { page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+h1 { font-size: 17px; margin: 0 0 2px; color: #a51f37; }
+.sub { color: #555; margin-bottom: 8px; font-size: 9.5px; line-height: 1.35; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.chip { font-size: 9px; padding: 2px 7px; border-radius: 10px; background: #eef3f5; color: #1f3b4d; border: 1px solid #d3dee3; }
+.chip.me { background: #fde8ec; border-color: #f2b8c3; color: #a51f37; font-weight: 600; }
+/* WBS */
+.root { margin: 0 auto 8px; width: 420px; text-align: center; background: #1f3b4d; color: #fff; padding: 6px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+.tree { display: grid; grid-template-columns: 0.95fr 2.5fr 1fr 1fr 0.95fr 1fr 1.25fr; gap: 5px; align-items: start; }
+.col h3 { margin: 0 0 4px; font-size: 9.6px; background: #1f3b4d; color: #fff; padding: 5px 4px; border-radius: 4px; text-align: center; min-height: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; }
+.col h3 small { font-weight: 400; font-size: 8px; opacity: .8; }
+.col.p2 .items { column-count: 2; column-gap: 5px; }
+.ms-h { break-inside: avoid; font-size: 8.4px; font-weight: 700; color: #0f6e66; background: #dff2ef; border-radius: 3px; padding: 2px 4px; margin: 3px 0 2px; }
+.ms-h span { font-weight: 400; color: #4c7d78; }
+.wp { break-inside: avoid; border: 1px solid #c9d6dc; background: #fff; border-left: 3px solid #a51f37; border-radius: 3px; padding: 2px 4px; margin-bottom: 2px; font-size: 8.2px; line-height: 1.22; }
+.wp b { color: #1f3b4d; }
+.wp .sco { color: #6b7c85; font-size: 7.6px; }
+.wp.oth { border-left-color: #9aa8b0; background: #f6f8f9; color: #555; }
+.wp.done { opacity: .5; }
+/* Gantt */
+table.g { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.g th, .g td { border-bottom: 1px solid #e6e6e6; padding: 1px 4px; font-size: 8.4px; height: 13.2px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g th { background: #1f3b4d; color: #fff; font-weight: 600; text-align: left; height: 16px; }
+.g tr.grp td { background: #e7eef1; font-weight: 700; color: #1f3b4d; }
+.g tr.lm td { color: #0f6e66; font-style: italic; }
+.g tr.oth td { color: #6b6b6b; }
+.g td.sco { color: #6b7c85; font-size: 7.8px; }
+.g td.tl { position: relative; padding: 0; }
+.bar { position: absolute; top: 2.5px; height: 8px; border-radius: 2px; background: #4a90b8; }
+.bar.crit { background: #c62f45; }
+.bar.oth { background: #b9c3c9; }
+.bar.donebar { background: #9db7c6; }
+.bar.phase { background: #1f3b4d; height: 6px; top: 3.5px; border-radius: 1px; }
+.bar.est { background: repeating-linear-gradient(45deg,#4a90b8,#4a90b8 3px,#8fbcd6 3px,#8fbcd6 6px); }
+.bar.crit.est { background: repeating-linear-gradient(45deg,#c62f45,#c62f45 3px,#e48a98 3px,#e48a98 6px); }
+.bar.oth.est { background: repeating-linear-gradient(45deg,#b9c3c9,#b9c3c9 3px,#dde2e5 3px,#dde2e5 6px); }
+.ms { position: absolute; top: 2px; width: 8.5px; height: 8.5px; background: #1a1a1a; transform: rotate(45deg); }
+.ms.crit { background: #c62f45; }
+.ms.lin { background: #f2b705; border: 1px solid #8a6a00; }
+.ms.lin.crit { background: #f2b705; border: 1.5px solid #c62f45; }
+.ms.done { background: #9db7c6; border-color: #7d97a6; }
+.shade { position: absolute; top: 0; bottom: 0; background: rgba(0,0,0,.07); }
+.today { position: absolute; top: 0; bottom: 0; border-left: 1.5px dashed #e08a00; }
+.mlabel { position: absolute; top: 0; font-size: 8.3px; color: #fff; padding-left: 2px; border-left: 1px solid rgba(255,255,255,.35); height: 100%; line-height: 16px; }
+.legend { margin-top: 5px; font-size: 8.6px; color: #444; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.sw { display: inline-block; width: 16px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: 3px; }
+.dm { display: inline-block; width: 7px; height: 7px; transform: rotate(45deg); vertical-align: middle; margin-right: 4px; }
+.note { font-size: 8.6px; color: #333; margin-top: 5px; line-height: 1.4; border-left: 3px solid #c62f45; padding: 3px 7px; background: #fbf3f4; }
+/* RACI */
+table.r { border-collapse: collapse; width: 100%; }
+.r th, .r td { border: 1px solid #999; padding: 5px 7px; font-size: 10.3px; }
+.r th { background: #1f3b4d; color: #fff; }
+.r td.c { text-align: center; font-weight: 700; width: 96px; font-size: 11.5px; }
+.r td.ph { color: #6b7c85; font-size: 9px; width: 120px; }
+.R { color: #d0402b; } .A { color: #1c86c8; } .C { color: #e08a00; } .I { color: #2e9a4a; }
+.key { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; font-size: 9.5px; }
+.key div { border: 1px solid #ddd; padding: 5px 7px; border-radius: 3px; }
+</style></head>
+<body>
+
+<!-- PAGE 1: WBS -->
+<div class="page">
+<h1>S.C.O.U.T. — Work Breakdown Structure</h1>
+<div class="sub">Isabella Rodriguez (Electrical Lead) · ECEN 194 · Updated 2026-11-02. Organized by the team's Linear phases and milestones; SCO-### is the Linear issue. Red-edged boxes are my work; grey boxes are teammates' work that my tasks depend on or feed.</div>
+<div class="chips">
+  <span class="chip me">Isabella Rodriguez — Electrical</span>
+  <span class="chip">David Chousal Cantu — Firmware / Software</span>
+  <span class="chip">John Ryan Myrdal — Mechanical</span>
+  <span class="chip">Dr. Shoba Krishnan — Advisor</span>
+</div>
+<div class="root">S.C.O.U.T. coral reef monitoring buoy · Sep 2026 → Jun 2027</div>
+<div class="tree" id="wbs"></div>
+</div>
+
+<!-- PAGE 2: GANTT -->
+<div class="page">
+<h1>S.C.O.U.T. — Gantt Chart, Fall 2026 → Spring 2027</h1>
+<div class="sub">Phases and milestone dates match Linear. Several of my Linear due dates from October are past, so this chart shows the realistic dates as of Nov 2 (parts arrival, shipping, Thanksgiving, winter break). "After" = WBS tasks this one waits on.</div>
+<table class="g" id="gantt">
+  <colgroup><col style="width:34px"><col style="width:66px"><col style="width:232px"><col style="width:44px"><col style="width:58px"><col></colgroup>
+  <thead><tr><th>WBS</th><th>Linear</th><th>Task</th><th>Owner</th><th>After</th><th class="tl" id="hdr" style="position:relative"></th></tr></thead>
+  <tbody></tbody>
+</table>
+<div class="legend">
+  <span><span class="sw" style="background:#1f3b4d;height:5px"></span>Linear phase</span>
+  <span><span class="dm" style="background:#f2b705;border:1px solid #8a6a00"></span>Linear milestone</span>
+  <span><span class="sw" style="background:#4a90b8"></span>My task</span>
+  <span><span class="sw" style="background:#c62f45"></span>My critical path</span>
+  <span><span class="sw" style="background:#b9c3c9"></span>Teammate's task</span>
+  <span><span class="sw" style="background:repeating-linear-gradient(45deg,#4a90b8,#4a90b8 3px,#8fbcd6 3px,#8fbcd6 6px)"></span>Estimated</span>
+  <span><span class="sw" style="background:#9db7c6"></span>Done</span>
+  <span><span class="sw" style="background:rgba(0,0,0,.12)"></span>Breaks</span>
+  <span><span class="sw" style="border-left:2px dashed #e08a00;width:4px"></span>Today</span>
+</div>
+<div class="note"><b>Critical path (my work):</b> 2.2.1 follow-up orders (overdue in Linear, placing this week) → parts arrive ~Nov 11 → 2.1.7–2.1.8 current measurements and sensor switching → 2.1.11 pass bench Stages 1–3 (Linear said Nov 6; realistic Nov 20) → John's integration build after Thanksgiving → <b>2.6.3 MVP Dec 4</b> (hard limit Dec 11) → 3.2.1 sealed endurance run, done Dec 18 → 4.3.1 GPS and tamper detection → live deployment Mar 26 → final report May 28 → final thesis. The 7-day battery run (2.5.1) runs in parallel and must finish by Nov 25. The live deployment site is not decided yet.</div>
+</div>
+
+<!-- PAGE 3: RACI -->
+<div class="page">
+<h1>S.C.O.U.T. — Accountability Matrix (RACI)</h1>
+<div class="sub">Team roles for the whole project, grouped by the Linear phases. One A (Accountable) per row.</div>
+<table class="r">
+  <thead><tr><th style="text-align:left">Task</th><th style="text-align:left">Linear phase</th><th>Isabella<br>Electrical</th><th>David<br>Firmware/SW</th><th>John<br>Mechanical</th><th>Dr. Krishnan<br>Advisor</th></tr></thead>
+  <tbody>
+    <tr><td>Project planning, Linear upkeep, weekly reports</td><td class="ph">All</td><td class="c R">R</td><td class="c R">R</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c I">I</td></tr>
+    <tr><td>Budget, parts orders and purchase log</td><td class="ph">All</td><td class="c R">R</td><td class="c R">R</td><td class="c R">R</td><td class="c A">A</td></tr>
+    <tr><td>Safety (hazard form, D-cell protection)</td><td class="ph">1–2</td><td class="c R">R</td><td class="c I">I</td><td class="c R">R</td><td class="c A">A</td></tr>
+    <tr><td>Electrical design: power budget, schematic, block diagram</td><td class="ph">1–2</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td><td class="c C">C</td><td class="c C">C</td></tr>
+    <tr><td>Electronics bench bring-up and power testing (Stages 1–3)</td><td class="ph">2</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td><td class="c I">I</td><td class="c C">C</td></tr>
+    <tr><td>Buoy-to-shore radio link</td><td class="ph">2, 4</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c R">R</td><td class="c I">I</td><td class="c I">I</td></tr>
+    <tr><td>Firmware, shore station and dashboard</td><td class="ph">2–4</td><td class="c C">C</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c I">I</td><td class="c I">I</td></tr>
+    <tr><td>Buoy structure, housing and waterproofing</td><td class="ph">2–3</td><td class="c C">C</td><td class="c I">I</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c I">I</td></tr>
+    <tr><td>Battery and sealed electronics endurance</td><td class="ph">2–3</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td><td class="c C">C</td><td class="c I">I</td></tr>
+    <tr><td>System integration and MVP test</td><td class="ph">2</td><td class="c R">R</td><td class="c R">R</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td></tr>
+    <tr><td>Field prototype tests, deployment prep and live deployment</td><td class="ph">4–6</td><td class="c R">R</td><td class="c R">R</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td></tr>
+    <tr><td>Thesis (each writes their own subsystem chapters)</td><td class="ph">2–6</td><td class="c R">R</td><td class="c R">R</td><td class="c R">R</td><td class="c A">A</td></tr>
+    <tr><td>Design reviews and Senior Design Conference</td><td class="ph">2–6</td><td class="c R">R</td><td class="c R">R</td><td class="c"><span class="A">A</span><span class="R">R</span></td><td class="c C">C</td></tr>
+  </tbody>
+</table>
+<div class="key">
+  <div><b class="R">R — Responsible</b><br>Does the work. At least 1 per task.</div>
+  <div><b class="A">A — Accountable</b><br>Final review before it's complete. Only 1 per task.</div>
+  <div><b class="C">C — Consulted</b><br>Gives input from their area.</div>
+  <div><b class="I">I — Informed</b><br>Kept up to date on progress.</div>
+</div>
+</div>
+
+<script>
+const S = new Date('2026-09-07'), E = new Date('2027-06-11');
+const span = E - S;
+const pct = d => ((new Date(d) - S) / span * 100);
+// [wbs, linear, task, owner, after, start, end, flags]
+// g = Linear phase, h = Linear milestone, d = done, c = critical, e = estimate, o = teammate, m = milestone
+const rows = [
+ ['1','','Phase 1 — Subsystem Bring-Up','','','2026-09-07','2026-10-23','g'],
+ ['1.1','SCO-70','Final component list and housing dimensions','Isabella','','2026-09-07','2026-10-08','d'],
+ ['1.2','','Power budget, block diagram, Rev A schematic','Isabella','','2026-09-14','2026-10-28','d'],
+ ['1.3','SCO-116','Electronics design review with Dr. Krishnan','Isabella','1.1','2026-10-06','2026-10-08','d'],
+ ['1.4','SCO-115','Order parts for one Scout and the shore station','Isabella','1.1','2026-10-05','2026-10-09','d'],
+ ['1.5','SCO-8','Hydrophone part decision','Isabella','','2026-10-12','2026-10-16','d'],
+ ['1.6','','Phase 1 closed; open bench work moved to Phase 2','All','','2026-10-30','2026-10-30','hd'],
+
+ ['2','','Phase 2 — System Integration','','','2026-10-22','2026-12-06','g'],
+ ['2.1','','Electronics bench bring-up, Stages 1–3','','','2026-11-20','2026-11-20','hc'],
+ ['2.1.0','SCO-189','Turbidity sensor kit arrived (Mouser)','Isabella','','2026-10-30','2026-10-30','md'],
+ ['2.1.1','SCO-152','Breadboard bring-up (Tests 1, 3, 11 passed Oct 29)','Isabella','1.4','2026-10-29','2026-11-06',''],
+ ['2.1.2','SCO-258','Temperature test protocol to advisors (in review)','Isabella','','2026-10-28','2026-10-30',''],
+ ['2.1.3','SCO-259','Temperature test and lab demo','Isabella','2.1.2','2026-11-02','2026-11-04',''],
+ ['2.1.4','SCO-153','Turbidity: current, settle time, inrush, direction','Isabella','2.1.0','2026-11-02','2026-11-09',''],
+ ['2.1.5','SCO-271','Turbidity accuracy pass mark and standard','Isabella','2.1.4','2026-11-06','2026-11-11',''],
+ ['2.1.6','SCO-60','Internal temp/humidity sensor (SHT40)','Isabella','2.1.1','2026-11-02','2026-11-06',''],
+ ['2.1.7','SCO-23/154/227','Measure sleep, transmit and receive current','Isabella','2.2.2','2026-11-11','2026-11-16','c'],
+ ['2.1.8','SCO-87','Per-sensor power switching (P-FETs)','Isabella','2.1.4','2026-11-09','2026-11-16','c'],
+ ['2.1.9','SCO-150','Protect the D cell from charging or shorting','Isabella','2.2.2','2026-11-11','2026-11-18',''],
+ ['2.1.10','SCO-83','Battery-voltage telemetry','Isabella','2.1.9','2026-11-16','2026-11-20',''],
+ ['2.1.11','SCO-157/156','Pass Stages 1–3; document the bench wiring','Isabella','2.1.7, 2.1.8','2026-11-16','2026-11-20','c'],
+
+ ['2.2','','Power & housing integration','','','2026-11-13','2026-11-13','h'],
+ ['2.2.1','SCO-158','Follow-up orders: D cells, diodes, hydrophone, antenna, meter','Isabella','','2026-11-02','2026-11-04','c'],
+ ['2.2.2','','Follow-up parts arrive (~1 week shipping)','Isabella','2.2.1','2026-11-11','2026-11-11','cme'],
+ ['2.2.3','SCO-223/267','Power budget: 140-byte packet, D-cell model','Isabella','','2026-11-02','2026-11-06',''],
+ ['2.2.4','SCO-225/226/234','OTA listen window, acoustic summary decisions','Isabella','2.2.3','2026-11-09','2026-11-13',''],
+ ['2.2.5','SCO-216','Hydrophone amplifier (reuse earlier team design)','Isabella','','2026-11-02','2026-11-13',''],
+ ['2.2.6','SCO-204','Humidity sensor calibration','Isabella','2.1.6','2026-11-09','2026-11-13',''],
+ ['2.2.7','SCO-272','Hydrophone noise-floor and frequency pass marks','Isabella','2.2.5','2026-11-16','2026-11-20','e'],
+ ['2.2.8','SCO-162/177','Lid D-cell bay and antenna; housing pressure test','John','','2026-11-02','2026-11-13','o'],
+
+ ['2.3','','Buoy-to-shore link on the bench','','','2026-11-10','2026-11-10','h'],
+ ['2.3.1','SCO-155','RFM95 link test: buoy Feather → shore station','Isabella','2.1.1','2026-11-02','2026-11-06','c'],
+ ['2.3.2','SCO-98','FCC-compliant modem config, bench check','David','2.3.1','2026-11-06','2026-11-10','o'],
+ ['2.4','','Duty-cycle firmware on the bench','','','2026-11-06','2026-11-06','h'],
+ ['2.4.1','SCO-160','24 h unattended duty-cycle run','David','','2026-11-02','2026-11-06','o'],
+
+ ['2.5','','Float soak & battery endurance','','','2026-12-02','2026-12-02','h'],
+ ['2.5.1','SCO-159','7 days on two D cells → 12-month extrapolation','Isabella','2.2.2, 2.1.11','2026-11-18','2026-11-25','c'],
+ ['2.5.2','SCO-180','4-week salt-water float soak (unit 1)','John','','2026-11-04','2026-12-11','o'],
+
+ ['2.6','','Full system integration (fall goal)','','','2026-12-04','2026-12-04','hc'],
+ ['2.6.1','SCO-278','End-to-end rehearsal, 48 h: buoy → shore → dashboard','David','2.3.2, 2.4.1','2026-11-16','2026-11-20','o'],
+ ['2.6.2','SCO-279','Integration build: electronics into the buoy','John','2.1.11, 2.6.1','2026-11-30','2026-12-02','oc'],
+ ['2.6.3','SCO-182','Integrated MVP test','All','2.6.2','2026-12-03','2026-12-04','c'],
+ ['2.6.4','','MVP hard limit before winter break','All','','2026-12-11','2026-12-11','m'],
+
+ ['2.7','','Thesis writing & design review','','','2026-12-04','2026-12-04','h'],
+ ['2.7.1','SCO-232','Get Dr. Krishnan’s bench task list before she leaves','Isabella','','2026-11-02','2026-11-06',''],
+ ['2.7.2','SCO-260','Present system architecture and demos to advisors','John','2.1.3','2026-11-02','2026-11-06','o'],
+ ['2.7.3','','Critical design review (CDR)','All','7.1','2026-11-30','2026-12-04','e'],
+
+ ['3','','Phase 3 — Enclosure & Waterproofing','','','2026-11-30','2027-01-15','g'],
+ ['3.1','','Corrosion & seal decisions (John)','','','2026-12-11','2026-12-11','h'],
+ ['3.2','','Sealed electronics endurance','','','2026-12-18','2026-12-18','hc'],
+ ['3.2.1','SCO-161','Sealed electronics run, 7–14 days in the housing','Isabella','2.6.3, 2.5.1','2026-12-04','2026-12-18','c'],
+ ['3.3','','Biofouling, coatings & materials (John)','','','2027-01-15','2027-01-15','h'],
+
+ ['4','','Phase 4 — Field Prototype Deployment','','','2027-01-18','2027-02-26','g'],
+ ['4.1','SCO-184','Real-ocean flotation test (John)','','','2027-01-29','2027-01-29','h'],
+ ['4.2','SCO-82','Integrated waterproof, proof-load and tilt (John)','','','2027-02-12','2027-02-12','h'],
+ ['4.3','','GPS & tamper detection','','','2027-02-19','2027-02-19','hc'],
+ ['4.3.1','SCO-62','Add GPS and tamper detection','Isabella','3.2.1','2027-01-18','2027-02-19','c'],
+ ['4.4','','Range & link reliability','','','2027-02-26','2027-02-26','h'],
+ ['4.4.1','SCO-14/21','Over-saltwater LoRa range, packet delivery','David','2.3.1','2027-01-25','2027-02-26','o'],
+
+ ['5','','Phase 5 — Deployment Prep','','','2027-03-01','2027-03-19','g'],
+ ['5.0','SCO-163','Get the lithium D cells to the site legally','Isabella','','2027-02-01','2027-02-26','e'],
+ ['5.1','','Site & window locked','','','2027-03-05','2027-03-05','h'],
+ ['5.2','','Permits & mooring approved','','','2027-03-12','2027-03-12','h'],
+ ['5.3','','Hardware shipped to the deployment site','','','2027-03-19','2027-03-19','hc'],
+
+ ['6','','Phase 6 — Live Deployment (site not decided)','','','2027-03-22','2027-05-28','g'],
+ ['6.1','','Deployed, link live','','','2027-03-26','2027-03-26','hc'],
+ ['6.1.1','','Electrical health checks: battery, humidity, packets','Isabella','6.1','2027-03-26','2027-05-21','e'],
+ ['6.2','','Month 1 field check','','','2027-04-23','2027-04-23','h'],
+ ['6.3','','Month 2 field check','','','2027-05-21','2027-05-21','h'],
+ ['6.4','','Final report & data archive','','','2027-05-28','2027-05-28','hc'],
+
+ ['7','','Thesis & Presentations','','','2026-11-02','2027-06-04','g'],
+ ['7.1','SCO-206','Thesis problem statement, intro, background','Isabella','','2026-11-02','2026-11-25',''],
+ ['7.2','','Advisor meeting: problem, diagram, requirements','All','','2026-11-02','2026-11-13',''],
+ ['7.3','','Ch: Requirements and specifications','Isabella','7.1','2027-01-11','2027-02-05','e'],
+ ['7.4','','Ch: Detailed design — electrical and power','Isabella','7.3','2027-02-08','2027-03-12','e'],
+ ['7.5','','Ch: Electrical testing, results; test-log appendix','Isabella','3.2.1','2027-03-01','2027-04-30','e'],
+ ['7.6','SCO-207/228','Teammates’ chapters: John (mech, PM), David (FW, LaTeX)','John, David','','2027-01-11','2027-04-30','oe'],
+ ['7.7','','Senior Design Conference registration closes','All','','2027-02-01','2027-02-01','m'],
+ ['7.8','','Discussion, conclusions, abstract, editing','All','7.5','2027-05-03','2027-05-28','e'],
+ ['7.9','','Conference slides and poster (my part: electrical)','All','7.5','2027-04-19','2027-05-07','e'],
+ ['7.10','','Senior Design Conference','All','7.9','2027-05-13','2027-05-13','me'],
+ ['7.11','','Final thesis submitted','All','7.8, 6.4','2027-06-04','2027-06-04','cme'],
+];
+
+/* Gantt */
+const tb = document.querySelector('#gantt tbody');
+const breaks = [['2026-11-25','2026-11-29'],['2026-12-12','2027-01-04'],['2027-03-20','2027-03-28']];
+const bg = () => breaks.map(([a,b]) => `<div class="shade" style="left:${pct(a)}%;width:${pct(b)-pct(a)}%"></div>`).join('') + `<div class="today" style="left:${pct('2026-11-02')}%"></div>`;
+const endPlus = e => { const d = new Date(e); d.setDate(d.getDate()+1); return d; };
+for (const [w,l,t,o,a,s,e,f] of rows) {
+  const tr = document.createElement('tr');
+  let mark = '';
+  if (f.includes('g')) {
+    tr.className = 'grp';
+    mark = `<div class="bar phase" style="left:${pct(s)}%;width:${pct(endPlus(e))-pct(s)}%"></div>`;
+  } else if (f.includes('h')) {
+    tr.className = 'lm';
+    mark = `<div class="ms lin ${f.includes('c')?'crit':''} ${f.includes('d')?'done':''}" style="left:calc(${pct(s)}% - 4px)"></div>`;
+  } else if (f.includes('m')) {
+    mark = `<div class="ms ${f.includes('c')?'crit':''} ${f.includes('d')?'done':''}" style="left:calc(${pct(s)}% - 4px)"></div>`;
+  } else {
+    const cls = ['bar', f.includes('d')?'donebar':'', f.includes('o')?'oth':'', f.includes('c')&&!f.includes('o')?'crit':'', f.includes('c')&&f.includes('o')?'crit':'', f.includes('e')?'est':''].join(' ');
+    mark = `<div class="${cls}" style="left:${pct(s)}%;width:${Math.max(pct(endPlus(e))-pct(s),0.4)}%"></div>`;
+  }
+  if (f.includes('o')) tr.classList.add('oth');
+  const name = f.includes('h') ? `◆ ${t}` : t;
+  tr.innerHTML = `<td>${w}</td><td class="sco">${l}</td><td title="${t}">${name}</td><td>${o}</td><td>${a}</td><td class="tl">${bg()}${mark}</td>`;
+  tb.appendChild(tr);
+}
+const hdr = document.getElementById('hdr');
+const months = [['Sep','2026-09-07'],['Oct','2026-10-01'],['Nov','2026-11-01'],['Dec','2026-12-01'],['Jan','2027-01-01'],['Feb','2027-02-01'],['Mar','2027-03-01'],['Apr','2027-04-01'],['May','2027-05-01'],['Jun','2027-06-01']];
+hdr.innerHTML = months.map(([m,d]) => `<span class="mlabel" style="left:${pct(d)}%">${m}</span>`).join('');
+
+/* WBS */
+const tree = document.getElementById('wbs'); let items;
+const fmt = d => new Date(d + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+for (const [w,l,t,o,a,s,e,f] of rows) {
+  if (f.includes('g')) {
+    const col = document.createElement('div'); col.className = 'col' + (w === '2' ? ' p2' : '');
+    const [ph, nm] = t.includes('—') ? t.split(' — ') : ['', t];
+    col.innerHTML = `<h3>${w}. ${nm}<small>${ph ? ph + ' · ' : ''}${fmt(s)} – ${fmt(e)}</small></h3><div class="items"></div>`;
+    tree.appendChild(col); items = col.querySelector('.items'); continue;
+  }
+  const d = document.createElement('div');
+  if (f.includes('h')) { d.className = 'ms-h'; d.innerHTML = `◆ ${t} <span>${fmt(s)}</span>`; items.appendChild(d); continue; }
+  d.className = 'wp' + (f.includes('o') ? ' oth' : '') + (f.includes('d') ? ' done' : '');
+  d.innerHTML = `<b>${w}</b> ${t}${f.includes('d') ? ' ✓' : ''}${l ? ` <span class="sco">${l}</span>` : ''}${o && o !== 'Isabella' ? ` <i style="color:#777">(${o})</i>` : ''}`;
+  items.appendChild(d);
+}
+</script>
+</body></html>
