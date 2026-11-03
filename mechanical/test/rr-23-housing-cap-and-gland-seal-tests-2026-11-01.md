@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-23 · Running (Stage 1 started 2026-11-02 10:47 PST) |
+| **Test ID / status** | RR-23 · Fail at Stage 1 (started 2026-11-02 10:47 PST; read 2026-11-03) |
 | **Date, duration, who** | Part A locked 2026-11-02; run dates Not set (this week, see the weekly plan); 24 h per stage; John Ryan Myrdal |
 | **Requirement tested** | Cap seals and glands stay dry (R-14); housing stays dry in salt water (R-12) |
 | **Tracking issue** | [SCO-294](https://linear.app/scout1/issue/SCO-294); related [SCO-270](https://linear.app/scout1/issue/SCO-270), [SCO-293](https://linear.app/scout1/issue/SCO-293) |
@@ -16,13 +16,13 @@
 
 | Parameter (unit) | Instrument | Pass if | Measured | Verdict |
 |---|---|---|---|---|
-| Stage 1: water inside, cap and glands with 3 printed pegs (towel and visual) | Dry paper towel, photo | Dry after 24 h just below the surface (weighted), fresh water | Not yet run | Not measured |
+| Stage 1: water inside, cap and glands with 3 printed pegs (towel and visual) | Dry paper towel, photo | Dry after 24 h just below the surface (weighted), fresh water | Flooded. Glands dry (John); cap face seal leaked | Fail |
 | Stage 2: water inside, glands with cable (towel and visual) | Dry paper towel, photo | Dry after 24 h just below the surface (weighted), fresh water | Not yet run | Not measured |
-| Mass change of the closed housing (g) | Scale | Within scale resolution after each stage | Not yet run | Not measured |
+| Mass change of the closed housing (g) | Scale | Within scale resolution after each stage | 518 g to 1113 g (+595 g) | Fail |
 
 **How and steps.** An initial screening test, deliberately simple: assemble the housing as built (O-ring in the cap, a dry paper towel inside, the three printed pegs clamped in the PG11 glands, which "work great" per John, 2026-11-02; [photo](housing-glands-with-pegs-2026-11-02-01.jpg)), put the whole thing in a tub just below the surface, held down with weights, for 24 h in fresh water, open it and look at the towel. Dry: go on to real cable (Stage 2) and plain salt water. Wet: do not guess; run the isolation tests in A6b, one leak path at a time.
 
-**Result.** Not yet run.
+**Result.** Stage 1 failed (John, 2026-11-03): the housing flooded, 1113 g full of water against 518 g dry (+595 g). The three PG11 glands did not leak; the leak path was the cap face seal. The cap O-ring had no grease. Stages 2 and 3 not run.
 
 **Does not establish.**
 
@@ -182,6 +182,7 @@ Open questions:
 | Time | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
 | 10:47 PST 2026-11-02 | Stage 1 start | Housing (518 g dry, pegs in, towel inside) placed cap end down in a bowl of fresh water, held down with weights; the seal is fully submerged and the body stands above the water | Seal fully under | Water mass not weighed |
+| 2026-11-03, time Not recorded (about 24 h) | Stage 1 end | **Flooded: 1113 g with water inside** (518 g before). Cable glands (pegs) confirmed not leaking; the leak was the cap face seal (John). **O-ring had no grease.** **O-ring as measured by John: 5-7/8 in OD, 5-5/8 in ID** (5.875 / 5.625 in; 149.2 / 142.9 mm), which gives a cross-section of 1/8 in (3.18 mm) by subtraction. How it was measured, and where the water entered the face seal, Not recorded | Towel dry; 518 g | Fail (M1, M4). The logged ring is AS568-247 (ID 4.609 in, CS 0.139 in), a different size: see C3 and the facts.md note |
 
 ### B3. Deviations
 
@@ -195,28 +196,29 @@ Open questions:
 
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
-| M1 cap seal | Not yet run | — | Not measured |
+| M1 cap seal | Flooded; face seal leaked, O-ring ungreased | Not met | Fail |
 | M2 glands | Not yet run | — | Not measured |
 | M3 salt water | Not yet run | — | Not measured |
-| M4 mass | Not yet run | — | Not measured |
+| M4 mass | +595 g (518 to 1113 g) | Not met | Fail |
 
-**Overall:** Planned.
+**Overall:** Fail at Stage 1. Stage 2 (real cable) and the salt-water stage were not run; the glands are reported dry but that is not a Stage 2 verdict.
 
 ### C2. Curve and analysis
 Not yet run.
 
 ### C3. Validity and limits
 
-- Does establish: nothing yet.
+- Does establish: with an ungreased O-ring of the size in B2 (which differs from the logged AS568-247), the forced-thread cap floods in 24 h just below the surface. The three glands with printed pegs stayed dry (John's observation; how it was checked is Not recorded).
 - Will not establish: depth behavior, long-term sealing, or a redesigned cap.
+- **Open contradiction (not reconciled):** this record, [facts.md](../../docs/hub/facts.md) and the housing README say the O-ring is AS568-247 (ID 4.609 in). John measured 5-5/8 in ID by 5-7/8 in OD on the ring that flooded. The groove was drawn for the 4.609 in ID. Whether the wrong ring was fitted, the log was wrong, or the measurement was off is Not known; a ring about 1 in larger in ID than the groove may itself explain the leak, but that is a hypothesis, not a result. Owner John: measure the ring and the groove, then correct whichever record is wrong.
 
 ### C4. Decision
 
 | Question | Answer |
 |---|---|
-| Good enough to stop redesigning? | Not yet known |
-| Design change driven by this test | Feeds the next cap ([SCO-293](https://linear.app/scout1/issue/SCO-293)) |
-| Re-run needed? | Not yet run |
+| Good enough to stop redesigning? | No: the housing is being redesigned (John, 2026-11-03) |
+| Design change driven by this test | Whole-housing redesign ([SCO-293](https://linear.app/scout1/issue/SCO-293)): the mounting holes that attach to the buoy no longer sit inside the cap's outer diameter, so the cap has a uniform circular outer diameter; the O-ring gets grease next time |
+| Re-run needed? | Yes, on the redesigned housing, with a greased and measured ring; Stage 2 (real cable) and salt water still to run |
 | Next test | Pressure test ([SCO-177](https://linear.app/scout1/issue/SCO-177)) |
 | Issues filed | [SCO-294](https://linear.app/scout1/issue/SCO-294) |
 
