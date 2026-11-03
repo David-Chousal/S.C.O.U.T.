@@ -40,6 +40,7 @@ deployment coating or the antifouling choice.
 | D | Clear coat spray | [Stops Rust Protective Enamel gloss crystal clear, 12 oz](https://www.homedepot.com/p/questions/Rust-Oleum-Stops-Rust-12-oz-Protective-Enamel-Gloss-Crystal-Clear-Spray-Paint-7701830/100176222/2) | Home Depot support says it will not adhere to plastic |
 | E | Plastic primer spray | [Rust-Oleum Specialty Plastic Primer, 12 oz](https://homedepot.com/p/Rust-Oleum-Specialty-12-oz-Plastic-Primer-Spray-6-Pack-209460/202058455) | Primer only |
 | F | Primer then clear coat | E, then D | Scored as a two-step system |
+| H | Do Nothing | Uncoated sanded PETG | Baseline required by the assignment rubric; added 2026-11-02 |
 | G | Industrial bottom paint | [Sea Hawk Smart Solution](https://defender.com/en_us/sea-hawk-smart-solution-antifouling-paint) | Copper-free, biocide-containing; specialty order. Stands in for "another industrial buoy solution"; swap if another product is meant |
 
 Not used: Interlux [Trilux 33 aerosol](https://defender.com/en_us/interlux-trilux-33-aerosol-antifouling-paint) and
@@ -114,27 +115,42 @@ The full table, with the scorer's reasons condensed:
 | F | 2 (lower of E, D) | 2 (worse of E, D) | 2 (no build stated) | 4 (E touches the plastic) | 2 (lower of E, D) | 3 (two products) | 2 (no evidence) | 2 (E price missing) |
 | G | 4 (below the waterline) | 1 (contains a biocide) | 4 (3.78 mils per coat) | 3 (general substrates; plastics not mentioned) | 2 (no evidence) | 3 (3 coats, recoat 6 h) | 2 (about 11.3 mils over 3 coats) | 2 (no price) |
 
+**H (Do Nothing) was scored afterward by John's session, not blind**, from repo evidence: C1 1 (a low-quality PETG print leaked in RR-03; printed parts are porous along layer lines, decision log 2026-08-17), C2 2 (no evidence: filament safety data sheet not collected), C3 1 (no film), C4 5 (no coating to fail), C5 2 (no evidence), C6 5, C7 5, C8 5.
+
 The scorer's judgment calls to recheck: A on C4, C6 and C7; B on C5; C on C1 (the facts say "above the waterline," not a ban
 below it); B on C8 (case price only); D on C8 (one can assumed).
 
 ## Results
 
-Totals out of 5 under four weightings (reproduce with `compute_totals.py`):
+Totals out of 5 under four weightings, with H (Do Nothing) included (reproduce with `compute_totals.py`):
 
 | Weighting | Ranking |
 |---|---|
-| Main: reef safety ranked 2nd | G 2.92, A 2.58, E 2.32, F 2.27, C 2.25, D 2.13, B 1.76 |
-| Reef safety ranked 1st | A 2.82, G 2.56, E 2.32, F 2.27, C 2.25, D 2.13, B 1.88 |
-| Rank-sum weights, reef safety 2nd | A 2.89, G 2.81, E 2.44, C 2.36, F 2.36, D 2.22, B 1.92 |
-| Equal weights | A 3.00, then C, D, G tied 2.62, E 2.50, F 2.38, B 2.12 |
+| Main: reef safety ranked 2nd | G 2.92, A 2.58, E 2.32, F 2.27, C 2.25, H 2.14, D 2.13, B 1.76 |
+| Reef safety ranked 1st | A 2.82, G 2.56, E 2.32, F 2.27, H 2.26, C 2.25, D 2.13, B 1.88 |
+| Rank-sum weights, reef safety 2nd | A 2.89, G 2.81, H 2.53, E 2.44, C 2.36, F 2.36, D 2.22, B 1.92 |
+| Equal weights | H 3.25, A 3.00, then C, D, G tied 2.62, E 2.50, F 2.38, B 2.12 |
+
+Under equal weights Do Nothing ranks first because cost and added mass count as much as waterproofing; that contradicts the coating's purpose, so equal weights are not a fair test here.
 
 **Robustness to missing evidence:** letting every "no evidence" cell be anything from 1 to 4 (20,000 draws, main weights),
-the first place goes to G 37%, E 27%, F 23%, D 12%, C 2%, A 0%, B 0%. A never wins because it has few missing cells and a
+the first place goes to G 36%, E 27%, F 23%, D 12%, C 2%, A 0%, B 0%, H 0%. A never wins because it has few missing cells and a
 documented low immersion score.
 
 **Reading:** the matrix does not confirm the provisional LeakSeal pick. G leads when reef safety is ranked second; A leads
 under the other three weightings. Both leaders carry a documented problem: A is "not intended for water immersion," G contains
 a biocide by design (and is a specialty order that fails the same-day availability screen). The 2-week coupon soak decides.
+
+## Decision (John, 2026-11-02, individual assignment)
+
+**Selected: A, LeakSeal Black spray**, one thick coat over sanded PETG, the option already chosen provisionally. It ranks second
+under the main weighting (2.58, behind G 2.92) and first when reef safety is ranked first and under rank-sum weights. G is excluded as
+a feasibility judgment, not a score: it contains a biocide (conflicts with the reef-safe principle, ADR-0004) and is a specialty order
+that cannot be on hand for the Nov 9 to 13 coating window. Do Nothing fails the purpose (leaks, porous layer lines). The decision
+stays provisional until the 2-week sanded-coupon soak in SCO-246; fallback is E then D (plastic primer plus clear coat). The
+assignment deliverable (Word file with the one-page matrix and the rationale paragraph) is built from this decision.
+**Limit to state in the write-up:** if the filament safety data sheet shows no aquatic hazard, Do Nothing's C2 rises to 4 and its
+total reaches 2.58, level with A; it still fails C1 and C3.
 
 ## Bias check (read this before reusing earlier versions)
 
