@@ -68,6 +68,11 @@ which option it favors; the earlier ranking is kept as a sensitivity row in [Res
 | 8 (C6) | Application (thickness, cure time, ease) | 2.6 | Schedule only; coating goes on before Nov 13 |
 | 9 (C7) | Added mass | 1.2 | Measurable and recordable; the floats are light |
 
+**Feasibility gate (John, 2026-11-03):** before scoring, an option must be on hand for the Nov 9 to 13 coating window; an option that
+cannot be sourced by then is excluded whatever its score and shown for comparison only. G (specialty order, C9 = 1) fails the gate; its lead time
+with the supplier is not yet confirmed. Among options that pass, A ranks first under the main weights, reef safety first, rank-sum weights and the
+earlier ranking; equal weights favor Do Nothing, which contradicts the coating's purpose.
+
 Considered and not scored: safety and ventilation (screen: all are solvent
 products, the hazard form requires ventilated work), reparability (low priority).
 
