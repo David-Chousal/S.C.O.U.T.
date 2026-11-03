@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCOUT Water Temperature Test</title>
+<style>
+@page { size: Letter; margin: 16mm 15mm; }
+body { font-family: Calibri, Arial, sans-serif; font-size: 10.5pt; line-height: 1.35; color: #212529;
+  max-width: 820px; margin: 0 auto; padding: 16px; background: #ffffff; }
+h1 { font-size: 20pt; margin: 0 0 2px; }
+.sub { color: #495057; margin: 0 0 12px; }
+h2 { font-size: 13pt; margin: 18px 0 6px; padding-bottom: 2px; border-bottom: 1.5px solid #212529; }
+h3 { font-size: 11pt; margin: 14px 0 4px; }
+table { width: 100%; border-collapse: collapse; margin: 6px 0 8px; }
+td, th { border: 1px solid #adb5bd; padding: 4px 6px; vertical-align: top; text-align: left; }
+th { background: #e9ecef; }
+td.k { background: #f1f3f5; font-weight: 600; width: 17%; }
+.lbl { font-weight: 600; }
+.note { font-size: 9pt; color: #495057; margin: 2px 0 8px; }
+code { font-family: Consolas, monospace; font-size: 9.5pt; }
+img { max-width: 100%; display: block; margin: 6px auto 0; }
+img.photo { max-width: 60%; }
+ul { margin: 4px 0; padding-left: 20px; }
+h2, h3 { break-after: avoid; }
+table, img, figure { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<h1>Water-Temperature Probe in Water: Step Response</h1>
+<p class="sub">S.C.O.U.T. Electrical Subsystem · Test Report</p>
+
+<table>
+  <tr><td class="k">Report number</td><td>SCOUT-E-TR-002, Rev A</td><td class="k">Status</td><td>Draft for review</td></tr>
+  <tr><td class="k">Test date</td><td>2026-11-03, 12:42–12:51 (logged 20:42:49–20:51:21 UTC)</td><td class="k">Location</td><td>Not recorded</td></tr>
+  <tr><td class="k">Tested by</td><td>Isabella Rodriguez</td><td class="k">Reviewed by</td><td>Dr. Shoba Krishnan; Dr. Jes Kuczenski</td></tr>
+  <tr><td class="k">Test plan</td><td>Test 3c water step test, written 2026-11-03 before the run (procedure in §2)</td><td class="k">Tracking</td><td>SCO-259, SCO-258; repo record RR-26</td></tr>
+  <tr><td class="k">Overall result</td><td colspan="3"><b>PARTIAL</b> · 3 of 3 pass/fail checks passed · response time measured (≈ 12–13 s) · ice point not reached (TC-05 inconclusive)</td></tr>
+</table>
+
+<h2>1. Purpose and scope</h2>
+<p>First test of the DS18B20 probe in water. TR-001 showed the probe reads and responds in still air; the buoy measures water, where heat moves into the probe far faster. This test checks that the probe and logging chain work while the tip is wet, measures how fast the reading follows a step in water temperature, shows how steady it is in a still bath, and was meant to give the first absolute check against the ice point (0 °C).</p>
+<p><span class="lbl">Not tested this session:</span> absolute accuracy against a reference thermometer (none available); the ice point (the ice cup did not reach 0 °C, TC-05); the flight firmware or the 30-minute sample cycle; salt water; depth or pressure.</p>
+
+<h2>2. Test setup</h2>
+<table>
+  <tr><td class="k">Hardware under test</td><td>Same stack as TR-001: Feather M0 RFM95 (3178) with Adalogger FeatherWing (2922); DS18B20 waterproof probe (381) on D12 with 4.7 kΩ pull-up. Powered from laptop USB, 3.3 V from the Feather regulator.</td></tr>
+  <tr><td class="k">Wiring</td><td>Unchanged from TR-001 (red → 3V3, blue → GND, yellow → D12). The heat-shrink splice and the breadboard stayed dry, away from the cups.</td></tr>
+  <tr><td class="k">Software</td><td>Bench sketch <code>scout_t3c_water</code> (new for this test): 12-bit, one reading per second, CSV <code>t_s,temp_c,mark</code>; text typed over USB is written in the mark column. Logged in Microsoft Edge by the bench page <code>scout-live-temp.html</code> (Web Serial, 115200 baud), which plots the reading live and saves the CSV with a PC timestamp on every line. Toolchain as in TR-001; versions not re-recorded.</td></tr>
+  <tr><td class="k">Water baths</td><td>Three thin clear disposable plastic cups, each about a third to half full, all tap water: hot, room temperature, and a few ice cubes floating in mostly room-temperature water (photo, Figure 2). Only the stainless-steel tip was submerged.</td></tr>
+  <tr><td class="k">Test equipment</td><td>Laptop (power, upload, logging). No reference thermometer.</td></tr>
+  <tr><td class="k">Procedure as planned</td><td>Air 1 min → ice cup 4 min, stirred → hot 3 min → cold 3 min → air 2 min, typing a mark at each move. Pass mark set before the run for the ice point: 0.0 ± 0.5 °C (DS18B20 datasheet accuracy). Response time and stability were to be measured; no pass mark was set for them.</td></tr>
+  <tr><td class="k">Procedure as run</td><td>Air → hot (≈ 40 s) → out into air until near room temperature → room-temperature water → ice cup, stirred once when it had settled near 4.5 °C. No marks were typed (hands busy); event times are taken from the trace (§5, D-01).</td></tr>
+</table>
+
+<h2>3. Results summary</h2>
+<table>
+  <tr><th style="width:8%">ID</th><th style="width:17%">Test</th><th style="width:11%">Requirement</th><th>Pass criterion</th><th>Measured</th><th style="width:12%">Result</th></tr>
+  <tr><td>TC-01</td><td>Logging chain with the tip wet</td><td>N1, M7</td><td>One reading per second; no dropouts</td><td>513 readings over 512 s, PC timestamps 0.994–1.005 s apart; 0 dropouts (no NaN or −127)</td><td><b>PASS</b></td></tr>
+  <tr><td>TC-02</td><td>Resolution in water</td><td>M2</td><td>Every reading on a 0.0625 °C step</td><td>513 of 513 on the 0.0625 °C grid</td><td><b>PASS</b></td></tr>
+  <tr><td>TC-03</td><td>Still-bath stability</td><td>M1</td><td>Within 2 steps (0.125 °C) in a settled bath</td><td>Room water: 23.50 °C, span 0.0625 °C (285–301 s). Ice cup: 3.01 °C, span 0.125 °C (470–492 s)</td><td><b>PASS</b></td></tr>
+  <tr><td>TC-04</td><td>Step response in water</td><td>N1, M7</td><td>Measure τ (63 % time); no pass mark set</td><td>Heating step τ ≈ 12 s (11.6–12.1 s); cooling step τ ≈ 13 s (13.2 s). Still air (TR-001): 150–170 s</td><td><b>MEASURED</b></td></tr>
+  <tr><td>TC-05</td><td>Ice point</td><td>M1</td><td>0.0 ± 0.5 °C in a stirred, packed ice bath</td><td>Settled near 3.0 °C, still falling at the end (2.81 °C); the bath was not at 0 °C</td><td><b>INCONCLUSIVE</b></td></tr>
+</table>
+<p class="note">PASS: all criteria met. MEASURED: a number recorded with no pass mark set before the run. INCONCLUSIVE: the test condition was not met, so the result says nothing about the probe. TC-03's pass mark was not written before the run; it is TR-001's "steady" criterion applied to water. Requirement IDs are the needs (N) and metrics (M) in the Project Specifications, as in TR-001.</p>
+
+<img src="charts/c-water-steps.svg" alt="Probe temperature over the whole run, with the air, hot, wet air, room water and ice cup segments shaded">
+<p class="note">Figure 1. The whole run, one reading per second. Segments are inferred from the trace (§5, D-01). The dashed line is 0 °C, which the ice cup did not reach.</p>
+
+<h2>4. Test details</h2>
+
+<h3>TC-01 Logging chain with the tip wet · PASS</h3>
+<p><span class="lbl">Procedure.</span> Uploaded <code>scout_t3c_water</code>, closed the Arduino Serial Monitor, opened <code>scout-live-temp.html</code> in Edge, connected to the Feather's COM port, ran the baths, and saved the CSV with the page's Download CSV button.</p>
+<p><span class="lbl">Observations.</span> 513 lines from 0 to 512 s, one per second; the PC timestamps are 0.994–1.005 s apart. Over the run the board counted 512 s while the PC counted 511.3 s, so the bench sketch's timer runs about 0.13 % fast against the PC; that does not affect these results. No line is missing a reading. This is also the first use of the live page and the 1 Hz sketch, and both worked as intended.</p>
+
+<h3>TC-02 Resolution in water · PASS</h3>
+<p><span class="lbl">Observations.</span> Every reading is a whole multiple of 0.0625 °C, so the probe stayed at 12-bit resolution throughout, wet and dry (M2, as in TR-001).</p>
+
+<h3>TC-03 Still-bath stability · PASS</h3>
+<p><span class="lbl">Observations.</span> In room-temperature water the reading held at 23.50 °C, with a single reading one step lower, for the 17 s before the probe was moved. In the ice cup, between the stir and the end, it held 2.94–3.06 °C over 23 s while drifting slowly down with the bath. Both windows are shorter than the planned last minute of each bath, because the dips were shorter than planned (§5, D-02).</p>
+
+<h3>TC-04 Step response in water · MEASURED</h3>
+<p><span class="lbl">Method.</span> τ is the time for the reading to cover 63.2 % of the step, from the moment of immersion, read by linear interpolation between readings. Heating step: from 23.69 °C at 16.5 s toward the hot water's temperature, taken as 43.5–44.0 °C (the probe came out at 56 s while still rising slightly, peak 43.44 °C). Cooling step: from 22.94 °C at 311.5 s toward the 4.5 °C plateau at 425–436 s.</p>
+<p><span class="lbl">Observations.</span> τ ≈ 11.6–12.1 s heating and ≈ 13.2 s cooling, about 12 times faster than the 150–170 s measured in still air in TR-001, as expected from the much higher heat transfer in water. Both are well under the 30-minute sample interval (M7), so the probe's lag does not limit the buoy's water reading. After the hot dip, the wet probe cooled in air with τ ≈ 48 s and settled at 23.06 °C, below the 23.69 °C starting air reading: evaporation from the wet tip cools it. That value is not comparable to TR-001's dry still-air figure.</p>
+
+<h3>TC-05 Ice point · INCONCLUSIVE</h3>
+<p><span class="lbl">Observations.</span> The ice cup held a few cubes floating in room-temperature tap water, not the packed crushed ice the plan called for. The reading levelled at about 4.5 °C, dropped to about 3.0 °C when the cup was stirred at ≈ 437 s, and was still falling at the end (3.01 → 2.87 °C over the last 40 s). The water around the tip was layered and still cooling, so the 3 °C plateau is the bath's temperature, not a probe error, and the probe's accuracy at 0 °C remains unchecked.</p>
+<img class="photo" src="test3c-setup-cups.webp" alt="Three clear plastic cups on a table: hot, room temperature, and a few ice cubes in water">
+<p class="note">Figure 2. The three baths: hot (left, condensation above the waterline), room temperature (middle) and the ice cup (right), which held only a few floating cubes.</p>
+
+<h2>5. Issues and deviations</h2>
+<table>
+  <tr><th style="width:8%">ID</th><th style="width:13%">Type</th><th>Description and root cause</th><th>Action taken</th><th style="width:10%">Status</th></tr>
+  <tr><td>D-01</td><td>Deviation</td><td>No event marks typed during the run; the operator's hands were busy moving the probe. Event times were taken from the trace (turns in the curve) and the operator's account, good to about ±1 s.</td><td>Timeline recorded in the run notes. Next time a second person marks, or use the page's keyboard keys (A, I, H, C).</td><td>Closed</td></tr>
+  <tr><td>D-02</td><td>Deviation</td><td>Order and dwell times differed from the plan: hot first and only ≈ 40 s; a wet-air cool-down added; no separate cold-tap bath; room water ≈ 30 s.</td><td>Results are reported for the steps that ran. τ for heating carries a range because the hot dip ended before full settling.</td><td>Closed</td></tr>
+  <tr><td>D-03</td><td>Deviation</td><td>Ice cup was ice floating in room-temperature water, not packed crushed ice with cold water, and was stirred only once.</td><td>Repeat: cup packed full of crushed ice, a little cold water, stirred from the start until the reading stops changing.</td><td>Open</td></tr>
+  <tr><td>D-04</td><td>Limitation</td><td>No reference thermometer (carries TR-001 D-02).</td><td>Ice-point repeat (D-03); a reference thermometer reading in each bath when one is available (SCO-259).</td><td>Open</td></tr>
+</table>
+
+<h2>6. Conclusions and next steps</h2>
+<ul>
+  <li>The probe, wiring and logging chain work with the tip in water: one reading per second, no dropouts, full 12-bit resolution, and steady to one or two steps in a still bath.</li>
+  <li>In water the probe responds with τ ≈ 12–13 s, about 12 times faster than in still air; at the buoy's 30-minute interval its lag is negligible.</li>
+  <li>Verified: resolution in water (M2). Partly verified: temperature accuracy (M1), only as steadiness; the absolute check is still open.</li>
+  <li>Next: repeat the ice point with a packed, stirred ice bath (pass 0.0 ± 0.5 °C), and spot-check each bath against a reference thermometer when one is available (SCO-259).</li>
+</ul>
+
+<h2>7. Approval</h2>
+<table>
+  <tr><th style="width:24%">Role</th><th style="width:32%">Name</th><th>Signature</th><th style="width:16%">Date</th></tr>
+  <tr><td>Test engineer</td><td>Isabella Rodriguez</td><td style="height:24px"></td><td></td></tr>
+  <tr><td>Reviewer</td><td>Dr. Shoba Krishnan</td><td style="height:24px"></td><td></td></tr>
+  <tr><td>Reviewer</td><td>Dr. Jes Kuczenski</td><td style="height:24px"></td><td></td></tr>
+</table>
+
+<h2>Appendix: evidence</h2>
+<p>This folder (<code>hardware/test/evidence/rr-26-2026-11-03/</code>, repo record RR-26): <code>data/test3c-water-steps.csv</code> (the 513 readings as saved by the bench page, unedited), <code>charts/c-water-steps.svg</code> (Figure 1, drawn from that file), <code>test3c-setup-cups.webp</code> (Figure 2) and <code>test3c-run-notes.md</code> (inferred timeline and calculations). Sketch <code>hardware/test/bench-sketches/scout_t3c_water/</code>; bench page <code>hardware/test/tools/live-temp-monitor.html</code>.</p>
+<p class="note">AI use: Claude (Anthropic) wrote the bench sketch and logging page, analysed the CSV and drafted this report from the operator's account; the test was run and the account given by the test engineer.</p>
+
+</body>
+</html>
