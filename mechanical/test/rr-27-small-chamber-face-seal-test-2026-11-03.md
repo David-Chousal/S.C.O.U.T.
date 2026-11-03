@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-27 · Planned (Part A is a draft; not locked) |
+| **Test ID / status** | RR-27 · Planned (Part A locked 2026-11-03) |
 | **Date, duration, who** | Run dates Not set; 24 h per stage; John Ryan Myrdal |
 | **Requirement tested** | Housing stays dry in salt water (R-12); cap seals (R-14) |
 | **Tracking issue** | [SCO-293](https://linear.app/scout1/issue/SCO-293); related [SCO-294](https://linear.app/scout1/issue/SCO-294) |
@@ -35,7 +35,7 @@
 
 ## Part A — Plan (write and date before the run)
 
-_Draft written 2026-11-03 from John's design and results. John locks it before the run; nothing here is locked yet._
+_Written 2026-11-03 from John's design and results; locked by John Ryan Myrdal the same day, before the run._
 
 ### A1. Purpose and risk retired
 [RR-23](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) Stage 1 flooded through the cap face seal (518 g to 1113 g) with an ungreased ring. This test checks the redesigned face seal on its own, in a smaller print that uses less plastic and has no cable outlet, so a leak can only come from the face seal, the cap or the bolt holes.
@@ -69,7 +69,7 @@ If the ring (5-5/8 in ID, 5-7/8 in OD) is greased and sits in a groove drawn for
 | M2 | Mass does not rise | Plausible | Change within scale resolution | A rise means water got in even if the towel looks dry | This plan |
 | M3 | Holds in plain salt water | Present | Towel dry after 24 h, then 1 week | R-12: salt water, 24 h then 1 week | Requirements matrix R-12 |
 
-Locked on: Not locked (draft, 2026-11-03).
+Locked on: 2026-11-03 (John Ryan Myrdal), before the run. Any later change goes in the deviation log (B3), not over this text.
 
 ### A6. Article, setup and sampling
 
@@ -148,7 +148,6 @@ None, pass/fail test.
 
 Open questions (owner John):
 
-- Lock Part A, including the pass mark, before the run.
 - Ring elastomer, grease product, print material and settings, weights used: Not recorded.
 - Should a second chamber run with an ungreased ring as a control? Not planned.
 - This does not test depth. The 0.3 m R-12 mark and [SCO-177](https://linear.app/scout1/issue/SCO-177) need a later, deeper run.
