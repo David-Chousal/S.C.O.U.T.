@@ -1,0 +1,9 @@
+option,name,c1_waterproofing,c2_reef_safety,c3_seam_sealing,c4_petg_adhesion,c5_flexibility,c6_application,c7_added_mass,c8_cost,no_evidence_cells
+A,LeakSeal Black flexible rubber spray,1,3,4,3,4,4,3,2,c8
+B,Marine topside paint,1,2,2,2,3,2,2,3,c2;c3;c6;c7
+C,Marine spar varnish,2,2,2,2,4,3,2,4,c2;c3;c7
+D,Clear coat spray (Stops Rust Protective Enamel),2,2,2,1,3,4,2,5,c1;c2;c3;c7
+E,Plastic primer spray,2,2,2,4,2,4,2,2,c1;c2;c3;c5;c7;c8
+F,Plastic primer then clear coat,2,2,2,4,2,3,2,2,c1;c2;c3;c5;c7;c8
+G,Bottom paint (Sea Hawk Smart Solution),4,1,4,3,2,3,2,2,c5;c8
+H,Do Nothing (uncoated sanded PETG),1,2,1,5,2,5,5,5,c2;c5
