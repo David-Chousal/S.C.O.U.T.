@@ -20,6 +20,9 @@ on:
     paths:
       - "analytics/**"
       - "shore/**"
+      # The site's chat-context.txt is built from docs/ (analytics/telemetry/site/build.py),
+      # so a docs-only merge redeploys now instead of waiting for the hourly run.
+      - "docs/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch: {}
   schedule:
