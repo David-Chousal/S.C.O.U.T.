@@ -17,11 +17,17 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/reports/", label: "Reports", icon: "export", key: "e", desktopOnly: true },
   { href: "/stations/", label: "Stations", icon: "connections", key: "s", desktopOnly: true },
   { href: "/team/", label: "Team", icon: "team", key: "t" },
-  { href: "/audit/", label: "Audit log", icon: "reports", key: "l", desktopOnly: true },
   { href: "/settings/", label: "Settings", icon: "settings", key: "p" },
   { href: "/developer/", label: "Developer", icon: "external", key: "d", desktopOnly: true },
-  { href: "/account/", label: "Account", icon: "lock", key: "a" },
+  { href: "/help/", label: "Help", icon: "info", key: "y", desktopOnly: true },
 ];
+
+/** Reached from the profile card at the top of the sidebar, not the nav list; on phones it is
+ * the bottom bar's last slot. */
+export const ACCOUNT_ITEM: NavItem = { href: "/account/", label: "Account", icon: "lock", key: "a" };
+
+/** Every "G then letter" target. */
+export const SHORTCUT_ITEMS: readonly NavItem[] = [...NAV_ITEMS, ACCOUNT_ITEM];
 
 /** Paths end in "/" in the static export; compare without it so "/fleet" and "/fleet/" match. */
 export function isCurrent(pathname: string, href: string): boolean {

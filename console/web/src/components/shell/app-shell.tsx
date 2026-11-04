@@ -25,6 +25,11 @@ type Load = { kind: "loading" } | { kind: "ready"; session: Session } | { kind: 
 // one renders straight away and re-checks in the background. Only a full page load waits.
 let lastSession: Session | null = null;
 
+/** Drop the cached session, so the next page re-checks it; call after signing out. */
+export function forgetSession(): void {
+  lastSession = null;
+}
+
 /** Every signed-in page: loads the session (or goes to sign-in), then sidebar, top bar, content. */
 export function AppShell({ title, actions, children }: AppShellProps) {
   const router = useRouter();
@@ -64,17 +69,11 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     };
   }, [router]);
 
-  async function signOut() {
-    await api.signOut().catch(() => undefined);
-    lastSession = null;
-    router.replace("/login/");
-  }
-
   if (load.kind !== "ready") {
     // The frame stays up while the session loads, so the page never flashes blank.
     return (
       <div className="sc-shell">
-        <Sidebar onSignOut={signOut} shortcuts={preferences.shortcuts} />
+        <Sidebar shortcuts={preferences.shortcuts} />
         <div className="sc-shell__page">
           <TopBar title={title} />
           <main className="sc-main" aria-busy={load.kind === "loading"}>
@@ -91,7 +90,7 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     <PreferencesContext value={preferencesValue}>
       <Toaster>
         <div className="sc-shell">
-          <Sidebar user={load.session.user} onSignOut={signOut} shortcuts={preferences.shortcuts} />
+          <Sidebar user={load.session.user} shortcuts={preferences.shortcuts} />
           <div className="sc-shell__page">
             <TopBar title={title} actions={actions} />
             <main className="sc-main">{children}</main>
