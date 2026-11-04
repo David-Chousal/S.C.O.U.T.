@@ -7,7 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
-**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed from `main` (7fd7544) on 2026-10-30, with D1 migrations 0003–0006 applied. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
+**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed on 2026-11-04 from branch `console/account-help-devtabs` (PR #286, before merge; Worker version 2dc12949), with D1 migration 0009 applied (database exported first); every earlier migration was already applied. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
