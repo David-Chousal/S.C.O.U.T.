@@ -38,7 +38,7 @@
 
 `make_gantt.py` checks the plan before it prints: it stops with an error if a dependency names a
 task that is not in the chart, if a task ends before it starts, or if a task starts before a task it
-depends on ends. A task already `In Progress` is exempt from the start rule and prints a warning.
+depends on ends. A task that is `Done`, `Canceled` or a `Duplicate` is exempt from the start rule (its dates are history); one that is `In Progress`, `In Test`, `In Review`, `Blocked` or `Backlog` prints a warning instead of failing, since it either started early or is waiting on a date conflict in Linear. Resynced from Linear on 2026-11-04 (statuses and due dates for the 47 rows that changed; today's line moved to Nov 4).
 
 ## Scheduling rule (set 2026-10-07)
 
