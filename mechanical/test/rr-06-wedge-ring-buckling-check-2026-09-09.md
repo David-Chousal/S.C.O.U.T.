@@ -78,10 +78,10 @@ Locked on: Not recorded (retroactive record)
 
 | Step | Action | Record | Done |
 |---|---|---|---|
-| 1 | List inputs and tag measured vs assumed. | Table | Not recorded |
-| 2 | Compute wall bending stiffness D. | Value | Not recorded |
-| 3 | Compute buckling pressure bare and foam-backed. | Pressures | Not recorded |
-| 4 | Compare to 50.3 kPa. | SF | Not recorded |
+| 1 | List inputs and tag measured vs assumed. | PETG E 2240 MPa, ν 0.38; wall t 2.413 mm, R 228.6 mm; foam E_f ~10 MPa (range 7 to 14, assumed generic 2 lb/ft³ PU, datasheet pending SCO-76); design pressure 50.3 kPa (5 m) | 2026-09-09 (source check §1–3) |
+| 2 | Compute wall bending stiffness D. | D = E t³ / (12 (1 − ν²)) = 3.065 N·m | 2026-09-09 (source check §1–3) |
+| 3 | Compute buckling pressure bare and foam-backed. | Free ring 770 Pa; edge-supported bare panel about 18 to 37 kPa (flat-plate bound 9.2 kPa); foam-backed 216 to 235 kPa | 2026-09-09 (source check §1–3) |
+| 4 | Compare to 50.3 kPa. | Bare SF 0.2 to 0.7 (free ring 0.015); foam-backed SF about 4.3, range 3.3 to 4.9 | 2026-09-09 (source check §1–3) |
 
 ### A8. Analysis plan
 Closed-form buckling pressure divided by the design pressure.
@@ -128,7 +128,7 @@ Foam modulus and PETG properties are assumed, so the foam-backed range is an est
 - Sources of error: assumed foam modulus; closed-form bound.
 - Does establish: foam backing is required.
 - Does not establish: the bonded ring's true margin.
-- Not recorded here: working (see source).
+- Not recorded: foam modulus is assumed, not from a datasheet or test (SCO-76), and the bonded 6-wedge ring buckling case was not run (closed form cannot resolve it).
 
 ### C4. Decision
 

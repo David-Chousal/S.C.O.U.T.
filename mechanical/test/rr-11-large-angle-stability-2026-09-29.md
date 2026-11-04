@@ -46,7 +46,7 @@ If the buoy is rotated to any angle, then it returns upright, because the centre
 
 | Parameter | Unit | Instrument / method | Resolution | Uncertainty | Calibrated / checked (date) |
 |---|---|---|---|---|---|
-| Righting arm vs heel angle | m vs degrees | Calculator (`buoy_stability.py`) on STEP geometry | Not recorded | Not recorded | Not recorded |
+| Righting arm vs heel angle | m vs degrees | Calculator (`buoy_stability.py`) on STEP geometry, voxel integration | 2 mm voxel grid | Reproduces GM·sinφ at 5° (0.58 vs 0.62 in); wedge-bottom profile matches the 2026-09-25 envelope measurement within 0.6% | Not recorded (not validated against a tilt test) |
 
 ### A4. Variables
 
@@ -77,9 +77,9 @@ Locked on: Not recorded (retroactive record)
 
 | Step | Action | Record | Done |
 |---|---|---|---|
-| 1 | Load STEP geometry and mass properties. | Inputs | Not recorded |
-| 2 | Compute the righting-arm curve. | Curve | Not recorded |
-| 3 | Add the ballast arm; recompute. | Curve | Not recorded |
+| 1 | Load STEP geometry and mass properties. | v5 wedge 168.7 cm³; nominal mass 8.19 kg (range 6.43 to 12.61); chassis 808 g sliced | 2026-09-29 (Stability §12) |
+| 2 | Compute the righting-arm curve. | v5 nominal: GM 7.12 in, max GZ 2.46 in at about 40°, vanishing angle about 90°; stable inverted (about 4.8 J to capsize, 5.6 J to right) | 2026-09-29 (Stability §12) |
+| 3 | Add the ballast arm; recompute. | Lead 2.58 kg at 24 in below the keel gives positive GZ from 5° to 178° with half caps (total about 10.3 kg, freeboard 4.60 in); cap height 1.5 in chosen with lead about 2.8 kg | 2026-09-29 (Stability §12) |
 
 ### A8. Analysis plan
 Inspect the sign of the righting arm across 0–180°.
@@ -101,7 +101,7 @@ Righting-arm curve (GZ vs heel angle) from the calculator. Validation against a 
 
 ### B2. Raw data
 
-See the calculator results folder.
+v5 (nominal 8.19 kg): GM 7.12 in, max GZ 2.46 in at about 40° (4.8 N·m), vanishing angle about 90°, stable inverted. v6 (24 in lead ballast, 2.58 kg minimum, about 2.8 kg with margin): positive GZ from 5° to 178°. Full output in `mechanical/simulations/buoy-stability/results/2026-09-29/`.
 
 ### B3. Deviations
 
@@ -113,8 +113,8 @@ None recorded.
 
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
-| M1 rights from any angle, v5 | Stable inverted | — | Fail |
-| M1 rights from any angle, v6 | Rights from any angle | — | Pass |
+| M1 rights from any angle, v5 | Vanishing angle about 90°, stable inverted | — | Fail |
+| M1 rights from any angle, v6 | Positive GZ from 5° to 178° with 2.58 kg lead at 24 in | Lead 2.8 kg chosen, about 10% over the minimum | Pass |
 
 **Overall:** v5 fails; v6 passes in the calculation.
 
@@ -126,7 +126,7 @@ Source: [Stability §12](../../docs/engineering/buoy-structural/stability-analys
 - Sources of error: calculation only; the calculator is not validated against a tilt test.
 - Does establish: the v5 problem and a candidate fix.
 - Does not establish: physical self-righting.
-- Not recorded here: numeric angles and arm lengths (see calculator).
+- Not recorded: validation of the calculator against a physical tilt test, and the stem and root-joint bending check at 2.6 kg on 24 in (open under SCO-125).
 
 ### C4. Decision
 

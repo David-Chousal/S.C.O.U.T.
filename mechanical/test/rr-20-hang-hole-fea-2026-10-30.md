@@ -139,7 +139,7 @@ Both load cases sit about 12 to 14 times below the float's 20 MPa yield, so the 
 - Sources of error: steel housing and cap, ABS stand-in for PETG (accepted by John, 2026-11-01), +Z loading, coarse mesh, unrecorded fixed support.
 - Does establish: the float around the holes is not near yield in either load case at these loads.
 - Does not establish: a validated margin, print-layer (Z) weakness, rope chafe, or dynamic snap loads.
-- Not recorded: fixed support location, load derivation (why 322 N each).
+- Not recorded: fixed support location, and the stated derivation of the loads. The values match the RR-04 loads (LC2 taut-line uplift 322 N; LC9 vertical snap component 644 N), which is an inference to confirm with John, not a recorded fact.
 
 ### C4. Decision
 

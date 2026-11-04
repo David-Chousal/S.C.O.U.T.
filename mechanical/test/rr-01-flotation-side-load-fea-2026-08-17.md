@@ -82,10 +82,10 @@ Locked on: Not recorded (retroactive record)
 
 | Step | Action | Record | Done |
 |---|---|---|---|
-| 1 | Apply the ABS material and the constraint at the chassis mounting reference. | Settings | Not recorded |
-| 2 | Apply the 300 N side load. | Components | Not recorded |
-| 3 | Mesh and solve. | Node/element count | Not recorded |
-| 4 | Read SF, stress, displacement, reaction. | Min/max values | Not recorded |
+| 1 | Apply the ABS material and the constraint at the chassis mounting reference. | ABS: E 2240 MPa, yield 20 MPa, UTS 29.6 MPa, 1.06×10⁻⁶ kg/mm³; fixed Ux/Uy/Uz | 2026-08-17 (Fusion report) |
+| 2 | Apply the 300 N side load. | X −259.808 N, Y 150.000 N, Z 0 N | 2026-08-17 (Fusion report) |
+| 3 | Mesh and solve. | 84,831 nodes / 43,130 elements, parabolic solids | 2026-08-17 (Fusion report) |
+| 4 | Read SF, stress, displacement, reaction. | See B2 | 2026-08-17 (Fusion report) |
 
 ### A8. Analysis plan
 Compare the minimum safety factor to the SF ≥ 4 bar.
