@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "docs" / "planning" / "wbs-tasks.csv"
 PDF_PATH = ROOT / "docs" / "planning" / "gantt-fall-2026.pdf"
 
-DETAIL_START = date(2026, 10, 26)
+DETAIL_START = date(2026, 11, 4)
 DETAIL_END = date(2026, 12, 11)
 DETAIL_LABEL = f"{DETAIL_START.strftime('%b')} {DETAIL_START.day} &ndash; {DETAIL_END.strftime('%b')} {DETAIL_END.day}, {DETAIL_END.year}"
 OVERVIEW_START = date(2026, 10, 5)  # a Monday
@@ -104,8 +104,10 @@ def validate(rows: list[dict]) -> list[str]:
             elif pred["end_d"] > r["start_d"]:
                 msg = (f"{r['wbs']} starts {r['start']} before {dep} ({pred['wbs']}) "
                        f"ends {pred['end']}")
-                if r["status"] == "In Progress":
-                    print(f"warning: {msg} (already in progress)", file=sys.stderr)
+                if r["status"] in ("Done", "Canceled", "Duplicate"):
+                    pass  # finished or dropped: its real dates are history
+                elif r["status"] in ("In Progress", "In Test", "In Review", "Blocked", "Backlog"):
+                    print(f"warning: {msg} ({r['status']}: started early or waiting on a Linear date conflict)", file=sys.stderr)
                 else:
                     errors.append(msg)
     return errors
