@@ -93,6 +93,14 @@ Open the article, inspect the paper towel, and record dry, damp or flooded. A pa
 
 None, pass/fail test. A leak indicator needs no calibration or validation curve; a leak rate would need a measured mass or volume gain, which this method does not give.
 
+### A10. Review and open questions
+
+| Reviewer | Sent (date) | Feedback | Change made to Part A |
+|---|---|---|---|
+| Not recorded (retroactive record) | Not recorded | Not recorded | None |
+
+Open questions: no pre-run review was held or recorded. The fields marked `Not recorded` in this record are the open questions; owner John, to be filled only if remembered or found in a source.
+
 ## Part B — Execution log
 
 ### B1. Run record

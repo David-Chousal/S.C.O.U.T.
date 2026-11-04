@@ -94,6 +94,14 @@ Compare the minimum safety factor to the SF ≥ 4 bar.
 
 None, analysis. A validation curve (model vs measurement) does not exist yet; this study has not been compared to a physical test.
 
+### A10. Review and open questions
+
+| Reviewer | Sent (date) | Feedback | Change made to Part A |
+|---|---|---|---|
+| Not recorded (retroactive record) | Not recorded | Not recorded | None |
+
+Open questions: no pre-run review was held or recorded. The fields marked `Not recorded` in this record are the open questions; owner John, to be filled only if remembered or found in a source.
+
 ## Part B — Execution log
 
 ### B1. Run record
