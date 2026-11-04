@@ -89,6 +89,14 @@ Dry, damp or flooded at 24 hr.
 
 None, pass/fail test.
 
+### A10. Review and open questions
+
+| Reviewer | Sent (date) | Feedback | Change made to Part A |
+|---|---|---|---|
+| Not sent | | | |
+
+Open questions: Part A is not locked yet. Lock the pass mark (A5) with a date before the run; until then this record is a draft plan. Owner John.
+
 ## Part B — Execution log
 
 ### B1. Run record

@@ -95,6 +95,14 @@ Compare the minimum safety factor to SF ≥ 4 in each load case.
 
 None, analysis. No validation curve (model vs measurement) exists; a physical hang check is tracked in [SCO-274](https://linear.app/scout1/issue/SCO-274).
 
+### A10. Review and open questions
+
+| Reviewer | Sent (date) | Feedback | Change made to Part A |
+|---|---|---|---|
+| Not recorded (retroactive record) | Not recorded | Not recorded | None |
+
+Open questions: no pre-run review was held or recorded. The fields marked `Not recorded` in this record are the open questions; owner John, to be filled only if remembered or found in a source.
+
 ## Part B — Execution log
 
 ### B1. Run record

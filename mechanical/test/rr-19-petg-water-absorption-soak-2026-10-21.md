@@ -87,6 +87,14 @@ Mass gain per piece against scale resolution; coupons separate plastic uptake fr
 
 None, measurement. A mass-vs-time curve would need interim weighings, which the plan does not include.
 
+### A10. Review and open questions
+
+| Reviewer | Sent (date) | Feedback | Change made to Part A |
+|---|---|---|---|
+| Not sent | | | |
+
+Open questions: Part A is not locked yet. Lock the pass mark (A5) with a date before the run; until then this record is a draft plan. Owner John.
+
 ## Part B — Execution log
 
 ### B1. Run record
