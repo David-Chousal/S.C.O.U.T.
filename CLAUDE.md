@@ -538,7 +538,7 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    [Known inconsistencies](README.md#known-inconsistencies).
 2. **Raw audio never goes over LoRa.** This is settled design, not an open question
    ([EDD §10](docs/engineering/engineering-design-document.md)). Bandwidth makes it
-   infeasible; the buoy stores audio locally and transmits a **44-byte** packet carrying a
+   infeasible; the buoy stores audio locally and transmits a **46-byte** packet carrying a
    14-byte acoustic summary of each recording instead
    ([ADR-0010](docs/decisions/0010-acoustic-summary-over-lora.md); 140 B is the payload
    *ceiling*, derived from the send timeout, not the actual size — see

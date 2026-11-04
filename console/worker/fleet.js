@@ -8,6 +8,7 @@
 import { record } from "./audit.js";
 import estimates from "./battery-life.json" with { type: "json" };
 import buoyConfig from "./buoy-config.json" with { type: "json" };
+import { digestHex, KEYS, REGISTRY, requestedOf, settingsState, snapshotError, wantedOf } from "./buoy-settings.js";
 
 export const TX_COUNTS = [1, 2, 3];
 export const DEFAULT_TX_COUNT = 3;
@@ -32,9 +33,82 @@ export function lifeFor(txCount, cells, listenWindow = false) {
   return { best: pick("best"), pessimistic: pick("pessimistic") };
 }
 
+async function settingRows(db, buoyId = null) {
+  const statement = buoyId === null
+    ? db.prepare("SELECT * FROM buoy_settings")
+    : db.prepare("SELECT * FROM buoy_settings WHERE buoy_id = ?").bind(buoyId);
+  return (await statement.all()).results;
+}
+
+/** Each buoy with its count state, and its remote settings: what was requested per setting
+ * (null = default), the snapshot it should run, that snapshot's digest and the overall state. */
 export async function listBuoys(db) {
   const { results } = await db.prepare("SELECT * FROM buoys ORDER BY buoy_id").all();
-  return results.map((b) => ({ ...b, state: countState(b) }));
+  const rows = await settingRows(db);
+  return results.map((b) => {
+    const requested = requestedOf(b, rows.filter((r) => r.buoy_id === b.buoy_id));
+    const wanted = wantedOf(requested);
+    return { ...b, state: countState(b), settings_requested: requested, settings_wanted: wanted,
+      settings_digest_wanted: digestHex(wanted), settings_state: settingsState(b, requested) };
+  });
+}
+
+/** Request remote settings for one buoy. `changes` is { key: value | null }; null withdraws a
+ * request (the buoy goes back to that setting's default). The resulting snapshot must be one the
+ * buoy would accept as a whole, or nothing is stored. */
+export async function requestSettings(db, actor, buoyId, changes) {
+  if (!changes || typeof changes !== "object" || Array.isArray(changes)) return { error: "Send settings as { key: value }." };
+  const unknown = Object.keys(changes).filter((key) => !KEYS.includes(key));
+  if (unknown.length) return { error: `Unknown setting: ${unknown.join(", ")}.` };
+  const buoy = await db.prepare("SELECT * FROM buoys WHERE buoy_id = ?").bind(Number(buoyId)).first();
+  if (!buoy) return { error: "No such buoy." };
+  const before = requestedOf(buoy, await settingRows(db, buoy.buoy_id));
+  const after = { ...before };
+  for (const [key, value] of Object.entries(changes)) after[key] = value === null ? null : Number(value);
+  const problem = snapshotError(wantedOf(after));
+  if (problem) return { error: problem };
+  const changed = KEYS.filter((key) => after[key] !== before[key]);
+  if (changed.length === 0) return {};
+  const now = Date.now();
+  const statements = changed.map((key) => {
+    if (key === "tx_count") {
+      return db.prepare("UPDATE buoys SET tx_count_requested = ?, requested_by = ?, requested_at = ?, cmd_rejected = 0 WHERE buoy_id = ?")
+        .bind(after.tx_count, actor.email, now, buoy.buoy_id);
+    }
+    return after[key] === null
+      ? db.prepare("DELETE FROM buoy_settings WHERE buoy_id = ? AND setting_key = ?").bind(buoy.buoy_id, key)
+      : db.prepare("INSERT INTO buoy_settings (buoy_id, setting_key, value, requested_by, requested_at) VALUES (?, ?, ?, ?, ?) " +
+        "ON CONFLICT (buoy_id, setting_key) DO UPDATE SET value = excluded.value, requested_by = excluded.requested_by, " +
+        "requested_at = excluded.requested_at").bind(buoy.buoy_id, key, after[key], actor.email, now);
+  });
+  statements.push(db.prepare("UPDATE buoys SET cmd_rejected = 0 WHERE buoy_id = ?").bind(buoy.buoy_id));
+  await db.batch(statements);
+  const pick = (source) => Object.fromEntries(changed.map((key) => [key, source[key]]));
+  await record(db, { actor, action: "buoy.settings", target: buoy.label, before: pick(before), after: pick(after) });
+  return {};
+}
+
+/** Request every setting at its firmware default, so the shore sends the default snapshot. */
+export async function restoreDefaults(db, actor, buoyId) {
+  return requestSettings(db, actor, buoyId, Object.fromEntries(REGISTRY.map((spec) => [spec.key, spec.default])));
+}
+
+/** The snapshot string and digest the shore station sends, for every buoy with any request.
+ * Only a buoy's command station hears about it; a lone station is everyone's. */
+export async function wantedForDevice(db, deviceId) {
+  const { results } = await db
+    .prepare("SELECT * FROM buoys WHERE (command_device_id = ? OR (command_device_id IS NULL AND " +
+      "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1)) ORDER BY buoy_id")
+    .bind(deviceId)
+    .all();
+  const rows = await settingRows(db);
+  return results.flatMap((b) => {
+    const requested = requestedOf(b, rows.filter((r) => r.buoy_id === b.buoy_id));
+    if (!Object.values(requested).some((value) => value !== null)) return [];
+    const wanted = wantedOf(requested);
+    return [{ buoy_id: b.buoy_id, tx_count_requested: b.tx_count_requested ?? null,
+      settings: wanted.join(","), settings_digest: digestHex(wanted) }];
+  });
 }
 
 export async function addBuoy(db, actor, buoyId, label) {

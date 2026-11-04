@@ -2,7 +2,7 @@
  * token. Documented in openapi.json, which is public. Bearer tokens, not cookies, so there is no
  * CSRF to guard; every call is checked against the token's scopes and its owner's role. */
 
-import { buoyConfig, listBuoys, requestTxCount } from "./fleet.js";
+import { buoyConfig, listBuoys, requestSettings, requestTxCount } from "./fleet.js";
 import { apiError, json } from "./http.js";
 import openapi from "./openapi.json" with { type: "json" };
 import { listReadings, readingsQuery } from "./readings.js";
@@ -11,6 +11,7 @@ import { authenticateToken } from "./tokens.js";
 
 const READINGS = /^\/api\/v1\/buoys\/(\d{1,5})\/readings$/;
 const TX_COUNT = /^\/api\/v1\/buoys\/(\d{1,5})\/tx-count$/;
+const SETTINGS = /^\/api\/v1\/buoys\/(\d{1,5})\/settings$/;
 
 async function readJson(request) {
   try {
@@ -42,12 +43,15 @@ export async function handleRest(request, env, path) {
     return (await reads(env, new URL(request.url), path)) ?? apiError("not found", 404);
   }
   const txCount = TX_COUNT.exec(path);
-  if (request.method === "POST" && txCount) {
+  const settings = SETTINGS.exec(path);
+  if (request.method === "POST" && (txCount || settings)) {
     if (!auth.scopes.includes("write:settings")) return apiError("This token lacks the write:settings scope.", 403);
     if (!can(auth.user, "settings.write")) return apiError("The token's owner cannot change settings.", 403);
     const body = await readJson(request);
     if (!body) return apiError("Send a JSON object.", 400);
-    const result = await requestTxCount(env.DB, auth.user, txCount[1], body.tx_count);
+    const result = txCount
+      ? await requestTxCount(env.DB, auth.user, txCount[1], body.tx_count)
+      : await requestSettings(env.DB, auth.user, settings[1], body.settings);
     return result.error ? apiError(result.error, 400) : json(result);
   }
   return apiError("not found", 404);

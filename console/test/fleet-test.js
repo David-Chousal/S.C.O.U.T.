@@ -80,7 +80,7 @@ test("a member requests a count; it is pending until the buoy reports it, and au
   assert.equal((await buoy(client)).state, "pending");
 
   const settings = await (await deviceCall(env, token, "/api/device/settings")).json();
-  assert.deepEqual(settings.buoys, [{ buoy_id: 1, tx_count_requested: 1 }]);
+  assert.deepEqual(settings.buoys, [{ buoy_id: 1, tx_count_requested: 1, settings: "1,0,30,60,3200,3100,3,70", settings_digest: "a61d" }]);
 
   await deviceCall(env, token, "/api/device/readings", { rows: [row(2, { tx: "1", ts: "2026-03-02T00:00:00Z" })] });
   assert.equal((await buoy(client)).state, "confirmed");
@@ -198,7 +198,10 @@ test("the settings read carries each buoy and the firmware's settings, from the 
   assert.equal(body.buoys[0].label, "SCOUT-01");
   const keys = body.firmware.settings.map((s) => s.key);
   assert.ok(keys.includes("tx_count") && keys.includes("humidity_alert"));
-  assert.equal(body.firmware.settings.find((s) => s.key === "sample_interval").value, "every 30 min");
+  assert.equal(body.firmware.settings.find((s) => s.key === "sample_interval").value, "every 30 min (15, 30, 60)");
+  assert.deepEqual(body.firmware.remote.map((s) => s.key).slice(0, 2), ["tx_count", "slot_phase_h"]);
+  assert.equal(body.buoys[0].settings_state, "default");
+  assert.equal(body.buoys[0].settings_digest_wanted, "e674");
 });
 
 test("a member renames a buoy, audited; a guest cannot; bad names are refused", async () => {

@@ -1,7 +1,8 @@
 /* The shore station's API (bearer device token; never a user session).
  *
  *   POST /api/device/readings  { rows: [schema row, ...] }   ≤ 200 rows, ≤ 256 KB
- *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested }] }
+ *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested, settings, settings_digest }] }
+ *        settings: every remote setting in ID order, "3,0,30,60,3200,3100,3,70" (fleet.js)
  *
  * Rows are validated field by field before anything is stored, and repeats of a
  * (buoy_id, record_seq, timestamp_utc) are ignored, so a shore station may push the same day
@@ -9,6 +10,7 @@
 
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
+import { wantedForDevice } from "./fleet.js";
 import { apiError, bodyWithin, json } from "./http.js";
 
 const MAX_ROWS = 200;
@@ -61,7 +63,9 @@ async function authenticate(db, request) {
   return device;
 }
 
-/** A validated row → {buoyId, seq, timestamp, txCount, rejected, clockLost}, or null. */
+const DIGEST = /^[0-9a-f]{4}$/;
+
+/** A validated row → {buoyId, seq, timestamp, txCount, digest, rejected, clockLost}, or null. */
 export function parseRow(row, now = Date.now()) {
   if (!row || typeof row !== "object") return null;
   const label = BUOY_LABEL.exec(String(row.buoy_id || ""));
@@ -71,10 +75,12 @@ export function parseRow(row, now = Date.now()) {
   const txText = String(row.tx_count ?? "");
   if (!(buoyId >= 1 && buoyId <= 65535) || !Number.isInteger(seq) || seq < 0 || seq > 0xffffffff) return null;
   if (!TIMESTAMP.test(timestamp) || !["", "1", "2", "3"].includes(txText)) return null;
+  const digestText = String(row.settings_digest ?? "");
+  if (digestText !== "" && !DIGEST.test(digestText)) return null;
   if (!(Date.parse(timestamp) <= now + MAX_FUTURE_MS)) return null;
   const flags = String(row.flags || "").split("|");
   return {
-    buoyId, seq, timestamp, txCount: txText ? Number(txText) : null,
+    buoyId, seq, timestamp, txCount: txText ? Number(txText) : null, digest: digestText || null,
     rejected: flags.includes("CMD_REJECTED"), clockLost: flags.includes("RTC_LOST"),
   };
 }
@@ -111,14 +117,15 @@ async function updateReported(db, parsed) {
     ];
     const p = trusted.get(buoyId);
     if (p) {
-      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), cmd_rejected = ?, " +
+      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), " +
+        "settings_digest_reported = COALESCE(?, settings_digest_reported), cmd_rejected = ?, " +
         "reported_at = ?, clock_lost = 0 WHERE buoy_id = ? AND (reported_at IS NULL OR reported_at <= ?)")
-        .bind(p.txCount, p.rejected ? 1 : 0, Date.parse(p.timestamp), buoyId, Date.parse(p.timestamp)));
+        .bind(p.txCount, p.digest, p.rejected ? 1 : 0, Date.parse(p.timestamp), buoyId, Date.parse(p.timestamp)));
     } else {
       const lost = clockLost.get(buoyId);
-      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), cmd_rejected = ?, " +
-        "clock_lost = 1 WHERE buoy_id = ?")
-        .bind(lost.txCount, lost.rejected ? 1 : 0, buoyId));
+      statements.push(db.prepare("UPDATE buoys SET tx_count_reported = COALESCE(?, tx_count_reported), " +
+        "settings_digest_reported = COALESCE(?, settings_digest_reported), cmd_rejected = ?, clock_lost = 1 WHERE buoy_id = ?")
+        .bind(lost.txCount, lost.digest, lost.rejected ? 1 : 0, buoyId));
     }
     return statements;
   }));
@@ -129,13 +136,7 @@ export async function handleDeviceApi(request, env, path) {
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
     // Only this buoy's command station hears about a request; a lone station is everyone's.
-    const { results } = await env.DB
-      .prepare("SELECT buoy_id, tx_count_requested FROM buoys WHERE tx_count_requested IS NOT NULL AND " +
-        "(command_device_id = ? OR (command_device_id IS NULL AND " +
-        "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1)) ORDER BY buoy_id")
-      .bind(device.id)
-      .all();
-    return json({ buoys: results });
+    return json({ buoys: await wantedForDevice(env.DB, device.id) });
   }
   if (path === "/api/device/readings" && request.method === "POST") {
     if (!bodyWithin(request, MAX_BODY_BYTES)) return apiError("body too large or without a length", 413);

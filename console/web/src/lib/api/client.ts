@@ -77,6 +77,9 @@ export const api = {
   addBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", "/api/fleet/buoys", { buoy_id: buoyId, label }),
   settings: () => call<BuoySettings>("GET", "/api/settings"),
   renameBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/label`, { label }),
+  requestSettings: (buoyId: number, settings: Record<string, number | null>) =>
+    call<{ ok: true }>("POST", `/api/settings/buoys/${buoyId}`, { settings }),
+  restoreDefaults: (buoyId: number) => call<{ ok: true }>("POST", `/api/settings/buoys/${buoyId}/defaults`, {}),
 
   team: () => call<Team>("GET", "/api/team"),
   createInvite: (email: string, role: Role) => call<{ link: string }>("POST", "/api/team/invites", { email, role }),

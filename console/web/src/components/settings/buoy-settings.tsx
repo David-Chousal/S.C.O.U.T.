@@ -12,6 +12,7 @@ import { api } from "@/lib/api/client";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
 import { COUNT_SIGNAL, lastHeard, packetLabel } from "@/lib/format";
 import { can, needs, useSession } from "@/lib/session";
+import { RemoteSettings } from "./remote-settings";
 
 const STATUS_BADGE: Record<FirmwareSetting["status"], string> = {
   decided: "sc-badge sc-badge--muted",
@@ -113,7 +114,9 @@ function FirmwareTable({ settings }: { settings: FirmwareSetting[] }) {
   );
 }
 
-/** Settings → Buoys: each buoy's name and transmit count, then the firmware's settings. */
+/** Settings → Buoys: each buoy's name and transmit count, its remote settings, then the firmware's
+ * settings. Each remote-settings bay remounts when what the buoy should run changes, so its form
+ * always starts from the saved values. */
 export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings | null; error: string; reload: () => void }) {
   const { user } = useSession();
   const canRename = can(user.role, "settings.write");
@@ -121,13 +124,18 @@ export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings 
   if (!data) return <span className="sc-tag" aria-busy="true">Loading buoy settings…</span>;
   return (
     <>
-      {!canRename && <Banner tone="info" icon="lock">View only: renaming a buoy needs the {needs("settings.write")} role.</Banner>}
+      {!canRename && <Banner tone="info" icon="lock">View only: renaming a buoy or changing its settings needs the {needs("settings.write")} role.</Banner>}
       {data.buoys.length === 0 ? (
         <EmptyState status="No buoys" title="No buoys yet">A buoy appears when its shore station first pushes a reading.</EmptyState>
       ) : (
         <div className="sc-grid12">
           {data.buoys.map((buoy) => (
             <div className="span-6" key={buoy.buoy_id}><BuoyCard buoy={buoy} canRename={canRename} onSaved={reload} /></div>
+          ))}
+          {data.buoys.map((buoy) => (
+            <div className="span-12" key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`}>
+              <RemoteSettings buoy={buoy} remote={data.firmware.remote} canEdit={canRename} onSaved={reload} />
+            </div>
           ))}
         </div>
       )}
