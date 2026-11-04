@@ -1,12 +1,14 @@
 /* Personal API tokens (Phase B, SCO-240). A member makes one on the Developer page for a script
- * or a notebook; it is shown once, stored hashed, always expires, and can be revoked. A token
+ * or a notebook; it is shown once, stored hashed, expires after
+ * 7–365 days or never (days 0, expires_at NULL), and can be revoked. A token
  * acts as its owner with that owner's role at the time of use, limited further by its scopes. */
 
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
 
 export const SCOPES = ["read:telemetry", "write:settings"];
-export const EXPIRY_DAYS = [7, 30, 90, 365];
+/** 0 means the token never expires. */
+export const EXPIRY_DAYS = [7, 30, 90, 365, 0];
 const DAY_MS = 24 * 3600 * 1000;
 
 export async function createToken(db, actor, { name, scopes, days }) {
@@ -14,13 +16,13 @@ export async function createToken(db, actor, { name, scopes, days }) {
   const wanted = Array.isArray(scopes) ? [...new Set(scopes)] : [];
   if (!cleanName) return { error: "Name the token after what will use it." };
   if (wanted.length === 0 || !wanted.every((scope) => SCOPES.includes(scope))) return { error: "Pick at least one scope." };
-  if (!EXPIRY_DAYS.includes(Number(days))) return { error: `Expiry is ${EXPIRY_DAYS.join(", ")} days.` };
+  if (!EXPIRY_DAYS.includes(Number(days))) return { error: "Expiry is 7, 30, 90 or 365 days, or never (0)." };
   const token = `sct_${randomToken(24)}`;
   const id = crypto.randomUUID();
   const now = Date.now();
   await db
     .prepare("INSERT INTO api_tokens (id, user_id, name, token_hash, scopes, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-    .bind(id, actor.id, cleanName, await sha256Hex(token), wanted.join(" "), now, now + Number(days) * DAY_MS)
+    .bind(id, actor.id, cleanName, await sha256Hex(token), wanted.join(" "), now, Number(days) === 0 ? null : now + Number(days) * DAY_MS)
     .run();
   await record(db, { actor, action: "token.create", target: cleanName, after: { scopes: wanted.join(" "), days: Number(days) } });
   return { token, id };
@@ -53,7 +55,7 @@ export async function authenticateToken(db, request, now = Date.now()) {
       "FROM api_tokens t JOIN users u ON u.id = t.user_id WHERE t.token_hash = ?")
     .bind(await sha256Hex(match[1]))
     .first();
-  if (!row || row.revoked_at || row.expires_at <= now || row.disabled) return null;
+  if (!row || row.revoked_at || (row.expires_at !== null && row.expires_at <= now) || row.disabled) return null;
   await db.prepare("UPDATE api_tokens SET last_used_at = ? WHERE id = ?").bind(now, row.id).run();
   return {
     scopes: row.scopes.split(" "),

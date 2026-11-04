@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { NAV_ITEMS } from "./nav";
+import { SHORTCUT_ITEMS } from "./nav";
 
 const PREFIX_WINDOW_MS = 1000;
 
@@ -23,7 +23,7 @@ export function useGoShortcuts(navigate: (href: string) => void, enabled = true)
 
       if (now - prefixAt < PREFIX_WINDOW_MS) {
         prefixAt = 0;
-        const item = NAV_ITEMS.find((nav) => nav.key === key);
+        const item = SHORTCUT_ITEMS.find((nav) => nav.key === key);
         if (item) {
           event.preventDefault();
           navigate(item.href);

@@ -46,7 +46,7 @@ function NewToken({ list, allowed, onCreated }: { list: TokenList; allowed: bool
       <label className="sc-fieldset">
         <span className="sc-fieldset__label"><span className="sc-tag">Expires after</span></span>
         <select className="sc-input" value={days} disabled={!allowed} onChange={(event) => setDays(Number(event.target.value))}>
-          {list.expiryDays.map((d) => <option key={d} value={d}>{d} days</option>)}
+          {list.expiryDays.map((d) => <option key={d} value={d}>{d === 0 ? "Never" : `${d} days`}</option>)}
         </select>
       </label>
       <fieldset className="sc-settings-choices sc-token-form__wide">
@@ -68,7 +68,7 @@ function NewToken({ list, allowed, onCreated }: { list: TokenList; allowed: bool
 function TokenRow({ token, allowed, now, onRevoked }: { token: ApiToken; allowed: boolean; now: number; onRevoked: () => void }) {
   const when = useWhen();
   const { show } = useToast();
-  const expired = token.expires_at <= now;
+  const expired = token.expires_at !== null && token.expires_at <= now;
   async function revoke() {
     try {
       await api.revokeToken(token.id);
@@ -82,7 +82,7 @@ function TokenRow({ token, allowed, now, onRevoked }: { token: ApiToken; allowed
     <div className="sc-list__row">
       <span className="sc-list__main">
         <strong>{token.name}</strong>
-        <span>{token.scopes.replaceAll(" ", " · ")} · expires {when(token.expires_at)} · last used <Ago ms={token.last_used_at} /></span>
+        <span>{token.scopes.replaceAll(" ", " · ")} · {token.expires_at === null ? "never expires" : <>expires {when(token.expires_at)}</>} · last used <Ago ms={token.last_used_at} /></span>
       </span>
       <span className="sc-list__end">
         {token.revoked_at || expired

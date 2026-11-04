@@ -40,10 +40,10 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Fleet | member, admin | Each buoy's daily transmit count (1–3): requested vs reported as a signal meter, **pending** until they match, and each option's battery life (two D cells, estimate) |
 | Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
-| Audit log | (read only) | Every change: who, what, before → after |
-| Developer | member, admin (guests view) | Personal API tokens (scopes `read:telemetry`, `write:settings`; 7–365 days; shown once, stored hashed, revocable) and how to call `/api/v1` |
+| Developer | member, admin (guests view) | Two tabs. **API tokens:** personal tokens (scopes `read:telemetry`, `write:settings`; 7, 30, 90 or 365 days, or never (migration `0009-tokens-never-expire.sql`); shown once, stored hashed, revocable) and how to call `/api/v1`. **Audit log** (read only, `?tab=audit`): every change, who, what, before → after. The old `/audit/` address forwards here |
 | Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
-| Account | yourself | How you sign in; hold to sign out everywhere |
+| Account | yourself | Opened from the **profile card at the top of the sidebar** (your initials, name and role; G A), not from the nav list. How you sign in; sign out of this browser; hold to sign out everywhere |
+| Help | (read only) | How data gets from the buoy to the console, connecting a shore station (S3 over WiFi, or the USB computer fallback), adding a buoy, changing its settings, roles, keyboard shortcuts, the API, and troubleshooting |
 | Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
 
 **Roles.** *Guest* sees every page and every setting, admin pages included, with the controls

@@ -149,7 +149,8 @@ export interface ApiToken {
   /** Space-separated: read:telemetry, write:settings. */
   scopes: string;
   created_at: number;
-  expires_at: number;
+  /** null: never expires. */
+  expires_at: number | null;
   last_used_at: number | null;
   revoked_at: number | null;
 }
@@ -157,6 +158,7 @@ export interface ApiToken {
 export interface TokenList {
   tokens: ApiToken[];
   scopes: string[];
+  /** 0 means never expires. */
   expiryDays: number[];
 }
 

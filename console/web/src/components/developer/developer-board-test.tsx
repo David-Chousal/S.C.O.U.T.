@@ -12,7 +12,7 @@ import { DeveloperBoard } from "./developer-board";
 const LIST: TokenList = {
   tokens: [{ id: "t1", name: "notebook", scopes: "read:telemetry", created_at: 0, expires_at: Date.now() + 86400000, last_used_at: null, revoked_at: null }],
   scopes: ["read:telemetry", "write:settings"],
-  expiryDays: [7, 30, 90, 365],
+  expiryDays: [7, 30, 90, 365, 0],
 };
 
 function renderBoard(role: Role) {
@@ -44,6 +44,16 @@ describe("DeveloperBoard", () => {
     await userEvent.click(screen.getByRole("button", { name: /Create token/ }));
     expect(api.createToken).toHaveBeenCalledWith("laptop", ["read:telemetry"], 30);
     expect(await screen.findByText("sct_secret_value_123456789012345")).toBeDefined();
+  });
+
+  test("a token can be made to never expire", async () => {
+    vi.spyOn(api, "createToken").mockResolvedValue({ token: "sct_secret_value_123456789012345", id: "t2" });
+    renderBoard("member");
+    await userEvent.type(await screen.findByLabelText("Token name"), "station");
+    await userEvent.selectOptions(screen.getByLabelText("Expires after"), "Never");
+    await userEvent.click(screen.getByRole("checkbox", { name: /read:telemetry/ }));
+    await userEvent.click(screen.getByRole("button", { name: /Create token/ }));
+    expect(api.createToken).toHaveBeenCalledWith("station", ["read:telemetry"], 0);
   });
 
   test("a guest sees the page but every control is off", async () => {

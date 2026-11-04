@@ -62,6 +62,15 @@ test("an unknown scope, a missing name or an odd expiry is refused", async () =>
   assert.equal((await makeToken(client, ["read:telemetry"], 9999)).status, 400);
 });
 
+test("a never-expiring token (days 0) stores no expiry and keeps working", async () => {
+  const env = makeEnv();
+  const { client } = await signedIn(env, "member");
+  const { status, body } = await makeToken(client, ["read:telemetry"], 0, "forever");
+  assert.equal(status, 200);
+  assert.equal(env.DB.raw.prepare("SELECT expires_at FROM api_tokens WHERE id = ?").get(body.id).expires_at, null);
+  assert.equal((await bearer(env, body.token, "/api/v1/buoys")).status, 200);
+});
+
 test("a read:telemetry token reads buoys, readings and settings", async () => {
   const env = makeEnv();
   await pushReadings(env, [row(1, "2026-10-30T00:10:00Z", "26.1"), row(2, "2026-10-30T08:10:00Z", "26.4")]);
