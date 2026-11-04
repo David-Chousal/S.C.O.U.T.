@@ -14,7 +14,7 @@ name: Console deploy (Cloudflare)
 # missing environment with no protection, so the first merge would deploy unapproved.
 #
 # Secrets (environment `production`, never committed):
-#   CLOUDFLARE_API_TOKEN   — scoped to Workers Scripts, D1 and Workers R2 Storage: Edit
+#   CLOUDFLARE_API_TOKEN   — "Edit Cloudflare Workers" template + D1: Edit (console/README.md)
 #   CLOUDFLARE_ACCOUNT_ID
 #
 # The repo is public, so the database export never goes to a GitHub artifact (anyone signed in

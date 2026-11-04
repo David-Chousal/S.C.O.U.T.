@@ -177,9 +177,12 @@ goes to R2, never to a GitHub artifact, because the repo is public.
 **One-time setup, before the workflow first reaches `main`.** Claude cannot do it: it needs the
 Cloudflare account and repo admin (`David-Chousal`).
 
-1. **Cloudflare API token.** Dashboard → **My Profile → API Tokens → Create Token → Custom**,
-   permissions on the S.C.O.U.T. account only: *Workers Scripts: Edit*, *D1: Edit*,
-   *Workers R2 Storage: Edit*. The account ID is on the Workers overview page.
+1. **Cloudflare API token.** Dashboard → **My Profile → API Tokens → Create Token** → the
+   **Edit Cloudflare Workers** template, then **add** *Account · D1 · Edit*. Limit *Account
+   Resources* to the S.C.O.U.T. account and *Zone Resources* to `scoutscu.com`. The template's
+   *Workers Routes* and *Account Settings: Read* are needed too, because `wrangler deploy` checks
+   the `console.scoutscu.com` custom domain and the account. The account ID is in the dashboard
+   URL (`dash.cloudflare.com/<account id>/…`) and on the Workers overview page.
 2. **GitHub environment.** Repo **Settings → Environments → New environment** → `production`.
    Tick **Required reviewers** and add at least one teammate. Under **Deployment branches**, pick
    *Selected branches* → `main`. Add the secrets `CLOUDFLARE_API_TOKEN` and
