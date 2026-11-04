@@ -81,10 +81,10 @@ Locked on: Not recorded (retroactive record)
 
 | Step | Action | Record | Done |
 |---|---|---|---|
-| 1 | Define each load case per the structural load framework. | Load vectors | Not recorded |
-| 2 | Apply constraints and the stand-in ring. | Settings | Not recorded |
-| 3 | Solve each case. | Min SF, displacement | Not recorded |
-| 4 | Examine local low-SF spots. | Cause | Not recorded |
+| 1 | Define each load case per the structural load framework. | LC2 (0, 0, −322) N; LC3 (0, 14, 0) N; LC4 185 N horizontal; LC5 440 N horizontal (face and edge); LC6 (−490, 0, −392) N; LC7 (−490, 0, 0) N, moment not applied; LC8 0.05 MPa external; LC9 (−490, 0, −644) N; service (0, 0, −200) N | 2026-08-29 (Fusion reports) |
+| 2 | Apply constraints and the stand-in ring. | Custom PETG (E 2240 MPa, ν 0.38, yield 35 MPa, UTS 45 MPa, density 1.06 carried from ABS, should be 1.27); Fusion generic steel (yield 207 MPa) for the McMaster 3076T33 ring; mesh 114,564 nodes / 62,994 elements, parabolic | 2026-08-29 (Fusion reports) |
+| 3 | Solve each case. | Min SF 7.53 (LC2), 1450 (LC3), 70.4 (LC4), 29.6 and 65.0 (LC5), 9.98 (LC8), 290 (service); displacement 0.003 to 0.40 mm | 2026-08-29 (Fusion reports) |
+| 4 | Examine local low-SF spots. | LC6, LC7 and LC9 min SF 1.49 to 2.03 are contact-edge singularities at the bonded 3076T33 stand-in ring interface (coarse 10% mesh, generic steel), confirmed by John | 2026-08-29 (Fusion reports) |
 
 ### A8. Analysis plan
 Report minimum SF per case on the buoy PETG, separating the stand-in ring's contact artifacts.

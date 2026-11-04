@@ -77,10 +77,10 @@ Locked on: Not recorded (retroactive record)
 
 | Step | Action | Record | Done |
 |---|---|---|---|
-| 1 | Take the wedge-relevant load cases from the force budget. | Loads | Not recorded |
-| 2 | Compute wall stress for outer and side walls. | Stress | Not recorded |
-| 3 | Add foam-fill pressure and print/handling flex. | Values | Not recorded |
-| 4 | Compare to allowable. | Verdict | Not recorded |
+| 1 | Take the wedge-relevant load cases from the force budget. | LC8 50.3 kPa external (governing); foam-fill 15 to 35 kPa internal (~25 kPa used); LC5 440 N over one wedge face = 13.2 kPa; handling 100 to 200 N | 2026-09-07 (source check §3–5) |
+| 2 | Compute wall stress for outer and side walls. | Outer wall hoop stress 4.77 MPa at 50.3 kPa (R 228.6 mm, t 2.413 mm); bare side wall plate 115 MPa at 50.3 kPa and 57 MPa at 25 kPa (3.3× and 1.6× over yield, worst case) | 2026-09-07 (source check §3–5) |
+| 3 | Add foam-fill pressure and print/handling flex. | With the web halving the span (b ≈ 78 mm), side wall 17.8 MPa at 25 kPa foam-fill, SF 2.0 on 35 MPa yield | 2026-09-07 (source check §3–5) |
+| 4 | Compare to allowable. | Outer wall SF 7.3 (LC5 SF 29); side wall SF 2.0 with the web, a one-time pre-cure transient; web mandatory | 2026-09-07 (source check §3–5) |
 
 ### A8. Analysis plan
 Closed-form stress vs allowable per wall.
@@ -114,7 +114,7 @@ Side-wall verdict made conditional in Rev 2, resolved in Rev 3 after John confir
 
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
-| M1 stress within allowable | Accepted (see source) | Not recorded here | Pass |
+| M1 stress within allowable | Outer wall 4.77 MPa (SF 7.3); side wall with web 17.8 MPa (SF 2.0, pre-cure only) against 35 MPa yield | SF 7.3 and 2.0 | Pass |
 
 **Overall:** Pass on stress; internal web mandatory; foam retained as required backing.
 
@@ -126,7 +126,7 @@ Numerical margins are in the source narrative.
 - Sources of error: closed-form bounds.
 - Does establish: the walls are sane on stress.
 - Does not establish: impact survivability or buckling.
-- Not recorded here: numerical margins (see source).
+- Not recorded: the allowable-stress margin was not set as a locked SF target before the check, and no assembly-level buckling FEA of the epoxied ring was run.
 
 ### C4. Decision
 
