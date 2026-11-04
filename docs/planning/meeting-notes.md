@@ -1237,3 +1237,77 @@ owners below are inferred from what was said.
 | Make the buoyancy simulator understandable to non-engineers | John, David helping ([SCO-229](https://linear.app/scout1/issue/SCO-229)) |
 | Ask the Santa Cruz yacht club about a test site | John ([SCO-195](https://linear.app/scout1/issue/SCO-195)) |
 | Test two stations uploading the same reading; size data against the D1 free plan | David ([SCO-290](https://linear.app/scout1/issue/SCO-290), [SCO-291](https://linear.app/scout1/issue/SCO-291)) |
+
+---
+
+## 2026-11-04 — S.C.O.U.T. Sr. Design GENG & ECEN advisor meeting
+
+**Attendees** — John Ryan Myrdal · Isabella Rodriguez · Shoba Krishnan · Jes Kuczenski. David Chousal Cantu was not present; his work was reported by
+John and Isabella. Source: Granola ([transcript and notes](https://notes.granola.ai/t/4dbf3b38-ff46-4dad-8a47-adb9661862fc)). The transcript is auto-generated and
+partly garbled; only points that are clear in it are recorded.
+
+### Demo: temperature sensor
+
+- Isabella ran the sensor on the local website built on David's software, which shows the live reading and a marked event log instead of raw Arduino output.
+  Marked events: air, then ice water. The log saves to the repo.
+- In ice water the reading settled near, but not at, 0 °C because the input water was warmer than ice-cold. In air it read within the second decimal of a digital
+  thermometer; in water it agreed with a regular thermometer.
+- Datasheet accuracy is ±0.5 to ±1.5 °C (stated in the meeting). Isabella's position: adequate for the MVP because the use case is shallow coral-reef water and
+  pattern recognition across channels, not absolute ocean temperature. A later deployment would carry three probes at different depths that cross-check each
+  other (the sponsor, transcribed "Noah" and presumably NOAA, wants multi-depth data).
+- Advisors asked how the sensor is calibrated, whether it drifts, and how often it needs recalibrating. Answer: it will drift as marine growth builds up; the
+  rate can only be learned by leaving sensors in salt water, and recalibration frequency follows from that.
+
+### Feedback and direction from the advisors
+
+- **Calibration curve:** use four known reference points (the ice point is one) and test two sensors side by side to see how far they differ.
+- **Justify the accuracy in writing:** the claim that shallow water swings in temperature (rain runoff, strong currents) needs cited data in the thesis and
+  presentation. A more accurate probe and its cost go in as a future-upgrade recommendation.
+- **Cost tiers belong in the thesis:** the turbidity sensor is about $30; a comparable next-tier sensor is about $2,400. Frame cost against what the sponsor would accept
+  (the sponsor target of under $30k a unit was mentioned), not against what the team calls cheap.
+- **Measure power now:** build a station that logs battery draw over a 3-minute measure-and-transmit cycle; before the winter break, leave it running for the
+  two-week gap and compare against the power analysis. David's LoRa tests could log power passively.
+- **Battery plan (John):** single-cell baseline from Thanksgiving to winter break, two cells over the break. Projected: two cells guarantee about a year; one cell's
+  pessimistic case is about 11.5 months. Neither is tested.
+- **Website and marketing:** describe how the system works but do not publish wiring diagrams or pinouts; put detailed documentation behind locked pages.
+  Presentations are recorded for education only and judges are bound not to share. Add a 3D interactive viewer for each buoy iteration; the electrical visuals are
+  due this weekend. Advisors framed claims as what could be stated definitively on a product page (for example, guarantee six months rather than a year).
+- **Colour:** yellow is the nautical norm and eases permitting in some jurisdictions; it also matches the SCU mustard yellow. A yellow-on-black logo variant was
+  discussed; nothing decided.
+- **IP and an LLC:** an LLC was discussed as low cost and protective. Free IP advice is available through Bronco Ventures and the law school. Not decided.
+- **Deployment recommendations:** the thesis or website could add sensor depth guidance and units per reef (a sketch map), and eventually a user manual.
+
+### Status reported
+
+- **Isabella (electronics):** temperature sensor demonstrated; turbidity sensor arrived Friday, work starts Tuesday Nov 10 after two midterms; one sensor per week,
+  then shrink to perfboard and a custom PCB shaped to the housing. Funding letters from the department are expected by early next week at the latest, each carrying
+  an activity code that must appear on every purchase.
+- **John (mechanical):** electronics housing with unplugged cable glands leaked from uneven cap flexing around the mounting cutouts; a scaled-down seal test
+  chamber is being printed to iterate without wasting filament. Float and waterline tests match the model. PET water uptake is lower than expected. Salt-water
+  bath running for fouling tests; coated and uncoated samples will go to the home setup over winter break. The website's Technology page shows 15 iterations; the
+  16th and one re-exported assembly still need uploading.
+- **David (software), as reported:** the console is consolidated under one domain with security improved; the snapping-shrimp noise profile work includes edge
+  cases where shrimp calls could be misclassified; LoRa packet size is being tested (60 to 70 bytes mentioned).
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Test sending hydrophone audio over LoRa, like other sensor packets | Raw audio never goes over LoRa ([Standing rule 2](../../CLAUDE.md), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md)); only a 44-byte packet with a 14-byte acoustic summary is sent. Likely a request to confirm that limit by test |
+| Temperature and turbidity transmit together; hydrophone is separate | [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md) puts the acoustic summary in the same packet; see [`facts.md`](../hub/facts.md) |
+| Packet size of 60 to 70 bytes | 44 bytes actual, 140 bytes ceiling ([`facts.md`](../hub/facts.md)) |
+| Three measurements a day, about three minutes each | Check against the sampling schedule in [`facts.md`](../hub/facts.md) before quoting |
+
+### Action items
+
+No Linear issues filed yet; the owners below are as stated in the meeting.
+
+| Item | Owner |
+|---|---|
+| Run a calibration curve (four reference points) and compare two temperature sensors | Isabella |
+| Write the accuracy justification for shallow water with cited data (thesis and presentation) | Isabella, John |
+| Build the power-measurement station; 3-minute cycle logging; single-cell baseline before Thanksgiving | Isabella |
+| Ask David what packet sizes and formats the LoRa link has already carried, and whether audio can be tested | John |
+| Upload the 16th iteration, re-export the failed assembly, add the 3D viewer and electrical visuals | John, Isabella |
+| Send the draft funding letters; put the activity code on every purchase | Department (expected early next week) |
+| Ask Bronco Ventures or the law school about IP protection before publishing more on the site | John |
