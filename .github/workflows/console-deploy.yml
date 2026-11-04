@@ -1,0 +1,111 @@
+name: Console deploy (Cloudflare)
+
+# Deploys the S.C.O.U.T. Console (console/, ADR-0012) to https://console.scoutscu.com when a
+# merge to main touches console/. Replaces the manual `npx wrangler deploy`.
+#
+# Order matters and is the same as the manual runbook (console/README.md → Automatic deploy):
+#   tests + build  →  export D1 to R2  →  apply D1 migrations  →  deploy the Worker  →  /healthz
+# Migrations run before the deploy because the new Worker code expects the new schema. A D1
+# migration cannot be rolled back, so the database is exported first, every time.
+#
+# Gated by the `production` environment: the job waits for a required reviewer to approve it.
+# One-time setup (repo admin, see console/README.md): create the environment with a required
+# reviewer and the two secrets below BEFORE this workflow first reaches main. GitHub creates a
+# missing environment with no protection, so the first merge would deploy unapproved.
+#
+# Secrets (environment `production`, never committed):
+#   CLOUDFLARE_API_TOKEN   — scoped to Workers Scripts, D1 and Workers R2 Storage: Edit
+#   CLOUDFLARE_ACCOUNT_ID
+#
+# The repo is public, so the database export never goes to a GitHub artifact (anyone signed in
+# could download it). It goes to the private R2 bucket under backups/, which the bucket's
+# lifecycle rule deletes after 35 days, like the nightly backups.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "console/**"
+      - ".github/workflows/console-deploy.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+# Never run two deploys (or two migration runs) against the live database at once.
+concurrency:
+  group: console-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Test, migrate and deploy the console
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://console.scoutscu.com
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Check the Cloudflare secrets are set
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID must be set on the production environment (console/README.md → Automatic deploy)."
+            exit 1
+          fi
+
+      # The same checks ci.yml runs; repeated here so nothing untested reaches the live site,
+      # even from a manual run.
+      - name: Worker tests
+        working-directory: console
+        run: npm test
+      - name: Install the front end
+        working-directory: console/web
+        run: npm ci
+      - name: Front-end tests
+        working-directory: console/web
+        run: npm test
+      - name: Build the front end (static export the Worker serves)
+        working-directory: console/web
+        run: npm run build
+
+      - name: Install wrangler
+        working-directory: console
+        run: npm install --no-save wrangler@4
+
+      - name: Export the live database to R2
+        working-directory: console
+        run: |
+          key="backups/pre-deploy-$(date -u +%Y-%m-%dT%H%MZ)-${GITHUB_SHA::7}.sql.gz"
+          npx wrangler d1 export scout-console --remote --output "$RUNNER_TEMP/d1.sql"
+          gzip -9 "$RUNNER_TEMP/d1.sql"
+          npx wrangler r2 object put "scout-console-files/$key" --remote \
+            --file "$RUNNER_TEMP/d1.sql.gz" --content-type application/gzip
+          rm -f "$RUNNER_TEMP/d1.sql.gz"
+          echo "Database exported to R2: $key" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply pending D1 migrations
+        working-directory: console
+        run: npx wrangler d1 migrations apply scout-console --remote
+
+      - name: Deploy the Worker
+        working-directory: console
+        run: npx wrangler deploy
+
+      - name: Check the live console answers
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl -fsS https://console.scoutscu.com/healthz | grep -q ok; then
+              echo "Deployed ${GITHUB_SHA::7}; /healthz says ok." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::https://console.scoutscu.com/healthz did not say ok after the deploy."
+          exit 1
