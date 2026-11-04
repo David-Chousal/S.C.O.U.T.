@@ -59,7 +59,7 @@
 
 File name: `<discipline>/test/rr-NN-subject-YYYY-MM-DD.md`. `NN` is the next free ID in the
 [risk-reduction register](../../mechanical/test/risk-reduction-register.md). The CI check
-(`check_conventions.py`) fails a PR whose test record lacks the one-page summary or Parts A, B, C.
+(`check_conventions.py`) fails a PR whose test record lacks the one-page summary or Parts A, B, C. A record **added** in a PR is held to more: every section A1 to C5, a Record kind row, no template placeholders left, an A5 metric table with a `Pass if` column, and a dated `Locked on:` line unless the record is retroactive. Existing records are not re-judged.
 
 ```markdown
 # <Subject> — <Test name>, YYYY-MM-DD

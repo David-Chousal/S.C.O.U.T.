@@ -243,6 +243,41 @@ def check_test_records(added: list[str], modified: list[str]) -> list[str]:
                     f"{f}: test record is missing '{need}' — "
                     "copy docs/engineering/test-record-template.md"
                 )
+        if f in added:
+            fatal.extend(check_new_test_record(f, text))
+    return fatal
+
+
+# A NEW record must have every section of the template filled in, not just the three Parts.
+TEST_NEW_SECTIONS = tuple(
+    f"### {s}."
+    for s in (
+        "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10",
+        "B1", "B2", "B3", "C1", "C2", "C3", "C4", "C5",
+    )
+)
+TEST_PLACEHOLDERS = ("YYYY-MM-DD", "rr-NN", "RR-NN", "<Subject>", "<Test name>", "SCO-NNN")
+
+
+def check_new_test_record(f: str, text: str) -> list[str]:
+    """Stricter rules for a record added in this PR (existing records are not re-judged)."""
+    fatal: list[str] = []
+    for need in TEST_NEW_SECTIONS:
+        if need not in text:
+            fatal.append(f"{f}: new test record is missing section '{need}'")
+    if "**Record kind**" not in text:
+        fatal.append(f"{f}: new test record is missing the 'Record kind' row (Prospective or Retroactive)")
+    for ph in TEST_PLACEHOLDERS:
+        if ph in text:
+            fatal.append(f"{f}: template placeholder '{ph}' was left in the record")
+    a5 = re.search(r"### A5\..*?(?=\n### A6\.)", text, re.S)
+    if a5:
+        block = a5.group(0)
+        if "Pass if" not in block or not re.search(r"^\| M\d+ ", block, re.M):
+            fatal.append(f"{f}: A5 needs a metric table with a 'Pass if' column and at least one M row")
+        retro = "Retroactive" in text
+        if not retro and not re.search(r"Locked on:\s*\d{4}-\d{2}-\d{2}", block):
+            fatal.append(f"{f}: A5 needs 'Locked on: YYYY-MM-DD' (the pass mark is fixed before the run)")
     return fatal
 
 
