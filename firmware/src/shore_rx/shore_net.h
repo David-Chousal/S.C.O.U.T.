@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include "scout_console.h"
 #include "scout_shore_clock.h"
 #include "scout_upload_queue.h"
 
@@ -20,7 +21,7 @@
 struct ShoreShared {
     ScoutUploadQueue queue;
     ScoutShoreClock clock;
-    uint8_t requested[SHORE_MAX_BUOY_ID + 1]; /* index = buoy_id; 0 = nothing requested */
+    ScoutWanted wanted[SHORE_MAX_BUOY_ID + 1]; /* index = buoy_id; all zero = nothing requested */
 };
 
 extern ShoreShared g_shared;

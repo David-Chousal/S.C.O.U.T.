@@ -65,25 +65,29 @@ size_t scout_packet_encode(const ScoutReading *r, uint8_t *out) {
     put_u16(&p, (uint16_t)r->ndsi_e4);
     put_u16(&p, r->snap_count);
     put_u16(&p, r->clip_count);
+    put_u16(&p, r->settings_digest);
 
-    size_t body_len = (size_t)(p - out); /* 42 */
+    size_t body_len = (size_t)(p - out); /* 44 */
     put_u16(&p, scout_crc16_ccitt(out, body_len));
-    return (size_t)(p - out); /* 44 */
+    return (size_t)(p - out); /* 46 */
 }
 
 scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutReading *out) {
     bool legacy = (len == SCOUT_PACKET_LEGACY_SIZE);
-    if (len != SCOUT_PACKET_SIZE && !legacy) {
+    bool v4 = (len == SCOUT_PACKET_V4_SIZE);
+    if (len != SCOUT_PACKET_SIZE && !legacy && !v4) {
         return SCOUT_DECODE_BAD_LENGTH;
     }
-    size_t body_len = legacy ? SCOUT_PACKET_LEGACY_BODY_SIZE : SCOUT_PACKET_BODY_SIZE;
+    size_t body_len = legacy ? SCOUT_PACKET_LEGACY_BODY_SIZE
+                      : v4   ? SCOUT_PACKET_V4_BODY_SIZE
+                             : SCOUT_PACKET_BODY_SIZE;
     const uint8_t *crc_at = buf + body_len;
     if (get_u16(&crc_at) != scout_crc16_ccitt(buf, body_len)) {
         return SCOUT_DECODE_BAD_CRC;
     }
     bool version_ok = legacy ? (buf[0] == 1 || buf[0] == 2)
-                             : (buf[0] == SCOUT_PACKET_VERSION ||
-                                buf[0] == SCOUT_PACKET_PREVIOUS_VERSION);
+                       : v4  ? (buf[0] == 3 || buf[0] == 4)
+                             : buf[0] == SCOUT_PACKET_VERSION;
     if (!version_ok) {
         return SCOUT_DECODE_BAD_VERSION;
     }
@@ -110,6 +114,7 @@ scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutR
     r.ndsi_e4 = legacy ? 0 : (int16_t)get_u16(&p);
     r.snap_count = legacy ? 0 : get_u16(&p);
     r.clip_count = legacy ? 0 : get_u16(&p);
+    r.settings_digest = (legacy || v4) ? 0 : get_u16(&p);
     *out = r;
     return SCOUT_DECODE_OK;
 }

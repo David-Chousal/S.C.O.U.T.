@@ -8,12 +8,12 @@
  *   turbidity_adc u16 | battery_mv u16 | uptime_s u32 | flags u16 | soh u8 | audio_present u8 |
  *   fw_major u8 | fw_minor u8 | fw_patch u8 |
  *   lvl_anthro_cdb i16 | lvl_mixed_cdb i16 | lvl_bio_cdb i16 | lvl_broad_cdb i16 |
- *   ndsi_e4 i16 | snap_count u16 | clip_count u16 | crc16 u16
+ *   ndsi_e4 i16 | snap_count u16 | clip_count u16 | settings_digest u16 | crc16 u16
  *
  * v1 and v2 were the first 28 body bytes alone (30 bytes with the CRC); the decoder still
  * accepts them, with the acoustic fields zero. v4 has the v3 byte layout; it gives meaning to
  * flags bits 8-10 (the transmit count and CMD_REJECTED, below), so the decoder accepts 44-byte
- * frames of either version.
+ * frames of either version. v5 appends settings_digest; 44-byte v3/v4 frames decode with it 0.
  *
  * Hardware-free on purpose (only <stdint.h>) so it compiles and unit-tests off-target
  * (`pio test -e native`), and so the encoder can be verified against the Python encoder.
@@ -35,11 +35,15 @@
 /* v4 (2026-10-25, SCO-198): flags bits 8-9 carry the daily transmit count the buoy is using
  * (1-3; 0 = not reported, as in every v1-v3 frame) and bit 10 is CMD_REJECTED; the CSV gains a
  * tx_count column. Byte layout unchanged from v3. */
-#define SCOUT_PACKET_VERSION 4
-/* 44-byte frames older than v4 that still decode (tx_count reads 0). */
-#define SCOUT_PACKET_PREVIOUS_VERSION 3
-#define SCOUT_PACKET_SIZE 44
-#define SCOUT_PACKET_BODY_SIZE 42
+/* v5 (2026-11-04, remote settings plan): settings_digest u16 appended to the body, the
+ * CRC-16 of every remote setting the buoy runs (lib/scout_settings), and the CSV gains a
+ * settings_digest column. */
+#define SCOUT_PACKET_VERSION 5
+#define SCOUT_PACKET_SIZE 46
+#define SCOUT_PACKET_BODY_SIZE 44
+/* v3/v4: the v5 layout without settings_digest (it reads 0). v3 has tx_count 0. */
+#define SCOUT_PACKET_V4_SIZE 44
+#define SCOUT_PACKET_V4_BODY_SIZE 42
 /* The v1/v2 layout: no acoustic summary. Decoded for old frames and replayed logs. */
 #define SCOUT_PACKET_LEGACY_SIZE 30
 #define SCOUT_PACKET_LEGACY_BODY_SIZE 28
@@ -95,24 +99,27 @@ typedef struct {
     int16_t ndsi_e4;        /* NDSI × 10,000 */
     uint16_t snap_count;
     uint16_t clip_count;
+    /* CRC-16 of the buoy's remote settings (scout_settings_digest, v5); 0 when not reported. */
+    uint16_t settings_digest;
 } ScoutReading;
 
 /* CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) — matches crc16_ccitt in packet.py. */
 uint16_t scout_crc16_ccitt(const uint8_t *data, size_t len);
 
-/* Encode `r` into `out` (must hold >= SCOUT_PACKET_SIZE). Returns bytes written (44). */
+/* Encode `r` into `out` (must hold >= SCOUT_PACKET_SIZE). Returns bytes written (46). */
 size_t scout_packet_encode(const ScoutReading *r, uint8_t *out);
 
 /* Decode outcomes, checked in this order — same checks as decode() in packet.py. */
 typedef enum {
     SCOUT_DECODE_OK = 0,
-    SCOUT_DECODE_BAD_LENGTH = 1,  /* neither SCOUT_PACKET_SIZE nor SCOUT_PACKET_LEGACY_SIZE */
+    SCOUT_DECODE_BAD_LENGTH = 1,  /* not 46 (v5), 44 (v3/v4) or 30 (v1/v2) bytes */
     SCOUT_DECODE_BAD_CRC = 2,     /* trailing CRC does not match the body */
-    SCOUT_DECODE_BAD_VERSION = 3, /* 44 B but not v3/v4, or 30 B but not v1/v2 */
+    SCOUT_DECODE_BAD_VERSION = 3, /* the version byte does not fit the length */
 } scout_decode_result_t;
 
 /* Decode a received payload into `out` (shore side, SCO-24). `out` is written only on OK.
- * A 30-byte v1/v2 frame decodes with its own schema_version and the acoustic fields zero. */
+ * A 30-byte v1/v2 frame decodes with its own schema_version and the acoustic fields zero; a
+ * 44-byte v3/v4 frame with settings_digest zero. */
 scout_decode_result_t scout_packet_decode(const uint8_t *buf, size_t len, ScoutReading *out);
 
 /* Put `tx_count` (0-3) into bits 8-9 of `flags`, leaving every other bit as it was. */

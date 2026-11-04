@@ -1,6 +1,7 @@
 #include "scout_console.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -306,6 +307,14 @@ size_t scout_console_row(const ScoutReading *r, char *out, size_t cap) {
         put_u32(&o, tx);
     }
     end_value(&o);
+    key(&o, "settings_digest");  // v5 only; 4 lowercase hex digits, as schema.py writes it
+    if (r->schema_version >= 5) {
+        static const char HEX[] = "0123456789abcdef";
+        char hex[5] = {HEX[(r->settings_digest >> 12) & 0xF], HEX[(r->settings_digest >> 8) & 0xF],
+                       HEX[(r->settings_digest >> 4) & 0xF], HEX[r->settings_digest & 0xF], '\0'};
+        put(&o, hex);
+    }
+    end_value(&o);
     put(&o, "}");
 
     if (!o.ok) {
@@ -367,14 +376,15 @@ int scout_console_bad_row(const char *body) {
     return -1;
 }
 
-int scout_console_parse_settings(const char *body, uint8_t *requested, size_t slots) {
+int scout_console_parse_wanted(const char *body, ScoutWanted *wanted, size_t slots) {
     const char *at = strstr(body, "\"buoys\"");
     if (at == nullptr || strchr(at, '[') == nullptr) {
         return -1;
     }
     at = strchr(at, '[');
-    uint8_t parsed[256] = {0};
-    size_t limit = slots < sizeof(parsed) ? slots : sizeof(parsed);
+    ScoutWanted parsed[SCOUT_WANTED_MAX_SLOTS];
+    memset(parsed, 0, sizeof(parsed));
+    size_t limit = slots < SCOUT_WANTED_MAX_SLOTS ? slots : SCOUT_WANTED_MAX_SLOTS;
     int set = 0;
     const char *object;
     while ((object = strchr(at, '{')) != nullptr) {
@@ -383,13 +393,31 @@ int scout_console_parse_settings(const char *body, uint8_t *requested, size_t sl
             return -1;
         }
         long buoy = number_after(object, "\"buoy_id\":", close);
-        long count = number_after(object, "\"tx_count_requested\":", close);
-        if (buoy >= 0 && (size_t)buoy < limit && count >= 1 && count <= 3) {
-            parsed[buoy] = (uint8_t)count;
-            set++;
+        if (buoy > 0 && (size_t)buoy < limit) {
+            ScoutWanted *w = &parsed[buoy];
+            long count = number_after(object, "\"tx_count_requested\":", close);
+            if (count >= 1 && count <= 3) {
+                w->tx_count = (uint8_t)count;
+            }
+            // "settings":"3,0,30,..." is the S-line body; reuse its parser and its checks.
+            const char *values = strstr(object, "\"settings\":\"");
+            if (values != nullptr && values < close) {
+                values += strlen("\"settings\":\"");
+                const char *end = strchr(values, '"');
+                char line[96];
+                int n = end ? snprintf(line, sizeof(line), "S%ld:%.*s", buoy, (int)(end - values), values) : -1;
+                uint16_t parsed_id = 0;
+                if (n > 0 && (size_t)n < sizeof(line) &&
+                    scout_dl_parse_settings_command(line, &parsed_id, &w->settings)) {
+                    w->has_settings = 1;
+                }
+            }
+            if (w->tx_count || w->has_settings) {
+                set++;
+            }
         }
         at = close + 1;
     }
-    memcpy(requested, parsed, limit);
+    memcpy(wanted, parsed, limit * sizeof(ScoutWanted));
     return set;
 }

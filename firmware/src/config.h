@@ -17,30 +17,32 @@ static const uint16_t BUOY_ID = 1;  // CSV/label renders as SCOUT-01
 #define FW_PATCH 0
 
 /* ── Cadence (seconds) ────────────────────────────────────────────────────── */
+/* The reading interval, transmit count, slot phase, audio clip length, power thresholds and
+ * humidity alert are REMOTE SETTINGS, not constants: their defaults, ranges and digest live in
+ * lib/scout_settings/scout_settings.h, the one table the shore and the console mirror
+ * (docs/engineering/firmware-remote-settings-plan.md). */
 #ifdef SCOUT_BENCH
 /* BENCH BUILD ONLY (env feather_m0_bench): sample every minute and transmit after every sample,
  * so the bench link test (SCO-155) gets a frame a minute instead of three a day. Never deploy. */
-static const uint32_t SAMPLE_INTERVAL_S = 60;
 static const bool TX_EVERY_SAMPLE = true;
 #else
-static const uint32_t SAMPLE_INTERVAL_S = 1800;         // 30-minute duty cycle (:00 and :30)
 static const bool TX_EVERY_SAMPLE = false;
 #endif
-/* Fixed LoRa transmit slots, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
+static const uint32_t BENCH_SAMPLE_INTERVAL_S = 60;     // used only when TX_EVERY_SAMPLE
+/* LoRa transmit slots at slot phase 0, seconds after midnight UTC: 00:10, 08:10, 16:10 (SCO-165,
  * decided 2026-10-16). Each sits 10 min after a sample so the radio never overlaps a sensor
- * read, and the shore station listens on the same table. Change slot times here only.
- * How many are used is a runtime setting since SCO-198, the daily transmit count (1-3, default
- * 3, held in retained RAM): scout_select_tx_slots picks 1 → 00:10, 2 → 00:10 + 16:10,
- * 3 → all three. The range is pending ECE power-budget sign-off. */
+ * read. Two remote settings act on this table: the transmit count picks 1 → 00:10,
+ * 2 → 00:10 + 16:10, 3 → all three (SCO-198), and the slot phase moves every slot 0-7 h later
+ * (scout_settings_tx_slots). Every reading interval (15/30/60 min) samples on the hour, so each
+ * slot still follows a sample by 10 min. */
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
-// Audio: one 60 s clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
-// later carries the clip just before it. Clip length is ACOUSTIC_CLIP_SECONDS below.
+// Audio at phase 0: one clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
+// later carries the clip just before it. The slot phase moves these hours with the slots; the clip
+// length is the audio_clip_s setting, at most ACOUSTIC_CLIP_SECONDS below.
 static const uint8_t AUDIO_HOURS_UTC[] = {0, 8, 16};
-/* Housing humidity alert (SCO-205). ⚠️ PROVISIONAL: a placeholder until the calibration in
- * SCO-204 (sealed chamber, known water added) gives a threshold from data. Rows at or above it
- * carry HUMIDITY_HIGH, which reaches the dashboard as a fault. */
-static const float HUMIDITY_ALERT_RH_PCT = 70.0f;
+/* Housing humidity alert (SCO-205): the humidity_alert_pct setting. Rows at or above it carry
+ * HUMIDITY_HIGH, which reaches the dashboard as a fault. */
 static const uint16_t SENSOR_WARMUP_MS = 500;           // turbidity settle after power-on
 /* Bench clock set (SCO-201): at boot, wait this long for USB and then for a "T<unix-epoch>"
  * line. Only at power-on/reset, never on a wake, so the battery cost is one ~8 s window. */
@@ -49,16 +51,13 @@ static const uint32_t MIN_VALID_EPOCH = 1767225600;     // 2026-01-01T00:00:00Z
 static const uint16_t WDT_TIMEOUT_MS = 16384;           // watchdog reset if a cycle hangs
                                                         // (SAMD21 max; a healthy cycle is a few s)
 
-/* ── Power thresholds (adaptive/graceful-degradation tiers) ───────────────────
- * NORMAL   ≥ CONSERVE_MV            all sensing, transmit in every slot
- * CONSERVE CRITICAL_MV..CONSERVE_MV skip audio, transmit in every Nth slot
- * CRITICAL < CRITICAL_MV           temperature + logging only; no TX, turbidity, or audio
- * Provisional millivolts — depend on the final battery/charging path (ADR-0002). */
-static const uint16_t BATTERY_CONSERVE_MV = 3200;                  // drop into conserve below this
-static const uint16_t BATTERY_CRITICAL_MV = 3100;                  // drop into critical below this
-// conserve: every 3rd slot in use, so only the first (00:10), which every transmit count keeps:
-// CONSERVE never sends more than the setting (SCO-198).
-static const uint32_t TRANSMIT_CONSERVE_EVERY = 3;
+/* ── Power tiers (adaptive/graceful-degradation) ───────────────────────────────
+ * NORMAL   ≥ conserve_mv               all sensing, transmit in every used slot
+ * CONSERVE critical_mv..conserve_mv    skip audio, transmit in every conserve_every-th used slot
+ * CRITICAL < critical_mv               temperature + logging only; no TX, turbidity, or audio
+ * All three are remote settings (lib/scout_settings). With the default conserve_every of 3 only
+ * the first slot (always kept by every transmit count) sends, so CONSERVE never sends more than
+ * the setting (SCO-198). */
 
 /* ── Pin map (Feather M0 defaults — confirm with ECE) ─────────────────────── */
 #define PIN_ONEWIRE 12     // DS18B20 data (4.7 kΩ pull-up to 3.3 V)
@@ -133,11 +132,12 @@ static const int8_t LORA_TX_POWER_DBM = 11;
  * SX1276 500 kHz receiver-sensitivity erratum (reg 0x36 = 0x02, reg 0x3A = 0x64) which
  * does not apply to this transmit-only node. Tracked on SCO-24. */
 /* ── Settings downlink (SCO-198, OTA design §2-§3) ─────────────────────────────
- * Built only with -DSCOUT_DOWNLINK, which is OFF in every shipped environment: the listen
- * window is a power-budget line that needs Isabella's sign-off, and the shore must not transmit
- * off the bench until the RFM95W FeatherWing's FCC authorization is checked (OTA §8).
- * With it on, the radio listens DOWNLINK_LISTEN_MS after each send for one authenticated
- * SET_TX_COUNT frame (lib/scout_downlink), keyed by src/downlink_key.h, which is never committed.
+ * Built with -DSCOUT_DOWNLINK, which the shipped environments (feather_m0, feather_esp32s3_shore)
+ * turn on since 2026-11-04, on the team's instruction that the power and FCC sign-offs be treated
+ * as given (docs/engineering/firmware-remote-settings-plan.md); a deploy build therefore needs
+ * src/downlink_key.h, which is never committed, and fails to compile without it.
+ * The radio listens DOWNLINK_LISTEN_MS after each send for one authenticated command frame
+ * (lib/scout_downlink): v1 sets the transmit count, v2 every remote setting at once.
  * ⚠️ Window length, RX current and shore turnaround are design figures, not bench-measured. */
 static const uint16_t DOWNLINK_LISTEN_MS = 1000;   // OTA §2: 1.0 s ≈ 0.019 mAh/day at 3 slots
 // A frame whose header arrived inside the window is received to its end: one ceiling airtime.
