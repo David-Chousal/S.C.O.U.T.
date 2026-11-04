@@ -365,3 +365,29 @@ and a recessed gland section) to check room to tighten the nuts and that the wal
 test or two the wall in the gland section was thinned for more thread contact. The numbers were not recorded; see
 [RR-24](../../test/rr-24-gland-fit-coupon-2026-11-02.md) and the [photo](../../test/gland-fit-coupon-2026-11-02-01.jpg).
 
+
+## Small test chamber for face-seal testing (2026-11-03)
+
+After the [RR-23](../../test/rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) flood through the cap face seal, John
+Ryan made a cut-down housing and cap to test the face seal alone, using less plastic per print. The cable outlet is
+removed and the chamber is smaller. Exported from CAD on 2026-11-03; renamed from `Electronics Housing.step` and
+`Electronics Cap.step`.
+
+| File | Role |
+|---|---|
+| [`electronics-housing-small-test-chamber-body-2026-11-03.step`](electronics-housing-small-test-chamber-body-2026-11-03.step) | Test body with the face-seal groove |
+| [`electronics-housing-small-test-chamber-cap-2026-11-03.step`](electronics-housing-small-test-chamber-cap-2026-11-03.step) | Matching plain-circle cap, 10 bolt holes |
+
+Read from the STEP files (inches); overall chamber height and print settings are Not recorded.
+
+| Feature | Value |
+|---|---|
+| Groove ID / OD | 5.625 / 5.975 in (142.9 / 151.8 mm), width 0.175 in |
+| Groove depth | 0.094 in (2.39 mm) |
+| Cap outer diameter | 7.0 in (uniform circle) |
+| Cap bolt holes | 10 at Ø0.177 in (4.5 mm), bolt circle Ø6.4 in |
+| Body outer diameter | about 7.5 in |
+
+The groove matches the 5-5/8 in ID by 5-7/8 in OD ring John measured, not the AS568-247 logged above (conflict in
+[facts.md](../../../docs/hub/facts.md)). Use grease on the ring. The test itself still needs its
+[test record](../../../docs/engineering/test-record-template.md) with the pass mark written first.
