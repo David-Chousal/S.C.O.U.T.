@@ -1,152 +1,188 @@
 import type { ReactNode } from "react";
+import { Icon } from "@/components/ui/icon";
+import { CopyCommand } from "./copy-command";
+import {
+  BUOY_STEPS, PROBLEMS, ROLES, SHORE_STEPS, SHORTCUTS, TASKS, USB_FALLBACK_COMMAND, type HelpStep,
+} from "./help-content";
 
-interface HelpSection {
+interface GuideSectionProps {
   id: string;
+  eyebrow: string;
   title: string;
-  tag: string;
-  body: ReactNode;
+  lead?: ReactNode;
+  children: ReactNode;
 }
 
-const SECTIONS: readonly HelpSection[] = [
-  {
-    id: "flow",
-    title: "How data reaches the console",
-    tag: "Buoy → shore → console",
-    body: (
-      <>
-        <p className="sc-help">
-          The buoy never talks to the console. It sends a 44-byte LoRa packet in each transmit slot (00:10, 08:10 and 16:10 UTC
-          by default). The <strong>shore station</strong>, an ESP32-S3 Feather with a LoRa FeatherWing, receives it and pushes the
-          reading here over WiFi with its device token. Every 10 minutes it also reads each buoy&apos;s requested transmit count and
-          sends it to the buoy right after that buoy&apos;s next packet. Without WiFi, a computer plugged into the S3 over USB does the
-          same job (<code>sync_console.py</code>).
-        </p>
-        <code className="sc-secret">buoy ──LoRa 915 MHz──► shore S3 ──WiFi, HTTPS──► console   (fallback: S3 ──USB──► computer ──HTTPS──► console)</code>
-      </>
-    ),
-  },
-  {
-    id: "shore",
-    title: "Connect a shore station",
-    tag: "Admin",
-    body: (
-      <ol className="sc-help sc-help-steps">
-        <li><strong>Make a device token.</strong> Stations → Shore stations → name the station (e.g. &quot;Kona pier&quot;) → copy the
-          <code>scd_…</code> token. It is shown once and stored hashed; make a new one if it is lost.</li>
-        <li><strong>Give the S3 its WiFi and token.</strong> Copy <code>firmware/src/shore_rx/shore_secrets_example.h</code> to
-          <code>shore_secrets.h</code> (never committed), fill in the WiFi name and password and the <code>scd_…</code> token, then
-          flash the <code>feather_esp32s3_shore</code> environment with PlatformIO. It pushes on its own from then on and keeps its
-          clock from NTP.</li>
-        <li><strong>No WiFi at the site?</strong> Plug the S3 into a Linux computer (a Raspberry Pi works), run the receiver as a
-          service (<code>shore/deploy/scout-shore.service</code>, <code>--serial</code> set to the S3&apos;s name under
-          <code>/dev/serial/by-id/</code>), and push on a timer with the token in the environment, never in a file in the repo:
-          <code className="sc-secret">SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…</code>
-          Pushing the same day twice is safe; repeats are ignored.</li>
-        <li><strong>Check it on Stations:</strong> the station shows &quot;last heard&quot; within a minute of its first push. If two stations
-          hear the same buoy, pick which one sends that buoy&apos;s commands there.</li>
-      </ol>
-    ),
-  },
-  {
-    id: "buoy",
-    title: "Add a buoy",
-    tag: "Member",
-    body: (
-      <ol className="sc-help sc-help-steps">
-        <li><strong>Flash the firmware</strong> from <code>firmware/</code> with PlatformIO, with <code>BUOY_ID</code> set in
-          <code>src/config.h</code> (it reports as <code>SCOUT-&lt;id&gt;</code>). For settings by radio, give it its own downlink key in
-          <code>src/downlink_key.h</code> (never committed) and the same key to the shore station as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>;
-          the console never holds it.</li>
-        <li><strong>Power it within range</strong> of a running shore station. Nothing else is needed: the buoy appears on Readings and
-          Fleet with its first pushed packet. You can also add it by hand on Fleet, to name it before it reports.</li>
-        <li><strong>Name it</strong> in Settings → Buoys. The name is the console&apos;s label only; the buoy keeps its ID.</li>
-      </ol>
-    ),
-  },
-  {
-    id: "settings",
-    title: "Change how a buoy behaves",
-    tag: "Member",
-    body: (
-      <p className="sc-help">
-        On Fleet, request a transmit count (1–3 a day). It shows <strong>pending</strong> until the buoy&apos;s own packets report the
-        new count, which takes at most one transmit slot after the shore station delivers it. Every other firmware setting is
-        listed in Settings → Buoys, read straight from <code>config.h</code>, with how it changes.
-      </p>
-    ),
-  },
-  {
-    id: "roles",
-    title: "Roles",
-    tag: "Who can do what",
-    body: (
-      <dl className="sc-pair">
-        <div><dt className="sc-tag">Guest</dt><dd className="sc-help">Sees every page with the controls off. Signs in with a name and email, can never be promoted.</dd></div>
-        <div><dt className="sc-tag">Member</dt><dd className="sc-help">Also changes buoy settings, dashboards, reports and API tokens.</dd></div>
-        <div><dt className="sc-tag">Admin</dt><dd className="sc-help">Also manages people (Team) and shore stations (Stations).</dd></div>
-      </dl>
-    ),
-  },
-  {
-    id: "keys",
-    title: "Keyboard shortcuts",
-    tag: "Settings → This browser",
-    body: (
-      <p className="sc-help">
-        Press <kbd>G</kbd> then a letter to jump: <kbd>H</kbd> Dashboard, <kbd>F</kbd> Fleet, <kbd>R</kbd> Readings, <kbd>E</kbd> Reports,
-        <kbd>S</kbd> Stations, <kbd>T</kbd> Team, <kbd>P</kbd> Settings, <kbd>D</kbd> Developer, <kbd>Y</kbd> Help, <kbd>A</kbd> Account.
-        On the Dashboard, <kbd>E</kbd> customizes and <kbd>⌘S</kbd> saves. Turn shortcuts off in Settings → This browser.
-      </p>
-    ),
-  },
-  {
-    id: "api",
-    title: "Scripts and notebooks",
-    tag: "Developer",
-    body: (
-      <p className="sc-help">
-        Make a personal API token on Developer → API tokens and send it as <code>Authorization: Bearer sct_…</code> to
-        <code>/api/v1</code>. It acts with your role, limited to its scopes. Every change anyone makes is on Developer → Audit log.
-      </p>
-    ),
-  },
-  {
-    id: "trouble",
-    title: "When something looks wrong",
-    tag: "Troubleshooting",
-    body: (
-      <ul className="sc-help sc-help-steps">
-        <li><strong>A buoy is stale:</strong> check Stations first. If the shore station is stale too, the problem is ashore
-          (no power, WiFi down, or on the USB fallback the computer off: <code>journalctl -u scout-shore -f</code>). If only the buoy is, it missed its slots: battery,
-          antenna, or out of range.</li>
-        <li><strong>The shore station gets 401:</strong> its device token was revoked or mistyped. Make a new one on Stations.</li>
-        <li><strong>A transmit count stays pending:</strong> the buoy has not sent since the shore station delivered it, or a different
-          station is set to send its commands (Stations).</li>
-        <li><strong>A gap in a trend line:</strong> the buoy was silent for over 26 hours. Readings it stored on its SD card can be
-          imported later and fill the gap.</li>
-      </ul>
-    ),
-  },
-];
+function GuideSection({ id, eyebrow, title, lead, children }: GuideSectionProps) {
+  return (
+    <section id={id} className="sc-guide__section" aria-labelledby={`${id}-title`}>
+      <header className="sc-guide__head">
+        <span className="sc-guide__eyebrow">{eyebrow}</span>
+        <h2 className="sc-guide__title" id={`${id}-title`}>{title}</h2>
+        {lead ? <p className="sc-guide__lead">{lead}</p> : null}
+      </header>
+      {children}
+    </section>
+  );
+}
 
-/** The Help page: how to connect a buoy and a shore station, and what else a console user needs. */
-export function HelpGuide() {
+interface StepsProps {
+  steps: readonly HelpStep[];
+  done: ReactNode;
+}
+
+function Steps({ steps, done }: StepsProps) {
   return (
     <>
-      <nav className="sc-bay" aria-label="On this page">
-        <ul className="sc-help-toc">
-          {SECTIONS.map((section) => <li key={section.id}><a className="sc-link" href={`#${section.id}`}>{section.title}</a></li>)}
-        </ul>
-      </nav>
-      {SECTIONS.map((section) => (
-        <section key={section.id} id={section.id} className="sc-bay" aria-labelledby={`${section.id}-title`}>
-          <div className="sc-bay__head">
-            <h2 className="sc-bay__title" id={`${section.id}-title`}>{section.title}</h2>
-            <span className="sc-tag">{section.tag}</span>
-          </div>
-          {section.body}
-        </section>
-      ))}
+      <ol className="sc-guide__steps">
+        {steps.map((step) => (
+          <li key={step.title} className="sc-guide__step">
+            <h3 className="sc-guide__step-title">{step.title}</h3>
+            <p className="sc-guide__text">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="sc-guide__done"><Icon name="check" /><span><b>Done when</b> {done}</span></p>
     </>
+  );
+}
+
+const FLOW_NODES = [
+  { name: "Buoy", detail: "Measures and stores" },
+  { name: "Shore station", detail: "ESP32-S3 within radio range" },
+  { name: "Console", detail: "You are here" },
+];
+const FLOW_LINKS = ["LoRa radio", "WiFi"];
+
+function FlowDiagram() {
+  return (
+    <ol className="sc-guide__flow" aria-label="Buoy to shore station to console">
+      {FLOW_NODES.map((node, index) => (
+        <li key={node.name} className="sc-guide__flow-item">
+          <div className="sc-guide__node"><strong>{node.name}</strong><span>{node.detail}</span></div>
+          {FLOW_LINKS[index] ? <span className="sc-guide__wire">{FLOW_LINKS[index]}</span> : null}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function TaskPicker() {
+  return (
+    <nav className="sc-guide__intro" aria-label="Help topics">
+      <p className="sc-guide__lead">What do you need to do?</p>
+      <ul className="sc-guide__tasks">
+        {TASKS.map((task) => (
+          <li key={task.id}>
+            <a className="sc-guide__task" href={`#${task.id}`}>
+              <Icon name={task.icon} size={20} />
+              <strong>{task.title}</strong>
+              <span>{task.summary}</span>
+              <small>{task.who}</small>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+function ShoreFallback() {
+  return (
+    <details className="sc-guide__more">
+      <summary>No WiFi at the site? Use a computer instead<Icon name="chevron-down" /></summary>
+      <div className="sc-guide__more-body">
+        <p className="sc-guide__text">
+          Plug the shore station into a Linux computer (a Raspberry Pi works) and run the receiver as a service with{" "}
+          <code>shore/deploy/scout-shore.service</code>, setting <code>--serial</code> to the device under <code>/dev/serial/by-id/</code>.
+          Then push on a timer. Keep the token in the environment, never in a file in the repo:
+        </p>
+        <CopyCommand command={USB_FALLBACK_COMMAND} />
+        <p className="sc-guide__text">Pushing the same day twice is safe; repeats are ignored.</p>
+      </div>
+    </details>
+  );
+}
+
+function Reference() {
+  return (
+    <div className="sc-guide__reference">
+      <GuideSection id="roles" eyebrow="Reference" title="Who can do what">
+        <dl className="sc-guide__roles">
+          {ROLES.map((row) => (
+            <div key={row.role}><dt className="sc-tag">{row.role}</dt><dd className="sc-guide__text">{row.can}</dd></div>
+          ))}
+        </dl>
+      </GuideSection>
+      <GuideSection id="keys" eyebrow="Reference" title="Keyboard shortcuts"
+        lead={<>Press <kbd>G</kbd>, then a letter, to jump to a page. Turn shortcuts off in <b>Settings → This browser</b>.</>}>
+        <dl className="sc-guide__shortcuts">
+          {SHORTCUTS.map((shortcut) => (
+            <div key={shortcut.action}>
+              <dt aria-label={shortcut.keys.join(shortcut.together ? " plus " : " then ")}>
+                {shortcut.keys.map((key, index) => <span key={key}>{index > 0 ? <i>{shortcut.together ? "+" : "then"}</i> : null}<kbd>{key}</kbd></span>)}
+              </dt>
+              <dd>{shortcut.action}</dd>
+            </div>
+          ))}
+        </dl>
+      </GuideSection>
+    </div>
+  );
+}
+
+/** The Help page: task-first how-tos, one short explanation, troubleshooting by symptom, then reference. */
+export function HelpGuide() {
+  return (
+    <div className="sc-guide">
+      <TaskPicker />
+
+      <GuideSection id="flow" eyebrow="Before you start" title="How readings reach the console"
+        lead="The buoy never talks to the console directly. A shore station listens for it and passes each reading on.">
+        <FlowDiagram />
+        <p className="sc-guide__text sc-guide__aside">
+          The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 44-byte packet; raw audio stays on the buoy. Every 10 minutes
+          the shore station also asks the console for setting changes and hands them to the buoy right after its next packet.
+        </p>
+      </GuideSection>
+
+      <GuideSection id="shore" eyebrow="Admin" title="Connect a shore station">
+        <Steps steps={SHORE_STEPS} done={<>the station shows a recent <b>last heard</b> time on Stations.</>} />
+        <ShoreFallback />
+      </GuideSection>
+
+      <GuideSection id="buoy" eyebrow="Member" title="Add a buoy">
+        <Steps steps={BUOY_STEPS} done={<>the buoy appears on Fleet with a recent reading.</>} />
+      </GuideSection>
+
+      <GuideSection id="settings" eyebrow="Member" title="Change how a buoy behaves"
+        lead="On Fleet, pick how many times a day the buoy should transmit, from 1 to 3.">
+        <p className="sc-guide__text">
+          The change shows as <b>pending</b> until the buoy&rsquo;s own packets confirm it, which takes at most one transmit slot after the
+          shore station delivers it. Every other firmware setting is listed under <b>Settings → Buoys</b>, with how to change it.
+        </p>
+      </GuideSection>
+
+      <GuideSection id="trouble" eyebrow="Troubleshooting" title="Fix something that looks wrong" lead="Pick what you are seeing.">
+        <div className="sc-guide__problems">
+          {PROBLEMS.map((problem) => (
+            <details key={problem.symptom} className="sc-guide__problem">
+              <summary>{problem.symptom}<Icon name="chevron-down" /></summary>
+              <p className="sc-guide__text">{problem.fix}</p>
+            </details>
+          ))}
+        </div>
+      </GuideSection>
+
+      <Reference />
+
+      <GuideSection id="api" eyebrow="Developer" title="Use the data in scripts and notebooks">
+        <p className="sc-guide__text">
+          Make a personal token on <b>Developer → API tokens</b> and send it as a header with every request to <code>/api/v1</code>. It acts
+          with your role, limited to the scopes you gave it. Every change anyone makes is listed on <b>Developer → Audit log</b>.
+        </p>
+        <CopyCommand command="Authorization: Bearer sct_…" />
+      </GuideSection>
+    </div>
   );
 }
