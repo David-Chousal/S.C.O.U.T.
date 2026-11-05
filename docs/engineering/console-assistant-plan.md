@@ -1,13 +1,30 @@
 # Console Assistant Plan
 
 > **Summary** — A plan for **Fred**, an AI assistant in the team console
-> (`console.scoutscu.com`). Fred answers questions about the project and the live fleet, and
-> helps run the console: it proposes changes such as buoy settings, renames, station
-> assignments and reports, and nothing changes until the person clicks Confirm. Drafted
-> 2026-11-05 ([SCO-299](https://linear.app/scout1/issue/SCO-299)). **Not adopted and not built.** It becomes ADR-0013 once the decisions at the end
-> are made. The top bar already has a disabled "Ask Fred" slot for it.
+> (`console.scoutscu.com`), built on the **free tier of Google's Gemini API**. Fred answers
+> questions about the project and the live fleet, and helps run the console: it proposes
+> changes such as buoy settings, renames, station assignments and reports, and nothing changes
+> until the person clicks Confirm. Drafted 2026-11-05
+> ([SCO-299](https://linear.app/scout1/issue/SCO-299)). **Not adopted and not built.** It
+> becomes ADR-0013 once the decisions at the end are made. The top bar already has a disabled
+> "Ask Fred" slot for it.
 
 ---
+
+## Why Gemini's free tier
+
+The project has no budget line for an AI service. Three free routes were weighed on 2026-11-05:
+
+| Option | For | Against |
+|---|---|---|
+| **Gemini API, free tier** (chosen) | Free with a Google account, no card. Strong enough for tool calling and multi-step diagnosis; very large context window | Low per-minute and per-day request limits that Google changes without notice; free-tier prompts and replies may be used to improve Google's products and read by human reviewers |
+| Cloudflare Workers AI, free tier | Already on our platform, no key at all | Open models noticeably weaker at chaining tools and at saying "I don't know"; smaller context |
+| Anthropic API (Claude) | Strongest at tool use | No free tier; a Claude Pro subscription does not include API access |
+
+Gemini wins on capability for zero cost. Its two weaknesses shape the plan: the **rate
+limits** (see [Limits and fallback](#limits-and-fallback)) and the **data terms** (see
+[Data and privacy](#data-and-privacy)). The model sits behind one small interface, so moving to
+Workers AI or a paid key later is a one-file change.
 
 ## What Fred should do
 
@@ -30,22 +47,28 @@ click. Anything the person's role cannot do, Fred cannot do for them.
 ```
 browser ── POST /api/assistant (session + CSRF) ──► Worker
    ▲  streamed reply (SSE)                           │ 1. load the user and their role
-   │                                                 │ 2. system prompt + knowledge pack (cached)
-   │  confirm card ──► POST /api/assistant/confirm   │ 3. Claude tool-use loop (max 8 turns)
+   │                                                 │ 2. system prompt + knowledge pack
+   │  confirm card ──► POST /api/assistant/confirm   │ 3. Gemini function-calling loop (max 8 turns)
    │                     │                           │      read tools → existing D1 queries
    │                     ▼                           │      propose tools → a pending action row
-   │           runs the existing handler as the user │ 4. store the turn, count the tokens
+   │           runs the existing handler as the user │ 4. store the turn, count the requests
    │           (same can() check, audited)           ▼
-   └──────────────────────────────────────── Anthropic Messages API
+   └──────────────────────────────────────── Gemini API (free tier)
 ```
 
 - **Runs in the existing Worker.** No new service: a new `worker/assistant/` folder, a new
-  `/api/assistant` route behind the same session and CSRF checks as `/api/*`, and the
-  Anthropic key as a Worker secret (`ANTHROPIC_API_KEY`, set with `wrangler secret put`, never
-  in `wrangler.toml`).
-- **Model:** Claude Sonnet 5.5 (`claude-sonnet-5-5`) by default; Haiku 5.5
-  (`claude-haiku-5-5`) for the morning brief and for titling conversations. The model ID lives
-  in one constant so it can change without touching anything else.
+  `/api/assistant` route behind the same session and CSRF checks as `/api/*`, and the Gemini
+  key as a Worker secret (`GEMINI_API_KEY`, set with `wrangler secret put`, never in
+  `wrangler.toml` or the repo).
+- **Calls Gemini over plain `fetch`** to its REST endpoint, with streaming and function
+  calling. No SDK, so the Worker bundle stays small.
+- **Model:** the strongest Gemini **Flash** model offered on the free tier for everything; a
+  lighter Flash-Lite model, if it has its own allowance, for the morning brief and conversation
+  titles. Both IDs live in one constant (`worker/assistant/model.js`), because Google retires
+  and renames models often.
+- **One interface for the model.** `model.js` exposes `chat(messages, tools)` and returns text
+  and tool calls in our own shape. Gemini's request format stays inside it, so the fallback
+  (Workers AI) or a paid provider is a second implementation of the same function.
 - **Fred acts as the person, never above them.** Every tool runs through the same functions
   the pages use, with the person's session. A guest gets read tools only; propose tools are
   not offered to the model at all for a role that could not run them, and the confirm
@@ -55,18 +78,19 @@ browser ── POST /api/assistant (session + CSRF) ──► Worker
   for 10 minutes, and returns a summary. The UI shows it as a card; Confirm calls
   `/api/assistant/confirm`, which runs the real handler. The audit log records it with
   "via Fred", so it is clear who asked and how.
-- **Streaming:** the Worker streams the model's reply to the browser as server-sent events,
-  with a line per tool call ("Looked at Fleet", "Read buoy 1's readings").
+- **Streaming:** the Worker streams the reply to the browser as server-sent events, with a
+  line per tool call ("Looked at Fleet", "Read buoy 1's readings").
 
 ## What Fred knows
 
-The repo's Markdown is about 2 MB, roughly half a million tokens, too much to send with every
-question. Knowledge comes in three layers:
+The repo's Markdown is about 2 MB, roughly half a million tokens. Gemini's context could hold
+much of it, but the free tier also limits **tokens per minute**, so sending it all with every
+question would exhaust the allowance in a few questions. Knowledge comes in three layers:
 
 | Layer | Contents | How it reaches the model |
 |---|---|---|
-| **Always in the prompt** (~15k tokens) | What the console is, its pages and roles, the Help content, the remote-settings registry (`buoy-config.json`), the canonical values in [`facts.md`](../hub/facts.md), the rules Fred follows | System prompt, prompt-cached so repeat questions are cheap |
-| **Searchable** | Every `docs/**.md`, the console README, ADRs, the decision log | A `search_docs` tool over a chunk index built at deploy time (keyword ranking in the Worker; no vector database to start). Returns passages with their file path so Fred can cite them |
+| **Always in the prompt** (kept under ~15k tokens) | What the console is, its pages and roles, the Help content, the remote-settings registry (`buoy-config.json`), the canonical values in [`facts.md`](../hub/facts.md), the rules Fred follows | System instruction on every request |
+| **Searchable** | Every `docs/**.md`, the console README, ADRs, the decision log | A `search_docs` tool over a chunk index built at deploy time (keyword ranking in the Worker; no vector database). Returns passages with their file path so Fred can cite them |
 | **Live** | Fleet, readings, settings, stations, reports, dashboards, audit log, storage | Read tools (below) |
 
 A script, `console/scripts/build_assistant_knowledge.py`, builds the knowledge pack and the
@@ -75,7 +99,7 @@ Notion is not a source: it is frozen since 2026-10-23.
 
 ## Tools
 
-**Read** (every role):
+Declared to Gemini as function declarations. **Read** (every role):
 
 | Tool | Returns | Backed by |
 |---|---|---|
@@ -110,50 +134,69 @@ Anything not in these tables is out of scope until added here.
   one late?" works.
 - Replies render Markdown, with links into the console and citations to repo files.
   Confirm cards use the existing card and `Key` components; a pending card expires visibly.
+- A standing line under the input: *"Fred uses Google Gemini's free tier. Google may review
+  what you type. Don't share personal information."*
 - Conversations are listed in the panel and kept 30 days, then deleted by the daily cron.
-- Settings → Account gets a line explaining what Fred sends to Anthropic.
 
 ## Data and privacy
 
-- **Sent to Anthropic:** the question, the page context, tool results (buoy data, readings,
-  station names, report names) and doc passages. **Not sent:** passwords, token values or
-  hashes, invite and reset links, other people's emails (the team tool returns names and
-  roles only).
+**The free-tier terms are the main trade-off.** Google may use free-tier prompts and replies to
+improve its products, and human reviewers may read them. For S.C.O.U.T. that is acceptable for
+project data: buoy readings, settings and station names are not sensitive, and much of the data
+is public on the project site already. It is not acceptable for personal or secret data, so:
+
+- **Never sent:** passwords, token values or hashes, invite and reset links, anyone's email
+  address. The team tool returns names and roles only; the audit tool strips emails to names.
+- **Warned about:** what people type. The panel notice above says so on every conversation,
+  including for guests outside the team.
 - **Stored in D1** (migration `0011-assistant.sql`): `assistant_conversations`,
   `assistant_messages` (text and tool calls, 30-day retention), `assistant_actions` (pending
-  proposals) and `assistant_usage` (tokens per user per day).
+  proposals) and `assistant_usage` (requests and tokens per user per day).
 - **Prompt injection:** buoy labels, station names and report text are typed by people and
-  could carry instructions. Tool results are passed as data, the system prompt says so, and
-  the confirm step means injected text can at most produce a card the person declines.
+  could carry instructions. Tool results are passed as data, the system instruction says so,
+  and the confirm step means injected text can at most produce a card the person declines.
+- **Account:** the key is created on a team Google account (decision 1 below), not a personal
+  one, so it survives the capstone handover.
 
-## Cost and limits
+## Limits and fallback
 
-- A daily token cap per person and a monthly cap for the whole console, both Worker vars.
-  Over the cap, Fred says so and the panel stays readable.
-- Rate limit: 20 questions per person per hour, guests 5.
-- Prompt caching on the system prompt and knowledge pack; readings downsampled before they
-  reach the model.
-- Usage shows on Developer → Storage beside D1 and R2.
-- Real numbers come from Phase 1: log tokens per question for a week before fixing the caps.
+The free tier's real constraint is **requests per minute and per day**, shared by everyone
+using the console. Google publishes the current numbers in AI Studio and has changed them
+several times, so the console reads them from Worker vars rather than hard-coding them.
+
+- **Per-person fair share:** a daily question cap per person (guests lower), so one person
+  cannot spend the team's allowance.
+- **Each question is several requests:** every tool round trip is one model call, so the loop
+  is capped at 8 turns and read tools return compact, downsampled results.
+- **When Gemini refuses with a rate-limit error:** back off once, then fall back to Workers AI
+  (free, already on Cloudflare, an `[ai]` binding) for that question, and say so in the reply
+  ("Gemini is busy; answered with a smaller model"). Propose tools stay off on the fallback,
+  so a weaker model never drafts a change.
+- **When both are out:** Fred says it is over today's limit; the panel and history stay readable.
+- **Before a demo** (CDR, open house, Hawaii briefings): check the day's usage on
+  Developer → Storage, where assistant usage shows beside D1 and R2.
+- **If the free tier stops being enough:** the same interface takes a paid Gemini key or an
+  Anthropic key; that is a budget decision, not a rebuild.
 
 ## Testing
 
-- **Worker tests** (node:test, the D1 shim) with the Anthropic client stubbed: each tool
-  returns the right data; a guest is never offered a propose tool; confirm re-checks the role,
-  refuses an expired or someone else's action, and writes the audit row; caps and rate limits
-  refuse cleanly.
-- **Web tests** (vitest): the panel streams, renders a confirm card, and handles a refusal.
+- **Worker tests** (node:test, the D1 shim) with the model interface stubbed: each tool returns
+  the right data; a guest is never offered a propose tool; confirm re-checks the role, refuses
+  an expired or someone else's action, and writes the audit row; caps refuse cleanly; a
+  rate-limit error falls back to Workers AI with propose tools off.
+- **Web tests** (vitest): the panel streams, shows the notice, renders a confirm card, and
+  handles a refusal.
 - **Eval set:** about 40 questions with the expected tool calls and facts
-  (`console/test/assistant-evals.json`), run by hand against the real model before each
+  (`console/test/assistant-evals.json`), run by hand against the real Gemini model before each
   prompt or model change, scored and recorded. It includes injection attempts in buoy labels
-  and requests Fred must refuse.
+  and requests Fred must refuse. Run it again whenever Google changes the free model.
 
 ## Phases
 
 | Phase | Delivers | Exit |
 |---|---|---|
-| **0 — Decide** | The decisions below; ADR-0013; the API key as a secret | ADR accepted |
-| **1 — Ask** | Panel, streaming, knowledge pack, `search_docs`, every read tool, usage logging | Fred answers the eval set's read questions correctly; guests and members use it for a week |
+| **0 — Decide** | The decisions below; ADR-0013; a Gemini key from AI Studio as a Worker secret | ADR accepted |
+| **1 — Ask** | Panel, streaming, knowledge pack, `search_docs`, every read tool, usage logging, the Workers AI fallback | Fred answers the eval set's read questions correctly; guests and members use it for a week within the free limits |
 | **2 — Act** | Propose tools, confirm cards, "via Fred" audit entries | Every propose tool tested end to end; no write without Confirm |
 | **3 — Brief** | Morning brief on the daily cron, shown on the Dashboard | Runs for a week with no false alarms |
 
@@ -162,20 +205,26 @@ the shore station.
 
 ## Decisions needed before building
 
-1. **Who holds the Anthropic API key and pays for it?** A team key on a university or personal
-   account, and the monthly cap that goes with it.
-2. **Can guests use Fred?** The plan says yes, read-only, with a lower limit; the alternative is
-   members only.
-3. **Keep conversations 30 days, or not at all?** Keeping them gives history and helps debug
-   wrong answers; not keeping them sends less to D1.
-4. **Is "Fred" the name?** The placeholder uses it.
-5. **Which writes are in Phase 2?** The table above is the proposal; admin actions could wait.
+1. **Which Google account holds the key?** A team account (recommended, so it outlives any one
+   person) or David's own.
+2. **Is the free tier's data use acceptable?** The plan says yes for project data, with the
+   notice in the panel. Worth a word with the advisors, since the console is a university
+   project.
+3. **Can guests use Fred?** The plan says yes, read-only, with a lower cap; the alternative is
+   members only, which also saves the shared allowance.
+4. **Keep conversations 30 days, or not at all?** Keeping them gives history and helps debug
+   wrong answers; not keeping them stores less.
+5. **Is "Fred" the name, and which writes are in Phase 2?** The tables above are the proposal;
+   admin actions could wait.
 
 ## Risks
 
+- **Free limits hit at the worst moment** (a demo). Mitigated by per-person caps, the Workers AI
+  fallback and checking usage beforehand.
+- **Google changes the free tier** (limits, models, or ends it). The interface makes a switch
+  one file; the eval set shows whether the new model is good enough.
 - **Wrong answers stated confidently.** Mitigated by citing files and tool results, and by the
   eval set. Fred should say when it does not know.
-- **Cost running away.** Caps and rate limits refuse before the bill grows.
 - **A change nobody meant.** Every write needs a click on a card that states the effect.
 - **Stale knowledge.** The pack is rebuilt on every deploy from `main`; live data always comes
   from tools, never from the pack.
