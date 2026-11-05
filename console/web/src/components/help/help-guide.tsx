@@ -159,7 +159,7 @@ export function HelpGuide() {
         lead={<>Open <b>Settings → Buoys</b>. Each setting that can change by radio has its own control.</>}>
         <p className="sc-guide__text">
           You can change transmits a day, slot phase, reading interval, hydrophone clip, power thresholds and the housing humidity alert.
-          Fleet also changes the transmit count. The shore station sends the whole set right after the buoy&rsquo;s next packet.
+          The shore station sends the whole set right after the buoy&rsquo;s next packet.
         </p>
         <dl className="sc-guide__states">
           <div><dt>Pending</dt><dd>Sent, waiting for a packet from the buoy that reports the same settings.</dd></div>

@@ -64,7 +64,7 @@ export const BUOY_STEPS: readonly HelpStep[] = [
   },
   {
     title: "Power it on near a shore station",
-    body: <>That is all it needs. The buoy shows up on Readings and Fleet with its first packet. You can also add it on Fleet first, to name it before it reports.</>,
+    body: <>That is all it needs. The buoy shows up on Readings and Fleet with its first packet. You can also add it first, with <b>Add buoy</b> on Fleet, to name it before it reports.</>,
   },
   {
     title: "Give it a name",

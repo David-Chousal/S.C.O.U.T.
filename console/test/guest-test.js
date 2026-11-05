@@ -58,15 +58,24 @@ test("one address can only start a few guest sessions in 15 minutes", async () =
   assert.equal(statuses[6], 429);
 });
 
-test("a self-signed-up guest sees other people's emails masked, and their own in full", async () => {
+test("a self-signed-up guest sees other people's emails masked", async () => {
   const env = makeEnv();
   await addUser(env, "isabella@scout.test", "member");
   const { client } = await guest(env);
   const { body } = await client.get("/api/team");
   const emails = body.members.map((member) => member.email);
-  assert.ok(emails.includes("visitor@example.org"));
   assert.ok(emails.includes("i•••@scout.test"));
   assert.ok(!JSON.stringify(body).includes("isabella@scout.test"));
+});
+
+test("self-signed-up guests are not listed on the Team page; invited guests are", async () => {
+  const env = makeEnv();
+  await guest(env);
+  await addUser(env, "advisor@scu.test", "guest");
+  const { client: admin } = await signedIn(env, "admin");
+  const emails = (await admin.get("/api/team")).body.members.map((member) => member.email);
+  assert.ok(!emails.includes("visitor@example.org"));
+  assert.ok(emails.includes("advisor@scu.test"));
 });
 
 test("an invited guest still sees emails in full", async () => {

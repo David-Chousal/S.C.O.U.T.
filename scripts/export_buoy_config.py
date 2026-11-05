@@ -166,6 +166,7 @@ def settings() -> list[dict]:
 def render() -> str:
     data = {"source": "firmware/src/config.h and library headers, via scripts/export_buoy_config.py",
             "settings": settings(), "remote": remote(),
+            "slotsSod": _numbers(_deployed(CONFIG_H.read_text()), "TX_SLOTS_SOD"),
             "tierGapMv": _settings_macros()["SCOUT_SET_MIN_TIER_GAP_MV"]}
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 

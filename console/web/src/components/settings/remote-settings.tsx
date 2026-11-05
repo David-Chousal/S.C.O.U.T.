@@ -28,6 +28,19 @@ function display(spec: RemoteSetting, value: number): string {
   return spec.unit ? `${value} ${spec.unit}` : String(value);
 }
 
+/** The slots a count uses (1 → first, 2 → first and last, 3 → all), as scout_tx_slot_mask does. */
+const SLOT_INDICES: Record<number, number[]> = { 1: [0], 2: [0, 2], 3: [0, 1, 2] };
+
+/** When a buoy with this count and phase sends, e.g. "00:10 and 16:10 UTC". */
+export function sendTimes(slotsSod: number[], txCount: number, phaseH: number): string {
+  const times = (SLOT_INDICES[txCount] ?? []).map((i) => {
+    const sod = (slotsSod[i] + phaseH * 3600) % 86400;
+    return `${String(Math.floor(sod / 3600)).padStart(2, "0")}:${String(Math.floor((sod % 3600) / 60)).padStart(2, "0")}`;
+  });
+  const joined = times.length > 1 ? `${times.slice(0, -1).join(", ")} and ${times.at(-1)}` : times[0];
+  return `${joined} UTC`;
+}
+
 /** The keys whose value in `form` differs from what the buoy is asked to run now. */
 export function changedKeys(remote: RemoteSetting[], wanted: number[], form: Record<string, number>): string[] {
   return remote.filter((spec, i) => form[spec.key] !== wanted[i]).map((spec) => spec.key);
@@ -35,6 +48,8 @@ export function changedKeys(remote: RemoteSetting[], wanted: number[], form: Rec
 
 interface FieldProps {
   spec: RemoteSetting;
+  /** Overrides spec.help, for a line that depends on other values in the form. */
+  help?: string;
   buoyId: number;
   value: number;
   requested: boolean;
@@ -42,7 +57,7 @@ interface FieldProps {
   onChange: (value: number) => void;
 }
 
-function Field({ spec, buoyId, value, requested, disabled, onChange }: FieldProps) {
+function Field({ spec, help, buoyId, value, requested, disabled, onChange }: FieldProps) {
   const id = `buoy-${buoyId}-${spec.key}`;
   const options = optionsOf(spec);
   return (
@@ -57,7 +72,7 @@ function Field({ spec, buoyId, value, requested, disabled, onChange }: FieldProp
         <input id={id} className="sc-input" type="number" inputMode="numeric" min={spec.min} max={spec.max} step={spec.step}
           value={value} disabled={disabled} aria-describedby={`${id}-help`} onChange={(event) => onChange(Number(event.target.value))} />
       )}
-      <span id={`${id}-help`} className="sc-help">{spec.help} Default {display(spec, spec.default)}{requested ? " · requested" : ""}.</span>
+      <span id={`${id}-help`} className="sc-help">{help ?? spec.help} Default {display(spec, spec.default)}{requested ? " · requested" : ""}.</span>
     </div>
   );
 }
@@ -65,6 +80,7 @@ function Field({ spec, buoyId, value, requested, disabled, onChange }: FieldProp
 interface RemoteSettingsProps {
   buoy: Buoy;
   remote: RemoteSetting[];
+  slotsSod: number[];
   canEdit: boolean;
   onSaved: () => void;
 }
@@ -72,7 +88,7 @@ interface RemoteSettingsProps {
 /** One buoy's remote settings: what it should run, whether it has confirmed it, and controls to
  * change it. Saving sends only the settings that changed; the console refuses a set the buoy
  * would refuse, so a bad combination never reaches the radio. */
-export function RemoteSettings({ buoy, remote, canEdit, onSaved }: RemoteSettingsProps) {
+export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: RemoteSettingsProps) {
   const { show } = useToast();
   const initial = Object.fromEntries(remote.map((spec, i) => [spec.key, buoy.settings_wanted[i]]));
   const [form, setForm] = useState<Record<string, number>>(initial);
@@ -117,7 +133,9 @@ export function RemoteSettings({ buoy, remote, canEdit, onSaved }: RemoteSetting
         buoy reports <span className="sc-num">{buoy.settings_digest_reported ?? "—"}</span>.</p>
       <form className="sc-settings-form sc-remote-form" onSubmit={onSubmit}>
         {remote.map((spec) => (
-          <Field key={spec.key} spec={spec} buoyId={buoy.buoy_id} value={form[spec.key]} disabled={!canEdit}
+          <Field key={spec.key} spec={spec} buoyId={buoy.buoy_id}
+            help={spec.key === "tx_count" || spec.key === "slot_phase_h"
+              ? `Sends at ${sendTimes(slotsSod, form.tx_count, form.slot_phase_h)}.` : undefined} value={form[spec.key]} disabled={!canEdit}
             requested={buoy.settings_requested[spec.key] !== null}
             onChange={(value) => setForm((now) => ({ ...now, [spec.key]: value }))} />
         ))}

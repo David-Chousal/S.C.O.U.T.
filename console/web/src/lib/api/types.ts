@@ -99,7 +99,8 @@ export interface FirmwareSetting {
 
 export interface BuoySettings {
   buoys: Buoy[];
-  firmware: { source: string; settings: FirmwareSetting[]; remote: RemoteSetting[]; tierGapMv: number };
+  /** slotsSod: the three transmit slots at slot phase 0, seconds after midnight UTC. */
+  firmware: { source: string; settings: FirmwareSetting[]; remote: RemoteSetting[]; tierGapMv: number; slotsSod: number[] };
 }
 
 export interface Member {

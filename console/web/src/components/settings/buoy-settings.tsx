@@ -1,16 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { useToast } from "@/components/feedback/toaster";
-import { SignalMeter } from "@/components/status/signal-meter";
-import { Ago } from "@/components/ui/ago";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
-import { COUNT_SIGNAL, lastHeard, packetLabel } from "@/lib/format";
 import { can, needs, useSession } from "@/lib/session";
 import { RemoteSettings } from "./remote-settings";
 
@@ -18,7 +14,6 @@ function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean
   const { show } = useToast();
   const [label, setLabel] = useState(buoy.label);
   const [saving, setSaving] = useState(false);
-  const signal = COUNT_SIGNAL[buoy.state];
   const inputId = `buoy-${buoy.buoy_id}-label`;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -47,15 +42,6 @@ function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean
           <input id={inputId} className="sc-input" maxLength={40} required value={label} disabled={!canRename}
             aria-describedby={`${inputId}-help`} onChange={(event) => setLabel(event.target.value)} />
           <span id={`${inputId}-help`} className="sc-help">Only the console uses it; the buoy sends its numeric ID.</span>
-        </div>
-        <div className="sc-fieldset">
-          <span className="sc-fieldset__label"><span className="sc-tag">Transmits a day</span></span>
-          <span className="sc-row sc-settings-count">
-            <strong>{buoy.tx_count_requested ? `${buoy.tx_count_requested} requested` : "Default (3)"}</strong>
-            <SignalMeter state={signal.state} lit={signal.lit} word={signal.word} />
-          </span>
-          <span className="sc-help">Buoy reports {buoy.tx_count_reported ?? "—"} a day · {packetLabel(buoy)} <Ago ms={lastHeard(buoy)} /> ·{" "}
-            <Link className="sc-link" href="/fleet/">change it on Fleet</Link></span>
         </div>
         <div className="sc-settings-form__foot">
           <Key type="submit" variant="primary" disabled={!canRename || saving || label.trim() === buoy.label}>
@@ -121,7 +107,8 @@ export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings 
           ))}
           {data.buoys.map((buoy) => (
             <div className="span-12" key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`}>
-              <RemoteSettings buoy={buoy} remote={data.firmware.remote} canEdit={canRename} onSaved={reload} />
+              <RemoteSettings buoy={buoy} remote={data.firmware.remote} slotsSod={data.firmware.slotsSod}
+                canEdit={canRename} onSaved={reload} />
             </div>
           ))}
         </div>

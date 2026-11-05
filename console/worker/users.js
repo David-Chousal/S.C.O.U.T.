@@ -214,10 +214,13 @@ export async function resetPassword(db, token, password) {
   return { user };
 }
 
+/** The team: everyone with a real account. People who signed in as a guest with just a name and
+ * an email are visitors, not team members, so they are left out (the audit log still names them). */
 export async function listUsers(db) {
   const { results } = await db
     .prepare("SELECT id, email, name, role, disabled, created_at, password_hash IS NOT NULL AS has_password, " +
-      "github_id IS NOT NULL AS has_github, google_sub IS NOT NULL AS has_google, self_signup FROM users ORDER BY created_at")
+      "github_id IS NOT NULL AS has_github, google_sub IS NOT NULL AS has_google, self_signup FROM users " +
+      "WHERE self_signup = 0 ORDER BY created_at")
     .all();
   return results;
 }

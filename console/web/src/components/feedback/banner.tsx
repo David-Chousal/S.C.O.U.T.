@@ -3,7 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import type { IconName } from "@/components/ui/icon-paths";
 
 interface BannerProps {
-  tone?: "caution" | "failed" | "info";
+  tone?: "caution" | "failed" | "info" | "ok";
   icon?: IconName;
   action?: ReactNode;
   children: ReactNode;
