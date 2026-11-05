@@ -25,9 +25,9 @@ describe("Sidebar", () => {
 });
 
 describe("phone bottom bar", () => {
-  test("keeps to six destinations, leaving stations, reports, the developer page and help to the sidebar", () => {
+  test("keeps to five destinations; the account lives in the top bar", () => {
     render(<Sidebar />);
     const compact = screen.getByRole("navigation", { name: "Main, compact" });
-    expect([...compact.querySelectorAll("a")].map((a) => a.textContent)).toEqual(["Dashboard", "Fleet", "Readings", "Team", "Settings", "Account"]);
+    expect([...compact.querySelectorAll("a")].map((a) => a.textContent)).toEqual(["Dashboard", "Fleet", "Readings", "Team", "Settings"]);
   });
 });

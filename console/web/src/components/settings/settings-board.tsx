@@ -5,21 +5,38 @@ import { api } from "@/lib/api/client";
 import type { BuoySettings } from "@/lib/api/types";
 import { can, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
+import { AccountPanel } from "@/components/account/account-panel";
 import { BrowserSettingsPanel } from "./browser-settings";
 import { BuoySettingsPanel } from "./buoy-settings";
 import { StoragePanel } from "./storage-panel";
 
 const TABS = [
   { id: "buoys", label: "Buoys" },
+  { id: "account", label: "Account" },
   { id: "browser", label: "This browser" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
-/** The Settings page: buoy settings for the team, page settings for this browser. Tabs follow
- * the WAI-ARIA pattern: arrow keys move between them, Home and End jump to the ends. */
+function tabFromUrl(): TabId {
+  const wanted = new URLSearchParams(window.location.search).get("tab");
+  return TABS.find((tab) => tab.id === wanted)?.id ?? "buoys";
+}
+
+/** The Settings page: buoy settings for the team, your account (how you sign in, signing out), and
+ * page settings for this browser. "?tab=account" opens a tab directly, as the top bar's account
+ * menu does. Tabs follow the WAI-ARIA pattern: arrow keys move between them, Home and End jump to
+ * the ends. */
 export function SettingsBoard() {
   const { user } = useSession();
-  const [active, setActive] = useState<TabId>("buoys");
+  // Safe to read the URL while rendering: AppShell renders page content only in the browser.
+  const [active, setActiveState] = useState<TabId>(() => (typeof window === "undefined" ? "buoys" : tabFromUrl()));
+  function setActive(id: TabId) {
+    setActiveState(id);
+    const url = new URL(window.location.href);
+    if (id === "buoys") url.searchParams.delete("tab");
+    else url.searchParams.set("tab", id);
+    window.history.replaceState(null, "", url);
+  }
   const buttons = useRef<Record<string, HTMLButtonElement | null>>({});
   const buoys = useApi<BuoySettings>(api.settings);
 
@@ -52,7 +69,7 @@ export function SettingsBoard() {
               <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
               {can(user.role, "storage.read") && <StoragePanel />}
             </>
-            : <BrowserSettingsPanel />}
+            : tab.id === "account" ? <AccountPanel /> : <BrowserSettingsPanel />}
         </div>
       ))}
     </>

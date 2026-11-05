@@ -11,7 +11,6 @@ import { api } from "@/lib/api/client";
 import type { BuoySettings, Device } from "@/lib/api/types";
 import { plural } from "@/lib/format";
 import { can, useSession } from "@/lib/session";
-import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 import { usePoll } from "@/lib/use-poll";
 import { AssignDialog } from "./assign-dialog";
@@ -35,7 +34,6 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
  * its token: a key to make one, hold to revoke, and delete once revoked. Buoys' own state lives on
  * Fleet. */
 export function StationsBoard() {
-  const when = useWhen();
   const { user } = useSession();
   const { show } = useToast();
   const settings = useApi<BuoySettings>(api.settings);
@@ -88,7 +86,7 @@ export function StationsBoard() {
               <tbody>
                 {devices.data.devices.map((device) => (
                   <tr key={device.id}>
-                    <th scope="row">{device.name}<span className="sub">created {when(device.created_at)}</span></th>
+                    <th scope="row">{device.name}</th>
                     <td>
                       <span className="sc-chips">
                         {(routes.byStation.get(device.id) ?? []).map((buoy) => <span key={buoy.buoy_id} className="sc-chip">{buoy.label}</span>)}
@@ -101,7 +99,7 @@ export function StationsBoard() {
                     </td>
                     <td className="sc-stations-table__when"><Ago ms={device.last_seen_at} /></td>
                     <td>{device.revoked_at
-                      ? <><span className="sc-badge sc-badge--muted">Revoked</span><span className="sub">{when(device.revoked_at)}</span></>
+                      ? <span className="sc-badge sc-badge--muted">Revoked</span>
                       : <SignalMeter {...freshness(device.last_seen_at, now, 2 * HOUR)} />}</td>
                     <td className="sc-stations-table__actions">
                       {device.revoked_at ? (

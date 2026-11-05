@@ -12,6 +12,8 @@ import { SessionContext } from "@/lib/session";
 import { keepUnits } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn() }), usePathname: () => "/settings/" }));
+
 const DATA = {
   buoys: [{ buoy_id: 1, label: "SCOUT-01", tx_count_requested: null, requested_by: null, requested_at: null,
     tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default",
@@ -98,9 +100,19 @@ describe("SettingsBoard", () => {
     expect(screen.getByText(/View only/)).toBeDefined();
   });
 
+  test("the Account tab holds sign out, and ?tab=account opens it", async () => {
+    window.history.replaceState(null, "", "/settings/?tab=account");
+    renderBoard("member");
+    expect(await screen.findByRole("button", { name: "Sign out" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Account" }).getAttribute("aria-selected")).toBe("true");
+    window.history.replaceState(null, "", "/");
+  });
+
   test("arrow keys move between tabs, and page settings apply through update", async () => {
     const update = renderBoard("guest");
     await userEvent.click(screen.getByRole("tab", { name: "Buoys" }));
+    await userEvent.keyboard("{ArrowRight}");
+    expect(screen.getByRole("tab", { name: "Account" }).getAttribute("aria-selected")).toBe("true");
     await userEvent.keyboard("{ArrowRight}");
     expect(screen.getByRole("tab", { name: "This browser" }).getAttribute("aria-selected")).toBe("true");
     expect((screen.getByRole("button", { name: "Light" })).getAttribute("aria-pressed")).toBe("true");

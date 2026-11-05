@@ -9,8 +9,19 @@ import { ApiError, type Session } from "@/lib/api/types";
 import { applyTheme, DEFAULT_PREFERENCES, loadPreferences, savePreferences, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
+import { cachedSession, forgetSession, rememberSession } from "./session-cache";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
+
+/** The page's title, with its own actions beside it. */
+function PageHead({ title, actions }: { title: string; actions?: ReactNode }) {
+  return (
+    <header className="sc-page-head">
+      <h1 className="sc-page-head__title">{title}</h1>
+      {actions && <div className="sc-page-head__actions">{actions}</div>}
+    </header>
+  );
+}
 
 interface AppShellProps {
   title: string;
@@ -20,20 +31,14 @@ interface AppShellProps {
 
 type Load = { kind: "loading" } | { kind: "ready"; session: Session } | { kind: "failed"; message: string };
 
-// Each page mounts its own AppShell, so moving between pages would re-check the session and
-// blank the shell every time. The last session answer is kept here: a page opened from another
-// one renders straight away and re-checks in the background. Only a full page load waits.
-let lastSession: Session | null = null;
-
-/** Drop the cached session, so the next page re-checks it; call after signing out. */
-export function forgetSession(): void {
-  lastSession = null;
-}
 
 /** Every signed-in page: loads the session (or goes to sign-in), then sidebar, top bar, content. */
 export function AppShell({ title, actions, children }: AppShellProps) {
   const router = useRouter();
-  const [load, setLoad] = useState<Load>(() => (lastSession ? { kind: "ready", session: lastSession } : { kind: "loading" }));
+  const [load, setLoad] = useState<Load>(() => {
+    const cached = cachedSession();
+    return cached ? { kind: "ready", session: cached } : { kind: "loading" };
+  });
   // The static HTML is prerendered with the defaults; nothing that reads preferences renders
   // until the session loads, so reading storage here cannot cause a hydration mismatch. The
   // theme itself was already applied before paint by the boot script in app/layout.tsx.
@@ -54,11 +59,11 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     let live = true;
     api.session().then(
       (session) => {
-        lastSession = session;
+        rememberSession(session);
         if (live) setLoad({ kind: "ready", session });
       },
       (error: unknown) => {
-        if (error instanceof ApiError && error.status === 401) lastSession = null;
+        if (error instanceof ApiError && error.status === 401) forgetSession();
         if (!live) return;
         if (error instanceof ApiError && error.status === 401) router.replace("/login/");
         else setLoad({ kind: "failed", message: error instanceof Error ? error.message : "The console did not answer." });
@@ -73,10 +78,11 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     // The frame stays up while the session loads, so the page never flashes blank.
     return (
       <div className="sc-shell">
-        <TopBar title={title} />
+        <TopBar />
         <Sidebar shortcuts={preferences.shortcuts} />
         <div className="sc-shell__page">
           <main className="sc-main" aria-busy={load.kind === "loading"}>
+            <PageHead title={title} />
             {load.kind === "loading"
               ? <span className="sc-tag">Checking your session…</span>
               : <Banner tone="failed">{load.message}</Banner>}
@@ -90,10 +96,10 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     <PreferencesContext value={preferencesValue}>
       <Toaster>
         <div className="sc-shell">
-          <TopBar title={title} user={load.session.user} actions={actions} />
+          <TopBar user={load.session.user} />
           <Sidebar shortcuts={preferences.shortcuts} />
           <div className="sc-shell__page">
-            <main className="sc-main">{children}</main>
+            <main className="sc-main"><PageHead title={title} actions={actions} />{children}</main>
           </div>
         </div>
       </Toaster>

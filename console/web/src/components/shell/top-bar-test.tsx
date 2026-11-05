@@ -1,28 +1,58 @@
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { initials, TopBar } from "./top-bar";
+import userEvent from "@testing-library/user-event";
+import { api } from "@/lib/api/client";
+import { DEFAULT_PREFERENCES } from "@/lib/preferences";
+import { PreferencesContext } from "@/lib/preferences-context";
+import { initials } from "./account-menu";
+import { TopBar } from "./top-bar";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/team/" }));
+const replace = vi.fn();
+vi.mock("next/navigation", () => ({ usePathname: () => "/team/", useRouter: () => ({ replace }) }));
 
 const user = { id: "u1", name: "David Chousal", email: "david@scout.test", role: "guest" as const, hasPassword: true, github: false, google: false, selfSignup: false };
 
+function renderBar(update = vi.fn()) {
+  render(
+    <PreferencesContext value={{ preferences: DEFAULT_PREFERENCES, update, stored: true }}>
+      <TopBar user={user} />
+    </PreferencesContext>,
+  );
+  return update;
+}
+
+afterEach(() => vi.restoreAllMocks());
+
 describe("TopBar", () => {
-  test("carries the console's mark, the account as a link to Account, and the page title", () => {
-    render(<TopBar title="Team" user={user} />);
-    const bar = screen.getByRole("banner");
+  test("holds the mark, the account and Ask Fred, but no page title", () => {
+    renderBar();
     expect(screen.getByRole("link", { name: /S\.C\.O\.U\.T\. Console/ }).getAttribute("href")).toMatch(/^\/dashboard\/?$/);
-    expect(bar.querySelector(".sc-top__brand")?.textContent).not.toContain("S.C.O.U.T.");
-    const account = screen.getByRole("link", { name: "Account: David Chousal" });
-    expect(account.getAttribute("href")).toMatch(/^\/account\/?$/);
-    expect(account.getAttribute("title")).toBe("Guest · view only");
-    expect(screen.getByRole("heading", { level: 1, name: "Team" })).toBeDefined();
-    expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Account: David Chousal" })).toBeDefined();
+    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   });
 
-  test("while the session loads, the bar shows without the account", () => {
-    render(<TopBar title="Fleet" />);
-    expect(screen.queryByRole("link", { name: /^Account:/ })).toBeNull();
-    expect(screen.getByRole("heading", { level: 1, name: "Fleet" })).toBeDefined();
+  test("the account menu changes appearance and time, links to account settings, and signs out", async () => {
+    vi.spyOn(api, "signOut").mockResolvedValue({ ok: true });
+    const update = renderBar();
+    await userEvent.click(screen.getByRole("button", { name: "Account: David Chousal" }));
+    const panel = screen.getByRole("dialog", { name: "Account" });
+    expect(panel.textContent).toContain("Guest · view only");
+    await userEvent.click(screen.getByRole("button", { name: "Dark" }));
+    expect(update).toHaveBeenCalledWith({ theme: "dark" });
+    await userEvent.click(screen.getByRole("button", { name: "My time zone" }));
+    expect(update).toHaveBeenCalledWith({ time: "local" });
+    expect(screen.getByRole("link", { name: /Account settings/ }).getAttribute("href")).toMatch(/\?tab=account$/);
+    await userEvent.click(screen.getByRole("button", { name: /Sign out/ }));
+    expect(api.signOut).toHaveBeenCalled();
+    expect(replace).toHaveBeenCalledWith("/login/");
+  });
+
+  test("Escape closes the account menu", async () => {
+    renderBar();
+    await userEvent.click(screen.getByRole("button", { name: "Account: David Chousal" }));
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "Account" })).toBeNull();
   });
 });
 

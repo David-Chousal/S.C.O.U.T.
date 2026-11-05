@@ -6,7 +6,7 @@ export interface NavItem {
   icon: IconName;
   /** Second key of the "G then letter" shortcut. */
   key: string;
-  /** Left out of the phone bottom bar, which has room for six. */
+  /** Left out of the phone bottom bar, which has room for five. */
   desktopOnly?: boolean;
 }
 
@@ -22,12 +22,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/help/", label: "Help", icon: "info", key: "y", desktopOnly: true },
 ];
 
-/** Reached from the profile card at the top of the sidebar, not the nav list; on phones it is
- * the bottom bar's last slot. */
-export const ACCOUNT_ITEM: NavItem = { href: "/account/", label: "Account", icon: "lock", key: "a" };
-
-/** Every "G then letter" target. */
-export const SHORTCUT_ITEMS: readonly NavItem[] = [...NAV_ITEMS, ACCOUNT_ITEM];
 
 /** Paths end in "/" in the static export; compare without it so "/fleet" and "/fleet/" match. */
 export function isCurrent(pathname: string, href: string): boolean {

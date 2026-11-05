@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/feedback/toaster";
-import { forgetSession } from "@/components/shell/app-shell";
+import { forgetSession } from "@/components/shell/session-cache";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import { ROLE_LABEL, useSession } from "@/lib/session";
 
-/** Who you are, how you sign in, and signing out here or everywhere. The sidebar's profile card
- * opens this page; signing out lives here, not in the sidebar. */
+/** Settings → Account: who you are, how you sign in, and signing out here or everywhere. The top
+ * bar's account menu also signs out, and links here. */
 export function AccountPanel() {
   const { user } = useSession();
   const router = useRouter();

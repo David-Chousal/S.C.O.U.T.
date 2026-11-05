@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
-import { ACCOUNT_ITEM, NAV_ITEMS, isCurrent } from "./nav";
+import { NAV_ITEMS, isCurrent } from "./nav";
 import { useGoShortcuts } from "./use-go-shortcuts";
 
 interface SidebarProps {
@@ -32,7 +32,7 @@ export function Sidebar({ shortcuts = false }: SidebarProps) {
         </div>
       </nav>
       <nav className="sc-bottomnav" aria-label="Main, compact">
-        {[...NAV_ITEMS.filter((item) => !item.desktopOnly), ACCOUNT_ITEM].map((item) => (
+        {NAV_ITEMS.filter((item) => !item.desktopOnly).map((item) => (
           <Link key={item.href} href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
             <Icon name={item.icon} size={20} />
             {item.label}
