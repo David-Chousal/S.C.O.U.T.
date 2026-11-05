@@ -8,7 +8,6 @@ import { FredMarkdown } from "./fred-markdown";
 
 const SOURCE: Record<FredBrief["provider"], string> = {
   gemini: "Fred · Gemini",
-  "workers-ai": "Fred · smaller model",
   facts: "Fred · facts only",
 };
 

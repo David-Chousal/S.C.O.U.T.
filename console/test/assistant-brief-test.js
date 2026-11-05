@@ -49,11 +49,14 @@ test("the brief model phrases the facts; with no model the facts are stored as t
   assert.match(plain.text, /^3 things to look at:\n- /);
 });
 
-test("Gemini busy: Workers AI phrases it", async (t) => {
-  const ai = stubWorkersAi([{ response: "Fleet fine." }]);
+test("Gemini busy: the plain facts are stored, never a weaker model's phrasing", async (t) => {
+  const ai = stubWorkersAi([{ response: "Invented extra detail." }]);
   const env = makeEnv({ GEMINI_API_KEY: "k", AI: ai });
+  seed(env);
   stubGemini(t, [{ status: 429 }]);
-  assert.deepEqual(await runBrief(env, NOW), { text: "Fleet fine.", provider: "workers-ai" });
+  const got = await runBrief(env, NOW);
+  assert.equal(got.provider, "facts");
+  assert.equal(ai.calls.length, 0);
 });
 
 test("the cron writes the brief beside the backup, and the Dashboard route reads it", async () => {

@@ -128,7 +128,8 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
         update((t) => apply(t, event));
         if (event.event === "done") setUsage({ used: event.data.used, cap: event.data.cap });
       }, abort.current.signal);
-      update((t) => (t.done ? t : { ...t, done: true }));
+      // A stream that closes without "done" was cut off on the way.
+      update((t) => (t.done ? t : { ...t, done: true, error: "Fred's reply was cut off. Ask again." }));
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
       update((t) => ({ ...t, done: true, error: error instanceof Error ? error.message : "Fred did not answer." }));

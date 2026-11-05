@@ -98,7 +98,12 @@ async function askFred(messages: FredMessage[], context: FredContext, onEvent: (
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
     throw new ApiError(response.status, payload.error ?? `The console answered ${response.status}.`);
   }
-  await readEvents(response.body, onEvent);
+  try {
+    await readEvents(response.body, onEvent);
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new ApiError(0, "Fred's reply was cut off. Check your connection and ask again.");
+  }
 }
 
 export const api = {

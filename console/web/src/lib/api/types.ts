@@ -242,7 +242,7 @@ export interface FredStatus {
 export interface FredBrief {
   day: string;
   text: string;
-  provider: "gemini" | "workers-ai" | "facts";
+  provider: "gemini" | "facts";
   created_at: number;
 }
 

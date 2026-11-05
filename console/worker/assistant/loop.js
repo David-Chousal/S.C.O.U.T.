@@ -9,6 +9,9 @@ import { countCall } from "./usage.js";
 
 const MAX_TURNS = 8;
 const DEFAULT_RETRY_MS = 2000;
+const FALLBACK_NOTE = "You are the smaller backup model because Gemini is busy, so you have no propose tools and cannot draft " +
+  "changes. If the person asks for a change, say so plainly, and tell them they can make it themselves on the page (call " +
+  "link_to) or ask again later. Do not tell them their role cannot do it unless the role above says so.";
 
 const LABELS = {
   list_buoys: "Looked at Fleet", get_buoy: "Read buoy {buoy_id}", get_readings: "Read buoy {buoy_id}'s readings",
@@ -20,7 +23,8 @@ const LABELS = {
 };
 
 export function toolLabel(name, args = {}) {
-  return (LABELS[name] ?? name).replace(/\{(\w+)\}/g, (_, key) => String(args[key] ?? "").slice(0, 60));
+  if (!LABELS[name]) return "Tried a tool it doesn't have";
+  return LABELS[name].replace(/\{(\w+)\}/g, (_, key) => String(args[key] ?? "").slice(0, 60));
 }
 
 /** The tools this person may be offered: role-checked, and without propose tools when `propose` is false. */
@@ -51,7 +55,10 @@ async function converse(ctx, model, tools, history, emit) {
       throw error;
     });
     await countCall(ctx.env, ctx.user.id, { usage: reply.usage, fallback: model.provider !== "gemini" }, ctx.now);
-    if (!reply.toolCalls.length) return { provider: model.provider };
+    if (!reply.toolCalls.length) {
+      if (!reply.text.trim()) emit("text", { delta: "I couldn't put an answer together. Try asking another way." });
+      return { provider: model.provider };
+    }
     messages.push({ role: "assistant", text: reply.text, toolCalls: reply.toolCalls });
     const results = [];
     for (const call of reply.toolCalls) {
@@ -90,7 +97,8 @@ export async function answer({ env, user, history, context = {}, tools, emit, no
   emit("notice", { message: env.GEMINI_API_KEY
     ? "Gemini is busy, so a smaller model answered. It can't draft changes."
     : "Gemini isn't set up here, so a smaller model answered. It can't draft changes." });
-  return converse(ctx, workersAiModel(env), toolsFor(user, tools, { propose: false }), history, emit);
+  const fallback = { ...ctx, system: `${ctx.system}\n\n# Right now\n${FALLBACK_NOTE}` };
+  return converse(fallback, workersAiModel(env), toolsFor(user, tools, { propose: false }), history, emit);
 }
 
 export { ModelBusy, ModelError };

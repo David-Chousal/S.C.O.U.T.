@@ -6,6 +6,7 @@ import { test } from "node:test";
 
 import { READ_TOOLS, scrubEmails } from "../worker/assistant/read-tools.js";
 import { searchDocs } from "../worker/assistant/knowledge.js";
+import { toolLabel } from "../worker/assistant/loop.js";
 import { validQuestion } from "../worker/assistant/route.js";
 import { ask, stubGemini, stubWorkersAi, textOf } from "./assistant-helpers.js";
 import { Client, makeEnv, signedIn } from "./helpers.js";
@@ -143,6 +144,7 @@ test("a tool the person was not offered is refused even if the model calls it", 
   const { client } = await signedIn(env, "member");
   await ask(client, "How much storage is used?");
   assert.match(JSON.stringify(requests[1].body.contents.at(-1)), /no tool called get_storage/);
+  assert.equal(toolLabel("propose_buoy_setting"), "Tried a tool it doesn't have");
 });
 
 test("a buoy label carrying instructions reaches the model only as tool data", async (t) => {
@@ -167,8 +169,22 @@ test("rate-limited twice: falls back to Workers AI, says so, and offers no propo
   assert.equal(reply.events.at(-1).data.provider, "workers-ai");
   assert.ok(!ai.calls[0].input.tools.some((tl) => tl.function.name.startsWith("propose_")));
   assert.equal(ai.calls[1].input.messages.at(-1).role, "tool");
+  assert.match(ai.calls[0].input.messages[0].content, /cannot draft changes/);
   const usage = env.DB.raw.prepare("SELECT * FROM assistant_usage").get();
   assert.equal(usage.fallbacks, 2);
+});
+
+test("the fallback's tool call written as its reply body is still run, and an empty answer is said out loud", async (t) => {
+  const ai = stubWorkersAi([
+    { response: { type: "function", function: { name: "search_docs", parameters: { query: "LoRa audio" } } }, tool_calls: [] },
+    { choices: [{ message: { content: "{\"type\": \"function\", \"function\": {\"name\": \"link_to\", \"parameters\": {\"page\": \"help\"}}}" } }] },
+    { response: "" },
+  ]);
+  const env = makeEnv({ AI: ai });
+  const { client } = await signedIn(env, "member");
+  const reply = await ask(client, "Why no audio over LoRa?");
+  assert.deepEqual(reply.events.filter((e) => e.event === "tool").map((e) => e.data.name), ["search_docs", "link_to"]);
+  assert.match(textOf(reply.events), /couldn't put an answer together/);
 });
 
 test("a single 429 is retried on Gemini", async (t) => {

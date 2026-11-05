@@ -5,6 +5,6 @@
 CREATE TABLE assistant_briefs (
   day        TEXT PRIMARY KEY,               -- UTC date, YYYY-MM-DD
   text       TEXT NOT NULL,
-  provider   TEXT NOT NULL,                  -- gemini | workers-ai | facts (no model answered)
+  provider   TEXT NOT NULL,                  -- gemini | facts (Gemini did not answer)
   created_at INTEGER NOT NULL
 );

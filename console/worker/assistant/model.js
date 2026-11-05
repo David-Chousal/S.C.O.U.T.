@@ -140,11 +140,32 @@ function workersAiMessages(system, messages) {
   return out;
 }
 
+/** A function call the model wrote as its reply body ({ type: "function", function: { name, parameters } }),
+ * which Llama on Workers AI sometimes does instead of filling tool_calls; null when it is prose. */
+function callInBody(body) {
+  let value = body;
+  if (typeof body === "string") {
+    if (!/^\s*\{[\s\S]*"name"[\s\S]*\}\s*$/.test(body)) return null;
+    try { value = JSON.parse(body); } catch { return null; }
+  }
+  const fn = value?.function ?? value;
+  return fn && typeof fn === "object" && typeof fn.name === "string" ? { name: fn.name, arguments: fn.parameters ?? fn.arguments ?? {} } : null;
+}
+
+/** Text and tool calls from a Workers AI result, in any of the shapes it returns. */
+function workersAiReply(result) {
+  const message = result?.choices?.[0]?.message;
+  const listed = result?.tool_calls?.length ? result.tool_calls : message?.tool_calls ?? [];
+  const body = result?.response ?? message?.content ?? "";
+  const inBody = listed.length ? null : callInBody(body);
+  return { text: inBody || typeof body !== "string" ? "" : body, calls: workersAiCalls(inBody ? [inBody] : listed) };
+}
+
 /** Workers AI returns tool calls either flat ({ name, arguments }) or OpenAI-style. */
 function workersAiCalls(raw = []) {
   return raw.map((call, i) => {
     const fn = call.function ?? call;
-    let args = fn.arguments ?? {};
+    let args = fn.arguments ?? fn.parameters ?? {};
     if (typeof args === "string") {
       try { args = JSON.parse(args); } catch { args = {}; }
     }
@@ -171,9 +192,9 @@ export function workersAiModel(env, id = MODELS.fallback) {
         console.error("assistant: workers ai error", message);
         throw new ModelError("The fallback model failed.");
       }
-      const text = typeof result?.response === "string" ? result.response : "";
+      const { text, calls } = workersAiReply(result);
       if (text) onText(text);
-      return { text, toolCalls: workersAiCalls(result?.tool_calls), usage: { in: result?.usage?.prompt_tokens ?? 0, out: result?.usage?.completion_tokens ?? 0 } };
+      return { text, toolCalls: calls, usage: { in: result?.usage?.prompt_tokens ?? 0, out: result?.usage?.completion_tokens ?? 0 } };
     },
   };
 }

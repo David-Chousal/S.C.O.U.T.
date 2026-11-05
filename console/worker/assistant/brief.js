@@ -2,13 +2,14 @@
  *
  * The facts are worked out here, in code, so the brief cannot raise an alarm the data does not
  * support: silent or late buoys, settings a buoy rejected or has not picked up for a day, shore
- * stations quiet for a day, and file storage near its budget. A model only phrases them (the
- * lighter Flash-Lite, then Workers AI); if neither answers, the facts are stored as they are. */
+ * stations quiet for a day, and file storage near its budget. Gemini Flash-Lite only phrases them;
+ * if it does not answer, the facts are stored as they are. Workers AI is not used here: in local
+ * testing (2026-11-05) it padded the facts with lines the data did not support. */
 
 import { listDevices } from "../device.js";
 import { listBuoys } from "../fleet.js";
 import { BUDGET, usage } from "../storage.js";
-import { geminiModel, MODELS, workersAiModel } from "./model.js";
+import { geminiModel, MODELS } from "./model.js";
 import { health } from "./read-tools.js";
 import { today } from "./usage.js";
 
@@ -53,13 +54,12 @@ function plain(facts, buoys) {
 
 async function phrase(env, facts, buoys) {
   const ask = [{ role: "user", text: `Fleet of ${buoys} buoys. Facts:\n${facts.map((f) => `- ${f}`).join("\n") || "- Nothing needs attention."}` }];
-  const models = [env.GEMINI_API_KEY && geminiModel(env, MODELS.brief), env.AI && workersAiModel(env)].filter(Boolean);
-  for (const model of models) {
+  if (env.GEMINI_API_KEY) {
     try {
-      const { text } = await model.chat({ system: STYLE, messages: ask });
-      if (text.trim()) return { text: text.trim().slice(0, 2000), provider: model.provider };
+      const { text } = await geminiModel(env, MODELS.brief).chat({ system: STYLE, messages: ask });
+      if (text.trim()) return { text: text.trim().slice(0, 2000), provider: "gemini" };
     } catch (error) {
-      console.error("assistant: brief model failed", model.provider, error instanceof Error ? error.message : error);
+      console.error("assistant: brief model failed", error instanceof Error ? error.message : error);
     }
   }
   return { text: plain(facts, buoys), provider: "facts" };
