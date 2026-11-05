@@ -28,7 +28,7 @@ describe("TopBar", () => {
     renderBar();
     expect(screen.getByRole("link", { name: /S\.C\.O\.U\.T\. Console/ }).getAttribute("href")).toMatch(/^\/dashboard\/?$/);
     expect(screen.getByRole("button", { name: "Account: David Chousal" })).toBeDefined();
-    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(false);
     expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   });
 
@@ -53,6 +53,22 @@ describe("TopBar", () => {
     await userEvent.click(screen.getByRole("button", { name: "Account: David Chousal" }));
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Account" })).toBeNull();
+  });
+});
+
+describe("Ask Fred", () => {
+  test("opens and closes Fred's panel", async () => {
+    vi.spyOn(api, "fredStatus").mockResolvedValue({ ok: true, enabled: true, used: 0, cap: 10 } as never);
+    renderBar();
+    await userEvent.click(screen.getByRole("button", { name: /Ask Fred/ }));
+    expect(screen.getByRole("dialog", { name: "Ask Fred" })).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Close Fred" }));
+    expect(screen.queryByRole("dialog", { name: "Ask Fred" })).toBeNull();
+  });
+
+  test("is disabled before the session loads", () => {
+    render(<TopBar />);
+    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
 

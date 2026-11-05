@@ -5,7 +5,10 @@
   "description": "S.C.O.U.T. Console: the team's signed-in back end (Cloudflare Worker + D1, ADR-0012)",
   "engines": { "node": ">=22.13" },
   "scripts": {
+    "knowledge": "python3 scripts/build_assistant_knowledge.py",
+    "pretest": "python3 scripts/build_assistant_knowledge.py",
     "test": "node --test test/*-test.js",
+    "predev": "python3 scripts/build_assistant_knowledge.py",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   }

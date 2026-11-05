@@ -217,3 +217,30 @@ export interface ReportList {
   reports: ReportItem[];
   columns: string[];
 }
+
+/** Fred, the console's assistant (console/worker/assistant/route.js). */
+export interface FredMessage {
+  role: "user" | "assistant";
+  text: string;
+}
+
+export interface FredContext {
+  page?: string;
+  tab?: string;
+  buoy?: number;
+}
+
+export interface FredStatus {
+  enabled: boolean;
+  used: number;
+  cap: number;
+}
+
+/** One server-sent event from POST /api/assistant. */
+export type FredEvent =
+  | { event: "text"; data: { delta: string } }
+  | { event: "tool"; data: { name: string; label: string } }
+  | { event: "notice"; data: { message: string } }
+  | { event: "reset"; data: Record<string, never> }
+  | { event: "done"; data: { provider: string; used: number; cap: number } }
+  | { event: "error"; data: { message: string } };

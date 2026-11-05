@@ -5,6 +5,7 @@
  * CSRF token in X-CSRF-Token. Roles are checked here on every write (roles.js); the front end's
  * disabled controls are only a courtesy. Replies use the envelope { ok, ...data } / { ok:false, error }. */
 
+import { handleAssistant } from "./assistant/route.js";
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, deleteDevice, listDevices, revokeDevice } from "./device.js";
@@ -197,6 +198,8 @@ async function writes(request, env, path, session, body) {
 }
 
 export async function handleApi(request, env, path) {
+  // Fred reads its own, larger body (the open conversation) and streams its reply.
+  if (path === "/api/assistant" || path.startsWith("/api/assistant/")) return handleAssistant(request, env, path);
   let body = {};
   if (request.method === "POST") {
     if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);
