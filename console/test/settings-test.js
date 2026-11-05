@@ -144,3 +144,4 @@ test("a write:settings API token changes settings through /api/v1", async () => 
   assert.equal(response.status, 200, await response.clone().text());
   assert.equal((await buoy(client)).settings_requested.audio_clip_s, 0);
 });
+

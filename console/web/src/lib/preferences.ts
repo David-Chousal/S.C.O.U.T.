@@ -12,7 +12,7 @@ export interface Preferences {
 }
 
 export const STORAGE_KEY = "scout-console-preferences";
-export const DEFAULT_PREFERENCES: Preferences = { theme: "light", time: "utc", shortcuts: true };
+export const DEFAULT_PREFERENCES: Preferences = { theme: "light", time: "utc", shortcuts: false };
 
 export function parsePreferences(raw: string | null): Preferences {
   if (!raw) return DEFAULT_PREFERENCES;
@@ -21,7 +21,7 @@ export function parsePreferences(raw: string | null): Preferences {
     return {
       theme: value.theme === "dark" || value.theme === "system" ? value.theme : "light",
       time: value.time === "local" ? "local" : "utc",
-      shortcuts: value.shortcuts !== false,
+      shortcuts: value.shortcuts === true,
     };
   } catch {
     return DEFAULT_PREFERENCES;

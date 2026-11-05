@@ -101,6 +101,8 @@ export interface BuoySettings {
   buoys: Buoy[];
   /** slotsSod: the three transmit slots at slot phase 0, seconds after midnight UTC. */
   firmware: { source: string; settings: FirmwareSetting[]; remote: RemoteSetting[]; tierGapMv: number; slotsSod: number[] };
+  /** Battery life by transmit count, for the confirmation before a count changes. */
+  estimates: Estimates;
 }
 
 export interface Member {

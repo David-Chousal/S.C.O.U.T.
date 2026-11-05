@@ -6,9 +6,10 @@ import { SignalMeter } from "@/components/status/signal-meter";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Buoy, CountState, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, CountState, Estimates, RemoteSetting } from "@/lib/api/types";
+import { TransmitConfirm } from "./transmit-confirm";
 
-const SIGNAL: Record<CountState, { state: "ok" | "stale" | "failed"; lit: number; word: string; detail: string }> = {
+export const SETTINGS_SIGNAL: Record<CountState, { state: "ok" | "stale" | "failed"; lit: number; word: string; detail: string }> = {
   confirmed: { state: "ok", lit: 4, word: "Confirmed", detail: "The buoy reports running exactly these settings." },
   default: { state: "ok", lit: 4, word: "Default", detail: "Nothing requested; the buoy runs its firmware defaults." },
   pending: { state: "stale", lit: 2, word: "Pending", detail: "Sent after the buoy's next packet; confirmed when its digest matches." },
@@ -23,7 +24,7 @@ export function optionsOf(spec: RemoteSetting): number[] | null {
   return count <= 12 ? Array.from({ length: count }, (_, i) => spec.min! + i * spec.step!) : null;
 }
 
-function display(spec: RemoteSetting, value: number): string {
+export function display(spec: RemoteSetting, value: number): string {
   if (spec.key === "audio_clip_s" && value === 0) return "Off";
   return spec.unit ? `${value} ${spec.unit}` : String(value);
 }
@@ -81,24 +82,68 @@ interface RemoteSettingsProps {
   buoy: Buoy;
   remote: RemoteSetting[];
   slotsSod: number[];
+  estimates: Estimates;
   canEdit: boolean;
   onSaved: () => void;
 }
 
-/** One buoy's remote settings: what it should run, whether it has confirmed it, and controls to
- * change it. Saving sends only the settings that changed; the console refuses a set the buoy
- * would refuse, so a bad combination never reaches the radio. */
-export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: RemoteSettingsProps) {
+/** The buoy's name in the console, saved on its own: it never goes to the buoy. */
+function RenameField({ buoy, canEdit, onSaved }: { buoy: Buoy; canEdit: boolean; onSaved: () => void }) {
+  const { show } = useToast();
+  const [label, setLabel] = useState(buoy.label);
+  const [saving, setSaving] = useState(false);
+  const id = `buoy-${buoy.buoy_id}-label`;
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      await api.renameBuoy(buoy.buoy_id, label.trim());
+      show({ tone: "ok", title: `Renamed buoy ${buoy.buoy_id} to ${label.trim()}` });
+      onSaved();
+    } catch (failure) {
+      show({ tone: "failed", title: "Not renamed", detail: failure instanceof Error ? failure.message : undefined });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="sc-rename" onSubmit={onSubmit}>
+      <label className="sc-tag" htmlFor={id}>Name in the console</label>
+      <span className="sc-rename__row">
+        <input id={id} className="sc-input" maxLength={40} required value={label} disabled={!canEdit}
+          onChange={(event) => setLabel(event.target.value)} />
+        <Key type="submit" disabled={!canEdit || saving || label.trim() === buoy.label}>{saving ? "Saving…" : "Save name"}</Key>
+      </span>
+    </form>
+  );
+}
+
+/** One buoy's editor: its name, whether it runs what was asked, and a control per remote setting.
+ * Saving sends only the settings that changed; the console refuses a set the buoy would refuse,
+ * so a bad combination never reaches the radio. */
+export function RemoteSettings({ buoy, remote, slotsSod, estimates, canEdit, onSaved }: RemoteSettingsProps) {
   const { show } = useToast();
   const initial = Object.fromEntries(remote.map((spec, i) => [spec.key, buoy.settings_wanted[i]]));
   const [form, setForm] = useState<Record<string, number>>(initial);
   const [saving, setSaving] = useState(false);
-  const signal = SIGNAL[buoy.settings_state];
+  const [confirming, setConfirming] = useState(false);
+  const signal = SETTINGS_SIGNAL[buoy.settings_state];
   const changed = changedKeys(remote, buoy.settings_wanted, form);
   const titleId = `buoy-${buoy.buoy_id}-remote-title`;
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  // A new transmit count is confirmed first, with what it does to battery life.
+  const fromCount = buoy.settings_wanted[remote.findIndex((spec) => spec.key === "tx_count")];
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (changed.includes("tx_count")) setConfirming(true);
+    else void send();
+  }
+
+  async function send() {
+    setConfirming(false);
     setSaving(true);
     try {
       await api.requestSettings(buoy.buoy_id, Object.fromEntries(changed.map((key) => [key, form[key]])));
@@ -126,9 +171,11 @@ export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: Rem
   return (
     <section className="sc-bay" aria-labelledby={titleId}>
       <div className="sc-bay__head">
-        <h3 className="sc-bay__title" id={titleId}>{buoy.label} · remote settings</h3>
-        <SignalMeter state={signal.state} lit={signal.lit} word={signal.word} />
+        <h3 className="sc-bay__title" id={titleId}>{buoy.label}</h3>
+        <span className="sc-row"><span className="sc-tag">Buoy ID {buoy.buoy_id}</span>
+          <SignalMeter state={signal.state} lit={signal.lit} word={signal.word} /></span>
       </div>
+      <RenameField key={buoy.label} buoy={buoy} canEdit={canEdit} onSaved={onSaved} />
       <p className="sc-help">{signal.detail} Wanted digest <span className="sc-num">{buoy.settings_digest_wanted}</span> ·
         buoy reports <span className="sc-num">{buoy.settings_digest_reported ?? "—"}</span>.</p>
       <form className="sc-settings-form sc-remote-form" onSubmit={onSubmit}>
@@ -148,6 +195,9 @@ export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: Rem
             disabled={!canEdit} onConfirm={restore} />
         </div>
       </form>
+      <TransmitConfirm open={confirming} buoyLabel={buoy.label} from={fromCount} to={form.tx_count}
+        sendTimes={sendTimes(slotsSod, form.tx_count, form.slot_phase_h)} estimates={estimates}
+        onCancel={() => setConfirming(false)} onConfirm={() => void send()} />
     </section>
   );
 }

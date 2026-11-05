@@ -18,7 +18,7 @@
 .sc-editbar .sc-key { box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .28); }
 .sc-layout { display: grid; gap: var(--space-8); }
 .sc-layout--editing { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
-.sc-lib-rail { position: sticky; top: var(--space-4); display: grid; gap: var(--space-3); }
+.sc-lib-rail { position: sticky; top: calc(var(--bar-h, 0px) + var(--space-4)); display: grid; gap: var(--space-3); }
 .sc-bay-slot { position: relative; min-width: 0; }
 .sc-bay-slot--edit { outline: 1px dashed var(--line-strong); outline-offset: 6px; }
 .sc-bay-slot--edit > .sc-bay-slot__content { pointer-events: none; user-select: none; }

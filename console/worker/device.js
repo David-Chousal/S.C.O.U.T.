@@ -45,6 +45,20 @@ export async function revokeDevice(db, actor, id) {
   return {};
 }
 
+/** Remove a revoked token for good. An active one must be revoked first, so a station is never
+ * cut off by a delete; nothing else refers to it once revoked (revoking clears its buoys). */
+export async function deleteDevice(db, actor, id) {
+  const device = await db.prepare("SELECT * FROM devices WHERE id = ?").bind(id).first();
+  if (!device) return { error: "No such shore station token." };
+  if (!device.revoked_at) return { error: "Revoke the token before deleting it." };
+  await db.batch([
+    db.prepare("UPDATE buoys SET command_device_id = NULL WHERE command_device_id = ?").bind(id),
+    db.prepare("DELETE FROM devices WHERE id = ?").bind(id),
+  ]);
+  await record(db, { actor, action: "device.delete", target: device.name });
+  return {};
+}
+
 export async function listDevices(db) {
   const { results } = await db
     .prepare("SELECT id, name, created_at, revoked_at, last_seen_at FROM devices ORDER BY created_at DESC")

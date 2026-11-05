@@ -140,7 +140,7 @@ function Reference() {
         </dl>
       </GuideSection>
       <GuideSection id="keys" eyebrow="Reference" title="Keyboard shortcuts"
-        lead={<>Press <kbd>G</kbd>, then a letter, to jump to a page. Turn shortcuts off in <b>Settings → This browser</b>.</>}>
+        lead={<>Press <kbd>G</kbd>, then a letter, to jump to a page. They are off until you turn them on in <b>Settings → This browser</b>.</>}>
         <dl className="sc-guide__shortcuts">
           {SHORTCUTS.map((shortcut) => (
             <div key={shortcut.action}>

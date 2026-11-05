@@ -7,7 +7,7 @@
 
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
-import { createDevice, listDevices, revokeDevice } from "./device.js";
+import { createDevice, deleteDevice, listDevices, revokeDevice } from "./device.js";
 import {
   addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestSettings, requestTxCount, restoreDefaults,
   setCommandStation, SLOT_LABELS,
@@ -113,7 +113,7 @@ async function reads(env, path, session, url) {
     case "/api/fleet":
       return json({ buoys: await listBuoys(env.DB), estimates, slotLabels: SLOT_LABELS });
     case "/api/settings":
-      return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig });
+      return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig, estimates });
     case "/api/team":
       return json({ members: await listUsers(env.DB), invites: await openInvites(env.DB) });
     case "/api/devices":
@@ -169,6 +169,7 @@ const WRITES = [
   [/^\/api\/tokens\/([\w-]{1,64})\/revoke$/, "tokens.write", (db, b, m, a) => revokeToken(db, a, m[1])],
   [/^\/api\/devices$/, "devices.write", (db, b, m, a) => createDevice(db, a, b.name)],
   [/^\/api\/devices\/([\w-]{1,64})\/revoke$/, "devices.write", (db, b, m, a) => revokeDevice(db, a, m[1])],
+  [/^\/api\/devices\/([\w-]{1,64})\/delete$/, "devices.write", (db, b, m, a) => deleteDevice(db, a, m[1])],
 ];
 
 async function writes(request, env, path, session, body) {

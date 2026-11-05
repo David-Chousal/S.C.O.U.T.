@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { AuditTable } from "@/components/audit/audit-table";
 import { DeveloperBoard } from "./developer-board";
@@ -10,17 +11,21 @@ const TABS = [
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
-function tabFromUrl(): TabId {
-  const wanted = new URLSearchParams(window.location.search).get("tab");
+function tabOf(wanted: string | null): TabId {
   return TABS.find((tab) => tab.id === wanted)?.id ?? "tokens";
 }
 
 /** The Developer page: API tokens and the audit log as two tabs. "?tab=audit" opens the log, so
- * the old /audit/ address and links can land on it. Tabs follow the WAI-ARIA pattern. */
+ * the old /audit/ address and links can land on it, and keeps following the address when it
+ * changes. Tabs follow the WAI-ARIA pattern. */
 export function DeveloperTabs() {
-  // Safe to read the URL while rendering: AppShell renders page content only once the session
-  // has loaded in the browser, never in the prerendered HTML, so there is no hydration mismatch.
-  const [active, setActive] = useState<TabId>(() => (typeof window === "undefined" ? "tokens" : tabFromUrl()));
+  const tabParam = useSearchParams()?.get("tab") ?? null;
+  const [active, setActive] = useState<TabId>(() => tabOf(tabParam));
+  const [seenParam, setSeenParam] = useState(tabParam);
+  if (tabParam !== seenParam) {
+    setSeenParam(tabParam);
+    setActive(tabOf(tabParam));
+  }
   const buttons = useRef<Record<string, HTMLButtonElement | null>>({});
 
   function choose(id: TabId) {

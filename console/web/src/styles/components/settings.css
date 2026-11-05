@@ -58,3 +58,8 @@ input.sc-slot--channel { width: 148px; }
   .sc-alert-table__buttons { justify-content: flex-start; }
 }
 .sc-sentence__part { white-space: nowrap; }
+
+/* The buoy editor's name row: label above, field and save key side by side. */
+.sc-rename { display: grid; gap: var(--space-2); max-width: 520px; margin-bottom: var(--space-4); }
+.sc-rename__row { display: flex; gap: var(--space-2); align-items: center; }
+.sc-rename__row .sc-input { flex: 1; min-width: 0; }

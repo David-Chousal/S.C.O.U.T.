@@ -1,57 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { useToast } from "@/components/feedback/toaster";
-import { Key } from "@/components/ui/key";
-import { api } from "@/lib/api/client";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
+import { BuoyOverview } from "./buoy-overview";
 import { RemoteSettings } from "./remote-settings";
-
-function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean; onSaved: () => void }) {
-  const { show } = useToast();
-  const [label, setLabel] = useState(buoy.label);
-  const [saving, setSaving] = useState(false);
-  const inputId = `buoy-${buoy.buoy_id}-label`;
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSaving(true);
-    try {
-      await api.renameBuoy(buoy.buoy_id, label.trim());
-      show({ tone: "ok", title: `Renamed buoy ${buoy.buoy_id} to ${label.trim()}` });
-      onSaved();
-    } catch (failure) {
-      show({ tone: "failed", title: "Not renamed", detail: failure instanceof Error ? failure.message : undefined });
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <section className="sc-bay" aria-labelledby={`${inputId}-title`}>
-      <div className="sc-bay__head">
-        <h3 className="sc-bay__title" id={`${inputId}-title`}>{buoy.label}</h3>
-        <span className="sc-tag">Buoy ID {buoy.buoy_id}</span>
-      </div>
-      <form className="sc-settings-form" onSubmit={onSubmit}>
-        <div className="sc-fieldset">
-          <span className="sc-fieldset__label"><label className="sc-tag" htmlFor={inputId}>Name in the console</label></span>
-          <input id={inputId} className="sc-input" maxLength={40} required value={label} disabled={!canRename}
-            aria-describedby={`${inputId}-help`} onChange={(event) => setLabel(event.target.value)} />
-          <span id={`${inputId}-help`} className="sc-help">Only the console uses it; the buoy sends its numeric ID.</span>
-        </div>
-        <div className="sc-settings-form__foot">
-          <Key type="submit" variant="primary" disabled={!canRename || saving || label.trim() === buoy.label}>
-            {saving ? "Saving…" : "Save name"}
-          </Key>
-        </div>
-      </form>
-    </section>
-  );
-}
 
 /** Keep "3.10 V" and "CR 4/8" on one line: a number never wraps away from its unit or name. */
 export function keepUnits(value: string): string {
@@ -87,31 +42,47 @@ function FirmwareTable({ settings }: { settings: FirmwareSetting[] }) {
   );
 }
 
-/** Settings → Buoys: each buoy's name and transmit count, its remote settings, then the firmware's
- * settings. Each remote-settings bay remounts when what the buoy should run changes, so its form
- * always starts from the saved values. */
+function selectedFromUrl(buoys: Buoy[]): number {
+  const wanted = Number(new URLSearchParams(window.location.search).get("buoy"));
+  return buoys.some((b) => b.buoy_id === wanted) ? wanted : buoys[0]?.buoy_id ?? 0;
+}
+
+/** Settings → Buoys: an overview of every buoy, one buoy's editor below it, then the firmware
+ * defaults. The picked buoy is kept in the address (?buoy=2) so a link opens it. The editor
+ * remounts when what the buoy should run changes, so its form starts from the saved values. */
 export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings | null; error: string; reload: () => void }) {
   const { user } = useSession();
-  const canRename = can(user.role, "settings.write");
+  const canEdit = can(user.role, "settings.write");
+  const [picked, setPicked] = useState<number | null>(null);
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!data) return <span className="sc-tag" aria-busy="true">Loading buoy settings…</span>;
+  const selected = picked ?? (typeof window === "undefined" ? data.buoys[0]?.buoy_id ?? 0 : selectedFromUrl(data.buoys));
+  const buoy = data.buoys.find((b) => b.buoy_id === selected);
+
+  function select(buoyId: number) {
+    setPicked(buoyId);
+    const url = new URL(window.location.href);
+    url.searchParams.set("buoy", String(buoyId));
+    window.history.replaceState(null, "", url);
+  }
+
   return (
     <>
-      {!canRename && <Banner tone="info" icon="lock">View only: renaming a buoy or changing its settings needs the {needs("settings.write")} role.</Banner>}
-      {data.buoys.length === 0 ? (
-        <EmptyState status="No buoys" title="No buoys yet">A buoy appears when its shore station first pushes a reading.</EmptyState>
-      ) : (
-        <div className="sc-grid12">
-          {data.buoys.map((buoy) => (
-            <div className="span-6" key={buoy.buoy_id}><BuoyCard buoy={buoy} canRename={canRename} onSaved={reload} /></div>
-          ))}
-          {data.buoys.map((buoy) => (
-            <div className="span-12" key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`}>
-              <RemoteSettings buoy={buoy} remote={data.firmware.remote} slotsSod={data.firmware.slotsSod}
-                canEdit={canRename} onSaved={reload} />
-            </div>
-          ))}
+      {!canEdit && <Banner tone="info" icon="lock">View only: renaming a buoy or changing its settings needs the {needs("settings.write")} role.</Banner>}
+      <section className="sc-bay" aria-labelledby="buoys-overview-title">
+        <div className="sc-bay__head">
+          <h3 className="sc-bay__title" id="buoys-overview-title">Buoys</h3>
+          <span className="sc-tag">Pick one to change it</span>
         </div>
+        {data.buoys.length === 0 ? (
+          <EmptyState status="No buoys" title="No buoys yet">
+            A buoy appears when its shore station first pushes a reading, or when an admin adds it on Fleet. Its settings open here.
+          </EmptyState>
+        ) : <BuoyOverview buoys={data.buoys} remote={data.firmware.remote} selected={selected} onSelect={select} />}
+      </section>
+      {buoy && (
+        <RemoteSettings key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`} buoy={buoy} remote={data.firmware.remote}
+          slotsSod={data.firmware.slotsSod} estimates={data.estimates} canEdit={canEdit} onSaved={reload} />
       )}
       <FirmwareTable settings={data.firmware.settings} />
     </>
