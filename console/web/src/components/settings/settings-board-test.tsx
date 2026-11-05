@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import estimates from "../../../../worker/battery-life.json";
 import firmware from "../../../../worker/buoy-config.json";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
@@ -18,6 +19,7 @@ const DATA = {
     settings_wanted: firmware.remote.map((spec) => spec.default), settings_digest_wanted: "e674",
     settings_digest_reported: "e674", settings_state: "default" }],
   firmware,
+  estimates,
 } as BuoySettings;
 
 function renderBoard(role: Role, update = vi.fn(), preferences: Preferences = DEFAULT_PREFERENCES) {
@@ -67,6 +69,18 @@ describe("SettingsBoard", () => {
     await userEvent.type(humidity, "80");
     await userEvent.click(screen.getByRole("button", { name: "Send 2 changes" }));
     expect(send).toHaveBeenCalledWith(1, { sample_interval_min: 15, humidity_alert_pct: 80 });
+  });
+
+  test("a new transmit count asks first, showing battery life, and sends only on confirm", async () => {
+    const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
+    renderBoard("member");
+    await userEvent.selectOptions(await screen.findByLabelText("Transmits a day"), "1");
+    await userEvent.click(screen.getByRole("button", { name: "Send 1 change" }));
+    expect(send).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog", { name: "Change SCOUT-01 to 1 a day?" })).toBeDefined();
+    expect(screen.getByText("After · 1 a day")).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Change to 1 a day" }));
+    expect(send).toHaveBeenCalledWith(1, { tx_count: 1 });
   });
 
   test("the hydrophone clip offers Off, and the radio never appears as a control", async () => {

@@ -6,7 +6,8 @@ import { SignalMeter } from "@/components/status/signal-meter";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Buoy, CountState, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, CountState, Estimates, RemoteSetting } from "@/lib/api/types";
+import { TransmitConfirm } from "./transmit-confirm";
 
 export const SETTINGS_SIGNAL: Record<CountState, { state: "ok" | "stale" | "failed"; lit: number; word: string; detail: string }> = {
   confirmed: { state: "ok", lit: 4, word: "Confirmed", detail: "The buoy reports running exactly these settings." },
@@ -81,6 +82,7 @@ interface RemoteSettingsProps {
   buoy: Buoy;
   remote: RemoteSetting[];
   slotsSod: number[];
+  estimates: Estimates;
   canEdit: boolean;
   onSaved: () => void;
 }
@@ -121,17 +123,27 @@ function RenameField({ buoy, canEdit, onSaved }: { buoy: Buoy; canEdit: boolean;
 /** One buoy's editor: its name, whether it runs what was asked, and a control per remote setting.
  * Saving sends only the settings that changed; the console refuses a set the buoy would refuse,
  * so a bad combination never reaches the radio. */
-export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: RemoteSettingsProps) {
+export function RemoteSettings({ buoy, remote, slotsSod, estimates, canEdit, onSaved }: RemoteSettingsProps) {
   const { show } = useToast();
   const initial = Object.fromEntries(remote.map((spec, i) => [spec.key, buoy.settings_wanted[i]]));
   const [form, setForm] = useState<Record<string, number>>(initial);
   const [saving, setSaving] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const signal = SETTINGS_SIGNAL[buoy.settings_state];
   const changed = changedKeys(remote, buoy.settings_wanted, form);
   const titleId = `buoy-${buoy.buoy_id}-remote-title`;
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  // A new transmit count is confirmed first, with what it does to battery life.
+  const fromCount = buoy.settings_wanted[remote.findIndex((spec) => spec.key === "tx_count")];
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (changed.includes("tx_count")) setConfirming(true);
+    else void send();
+  }
+
+  async function send() {
+    setConfirming(false);
     setSaving(true);
     try {
       await api.requestSettings(buoy.buoy_id, Object.fromEntries(changed.map((key) => [key, form[key]])));
@@ -183,6 +195,9 @@ export function RemoteSettings({ buoy, remote, slotsSod, canEdit, onSaved }: Rem
             disabled={!canEdit} onConfirm={restore} />
         </div>
       </form>
+      <TransmitConfirm open={confirming} buoyLabel={buoy.label} from={fromCount} to={form.tx_count}
+        sendTimes={sendTimes(slotsSod, form.tx_count, form.slot_phase_h)} estimates={estimates}
+        onCancel={() => setConfirming(false)} onConfirm={() => void send()} />
     </section>
   );
 }

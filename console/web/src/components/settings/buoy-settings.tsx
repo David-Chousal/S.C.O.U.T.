@@ -82,7 +82,7 @@ export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings 
       </section>
       {buoy && (
         <RemoteSettings key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`} buoy={buoy} remote={data.firmware.remote}
-          slotsSod={data.firmware.slotsSod} canEdit={canEdit} onSaved={reload} />
+          slotsSod={data.firmware.slotsSod} estimates={data.estimates} canEdit={canEdit} onSaved={reload} />
       )}
       <FirmwareTable settings={data.firmware.settings} />
     </>

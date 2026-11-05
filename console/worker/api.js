@@ -113,7 +113,7 @@ async function reads(env, path, session, url) {
     case "/api/fleet":
       return json({ buoys: await listBuoys(env.DB), estimates, slotLabels: SLOT_LABELS });
     case "/api/settings":
-      return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig });
+      return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig, estimates });
     case "/api/team":
       return json({ members: await listUsers(env.DB), invites: await openInvites(env.DB) });
     case "/api/devices":
