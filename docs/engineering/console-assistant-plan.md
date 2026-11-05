@@ -212,8 +212,9 @@ the shore station.
 2. **Is the free tier's data use acceptable?** The plan says yes for project data, with the
    notice in the panel. Worth a word with the advisors, since the console is a university
    project.
-3. **Can guests use Fred?** The plan says yes, read-only, with a lower cap; the alternative is
-   members only, which also saves the shared allowance.
+3. ~~**Can guests use Fred?**~~ **Decided 2026-11-05: yes, read-only**, with a lower daily
+   cap than members. Guests are never offered propose tools, and the confirm endpoint refuses
+   them regardless.
 4. **Keep conversations 30 days, or not at all?** Keeping them gives history and helps debug
    wrong answers; not keeping them stores less.
 5. **Is "Fred" the name, and which writes are in Phase 2?** The tables above are the proposal;
