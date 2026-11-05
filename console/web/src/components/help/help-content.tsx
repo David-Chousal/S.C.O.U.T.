@@ -44,8 +44,9 @@ export const SHORE_STEPS: readonly HelpStep[] = [
     ),
   },
   {
-    title: "Check it on Stations",
-    body: <>Within a minute of its first push, the station shows a <b>last heard</b> time. From now on it sends readings by itself.
+    title: "Watch it connect",
+    body: <>Leave Stations open after making the token. A live check under it turns green the moment the station joins WiFi and
+      checks in, usually within seconds of power-on. From now on it sends readings by itself.
       If two stations hear the same buoy, choose there which one sends that buoy&rsquo;s commands.</>,
   },
 ];
@@ -64,7 +65,8 @@ export const BUOY_STEPS: readonly HelpStep[] = [
   },
   {
     title: "Power it on near a shore station",
-    body: <>That is all it needs. The buoy shows up on Readings and Fleet with its first packet. You can also add it first, with <b>Add buoy</b> on Fleet, to name it before it reports.</>,
+    body: <>Add it first with <b>Add buoy</b> on Fleet, then power it on. It sends one packet straight away, and the dialog turns green
+      as soon as the shore station passes it on. A buoy that is not added shows up on its own with that same first packet.</>,
   },
   {
     title: "Give it a name",

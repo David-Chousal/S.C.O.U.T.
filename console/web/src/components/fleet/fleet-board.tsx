@@ -7,6 +7,7 @@ import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Estimates, Fleet } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
+import { usePoll } from "@/lib/use-poll";
 import { AddBuoyDialog } from "./add-buoy-dialog";
 import { BatteryTable } from "./battery-table";
 import { BuoyBay } from "./buoy-bay";
@@ -32,6 +33,7 @@ export function FleetBoard() {
     api.fleet().then(setFleet, (failure: unknown) => setError(failure instanceof Error ? failure.message : "Could not load the fleet."));
   }, []);
   useEffect(load, [load]);
+  usePoll(load, 30 * 1000);
 
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!fleet) return <span className="sc-tag" aria-busy="true">Loading the fleet…</span>;
