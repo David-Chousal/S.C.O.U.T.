@@ -59,7 +59,9 @@ function FlowDiagram() {
     <ol className="sc-guide__flow" aria-label="Buoy to shore station to console">
       {FLOW_NODES.map((node, index) => (
         <li key={node.name} className="sc-guide__flow-item">
-          <div className="sc-guide__node"><strong>{node.name}</strong><span>{node.detail}</span></div>
+          <div className={index === FLOW_NODES.length - 1 ? "sc-guide__node sc-guide__node--here" : "sc-guide__node"}>
+            <strong>{node.name}</strong><span>{node.detail}</span>
+          </div>
           {FLOW_LINKS[index] ? <span className="sc-guide__wire">{FLOW_LINKS[index]}</span> : null}
         </li>
       ))}
@@ -79,9 +81,32 @@ function TaskPicker() {
               <strong>{task.title}</strong>
               <span>{task.summary}</span>
               <small>{task.who}</small>
+              <Icon name="chevron-right" />
             </a>
           </li>
         ))}
+      </ul>
+    </nav>
+  );
+}
+
+const PAGE_INDEX = [
+  { id: "flow", label: "How readings reach the console" },
+  { id: "shore", label: "Connect a shore station" },
+  { id: "buoy", label: "Add a buoy" },
+  { id: "settings", label: "Change how a buoy behaves" },
+  { id: "trouble", label: "Fix something that looks wrong" },
+  { id: "roles", label: "Who can do what" },
+  { id: "keys", label: "Keyboard shortcuts" },
+  { id: "api", label: "Scripts and notebooks" },
+];
+
+function PageIndex() {
+  return (
+    <nav className="sc-guide__index" aria-label="On this page">
+      <span className="sc-guide__eyebrow">On this page</span>
+      <ul>
+        {PAGE_INDEX.map((entry) => <li key={entry.id}><a href={`#${entry.id}`}>{entry.label}</a></li>)}
       </ul>
     </nav>
   );
@@ -136,59 +161,61 @@ export function HelpGuide() {
   return (
     <div className="sc-guide">
       <TaskPicker />
+      <PageIndex />
+      <div className="sc-guide__body">
+        <GuideSection id="flow" eyebrow="Before you start" title="How readings reach the console"
+          lead="The buoy never talks to the console directly. A shore station listens for it and passes each reading on.">
+          <FlowDiagram />
+          <p className="sc-guide__text sc-guide__aside">
+            The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 44-byte packet; raw audio stays on the buoy. Every 10 minutes
+            the shore station also asks the console for setting changes and hands them to the buoy right after its next packet.
+          </p>
+        </GuideSection>
 
-      <GuideSection id="flow" eyebrow="Before you start" title="How readings reach the console"
-        lead="The buoy never talks to the console directly. A shore station listens for it and passes each reading on.">
-        <FlowDiagram />
-        <p className="sc-guide__text sc-guide__aside">
-          The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 44-byte packet; raw audio stays on the buoy. Every 10 minutes
-          the shore station also asks the console for setting changes and hands them to the buoy right after its next packet.
-        </p>
-      </GuideSection>
+        <GuideSection id="shore" eyebrow="Admin" title="Connect a shore station">
+          <Steps steps={SHORE_STEPS} done={<>the station shows a recent <b>last heard</b> time on Stations.</>} />
+          <ShoreFallback />
+        </GuideSection>
 
-      <GuideSection id="shore" eyebrow="Admin" title="Connect a shore station">
-        <Steps steps={SHORE_STEPS} done={<>the station shows a recent <b>last heard</b> time on Stations.</>} />
-        <ShoreFallback />
-      </GuideSection>
+        <GuideSection id="buoy" eyebrow="Member" title="Add a buoy">
+          <Steps steps={BUOY_STEPS} done={<>the buoy appears on Fleet with a recent reading.</>} />
+        </GuideSection>
 
-      <GuideSection id="buoy" eyebrow="Member" title="Add a buoy">
-        <Steps steps={BUOY_STEPS} done={<>the buoy appears on Fleet with a recent reading.</>} />
-      </GuideSection>
+        <GuideSection id="settings" eyebrow="Member" title="Change how a buoy behaves"
+          lead={<>Open <b>Settings → Buoys</b>. Each setting that can change by radio has its own control.</>}>
+          <p className="sc-guide__text">
+            You can change transmits a day, slot phase, reading interval, hydrophone clip, power thresholds and the housing humidity alert.
+            The shore station sends the whole set right after the buoy&rsquo;s next packet.
+          </p>
+          <dl className="sc-guide__states">
+            <div><dt>Pending</dt><dd>Sent, waiting for a packet from the buoy that reports the same settings.</dd></div>
+            <div><dt>Confirmed</dt><dd>The buoy is running the new settings.</dd></div>
+            <div><dt>Rejected</dt><dd>The buoy refused the change and kept its old settings.</dd></div>
+          </dl>
+          <p className="sc-guide__text sc-guide__aside">The radio and the listen window never change by radio; they need a firmware update.</p>
+        </GuideSection>
 
-      <GuideSection id="settings" eyebrow="Member" title="Change how a buoy behaves"
-        lead={<>Open <b>Settings → Buoys</b>. Each setting that can change by radio has its own control.</>}>
-        <p className="sc-guide__text">
-          You can change transmits a day, slot phase, reading interval, hydrophone clip, power thresholds and the housing humidity alert.
-          The shore station sends the whole set right after the buoy&rsquo;s next packet.
-        </p>
-        <dl className="sc-guide__states">
-          <div><dt>Pending</dt><dd>Sent, waiting for a packet from the buoy that reports the same settings.</dd></div>
-          <div><dt>Confirmed</dt><dd>The buoy is running the new settings.</dd></div>
-          <div><dt>Rejected</dt><dd>The buoy refused the change and kept its old settings.</dd></div>
-        </dl>
-        <p className="sc-guide__text sc-guide__aside">The radio and the listen window never change by radio; they need a firmware update.</p>
-      </GuideSection>
+        <GuideSection id="trouble" eyebrow="Troubleshooting" title="Fix something that looks wrong" lead="Pick what you are seeing.">
+          <div className="sc-guide__problems">
+            {PROBLEMS.map((problem) => (
+              <details key={problem.symptom} className="sc-guide__problem">
+                <summary>{problem.symptom}<Icon name="chevron-down" /></summary>
+                <p className="sc-guide__text">{problem.fix}</p>
+              </details>
+            ))}
+          </div>
+        </GuideSection>
 
-      <GuideSection id="trouble" eyebrow="Troubleshooting" title="Fix something that looks wrong" lead="Pick what you are seeing.">
-        <div className="sc-guide__problems">
-          {PROBLEMS.map((problem) => (
-            <details key={problem.symptom} className="sc-guide__problem">
-              <summary>{problem.symptom}<Icon name="chevron-down" /></summary>
-              <p className="sc-guide__text">{problem.fix}</p>
-            </details>
-          ))}
-        </div>
-      </GuideSection>
+        <Reference />
 
-      <Reference />
-
-      <GuideSection id="api" eyebrow="Developer" title="Use the data in scripts and notebooks">
-        <p className="sc-guide__text">
-          Make a personal token on <b>Developer → API tokens</b> and send it as a header with every request to <code>/api/v1</code>. It acts
-          with your role, limited to the scopes you gave it. Every change anyone makes is listed on <b>Developer → Audit log</b>.
-        </p>
-        <CopyCommand command="Authorization: Bearer sct_…" />
-      </GuideSection>
+        <GuideSection id="api" eyebrow="Developer" title="Use the data in scripts and notebooks">
+          <p className="sc-guide__text">
+            Make a personal token on <b>Developer → API tokens</b> and send it as a header with every request to <code>/api/v1</code>. It acts
+            with your role, limited to the scopes you gave it. Every change anyone makes is listed on <b>Developer → Audit log</b>.
+          </p>
+          <CopyCommand command="Authorization: Bearer sct_…" />
+        </GuideSection>
+      </div>
     </div>
   );
 }
