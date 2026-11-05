@@ -4,11 +4,11 @@ import userEvent from "@testing-library/user-event";
 import firmware from "../../../../worker/buoy-config.json";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
-import type { BuoySettings, FirmwareSetting, Role, Session } from "@/lib/api/types";
+import type { BuoySettings, Role, Session } from "@/lib/api/types";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
-import { keepUnits, usualChange } from "./buoy-settings";
+import { keepUnits } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
 const DATA = {
@@ -38,8 +38,11 @@ afterEach(() => vi.restoreAllMocks());
 describe("SettingsBoard", () => {
   test("lists every firmware setting exported from config.h", async () => {
     renderBoard("member");
-    expect(await screen.findByText("Firmware settings")).toBeDefined();
-    for (const setting of firmware.settings) expect(screen.getByRole("rowheader", { name: setting.label })).toBeDefined();
+    expect(await screen.findByText("Firmware defaults")).toBeDefined();
+    for (const setting of firmware.settings) expect(screen.getByText(setting.description)).toBeDefined();
+    expect(screen.queryByText(/provisional|decided/i)).toBeNull();
+    const badges = [...screen.getByRole("table").querySelectorAll(".sc-badge")].map((b) => b.textContent);
+    expect(badges.filter((text) => text === "By radio")).toHaveLength(firmware.settings.filter((s) => s.change === "radio").length);
   });
 
   test("a member can rename a buoy; the save key wakes once the name changes", async () => {
@@ -100,8 +103,4 @@ describe("firmware table helpers", () => {
     expect(keepUnits("SF12 · CR 4/8")).toBe("SF12 · CR\u00a04/8");
   });
 
-  test("the usual way a setting changes is the most common one", () => {
-    const rows = [{ change: "radio" }, { change: "firmware" }, { change: "firmware" }] as FirmwareSetting[];
-    expect(usualChange(rows)).toBe("firmware");
-  });
 });

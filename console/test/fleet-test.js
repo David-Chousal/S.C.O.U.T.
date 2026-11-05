@@ -198,7 +198,7 @@ test("the settings read carries each buoy and the firmware's settings, from the 
   assert.equal(body.buoys[0].label, "SCOUT-01");
   const keys = body.firmware.settings.map((s) => s.key);
   assert.ok(keys.includes("tx_count") && keys.includes("humidity_alert"));
-  assert.equal(body.firmware.settings.find((s) => s.key === "sample_interval").value, "every 30 min (15, 30, 60)");
+  assert.equal(body.firmware.settings.find((s) => s.key === "sample_interval").value, "Every 30 min");
   assert.deepEqual(body.firmware.remote.map((s) => s.key).slice(0, 2), ["tx_count", "slot_phase_h"]);
   assert.equal(body.buoys[0].settings_state, "default");
   assert.equal(body.buoys[0].settings_digest_wanted, "e674");

@@ -14,12 +14,6 @@ import { COUNT_SIGNAL, lastHeard, packetLabel } from "@/lib/format";
 import { can, needs, useSession } from "@/lib/session";
 import { RemoteSettings } from "./remote-settings";
 
-const STATUS_BADGE: Record<FirmwareSetting["status"], string> = {
-  decided: "sc-badge sc-badge--muted",
-  provisional: "sc-badge sc-badge--pending",
-  "pending sign-off": "sc-badge sc-badge--pending",
-};
-
 function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean; onSaved: () => void }) {
   const { show } = useToast();
   const [label, setLabel] = useState(buoy.label);
@@ -73,38 +67,31 @@ function BuoyCard({ buoy, canRename, onSaved }: { buoy: Buoy; canRename: boolean
   );
 }
 
-/** The way most settings change; said once above the table, so only the exceptions repeat it. */
-export function usualChange(settings: FirmwareSetting[]): string {
-  const counts = new Map<string, number>();
-  for (const setting of settings) counts.set(setting.change, (counts.get(setting.change) ?? 0) + 1);
-  return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "";
-}
-
 /** Keep "3.10 V" and "CR 4/8" on one line: a number never wraps away from its unit or name. */
 export function keepUnits(value: string): string {
   return value.replace(/(\d) (?=[^\s·]{1,4}(?:\s|$))/g, "$1\u00a0").replace(/\b([A-Z]{2,3}) (?=\d)/g, "$1\u00a0");
 }
 
+const CHANGE_LABEL: Record<FirmwareSetting["change"], string> = { radio: "By radio", firmware: "Firmware" };
+
 function FirmwareTable({ settings }: { settings: FirmwareSetting[] }) {
-  const usual = usualChange(settings);
   return (
     <section className="sc-bay" aria-labelledby="firmware-title">
       <div className="sc-bay__head">
-        <h3 className="sc-bay__title" id="firmware-title">Firmware settings</h3>
+        <h3 className="sc-bay__title" id="firmware-title">Firmware defaults</h3>
         <span className="sc-tag">Every buoy · read from the firmware</span>
       </div>
-      <p className="sc-help">These come straight from the buoy firmware in the repo (config.h), so they cannot drift from it.
-        Unless a row says otherwise, a setting changes by: {usual}.</p>
+      <p className="sc-help">What every buoy starts with, read from the firmware in the repo so it cannot drift. Settings marked
+        {" "}<strong>By radio</strong> can be changed per buoy above; the rest need a firmware update.</p>
       <div className="sc-table-wrap">
         <table className="sc-table sc-firmware-table">
-          <thead><tr><th scope="col">Setting</th><th scope="col">Value</th><th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Setting</th><th scope="col">Default</th><th scope="col">Changes</th></tr></thead>
           <tbody>
             {settings.map((setting) => (
               <tr key={setting.key}>
-                <th scope="row">{setting.label}</th>
-                <td><span className="sc-num">{keepUnits(setting.value)}</span>{setting.note && <span className="sub">{setting.note}</span>}
-                  {setting.change !== usual && <span className="sub">Changes: {setting.change}</span>}</td>
-                <td><span className={STATUS_BADGE[setting.status]}>{setting.status}</span></td>
+                <th scope="row">{setting.label}<span className="sub">{setting.description}</span></th>
+                <td><span className="sc-num">{keepUnits(setting.value)}</span></td>
+                <td><span className={setting.change === "radio" ? "sc-badge" : "sc-badge sc-badge--muted"}>{CHANGE_LABEL[setting.change]}</span></td>
               </tr>
             ))}
           </tbody>

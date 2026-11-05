@@ -91,11 +91,10 @@ export interface FirmwareSetting {
   key: string;
   label: string;
   value: string;
-  /** How it can be changed: by radio from Settings → Buoys, or by a firmware update. */
-  change: string;
-  status: "decided" | "provisional" | "pending sign-off";
-  note: string;
-  source: string;
+  /** What the setting does, in a sentence or two. */
+  description: string;
+  /** "radio": per buoy, from its controls on Settings → Buoys. "firmware": only by a firmware update. */
+  change: "radio" | "firmware";
 }
 
 export interface BuoySettings {

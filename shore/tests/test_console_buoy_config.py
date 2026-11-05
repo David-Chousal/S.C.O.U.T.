@@ -32,14 +32,14 @@ class BuoyConfigExport(unittest.TestCase):
         self.assertEqual(EXPORT.OUT.read_text(), EXPORT.render())
 
     def test_reads_the_default_sample_interval_from_the_registry(self):
-        self.assertEqual(SETTINGS["sample_interval"]["value"], "every 30 min (15, 30, 60)")
+        self.assertEqual(SETTINGS["sample_interval"]["value"], "Every 30 min")
 
     def test_slots_agree_with_the_shore_schedule(self):
-        expected = " · ".join(f"{s // 3600:02d}:{s % 3600 // 60:02d} UTC" for s in tx_schedule.TX_SLOTS_SOD)
+        expected = " · ".join(f"{s // 3600:02d}:{s % 3600 // 60:02d}" for s in tx_schedule.TX_SLOTS_SOD) + " UTC"
         self.assertEqual(SETTINGS["tx_slots"]["value"], expected)
 
     def test_radio_parameters_and_the_listen_window_never_change_by_radio(self):
-        by_radio = {key for key, s in SETTINGS.items() if s["change"].startswith("By radio")}
+        by_radio = {key for key, s in SETTINGS.items() if s["change"] == "radio"}
         self.assertEqual(by_radio, {"tx_count", "tx_slots", "sample_interval", "audio", "power_modes",
                                     "humidity_alert"})
 
@@ -50,9 +50,15 @@ class BuoyConfigExport(unittest.TestCase):
         self.assertEqual(exported, mirror)
         self.assertEqual(DATA["tierGapMv"], registry.MIN_TIER_GAP_MV)
 
-    def test_provisional_values_say_so(self):
-        self.assertEqual(SETTINGS["humidity_alert"]["status"], "provisional")
-        self.assertEqual(SETTINGS["power_modes"]["status"], "provisional")
+    def test_every_row_says_what_it_does_and_how_it_changes(self):
+        for key, setting in SETTINGS.items():
+            with self.subTest(key):
+                self.assertIn(setting["change"], ("radio", "firmware"))
+                self.assertTrue(setting["description"].endswith("."))
+
+    def test_placeholder_defaults_say_so(self):
+        self.assertIn("SCO-204", SETTINGS["humidity_alert"]["description"])
+        self.assertIn("ADR-0007", SETTINGS["power_modes"]["description"])
 
 
 if __name__ == "__main__":
