@@ -1,4 +1,6 @@
 /* ───── Shell ───── */
+/* --bar-h is also what anything sticky on a page offsets by, so it never slides under the bar
+   (the Help index, the Dashboard bay library, anchor jumps). */
 /* The top bar spans the page; the menu and the page sit under it. The bar's left block is exactly
    as wide as the menu, so the mark and the account line up over it. */
 .sc-shell { --side-w: 248px; --bar-h: 52px; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); grid-template-rows: var(--bar-h) 1fr; min-height: 100%; }
