@@ -155,8 +155,10 @@ is public on the project site already. It is not acceptable for personal or secr
 - **Prompt injection:** buoy labels, station names and report text are typed by people and
   could carry instructions. Tool results are passed as data, the system instruction says so,
   and the confirm step means injected text can at most produce a card the person declines.
-- **Account:** the key is created on a team Google account (decision 1 below), not a personal
-  one, so it survives the capstone handover.
+- **Account:** the key is created in Google AI Studio on **David's own Google account**
+  (decided 2026-11-05). It lives only as the Worker secret. At the capstone handover, whoever
+  keeps the console creates a key on their own account and replaces the secret; David then
+  deletes his key.
 
 ## Limits and fallback
 
@@ -205,8 +207,8 @@ the shore station.
 
 ## Decisions needed before building
 
-1. **Which Google account holds the key?** A team account (recommended, so it outlives any one
-   person) or David's own.
+1. ~~**Which Google account holds the key?**~~ **Decided 2026-11-05: David's own Google
+   account**, replaced at handover (see [Data and privacy](#data-and-privacy)).
 2. **Is the free tier's data use acceptable?** The plan says yes for project data, with the
    notice in the panel. Worth a word with the advisors, since the console is a university
    project.
