@@ -1,8 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import estimates from "../../../../worker/battery-life.json";
 import firmware from "../../../../worker/buoy-config.json";
-import type { Buoy, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, Estimates, RemoteSetting } from "@/lib/api/types";
 import { FleetList, transmitsLabel } from "./fleet-list";
 
 const REMOTE = firmware.remote as RemoteSetting[];
@@ -23,19 +24,20 @@ describe("FleetList", () => {
     expect(transmitsLabel(buoy({ tx_count_reported: null })).main).toBe("Not reported yet");
   });
 
-  test("a row opens to its essentials and closes again; no battery or reading data", async () => {
-    render(<FleetList buoys={[buoy(), buoy({ buoy_id: 2, label: "Reef south", settings_state: "pending" })]} remote={REMOTE}
-      devices={[{ id: "d1", name: "Kaneohe shore", created_at: 0, revoked_at: null, last_seen_at: null }]} />);
-    expect(screen.getByText("Pending")).toBeDefined();
-    expect(screen.queryByText("Kaneohe shore")).toBeNull();
-    const toggle = screen.getByRole("button", { name: /Reef south/ });
+  test("status says whether the buoy is alive; a row opens to its briefing with a Settings key", async () => {
+    const now = Date.now();
+    render(<FleetList buoys={[buoy({ reported_at: now - 60_000 }), buoy({ buoy_id: 2, label: "Reef south", reported_at: null, last_seen_at: null })]}
+      remote={REMOTE} slotsSod={firmware.slotsSod} estimates={estimates as Estimates} />);
+    expect(screen.getByText("Live")).toBeDefined();
+    expect(screen.getByText("Not heard")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Settings for/ })).toBeNull();
+    const toggle = screen.getByRole("button", { name: /SCOUT-01/ });
     await userEvent.click(toggle);
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByText("Kaneohe shore")).toBeDefined();
-    expect(screen.getByText("All defaults")).toBeDefined();
+    expect(screen.getByText("Next transmission")).toBeDefined();
+    expect(screen.getByText(/on 2 D cells/)).toBeDefined();
+    expect(screen.getByRole("link", { name: "Settings for SCOUT-01" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=1$/);
     await userEvent.click(toggle);
-    expect(screen.queryByText("Kaneohe shore")).toBeNull();
-    expect(screen.getByRole("link", { name: "Settings for Reef south" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=2$/);
-    expect(screen.queryByText(/battery/i)).toBeNull();
+    expect(screen.queryByText("Next transmission")).toBeNull();
   });
 });

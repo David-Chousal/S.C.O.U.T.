@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { Fragment, useState } from "react";
-import { changedSummary } from "@/components/settings/buoy-overview";
-import { SETTINGS_SIGNAL } from "@/components/settings/remote-settings";
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import { Icon } from "@/components/ui/icon";
-import type { Buoy, Device, RemoteSetting } from "@/lib/api/types";
-import { lastHeard } from "@/lib/format";
+import type { Buoy, Estimates, RemoteSetting } from "@/lib/api/types";
+import { buoyHealth, nextTransmit, runningSettings, slotsInUse, untilLabel, utcClock } from "@/lib/buoy-status";
+import { lastHeard, lifeFor, months } from "@/lib/format";
 
 /** "3 a day", with what was asked when it differs: "1 a day asked". */
 export function transmitsLabel(buoy: Buoy): { main: string; sub: string } {
@@ -22,16 +21,18 @@ export function transmitsLabel(buoy: Buoy): { main: string; sub: string } {
 interface FleetListProps {
   buoys: Buoy[];
   remote: RemoteSetting[];
-  devices: Device[];
+  slotsSod: number[];
+  estimates: Estimates;
 }
 
-/** Every buoy on one row: how often it sends, whether it runs the settings asked of it, when it
- * was last heard, and a way to its settings. Each row opens to the few other things worth a
- * glance. Readings belong on the Dashboard and Reports. */
-export function FleetList({ buoys, remote, devices }: FleetListProps) {
+/** Every buoy on one row: how often it sends, whether it is alive and connected, and when it was
+ * last heard. Each row opens to a short briefing: when it next transmits, its battery life
+ * estimate, and its settings. Readings belong on the Dashboard and Reports. */
+export function FleetList({ buoys, remote, slotsSod, estimates }: FleetListProps) {
+  const [now] = useState(() => Date.now());
   const [open, setOpen] = useState<Set<number>>(new Set());
-  const toggle = (id: number) => setOpen((now) => {
-    const next = new Set(now);
+  const toggle = (id: number) => setOpen((current) => {
+    const next = new Set(current);
     if (next.has(id)) next.delete(id);
     else next.add(id);
     return next;
@@ -41,18 +42,18 @@ export function FleetList({ buoys, remote, devices }: FleetListProps) {
     <div className="sc-table-wrap">
       <table className="sc-table sc-fleet-table">
         <thead>
-          <tr>
-            <th scope="col">Buoy</th><th scope="col">Transmits</th><th scope="col">Settings</th>
-            <th scope="col">Last heard</th><th scope="col"><span className="sc-visually-hidden">Open settings</span></th>
-          </tr>
+          <tr><th scope="col">Buoy</th><th scope="col">Transmits</th><th scope="col">Status</th><th scope="col">Last heard</th></tr>
         </thead>
         <tbody>
           {buoys.map((buoy) => {
-            const signal = SETTINGS_SIGNAL[buoy.settings_state];
+            const running = runningSettings(buoy, remote);
+            const slots = slotsInUse(slotsSod, running.tx_count, running.slot_phase_h);
+            const health = buoyHealth(lastHeard(buoy), slots, now);
+            const next = nextTransmit(slots, now);
+            const life = lifeFor(estimates, running.tx_count, 2, true);
             const transmits = transmitsLabel(buoy);
             const isOpen = open.has(buoy.buoy_id);
             const detailId = `fleet-detail-${buoy.buoy_id}`;
-            const station = devices.find((d) => d.id === buoy.command_device_id);
             return (
               <Fragment key={buoy.buoy_id}>
                 <tr className={isOpen ? "is-open" : undefined} onClick={() => toggle(buoy.buoy_id)}>
@@ -64,22 +65,23 @@ export function FleetList({ buoys, remote, devices }: FleetListProps) {
                     </button>
                   </th>
                   <td>{transmits.main}<span className="sub">{transmits.sub}</span></td>
-                  <td><SignalMeter state={signal.state} lit={signal.lit} word={signal.word} /></td>
+                  <td><SignalMeter state={health.state} lit={health.lit} word={health.word} /></td>
                   <td><Ago ms={lastHeard(buoy)} />{buoy.clock_lost ? <span className="sub">buoy clock lost</span> : null}</td>
-                  <td className="sc-fleet-table__go">
-                    <Link className="sc-link" href={`/settings/?buoy=${buoy.buoy_id}`} aria-label={`Settings for ${buoy.label}`}
-                      onClick={(event) => event.stopPropagation()}>Settings</Link>
-                  </td>
                 </tr>
                 {isOpen && (
                   <tr className="sc-fleet-table__detail" id={detailId}>
-                    <td colSpan={5}>
-                      <dl className="sc-fleet-table__facts">
-                        <div><dt className="sc-tag">Differs from defaults</dt><dd>{changedSummary(buoy, remote)}</dd></div>
-                        <div><dt className="sc-tag">Commands from</dt><dd>{station ? station.name : "Any shore station"}</dd></div>
-                        <div><dt className="sc-tag">Settings digest</dt>
-                          <dd className="sc-num">{buoy.settings_digest_reported ?? "—"} reported · {buoy.settings_digest_wanted} wanted</dd></div>
-                      </dl>
+                    <td colSpan={4}>
+                      <div className="sc-fleet-table__brief">
+                        <dl className="sc-fleet-table__facts">
+                          <div><dt className="sc-tag">Next transmission</dt>
+                            <dd>{next ? <>{untilLabel(next, now)}<span className="sub">{utcClock(next)}</span></> : "—"}</dd></div>
+                          <div><dt className="sc-tag">Battery life · estimate</dt>
+                            <dd>{months(life.best)} on 2 D cells<span className="sub">{months(life.pessimistic)} worst case, at {running.tx_count} a day</span></dd></div>
+                        </dl>
+                        <Link className="sc-key sc-key--sm" href={`/settings/?buoy=${buoy.buoy_id}`} aria-label={`Settings for ${buoy.label}`}>
+                          <Icon name="settings" /> Settings
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 )}
