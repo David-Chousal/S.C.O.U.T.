@@ -13,7 +13,7 @@ function buoy(id: number, wanted = DEFAULTS, state: Buoy["settings_state"] = "de
     buoy_id: id, label: `SCOUT-0${id}`, tx_count_requested: null, requested_by: null, requested_at: null,
     tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default",
     settings_requested: {}, settings_wanted: wanted, settings_digest_wanted: "e674", settings_digest_reported: "e674",
-    settings_state: state, uptime_s_reported: null, battery_v_reported: null,
+    settings_state: state,
   };
 }
 

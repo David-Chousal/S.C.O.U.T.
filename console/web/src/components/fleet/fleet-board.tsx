@@ -19,7 +19,7 @@ export function FleetBoard() {
   const settings = useApi<BuoySettings>(api.settings);
   const [adding, setAdding] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  // New packets, and the countdown to the next transmission, update without a reload.
+  // New packets, and each buoy's status, update without a reload.
   usePoll(() => { settings.reload(); setNow(Date.now()); }, 30 * 1000);
 
   if (settings.error) return <Banner tone="failed">{settings.error}</Banner>;
@@ -43,7 +43,7 @@ export function FleetBoard() {
             A buoy appears when its shore station first pushes a reading, or when it is added here.
           </EmptyState>
         ) : <FleetList buoys={buoys} remote={settings.data.firmware.remote} slotsSod={settings.data.firmware.slotsSod}
-            estimates={settings.data.estimates} now={now} />}
+            now={now} />}
       </section>
       <AddBuoyDialog open={adding} onClose={() => setAdding(false)} onAdded={settings.reload} />
     </>

@@ -1,9 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import estimates from "../../../../worker/battery-life.json";
 import firmware from "../../../../worker/buoy-config.json";
-import type { Buoy, Estimates, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, RemoteSetting } from "@/lib/api/types";
 import { FleetList, transmitsLabel } from "./fleet-list";
 
 const REMOTE = firmware.remote as RemoteSetting[];
@@ -13,7 +11,7 @@ function buoy(overrides: Partial<Buoy> = {}): Buoy {
     buoy_id: 1, label: "SCOUT-01", tx_count_requested: null, requested_by: null, requested_at: null,
     tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: "d1", state: "default",
     settings_requested: {}, settings_wanted: REMOTE.map((s) => s.default), settings_digest_wanted: "e674",
-    settings_digest_reported: "e674", settings_state: "default", uptime_s_reported: null, battery_v_reported: null, ...overrides,
+    settings_digest_reported: "e674", settings_state: "default", ...overrides,
   };
 }
 
@@ -24,23 +22,13 @@ describe("FleetList", () => {
     expect(transmitsLabel(buoy({ tx_count_reported: null })).main).toBe("Not reported yet");
   });
 
-  test("status says whether the buoy is alive; a row opens to its briefing with a Settings key", async () => {
+  test("each row has its status and a Settings link, and no dropdown", () => {
     const now = Date.now();
-    render(<FleetList buoys={[buoy({ reported_at: now - 60_000, uptime_s_reported: 30 * 86400, battery_v_reported: 3.58 }), buoy({ buoy_id: 2, label: "Reef south", reported_at: null, last_seen_at: null })]}
-      remote={REMOTE} slotsSod={firmware.slotsSod} estimates={estimates as Estimates} now={now} />);
+    render(<FleetList buoys={[buoy({ reported_at: now - 60_000 }), buoy({ buoy_id: 2, label: "Reef south", reported_at: null, last_seen_at: null })]}
+      remote={REMOTE} slotsSod={firmware.slotsSod} now={now} />);
     expect(screen.getByText("Live")).toBeDefined();
     expect(screen.getByText("Not heard")).toBeDefined();
-    expect(screen.queryByRole("link", { name: /Settings for/ })).toBeNull();
-    const toggle = screen.getByRole("button", { name: /SCOUT-01/ });
-    await userEvent.click(toggle);
-    expect(toggle.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByText("Next transmission")).toBeDefined();
-    expect(screen.getByText("Battery left · estimate")).toBeDefined();
-    expect(screen.getByText(/30 d on this pack/)).toBeDefined();
-    expect(screen.getByText("3.58 V")).toBeDefined();
-    expect(screen.getByText("normal power")).toBeDefined();
-    expect(screen.getByRole("link", { name: "Settings for SCOUT-01" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=1$/);
-    await userEvent.click(toggle);
-    expect(screen.queryByText("Next transmission")).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(screen.getByRole("link", { name: "Settings for Reef south" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=2$/);
   });
 });

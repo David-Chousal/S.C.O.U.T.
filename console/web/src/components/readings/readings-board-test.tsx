@@ -10,7 +10,7 @@ import { ReadingsBoard } from "./readings-board";
 const buoy = (buoy_id: number, label: string): Buoy => ({
   buoy_id, label, tx_count_requested: null, requested_by: null, requested_at: null, tx_count_reported: 3, cmd_rejected: 0,
   reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default",
-  settings_requested: {}, settings_wanted: [], settings_digest_wanted: "e674", settings_digest_reported: null, settings_state: "default", uptime_s_reported: null, battery_v_reported: null,
+  settings_requested: {}, settings_wanted: [], settings_digest_wanted: "e674", settings_digest_reported: null, settings_state: "default",
 });
 const reading = (seq: number, temp: string, flags = ""): Reading => ({
   buoy_id: "SCOUT-01", record_seq: String(seq), timestamp_utc: `2026-10-30T0${seq}:10:00Z`, temp_c: temp,

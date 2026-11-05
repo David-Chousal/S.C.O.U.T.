@@ -1,7 +1,7 @@
-/* What a buoy is doing now, worked out from what the console knows: when it next transmits, and
- * whether it is alive and connected. Pure functions, so they test without a clock. */
+/* Whether a buoy is alive and connected, worked out from what the console knows of its schedule.
+ * Pure functions, so they test without a clock. */
 
-import type { Buoy, LifeRow, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, RemoteSetting } from "@/lib/api/types";
 
 const HOUR_MS = 3600 * 1000;
 const DAY_S = 86400;
@@ -23,19 +23,6 @@ export function slotsInUse(slotsSod: number[], txCount: number, phaseH: number):
   return (SLOT_INDICES[txCount] ?? []).map((i) => (slotsSod[i] + phaseH * 3600) % DAY_S).sort((a, b) => a - b);
 }
 
-/** The next transmit slot strictly after `nowMs`, as Unix ms. */
-export function nextTransmit(slots: number[], nowMs: number): number | null {
-  if (slots.length === 0) return null;
-  const dayStart = Math.floor(nowMs / 1000 / DAY_S) * DAY_S;
-  for (const day of [dayStart, dayStart + DAY_S]) {
-    for (const sod of slots) {
-      const at = (day + sod) * 1000;
-      if (at > nowMs) return at;
-    }
-  }
-  return null;
-}
-
 /** The longest gap between two consecutive slots, in ms: how long silence is normal. */
 export function longestGapMs(slots: number[]): number {
   if (slots.length <= 1) return DAY_S * 1000;
@@ -53,41 +40,4 @@ export function buoyHealth(lastHeardMs: number | null, slots: number[], nowMs: n
   if (age <= gap) return { state: "ok", lit: 4, word: "Live" };
   if (age <= 2 * gap) return { state: "stale", lit: 2, word: "Late" };
   return { state: "failed", lit: 1, word: "Silent" };
-}
-
-/** "in 3 h 12 min" / "in 8 min". */
-export function untilLabel(atMs: number, nowMs: number): string {
-  const minutes = Math.max(0, Math.round((atMs - nowMs) / 60000));
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return h ? `in ${h} h ${m} min` : `in ${m} min`;
-}
-
-/** "16:10 UTC". */
-export function utcClock(atMs: number): string {
-  const d = new Date(atMs);
-  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC`;
-}
-
-const DAYS_PER_MONTH = 30.44;
-
-/** Months left on the pack: the estimated life at this count minus the time the buoy has run on
- * it (uptime_s, which restarts on the cold start a pack swap causes). Null without either. */
-export function monthsLeft(life: LifeRow | undefined, uptimeS: number | null): number | null {
-  if (!life || uptimeS === null || uptimeS === undefined) return null;
-  return Math.max(0, life.days - uptimeS / DAY_S) / DAYS_PER_MONTH;
-}
-
-/** "3 d" / "4.2 mo": how long the buoy has run on its current pack. */
-export function onPackLabel(uptimeS: number): string {
-  const days = uptimeS / DAY_S;
-  return days < 60 ? `${Math.floor(days)} d` : `${(days / DAYS_PER_MONTH).toFixed(1)} mo`;
-}
-
-/** The power tier the buoy's voltage puts it in, by its own thresholds (millivolts). */
-export function batteryTier(volts: number, conserveMv: number, criticalMv: number): Health {
-  const mv = volts * 1000;
-  if (mv < criticalMv) return { state: "failed", lit: 1, word: "Critical" };
-  if (mv < conserveMv) return { state: "stale", lit: 2, word: "Conserve" };
-  return { state: "ok", lit: 4, word: "Normal" };
 }

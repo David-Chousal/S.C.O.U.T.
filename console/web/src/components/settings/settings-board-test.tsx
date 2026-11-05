@@ -17,7 +17,7 @@ const DATA = {
     tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default",
     settings_requested: Object.fromEntries(firmware.remote.map((spec) => [spec.key, null])),
     settings_wanted: firmware.remote.map((spec) => spec.default), settings_digest_wanted: "e674",
-    settings_digest_reported: "e674", settings_state: "default", uptime_s_reported: null, battery_v_reported: null}],
+    settings_digest_reported: "e674", settings_state: "default"}],
   firmware,
   estimates,
 } as BuoySettings;
