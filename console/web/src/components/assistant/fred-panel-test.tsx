@@ -78,7 +78,7 @@ describe("FredPanel", () => {
 });
 
 describe("helpers", () => {
-  const turn: FredTurn = { id: 1, question: "q1", answer: "a1", tools: ["Looked at Fleet"], notices: [], done: true, provider: "gemini" };
+  const turn: FredTurn = { id: 1, question: "q1", answer: "a1", tools: ["Looked at Fleet"], notices: [], cards: [], done: true, provider: "gemini" };
 
   test("historyFor sends finished exchanges then the new question", () => {
     expect(historyFor([turn, { ...turn, id: 2, error: "x" }], "q2")).toEqual([

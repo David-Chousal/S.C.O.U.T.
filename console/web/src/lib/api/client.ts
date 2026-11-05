@@ -8,6 +8,7 @@ import {
   type Device,
   type BuoySettings,
   type Fleet,
+  type FredCard,
   type FredContext,
   type FredEvent,
   type FredMessage,
@@ -160,4 +161,6 @@ export const api = {
 
   fredStatus: () => call<FredStatus>("GET", "/api/assistant/status"),
   askFred,
+  confirmFred: (id: FredCard["id"]) => call<{ message: string; link?: string }>("POST", "/api/assistant/confirm", { id }),
+  declineFred: (id: FredCard["id"]) => call<{ ok: true }>("POST", "/api/assistant/decline", { id }),
 };

@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type Keyboard
 import { Banner } from "@/components/feedback/banner";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { FredContext, FredEvent, FredMessage, User } from "@/lib/api/types";
+import type { FredCard, FredContext, FredEvent, FredMessage, User } from "@/lib/api/types";
+import { FredConfirmCard } from "./fred-card";
 import { FredMarkdown } from "./fred-markdown";
 
 export const PRIVACY_NOTICE = "Fred uses Google Gemini's free tier. Google may review what you type. Don't share personal information.";
@@ -22,6 +23,7 @@ export interface FredTurn {
   answer: string;
   tools: string[];
   notices: string[];
+  cards: FredCard[];
   error?: string;
   provider?: string;
   done: boolean;
@@ -53,6 +55,7 @@ function apply(turn: FredTurn, event: FredEvent): FredTurn {
     case "text": return { ...turn, answer: turn.answer + event.data.delta };
     case "reset": return { ...turn, answer: "" };
     case "tool": return { ...turn, tools: [...turn.tools, event.data.label] };
+    case "action": return { ...turn, cards: [...turn.cards, event.data] };
     case "notice": return { ...turn, notices: [...turn.notices, event.data.message] };
     case "error": return { ...turn, error: event.data.message, done: true };
     case "done": return { ...turn, provider: event.data.provider, done: true };
@@ -80,6 +83,7 @@ function Exchange({ turn }: { turn: FredTurn }) {
       <div className="sc-fred__a" aria-live="polite">
         {turn.answer ? <FredMarkdown text={turn.answer} /> : !turn.done && <span className="sc-tag">Thinking…</span>}
       </div>
+      {turn.cards.map((card) => <FredConfirmCard key={card.id} card={card} />)}
       {turn.error && <Banner tone="failed">{turn.error}</Banner>}
       {turn.done && (turn.answer || turn.error) && (
         <div className="sc-fred__turn-foot">
@@ -115,7 +119,7 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
     if (!text || busy) return;
     const id = Date.now();
     const history = historyFor(turns, text);
-    setTurns((all) => [...all, { id, question: text, answer: "", tools: [], notices: [], done: false }]);
+    setTurns((all) => [...all, { id, question: text, answer: "", tools: [], notices: [], cards: [], done: false }]);
     setDraft("");
     abort.current = new AbortController();
     const update = (fn: (t: FredTurn) => FredTurn) => setTurns((all) => all.map((t) => (t.id === id ? fn(t) : t)));

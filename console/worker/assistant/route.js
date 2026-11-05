@@ -3,6 +3,8 @@
  *   GET  /api/assistant/status   → { enabled, used, cap }
  *   POST /api/assistant          { messages: [{ role: "user"|"assistant", text }], context: { page, tab, buoy } }
  *                                → text/event-stream: text · tool · action · notice · reset · done · error
+ *   POST /api/assistant/confirm  { id } → runs a proposed change as the person (role re-checked, audited "via Fred")
+ *   POST /api/assistant/decline  { id } → drops it
  *
  * The conversation lives only in the open panel: the browser sends it back with each question,
  * and nothing of it is stored here (ADR-0013). Only counts land in assistant_usage. */
@@ -10,7 +12,9 @@
 import { constantTimeEqual } from "../crypto.js";
 import { apiError, json, sameOrigin, SECURITY_HEADERS } from "../http.js";
 import { loadSession } from "../sessions.js";
+import { confirm, decline } from "./actions.js";
 import { answer, ModelBusy } from "./loop.js";
+import { PROPOSE_TOOLS } from "./propose-tools.js";
 import { READ_TOOLS } from "./read-tools.js";
 import { capFor, takeQuestion, today } from "./usage.js";
 
@@ -18,7 +22,7 @@ const MAX_BODY_CHARS = 64 * 1024;
 const MAX_MESSAGES = 20;
 const MAX_TEXT = 4000;
 
-export const TOOLS = [...READ_TOOLS];
+export const TOOLS = [...READ_TOOLS, ...PROPOSE_TOOLS];
 
 /** A request body → { history, context }, or { error }. */
 export function validQuestion(body) {
@@ -96,5 +100,11 @@ export async function handleAssistant(request, env, path) {
     return apiError("This page is out of date. Reload it and try again.", 403);
   }
   if (path === "/api/assistant") return ask(request, env, session);
+  if (path === "/api/assistant/confirm" || path === "/api/assistant/decline") {
+    const body = await readBody(request);
+    if (!body) return apiError("Send a JSON object.", 415);
+    const result = await (path.endsWith("confirm") ? confirm : decline)(env, session.user, body.id);
+    return result.error ? apiError(result.error, result.status) : json(result);
+  }
   return apiError("not found", 404);
 }

@@ -236,10 +236,20 @@ export interface FredStatus {
   cap: number;
 }
 
+/** A change Fred proposed; it runs only on Confirm, within 10 minutes. */
+export interface FredCard {
+  id: string;
+  kind: string;
+  title: string;
+  details: [string, string][];
+  expiresAt: number;
+}
+
 /** One server-sent event from POST /api/assistant. */
 export type FredEvent =
   | { event: "text"; data: { delta: string } }
   | { event: "tool"; data: { name: string; label: string } }
+  | { event: "action"; data: FredCard }
   | { event: "notice"; data: { message: string } }
   | { event: "reset"; data: Record<string, never> }
   | { event: "done"; data: { provider: string; used: number; cap: number } }
