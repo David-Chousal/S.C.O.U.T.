@@ -64,6 +64,11 @@ async function* sseData(body) {
 async function geminiFailure(response) {
   const detail = await response.json().catch(() => ({}));
   const status = detail?.error?.status ?? "";
+  if (/credit|billing|prepay/i.test(detail?.error?.message ?? "")) {
+    // Not a rate limit: the key's Google project has billing on and no credit left, so it is off
+    // the free tier. Fall back like a rate limit, but say why in the log.
+    console.error("assistant: gemini key's project has no credit (billing enabled); create the key in a project without billing");
+  }
   if (response.status === 429 || response.status === 503 || status === "RESOURCE_EXHAUSTED" || status === "UNAVAILABLE") {
     return new ModelBusy(`Gemini is busy (${response.status}).`);
   }
