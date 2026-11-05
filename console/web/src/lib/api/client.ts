@@ -105,7 +105,7 @@ export const api = {
     call<{ ok: true }>("POST", `/api/team/users/${encodeURIComponent(userId)}/${disabled ? "disable" : "enable"}`),
 
   devices: () => call<{ devices: Device[] }>("GET", "/api/devices"),
-  createDevice: (name: string) => call<{ token: string; name: string }>("POST", "/api/devices", { name }),
+  createDevice: (name: string) => call<{ id: string; token: string; name: string }>("POST", "/api/devices", { name }),
   revokeDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/revoke`),
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),

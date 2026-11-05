@@ -216,3 +216,11 @@ test("a member renames a buoy, audited; a guest cannot; bad names are refused", 
   const audit = env.DB.raw.prepare("SELECT * FROM audit_log WHERE action = 'buoy.rename'").get();
   assert.equal(audit.before_json, '{"label":"SCOUT-01"}');
 });
+
+test("creating a shore token returns its id, so the page can watch for its first contact", async () => {
+  const env = makeEnv();
+  const { client } = await signedIn(env, "admin", "dev-admin@scout.test");
+  const { body } = await client.post("/api/devices", { name: "Kona pier" });
+  const listed = (await client.get("/api/devices")).body.devices;
+  assert.equal(listed.find((device) => device.name === "Kona pier").id, body.id);
+});

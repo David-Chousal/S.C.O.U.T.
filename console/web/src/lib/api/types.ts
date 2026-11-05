@@ -45,6 +45,9 @@ export interface Buoy {
   /** From the newest v5 packet; null until one arrives. */
   settings_digest_reported: string | null;
   settings_state: CountState;
+  /** From the newest reading: seconds run on the current pack, and battery volts. Null before one. */
+  uptime_s_reported: number | null;
+  battery_v_reported: number | null;
 }
 
 /** One remote setting, from the firmware's table (buoy-config.json "remote"). */

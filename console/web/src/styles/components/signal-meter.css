@@ -8,3 +8,12 @@
 .sc-signal--ok { color: var(--positive); } .sc-signal--stale { color: var(--caution); }
 .sc-signal--failed { color: var(--negative); } .sc-signal--off { color: var(--ink-muted); }
 .sc-signal b { font-weight: 500; color: var(--ink-muted); }
+
+/* First contact: the live check after adding a buoy or a shore station */
+.sc-contact { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); color: var(--ink-muted); }
+.sc-contact strong { color: var(--ink); font-weight: 600; }
+.sc-contact--ok { color: var(--positive); border-color: currentColor; }
+.sc-contact--ok strong { color: var(--positive); }
+.sc-contact__pulse { flex: none; width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; background: var(--caution); animation: sc-contact-pulse 1.4s ease-in-out infinite; }
+.sc-contact__note { color: var(--caution); }
+@keyframes sc-contact-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }

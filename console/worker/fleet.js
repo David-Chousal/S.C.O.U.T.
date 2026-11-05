@@ -40,10 +40,18 @@ async function settingRows(db, buoyId = null) {
   return (await statement.all()).results;
 }
 
-/** Each buoy with its count state, and its remote settings: what was requested per setting
- * (null = default), the snapshot it should run, that snapshot's digest and the overall state. */
+// From each buoy's newest reading: how long it has run on its current pack (uptime_s restarts on
+// a cold start, which a pack swap is) and its battery voltage, for Fleet's remaining-life briefing.
+const NEWEST = (column, cast) => `(SELECT CAST(json_extract(r.row_json, '$.${column}') AS ${cast}) FROM readings r ` +
+  `WHERE r.buoy_id = b.buoy_id ORDER BY r.timestamp_utc DESC LIMIT 1) AS ${column}_reported`;
+
+/** Each buoy with its count state, its newest uptime and battery voltage, and its remote settings:
+ * what was requested per setting (null = default), the snapshot it should run, that snapshot's
+ * digest and the overall state. */
 export async function listBuoys(db) {
-  const { results } = await db.prepare("SELECT * FROM buoys ORDER BY buoy_id").all();
+  const { results } = await db
+    .prepare(`SELECT b.*, ${NEWEST("uptime_s", "INTEGER")}, ${NEWEST("battery_v", "REAL")} FROM buoys b ORDER BY b.buoy_id`)
+    .all();
   const rows = await settingRows(db);
   return results.map((b) => {
     const requested = requestedOf(b, rows.filter((r) => r.buoy_id === b.buoy_id));

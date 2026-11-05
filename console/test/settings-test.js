@@ -9,8 +9,9 @@ import { digestHex, DEFAULTS, settingsState, snapshotError } from "../worker/buo
 import worker from "../worker/index.js";
 import { APP_URL, makeEnv, signedIn } from "./helpers.js";
 
-function row(seq, { digest = "", tx = "3", flags = "", ts = "2026-03-01T00:00:00Z" } = {}) {
-  return { buoy_id: "SCOUT-01", record_seq: String(seq), timestamp_utc: ts, tx_count: tx, flags, settings_digest: digest };
+function row(seq, { digest = "", tx = "3", flags = "", ts = "2026-03-01T00:00:00Z", uptime = "", battery = "" } = {}) {
+  return { buoy_id: "SCOUT-01", record_seq: String(seq), timestamp_utc: ts, tx_count: tx, flags, settings_digest: digest,
+    uptime_s: uptime, battery_v: battery };
 }
 
 async function deviceToken(env) {
@@ -143,4 +144,15 @@ test("a write:settings API token changes settings through /api/v1", async () => 
   }), env);
   assert.equal(response.status, 200, await response.clone().text());
   assert.equal((await buoy(client)).settings_requested.audio_clip_s, 0);
+});
+
+test("each buoy carries its newest reading's uptime and battery voltage", async () => {
+  const { env, token, client } = await setup();
+  await deviceCall(env, token, "/api/device/readings", { rows: [
+    row(2, { ts: "2026-03-02T00:00:00Z", uptime: "86400", battery: "3.58" }),
+    row(3, { ts: "2026-03-01T12:00:00Z", uptime: "43200", battery: "3.60" }),
+  ] });
+  const b = await buoy(client);
+  assert.equal(b.uptime_s_reported, 86400);
+  assert.equal(b.battery_v_reported, 3.58);
 });

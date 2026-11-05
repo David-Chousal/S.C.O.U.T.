@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { buoyHealth, longestGapMs, nextTransmit, slotsInUse, untilLabel, utcClock } from "./buoy-status";
+import { batteryTier, buoyHealth, longestGapMs, monthsLeft, nextTransmit, onPackLabel, slotsInUse, untilLabel, utcClock } from "./buoy-status";
 
 const BASE = [600, 29400, 58200];
 const HOUR = 3600 * 1000;
@@ -31,5 +31,20 @@ describe("buoy status", () => {
     expect(buoyHealth(now - 12 * HOUR, slots, now).word).toBe("Late");
     expect(buoyHealth(now - 30 * HOUR, slots, now).word).toBe("Silent");
     expect(buoyHealth(null, slots, now).word).toBe("Not heard");
+  });
+
+  test("months left is the estimate minus time on the pack, never below zero", () => {
+    const life = { scenario: "best" as const, tx_per_day: 3, cells: 2, mah_per_day: 16, days: 1466, months: 48.2 };
+    expect(monthsLeft(life, 0)!.toFixed(1)).toBe("48.2");
+    expect(monthsLeft(life, 366 * 86400)!.toFixed(1)).toBe("36.1");
+    expect(monthsLeft(life, 5000 * 86400)).toBe(0);
+    expect(monthsLeft(life, null)).toBeNull();
+    expect(onPackLabel(3 * 86400 + 5)).toBe("3 d");
+  });
+
+  test("the battery tier follows the buoy's own thresholds", () => {
+    expect(batteryTier(3.58, 3200, 3100).word).toBe("Normal");
+    expect(batteryTier(3.15, 3200, 3100).word).toBe("Conserve");
+    expect(batteryTier(3.05, 3200, 3100).word).toBe("Critical");
   });
 });

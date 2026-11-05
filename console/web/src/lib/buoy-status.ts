@@ -1,7 +1,7 @@
 /* What a buoy is doing now, worked out from what the console knows: when it next transmits, and
  * whether it is alive and connected. Pure functions, so they test without a clock. */
 
-import type { Buoy, RemoteSetting } from "@/lib/api/types";
+import type { Buoy, LifeRow, RemoteSetting } from "@/lib/api/types";
 
 const HOUR_MS = 3600 * 1000;
 const DAY_S = 86400;
@@ -67,4 +67,27 @@ export function untilLabel(atMs: number, nowMs: number): string {
 export function utcClock(atMs: number): string {
   const d = new Date(atMs);
   return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC`;
+}
+
+const DAYS_PER_MONTH = 30.44;
+
+/** Months left on the pack: the estimated life at this count minus the time the buoy has run on
+ * it (uptime_s, which restarts on the cold start a pack swap causes). Null without either. */
+export function monthsLeft(life: LifeRow | undefined, uptimeS: number | null): number | null {
+  if (!life || uptimeS === null || uptimeS === undefined) return null;
+  return Math.max(0, life.days - uptimeS / DAY_S) / DAYS_PER_MONTH;
+}
+
+/** "3 d" / "4.2 mo": how long the buoy has run on its current pack. */
+export function onPackLabel(uptimeS: number): string {
+  const days = uptimeS / DAY_S;
+  return days < 60 ? `${Math.floor(days)} d` : `${(days / DAYS_PER_MONTH).toFixed(1)} mo`;
+}
+
+/** The power tier the buoy's voltage puts it in, by its own thresholds (millivolts). */
+export function batteryTier(volts: number, conserveMv: number, criticalMv: number): Health {
+  const mv = volts * 1000;
+  if (mv < criticalMv) return { state: "failed", lit: 1, word: "Critical" };
+  if (mv < conserveMv) return { state: "stale", lit: 2, word: "Conserve" };
+  return { state: "ok", lit: 4, word: "Normal" };
 }

@@ -6,8 +6,10 @@ import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import { Icon } from "@/components/ui/icon";
 import type { Buoy, Estimates, RemoteSetting } from "@/lib/api/types";
-import { buoyHealth, nextTransmit, runningSettings, slotsInUse, untilLabel, utcClock } from "@/lib/buoy-status";
-import { lastHeard, lifeFor, months } from "@/lib/format";
+import {
+  batteryTier, buoyHealth, monthsLeft, nextTransmit, onPackLabel, runningSettings, slotsInUse, untilLabel, utcClock,
+} from "@/lib/buoy-status";
+import { lastHeard, lifeFor } from "@/lib/format";
 
 /** "3 a day", with what was asked when it differs: "1 a day asked". */
 export function transmitsLabel(buoy: Buoy): { main: string; sub: string } {
@@ -23,13 +25,14 @@ interface FleetListProps {
   remote: RemoteSetting[];
   slotsSod: number[];
   estimates: Estimates;
+  /** The time the briefing counts from; the page advances it as it refreshes. */
+  now: number;
 }
 
 /** Every buoy on one row: how often it sends, whether it is alive and connected, and when it was
- * last heard. Each row opens to a short briefing: when it next transmits, its battery life
- * estimate, and its settings. Readings belong on the Dashboard and Reports. */
-export function FleetList({ buoys, remote, slotsSod, estimates }: FleetListProps) {
-  const [now] = useState(() => Date.now());
+ * last heard. Each row opens to a briefing, one fact under each column: when it next transmits,
+ * how long its battery has left, its battery voltage, and its settings. Readings belong on the Dashboard and Reports. */
+export function FleetList({ buoys, remote, slotsSod, estimates, now }: FleetListProps) {
   const [open, setOpen] = useState<Set<number>>(new Set());
   const toggle = (id: number) => setOpen((current) => {
     const next = new Set(current);
@@ -51,6 +54,10 @@ export function FleetList({ buoys, remote, slotsSod, estimates }: FleetListProps
             const health = buoyHealth(lastHeard(buoy), slots, now);
             const next = nextTransmit(slots, now);
             const life = lifeFor(estimates, running.tx_count, 2, true);
+            const best = monthsLeft(life.best, buoy.uptime_s_reported);
+            const worst = monthsLeft(life.pessimistic, buoy.uptime_s_reported);
+            const left = best === null || worst === null ? null : { best, worst };
+            const tier = buoy.battery_v_reported ? batteryTier(buoy.battery_v_reported, running.conserve_mv, running.critical_mv) : null;
             const transmits = transmitsLabel(buoy);
             const isOpen = open.has(buoy.buoy_id);
             const detailId = `fleet-detail-${buoy.buoy_id}`;
@@ -70,18 +77,27 @@ export function FleetList({ buoys, remote, slotsSod, estimates }: FleetListProps
                 </tr>
                 {isOpen && (
                   <tr className="sc-fleet-table__detail" id={detailId}>
-                    <td colSpan={4}>
-                      <div className="sc-fleet-table__brief">
-                        <dl className="sc-fleet-table__facts">
-                          <div><dt className="sc-tag">Next transmission</dt>
-                            <dd>{next ? <>{untilLabel(next, now)}<span className="sub">{utcClock(next)}</span></> : "—"}</dd></div>
-                          <div><dt className="sc-tag">Battery life · estimate</dt>
-                            <dd>{months(life.best)} on 2 D cells<span className="sub">{months(life.pessimistic)} worst case, at {running.tx_count} a day</span></dd></div>
-                        </dl>
-                        <Link className="sc-key sc-key--sm" href={`/settings/?buoy=${buoy.buoy_id}`} aria-label={`Settings for ${buoy.label}`}>
-                          <Icon name="settings" /> Settings
-                        </Link>
-                      </div>
+                    <td>
+                      <span className="sc-tag">Next transmission</span>
+                      <span className="sc-fleet-table__fact">{next ? untilLabel(next, now) : "—"}</span>
+                      {next && <span className="sub">{utcClock(next)}</span>}
+                    </td>
+                    <td>
+                      <span className="sc-tag">Battery left · estimate</span>
+                      <span className="sc-fleet-table__fact">{left === null ? "—" : `${left.best.toFixed(1)} mo`}</span>
+                      <span className="sub">{left === null ? "after its first reading"
+                        : `${left.worst.toFixed(1)} mo worst case · ${onPackLabel(buoy.uptime_s_reported ?? 0)} on this pack`}</span>
+                    </td>
+                    <td>
+                      <span className="sc-tag">Battery now</span>
+                      <span className="sc-fleet-table__fact">{buoy.battery_v_reported ? `${buoy.battery_v_reported.toFixed(2)} V` : "—"}</span>
+                      {tier && <span className="sub" title={`Conserve below ${(running.conserve_mv / 1000).toFixed(2)} V, critical below ${(running.critical_mv / 1000).toFixed(2)} V`}>
+                        {tier.word === "Normal" ? "normal power" : `${tier.word.toLowerCase()} mode`}</span>}
+                    </td>
+                    <td className="sc-fleet-table__go">
+                      <Link className="sc-key sc-key--sm" href={`/settings/?buoy=${buoy.buoy_id}`} aria-label={`Settings for ${buoy.label}`}>
+                        <Icon name="settings" /> Settings
+                      </Link>
                     </td>
                   </tr>
                 )}

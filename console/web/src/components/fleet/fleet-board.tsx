@@ -8,6 +8,7 @@ import { api } from "@/lib/api/client";
 import type { BuoySettings } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
+import { usePoll } from "@/lib/use-poll";
 import { AddBuoyDialog } from "./add-buoy-dialog";
 import { FleetList } from "./fleet-list";
 
@@ -17,6 +18,9 @@ export function FleetBoard() {
   const { user } = useSession();
   const settings = useApi<BuoySettings>(api.settings);
   const [adding, setAdding] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+  // New packets, and the countdown to the next transmission, update without a reload.
+  usePoll(() => { settings.reload(); setNow(Date.now()); }, 30 * 1000);
 
   if (settings.error) return <Banner tone="failed">{settings.error}</Banner>;
   if (!settings.data) return <span className="sc-tag" aria-busy="true">Loading the fleet…</span>;
@@ -39,7 +43,7 @@ export function FleetBoard() {
             A buoy appears when its shore station first pushes a reading, or when it is added here.
           </EmptyState>
         ) : <FleetList buoys={buoys} remote={settings.data.firmware.remote} slotsSod={settings.data.firmware.slotsSod}
-            estimates={settings.data.estimates} />}
+            estimates={settings.data.estimates} now={now} />}
       </section>
       <AddBuoyDialog open={adding} onClose={() => setAdding(false)} onAdded={settings.reload} />
     </>
