@@ -59,6 +59,12 @@ uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
  * skipped slot is simply skipped — there are no retries outside a slot. */
 bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every);
 
+/* Whether to send one "hello" packet right after power-on, outside the slots, so the console
+ * confirms a new buoy within seconds instead of at the next slot (up to 8 h away). Never after
+ * a watchdog reset: a buoy stuck in a reset loop must not keep transmitting out of its slot
+ * over other buoys. Never in CRITICAL, which sends nothing. */
+bool scout_boot_hello_transmits(scout_power_mode_t mode, bool watchdog_reset);
+
 /* Daily transmit count (SCO-198): how many of the slot table's slots are used. Agreed range
  * 1-3, pending ECE (Isabella) power-budget sign-off; the default is 3, today's schedule. */
 #define SCOUT_TX_COUNT_MIN 1u

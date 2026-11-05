@@ -72,6 +72,13 @@ void test_slot_transmits_by_power_mode(void) {
     TEST_ASSERT_TRUE(scout_slot_transmits(SCOUT_POWER_CONSERVE, 1, 0));  // guard: factor 0 → every slot
 }
 
+void test_boot_hello_only_on_a_real_power_on(void) {
+    TEST_ASSERT_TRUE(scout_boot_hello_transmits(SCOUT_POWER_NORMAL, false));
+    TEST_ASSERT_TRUE(scout_boot_hello_transmits(SCOUT_POWER_CONSERVE, false));
+    TEST_ASSERT_FALSE(scout_boot_hello_transmits(SCOUT_POWER_CRITICAL, false));  // no TX at all
+    TEST_ASSERT_FALSE(scout_boot_hello_transmits(SCOUT_POWER_NORMAL, true));     // reset loop guard
+}
+
 void test_battery_gate(void) {
     TEST_ASSERT_TRUE(scout_battery_ok(3100, 3100));
     TEST_ASSERT_TRUE(scout_battery_ok(3300, 3100));
@@ -182,6 +189,7 @@ static void run_all() {
     RUN_TEST(test_every_used_slot_follows_a_recording_by_ten_minutes);
     RUN_TEST(test_conserve_never_sends_more_than_the_setting);
     RUN_TEST(test_listen_window_follows_the_selected_slots);
+    RUN_TEST(test_boot_hello_only_on_a_real_power_on);
     UNITY_END();
 }
 

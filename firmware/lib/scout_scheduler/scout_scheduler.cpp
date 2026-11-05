@@ -71,6 +71,10 @@ bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t cons
     }
 }
 
+bool scout_boot_hello_transmits(scout_power_mode_t mode, bool watchdog_reset) {
+    return !watchdog_reset && mode != SCOUT_POWER_CRITICAL;
+}
+
 bool scout_tx_count_valid(uint8_t tx_count) {
     return tx_count >= SCOUT_TX_COUNT_MIN && tx_count <= SCOUT_TX_COUNT_MAX;
 }
