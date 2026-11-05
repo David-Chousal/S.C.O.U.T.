@@ -8,14 +8,14 @@ import { Ago } from "@/components/ui/ago";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Buoy, BuoySettings, Device, RemoteSetting } from "@/lib/api/types";
-import { buoyHealth, runningSettings, slotsInUse } from "@/lib/buoy-status";
-import { lastHeard, plural } from "@/lib/format";
+import type { BuoySettings, Device } from "@/lib/api/types";
+import { plural } from "@/lib/format";
 import { can, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 import { usePoll } from "@/lib/use-poll";
-import { CommandStation } from "./command-station";
+import { AssignDialog } from "./assign-dialog";
+import { commandRoutes } from "./command-routes";
 import { NewTokenDialog } from "./new-token-dialog";
 
 const HOUR = 3600 * 1000;
@@ -31,40 +31,9 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
   return { state: "failed", lit: 1, word: "Silent" };
 }
 
-interface StationsData {
-  buoys: Buoy[];
-  remote: RemoteSetting[];
-  slotsSod: number[];
-}
-
-function BuoysTable({ data, active, allowed, now, onChanged }: {
-  data: StationsData; active: Device[]; allowed: boolean; now: number; onChanged: () => void;
-}) {
-  return (
-    <div className="sc-table-wrap">
-      <table className="sc-table sc-stations-buoys">
-        <thead><tr><th scope="col">Buoy</th><th scope="col">Commands from</th><th scope="col">Last heard</th><th scope="col">Status</th></tr></thead>
-        <tbody>
-          {data.buoys.map((buoy) => {
-            const running = runningSettings(buoy, data.remote);
-            const health = buoyHealth(lastHeard(buoy), slotsInUse(data.slotsSod, running.tx_count, running.slot_phase_h), now);
-            return (
-              <tr key={buoy.buoy_id}>
-                <th scope="row">{buoy.label}<span className="sub">ID {buoy.buoy_id}</span></th>
-                <td><CommandStation buoy={buoy} stations={active} canPick={allowed} onChanged={onChanged} /></td>
-                <td><Ago ms={lastHeard(buoy)} />{buoy.clock_lost ? <span className="sub">buoy clock lost</span> : null}</td>
-                <td><SignalMeter state={health.state} lit={health.lit} word={health.word} /></td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-/** Stations: which shore station commands each buoy and when each was heard, then the shore
- * stations' tokens, with a key to make one and a way to revoke and then delete them. */
+/** Stations: every shore station, the buoys whose commands it sends, when it was last seen, and
+ * its token: a key to make one, hold to revoke, and delete once revoked. Buoys' own state lives on
+ * Fleet. */
 export function StationsBoard() {
   const when = useWhen();
   const { user } = useSession();
@@ -72,6 +41,7 @@ export function StationsBoard() {
   const settings = useApi<BuoySettings>(api.settings);
   const devices = useApi<{ devices: Device[] }>(api.devices);
   const [adding, setAdding] = useState(false);
+  const [assigning, setAssigning] = useState<Device | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const allowed = can(user.role, "devices.write");
   const active = (devices.data?.devices ?? []).filter((device) => !device.revoked_at);
@@ -95,16 +65,12 @@ export function StationsBoard() {
   const error = settings.error || devices.error;
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!settings.data || !devices.data) return <span className="sc-tag" aria-busy="true">Loading stations…</span>;
-  const data = { buoys: settings.data.buoys, remote: settings.data.firmware.remote, slotsSod: settings.data.firmware.slotsSod };
+  const buoys = settings.data.buoys;
+  const routes = commandRoutes(buoys, active);
+  const canAssign = allowed && active.length > 1 && buoys.length > 0;
 
   return (
     <>
-      <section className="sc-bay" aria-labelledby="buoys-title">
-        <div className="sc-bay__head"><h2 className="sc-bay__title" id="buoys-title">Buoys</h2>
-          <span className="sc-tag">Which shore station sends each buoy&rsquo;s commands</span></div>
-        {data.buoys.length === 0 ? <p className="sc-help">No buoy has reported yet.</p>
-          : <BuoysTable data={data} active={active} allowed={allowed} now={now} onChanged={settings.reload} />}
-      </section>
       <section className="sc-bay" aria-labelledby="shore-title">
         <div className="sc-bay__head">
           <h2 className="sc-bay__title" id="shore-title">Shore stations</h2>
@@ -117,13 +83,22 @@ export function StationsBoard() {
         {devices.data.devices.length === 0 ? <p className="sc-help">No shore stations yet.</p> : (
           <div className="sc-table-wrap">
             <table className="sc-table sc-stations-table">
-              <thead><tr><th scope="col">Station</th><th scope="col">Created</th><th scope="col">Last seen</th>
+              <thead><tr><th scope="col">Station</th><th scope="col">Buoys it commands</th><th scope="col">Last seen</th>
                 <th scope="col">Status</th><th scope="col"><span className="sc-visually-hidden">Actions</span></th></tr></thead>
               <tbody>
                 {devices.data.devices.map((device) => (
                   <tr key={device.id}>
-                    <th scope="row">{device.name}</th>
-                    <td className="sc-stations-table__when">{when(device.created_at)}</td>
+                    <th scope="row">{device.name}<span className="sub">created {when(device.created_at)}</span></th>
+                    <td>
+                      <span className="sc-chips">
+                        {(routes.byStation.get(device.id) ?? []).map((buoy) => <span key={buoy.buoy_id} className="sc-chip">{buoy.label}</span>)}
+                        {!device.revoked_at && (routes.byStation.get(device.id) ?? []).length === 0 && <span className="sc-help">None</span>}
+                        {device.revoked_at && <span className="sc-help">—</span>}
+                        {canAssign && !device.revoked_at && (
+                          <Key size="sm" onClick={() => setAssigning(device)} aria-label={`Assign buoys to ${device.name}`}>Assign</Key>
+                        )}
+                      </span>
+                    </td>
                     <td className="sc-stations-table__when"><Ago ms={device.last_seen_at} /></td>
                     <td>{device.revoked_at
                       ? <><span className="sc-badge sc-badge--muted">Revoked</span><span className="sub">{when(device.revoked_at)}</span></>
@@ -144,7 +119,19 @@ export function StationsBoard() {
             </table>
           </div>
         )}
+        {active.length === 1 && buoys.length > 0 && (
+          <p className="sc-help">{active[0].name} is the only active station, so it sends every buoy&rsquo;s commands.</p>
+        )}
+        {active.length > 1 && routes.orphans.length > 0 && (
+          <Banner tone="caution">
+            <strong>{routes.orphans.map((b) => b.label).join(", ")}</strong> {routes.orphans.length === 1 ? "has" : "have"} no station
+            sending {routes.orphans.length === 1 ? "its" : "their"} commands, so settings changes cannot reach {routes.orphans.length === 1 ? "it" : "them"}.
+            Assign {routes.orphans.length === 1 ? "it" : "them"} to a station.
+          </Banner>
+        )}
       </section>
+      <AssignDialog key={assigning?.id ?? "none"} station={assigning} buoys={buoys} active={active}
+        onClose={() => setAssigning(null)} onSaved={settings.reload} />
       <NewTokenDialog open={adding} onClose={() => setAdding(false)} onCreated={devices.reload} />
     </>
   );

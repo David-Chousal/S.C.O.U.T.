@@ -35,19 +35,21 @@
   .sc-fleet-table th:nth-child(n), .sc-buoy-table th:nth-child(n) { width: auto; }
   .sc-buoy-table th:nth-child(3), .sc-buoy-table td:nth-child(3), .sc-fleet-table th:nth-child(2), .sc-fleet-table td:nth-child(2), .sc-fleet-table th:nth-child(3), .sc-fleet-table td:nth-child(3) { display: none; }
 }
-/* Stations tables: same rhythm as Fleet, status before the actions. */
-.sc-stations-buoys, .sc-stations-table { table-layout: fixed; }
-.sc-stations-buoys th:nth-child(1) { width: 26%; } .sc-stations-buoys th:nth-child(3) { width: 170px; } .sc-stations-buoys th:nth-child(4) { width: 130px; }
-.sc-stations-buoys td:nth-child(3), .sc-stations-table__when { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
-.sc-stations-buoys .sc-command-station__select { max-width: 240px; }
-.sc-stations-table th:nth-child(2) { width: 200px; } .sc-stations-table th:nth-child(3) { width: 150px; }
-.sc-stations-table th:nth-child(4) { width: 200px; } .sc-stations-table th:nth-child(5) { width: 150px; }
+/* Stations table: same rhythm as Fleet, status before the actions. */
+.sc-stations-table { table-layout: fixed; }
+.sc-stations-table th:nth-child(1) { width: 24%; } .sc-stations-table th:nth-child(3) { width: 130px; }
+.sc-stations-table th:nth-child(4) { width: 190px; } .sc-stations-table th:nth-child(5) { width: 150px; }
+.sc-stations-table__when { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
+/* The buoys a station commands, as chips. */
+.sc-chips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.sc-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 500 12px/1 var(--font-sans); white-space: nowrap; }
+.sc-assign { display: grid; gap: 2px; margin: var(--space-3) 0 0; padding: 0; border: 0; }
+.sc-assign__row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--line); cursor: pointer; }
 .sc-table td.sc-stations-table__actions { padding-right: var(--space-4); text-align: right; }
 @media (max-width: 767px) {
-  .sc-stations-buoys, .sc-stations-table { table-layout: auto; }
-  .sc-stations-buoys th:nth-child(n), .sc-stations-table th:nth-child(n) { width: auto; }
-  .sc-stations-buoys th:nth-child(3), .sc-stations-buoys td:nth-child(3),
-  .sc-stations-table th:nth-child(2), .sc-stations-table td:nth-child(2), .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
+  .sc-stations-table { table-layout: auto; }
+  .sc-stations-table th:nth-child(n) { width: auto; }
+  .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
 }
 /* Team tables: fixed columns so members and invites line up. */
 .sc-team-table { table-layout: fixed; }

@@ -29,7 +29,9 @@ export function TopBar({ title, user, status, actions }: TopBarProps) {
   return (
     <header className="sc-top">
       <div className="sc-top__brand">
-        <Link href="/dashboard/" className="sc-wordmark">S.C.O.U.T. <span className="sc-tag">Console</span></Link>
+        <Link href="/dashboard/" className="sc-logo" aria-label="S.C.O.U.T. Console, go to the Dashboard" title="S.C.O.U.T. Console">
+          <span className="sc-logo__mark" aria-hidden="true" />
+        </Link>
         {user && (
           <Link href={ACCOUNT_ITEM.href} className="sc-top__account" aria-label={`Account: ${user.name || user.email}`}
             aria-current={isCurrent(pathname, ACCOUNT_ITEM.href) ? "page" : undefined} title={ROLE_LABEL[user.role]}>

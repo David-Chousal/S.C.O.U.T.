@@ -10,7 +10,8 @@ describe("TopBar", () => {
   test("carries the console's mark, the account as a link to Account, and the page title", () => {
     render(<TopBar title="Team" user={user} />);
     const bar = screen.getByRole("banner");
-    expect(bar.querySelector(".sc-top__brand")?.textContent).toContain("S.C.O.U.T.");
+    expect(screen.getByRole("link", { name: /S\.C\.O\.U\.T\. Console/ }).getAttribute("href")).toMatch(/^\/dashboard\/?$/);
+    expect(bar.querySelector(".sc-top__brand")?.textContent).not.toContain("S.C.O.U.T.");
     const account = screen.getByRole("link", { name: "Account: David Chousal" });
     expect(account.getAttribute("href")).toMatch(/^\/account\/?$/);
     expect(account.getAttribute("title")).toBe("Guest · view only");
