@@ -5,55 +5,55 @@
       "key": "tx_count",
       "label": "Transmits a day",
       "value": "1–3 (default 3)",
-      "change": "By radio, from the Fleet page, once the settings downlink is switched on",
-      "status": "pending sign-off",
-      "note": "Range pending the electrical lead's power sign-off (SCO-198)",
-      "source": "firmware/lib/scout_scheduler/scout_scheduler.h"
+      "change": "By radio, from Settings → Buoys",
+      "status": "decided",
+      "note": "Treated as signed off (SCO-198)",
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "tx_slots",
       "label": "Transmit slots",
       "value": "00:10 UTC · 08:10 UTC · 16:10 UTC",
-      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "change": "By radio, from Settings → Buoys",
       "status": "decided",
-      "note": "A count of 1 uses the first slot; 2 the first and last; 3 all three",
-      "source": "firmware/src/config.h"
+      "note": "At slot phase 0. A count of 1 uses the first slot; 2 the first and last; 3 all three. The slot phase (0–7 h) moves them later",
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "sample_interval",
       "label": "Sensor readings",
-      "value": "every 30 min",
-      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "value": "every 30 min (15, 30, 60)",
+      "change": "By radio, from Settings → Buoys",
       "status": "decided",
       "note": "",
-      "source": "firmware/src/config.h"
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "audio",
       "label": "Hydrophone recordings",
       "value": "60 s at 00:00, 08:00, 16:00 UTC · 22,050 Hz",
-      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "change": "By radio, from Settings → Buoys",
       "status": "decided",
-      "note": "Normal power mode only (ADR-0011)",
-      "source": "firmware/src/config.h"
+      "note": "Clip 0, 15, 30, 60 s by radio (0 = off); the sample rate is firmware only (ADR-0011). Normal power mode only",
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "power_modes",
       "label": "Power-saving thresholds",
       "value": "conserve below 3.20 V · critical below 3.10 V",
-      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "change": "By radio, from Settings → Buoys",
       "status": "provisional",
-      "note": "Depends on the final battery pack (ADR-0007)",
-      "source": "firmware/src/config.h"
+      "note": "Defaults depend on the final battery pack (ADR-0007)",
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "humidity_alert",
       "label": "Housing humidity alert",
       "value": "70 %RH",
-      "change": "Firmware update (config.h); over-the-air updates are not built yet",
+      "change": "By radio, from Settings → Buoys",
       "status": "provisional",
-      "note": "Placeholder until the leak calibration (SCO-204)",
-      "source": "firmware/src/config.h"
+      "note": "Default is a placeholder until the leak calibration (SCO-204)",
+      "source": "firmware/lib/scout_settings/scout_settings.h"
     },
     {
       "key": "radio",
@@ -61,26 +61,122 @@
       "value": "915 MHz · +11 dBm · BW 500 kHz · SF12 · CR 4/8",
       "change": "Firmware update (config.h); over-the-air updates are not built yet",
       "status": "decided",
-      "note": "Set by the FCC grant; not a free choice (config.h)",
+      "note": "Set by the FCC grant; never changed by radio (config.h)",
       "source": "firmware/src/config.h"
     },
     {
       "key": "downlink",
       "label": "Settings downlink listen window",
-      "value": "1 s after each send · off in shipped builds",
+      "value": "1 s after each send",
       "change": "Firmware update (config.h); over-the-air updates are not built yet",
-      "status": "pending sign-off",
-      "note": "Built behind SCOUT_DOWNLINK; needs power sign-off and the FCC check",
+      "status": "decided",
+      "note": "Never changed by radio, so a wrong value cannot lock a buoy out",
       "source": "firmware/src/config.h"
     },
     {
       "key": "firmware",
       "label": "Firmware",
-      "value": "v0.1.0 · packet v4",
+      "value": "v0.1.0 · packet v5",
       "change": "Firmware update (config.h); over-the-air updates are not built yet",
       "status": "decided",
       "note": "What the buoy reports is in its packets; this is the firmware in the repo",
       "source": "firmware/src/config.h"
     }
-  ]
+  ],
+  "remote": [
+    {
+      "id": 1,
+      "key": "tx_count",
+      "label": "Transmits a day",
+      "unit": "",
+      "help": "How many of the three daily slots send a packet.",
+      "default": 3,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "id": 2,
+      "key": "slot_phase_h",
+      "label": "Slot phase",
+      "unit": "h",
+      "help": "Moves every transmit slot and recording this many hours later.",
+      "default": 0,
+      "min": 0,
+      "max": 7,
+      "step": 1
+    },
+    {
+      "id": 3,
+      "key": "sample_interval_min",
+      "label": "Reading interval",
+      "unit": "min",
+      "help": "Minutes between sensor readings.",
+      "default": 30,
+      "choices": [
+        15,
+        30,
+        60
+      ]
+    },
+    {
+      "id": 4,
+      "key": "audio_clip_s",
+      "label": "Hydrophone clip",
+      "unit": "s",
+      "help": "Length of each recording; 0 turns recording off.",
+      "default": 60,
+      "choices": [
+        0,
+        15,
+        30,
+        60
+      ]
+    },
+    {
+      "id": 5,
+      "key": "conserve_mv",
+      "label": "Conserve below",
+      "unit": "mV",
+      "help": "Below this battery voltage the buoy skips audio and sends less.",
+      "default": 3200,
+      "min": 3000,
+      "max": 3600,
+      "step": 10
+    },
+    {
+      "id": 6,
+      "key": "critical_mv",
+      "label": "Critical below",
+      "unit": "mV",
+      "help": "Below this it only logs temperature. At least 50 mV under conserve.",
+      "default": 3100,
+      "min": 2900,
+      "max": 3500,
+      "step": 10
+    },
+    {
+      "id": 7,
+      "key": "conserve_every",
+      "label": "Conserve: send every",
+      "unit": "slot",
+      "help": "In conserve, transmit in every Nth used slot.",
+      "default": 3,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "id": 8,
+      "key": "humidity_alert_pct",
+      "label": "Housing humidity alert",
+      "unit": "%RH",
+      "help": "Rows at or above it carry HUMIDITY_HIGH.",
+      "default": 70,
+      "min": 40,
+      "max": 95,
+      "step": 1
+    }
+  ],
+  "tierGapMv": 50
 }

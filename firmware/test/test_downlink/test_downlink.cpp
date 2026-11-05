@@ -17,6 +17,14 @@ static const uint8_t GOLDEN[SCOUT_DL_CMD_SIZE] = {
     0xc1, 0x01, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x01, 0x02, 0x2a, 0x0c, 0xc2, 0xc6,
     0xd7, 0x3d, 0x09, 0x5d, 0x5f, 0x2f, 0x3f, 0x92, 0x9f, 0x9e, 0xe0, 0x29, 0x38, 0x40};
 
+// downlink.encode_settings(SettingsCommand(1, 1803859200, (2, 1, 15, 30, 3300, 3200, 2, 80)),
+//                          bytes(range(32)))
+static const uint8_t GOLDEN_SETTINGS[SCOUT_DL_SETTINGS_SIZE] = {
+    0xc1, 0x02, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x08, 0x02, 0x00, 0x01, 0x00, 0x0f, 0x00,
+    0x1e, 0x00, 0xe4, 0x0c, 0x80, 0x0c, 0x02, 0x00, 0x50, 0x00, 0xa5, 0x7e, 0xe5, 0x86, 0x7e,
+    0xc8, 0xb0, 0xee, 0x93, 0x7d, 0x01, 0x5c, 0x16, 0x1f, 0xd7, 0xe9, 0x2b, 0xfa};
+static const uint16_t GOLDEN_VALUES[SCOUT_SETTINGS_COUNT] = {2, 1, 15, 30, 3300, 3200, 2, 80};
+
 static void test_key(uint8_t key[SCOUT_DL_KEY_BYTES]) {
     for (uint8_t i = 0; i < SCOUT_DL_KEY_BYTES; i++) {
         key[i] = i;
@@ -252,6 +260,110 @@ void test_shore_set_command_rejects_malformed_or_out_of_range(void) {
     TEST_ASSERT_EQUAL_UINT16(7, buoy);  // untouched on failure
 }
 
+static ScoutSettingsCommand golden_settings_cmd(void) {
+    ScoutSettingsCommand c;
+    c.buoy_id = 1;
+    c.counter = NOW;
+    memcpy(c.settings.v, GOLDEN_VALUES, sizeof(GOLDEN_VALUES));
+    return c;
+}
+
+static scout_dl_result_t decode_any_for_buoy_1(const uint8_t *frame, size_t len, ScoutSettings *next,
+                                               uint32_t *counter) {
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    ScoutSettings current;
+    scout_settings_defaults(&current);
+    return scout_dl_decode_any(frame, len, key, 1, 0, NOW, DAY, &current, next, counter);
+}
+
+void test_settings_frame_matches_shore_golden(void) {
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    ScoutSettingsCommand c = golden_settings_cmd();
+    uint8_t frame[SCOUT_DL_SETTINGS_SIZE];
+    TEST_ASSERT_EQUAL(SCOUT_DL_SETTINGS_SIZE, scout_dl_encode_settings(&c, key, frame));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(GOLDEN_SETTINGS, frame, SCOUT_DL_SETTINGS_SIZE);
+}
+
+void test_settings_frame_decodes_to_the_whole_snapshot(void) {
+    ScoutSettings next;
+    uint32_t counter = 0;
+    TEST_ASSERT_EQUAL(SCOUT_DL_OK, decode_any_for_buoy_1(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS), &next, &counter));
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(GOLDEN_VALUES, next.v, SCOUT_SETTINGS_COUNT);
+    TEST_ASSERT_EQUAL_UINT32(NOW, counter);
+}
+
+void test_v1_frame_changes_only_the_transmit_count(void) {
+    ScoutSettings next;
+    uint32_t counter = 0;
+    TEST_ASSERT_EQUAL(SCOUT_DL_OK, decode_any_for_buoy_1(GOLDEN, sizeof(GOLDEN), &next, &counter));
+    ScoutSettings expected;
+    scout_settings_defaults(&expected);
+    expected.v[SCOUT_SET_TX_COUNT - 1] = 2;
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(expected.v, next.v, SCOUT_SETTINGS_COUNT);
+}
+
+void test_settings_frame_with_a_bad_set_is_refused_whole(void) {
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    ScoutSettingsCommand c = golden_settings_cmd();
+    c.settings.v[SCOUT_SET_CRITICAL_MV - 1] = 3300;  // equal to conserve: tiers would invert
+    uint8_t frame[SCOUT_DL_SETTINGS_SIZE];
+    scout_dl_encode_settings(&c, key, frame);
+    ScoutSettings next;
+    scout_settings_defaults(&next);
+    next.v[0] = 99;  // sentinel: must stay untouched on refusal
+    uint32_t counter = 5;
+    TEST_ASSERT_EQUAL(SCOUT_DL_OUT_OF_RANGE, decode_any_for_buoy_1(frame, sizeof(frame), &next, &counter));
+    TEST_ASSERT_EQUAL_UINT16(99, next.v[0]);
+    TEST_ASSERT_EQUAL_UINT32(5, counter);
+}
+
+void test_settings_frame_checks_envelope_like_v1(void) {
+    uint8_t frame[SCOUT_DL_SETTINGS_SIZE];
+    memcpy(frame, GOLDEN_SETTINGS, sizeof(frame));
+    ScoutSettings next;
+    uint32_t counter;
+    frame[12] ^= 0x01;
+    TEST_ASSERT_EQUAL(SCOUT_DL_BAD_CRC, decode_any_for_buoy_1(frame, sizeof(frame), &next, &counter));
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    ScoutSettings current;
+    scout_settings_defaults(&current);
+    TEST_ASSERT_EQUAL(SCOUT_DL_REPLAY, scout_dl_decode_any(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS), key, 1, NOW,
+                                                           NOW, DAY, &current, &next, &counter));
+    TEST_ASSERT_EQUAL(SCOUT_DL_WRONG_BUOY, scout_dl_decode_any(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS), key, 2, 0,
+                                                               NOW, DAY, &current, &next, &counter));
+    key[0] ^= 0xFF;
+    TEST_ASSERT_EQUAL(SCOUT_DL_BAD_TAG, scout_dl_decode_any(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS), key, 1, 0,
+                                                            NOW, DAY, &current, &next, &counter));
+    TEST_ASSERT_EQUAL(SCOUT_DL_BAD_LENGTH, decode_any_for_buoy_1(GOLDEN_SETTINGS, 42, &next, &counter));
+}
+
+void test_settings_frame_fits_the_payload_ceiling(void) {
+    TEST_ASSERT_TRUE(SCOUT_DL_FRAME_MAX <= 140);
+    TEST_ASSERT_EQUAL(43, SCOUT_DL_SETTINGS_SIZE);
+}
+
+void test_shore_settings_command_parses(void) {
+    uint16_t buoy = 0;
+    ScoutSettings s;
+    TEST_ASSERT_TRUE(scout_dl_parse_settings_command("S1:2,1,15,30,3300,3200,2,80\r", &buoy, &s));
+    TEST_ASSERT_EQUAL_UINT16(1, buoy);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(GOLDEN_VALUES, s.v, SCOUT_SETTINGS_COUNT);
+}
+
+void test_shore_settings_command_rejects_malformed_or_invalid(void) {
+    uint16_t buoy = 0;
+    ScoutSettings s;
+    TEST_ASSERT_FALSE(scout_dl_parse_settings_command("S1:2,1,15,30,3300,3200,2", &buoy, &s));
+    TEST_ASSERT_FALSE(scout_dl_parse_settings_command("S1:2,1,15,30,3300,3200,2,80,1", &buoy, &s));
+    TEST_ASSERT_FALSE(scout_dl_parse_settings_command("S0:2,1,15,30,3300,3200,2,80", &buoy, &s));
+    TEST_ASSERT_FALSE(scout_dl_parse_settings_command("S1:2,1,45,30,3300,3200,2,80", &buoy, &s));
+    TEST_ASSERT_FALSE(scout_dl_parse_settings_command("N1:2", &buoy, &s));
+}
+
 static void run_all() {
     UNITY_BEGIN();
     RUN_TEST(test_sha256_fips_vectors);
@@ -273,6 +385,14 @@ static void run_all() {
     RUN_TEST(test_frame_fits_the_payload_ceiling);
     RUN_TEST(test_shore_set_command_parses);
     RUN_TEST(test_shore_set_command_rejects_malformed_or_out_of_range);
+    RUN_TEST(test_settings_frame_matches_shore_golden);
+    RUN_TEST(test_settings_frame_decodes_to_the_whole_snapshot);
+    RUN_TEST(test_v1_frame_changes_only_the_transmit_count);
+    RUN_TEST(test_settings_frame_with_a_bad_set_is_refused_whole);
+    RUN_TEST(test_settings_frame_checks_envelope_like_v1);
+    RUN_TEST(test_settings_frame_fits_the_payload_ceiling);
+    RUN_TEST(test_shore_settings_command_parses);
+    RUN_TEST(test_shore_settings_command_rejects_malformed_or_invalid);
     UNITY_END();
 }
 

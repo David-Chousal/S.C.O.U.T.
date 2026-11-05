@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Sync the shore station with the S.C.O.U.T. Console (SCO-198): push received readings, pull
-the transmit count requested for each buoy, and hand it to the ESP32 receiver.
+what each buoy should run (transmit count and remote-settings snapshot), and hand it to the ESP32.
 
     SCOUT_CONSOLE_URL=https://... SCOUT_CONSOLE_TOKEN=... \\
         python scripts/sync_console.py --data data-live --serial /dev/cu.usbmodem1101
 
-Without ``--serial`` it prints the ``N<buoy>:<count>`` lines to type into the ESP32's USB
-console. The ESP32 then sends SET_TX_COUNT after each buoy's packet, but only in a
-SCOUT_DOWNLINK build (off by default, pending ECE sign-off and the FCC check).
+Without ``--serial`` it prints the ``N<buoy>:<count>`` and ``S<buoy>:<settings>`` lines to type
+into the ESP32's USB console. The ESP32 then sends the settings (v5 buoys) or the count (v4 buoys)
+right after each buoy's packet, whenever what the buoy reports differs.
 
 Readings already pushed are skipped: the console stores on (buoy_id, record_seq) and ignores
 repeats, so pushing a whole day again is safe. Standard library only.
@@ -23,7 +23,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from scout_shore.console import ConsoleClient, ConsoleConfig, ConsoleError, set_commands  # noqa: E402
+from scout_shore.console import (  # noqa: E402
+    ConsoleClient,
+    ConsoleConfig,
+    ConsoleError,
+    set_commands,
+    settings_commands,
+)
 
 log = logging.getLogger("scout_shore.sync")
 
@@ -56,13 +62,15 @@ def main() -> int:
     client = ConsoleClient(config)
     try:
         stored = client.push_rows(_rows(args.data, args.files))
-        requested = client.requested_counts()
+        requested, snapshots = client.wanted()
     except ConsoleError as exc:
         log.error("%s", exc)
         return 1
-    log.info("pushed: %d new rows; requested counts: %s", stored, requested or "none")
+    log.info("pushed: %d new rows; requested counts: %s; settings for buoys: %s",
+             stored, requested or "none", sorted(snapshots) or "none")
 
-    lines = set_commands(requested)
+    # S after N: a snapshot carries the count too, so it is the last word for a v5 buoy.
+    lines = set_commands(requested) + settings_commands(snapshots)
     if args.serial is None:
         for line in lines:
             print(line)  # noqa: T201 — this script's output is the commands to type

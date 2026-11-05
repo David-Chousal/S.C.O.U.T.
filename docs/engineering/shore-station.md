@@ -35,7 +35,7 @@ open is listed under [Open items](#open-items).
 ## Role
 
 1. **LoRa reception** from every buoy, matching their radio settings exactly.
-2. **Packet validation and decode** against the 44-byte packet contract (v4, and v3 with the same bytes), still accepting 30-byte v1/v2 frames (CRC, version).
+2. **Packet validation and decode** against the 46-byte packet contract (v5), still accepting 44-byte v3/v4 and 30-byte v1/v2 frames (CRC, version).
 3. **Push to the dashboard over WiFi.**
 4. **Downlink (ADR-0008):** send firmware images and settings to the buoys in their listen windows.
 5. **Serve more than one buoy** (two planned), deduplicating any repeated reading on
@@ -70,12 +70,13 @@ console over WiFi (below); without WiFi, `N<buoy>:<count>` over USB (e.g. `N1:2`
 count changes the tag, not when the radio is on. Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
 ⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
-IRQ 9**, to be confirmed by ECE. **Settings downlink written, off by default:** built with
-`-DSCOUT_DOWNLINK` (env `feather_esp32s3_shore_downlink`, compile check with public example keys),
-the station sends one HMAC-signed `SET_TX_COUNT` frame (`lib/scout_downlink`, 28 bytes) straight
-after a buoy's packet whenever that buoy's reported count differs from the requested one, at the
-buoy's +11 dBm. ⚠️ **Do not transmit off the bench** until the FeatherWing's FCC authorization is
-checked (open item 3). Keys go in the gitignored `firmware/src/downlink_key.h`. **Not written:**
+IRQ 9**, to be confirmed by ECE. **Settings downlink, on in the shipped build since 2026-11-04:**
+`feather_esp32s3_shore` carries `-DSCOUT_DOWNLINK` (`feather_esp32s3_shore_downlink` is the same
+build with public example keys, for CI). Straight after a buoy's packet the station sends one
+HMAC-signed frame at the buoy's +11 dBm (`lib/scout_downlink`): the 43-byte v2 snapshot of every
+remote setting when a v5 buoy's settings digest differs from the console's, or the 28-byte v1
+`SET_TX_COUNT` when a v4 buoy's count does. ⚠️ The FeatherWing's FCC authorization (open item 3)
+is treated as checked on the team's instruction, but no record of the check exists yet. Keys go in the gitignored `firmware/src/downlink_key.h`. **Not written:**
 firmware OTA.
 
 **WiFi push — written 2026-10-28, not yet run on the board**
@@ -129,7 +130,7 @@ The station must:
   does not need;
 - listen around the slots of each buoy's transmit count, and transmit downlink messages
   (ADR-0008) at ≤ +11 dBm through a ≤ 2.15 dBi antenna;
-- if it decodes frames itself, match the 44-byte v4 layout in `firmware/lib/scout_packet/` and
+- if it decodes frames itself, match the 46-byte v5 layout in `firmware/lib/scout_packet/` and
   `shore/scout_shore/packet.py` — the contract `scripts/check_packet_contract.py` enforces.
 
 The bench receiver `firmware/src/bench_rx/` (a second Feather M0) already does the first two
@@ -160,12 +161,12 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
   sample every 30 min → SD card              LoRa RX task  ──►  validate + decode
         │                                         ▲                    │
         └── 1-3 slots/day: LoRa TX ───────────────┘                    ▼
-            (44-byte packet, 1 copy per slot)                 WiFi task: push to the console
+            (46-byte packet, 1 copy per slot)                 WiFi task: push to the console
                                                               (written). Fallbacks: USB → computer
                                                               (run_receiver --link serial) →
                                                               CSVs → sync_console.py; SD card
         ◄── SET_TX_COUNT in the 1 s listen window ──                   ▼
-            (built, off by default; firmware OTA not built)    team console (ADR-0012)
+            (settings: on since 2026-11-04; firmware OTA not built) team console (ADR-0012)
 
    raw audio and the full record stay on each buoy's SD card;
    a retrieved card is merged with shore/scripts/import_sd_card.py

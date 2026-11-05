@@ -156,11 +156,17 @@ export function HelpGuide() {
       </GuideSection>
 
       <GuideSection id="settings" eyebrow="Member" title="Change how a buoy behaves"
-        lead="On Fleet, pick how many times a day the buoy should transmit, from 1 to 3.">
+        lead={<>Open <b>Settings → Buoys</b>. Each setting that can change by radio has its own control.</>}>
         <p className="sc-guide__text">
-          The change shows as <b>pending</b> until the buoy&rsquo;s own packets confirm it, which takes at most one transmit slot after the
-          shore station delivers it. Every other firmware setting is listed under <b>Settings → Buoys</b>, with how to change it.
+          You can change transmits a day, slot phase, reading interval, hydrophone clip, power thresholds and the housing humidity alert.
+          Fleet also changes the transmit count. The shore station sends the whole set right after the buoy&rsquo;s next packet.
         </p>
+        <dl className="sc-guide__states">
+          <div><dt>Pending</dt><dd>Sent, waiting for a packet from the buoy that reports the same settings.</dd></div>
+          <div><dt>Confirmed</dt><dd>The buoy is running the new settings.</dd></div>
+          <div><dt>Rejected</dt><dd>The buoy refused the change and kept its old settings.</dd></div>
+        </dl>
+        <p className="sc-guide__text sc-guide__aside">The radio and the listen window never change by radio; they need a firmware update.</p>
       </GuideSection>
 
       <GuideSection id="trouble" eyebrow="Troubleshooting" title="Fix something that looks wrong" lead="Pick what you are seeing.">

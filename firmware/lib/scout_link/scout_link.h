@@ -48,16 +48,17 @@ extern "C" {
  * the blocking budget, not the airtime — see SCOUT_LINK_AIRTIME_MS for the real figure. */
 #define SCOUT_LINK_TX_BUDGET_MS 2000u
 
-/* Actual time on air for one 44-byte frame (packet v3) at the shipped modem config (BW500/SF12/CR4-8,
+/* Actual time on air for one 46-byte frame (packet v5) at the shipped modem config (BW500/SF12/CR4-8,
  * plus RadioHead's 4-byte header), per Semtech AN1200.13. Reproduce with
  * scripts/lora_airtime.py. Kept here so the budget above can be asserted against something
  * real: a modem-config change that pushed airtime past the budget would otherwise only show
- * up as a mid-transmit watchdog reboot in the water. Rounded up from 690.2 ms (was 559 ms for
- * the 30-byte v2 packet; the acoustic summary added 14 bytes, ADR-0010).
+ * up as a mid-transmit watchdog reboot in the water. Rounded up from 755.7 ms (was 691 ms for
+ * the 44-byte v3/v4 packet before the 2-byte settings digest, and 559 ms for the 30-byte v2
+ * packet before the acoustic summary, ADR-0010).
  *
  * Was 111 ms at the previous BW125/SF7 config; raised 2026-09-01 for FCC compliance
  * (SCO-19 / SCO-98). Modelled, not yet measured on hardware. */
-#define SCOUT_LINK_AIRTIME_MS 691u
+#define SCOUT_LINK_AIRTIME_MS 756u
 
 /* Largest telemetry payload the buoy may send, in bytes (SCO-97, decided 2026-10-23). Derived
  * from the send timeout above, not inherited: a 140-byte payload plus RadioHead's 4-byte

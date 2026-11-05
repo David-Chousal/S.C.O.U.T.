@@ -7,7 +7,7 @@ design system in Tideline colour**. Decided in
 [SCO-198](https://linear.app/scout1/issue/SCO-198), the COR front end with
 [SCO-238](https://linear.app/scout1/issue/SCO-238).
 
-**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed on 2026-11-04 from branch `console/account-help-devtabs` (PR #286, before merge; Worker version 2dc12949), with D1 migration 0009 applied (database exported first); every earlier migration was already applied. Deploys are manual (`npx wrangler deploy`); merging does not deploy.
+**Live at <https://console.scoutscu.com>** (custom domain since 2026-10-30; the old <https://scout-console.scout1.workers.dev> address sends browsers there and still takes shore-station pushes) since 2026-10-26; last deployed on 2026-11-04 from branch `console/account-help-devtabs` (PR #286, before merge; Worker version 2dc12949), with D1 migration 0009 applied (database exported first); every earlier migration was already applied. From 2026-11-04, a merge to `main` that touches `console/` deploys it automatically after a reviewer approves ([Automatic deploy](#automatic-deploy-on-merge-to-main)); this takes effect once the one-time setup there is done.
 The public dashboard stays a static GitHub Pages site. It never calls this Worker and holds no
 secret.
 
@@ -17,7 +17,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
                                      ├─ /api/device/*  shore station     (worker/device.js) ◄── sync_console.py
                                      └─ everything else: web/out, the static front end,
                                         each page given a fresh script nonce + CSP (worker/assets.js)
-                                     D1: users, sessions, invites, buoys, devices, readings, audit
+                                     D1: users, sessions, invites, buoys, buoy_settings, devices, readings, audit
 ```
 
 ## Layout
@@ -41,7 +41,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Stations | admin | When each buoy and shore station was last heard from; **which station sends each buoy's downlink commands**; the shore stations' device tokens (shown once, stored hashed) |
 | Team | admin | People, roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
 | Developer | member, admin (guests view) | Two tabs. **API tokens:** personal tokens (scopes `read:telemetry`, `write:settings`; 7, 30, 90 or 365 days, or never (migration `0009-tokens-never-expire.sql`); shown once, stored hashed, revocable) and how to call `/api/v1`. **Audit log** (read only, `?tab=audit`): every change, who, what, before → after. The old `/audit/` address forwards here |
-| Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
+| Settings | member (buoys); yourself (page) | **Buoys:** rename each buoy, see its transmit count, **change its eight remote settings** (transmit count, slot phase, reading interval, hydrophone clip, power thresholds, conserve spacing, humidity alert; registry in `firmware/lib/scout_settings`, D1 migration `0010-remote-settings.sql`) with Pending/Confirmed from the digest in v5 packets and hold-to-restore-defaults, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account | yourself | Opened from the **profile card at the top of the sidebar** (your initials, name and role; G A), not from the nav list. How you sign in; sign out of this browser; hold to sign out everywhere |
 | Help | (read only) | Task-first guide: a picker of four tasks, then how data gets from the buoy to the console (diagram), connecting a shore station (S3 over WiFi, or the USB computer fallback), adding a buoy, changing its settings, troubleshooting by symptom, roles, keyboard shortcuts, and the API |
 | Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
@@ -164,6 +164,36 @@ Then:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
+
+## Automatic deploy (on merge to main)
+
+[`console-deploy.yml`](../.github/workflows/console-deploy.yml) deploys the console whenever a
+merge to `main` touches `console/`, or when run by hand (**Actions → Console deploy → Run
+workflow**). It waits for a reviewer to approve it, then runs the tests and builds the front end.
+Next it exports the live D1 database to R2 (`backups/pre-deploy-<time>-<commit>.sql.gz`, deleted
+after 35 days), applies pending migrations, deploys the Worker and checks `/healthz`. The export
+goes to R2, never to a GitHub artifact, because the repo is public.
+
+**One-time setup, before the workflow first reaches `main`.** Claude cannot do it: it needs the
+Cloudflare account and repo admin (`David-Chousal`).
+
+1. **Cloudflare API token.** Dashboard → **My Profile → API Tokens → Create Token** → the
+   **Edit Cloudflare Workers** template, then **add** *Account · D1 · Edit*. Limit *Account
+   Resources* to the S.C.O.U.T. account and *Zone Resources* to `scoutscu.com`. The template's
+   *Workers Routes* and *Account Settings: Read* are needed too, because `wrangler deploy` checks
+   the `console.scoutscu.com` custom domain and the account. The account ID is in the dashboard
+   URL (`dash.cloudflare.com/<account id>/…`) and on the Workers overview page.
+2. **GitHub environment.** Repo **Settings → Environments → New environment** → `production`.
+   Tick **Required reviewers** and add at least one teammate. Under **Deployment branches**, pick
+   *Selected branches* → `main`. Add the secrets `CLOUDFLARE_API_TOKEN` and
+   `CLOUDFLARE_ACCOUNT_ID` here, as environment secrets, not repo secrets.
+
+Do step 2 first: GitHub creates a missing environment with no reviewer, so the first merge
+would deploy without approval. Without the secrets the job stops at its first check and deploys
+nothing.
+
+A manual `npx wrangler deploy` still works for a deploy from a branch. Export the database first,
+as the workflow does.
 
 ## Storage guardrails (R2) and backups
 

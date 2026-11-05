@@ -37,6 +37,7 @@ def _sample_reading() -> Reading:
         ndsi_e4=9975,
         snap_count=10,
         clip_count=24,
+        settings_digest=0xE674,
     )
 
 
@@ -52,9 +53,20 @@ class PacketCodecTest(unittest.TestCase):
     def test_packet_fits_within_the_lora_budget(self):
         self.assertLessEqual(PACKET_SIZE, LORA_PAYLOAD_BUDGET_BYTES)
 
-    def test_v3_packet_is_44_bytes(self):
-        self.assertEqual(PACKET_SIZE, 44)
-        self.assertEqual(len(encode(_sample_reading())), 44)
+    def test_v5_packet_is_46_bytes(self):
+        self.assertEqual(PACKET_SIZE, 46)
+        self.assertEqual(len(encode(_sample_reading())), 46)
+
+    def test_v4_frame_is_44_bytes_and_decodes_without_a_digest(self):
+        v4 = replace(_sample_reading(), schema_version=4, settings_digest=None, tx_count=2)
+        frame = encode(v4)
+        self.assertEqual(len(frame), 44)
+        self.assertEqual(decode(frame), v4)
+
+    def test_v5_version_in_a_v4_length_frame_is_rejected(self):
+        v4_frame = encode(replace(_sample_reading(), schema_version=4, settings_digest=None))
+        with self.assertRaises(PacketError):
+            decode(_with_version(v4_frame, 5))
 
     def test_acoustic_extremes_round_trip(self):
         loud = replace(_sample_reading(), lvl_broad_cdb=-32768, ndsi_e4=-10000,

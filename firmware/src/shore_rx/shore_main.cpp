@@ -73,7 +73,7 @@ static uint32_t g_frames = 0;
 #ifdef SCOUT_DOWNLINK
 static uint32_t g_last_counter[SHORE_MAX_BUOY_ID + 1];
 #endif
-static char g_line[24];
+static char g_line[96];  // room for an S line: "S65535:" and eight values
 static size_t g_line_len = 0;
 
 static bool radio_begin() {
@@ -114,9 +114,11 @@ static void print_rx_line(const uint8_t *buf, uint8_t len) {
     Serial.print(line);
 }
 
-static uint8_t requested_for(uint16_t buoy_id) {
+static ScoutWanted wanted_for(uint16_t buoy_id) {
     ShoreLock lock;
-    return buoy_id <= SHORE_MAX_BUOY_ID ? g_shared.requested[buoy_id] : 0;
+    ScoutWanted none;
+    memset(&none, 0, sizeof(none));
+    return buoy_id <= SHORE_MAX_BUOY_ID ? g_shared.wanted[buoy_id] : none;
 }
 
 static bool clock_valid() {
@@ -124,37 +126,68 @@ static bool clock_valid() {
     return scout_clock_valid(&g_shared.clock);
 }
 
-static const char *window_tag(uint8_t tx_count) {
+/* "in" when now is within ±2 min of a slot of `settings` (count and phase), else "out". */
+static const char *window_tag(const ScoutSettings &settings) {
     if (!clock_valid()) {
         return "unknown";
     }
     uint32_t slots[TX_SLOT_COUNT];
-    size_t n = scout_select_tx_slots(TX_SLOTS_SOD, TX_SLOT_COUNT, tx_count, slots);
+    size_t n = scout_settings_tx_slots(&settings, TX_SLOTS_SOD, slots);
     uint32_t now = (uint32_t)time(nullptr);
     return scout_in_listen_window(now, slots, n, LISTEN_HALF_WIDTH_S) ? "in" : "out";
 }
 
 #ifdef SCOUT_DOWNLINK
-// Sent straight after the buoy's packet: it listens for 1 s after every send (OTA design §2).
-static void send_tx_count(uint16_t buoy_id, uint8_t tx_count) {
+/* The key and a fresh counter for a command to `buoy_id`, or nullptr when it cannot be signed. */
+static const uint8_t *command_key(uint16_t buoy_id, uint32_t *counter) {
     const uint8_t *key = scout_downlink_key(buoy_id);
     if (key == nullptr || !clock_valid()) {
         Serial.printf("CMD skipped buoy=%u reason=%s\n", buoy_id, key ? "clock" : "no-key");
-        return;
+        return nullptr;
     }
     uint32_t now = (uint32_t)time(nullptr);
+    *counter = now > g_last_counter[buoy_id] ? now : g_last_counter[buoy_id] + 1u;
+    g_last_counter[buoy_id] = *counter;
+    return key;
+}
+
+static bool transmit(const uint8_t *frame, size_t len) {
+    bool sent = g_rf95.send(frame, (uint8_t)len) && g_rf95.waitPacketSent(2000);
+    g_rf95.setModeRx();
+    return sent;
+}
+
+// Sent straight after the buoy's packet: it listens for 1 s after every send (OTA design §2).
+static void send_tx_count(uint16_t buoy_id, uint8_t tx_count) {
     ScoutCommand cmd;
+    const uint8_t *key = command_key(buoy_id, &cmd.counter);
+    if (key == nullptr) {
+        return;
+    }
     cmd.buoy_id = buoy_id;
-    cmd.counter = now > g_last_counter[buoy_id] ? now : g_last_counter[buoy_id] + 1u;
     cmd.setting = SCOUT_DL_SETTING_TX_COUNT;
     cmd.value = tx_count;
     uint8_t frame[SCOUT_DL_CMD_SIZE];
     scout_dl_encode(&cmd, key, frame);
-    bool sent = g_rf95.send(frame, sizeof(frame)) && g_rf95.waitPacketSent(2000);
-    g_rf95.setModeRx();
-    g_last_counter[buoy_id] = cmd.counter;
+    bool sent = transmit(frame, sizeof(frame));
     Serial.printf("CMD buoy=%u tx_count=%u counter=%lu sent=%s\n", buoy_id, tx_count,
                   (unsigned long)cmd.counter, sent ? "yes" : "no");
+}
+
+// The whole snapshot, for a v5 buoy whose digest differs from what is wanted.
+static void send_settings(uint16_t buoy_id, const ScoutSettings &settings) {
+    ScoutSettingsCommand cmd;
+    const uint8_t *key = command_key(buoy_id, &cmd.counter);
+    if (key == nullptr) {
+        return;
+    }
+    cmd.buoy_id = buoy_id;
+    cmd.settings = settings;
+    uint8_t frame[SCOUT_DL_SETTINGS_SIZE];
+    scout_dl_encode_settings(&cmd, key, frame);
+    bool sent = transmit(frame, sizeof(frame));
+    Serial.printf("CMD buoy=%u settings digest=%04x counter=%lu sent=%s\n", buoy_id,
+                  scout_settings_digest(&settings), (unsigned long)cmd.counter, sent ? "yes" : "no");
 }
 #endif
 
@@ -185,24 +218,40 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
         scout_upload_queue_push(&g_shared.queue, &r);  // the network task sends it on
     }
     uint8_t reported = scout_flags_tx_count(r.flags);
-    uint8_t requested = requested_for(r.buoy_id);
-    uint8_t tagged = reported ? reported : (requested ? requested : SCOUT_TX_COUNT_DEFAULT);
-    bool pending = requested != 0 && reported != requested;
+    ScoutWanted wanted = wanted_for(r.buoy_id);
+    // A v5 buoy reports the digest of everything it runs; compare the whole snapshot. A v4 buoy
+    // reports only its count, so only the count can be checked and sent.
+    bool v5 = r.schema_version >= 5;
+    uint16_t wanted_digest = wanted.has_settings ? scout_settings_digest(&wanted.settings) : 0;
+    bool settings_pending = v5 && wanted.has_settings && r.settings_digest != wanted_digest;
+    bool count_pending = !settings_pending && wanted.tx_count != 0 && reported != wanted.tx_count;
+    // The schedule to tag against: the wanted snapshot once the buoy confirms it (its phase is
+    // otherwise unknown here), else the defaults with the count the frame reports.
+    ScoutSettings schedule;
+    scout_settings_defaults(&schedule);
+    if (v5 && wanted.has_settings && !settings_pending) {
+        schedule = wanted.settings;
+    } else if (reported) {
+        schedule.v[SCOUT_SET_TX_COUNT - 1] = reported;
+    }
     Serial.printf("OK buoy=%u seq=%lu ts=%lu temp_c_centi=%d batt_mv=%u flags=0x%04X win=%s "
-                  "tx=%u/%u%s%s\n",
+                  "tx=%u/%u digest=%04x/%04x%s%s\n",
                   r.buoy_id, (unsigned long)r.record_seq, (unsigned long)r.timestamp,
-                  r.temp_c_centi, r.battery_mv, r.flags, window_tag(tagged), reported, requested,
-                  pending ? " pending" : "",
+                  r.temp_c_centi, r.battery_mv, r.flags, window_tag(schedule), reported,
+                  wanted.tx_count, r.settings_digest, wanted_digest,
+                  (settings_pending || count_pending) ? " pending" : "",
                   (r.flags & SCOUT_FLAG_CMD_REJECTED) ? " cmd_rejected" : "");
 #ifdef SCOUT_DOWNLINK
-    if (pending) {
-        send_tx_count(r.buoy_id, requested);
+    if (settings_pending) {
+        send_settings(r.buoy_id, wanted.settings);
+    } else if (count_pending) {
+        send_tx_count(r.buoy_id, wanted.tx_count);
     }
 #endif
 }
 
-/* Read "T<unix-epoch>" or "N<buoy>:<count>" from USB, one character per call so the radio is
- * never starved. */
+/* Read "T<unix-epoch>", "N<buoy>:<count>" or "S<buoy>:<v1>,...,<v8>" from USB, one character per
+ * call so the radio is never starved. */
 static void poll_time_command() {
     while (Serial.available()) {
         char c = (char)Serial.read();
@@ -214,6 +263,7 @@ static void poll_time_command() {
         g_line_len = 0;
         uint16_t buoy = 0;
         uint8_t count = 0;
+        ScoutSettings settings;
         if (scout_dl_parse_set_command(g_line, &buoy, &count)) {
             if (buoy > SHORE_MAX_BUOY_ID) {
                 Serial.printf("tx: ignored, buoy %u above %u\n", buoy, SHORE_MAX_BUOY_ID);
@@ -221,14 +271,28 @@ static void poll_time_command() {
             }
             {
                 ShoreLock lock;
-                g_shared.requested[buoy] = count;
+                g_shared.wanted[buoy].tx_count = count;
             }
             Serial.printf("tx: buoy=%u requested=%u\n", buoy, count);
             continue;
         }
+        if (scout_dl_parse_settings_command(g_line, &buoy, &settings)) {
+            if (buoy > SHORE_MAX_BUOY_ID) {
+                Serial.printf("settings: ignored, buoy %u above %u\n", buoy, SHORE_MAX_BUOY_ID);
+                continue;
+            }
+            {
+                ShoreLock lock;
+                g_shared.wanted[buoy].settings = settings;
+                g_shared.wanted[buoy].has_settings = 1;
+                g_shared.wanted[buoy].tx_count = (uint8_t)scout_setting(&settings, SCOUT_SET_TX_COUNT);
+            }
+            Serial.printf("settings: buoy=%u digest=%04x\n", buoy, scout_settings_digest(&settings));
+            continue;
+        }
         uint32_t epoch = 0;
         if (!scout_parse_time_command(g_line, MIN_VALID_EPOCH, &epoch)) {
-            Serial.print("time: ignored, expected T<unix-epoch> or N<buoy>:<count>\n");
+            Serial.print("time: ignored, expected T<unix-epoch>, N<buoy>:<count> or S<buoy>:<settings>\n");
             continue;
         }
         struct timeval tv = {(time_t)epoch, 0};

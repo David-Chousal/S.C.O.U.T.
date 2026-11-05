@@ -7,10 +7,11 @@ Both ends MUST agree on this layout — the firmware C encoder mirrors this modu
 > ✅ **Verified against the firmware encoder** — byte-identical, CI-enforced via a golden
 > vector (`firmware/test/test_packet`). No longer a proposal pending ECE sign-off.
 
-Layout (little-endian), v3 and v4: 42-byte body + 2-byte CRC = **44 bytes** (under the 140-byte
+Layout (little-endian), v5: 44-byte body + 2-byte CRC = **46 bytes** (under the 140-byte
 payload ceiling, derived from the firmware's send timeout; see
-[`docs/hub/facts.md`](../../docs/hub/facts.md)). v1 and v2 were the first 28 body bytes alone
-(30 bytes); :func:`decode` still reads them, with the acoustic fields zero.
+[`docs/hub/facts.md`](../../docs/hub/facts.md)). v3 and v4 were the first 42 body bytes (44
+bytes), and v1 and v2 the first 28 (30 bytes); :func:`decode` still reads both, with the missing
+fields zero or ``None``.
 
 | Field | Type | Encoding |
 |---|---|---|
@@ -33,6 +34,7 @@ payload ceiling, derived from the firmware's send timeout; see
 | ndsi_e4 | int16 | NDSI × 10,000 (v3) |
 | snap_count | uint16 | snaps in the bio band, saturating (v3) |
 | clip_count | uint16 | samples near the ADC rails, saturating (v3) |
+| settings_digest | uint16 | CRC-16 of the buoy's remote settings, ``scout_shore.settings`` (v5) |
 | crc | uint16 | CRC-16/CCITT-FALSE over the body |
 
 The v3 acoustic fields are the summary of the most recent recording since the previous transmit
@@ -43,6 +45,9 @@ there was no recording.
 v4 (SCO-198) keeps the v3 bytes and gives meaning to flags bits 8-10: bits 8-9 are the daily
 transmit count the buoy is using (1-3, so the shore can confirm a settings change took effect;
 0 in every older frame, decoded as ``None``) and bit 10 is ``CMD_REJECTED``.
+
+v5 (2026-11-04) appends ``settings_digest``, so the shore and the console can confirm a buoy runs
+every remote setting it was sent, not just the transmit count.
 """
 
 from __future__ import annotations
@@ -56,16 +61,20 @@ from datetime import datetime, timezone
 # summary appended to the body. Must equal SCOUT_PACKET_VERSION in firmware/lib/scout_packet.
 # v4 (2026-10-25, SCO-198): tx_count in flags bits 8-9, CMD_REJECTED at bit 10, and a tx_count
 # CSV column; byte layout unchanged from v3, so 44-byte v3 frames still decode.
-PACKET_VERSION = 4
-PREVIOUS_VERSIONS = (3,)
+# v5 (2026-11-04): settings_digest u16 appended to the body, and a settings_digest CSV column.
+PACKET_VERSION = 5
+V4_VERSIONS = (3, 4)  # 44-byte frames: the v5 layout without settings_digest
 
 _LEGACY_BODY_FORMAT = "<BHIIhHHIHBBBBB"  # v1/v2: 28 bytes
 _ACOUSTIC_FORMAT = "hhhhhHH"  # v3: 14 bytes, ADR-0010 order
-_BODY_FORMAT = _LEGACY_BODY_FORMAT + _ACOUSTIC_FORMAT  # 42 bytes
+_V4_BODY_FORMAT = _LEGACY_BODY_FORMAT + _ACOUSTIC_FORMAT  # 42 bytes
+_BODY_FORMAT = _V4_BODY_FORMAT + "H"  # v5: 44 bytes
 _BODY_SIZE = struct.calcsize(_BODY_FORMAT)
+_V4_BODY_SIZE = struct.calcsize(_V4_BODY_FORMAT)
 _LEGACY_BODY_SIZE = struct.calcsize(_LEGACY_BODY_FORMAT)
 _CRC_FORMAT = "<H"
 PACKET_SIZE = _BODY_SIZE + struct.calcsize(_CRC_FORMAT)
+V4_PACKET_SIZE = _V4_BODY_SIZE + struct.calcsize(_CRC_FORMAT)
 LEGACY_PACKET_SIZE = _LEGACY_BODY_SIZE + struct.calcsize(_CRC_FORMAT)
 LEGACY_VERSIONS = (1, 2)
 
@@ -152,6 +161,8 @@ class Reading:
     clip_count: int = 0
     # Daily transmit count the buoy reports using (v4); None when not reported (v1-v3 frames).
     tx_count: int | None = None
+    # CRC-16 of the buoy's remote settings (v5); None when not reported (v1-v4 frames).
+    settings_digest: int | None = None
 
     def __post_init__(self) -> None:
         if self.timestamp.tzinfo is None:
@@ -167,6 +178,8 @@ class Reading:
                 raise ValueError(f"{name}={getattr(self, name)} outside {low}..{high}")
         if self.tx_count is not None and self.tx_count not in TX_COUNTS:
             raise ValueError(f"tx_count={self.tx_count} not in {TX_COUNTS}")
+        if self.settings_digest is not None and not 0 <= self.settings_digest <= 0xFFFF:
+            raise ValueError(f"settings_digest={self.settings_digest} outside 0..0xFFFF")
 
     def acoustic(self) -> tuple[int, ...]:
         """The seven v3 fields in wire order."""
@@ -214,10 +227,13 @@ def _parse_fw(version: str) -> tuple[int, int, int]:
 
 
 def encode(reading: Reading) -> bytes:
-    """Serialize a :class:`Reading` to the on-wire payload (with trailing CRC)."""
+    """Serialize a :class:`Reading` to the on-wire payload (with trailing CRC): 46 bytes for v5,
+    the 44-byte layout for any earlier ``schema_version`` (as the v3/v4 firmware sent it)."""
     fw_major, fw_minor, fw_patch = _parse_fw(reading.fw_version)
+    v5 = reading.schema_version >= 5
+    digest = (reading.settings_digest or 0,) if v5 else ()
     body = struct.pack(
-        _BODY_FORMAT,
+        _BODY_FORMAT if v5 else _V4_BODY_FORMAT,
         reading.schema_version,
         reading.buoy_id,
         int(reading.timestamp.timestamp()),
@@ -233,6 +249,7 @@ def encode(reading: Reading) -> bytes:
         fw_minor,
         fw_patch,
         *reading.acoustic(),
+        *digest,
     )
     return body + struct.pack(_CRC_FORMAT, crc16_ccitt(body))
 
@@ -241,19 +258,28 @@ def decode(payload: bytes) -> Reading:
     """Parse an on-wire payload back into a :class:`Reading`.
 
     A 30-byte v1/v2 payload decodes with its own ``schema_version`` and the acoustic fields
-    zero. Raises :class:`PacketError` on wrong length, CRC mismatch, or version mismatch.
+    zero; a 44-byte v3/v4 one with ``settings_digest`` None. Raises :class:`PacketError` on wrong
+    length, CRC mismatch, or a version that does not fit the length.
     """
-    legacy = len(payload) == LEGACY_PACKET_SIZE
-    if len(payload) != PACKET_SIZE and not legacy:
-        raise PacketError(f"expected {PACKET_SIZE} (or legacy {LEGACY_PACKET_SIZE}) bytes, "
+    layouts = {
+        PACKET_SIZE: (_BODY_FORMAT, (PACKET_VERSION,)),
+        V4_PACKET_SIZE: (_V4_BODY_FORMAT, V4_VERSIONS),
+        LEGACY_PACKET_SIZE: (_LEGACY_BODY_FORMAT, LEGACY_VERSIONS),
+    }
+    if len(payload) not in layouts:
+        raise PacketError(f"expected {PACKET_SIZE}, {V4_PACKET_SIZE} or {LEGACY_PACKET_SIZE} bytes, "
                           f"got {len(payload)}")
-    body_size = _LEGACY_BODY_SIZE if legacy else _BODY_SIZE
+    body_format, allowed = layouts[len(payload)]
+    body_size = struct.calcsize(body_format)
     body, (crc,) = payload[:body_size], struct.unpack(_CRC_FORMAT, payload[body_size:])
     if crc != crc16_ccitt(body):
         raise PacketError("CRC mismatch — corrupt or truncated packet")
 
-    fields = struct.unpack(_LEGACY_BODY_FORMAT if legacy else _BODY_FORMAT, body)
-    acoustic = (0,) * len(ACOUSTIC_FIELDS) if legacy else fields[-len(ACOUSTIC_FIELDS):]
+    fields = struct.unpack(body_format, body)
+    legacy = body_format == _LEGACY_BODY_FORMAT
+    v5 = body_format == _BODY_FORMAT
+    acoustic_end = _LEGACY_FIELD_COUNT + len(ACOUSTIC_FIELDS)
+    acoustic = (0,) * len(ACOUSTIC_FIELDS) if legacy else fields[_LEGACY_FIELD_COUNT:acoustic_end]
 
     (
         schema_version,
@@ -272,11 +298,10 @@ def decode(payload: bytes) -> Reading:
         fw_patch,
     ) = fields[:_LEGACY_FIELD_COUNT]
 
-    allowed = LEGACY_VERSIONS if legacy else (PACKET_VERSION, *PREVIOUS_VERSIONS)
     if schema_version not in allowed:
         raise PacketError(
             f"unsupported schema_version {schema_version} in a {len(payload)}-byte packet "
-            f"(decoder is v{PACKET_VERSION}/v3, legacy v1/v2 at {LEGACY_PACKET_SIZE} bytes)"
+            f"(v{PACKET_VERSION} is {PACKET_SIZE} bytes, v3/v4 {V4_PACKET_SIZE}, v1/v2 {LEGACY_PACKET_SIZE})"
         )
 
     return Reading(
@@ -293,5 +318,6 @@ def decode(payload: bytes) -> Reading:
         fw_version=f"v{fw_major}.{fw_minor}.{fw_patch}",
         schema_version=schema_version,
         tx_count=((flag_bits & TX_COUNT_MASK) >> TX_COUNT_SHIFT) or None,
+        settings_digest=fields[-1] if v5 else None,
         **dict(zip(ACOUSTIC_FIELDS, acoustic)),
     )

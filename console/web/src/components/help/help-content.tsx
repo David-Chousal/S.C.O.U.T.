@@ -24,7 +24,7 @@ export interface HelpProblem {
 export const TASKS: readonly HelpTask[] = [
   { id: "shore", icon: "connections", title: "Connect a shore station", summary: "Get readings flowing from the pier to the console.", who: "Admin" },
   { id: "buoy", icon: "plus", title: "Add a buoy", summary: "Bring a new buoy online and give it a name.", who: "Member" },
-  { id: "settings", icon: "settings", title: "Change how a buoy behaves", summary: "Ask a buoy to transmit more or less often.", who: "Member" },
+  { id: "settings", icon: "settings", title: "Change how a buoy behaves", summary: "Change its schedule, interval or alerts by radio.", who: "Member" },
   { id: "trouble", icon: "warning", title: "Fix something that looks wrong", summary: "Stale buoys, rejected pushes, gaps in a chart.", who: "Anyone" },
 ];
 
@@ -86,7 +86,7 @@ export const PROBLEMS: readonly HelpProblem[] = [
     fix: <>Its device token was revoked or typed wrong. Make a new one on <b>Stations</b> and flash it again.</>,
   },
   {
-    symptom: "A transmit count stays “pending”",
+    symptom: "A setting stays “pending”",
     fix: <>The buoy has not sent a packet since the shore station delivered the change, or a different station is set to send its commands. Check which one on <b>Stations</b>.</>,
   },
   {

@@ -75,7 +75,7 @@ measuring current or continuity · putting sensors in water · siting antennas �
 | Hydrophone (Aquarian H2dM) and antenna | 🔴 Not bought — decided 2026-10-28 to order this week through the department | [SCO-8](https://linear.app/scout1/issue/SCO-8), [SCO-158](https://linear.app/scout1/issue/SCO-158) |
 | Shore station hardware (ESP32-S3 Feather + LoRa FeatherWing) | ✅ Arrived 2026-10-16, soldered 2026-10-27; ⚠️ the FeatherWing's CS/RST/IRQ jumpers (10/11/9) are not yet soldered (G8) | [SCO-86](https://linear.app/scout1/issue/SCO-86) |
 | Shore station firmware (ESP32-S3): receive, validate, decode, dedupe, slot tag, **WiFi push to the console**, settings pull, NTP clock | ⚠️ Written and compiled (RAM 26.7%, flash 64.3% with WiFi), logic unit-tested, never run on the board | `firmware/src/shore_rx/`, [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237) |
-| Settings downlink (`SET_TX_COUNT`, HMAC-signed) | ⚠️ Written, **off in every shipped build**; waits on Isabella's sign-off of the listen window and the FeatherWing's FCC check (G10) | [SCO-198](https://linear.app/scout1/issue/SCO-198) |
+| Settings downlink (v1 count, v2 every remote setting; HMAC-signed) | ⚠️ **On in the shipped builds since 2026-11-04**, treating Isabella's listen-window sign-off and the FeatherWing FCC check as given (neither is recorded yet, G10); unit-tested, never run on hardware | [SCO-198](https://linear.app/scout1/issue/SCO-198) |
 | Bench tooling: clock set (`set_rtc.py`), bench receiver (`feather_m0_rx`), transmit-every-minute build (`feather_m0_bench`), frame decoder (`decode_frames.py`) | ⚠️ Written and built, never run on hardware | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186) |
 | Shore software on a computer (decode, dedupe, CSV store, SD import, publish, **USB bridge from the S3**, console sync) | ✅ 129 tests pass on simulated data and a pseudo-terminal; Python, stdlib only | [`shore/`](../../shore/), [SCO-257](https://linear.app/scout1/issue/SCO-257) |
 | Team console (Cloudflare Worker + D1): sign-in, roles, Fleet, Stations, Team, Audit, device API | ✅ **Live** at <https://console.scoutscu.com> since 2026-10-26; 43 Worker and 41 front-end tests pass | [`console/`](../../console/README.md), [ADR-0012](../decisions/0012-authenticated-console.md) |
@@ -191,7 +191,7 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 ### The cross-language packet contract
 
 `firmware/lib/scout_packet/` (C++) and `shore/scout_shore/packet.py` (Python) encode the **same
-44 bytes** (packet **v4**; 30-byte v1/v2 frames still decode). `scripts/check_packet_contract.py`
+46 bytes** (packet **v5**, since 2026-11-04; 44-byte v3/v4 and 30-byte v1/v2 frames still decode). `scripts/check_packet_contract.py`
 compares them and fails CI on drift. **Change one, change all, and bump `SCOUT_PACKET_VERSION`.**
 
 **The row contract (since 2026-10-28):** the S3 builds the console's schema rows in C++
@@ -241,8 +241,10 @@ together, suspect chip-select first.
   after every wake. **USB drops while asleep.**
 - **Radio:** 915.0 MHz · BW 500 kHz · SF12 · CR 4/8 · **+11 dBm** — fixed by FCC compliance; do
   not narrow the bandwidth ([facts.md](../hub/facts.md), [FCC brief](../research/fcc-review-brief.md)).
-  The buoy is **transmit-only** in every shipped build. A `SCOUT_DOWNLINK` build listens 1 s after
-  each send for a signed `SET_TX_COUNT` (G10).
+  Since 2026-11-04 the shipped build (`feather_m0`) carries `SCOUT_DOWNLINK`: it listens 1 s after
+  each send for a signed settings command (v1 count, or v2 every remote setting) and **needs the
+  real keys in `firmware/src/downlink_key.h` to compile** (G10). Bench builds fall back to the
+  public example keys and say so at boot.
 
 ---
 
@@ -258,7 +260,9 @@ cd analytics && python3 -m unittest discover -s telemetry/tests -t . \
 cd shore && python3 -m unittest discover -s tests && cd ..
 python3 scripts/check_packet_contract.py
 cd console && npm test && cd web && npm ci && npm test && cd ../..
-cd firmware && pio test -e native && pio run -e feather_m0 -e feather_esp32s3_shore && cd ..
+cd firmware && pio test -e native && pio run -e feather_m0_downlink -e feather_esp32s3_shore_downlink && cd ..
+# (the shipped feather_m0 / feather_esp32s3_shore need the real keys; the *_downlink envs are the
+#  same builds with the public example keys)
 ```
 
 **PASS (as recorded 2026-10-29, on `main` with PRs #231 and #235):** 289 telemetry tests OK · 29
@@ -289,7 +293,7 @@ FAT32 · CR1220 in the Adalogger.
 
 ```bash
 cd firmware
-pio run -e feather_m0 -t upload      # double-tap RESET if the port is not found
+pio run -e feather_m0 -t upload      # needs src/downlink_key.h; double-tap RESET if the port is not found
 cd .. && python3 firmware/tools/set_rtc.py              # press RESET once when asked
 pio device monitor -d firmware -b 115200
 ```
@@ -381,12 +385,12 @@ pio device monitor -d firmware -e feather_m0_rx -p <receiver port> \
 `feather_m0_rx` is built from the buoy's own `config.h` (915.0 MHz, `{0x98, 0xC4, 0x04}`), and
 applies the **SX1276 500 kHz erratum** (`0x36` ← `0x02`, `0x3A` ← `0x64`; `spiWrite` is public
 in RadioHead, no subclass needed). It prints `bench_rx: radio=ok … errata=applied` at boot, then
-`RX len=44 rssi=… snr=… hex=…` per frame (44 bytes since packet v3/v4). `feather_m0_bench`
+`RX len=46 rssi=… snr=… hex=…` per frame (46 bytes since packet v5; 44 for v3/v4 firmware). `feather_m0_bench`
 prints a warning at boot; **reflash `feather_m0` before anything leaves the bench.**
 
 **PASS:** frames decode and pass CRC in `decode_frames.py` · one frame per minute, one row each
 (the buoy sends one copy per slot since 2026-10-23) · on the bench, < 1% loss over 100+ frames ·
-time on air ≈ **0.69 s** for the 44-byte packet (`SCOUT_LINK_AIRTIME_MS` 691;
+time on air ≈ **0.76 s** for the 46-byte packet (`SCOUT_LINK_AIRTIME_MS` 756;
 `scripts/lora_airtime.py`) · TX current ≤ 100 mA · RSSI and SNR recorded with the distance. **Record the results on SCO-155 and SCO-98**;
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
@@ -414,7 +418,7 @@ network the S3 can join (2.4 GHz; no captive sign-in page) · a **device token**
 
    ```bash
    cd firmware
-   pio run -e feather_esp32s3_shore -t upload        # BOOT + RESET if the port is not found (§3)
+   pio run -e feather_esp32s3_shore -t upload        # needs src/downlink_key.h; BOOT + RESET if the port is not found (§3)
    pio device monitor -e feather_esp32s3_shore
    ```
 
@@ -599,11 +603,12 @@ done, every reading the shore station hears shows up on the console with no one 
    it (the S3 pushes at once and retries if offline; the computer path when `sync_console.py`
    next runs). **Fleet** shows each buoy's newest packet time and the transmit count it reports;
    **Stations** shows when each shore station's token was last used.
-6. **Changing the transmit count from the console** (member). Pick 1–3 on **Fleet**. The S3 reads
-   it within 10 minutes (or `sync_console.py` prints it), and the buoy shows **Pending** until its
-   next packet reports the new count, then **Confirmed**. ⚠️ Getting it to the buoy needs the
-   settings downlink, which is **off in every shipped build** (G10), so until then a request stays
-   Pending. Every other firmware setting (shown read-only on **Settings → Buoys**) needs a reflash.
+6. **Changing settings from the console** (member). Pick a transmit count on **Fleet**, or any of
+   the eight remote settings on **Settings → Buoys**. The S3 reads them within 10 minutes (or
+   `sync_console.py` prints the `N`/`S` lines), sends the whole snapshot right after the buoy's
+   next packet, and the console shows **Pending** until a packet reports the matching settings
+   digest, then **Confirmed** (**Rejected** if the buoy refused it). The radio parameters and the
+   listen window still need a reflash.
 
 **PASS:** the bench buoy's readings appear on Fleet at every slot with no one at a keyboard, for
 at least a day; Stations shows the station's token in use; a buoy that misses a slot shows its
@@ -681,7 +686,7 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 | SD and radio work alone, not together | Shared SPI chip select | Only one of D10 / D8 may be active |
 | Link weak, antenna fine | SX1276 500 kHz erratum not applied on the receiver | `0x36` ← `0x02`, `0x3A` ← `0x64`; `bench_rx` prints `errata=applied` |
 | Duplicate CSV rows for one reading | Shore dedupe broken | Rows must be unique on `(buoy_id, record_seq, timestamp_utc)` |
-| Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (691 ms for the 44-byte packet) |
+| Reboot mid-transmit | Airtime over the watchdog budget | Compare against `SCOUT_LINK_AIRTIME_MS` (756 ms for the 46-byte packet) |
 | SD import finds nothing | Card written by firmware older than PR #186 | Old builds wrote `YYYYMMDD.CSV` at the root; point the importer at the card root, and update the firmware |
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |
 | Completeness 0%, expected records absurd | A clock-invalid row | `RTC_LOST`/1970 rows are excluded from timing (`clock_invalid`) |

@@ -13,7 +13,7 @@ from pathlib import Path
 
 from scout_shore import CsvStore, MockLoRaLink, Receiver, decode, encode, reading_to_row
 from scout_shore import downlink, tx_schedule
-from scout_shore.console import ConsoleClient, ConsoleConfig, ConsoleError, set_commands
+from scout_shore.console import ConsoleClient, ConsoleConfig, ConsoleError, set_commands, settings_commands
 from scout_shore.packet import Reading
 from scout_shore.schema import SchemaError, validate_row
 
@@ -199,6 +199,20 @@ class Console(unittest.TestCase):
 
     def test_set_commands_format(self):
         self.assertEqual(set_commands({2: 3, 1: 1}), ["N1:1", "N2:3"])
+
+    def test_wanted_reads_counts_and_snapshots_and_drops_what_a_buoy_would_refuse(self):
+        client = self._client([{"ok": True, "buoys": [
+            {"buoy_id": 1, "tx_count_requested": 2, "settings": "2,1,15,30,3300,3200,2,80"},
+            {"buoy_id": 2, "tx_count_requested": None, "settings": "3,0,45,60,3200,3100,3,70"},
+            {"buoy_id": 3, "tx_count_requested": None, "settings": "3,0,30,60,3200,3100,3,70"},
+            {"buoy_id": 0, "tx_count_requested": 1, "settings": "3,0,30,60,3200,3100,3,70"}]}], [])
+        counts, snapshots = client.wanted()
+        self.assertEqual(counts, {1: 2})
+        self.assertEqual(snapshots, {1: (2, 1, 15, 30, 3300, 3200, 2, 80), 3: (3, 0, 30, 60, 3200, 3100, 3, 70)})
+
+    def test_settings_commands_format(self):
+        self.assertEqual(settings_commands({1: (2, 1, 15, 30, 3300, 3200, 2, 80)}),
+                         ["S1:2,1,15,30,3300,3200,2,80"])
 
 
 if __name__ == "__main__":

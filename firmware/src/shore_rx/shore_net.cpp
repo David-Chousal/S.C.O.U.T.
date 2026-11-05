@@ -47,7 +47,7 @@ void shore_shared_begin(uint32_t now, uint32_t min_valid_epoch) {
     g_lock = xSemaphoreCreateMutex();
     scout_upload_queue_init(&g_shared.queue);
     scout_clock_boot(&g_shared.clock, now, min_valid_epoch);
-    memset(g_shared.requested, 0, sizeof(g_shared.requested));
+    memset(g_shared.wanted, 0, sizeof(g_shared.wanted));
 }
 
 static void on_ntp(struct timeval *tv) {
@@ -129,30 +129,35 @@ static int push_once(size_t *left) {
     return code;
 }
 
-/* The console is the source of truth for requested counts once it answers. */
+/* The console is the source of truth for what each buoy should run once it answers. */
 static void pull_settings() {
     String reply;
     int code = console_request("GET", "/api/device/settings", nullptr, 0, &reply);
-    uint8_t latest[SHORE_MAX_BUOY_ID + 1];
-    if (code != 200 || scout_console_parse_settings(reply.c_str(), latest, sizeof(latest)) < 0) {
+    static ScoutWanted latest[SHORE_MAX_BUOY_ID + 1];
+    if (code != 200 || scout_console_parse_wanted(reply.c_str(), latest, SHORE_MAX_BUOY_ID + 1) < 0) {
         Serial.printf("console: settings read failed (%d)\n", code);
         return;
     }
     bool changed;
     {
         ShoreLock lock;
-        changed = memcmp(latest, g_shared.requested, sizeof(latest)) != 0;
-        memcpy(g_shared.requested, latest, sizeof(latest));
+        changed = memcmp(latest, g_shared.wanted, sizeof(latest)) != 0;
+        memcpy(g_shared.wanted, latest, sizeof(latest));
     }
     if (changed) {
-        char line[96];
-        int at = snprintf(line, sizeof(line), "console: requested");
-        for (uint16_t id = 1; id <= SHORE_MAX_BUOY_ID; id++) {
-            if (latest[id] && at < (int)sizeof(line)) {
-                at += snprintf(line + at, sizeof(line) - at, " buoy%u=%u", id, latest[id]);
+        char line[160];
+        int at = snprintf(line, sizeof(line), "console: wanted");
+        bool any = false;
+        for (uint16_t id = 1; id <= SHORE_MAX_BUOY_ID && at < (int)sizeof(line); id++) {
+            const ScoutWanted &w = latest[id];
+            if (!w.tx_count && !w.has_settings) {
+                continue;
             }
+            any = true;
+            at += snprintf(line + at, sizeof(line) - at, " buoy%u=tx%u/digest%04x", id, w.tx_count,
+                           w.has_settings ? scout_settings_digest(&w.settings) : 0u);
         }
-        Serial.printf("%s%s\n", line, at == 18 ? " none" : "");
+        Serial.printf("%s%s\n", line, any ? "" : " none");
     }
 }
 

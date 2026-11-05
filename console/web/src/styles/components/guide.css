@@ -56,6 +56,10 @@
 .sc-guide__problem > p { padding: 0 0 var(--space-4); }
 .sc-guide__more-body { display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
 
+.sc-guide__states { display: grid; margin: 0; border-top: 1px solid var(--line); }
+.sc-guide__states > div { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+.sc-guide__states dt { font: 500 11px/22px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); }
+.sc-guide__states dd { margin: 0; font: 400 14px/22px var(--font-sans); }
 .sc-guide__reference { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); align-items: start; }
 .sc-guide__roles { display: grid; gap: var(--space-4); margin: 0; }
 .sc-guide__roles > div { display: grid; gap: var(--space-1); }

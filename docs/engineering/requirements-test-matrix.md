@@ -44,7 +44,7 @@
 | R-08 | Ultra-low sleep and clean switching | Sleep current; switched-sensor off current; rail dip | Sleep ≤ 500 µA; off < 1 µA; dip < ~100 mV, no reset (Plan stages 2, 3) | Current measurements, bench | None | [SCO-157](https://linear.app/scout1/issue/SCO-157), [SCO-23](https://linear.app/scout1/issue/SCO-23) | Not run |
 | R-09 | 1+ year on the battery | Daily energy; battery voltage at transmit; charge leakage | ≈ 0.56 mA 24 h average; ≥ 3.35 V at TX; 0 µA into the battery on USB; 7 days on cells extrapolates to ≥ 12 months (Plan stages 5, 6) | Run on cells, bench | Validation: measured current vs the power budget | [SCO-160](https://linear.app/scout1/issue/SCO-160), [SCO-150](https://linear.app/scout1/issue/SCO-150) | Not run |
 | R-10 | Run autonomously and recover | Wakes, transmissions, resets | 48 wakes and 3 transmissions in 24 h, none missed; watchdog recovers; SD log and RTC survive a power cycle (Plan stages 1, 5) | Firmware loop, bench | None | [SCO-160](https://linear.app/scout1/issue/SCO-160) | Not run |
-| R-11 | Link to shore | Packet loss, TX current, range | 44 B packets with valid CRC, < 1% loss; TX ≤ 100 mA; outdoor range ≥ 500 m (Plan stage 4) | Bench, then outdoor line of sight | Range: RSSI against distance | [SCO-24](https://linear.app/scout1/issue/SCO-24) | Not run |
+| R-11 | Link to shore | Packet loss, TX current, range | 46 B packets with valid CRC, < 1% loss; TX ≤ 100 mA; outdoor range ≥ 500 m (Plan stage 4) | Bench, then outdoor line of sight | Range: RSSI against distance | [SCO-24](https://linear.app/scout1/issue/SCO-24) | Not run |
 
 ## Mechanical (John)
 

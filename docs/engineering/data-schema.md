@@ -1,4 +1,4 @@
-# On-Board CSV Data Schema (v4)
+# On-Board CSV Data Schema (v5)
 
 > **Summary** — The format of the CSV log the buoy writes to microSD: one row per sampling
 > event, fixed column order, UTC timestamps. This is the contract between the firmware
@@ -46,11 +46,11 @@ name could not be written by the buoy.
 
 Each daily CSV starts with the header row below.
 
-## Columns (v4)
+## Columns (v5)
 
 | # | Column | Type | Unit | Example | Notes |
 |---|---|---|---|---|---|
-| 1 | `schema_version` | int | — | `4` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v4 (2026-10-25, [SCO-198](https://linear.app/scout1/issue/SCO-198))** added column 24, `tx_count`, and the `CMD_REJECTED` flag; v3 files have 23 columns. **v3 (2026-10-25, [SCO-233](https://linear.app/scout1/issue/SCO-233), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))** added columns 17–23, the acoustic summary. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns, v2 files 16. Readers accept all four, and the shore store rewrites an older daily file's header before appending new rows. |
+| 1 | `schema_version` | int | — | `5` | Bumped when columns change. Constant within a file. Shared with the packet's version byte. **v5 (2026-11-04, [remote settings plan](firmware-remote-settings-plan.md))** added column 25, `settings_digest`; v4 files have 24 columns. **v4 (2026-10-25, [SCO-198](https://linear.app/scout1/issue/SCO-198))** added column 24, `tx_count`, and the `CMD_REJECTED` flag; v3 files have 23 columns. **v3 (2026-10-25, [SCO-233](https://linear.app/scout1/issue/SCO-233), [ADR-0010](../decisions/0010-acoustic-summary-over-lora.md))** added columns 17–23, the acoustic summary. **v2 (2026-10-23, [SCO-205](https://linear.app/scout1/issue/SCO-205))** added columns 15–16 and the `HUMIDITY_*` flags; v1 files have 14 columns, v2 files 16. Readers accept all five, and the shore store rewrites an older daily file's header before appending new rows. |
 | 2 | `buoy_id` | string | — | `SCOUT-01` | Multi-buoy readiness; stable per unit. |
 | 3 | `timestamp_utc` | string | ISO 8601 UTC | `2026-08-14T00:30:00Z` | From the PCF8523 RTC. Row key. |
 | 4 | `record_seq` | uint32 | — | `48` | Monotonic counter since boot; also the LoRa packet counter. With `buoy_id` it is the **idempotency key** the shore station deduplicates on — the same reading can arrive twice (a re-received frame, or an SD-card import of a reading the radio already delivered), and must collapse to one row. |
@@ -74,6 +74,7 @@ Each daily CSV starts with the header row below.
 | 22 | `snap_count` | uint16 | count | `10` | Bio-band impulses above 8× the running mean \|bio\|, one per 3.0 ms window; saturates at 65,535. |
 | 23 | `clip_count` | uint16 | samples | `24` | Samples within 16 ADC counts of either rail; saturates at 65,535. |
 | 24 | `tx_count` | int | transmits/day | `3` | The daily transmit count the buoy is using (1–3; [SCO-198](https://linear.app/scout1/issue/SCO-198)), so the shore and console can confirm a requested change took effect. Blank when not reported (rows from v1–v3 firmware). In the packet it rides in `flags` bits 8–9. |
+| 25 | `settings_digest` | hex | — | `e674` | CRC-16/CCITT-FALSE of every remote setting the buoy runs, as 4 lowercase hex digits (`firmware/lib/scout_settings`; `e674` is the firmware defaults). The console compares it with the digest of what it asked for, so one column confirms all eight remote settings. Blank when not reported (rows from v1–v4 firmware). |
 
 ### Optional / future columns (append at the end when the hardware lands)
 
@@ -146,11 +147,11 @@ flag**: they carry `tx_count` (0 = not reported), which the CSV writes as its ow
 ## Example
 
 ```csv
-schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,snap_count,clip_count,tx_count
-4,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2,,,,,,,,3
-4,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3,,,,,,,,3
-4,SCOUT-01,2026-08-14T08:00:00Z,17,26.51,498,1.61,,3.24,30660,20260814/080000Z.WAV,,,v0.1.0,25.02,38.9,-3972,-3006,-1068,-995,9975,2310,24,3
-4,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,,,,,,,,1
+schema_version,buoy_id,timestamp_utc,record_seq,temp_c,turbidity_adc,turbidity_v,turbidity_fau,battery_v,uptime_s,audio_file,flags,soh,fw_version,internal_temp_c,internal_humidity_pct,lvl_anthro_cdb,lvl_mixed_cdb,lvl_bio_cdb,lvl_broad_cdb,ndsi_e4,snap_count,clip_count,tx_count,settings_digest
+5,SCOUT-01,2026-08-14T00:00:00Z,1,26.44,,,,3.31,60,,,,v0.1.0,24.10,38.2,,,,,,,,3,e674
+5,SCOUT-01,2026-08-14T00:30:00Z,2,26.42,514,1.66,,3.30,1860,,,,v0.1.0,24.15,38.3,,,,,,,,3,e674
+5,SCOUT-01,2026-08-14T08:00:00Z,17,26.51,498,1.61,,3.24,30660,20260814/080000Z.WAV,,,v0.1.0,25.02,38.9,-3972,-3006,-1068,-995,9975,2310,24,3,e674
+5,SCOUT-01,2026-08-14T12:00:00Z,25,27.05,,,,3.19,43260,,BATT_LOW_SKIP_TX|HUMIDITY_FAIL,WATCHDOG_RESET,v0.1.0,,,,,,,,,,1,a61d
 ```
 
 ## Relationship to the LoRa daily packet
@@ -164,7 +165,7 @@ counter), the temperature and turbidity readings, and `battery_v`. The CSV is th
 **never** transmitted — it stays in `/AUDIO/` on the card. Since v3 the packet carries a
 14-byte summary of the most recent recording instead (below).
 
-### Packet layout (v4, 44 bytes; v3 has the same bytes)
+### Packet layout (v5, 46 bytes; v3 and v4 are bytes 0–41 plus a CRC, 44 bytes)
 
 Little-endian; the firmware (`firmware/lib/scout_packet`) and the shore decoder
 (`shore/scout_shore/packet.py`) are byte-identical, and `scripts/check_packet_contract.py`
@@ -172,7 +173,7 @@ fails CI if they drift.
 
 | Bytes | Field | Type | Encoding |
 |---|---|---|---|
-| 0 | `schema_version` | u8 | `4` (or `3` from older firmware); same number as the CSV |
+| 0 | `schema_version` | u8 | `5` (or `3`/`4` in a 44-byte frame from older firmware); same number as the CSV |
 | 1–2 | `buoy_id` | u16 | numeric; CSV renders `SCOUT-%02d` |
 | 3–6 | `timestamp` | u32 | Unix epoch seconds, UTC |
 | 7–10 | `record_seq` | u32 | monotonic counter |
@@ -191,13 +192,16 @@ fails CI if they drift.
 | 36–37 | `ndsi_e4` | i16 | NDSI × 10,000 |
 | 38–39 | `snap_count` | u16 | saturating |
 | 40–41 | `clip_count` | u16 | saturating |
-| 42–43 | `crc` | u16 | CRC-16/CCITT-FALSE over bytes 0–41 |
+| 42–43 | `settings_digest` | u16 | CRC-16 of the remote settings in use (v5); the CSV writes it as 4 hex digits |
+| 44–45 | `crc` | u16 | CRC-16/CCITT-FALSE over bytes 0–43 |
 
-v1 and v2 packets were bytes 0–27 plus a CRC (30 bytes). Both decoders still accept a 30-byte
-frame with version 1 or 2 and give the acoustic fields as zero.
+v3 and v4 packets were bytes 0–41 plus a CRC (44 bytes), and v1 and v2 bytes 0–27 plus a CRC
+(30 bytes). Both decoders still accept a 44-byte frame with version 3 or 4 (no digest) and a
+30-byte frame with version 1 or 2 (acoustic fields zero).
 
 **Which recording a packet carries.** The most recent recording since the previous transmit
-slot. Today recordings start at 00:00, 08:00 and 16:00 UTC and the slots are 10 minutes later,
+slot. At the default slot phase recordings start at 00:00, 08:00 and 16:00 UTC and the slots are
+10 minutes later (the slot phase setting moves both together),
 so each packet carries the clip just before it. Every slot closes the window, sent or not, so a
 recording is never reported twice. With no recording since the last slot, or in CONSERVE or
 CRITICAL (which record nothing), the seven fields are zero and `audio_present` is 0. The CSV
@@ -226,10 +230,10 @@ sine (0 cdB). The constants and their reasons are in `firmware/src/config.h` (`A
 
 | Number | What it is | Where it lives |
 |---|---|---|
-| **44 bytes** | The **actual** encoded packet today (v4, same bytes as v3) — 42-byte body + 2-byte CRC. Was 30 B in v1/v2 | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
+| **46 bytes** | The **actual** encoded packet today (v5) — 44-byte body + 2-byte CRC. Was 44 B in v3/v4 and 30 B in v1/v2 | `SCOUT_PACKET_SIZE` (firmware), `PACKET_SIZE` (shore); CI-enforced byte-identical by `scripts/check_packet_contract.py` |
 | **140 bytes** | The **payload ceiling** — the most a packet may grow to (since 2026-10-23, [SCO-97](https://linear.app/scout1/issue/SCO-97)) | `SCOUT_LINK_PAYLOAD_CEILING_BYTES` (firmware), `LORA_PAYLOAD_BUDGET_BYTES` (shore); CI checks they match and that a ceiling-size frame fits the send timeout |
 
-The packet therefore has 96 bytes of headroom for future signals (110 before the acoustic summary). Earlier revisions of this
+The packet therefore has 94 bytes of headroom for future signals (96 before the settings digest, 110 before the acoustic summary). Earlier revisions of this
 doc and `facts.md` quoted 82 B as though it were the packet size, which is what
 [SCO-40](https://linear.app/scout1/issue/SCO-40) corrected; until 2026-10-23 82 B was also the
 ceiling.
@@ -239,13 +243,13 @@ ceiling.
 RadioHead's 4-byte header takes 1,739 ms on air, under 90% of that timeout. The largest payload
 that fits at all is ~158 B; the radio's own 251 B frame would take ~3.0 s and time out. At three
 slots a day, one copy each (SCO-21, 2026-10-23), a full 140 B packet would cost about
-0.16 mAh/day, 1.2% of the 13.3 mAh/day power budget (44 B today, 690 ms a send: 0.5%; it was 0.4% at 30 B). Reproduce with `scripts/lora_airtime.py`.
+0.16 mAh/day, 1.2% of the 13.3 mAh/day power budget (46 B today, 756 ms a send: about 0.5%; it was 0.4% at 30 B). Reproduce with `scripts/lora_airtime.py`.
 
 **Where the old 82 came from, and why it was never a real limit.** EDD §10's
 82 bytes is not an arbitrary ceiling — it is the *sum of a specific proposed layout*: a
 timestamp, **18 temperature values, 18 turbidity values**, battery voltage, status flags,
 firmware version, and a CRC. That is a multi-sample packet built for the ESP32-C3 production
-target. The as-built packet (30 B in v1/v2, 44 B in v3) is a different design: **one** reading per packet, three packets a
+target. The as-built packet (30 B in v1/v2, 44 B in v3/v4, 46 B in v5) is a different design: **one** reading per packet, three packets a
 day, on
 the Feather M0 build platform ([ADR-0001](../decisions/0001-mcu-and-radio-selection.md)), plus
 fields the EDD layout never had (`record_seq`, `uptime_s`, `soh`, `audio_present`).
