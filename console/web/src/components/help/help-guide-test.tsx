@@ -9,6 +9,13 @@ describe("HelpGuide", () => {
     expect(screen.getByRole("heading", { name: "Add a buoy" })).toBeDefined();
   });
 
+  test("explains Fred, including that changes need Confirm and what Google may see", () => {
+    render(<HelpGuide />);
+    const section = screen.getByRole("heading", { name: "Ask Fred" }).closest("section");
+    expect(section?.textContent).toContain("Confirm");
+    expect(section?.textContent).toContain("Google may review");
+  });
+
   test("every task link points at a section on the page", () => {
     const { container } = render(<HelpGuide />);
     const links = [...container.querySelectorAll(".sc-guide__tasks a")];

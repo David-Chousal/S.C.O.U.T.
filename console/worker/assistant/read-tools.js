@@ -1,4 +1,4 @@
-/* Fred's read tools (console-assistant-plan.md → Tools). Every role gets them except get_storage,
+/* Fred's read tools (ADR-0013 → Design). Every role gets them except get_storage,
  * which is admin-only like the Storage page. Each runs the same queries the pages use and returns
  * compact results: no email addresses, token values or hashes, and readings downsampled. */
 

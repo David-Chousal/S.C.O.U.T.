@@ -1,4 +1,4 @@
-/* Fred's model interface (docs/engineering/console-assistant-plan.md → Architecture).
+/* Fred's model interface (ADR-0013 → Decision 1).
  *
  * One function, chat({ system, messages, tools, onText }), in our own message shape, so Gemini's
  * request format stays in this file and the fallback (Workers AI) is a second implementation of

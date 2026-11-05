@@ -1,4 +1,4 @@
--- Fred, the console's assistant (docs/engineering/console-assistant-plan.md, ADR-0013, SCO-299).
+-- Fred, the console's assistant (docs/decisions/0013-console-assistant-fred.md, SCO-299).
 -- No question or reply is ever stored. assistant_actions holds a change Fred proposed until the
 -- person confirms or declines it, or it is 10 minutes old; assistant_usage holds counts only, per
 -- person per UTC day, for the daily caps and the Storage page.

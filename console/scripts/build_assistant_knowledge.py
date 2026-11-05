@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Fred's knowledge pack and doc index (docs/engineering/console-assistant-plan.md).
+"""Build Fred's knowledge pack and doc index (ADR-0013, docs/decisions/0013-console-assistant-fred.md).
 
 Writes console/worker/assistant/knowledge.json, which the Worker bundles:
   pack    text that goes in Fred's system instruction on every question (kept under ~15k tokens):
