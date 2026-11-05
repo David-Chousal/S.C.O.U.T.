@@ -12,7 +12,11 @@ import { SessionContext } from "@/lib/session";
 import { keepUnits } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn() }), usePathname: () => "/settings/" }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => "/settings/",
+  useSearchParams: () => new URLSearchParams(window.location.search),
+}));
 
 const DATA = {
   buoys: [{ buoy_id: 1, label: "SCOUT-01", tx_count_requested: null, requested_by: null, requested_at: null,
@@ -27,15 +31,19 @@ const DATA = {
 function renderBoard(role: Role, update = vi.fn(), preferences: Preferences = DEFAULT_PREFERENCES) {
   vi.spyOn(api, "settings").mockResolvedValue(DATA);
   const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role, hasPassword: true, github: false, google: false, selfSignup: false } };
-  render(
+  const tree = () => (
     <SessionContext value={session}>
       <PreferencesContext value={{ preferences, update, stored: true }}>
         <Toaster><SettingsBoard /></Toaster>
       </PreferencesContext>
-    </SessionContext>,
+    </SessionContext>
   );
+  const { rerender } = render(tree());
+  lastRerender = () => rerender(tree());
   return update;
 }
+
+let lastRerender = () => {};
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -104,6 +112,16 @@ describe("SettingsBoard", () => {
     window.history.replaceState(null, "", "/settings/?tab=account");
     renderBoard("member");
     expect(await screen.findByRole("button", { name: "Sign out" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Account" }).getAttribute("aria-selected")).toBe("true");
+    window.history.replaceState(null, "", "/");
+  });
+
+  test("a link to ?tab=account switches tabs even when Settings is already open", async () => {
+    window.history.replaceState(null, "", "/settings/");
+    renderBoard("member");
+    expect((await screen.findByRole("tab", { name: "Buoys" })).getAttribute("aria-selected")).toBe("true");
+    window.history.replaceState(null, "", "/settings/?tab=account");
+    lastRerender();
     expect(screen.getByRole("tab", { name: "Account" }).getAttribute("aria-selected")).toBe("true");
     window.history.replaceState(null, "", "/");
   });

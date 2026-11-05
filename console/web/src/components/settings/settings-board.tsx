@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { api } from "@/lib/api/client";
 import type { BuoySettings } from "@/lib/api/types";
@@ -17,19 +18,25 @@ const TABS = [
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
-function tabFromUrl(): TabId {
-  const wanted = new URLSearchParams(window.location.search).get("tab");
+function tabOf(wanted: string | null): TabId {
   return TABS.find((tab) => tab.id === wanted)?.id ?? "buoys";
 }
 
 /** The Settings page: buoy settings for the team, your account (how you sign in, signing out), and
- * page settings for this browser. "?tab=account" opens a tab directly, as the top bar's account
- * menu does. Tabs follow the WAI-ARIA pattern: arrow keys move between them, Home and End jump to
- * the ends. */
+ * page settings for this browser. The address's "?tab=" picks the tab, and keeps picking it: a link
+ * such as the account menu's "Account settings" switches tabs even when Settings is already open.
+ * Tabs follow the WAI-ARIA pattern: arrow keys move between them, Home and End jump to the ends. */
 export function SettingsBoard() {
   const { user } = useSession();
-  // Safe to read the URL while rendering: AppShell renders page content only in the browser.
-  const [active, setActiveState] = useState<TabId>(() => (typeof window === "undefined" ? "buoys" : tabFromUrl()));
+  const tabParam = useSearchParams()?.get("tab") ?? null;
+  const [active, setActiveState] = useState<TabId>(() => tabOf(tabParam));
+  // Follow the address when it changes from outside this page (adjusting state during render,
+  // React's pattern for state that tracks a prop).
+  const [seenParam, setSeenParam] = useState(tabParam);
+  if (tabParam !== seenParam) {
+    setSeenParam(tabParam);
+    setActiveState(tabOf(tabParam));
+  }
   function setActive(id: TabId) {
     setActiveState(id);
     const url = new URL(window.location.href);

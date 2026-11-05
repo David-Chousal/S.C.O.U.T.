@@ -9,6 +9,8 @@ import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
 import { DeveloperTabs } from "./developer-tabs";
 
+vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams(window.location.search) }));
+
 function renderTabs() {
   vi.spyOn(api, "tokens").mockResolvedValue({ tokens: [], scopes: ["read:telemetry"], expiryDays: [30, 0] });
   vi.spyOn(api, "audit").mockResolvedValue({ entries: [] });
