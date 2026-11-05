@@ -222,8 +222,8 @@ the shore station.
    cost is that a wrong answer cannot be looked up afterwards, so the eval set carries the
    debugging, and a "Report this answer" key copies that one exchange to the clipboard for the
    person to paste into a Linear issue.
-5. **Is "Fred" the name, and which writes are in Phase 2?** The tables above are the proposal;
-   admin actions could wait.
+5. ~~**Is "Fred" the name, and which writes are in Phase 2?**~~ **Decided 2026-11-05: "Fred",
+   and all six propose tools in the table above**, the two admin ones included.
 
 ## Risks
 
