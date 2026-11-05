@@ -6,7 +6,7 @@
 
 import { guardedPut } from "./storage.js";
 
-const SKIP = new Set(["sessions", "login_failures", "storage_usage", "storage_objects", "d1_migrations"]);
+const SKIP = new Set(["sessions", "login_failures", "assistant_actions", "storage_usage", "storage_objects", "d1_migrations"]);
 // Parents before children, so a restore satisfies every foreign key in one pass.
 const ORDER = ["users", "invites", "password_resets", "devices", "buoys", "readings", "audit_log", "api_tokens"];
 

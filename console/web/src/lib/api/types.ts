@@ -236,6 +236,14 @@ export interface FredStatus {
   cap: number;
 }
 
+/** Fred's morning brief, written by the daily cron (console/worker/assistant/brief.js). */
+export interface FredBrief {
+  day: string;
+  text: string;
+  provider: "gemini" | "workers-ai" | "facts";
+  created_at: number;
+}
+
 /** A change Fred proposed; it runs only on Confirm, within 10 minutes. */
 export interface FredCard {
   id: string;

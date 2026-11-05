@@ -50,7 +50,8 @@ migrations_dir = "migrations"
 binding = "FILES"
 bucket_name = "scout-console-files"
 
-# The nightly backup to R2, at 10:30 UTC (00:30 in Hawaii, after the buoys' 00:10 slot).
+# The nightly backup to R2 and Fred's morning brief, at 10:30 UTC (00:30 in Hawaii, after the
+# buoys' 00:10 slot).
 [triggers]
 crons = ["30 10 * * *"]
 

@@ -8,6 +8,7 @@ import {
   type Device,
   type BuoySettings,
   type Fleet,
+  type FredBrief,
   type FredCard,
   type FredContext,
   type FredEvent,
@@ -159,6 +160,7 @@ export const api = {
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),
 
+  fredBrief: () => call<{ brief: FredBrief | null }>("GET", "/api/assistant/brief"),
   fredStatus: () => call<FredStatus>("GET", "/api/assistant/status"),
   askFred,
   confirmFred: (id: FredCard["id"]) => call<{ message: string; link?: string }>("POST", "/api/assistant/confirm", { id }),
