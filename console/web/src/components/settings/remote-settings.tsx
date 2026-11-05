@@ -121,12 +121,12 @@ export function RemoteSettings({ buoy, remote, canEdit, onSaved }: RemoteSetting
             requested={buoy.settings_requested[spec.key] !== null}
             onChange={(value) => setForm((now) => ({ ...now, [spec.key]: value }))} />
         ))}
-        <div className="sc-settings-form__foot sc-row">
+        <div className="sc-settings-form__foot sc-remote-form__actions">
           <Key type="submit" variant="primary" disabled={!canEdit || saving || changed.length === 0}>
             {saving ? "Sending…" : changed.length ? `Send ${changed.length} change${changed.length === 1 ? "" : "s"}` : "No changes"}
           </Key>
           <Key type="button" disabled={!canEdit || changed.length === 0} onClick={() => setForm(initial)}>Undo</Key>
-          <HoldKey size="sm" label="Hold to restore defaults" holdLabel={`Hold to restore ${buoy.label}'s defaults`}
+          <HoldKey label="Hold to restore defaults" holdLabel={`Hold to restore ${buoy.label}'s defaults`}
             disabled={!canEdit} onConfirm={restore} />
         </div>
       </form>

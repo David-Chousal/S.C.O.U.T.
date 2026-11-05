@@ -6,6 +6,9 @@ a.sc-tab { text-decoration: none; }
 .sc-settings-form__wide, .sc-settings-form__foot { grid-column: 1 / -1; }
 .sc-settings-form__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding-top: var(--space-2); }
 .sc-remote-form { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: none; }
+/* Send, Undo and Hold to restore: one height and one width, sized to the longest label. */
+.sc-remote-form__actions { display: grid; grid-template-columns: repeat(3, minmax(max-content, 1fr)); justify-content: start; width: max-content; max-width: 100%; }
+.sc-remote-form__actions > .sc-key { justify-content: center; width: 100%; }
 @media (max-width: 1100px) { .sc-remote-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .sc-settings-form > .sc-fieldset { align-content: start; }
 .sc-settings-choices { display: grid; align-content: start; gap: var(--space-2); min-width: 0; margin: 0; padding: 0; border: 0; }
@@ -40,6 +43,7 @@ input.sc-slot--channel { width: 148px; }
 
 @media (max-width: 767px) {
   .sc-settings-form { grid-template-columns: minmax(0, 1fr); }
+  .sc-remote-form__actions { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .sc-notify-table__channel { width: 72px; }
   .sc-alert-table, .sc-alert-table tbody { display: block; }
   .sc-alert-table colgroup, .sc-alert-table thead { display: none; }
