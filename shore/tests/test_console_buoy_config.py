@@ -57,8 +57,13 @@ class BuoyConfigExport(unittest.TestCase):
                 self.assertTrue(setting["description"].endswith("."))
 
     def test_placeholder_defaults_say_so(self):
-        self.assertIn("SCO-204", SETTINGS["humidity_alert"]["description"])
-        self.assertIn("ADR-0007", SETTINGS["power_modes"]["description"])
+        self.assertIn("placeholder", SETTINGS["humidity_alert"]["description"])
+        self.assertIn("retuned", SETTINGS["power_modes"]["description"])
+
+    def test_descriptions_name_no_tickets_or_adrs(self):
+        for key, setting in SETTINGS.items():
+            with self.subTest(key):
+                self.assertNotRegex(setting["description"], r"SCO-\d|ADR-\d")
 
 
 if __name__ == "__main__":

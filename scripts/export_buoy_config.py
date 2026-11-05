@@ -143,15 +143,14 @@ def settings() -> list[dict]:
             f"{clip['default']} s at " + " · ".join(f"{h:02d}:00" for h in hours) + " UTC",
             "One clip before each slot, summarised into the next packet; normal power mode only. "
             f"Clip length {options('audio_clip_s', ' s')}, where 0 turns recording off. The "
-            f"{int(_number(config, 'ACOUSTIC_SAMPLE_RATE_HZ')):,} Hz sample rate is fixed (ADR-0011)."),
+            f"{int(_number(config, 'ACOUSTIC_SAMPLE_RATE_HZ')):,} Hz sample rate is fixed."),
         row("power_modes", "Power-saving thresholds",
             f"Conserve below {conserve['default'] / 1000:.2f} V · critical below {critical['default'] / 1000:.2f} V",
             f"Below conserve the buoy skips audio and sends in {_every_nth(every['default'])} used slot; below "
-            "critical it only logs temperature. The defaults will be retuned for the final battery pack "
-            "(ADR-0007)."),
+            "critical it only logs temperature. The defaults will be retuned for the final battery pack."),
         row("humidity_alert", "Housing humidity alert", f"{humidity['default']} %RH",
             "Readings at or above it are flagged HUMIDITY_HIGH, the first sign of a leak. The default is a "
-            "placeholder until the leak calibration (SCO-204)."),
+            "placeholder until the leak calibration."),
         row("radio", "Radio", f"{_number(config, 'LORA_FREQUENCY_MHZ'):g} MHz · "
             f"+{int(_number(config, 'LORA_TX_POWER_DBM'))} dBm · BW 500 kHz · SF12 · CR 4/8",
             "Fixed by the RFM95's FCC grant; the shore station must match it exactly.", change="firmware"),

@@ -26,21 +26,21 @@
       "key": "audio",
       "label": "Hydrophone recordings",
       "value": "60 s at 00:00 · 08:00 · 16:00 UTC",
-      "description": "One clip before each slot, summarised into the next packet; normal power mode only. Clip length 0, 15, 30 or 60 s, where 0 turns recording off. The 22,050 Hz sample rate is fixed (ADR-0011).",
+      "description": "One clip before each slot, summarised into the next packet; normal power mode only. Clip length 0, 15, 30 or 60 s, where 0 turns recording off. The 22,050 Hz sample rate is fixed.",
       "change": "radio"
     },
     {
       "key": "power_modes",
       "label": "Power-saving thresholds",
       "value": "Conserve below 3.20 V · critical below 3.10 V",
-      "description": "Below conserve the buoy skips audio and sends in every 3rd used slot; below critical it only logs temperature. The defaults will be retuned for the final battery pack (ADR-0007).",
+      "description": "Below conserve the buoy skips audio and sends in every 3rd used slot; below critical it only logs temperature. The defaults will be retuned for the final battery pack.",
       "change": "radio"
     },
     {
       "key": "humidity_alert",
       "label": "Housing humidity alert",
       "value": "70 %RH",
-      "description": "Readings at or above it are flagged HUMIDITY_HIGH, the first sign of a leak. The default is a placeholder until the leak calibration (SCO-204).",
+      "description": "Readings at or above it are flagged HUMIDITY_HIGH, the first sign of a leak. The default is a placeholder until the leak calibration.",
       "change": "radio"
     },
     {
