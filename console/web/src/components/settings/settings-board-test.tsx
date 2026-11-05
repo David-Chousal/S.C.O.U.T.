@@ -107,7 +107,7 @@ describe("SettingsBoard", () => {
     await userEvent.click(screen.getByRole("button", { name: "Dark" }));
     expect(update).toHaveBeenCalledWith({ theme: "dark" });
     await userEvent.click(screen.getByRole("switch"));
-    expect(update).toHaveBeenCalledWith({ shortcuts: false });
+    expect(update).toHaveBeenCalledWith({ shortcuts: true });
   });
 });
 

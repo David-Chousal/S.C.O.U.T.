@@ -224,3 +224,20 @@ test("creating a shore token returns its id, so the page can watch for its first
   const listed = (await client.get("/api/devices")).body.devices;
   assert.equal(listed.find((device) => device.name === "Kona pier").id, body.id);
 });
+
+test("a revoked station token can be deleted; an active one cannot, and guests cannot", async () => {
+  const env = makeEnv();
+  const { client: admin } = await signedIn(env, "admin", "dev-admin@scout.test");
+  await admin.post("/api/devices", { name: "Old pier" });
+  const id = (await admin.get("/api/devices")).body.devices[0].id;
+  const early = await admin.post(`/api/devices/${id}/delete`, {});
+  assert.equal(early.status, 400);
+  assert.match(early.body.error, /Revoke/);
+  await admin.post(`/api/devices/${id}/revoke`, {});
+  const { client: guest } = await signedIn(env, "guest");
+  assert.equal((await guest.post(`/api/devices/${id}/delete`, {})).status, 403);
+  assert.equal((await admin.post(`/api/devices/${id}/delete`, {})).status, 200);
+  assert.equal((await admin.get("/api/devices")).body.devices.length, 0);
+  const audit = (await admin.get("/api/audit")).body.entries.find((e) => e.action === "device.delete");
+  assert.equal(audit.target, "Old pier");
+});

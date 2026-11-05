@@ -13,9 +13,9 @@ export interface NavItem {
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/dashboard/", label: "Dashboard", icon: "layout", key: "h" },
   { href: "/fleet/", label: "Fleet", icon: "analytics", key: "f" },
+  { href: "/stations/", label: "Stations", icon: "connections", key: "s", desktopOnly: true },
   { href: "/readings/", label: "Readings", icon: "data", key: "r" },
   { href: "/reports/", label: "Reports", icon: "export", key: "e", desktopOnly: true },
-  { href: "/stations/", label: "Stations", icon: "connections", key: "s", desktopOnly: true },
   { href: "/team/", label: "Team", icon: "team", key: "t" },
   { href: "/settings/", label: "Settings", icon: "settings", key: "p" },
   { href: "/developer/", label: "Developer", icon: "external", key: "d", desktopOnly: true },

@@ -28,6 +28,9 @@ describe("FleetList", () => {
       remote={REMOTE} slotsSod={firmware.slotsSod} now={now} />);
     expect(screen.getByText("Live")).toBeDefined();
     expect(screen.getByText("Not heard")).toBeDefined();
+    const headers = screen.getAllByRole("columnheader").map((h) => h.textContent);
+    expect(headers).toEqual(["Buoy", "Transmits", "Last heard", "Next transmission", "Status", "Settings"]);
+    expect(screen.getAllByText(/^in \d/).length).toBe(2);
     expect(screen.queryByRole("button")).toBeNull();
     expect(screen.getByRole("link", { name: "Settings for Reef south" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=2$/);
   });

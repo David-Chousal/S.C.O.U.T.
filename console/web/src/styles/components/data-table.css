@@ -20,8 +20,8 @@
 .sc-pager { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3); padding-top: var(--space-3); }
 /* Fleet and Settings buoy tables: one row per buoy. */
 .sc-fleet-table, .sc-buoy-table { table-layout: fixed; }
-.sc-fleet-table th:nth-child(1) { width: 32%; } .sc-fleet-table th:nth-child(3) { width: 150px; }
-.sc-fleet-table th:nth-child(4) { width: 160px; } .sc-fleet-table th:nth-child(5) { width: 104px; }
+.sc-fleet-table th:nth-child(1) { width: 26%; } .sc-fleet-table th:nth-child(3) { width: 150px; }
+.sc-fleet-table th:nth-child(4) { width: 170px; } .sc-fleet-table th:nth-child(5) { width: 130px; } .sc-fleet-table th:nth-child(6) { width: 96px; }
 .sc-table td.sc-fleet-table__go { padding-right: var(--space-4); text-align: right; }
 .sc-buoy-table th:nth-child(1) { width: 26%; } .sc-buoy-table th:nth-child(2) { width: 150px; } .sc-buoy-table th:nth-child(4) { width: 130px; }
 .sc-buoy-table tbody tr { cursor: pointer; }
@@ -29,11 +29,25 @@
 .sc-buoy-table__pick { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
 .sc-buoy-table__pick:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-buoy-table__changed { color: var(--ink-muted); }
-.sc-buoy-table__when, .sc-fleet-table td:nth-child(4) { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
+.sc-buoy-table__when, .sc-fleet-table td:nth-child(3) { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
 @media (max-width: 767px) {
   .sc-fleet-table, .sc-buoy-table { table-layout: auto; }
   .sc-fleet-table th:nth-child(n), .sc-buoy-table th:nth-child(n) { width: auto; }
-  .sc-buoy-table th:nth-child(3), .sc-buoy-table td:nth-child(3), .sc-fleet-table th:nth-child(4), .sc-fleet-table td:nth-child(4) { display: none; }
+  .sc-buoy-table th:nth-child(3), .sc-buoy-table td:nth-child(3), .sc-fleet-table th:nth-child(2), .sc-fleet-table td:nth-child(2), .sc-fleet-table th:nth-child(3), .sc-fleet-table td:nth-child(3) { display: none; }
+}
+/* Stations tables: same rhythm as Fleet, status before the actions. */
+.sc-stations-buoys, .sc-stations-table { table-layout: fixed; }
+.sc-stations-buoys th:nth-child(1) { width: 26%; } .sc-stations-buoys th:nth-child(3) { width: 170px; } .sc-stations-buoys th:nth-child(4) { width: 130px; }
+.sc-stations-buoys td:nth-child(3), .sc-stations-table__when { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
+.sc-stations-buoys .sc-command-station__select { max-width: 240px; }
+.sc-stations-table th:nth-child(2) { width: 200px; } .sc-stations-table th:nth-child(3) { width: 150px; }
+.sc-stations-table th:nth-child(4) { width: 200px; } .sc-stations-table th:nth-child(5) { width: 150px; }
+.sc-table td.sc-stations-table__actions { padding-right: var(--space-4); text-align: right; }
+@media (max-width: 767px) {
+  .sc-stations-buoys, .sc-stations-table { table-layout: auto; }
+  .sc-stations-buoys th:nth-child(n), .sc-stations-table th:nth-child(n) { width: auto; }
+  .sc-stations-buoys th:nth-child(3), .sc-stations-buoys td:nth-child(3),
+  .sc-stations-table th:nth-child(2), .sc-stations-table td:nth-child(2), .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
 }
 /* Team tables: fixed columns so members and invites line up. */
 .sc-team-table { table-layout: fixed; }

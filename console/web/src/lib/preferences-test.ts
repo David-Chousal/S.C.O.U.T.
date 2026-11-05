@@ -2,8 +2,8 @@ import { describe, expect, test } from "vitest";
 import { applyTheme, DEFAULT_PREFERENCES, parsePreferences, THEME_BOOT_SCRIPT } from "./preferences";
 
 describe("preferences", () => {
-  test("the console defaults to the light theme, UTC times and shortcuts on", () => {
-    expect(DEFAULT_PREFERENCES).toEqual({ theme: "light", time: "utc", shortcuts: true });
+  test("the console defaults to the light theme, UTC times and shortcuts off", () => {
+    expect(DEFAULT_PREFERENCES).toEqual({ theme: "light", time: "utc", shortcuts: false });
     expect(parsePreferences(null)).toEqual(DEFAULT_PREFERENCES);
   });
 

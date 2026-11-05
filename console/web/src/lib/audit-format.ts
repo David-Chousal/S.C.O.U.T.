@@ -10,6 +10,7 @@ const ACTIONS: Record<string, string> = {
   "buoy.command_station": "Picked command station",
   "device.create": "Created station token",
   "device.revoke": "Revoked station token",
+  "device.delete": "Deleted station token",
   "invite.create": "Invited",
   "invite.accept": "Accepted invite",
   "invite.revoke": "Revoked invite",

@@ -1,5 +1,5 @@
-/* Whether a buoy is alive and connected, worked out from what the console knows of its schedule.
- * Pure functions, so they test without a clock. */
+/* What a buoy is doing now, worked out from what the console knows of its schedule: when it next
+ * transmits, and whether it is alive and connected. Pure functions, so they test without a clock. */
 
 import type { Buoy, RemoteSetting } from "@/lib/api/types";
 
@@ -21,6 +21,33 @@ export function runningSettings(buoy: Buoy, remote: RemoteSetting[]): Record<str
 /** The slots in use, as seconds after midnight UTC, in order. */
 export function slotsInUse(slotsSod: number[], txCount: number, phaseH: number): number[] {
   return (SLOT_INDICES[txCount] ?? []).map((i) => (slotsSod[i] + phaseH * 3600) % DAY_S).sort((a, b) => a - b);
+}
+
+/** The next transmit slot strictly after `nowMs`, as Unix ms. */
+export function nextTransmit(slots: number[], nowMs: number): number | null {
+  if (slots.length === 0) return null;
+  const dayStart = Math.floor(nowMs / 1000 / DAY_S) * DAY_S;
+  for (const day of [dayStart, dayStart + DAY_S]) {
+    for (const sod of slots) {
+      const at = (day + sod) * 1000;
+      if (at > nowMs) return at;
+    }
+  }
+  return null;
+}
+
+/** "in 3 h 12 min" / "in 8 min". */
+export function untilLabel(atMs: number, nowMs: number): string {
+  const minutes = Math.max(0, Math.round((atMs - nowMs) / 60000));
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h ? `in ${h} h ${m} min` : `in ${m} min`;
+}
+
+/** "16:10 UTC". */
+export function utcClock(atMs: number): string {
+  const d = new Date(atMs);
+  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC`;
 }
 
 /** The longest gap between two consecutive slots, in ms: how long silence is normal. */
