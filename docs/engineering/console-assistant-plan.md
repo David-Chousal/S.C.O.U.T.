@@ -136,7 +136,9 @@ Anything not in these tables is out of scope until added here.
   Confirm cards use the existing card and `Key` components; a pending card expires visibly.
 - A standing line under the input: *"Fred uses Google Gemini's free tier. Google may review
   what you type. Don't share personal information."*
-- Conversations are listed in the panel and kept 30 days, then deleted by the daily cron.
+- **Conversations are not kept** (decided 2026-11-05). The conversation lives only in the open
+  panel; the browser sends it back with each question and it is gone when the tab closes.
+  There is no history list. A "New conversation" key clears it.
 
 ## Data and privacy
 
@@ -149,9 +151,10 @@ is public on the project site already. It is not acceptable for personal or secr
   address. The team tool returns names and roles only; the audit tool strips emails to names.
 - **Warned about:** what people type. The panel notice above says so on every conversation,
   including for guests outside the team.
-- **Stored in D1** (migration `0011-assistant.sql`): `assistant_conversations`,
-  `assistant_messages` (text and tool calls, 30-day retention), `assistant_actions` (pending
-  proposals) and `assistant_usage` (requests and tokens per user per day).
+- **Stored in D1** (migration `0011-assistant.sql`): only `assistant_actions` (pending
+  proposals, deleted when confirmed, declined or 10 minutes old) and `assistant_usage`
+  (request and token counts per user per day, no text). **No question or reply is stored.**
+  A confirmed change still lands in the audit log, as every change does.
 - **Prompt injection:** buoy labels, station names and report text are typed by people and
   could carry instructions. Tool results are passed as data, the system instruction says so,
   and the confirm step means injected text can at most produce a card the person declines.
@@ -215,8 +218,10 @@ the shore station.
 3. ~~**Can guests use Fred?**~~ **Decided 2026-11-05: yes, read-only**, with a lower daily
    cap than members. Guests are never offered propose tools, and the confirm endpoint refuses
    them regardless.
-4. **Keep conversations 30 days, or not at all?** Keeping them gives history and helps debug
-   wrong answers; not keeping them stores less.
+4. ~~**Keep conversations 30 days, or not at all?**~~ **Decided 2026-11-05: not at all.** The
+   cost is that a wrong answer cannot be looked up afterwards, so the eval set carries the
+   debugging, and a "Report this answer" key copies that one exchange to the clipboard for the
+   person to paste into a Linear issue.
 5. **Is "Fred" the name, and which writes are in Phase 2?** The tables above are the proposal;
    admin actions could wait.
 
