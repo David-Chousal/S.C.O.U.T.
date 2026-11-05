@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
-import { initials } from "@/components/shell/sidebar";
+import { initials } from "@/components/shell/top-bar";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";

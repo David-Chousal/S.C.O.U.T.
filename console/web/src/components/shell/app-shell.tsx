@@ -73,9 +73,9 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     // The frame stays up while the session loads, so the page never flashes blank.
     return (
       <div className="sc-shell">
+        <TopBar title={title} />
         <Sidebar shortcuts={preferences.shortcuts} />
         <div className="sc-shell__page">
-          <TopBar title={title} />
           <main className="sc-main" aria-busy={load.kind === "loading"}>
             {load.kind === "loading"
               ? <span className="sc-tag">Checking your session…</span>
@@ -90,9 +90,9 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     <PreferencesContext value={preferencesValue}>
       <Toaster>
         <div className="sc-shell">
-          <Sidebar user={load.session.user} shortcuts={preferences.shortcuts} />
+          <TopBar title={title} user={load.session.user} actions={actions} />
+          <Sidebar shortcuts={preferences.shortcuts} />
           <div className="sc-shell__page">
-            <TopBar title={title} actions={actions} />
             <main className="sc-main">{children}</main>
           </div>
         </div>
