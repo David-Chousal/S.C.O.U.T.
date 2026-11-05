@@ -41,7 +41,7 @@ describe("SettingsBoard", () => {
     expect(await screen.findByText("Firmware defaults")).toBeDefined();
     for (const setting of firmware.settings) expect(screen.getByText(setting.description)).toBeDefined();
     expect(screen.queryByText(/provisional|decided/i)).toBeNull();
-    const badges = [...screen.getByRole("table").querySelectorAll(".sc-badge")].map((b) => b.textContent);
+    const badges = [...document.querySelectorAll(".sc-firmware-table .sc-badge")].map((b) => b.textContent);
     expect(badges.filter((text) => text === "By radio")).toHaveLength(firmware.settings.filter((s) => s.change === "radio").length);
   });
 

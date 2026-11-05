@@ -9,7 +9,7 @@ import type { Estimates, Fleet } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
 import { AddBuoyDialog } from "./add-buoy-dialog";
 import { BatteryTable } from "./battery-table";
-import { BuoyBay } from "./buoy-bay";
+import { FleetTable } from "./fleet-table";
 
 /** The most days the 1 s listen window costs any option, so one table can stand for both. */
 export function listenWindowCost(estimates: Estimates): number {
@@ -48,19 +48,12 @@ export function FleetBoard() {
               title={canAdd ? undefined : `Adding a buoy needs the ${needs("buoys.add")} role`}>Add buoy</Key>
           </span>
         </div>
-        {fleet.buoys.length === 0 && (
+        {fleet.buoys.length === 0 ? (
           <EmptyState status="No buoys" title="No buoys yet">
             A buoy appears when its shore station first pushes a reading, or when it is added here.
           </EmptyState>
-        )}
+        ) : <FleetTable buoys={fleet.buoys} />}
       </section>
-      {fleet.buoys.length > 0 && (
-        <div className="sc-grid12">
-          {fleet.buoys.map((buoy) => (
-            <div className="span-6" key={buoy.buoy_id}><BuoyBay buoy={buoy} /></div>
-          ))}
-        </div>
-      )}
       <section className="sc-bay" aria-labelledby="battery-title">
         <div className="sc-bay__head">
           <h2 className="sc-bay__title" id="battery-title">Battery life by transmit count</h2>
