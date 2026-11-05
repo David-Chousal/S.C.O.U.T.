@@ -69,9 +69,11 @@ const SECTIONS: readonly HelpSection[] = [
     tag: "Member",
     body: (
       <p className="sc-help">
-        On Fleet, request a transmit count (1–3 a day). It shows <strong>pending</strong> until the buoy&apos;s own packets report the
-        new count, which takes at most one transmit slot after the shore station delivers it. Every other firmware setting is
-        listed in Settings → Buoys, read straight from <code>config.h</code>, with how it changes.
+        Settings → Buoys has a control for each remote setting: transmits a day, slot phase, reading interval, hydrophone
+        clip, power thresholds and the housing humidity alert (Fleet also changes the transmit count). The shore station sends
+        the whole set right after the buoy&apos;s next packet; it shows <strong>pending</strong> until a packet reports the
+        same settings digest, then <strong>confirmed</strong>, or <strong>rejected</strong> if the buoy refused it. The radio
+        and the listen window never change by radio; they need a firmware update.
       </p>
     ),
   },

@@ -101,29 +101,50 @@ void test_the_console_names_the_bad_row(void) {
     TEST_ASSERT_EQUAL(-1, scout_console_bad_row("{\"ok\":false,\"error\":\"unauthorized\"}"));
 }
 
-void test_settings_reply_sets_listed_buoys_and_clears_the_rest(void) {
-    uint8_t requested[9] = {0, 3, 3, 0, 0, 0, 0, 0, 3};
-    int n = scout_console_parse_settings(
-        "{\"buoys\":[{\"buoy_id\":1,\"tx_count_requested\":2},{\"buoy_id\":20,\"tx_count_requested\":1},"
-        "{\"buoy_id\":3,\"tx_count_requested\":7}]}",
-        requested, sizeof(requested));
-    TEST_ASSERT_EQUAL(1, n);
-    const uint8_t want[9] = {0, 2, 0, 0, 0, 0, 0, 0, 0};
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(want, requested, 9);
+void test_wanted_reply_reads_counts_and_snapshots_and_clears_the_rest(void) {
+    ScoutWanted wanted[9];
+    memset(wanted, 0, sizeof(wanted));
+    wanted[8].tx_count = 3;
+    int n = scout_console_parse_wanted(
+        "{\"buoys\":[{\"buoy_id\":1,\"tx_count_requested\":2,\"settings\":\"2,1,15,30,3300,3200,2,80\",\"settings_digest\":\"7e60\"},"
+        "{\"buoy_id\":2,\"tx_count_requested\":null,\"settings\":\"3,0,30,60,3200,3100,3,70\"},"
+        "{\"buoy_id\":20,\"tx_count_requested\":1},{\"buoy_id\":3,\"tx_count_requested\":7}]}",
+        wanted, 9);
+    TEST_ASSERT_EQUAL(2, n);
+    TEST_ASSERT_EQUAL_UINT8(2, wanted[1].tx_count);
+    TEST_ASSERT_EQUAL_UINT8(1, wanted[1].has_settings);
+    TEST_ASSERT_EQUAL_UINT16(3300, scout_setting(&wanted[1].settings, SCOUT_SET_CONSERVE_MV));
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[2].tx_count);
+    TEST_ASSERT_EQUAL_UINT8(1, wanted[2].has_settings);
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[3].tx_count);
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[8].tx_count);
 }
 
-void test_an_empty_settings_reply_clears_every_request(void) {
-    uint8_t requested[3] = {0, 2, 1};
-    TEST_ASSERT_EQUAL(0, scout_console_parse_settings("{\"buoys\":[]}", requested, 3));
-    const uint8_t want[3] = {0, 0, 0};
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(want, requested, 3);
+void test_wanted_reply_drops_a_snapshot_the_buoy_would_refuse(void) {
+    ScoutWanted wanted[3];
+    int n = scout_console_parse_wanted(
+        "{\"buoys\":[{\"buoy_id\":1,\"tx_count_requested\":2,\"settings\":\"2,0,45,60,3200,3100,3,70\"}]}",
+        wanted, 3);
+    TEST_ASSERT_EQUAL(1, n);
+    TEST_ASSERT_EQUAL_UINT8(2, wanted[1].tx_count);
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[1].has_settings);
+}
+
+void test_an_empty_wanted_reply_clears_every_request(void) {
+    ScoutWanted wanted[3];
+    wanted[1].tx_count = 2;
+    wanted[1].has_settings = 1;
+    TEST_ASSERT_EQUAL(0, scout_console_parse_wanted("{\"buoys\":[]}", wanted, 3));
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[1].tx_count);
+    TEST_ASSERT_EQUAL_UINT8(0, wanted[1].has_settings);
 }
 
 void test_a_reply_that_is_not_settings_changes_nothing(void) {
-    uint8_t requested[3] = {0, 2, 1};
-    TEST_ASSERT_EQUAL(-1, scout_console_parse_settings("{\"ok\":false,\"error\":\"unauthorized\"}", requested, 3));
-    const uint8_t want[3] = {0, 2, 1};
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(want, requested, 3);
+    ScoutWanted wanted[3];
+    memset(wanted, 0, sizeof(wanted));
+    wanted[1].tx_count = 2;
+    TEST_ASSERT_EQUAL(-1, scout_console_parse_wanted("{\"ok\":false,\"error\":\"unauthorized\"}", wanted, 3));
+    TEST_ASSERT_EQUAL_UINT8(2, wanted[1].tx_count);
 }
 
 void setUp(void) {}
@@ -139,8 +160,9 @@ static void run_all(void) {
     RUN_TEST(test_a_row_that_does_not_fit_writes_nothing);
     RUN_TEST(test_a_batch_takes_the_rows_that_fit);
     RUN_TEST(test_the_console_names_the_bad_row);
-    RUN_TEST(test_settings_reply_sets_listed_buoys_and_clears_the_rest);
-    RUN_TEST(test_an_empty_settings_reply_clears_every_request);
+    RUN_TEST(test_wanted_reply_reads_counts_and_snapshots_and_clears_the_rest);
+    RUN_TEST(test_wanted_reply_drops_a_snapshot_the_buoy_would_refuse);
+    RUN_TEST(test_an_empty_wanted_reply_clears_every_request);
     RUN_TEST(test_a_reply_that_is_not_settings_changes_nothing);
     UNITY_END();
 }

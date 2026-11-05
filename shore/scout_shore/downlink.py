@@ -15,6 +15,10 @@ Layout (little-endian), 28 bytes:
 | tag | 16 bytes | HMAC-SHA256(key, the 10 bytes above), truncated |
 | crc | uint16 | CRC-16/CCITT-FALSE over the 26 bytes above |
 
+**Version 2** carries the whole settings snapshot (``scout_shore.settings``), 43 bytes: type,
+``2``, buoy_id, counter, count (u8, the number of settings), the values as u16 in setting-ID
+order, a 16-byte tag over those 25 bytes, and the CRC. The buoy applies all of it or none of it.
+
 The 32-byte key is per buoy and never leaves the shore station and the buoy: not the console,
 not the repo. :func:`key_from_env` reads it from ``SCOUT_CMD_KEY_<buoy_id>`` (64 hex digits).
 
@@ -29,6 +33,7 @@ import struct
 from dataclasses import dataclass
 from hashlib import sha256
 
+from . import settings as registry
 from .packet import TX_COUNTS, crc16_ccitt
 
 TYPE_CMD = 0xC1
@@ -40,6 +45,10 @@ BUOY_ALL = 0
 SETTING_TX_COUNT = 1
 
 _SIGNED = struct.Struct("<BBHIBB")  # 10 bytes
+
+VERSION_SETTINGS = 2
+_SIGNED_SETTINGS = struct.Struct(f"<BBHIB{len(registry.SPECS)}H")  # 25 bytes
+SETTINGS_SIZE = _SIGNED_SETTINGS.size + TAG_BYTES + 2  # 43
 
 
 class DownlinkError(ValueError):
@@ -98,6 +107,47 @@ def decode(frame: bytes, key: bytes) -> Command:
     if not hmac.compare_digest(_tag(body[:_SIGNED.size], key), body[_SIGNED.size:]):
         raise DownlinkError("tag mismatch")
     return Command(buoy_id, counter, setting, value)
+
+
+@dataclass(frozen=True)
+class SettingsCommand:
+    """A v2 frame: every remote setting for one buoy, in setting-ID order."""
+
+    buoy_id: int
+    counter: int
+    values: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        try:
+            registry.check(self.values)
+        except registry.SettingsError as exc:
+            raise DownlinkError(str(exc)) from exc
+        if not 0 <= self.buoy_id <= 0xFFFF or not 0 < self.counter <= 0xFFFFFFFF:
+            raise DownlinkError("buoy_id or counter out of range")
+
+
+def encode_settings(command: SettingsCommand, key: bytes) -> bytes:
+    _check_key(key)
+    signed = _SIGNED_SETTINGS.pack(TYPE_CMD, VERSION_SETTINGS, command.buoy_id, command.counter,
+                                   len(command.values), *command.values)
+    body = signed + _tag(signed, key)
+    return body + struct.pack("<H", crc16_ccitt(body))
+
+
+def decode_settings(frame: bytes, key: bytes) -> SettingsCommand:
+    """Verify a v2 frame's length, CRC, type, version, count and tag, and return it."""
+    _check_key(key)
+    if len(frame) != SETTINGS_SIZE:
+        raise DownlinkError(f"expected {SETTINGS_SIZE} bytes, got {len(frame)}")
+    body, (crc,) = frame[:-2], struct.unpack("<H", frame[-2:])
+    if crc != crc16_ccitt(body):
+        raise DownlinkError("CRC mismatch")
+    kind, version, buoy_id, counter, count, *values = _SIGNED_SETTINGS.unpack(body[:_SIGNED_SETTINGS.size])
+    if kind != TYPE_CMD or version != VERSION_SETTINGS or count != len(registry.SPECS):
+        raise DownlinkError(f"not a v{VERSION_SETTINGS} settings frame for this registry")
+    if not hmac.compare_digest(_tag(body[:_SIGNED_SETTINGS.size], key), body[_SIGNED_SETTINGS.size:]):
+        raise DownlinkError("tag mismatch")
+    return SettingsCommand(buoy_id, counter, tuple(values))
 
 
 def key_from_env(buoy_id: int, environ: dict[str, str] | None = None) -> bytes | None:

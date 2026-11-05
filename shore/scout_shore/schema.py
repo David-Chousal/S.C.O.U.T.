@@ -8,6 +8,7 @@ analytics.
 from __future__ import annotations
 
 import csv
+import re
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -38,6 +39,9 @@ COLUMNS: tuple[str, ...] = (
     *ACOUSTIC_FIELDS,
     # Daily transmit count the buoy reports using (SCO-198, schema v4). Blank when not reported.
     "tx_count",
+    # CRC-16 of the buoy's remote settings, 4 lowercase hex digits (schema v5, scout_shore.settings).
+    # Blank when not reported.
+    "settings_digest",
 )
 
 # Column sets of earlier schema versions. Their files stay readable and importable; a row is
@@ -45,7 +49,8 @@ COLUMNS: tuple[str, ...] = (
 COLUMNS_V1 = COLUMNS[:14]  # before the internal humidity sensor (SCO-205)
 COLUMNS_V2 = COLUMNS[:16]  # before the acoustic summary (ADR-0010)
 COLUMNS_V3 = COLUMNS[:23]  # before the transmit count (SCO-198)
-ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V3, COLUMNS_V2, COLUMNS_V1)
+COLUMNS_V4 = COLUMNS[:24]  # before the settings digest (remote settings)
+ACCEPTED_COLUMN_SETS = (COLUMNS, COLUMNS_V4, COLUMNS_V3, COLUMNS_V2, COLUMNS_V1)
 
 # Provisional analog front-end constants — SAMD21 12-bit ADC at 3.3 V Vref.
 # ⚠️ Pending the turbidity front-end design (hardware/README.md open item, ADR-0002 area).
@@ -100,6 +105,7 @@ def reading_to_row(reading: Reading) -> dict[str, str]:
         "internal_humidity_pct": "",
         **acoustic_cells(reading),
         "tx_count": "" if reading.tx_count is None else str(reading.tx_count),
+        "settings_digest": "" if reading.settings_digest is None else f"{reading.settings_digest:04x}",
     }
 
 
@@ -114,7 +120,7 @@ def validate_row(row: dict[str, str]) -> None:
     """Check one row against the schema. Raises :class:`SchemaError` on any violation."""
     keys = tuple(row.keys())
     if keys not in ACCEPTED_COLUMN_SETS:
-        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1-v3 prefix)")
+        raise SchemaError(f"columns/order mismatch: {keys} != {COLUMNS} (or a v1-v4 prefix)")
 
     # Required (never-empty) fields and their parsers.
     required_numeric = {
@@ -156,6 +162,10 @@ def validate_row(row: dict[str, str]) -> None:
     tx_count = row.get("tx_count", "")
     if tx_count not in ("", "1", "2", "3"):
         raise SchemaError(f"tx_count={tx_count!r} must be blank or 1, 2 or 3")
+
+    digest = row.get("settings_digest", "")
+    if digest and not re.fullmatch(r"[0-9a-f]{4}", digest):
+        raise SchemaError(f"settings_digest={digest!r} must be blank or 4 lowercase hex digits")
 
 
 def validate_csv(path: str | Path) -> int:

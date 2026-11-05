@@ -78,10 +78,11 @@ test("the settings reply uses the keys the S3's parser looks for", async () => {
   const request = await client.post("/api/fleet/buoys/1/tx-count", { tx_count: 2 });
   assert.equal(request.status, 200, JSON.stringify(request.body));
   const text = await (await deviceCall(env, token, "/api/device/settings")).text();
-  // scout_console_parse_settings() finds "buoys", then "buoy_id": and "tx_count_requested": in
-  // each object, with no spaces after the colons.
+  // scout_console_parse_wanted() finds "buoys", then "buoy_id":, "tx_count_requested": and
+  // "settings":" in each object, with no spaces after the colons, and no nested object, since it
+  // takes the first "}" as the end of a buoy.
   assert.match(text, /"buoys":\[/);
-  assert.match(text, /\{"buoy_id":1,"tx_count_requested":2\}/);
+  assert.match(text, /\{"buoy_id":1,"tx_count_requested":2,"settings":"2,0,30,60,3200,3100,3,70","settings_digest":"[0-9a-f]{4}"\}/);
 });
 
 test("more rows than the console takes in one push are refused (the S3 sends 20)", async () => {

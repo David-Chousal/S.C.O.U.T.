@@ -15,7 +15,8 @@ A modem change that breaks that fails here rather than as missed slots in the wa
 
 The settings downlink (SCO-198) is held the same way: the shore's ``downlink.encode`` of a fixed
 command must equal the GOLDEN in ``firmware/test/test_downlink``, and the frame must fit the
-same 140-byte ceiling.
+same 140-byte ceiling. The v2 settings frame (every remote setting at once) is held to
+``GOLDEN_SETTINGS`` in the same test file.
 
 Standard library only. Exit 0 on match, non-zero on drift.
 """
@@ -65,6 +66,7 @@ CANONICAL = Reading(
     snap_count=10,
     clip_count=24,
     tx_count=2,  # v4 (SCO-198): flags bits 8-9
+    settings_digest=0xE674,  # v5: the digest of the default remote settings
 )
 
 _TEST_CPP = _ROOT / "firmware" / "test" / "test_packet" / "test_packet.cpp"
@@ -72,6 +74,8 @@ _DOWNLINK_TEST_CPP = _ROOT / "firmware" / "test" / "test_downlink" / "test_downl
 # Keep identical to GOLDEN's comment in test_downlink.cpp: buoy 1, tx_count 2, key 00..1f.
 _DOWNLINK_CANONICAL = downlink.set_tx_count(1, 2, now_epoch=1803859200)
 _DOWNLINK_TEST_KEY = bytes(range(32))
+# Keep identical to GOLDEN_SETTINGS's comment in test_downlink.cpp.
+_SETTINGS_CANONICAL = downlink.SettingsCommand(1, 1803859200, (2, 1, 15, 30, 3300, 3200, 2, 80))
 _LINK_H = _ROOT / "firmware" / "lib" / "scout_link" / "scout_link.h"
 _PACKET_H = _ROOT / "firmware" / "lib" / "scout_packet" / "scout_packet.h"
 _CONFIG_H = _ROOT / "firmware" / "src" / "config.h"
@@ -150,11 +154,11 @@ def check_payload_ceiling() -> str:
             f"packet {PACKET_SIZE} B, {packet_on_air:.0f} ms")
 
 
-def firmware_golden_hex(path: pathlib.Path = _TEST_CPP) -> str:
+def firmware_golden_hex(path: pathlib.Path = _TEST_CPP, name: str = "GOLDEN") -> str:
     text = path.read_text()
-    match = re.search(r"GOLDEN\[[^\]]*\]\s*=\s*\{([^}]*)\}", text)
+    match = re.search(rf"\b{name}\[[^\]]*\]\s*=\s*\{{([^}}]*)\}}", text)
     if not match:
-        sys.exit(f"could not find GOLDEN[] array in {path}")
+        sys.exit(f"could not find {name}[] array in {path}")
     byte_values = [int(b, 16) for b in re.findall(r"0x([0-9a-fA-F]{2})", match.group(1))]
     return bytes(byte_values).hex()
 
@@ -186,7 +190,18 @@ def check_downlink() -> str:
         )
     if downlink.CMD_SIZE > LORA_PAYLOAD_BUDGET_BYTES:
         sys.exit(f"the {downlink.CMD_SIZE}-byte command exceeds the {LORA_PAYLOAD_BUDGET_BYTES}-byte ceiling")
-    return f"downlink contract OK — {downlink.CMD_SIZE} bytes: {python_hex}"
+    settings_hex = downlink.encode_settings(_SETTINGS_CANONICAL, _DOWNLINK_TEST_KEY).hex()
+    fw_settings_hex = firmware_golden_hex(_DOWNLINK_TEST_CPP, "GOLDEN_SETTINGS")
+    if settings_hex != fw_settings_hex:
+        sys.exit(
+            "SETTINGS FRAME DRIFT — firmware and shore disagree on the v2 command frame:\n"
+            f"  shore (downlink.py) : {settings_hex}\n"
+            f"  firmware GOLDEN_SETTINGS : {fw_settings_hex}"
+        )
+    if downlink.SETTINGS_SIZE > LORA_PAYLOAD_BUDGET_BYTES:
+        sys.exit(f"the {downlink.SETTINGS_SIZE}-byte settings frame exceeds the ceiling")
+    return (f"downlink contract OK — v1 {downlink.CMD_SIZE} bytes: {python_hex}; "
+            f"v2 {downlink.SETTINGS_SIZE} bytes: {settings_hex}")
 
 
 if __name__ == "__main__":

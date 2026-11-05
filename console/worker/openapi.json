@@ -3,7 +3,7 @@
   "info": {
     "title": "S.C.O.U.T. Console API",
     "version": "1.0.0",
-    "description": "Read the buoys, their readings and settings; request a transmit count. Make a personal token on the console's Developer page and send it as `Authorization: Bearer sct_\u2026`. A token acts with its owner's current role, limited by its scopes."
+    "description": "Read the buoys, their readings and settings; request a transmit count. Make a personal token on the console's Developer page and send it as `Authorization: Bearer sct_…`. A token acts with its owner's current role, limited by its scopes."
   },
   "servers": [
     {
@@ -20,7 +20,7 @@
       "token": {
         "type": "http",
         "scheme": "bearer",
-        "description": "A personal API token (sct_\u2026)."
+        "description": "A personal API token (sct_…)."
       }
     },
     "schemas": {
@@ -71,6 +71,41 @@
             "description": "1 while the newest row carried RTC_LOST"
           },
           "state": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "default",
+              "pending",
+              "unreported",
+              "rejected"
+            ]
+          },
+          "settings_requested": {
+            "type": "object",
+            "description": "Each remote setting's requested value, or null for the firmware default",
+            "additionalProperties": {
+              "type": "integer",
+              "nullable": true
+            }
+          },
+          "settings_wanted": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "The snapshot the buoy should run, in setting-ID order"
+          },
+          "settings_digest_wanted": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{4}$"
+          },
+          "settings_digest_reported": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^[0-9a-f]{4}$",
+            "description": "From the newest v5 packet"
+          },
+          "settings_state": {
             "type": "string",
             "enum": [
               "confirmed",
@@ -392,6 +427,147 @@
         "responses": {
           "200": {
             "description": "OpenAPI 3 document"
+          }
+        }
+      }
+    },
+    "/buoys/{buoy_id}/settings": {
+      "post": {
+        "summary": "Request remote settings",
+        "description": "Scope: write:settings, and the token's owner must be a member or admin. Send any of the remote settings; the buoy's whole snapshot (defaults overlaid with every request) must be one the buoy would accept, or nothing is stored (critical_mv at least 50 mV under conserve_mv). Pending until the buoy's v5 packets report the same settings digest.",
+        "parameters": [
+          {
+            "name": "buoy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "settings"
+                ],
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "tx_count": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Transmits a day. How many of the three daily slots send a packet. Default 3; null withdraws a request.",
+                        "minimum": 1,
+                        "maximum": 3
+                      },
+                      "slot_phase_h": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Slot phase (h). Moves every transmit slot and recording this many hours later. Default 0; null withdraws a request.",
+                        "minimum": 0,
+                        "maximum": 7
+                      },
+                      "sample_interval_min": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Reading interval (min). Minutes between sensor readings. Default 30; null withdraws a request.",
+                        "enum": [
+                          15,
+                          30,
+                          60,
+                          null
+                        ]
+                      },
+                      "audio_clip_s": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Hydrophone clip (s). Length of each recording; 0 turns recording off. Default 60; null withdraws a request.",
+                        "enum": [
+                          0,
+                          15,
+                          30,
+                          60,
+                          null
+                        ]
+                      },
+                      "conserve_mv": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Conserve below (mV). Below this battery voltage the buoy skips audio and sends less. Default 3200; null withdraws a request.",
+                        "minimum": 3000,
+                        "maximum": 3600,
+                        "multipleOf": 10
+                      },
+                      "critical_mv": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Critical below (mV). Below this it only logs temperature. At least 50 mV under conserve. Default 3100; null withdraws a request.",
+                        "minimum": 2900,
+                        "maximum": 3500,
+                        "multipleOf": 10
+                      },
+                      "conserve_every": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Conserve: send every (slot). In conserve, transmit in every Nth used slot. Default 3; null withdraws a request.",
+                        "minimum": 1,
+                        "maximum": 3
+                      },
+                      "humidity_alert_pct": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Housing humidity alert (%RH). Rows at or above it carry HUMIDITY_HIGH. Default 70; null withdraws a request.",
+                        "minimum": 40,
+                        "maximum": 95
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Requested"
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }

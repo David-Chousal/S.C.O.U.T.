@@ -4,11 +4,13 @@ The shore station talks to the console with a per-device bearer token (``SCOUT_C
 never a user's login. It does two things:
 
 - **push** decoded readings, so the console can show the count each buoy last reported;
-- **pull** the transmit count requested for each buoy, which the shore then sends to the buoy
-  (``N<buoy>:<count>`` to the ESP32 over USB today; over WiFi once SCO-24's push exists).
+- **pull** what each buoy should run: the transmit count, for buoys still on packet v4
+  (``N<buoy>:<count>`` to the ESP32 over USB), and the whole remote-settings snapshot for v5 buoys
+  (``S<buoy>:<v1>,...``; ``scout_shore.settings``). The ESP32 sends whichever the buoy needs right
+  after its next packet. With WiFi the ESP32 reads the same reply itself (SCO-237).
 
-The console never holds the buoy's HMAC key: it can only ask for a count in 1-3, and the shore
-signs the frame. Standard library only (urllib), with the opener injectable for tests.
+The console never holds the buoy's HMAC key: it can only ask for values the registry allows, and
+the shore signs the frame. Standard library only (urllib), with the opener injectable for tests.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Callable, Iterable
 
+from . import settings as registry
 from .packet import TX_COUNTS, Reading
 from .schema import reading_to_row
 
@@ -87,15 +90,42 @@ class ConsoleClient:
 
     def requested_counts(self) -> dict[int, int]:
         """``{buoy_id: tx_count}`` for every buoy with a request. Ignores out-of-range values."""
+        return self.wanted()[0]
+
+    def wanted(self) -> tuple[dict[int, int], dict[int, tuple[int, ...]]]:
+        """One read of what every buoy should run: ``({buoy_id: tx_count}, {buoy_id: snapshot})``.
+
+        Counts outside 1-3 and snapshots the buoy would refuse (``settings.check``) are left out,
+        so nothing reaches a buoy that it would only reject."""
         payload = self._call("GET", "/api/device/settings")
-        out: dict[int, int] = {}
+        counts: dict[int, int] = {}
+        snapshots: dict[int, tuple[int, ...]] = {}
         for item in payload.get("buoys", []):
-            buoy_id, count = item.get("buoy_id"), item.get("tx_count_requested")
-            if isinstance(buoy_id, int) and count in TX_COUNTS:
-                out[buoy_id] = count
-        return out
+            buoy_id = item.get("buoy_id")
+            if not isinstance(buoy_id, int) or not 1 <= buoy_id <= 0xFFFF:
+                continue
+            if item.get("tx_count_requested") in TX_COUNTS:
+                counts[buoy_id] = item["tx_count_requested"]
+            snapshot = _parse_snapshot(item.get("settings"))
+            if snapshot is not None:
+                snapshots[buoy_id] = snapshot
+        return counts, snapshots
+
+
+def _parse_snapshot(text: object) -> tuple[int, ...] | None:
+    if not isinstance(text, str):
+        return None
+    try:
+        return registry.check(tuple(int(v) for v in text.split(",")))
+    except (ValueError, registry.SettingsError):
+        return None
 
 
 def set_commands(requested: dict[int, int]) -> list[str]:
     """The ESP32 shore's USB lines that apply ``requested`` (firmware/src/shore_rx)."""
     return [f"N{buoy}:{count}" for buoy, count in sorted(requested.items())]
+
+
+def settings_commands(snapshots: dict[int, tuple[int, ...]]) -> list[str]:
+    """The ESP32 shore's USB lines that set each buoy's whole settings snapshot."""
+    return [f"S{buoy}:{','.join(str(v) for v in values)}" for buoy, values in sorted(snapshots.items())]

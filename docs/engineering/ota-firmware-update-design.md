@@ -29,7 +29,7 @@
 | Boot stub and rollback | Proposed (§6). Arduino's SDU stub needs rebuilding for the Feather M0 RFM95 |
 | Power budget and ADR-0007 lifetime re-run | Figures in §7. Isabella's budget document not updated yet |
 | Shore transmit compliance | **Open.** The RFM95W FeatherWing's FCC authorization has not been checked (§8) |
-| Firmware | **Settings slice built 2026-10-25, off by default** ([SCO-198](https://linear.app/scout1/issue/SCO-198)): the 1 s listen window, the `CMD` frame as `SET_TX_COUNT` (HMAC-SHA256, §5), and the shore side, all behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware**. Firmware OTA (offer, chunks, signatures, boot stub, rollback) not started |
+| Firmware | **Settings slice built 2026-10-25** ([SCO-198](https://linear.app/scout1/issue/SCO-198)), **extended to every remote setting and switched on in the shipped builds 2026-11-04** ([plan](firmware-remote-settings-plan.md)): the 1 s listen window, the `CMD` frame (v1 `SET_TX_COUNT`, v2 full snapshot; HMAC-SHA256, §5), and the shore side, behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware**. Firmware OTA (offer, chunks, signatures, boot stub, rollback) not started |
 
 ## 1. Constraints this design has to fit
 
@@ -37,7 +37,7 @@
 |---|---|---|
 | Modem | 915 MHz · BW 500 kHz · SF12 · CR 4/8 · +11 dBm, on both buoy and shore | [facts.md](../hub/facts.md), `firmware/src/config.h` |
 | Frame ceiling | **140 B payload** (+4 B RadioHead header = 1,739 ms), from the 2 s send timeout | [SCO-97](https://linear.app/scout1/issue/SCO-97) |
-| Uplink | 44-byte packet (v3) in 3 fixed slots a day (00:10, 08:10, 16:10 UTC), never acknowledged | [SCO-165](https://linear.app/scout1/issue/SCO-165), [SCO-21](https://linear.app/scout1/issue/SCO-21) |
+| Uplink | 46-byte packet (v5) in 3 fixed slots a day (00:10, 08:10, 16:10 UTC at the default slot phase), never acknowledged | [SCO-165](https://linear.app/scout1/issue/SCO-165), [SCO-21](https://linear.app/scout1/issue/SCO-21) |
 | Next wake after a slot | Sensor wake at :30, 20 min after the slot | `config.h` |
 | Watchdog | 16.4 s (`WDT_TIMEOUT_MS`) | `config.h` |
 | Flash | SAMD21G18: 256 KB. Arduino bootloader uses the first 8 KB | ADR-0001 |
@@ -103,7 +103,7 @@ All downlink frames start with a 1-byte type and the 2-byte buoy ID (0 = all buo
 
 | Type | Direction | Payload | Size | Authenticated by |
 |---|---|---|---|---|
-| `CMD` | shore → buoy | 32-bit counter, setting ID, value, 16-byte HMAC tag | 28 B as built | HMAC-SHA256 (§5) |
+| `CMD` | shore → buoy | v1: 32-bit counter, setting ID, value, 16-byte HMAC tag. v2: counter, count, every remote setting (u16 each), tag | 28 B (v1) / 43 B (v2) as built | HMAC-SHA256 (§5) |
 | `OTA_OFFER` | shore → buoy | Signed manifest (below) | 124 B | Ed25519 (§5) |
 | `OTA_CHUNK` | shore → buoy | Session ID (2), chunk index (2), length (1), CRC-16 (2), data (≤ 128) | ≤ 136 B | Image hash at the end |
 | `OTA_ACK` | buoy → shore | Session ID, first chunk index of the burst, 16-bit received bitmap, battery tier | 12 B | None needed (§5) |
@@ -193,7 +193,7 @@ but cannot hear the shore is detected by the application itself: after 3 slots i
 - **First boot after USB flashing:** the application copies its own flash area into `GOOD.BIN`,
   so a known-good image always exists without sending one over the air.
 - **The next uplink reports the outcome** (applied / rolled back + version). That needs a flag
-  bit in the 44-byte packet; allocating one is a packet-contract change made with the build.
+  bit in the 46-byte packet; allocating one is a packet-contract change made with the build.
 - **Remaining risk, accepted:** an image that runs, never resets, and has broken trial logic
   would stay. The trial logic lives in a shared library that changes rarely and is tested on the
   bench before every release.
@@ -231,7 +231,7 @@ seconds a day. Under ADR-0008 and the FCC review:
 ## 9. What changes elsewhere when this is built
 
 Done for the settings slice (2026-10-25, [SCO-198](https://linear.app/scout1/issue/SCO-198)),
-everything behind `SCOUT_DOWNLINK` and off by default:
+everything behind `SCOUT_DOWNLINK` (on in the shipped builds since 2026-11-04):
 
 - **`LoraLink`:** `listen(buf, cap, window_ms, frame_max_ms)` with the errata registers, kept on to
   the end of a frame whose header arrived inside the window, and asleep on every exit. Done.
@@ -243,7 +243,10 @@ everything behind `SCOUT_DOWNLINK` and off by default:
   also requires it within `DOWNLINK_MAX_SKEW_S` (1 day) of its own clock, so a frame recorded
   earlier cannot be replayed after a cold start resets the stored counter. **No separate ACK**:
   the next uplink reports the count in use (packet v4, `flags` bits 8–9) and `CMD_REJECTED`
-  (bit 10) if a command failed its checks. Golden vector held by `check_packet_contract.py`.
+  (bit 10) if a command failed its checks. **v2 (2026-11-04)**, 43 bytes, carries every remote
+  setting (`firmware/lib/scout_settings`) under one tag; the buoy applies all of it or none, keeps
+  it in flash, and every v5 packet reports a CRC-16 digest of what it runs, which is the ACK for
+  the whole snapshot ([plan](firmware-remote-settings-plan.md)). Golden vector held by `check_packet_contract.py`.
 - **Keys:** per buoy, 32 bytes, in the gitignored `firmware/src/downlink_key.h` (template
   `downlink_key_example.h`) and the shore's `SCOUT_CMD_KEY_<id>`. Never in the console or the
   repo.

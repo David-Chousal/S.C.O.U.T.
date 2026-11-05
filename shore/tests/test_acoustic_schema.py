@@ -58,7 +58,7 @@ class AcousticRowTests(unittest.TestCase):
         # Updated for v4 (SCO-198): tx_count now follows the acoustic block, so the seven
         # fields are columns 16-22 rather than the tail.
         self.assertEqual(COLUMNS[16:23], ACOUSTIC_FIELDS)
-        self.assertEqual(len(COLUMNS), 24)
+        self.assertEqual(len(COLUMNS), 25)
 
     def test_recording_fills_the_acoustic_cells(self):
         row = reading_to_row(_reading(audio_present=True, **_SUMMARY))

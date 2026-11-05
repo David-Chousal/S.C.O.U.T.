@@ -8,7 +8,10 @@
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, listDevices, revokeDevice } from "./device.js";
-import { addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestTxCount, setCommandStation, SLOT_LABELS } from "./fleet.js";
+import {
+  addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestSettings, requestTxCount, restoreDefaults,
+  setCommandStation, SLOT_LABELS,
+} from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
@@ -142,6 +145,8 @@ async function reads(env, path, session, url) {
 const WRITES = [
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/tx-count$/, "settings.write", (db, b, m, a) => requestTxCount(db, a, m[1], b.tx_count)],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/label$/, "settings.write", (db, b, m, a) => renameBuoy(db, a, m[1], b.label)],
+  [/^\/api\/settings\/buoys\/(\d{1,5})$/, "settings.write", (db, b, m, a) => requestSettings(db, a, m[1], b.settings)],
+  [/^\/api\/settings\/buoys\/(\d{1,5})\/defaults$/, "settings.write", (db, b, m, a) => restoreDefaults(db, a, m[1])],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/command-station$/, "devices.write", (db, b, m, a) => setCommandStation(db, a, m[1], b.device_id)],
   [/^\/api\/fleet\/buoys$/, "buoys.add", (db, b, m, a) => addBuoy(db, a, b.buoy_id, String(b.label || "").trim())],
   [/^\/api\/team\/invites$/, "invites.write", async (db, b, m, a, env) => {

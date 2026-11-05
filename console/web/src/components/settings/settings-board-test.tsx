@@ -13,7 +13,10 @@ import { SettingsBoard } from "./settings-board";
 
 const DATA = {
   buoys: [{ buoy_id: 1, label: "SCOUT-01", tx_count_requested: null, requested_by: null, requested_at: null,
-    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default" }],
+    tx_count_reported: 3, cmd_rejected: 0, reported_at: 0, last_seen_at: 0, clock_lost: 0, command_device_id: null, state: "default",
+    settings_requested: Object.fromEntries(firmware.remote.map((spec) => [spec.key, null])),
+    settings_wanted: firmware.remote.map((spec) => spec.default), settings_digest_wanted: "e674",
+    settings_digest_reported: "e674", settings_state: "default" }],
   firmware,
 } as BuoySettings;
 
@@ -51,9 +54,30 @@ describe("SettingsBoard", () => {
     expect(rename).toHaveBeenCalledWith(1, "Reef north");
   });
 
+  test("a member changes remote settings; only the changed ones are sent", async () => {
+    const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
+    renderBoard("member");
+    const interval = await screen.findByLabelText("Reading interval");
+    await userEvent.selectOptions(interval, "15");
+    const humidity = screen.getByLabelText("Housing humidity alert");
+    await userEvent.clear(humidity);
+    await userEvent.type(humidity, "80");
+    await userEvent.click(screen.getByRole("button", { name: "Send 2 changes" }));
+    expect(send).toHaveBeenCalledWith(1, { sample_interval_min: 15, humidity_alert_pct: 80 });
+  });
+
+  test("the hydrophone clip offers Off, and the radio never appears as a control", async () => {
+    renderBoard("member");
+    const clip = await screen.findByLabelText("Hydrophone clip");
+    expect(screen.getAllByRole("option", { name: "Off" }).length).toBe(1);
+    expect(clip).toBeDefined();
+    expect(screen.queryByLabelText("Radio")).toBeNull();
+  });
+
   test("a guest sees the buoy settings but cannot rename", async () => {
     renderBoard("guest");
     expect(((await screen.findByLabelText("Name in the console")) as HTMLInputElement).disabled).toBe(true);
+    expect((screen.getByLabelText("Reading interval") as HTMLSelectElement).disabled).toBe(true);
     expect(screen.getByText(/View only/)).toBeDefined();
   });
 

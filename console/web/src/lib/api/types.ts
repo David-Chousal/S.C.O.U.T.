@@ -37,6 +37,29 @@ export interface Buoy {
   /** The one shore station that sends this buoy's downlink commands; null until an admin picks. */
   command_device_id: string | null;
   state: CountState;
+  /** Remote settings (worker/buoy-settings.js): each one's requested value, null = default. */
+  settings_requested: Record<string, number | null>;
+  /** The snapshot the buoy should run, in setting-ID order, and its digest. */
+  settings_wanted: number[];
+  settings_digest_wanted: string;
+  /** From the newest v5 packet; null until one arrives. */
+  settings_digest_reported: string | null;
+  settings_state: CountState;
+}
+
+/** One remote setting, from the firmware's table (buoy-config.json "remote"). */
+export interface RemoteSetting {
+  id: number;
+  key: string;
+  label: string;
+  unit: string;
+  help: string;
+  default: number;
+  /** Either a list of allowed values, or min..max in steps of step. */
+  choices?: number[];
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 export interface LifeRow {
@@ -68,7 +91,7 @@ export interface FirmwareSetting {
   key: string;
   label: string;
   value: string;
-  /** How it can be changed: by radio (only the transmit count) or by a firmware update. */
+  /** How it can be changed: by radio from Settings → Buoys, or by a firmware update. */
   change: string;
   status: "decided" | "provisional" | "pending sign-off";
   note: string;
@@ -77,7 +100,7 @@ export interface FirmwareSetting {
 
 export interface BuoySettings {
   buoys: Buoy[];
-  firmware: { source: string; settings: FirmwareSetting[] };
+  firmware: { source: string; settings: FirmwareSetting[]; remote: RemoteSetting[]; tierGapMv: number };
 }
 
 export interface Member {

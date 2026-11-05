@@ -18,7 +18,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "scout_downlink.h"
 #include "scout_packet.h"
+#include "scout_settings.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,12 +50,22 @@ size_t scout_console_batch(const ScoutReading *rows, size_t count, char *out, si
  * the body names no row. */
 int scout_console_bad_row(const char *body);
 
-/* Read {"buoys":[{"buoy_id":1,"tx_count_requested":2},...]} into requested[0..slots-1]
- * (index = buoy_id, 0 = nothing requested). Buoys the console does not list are cleared,
- * because the console is the source of truth once it answers; ids >= slots and counts outside
- * 1-3 are skipped. Returns how many buoys were set, or -1 (requested untouched) if the body is
- * not a settings reply. */
-int scout_console_parse_settings(const char *body, uint8_t *requested, size_t slots);
+/* What the console wants for one buoy: the transmit count (0 = nothing asked) for buoys still on
+ * packet v4, and the whole settings snapshot for v5 buoys. */
+typedef struct {
+    uint8_t tx_count;
+    uint8_t has_settings;
+    ScoutSettings settings;
+} ScoutWanted;
+
+#define SCOUT_WANTED_MAX_SLOTS 64u
+
+/* Read {"buoys":[{"buoy_id":1,"tx_count_requested":2,"settings":"2,0,30,60,3200,3100,3,70"},...]}
+ * into wanted[0..slots-1] (index = buoy_id). "settings" is checked exactly as an S line is
+ * (scout_dl_parse_settings_command); a snapshot the buoy would refuse is left out. Buoys the console
+ * does not list are cleared. Returns how many buoys have something wanted, or -1 (wanted untouched)
+ * if the body is not a settings reply. */
+int scout_console_parse_wanted(const char *body, ScoutWanted *wanted, size_t slots);
 
 #ifdef __cplusplus
 }
