@@ -18,18 +18,23 @@ function buoy(overrides: Partial<Buoy> = {}): Buoy {
 
 describe("FleetList", () => {
   test("says what was asked only when it differs from what the buoy reports", () => {
-    expect(transmitsLabel(buoy())).toBe("3 a day");
-    expect(transmitsLabel(buoy({ tx_count_requested: 1 }))).toBe("3 a day (1 a day asked)");
-    expect(transmitsLabel(buoy({ tx_count_reported: null }))).toBe("Not reported yet");
+    expect(transmitsLabel(buoy())).toEqual({ main: "3 a day", sub: "default" });
+    expect(transmitsLabel(buoy({ tx_count_requested: 1 }))).toEqual({ main: "3 a day", sub: "1 a day asked" });
+    expect(transmitsLabel(buoy({ tx_count_reported: null })).main).toBe("Not reported yet");
   });
 
-  test("each buoy opens to its essentials and a Settings key, and carries no battery or reading data", async () => {
+  test("a row opens to its essentials and closes again; no battery or reading data", async () => {
     render(<FleetList buoys={[buoy(), buoy({ buoy_id: 2, label: "Reef south", settings_state: "pending" })]} remote={REMOTE}
       devices={[{ id: "d1", name: "Kaneohe shore", created_at: 0, revoked_at: null, last_seen_at: null }]} />);
     expect(screen.getByText("Pending")).toBeDefined();
-    await userEvent.click(screen.getByText("Reef south"));
-    expect(screen.getAllByText("Kaneohe shore")[0]).toBeDefined();
-    expect(screen.getAllByText("All defaults")[0]).toBeDefined();
+    expect(screen.queryByText("Kaneohe shore")).toBeNull();
+    const toggle = screen.getByRole("button", { name: /Reef south/ });
+    await userEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.getByText("Kaneohe shore")).toBeDefined();
+    expect(screen.getByText("All defaults")).toBeDefined();
+    await userEvent.click(toggle);
+    expect(screen.queryByText("Kaneohe shore")).toBeNull();
     expect(screen.getByRole("link", { name: "Settings for Reef south" }).getAttribute("href")).toMatch(/^\/settings\/?\?buoy=2$/);
     expect(screen.queryByText(/battery/i)).toBeNull();
   });
