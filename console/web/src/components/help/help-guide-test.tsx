@@ -9,9 +9,9 @@ describe("HelpGuide", () => {
     expect(screen.getByRole("heading", { name: "Add a buoy" })).toBeDefined();
   });
 
-  test("every contents link points at a section on the page", () => {
+  test("every task link points at a section on the page", () => {
     const { container } = render(<HelpGuide />);
-    const links = [...container.querySelectorAll(".sc-help-toc a")];
+    const links = [...container.querySelectorAll(".sc-guide__tasks a")];
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) expect(container.querySelector(link.getAttribute("href") ?? "#none")).not.toBeNull();
   });
