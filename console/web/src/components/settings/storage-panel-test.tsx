@@ -23,6 +23,13 @@ describe("StoragePanel", () => {
     expect(screen.getByText(/backups\/2026-10-31.sql.gz/)).toBeDefined();
   });
 
+  test("shows Fred's use today", async () => {
+    vi.spyOn(api, "storage").mockResolvedValue({ ...REPORT,
+      assistant: { day: "2026-11-05", questions: 12, model_calls: 30, tokens_in: 9000, tokens_out: 1000, fallbacks: 2, people: 3 } });
+    render(<StoragePanel />);
+    expect((await screen.findByText(/Fred today/)).textContent).toMatch(/12 questions from 3 people, 30 model calls \(2 on the fallback\), 10,000 tokens/);
+  });
+
   test("warns when no bucket is bound", async () => {
     vi.spyOn(api, "storage").mockResolvedValue({ ...REPORT, bound: false, lastBackup: null });
     render(<StoragePanel />);

@@ -192,6 +192,8 @@ export interface StorageReport {
   budget: { writesPerMonth: number; readsPerMonth: number; storedBytes: number; maxObjectBytes: number };
   lastBackup: { key: string; bytes: number } | null;
   bound: boolean;
+  /** Fred's use today (UTC), across everyone; counts only. */
+  assistant?: { day: string; questions: number; model_calls: number; tokens_in: number; tokens_out: number; fallbacks: number; people: number };
 }
 
 export interface ReportRequest {
