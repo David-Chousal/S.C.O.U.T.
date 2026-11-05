@@ -72,8 +72,6 @@ export const api = {
     call<{ ok: true }>("POST", `/api/resets/${encodeURIComponent(token)}`, { password }),
 
   fleet: () => call<Fleet>("GET", "/api/fleet"),
-  requestTxCount: (buoyId: number, txCount: number) =>
-    call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/tx-count`, { tx_count: txCount }),
   addBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", "/api/fleet/buoys", { buoy_id: buoyId, label }),
   settings: () => call<BuoySettings>("GET", "/api/settings"),
   renameBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/label`, { label }),
@@ -107,7 +105,7 @@ export const api = {
     call<{ ok: true }>("POST", `/api/team/users/${encodeURIComponent(userId)}/${disabled ? "disable" : "enable"}`),
 
   devices: () => call<{ devices: Device[] }>("GET", "/api/devices"),
-  createDevice: (name: string) => call<{ token: string; name: string }>("POST", "/api/devices", { name }),
+  createDevice: (name: string) => call<{ id: string; token: string; name: string }>("POST", "/api/devices", { name }),
   revokeDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/revoke`),
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),

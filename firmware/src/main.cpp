@@ -663,6 +663,15 @@ void loop() {
             listen_for_command();
 #endif
         }
+    } else if (g_first_cycle && scout_boot_hello_transmits(g_last_mode, g_watchdog_reset)) {
+        // Boot hello: send the power-on reading now so the console confirms the buoy within
+        // seconds. The acoustic window stays open for the first real slot. The shore dedupes on
+        // (buoy_id, record_seq, timestamp_utc), so a slot that resends this reading collapses to one row.
+        ScoutAcousticSummary no_audio = {};
+        transmit_last_reading(false, no_audio);
+#ifdef SCOUT_DOWNLINK
+        listen_for_command();
+#endif
     }
 
 #ifdef SCOUT_WDT_TEST

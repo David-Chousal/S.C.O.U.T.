@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
+import { FirstContact } from "@/components/status/first-contact";
 import { SignalMeter, type SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import { HoldKey } from "@/components/ui/hold-key";
@@ -14,9 +15,16 @@ import { lastHeard, packetLabel } from "@/lib/format";
 import { can, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
+import { usePoll } from "@/lib/use-poll";
 import { CommandStation } from "./command-station";
 
 const HOUR = 3600 * 1000;
+const REFRESH_MS = 30 * 1000;
+
+/** When one shore station was last heard, or null if never. */
+function stationHeard(id: string): Promise<number | null> {
+  return api.devices().then((list) => list.devices.find((device) => device.id === id)?.last_seen_at ?? null);
+}
 
 /** How recently something checked in, as a signal meter. Buoys answer up to 3 times a day, so a
  * gap under 9 h is normal; a full day is silence. Shore stations sync at least hourly. */
@@ -28,14 +36,20 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
   return { state: "failed", lit: 1, word: "Silent" };
 }
 
-function NewToken({ onCreated, allowed }: { onCreated: (name: string, token: string) => void; allowed: boolean }) {
+interface CreatedToken {
+  id: string;
+  name: string;
+  token: string;
+}
+
+function NewToken({ onCreated, allowed }: { onCreated: (created: CreatedToken) => void; allowed: boolean }) {
   const { show } = useToast();
   const [name, setName] = useState("");
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
       const result = await api.createDevice(name.trim());
-      onCreated(result.name, result.token);
+      onCreated(result);
       setName("");
     } catch (failure) {
       show({ tone: "failed", title: "No token created", detail: failure instanceof Error ? failure.message : undefined });
@@ -60,10 +74,15 @@ export function StationsBoard() {
   const { show } = useToast();
   const fleet = useApi<Fleet>(api.fleet);
   const devices = useApi<{ devices: Device[] }>(api.devices);
-  const [created, setCreated] = useState<{ name: string; token: string } | null>(null);
-  const [now] = useState(() => Date.now());
+  const [created, setCreated] = useState<CreatedToken | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   const allowed = can(user.role, "devices.write");
   const active = (devices.data?.devices ?? []).filter((device) => !device.revoked_at);
+  usePoll(() => {
+    fleet.reload();
+    devices.reload();
+    setNow(Date.now());
+  }, REFRESH_MS);
 
   async function revoke(device: Device) {
     try {
@@ -110,6 +129,10 @@ export function StationsBoard() {
             <code className="sc-secret">{created.token}</code>
           </Banner>
         )}
+        {created && (
+          <FirstContact key={created.id} read={() => stationHeard(created.id)} onHeard={devices.reload}
+            waiting={<>Flash the station with this token and power it on; it checks in as soon as it joins WiFi.</>} />
+        )}
         <div className="sc-list">
           {devices.data.devices.length === 0 && <p className="sc-help">No shore stations yet.</p>}
           {devices.data.devices.map((device) => (
@@ -126,7 +149,7 @@ export function StationsBoard() {
             </div>
           ))}
         </div>
-        <NewToken allowed={allowed} onCreated={(name, token) => { setCreated({ name, token }); devices.reload(); }} />
+        <NewToken allowed={allowed} onCreated={(result) => { setCreated(result); devices.reload(); }} />
       </section>
     </>
   );

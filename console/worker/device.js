@@ -25,12 +25,13 @@ export async function createDevice(db, actor, name) {
   const label = String(name || "").trim().slice(0, 60);
   if (!label) return { error: "Name the shore station." };
   const token = `scd_${randomToken()}`;
+  const id = crypto.randomUUID();
   await db
     .prepare("INSERT INTO devices (id, name, token_hash, created_by, created_at) VALUES (?, ?, ?, ?, ?)")
-    .bind(crypto.randomUUID(), label, await sha256Hex(token), actor.id, Date.now())
+    .bind(id, label, await sha256Hex(token), actor.id, Date.now())
     .run();
   await record(db, { actor, action: "device.create", target: label });
-  return { token, name: label };
+  return { id, token, name: label };
 }
 
 export async function revokeDevice(db, actor, id) {

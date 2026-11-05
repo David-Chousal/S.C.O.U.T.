@@ -167,25 +167,25 @@ export function HelpGuide() {
           lead="The buoy never talks to the console directly. A shore station listens for it and passes each reading on.">
           <FlowDiagram />
           <p className="sc-guide__text sc-guide__aside">
-            The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 44-byte packet; raw audio stays on the buoy. Every 10 minutes
+            The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 46-byte packet; raw audio stays on the buoy. It also sends one packet the moment it is powered on, so a new buoy shows up within seconds. Every 10 minutes
             the shore station also asks the console for setting changes and hands them to the buoy right after its next packet.
           </p>
         </GuideSection>
 
         <GuideSection id="shore" eyebrow="Admin" title="Connect a shore station">
-          <Steps steps={SHORE_STEPS} done={<>the station shows a recent <b>last heard</b> time on Stations.</>} />
+          <Steps steps={SHORE_STEPS} done={<>the check under its new token turns green and says <b>Connected</b>.</>} />
           <ShoreFallback />
         </GuideSection>
 
         <GuideSection id="buoy" eyebrow="Member" title="Add a buoy">
-          <Steps steps={BUOY_STEPS} done={<>the buoy appears on Fleet with a recent reading.</>} />
+          <Steps steps={BUOY_STEPS} done={<>the <b>Add buoy</b> dialog turns green and says <b>Connected</b>.</>} />
         </GuideSection>
 
         <GuideSection id="settings" eyebrow="Member" title="Change how a buoy behaves"
           lead={<>Open <b>Settings → Buoys</b>. Each setting that can change by radio has its own control.</>}>
           <p className="sc-guide__text">
             You can change transmits a day, slot phase, reading interval, hydrophone clip, power thresholds and the housing humidity alert.
-            Fleet also changes the transmit count. The shore station sends the whole set right after the buoy&rsquo;s next packet.
+            The shore station sends the whole set right after the buoy&rsquo;s next packet.
           </p>
           <dl className="sc-guide__states">
             <div><dt>Pending</dt><dd>Sent, waiting for a packet from the buoy that reports the same settings.</dd></div>

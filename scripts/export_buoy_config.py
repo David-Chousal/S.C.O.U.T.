@@ -101,65 +101,72 @@ def remote() -> list[dict]:
     return out
 
 
+def _every_nth(n: int) -> str:
+    return "every" if n == 1 else f"every {n}{'nd' if n == 2 else 'rd'}"
+
+
 def settings() -> list[dict]:
+    """One display row per setting: a plain value, what it does, and whether it changes by radio
+    (per buoy, Settings → Buoys) or only by a firmware update."""
     config = _deployed(CONFIG_H.read_text())
     packet = PACKET_H.read_text()
     reg = {r["key"]: r for r in remote()}
     slots = _numbers(config, "TX_SLOTS_SOD")
     hours = _numbers(config, "AUDIO_HOURS_UTC")
-    firmware = "Firmware update (config.h); over-the-air updates are not built yet"
-    radio = "By radio, from Settings → Buoys"
 
-    def row(key, label, value, change=firmware, status="decided", note="", source="firmware/src/config.h"):
-        return {"key": key, "label": label, "value": value, "change": change, "status": status,
-                "note": note, "source": source}
+    def row(key, label, value, description, change="radio"):
+        return {"key": key, "label": label, "value": value, "description": description, "change": change}
 
-    def span(key):
+    def options(key, unit=""):
         r = reg[key]
-        return ", ".join(map(str, r["choices"])) if "choices" in r else f"{r['min']}–{r['max']}"
+        values = r["choices"] if "choices" in r else [r["min"], r["max"]]
+        joined = ", ".join(map(str, values[:-1])) + f" or {values[-1]}" if "choices" in r else f"{values[0]}–{values[1]}"
+        return f"{joined}{unit}"
 
-    lib = "firmware/lib/scout_settings/scout_settings.h"
+    tx, phase = reg["tx_count"], reg["slot_phase_h"]
+    clip = reg["audio_clip_s"]
+    conserve, critical = reg["conserve_mv"], reg["critical_mv"]
+    every = reg["conserve_every"]
+    humidity = reg["humidity_alert_pct"]
+    fw = (f"v{int(_number(config, 'FW_MAJOR'))}.{int(_number(config, 'FW_MINOR'))}."
+          f"{int(_number(config, 'FW_PATCH'))}")
     return [
-        row("tx_count", "Transmits a day", f"{span('tx_count')} (default {reg['tx_count']['default']})",
-            change=radio, note="Treated as signed off (SCO-198)", source=lib),
-        row("tx_slots", "Transmit slots", " · ".join(f"{_hhmm(s)} UTC" for s in slots),
-            change=radio, source=lib,
-            note=f"At slot phase 0. A count of 1 uses the first slot; 2 the first and last; 3 all three. "
-                 f"The slot phase ({span('slot_phase_h')} h) moves them later"),
-        row("sample_interval", "Sensor readings",
-            f"every {reg['sample_interval_min']['default']} min ({span('sample_interval_min')})",
-            change=radio, source=lib),
+        row("tx_count", "Transmits a day", f"{tx['default']} a day",
+            f"How many of the day's transmit slots send a packet ({options('tx_count')}). "
+            "1 uses the first slot, 2 the first and last, 3 all three."),
+        row("tx_slots", "Transmit slots", " · ".join(_hhmm(s) for s in slots) + " UTC",
+            f"Each comes 10 min after a sensor reading. The slot phase moves every slot "
+            f"{options('slot_phase_h', ' h')} later (default {phase['default']} h)."),
+        row("sample_interval", "Sensor readings", f"Every {reg['sample_interval_min']['default']} min",
+            f"How often the buoy wakes to read its sensors: every {options('sample_interval_min', ' min')}."),
         row("audio", "Hydrophone recordings",
-            f"{reg['audio_clip_s']['default']} s at "
-            + ", ".join(f"{h:02d}:00" for h in hours)
-            + f" UTC · {int(_number(config, 'ACOUSTIC_SAMPLE_RATE_HZ')):,} Hz",
-            change=radio, source=lib,
-            note=f"Clip {span('audio_clip_s')} s by radio (0 = off); the sample rate is firmware only "
-                 "(ADR-0011). Normal power mode only"),
+            f"{clip['default']} s at " + " · ".join(f"{h:02d}:00" for h in hours) + " UTC",
+            "One clip before each slot, summarised into the next packet; normal power mode only. "
+            f"Clip length {options('audio_clip_s', ' s')}, where 0 turns recording off. The "
+            f"{int(_number(config, 'ACOUSTIC_SAMPLE_RATE_HZ')):,} Hz sample rate is fixed."),
         row("power_modes", "Power-saving thresholds",
-            f"conserve below {reg['conserve_mv']['default'] / 1000:.2f} V · "
-            f"critical below {reg['critical_mv']['default'] / 1000:.2f} V",
-            change=radio, status="provisional", source=lib,
-            note="Defaults depend on the final battery pack (ADR-0007)"),
-        row("humidity_alert", "Housing humidity alert", f"{reg['humidity_alert_pct']['default']} %RH",
-            change=radio, status="provisional", source=lib,
-            note="Default is a placeholder until the leak calibration (SCO-204)"),
+            f"Conserve below {conserve['default'] / 1000:.2f} V · critical below {critical['default'] / 1000:.2f} V",
+            f"Below conserve the buoy skips audio and sends in {_every_nth(every['default'])} used slot; below "
+            "critical it only logs temperature. The defaults will be retuned for the final battery pack."),
+        row("humidity_alert", "Housing humidity alert", f"{humidity['default']} %RH",
+            "Readings at or above it are flagged HUMIDITY_HIGH, the first sign of a leak. The default is a "
+            "placeholder until the leak calibration."),
         row("radio", "Radio", f"{_number(config, 'LORA_FREQUENCY_MHZ'):g} MHz · "
             f"+{int(_number(config, 'LORA_TX_POWER_DBM'))} dBm · BW 500 kHz · SF12 · CR 4/8",
-            note="Set by the FCC grant; never changed by radio (config.h)"),
-        row("downlink", "Settings downlink listen window",
+            "Fixed by the RFM95's FCC grant; the shore station must match it exactly.", change="firmware"),
+        row("downlink", "Settings listen window",
             f"{_number(config, 'DOWNLINK_LISTEN_MS') / 1000:g} s after each send",
-            note="Never changed by radio, so a wrong value cannot lock a buoy out"),
-        row("firmware", "Firmware",
-            f"v{int(_number(config, 'FW_MAJOR'))}.{int(_number(config, 'FW_MINOR'))}.{int(_number(config, 'FW_PATCH'))}"
-            f" · packet v{int(_number(packet, 'SCOUT_PACKET_VERSION'))}",
-            note="What the buoy reports is in its packets; this is the firmware in the repo"),
+            "How long the buoy listens for a settings command. Fixed, so a bad value can never cut a "
+            "buoy off.", change="firmware"),
+        row("firmware", "Firmware", f"{fw} · packet v{int(_number(packet, 'SCOUT_PACKET_VERSION'))}",
+            "The version in the repo. Each buoy reports its own in every packet.", change="firmware"),
     ]
 
 
 def render() -> str:
     data = {"source": "firmware/src/config.h and library headers, via scripts/export_buoy_config.py",
             "settings": settings(), "remote": remote(),
+            "slotsSod": _numbers(_deployed(CONFIG_H.read_text()), "TX_SLOTS_SOD"),
             "tierGapMv": _settings_macros()["SCOUT_SET_MIN_TIER_GAP_MV"]}
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 

@@ -597,14 +597,14 @@ done, every reading the shore station hears shows up on the console with no one 
    the console, and readings whose sequence numbers collide would be silently dropped.
 4. **The buoy appears by itself.** Its first reading creates it on **Fleet** as `SCOUT-01`, `SCOUT-02`, … (the ID,
    zero-padded to two digits). An
-   admin can also add it ahead of time on Fleet (ID and name), and a member can rename it on
+   admin can also add it ahead of time with **Add buoy** on Fleet (ID and name), and a member can rename it on
    **Settings → Buoys**.
 5. **Watch it update.** Each reading reaches the console seconds after the shore station hears
    it (the S3 pushes at once and retries if offline; the computer path when `sync_console.py`
    next runs). **Fleet** shows each buoy's newest packet time and the transmit count it reports;
    **Stations** shows when each shore station's token was last used.
-6. **Changing settings from the console** (member). Pick a transmit count on **Fleet**, or any of
-   the eight remote settings on **Settings → Buoys**. The S3 reads them within 10 minutes (or
+6. **Changing settings from the console** (member). Change the transmit count or any of the
+   other remote settings on **Settings → Buoys**. The S3 reads them within 10 minutes (or
    `sync_console.py` prints the `N`/`S` lines), sends the whole snapshot right after the buoy's
    next packet, and the console shows **Pending** until a packet reports the matching settings
    digest, then **Confirmed** (**Rejected** if the buoy refused it). The radio parameters and the

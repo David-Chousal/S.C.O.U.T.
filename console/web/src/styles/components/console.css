@@ -53,8 +53,9 @@
 .sc-tabpanel[hidden] { display: none; }
 .sc-settings-count { gap: var(--space-3); }
 .sc-firmware-table { table-layout: fixed; }
-.sc-firmware-table thead th:nth-child(1) { width: 24%; }
-.sc-firmware-table thead th:nth-child(3) { width: 168px; }
+.sc-firmware-table thead th:nth-child(1) { width: 52%; }
+.sc-firmware-table thead th:nth-child(3) { width: 112px; }
+.sc-firmware-table th[scope="row"] .sub { display: block; margin-top: 2px; color: var(--ink-muted); font: 400 13px/18px var(--font-sans); }
 .sc-firmware-table th[scope="row"] { white-space: normal; vertical-align: top; }
 .sc-firmware-table td { vertical-align: top; white-space: normal; overflow-wrap: break-word; }
 .sc-firmware-table td .sub { display: block; white-space: normal; }
