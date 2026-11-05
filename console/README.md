@@ -185,7 +185,7 @@ For local development put `GEMINI_API_KEY=…` in `console/.dev.vars` (gitignore
 in the PR:
 
 ```bash
-cd console && node scripts/run_assistant_evals.mjs --out /tmp/fred-evals.json
+cd console && node scripts/run-assistant-evals.mjs --out /tmp/fred-evals.json
 ```
 
 ## Deploy (one-time, needs the account owner)

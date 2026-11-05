@@ -3,7 +3,7 @@
  * prompt or model change (ADR-0013). It seeds a throwaway in-memory database with a fixed fleet,
  * asks each question through the same loop the Worker runs, and scores the answer.
  *
- *   cd console && node scripts/run_assistant_evals.mjs [--only id,id] [--pace-ms 4000] [--out file.json]
+ *   cd console && node scripts/run-assistant-evals.mjs [--only id,id] [--pace-ms 4000] [--out file.json]
  *
  * The key comes from GEMINI_API_KEY in the environment or console/.dev.vars and is never printed.
  * Each question costs several free-tier requests; the default pace keeps under per-minute limits.

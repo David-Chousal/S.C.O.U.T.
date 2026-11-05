@@ -145,7 +145,7 @@ browser ── POST /api/assistant (session + CSRF) ──► Worker
   role gating, confirm expiry, ownership and audit, caps, the fallback, the brief). Web tests
   cover the panel, cards and brief. The eval set (`console/test/assistant-evals.json`, 41
   questions) is run by hand against the real model with
-  `node scripts/run_assistant_evals.mjs`; **it has not been scored yet**, because the first key
+  `node scripts/run-assistant-evals.mjs`; **it has not been scored yet**, because the first key
   was refused (decision 3).
 
 ## References
