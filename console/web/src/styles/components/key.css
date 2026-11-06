@@ -1,13 +1,14 @@
 /* Key: a physical console key with a keybed edge and a shortcut */
 .sc-key { position: relative; display: inline-flex; white-space: nowrap; text-decoration: none; align-items: center; gap: var(--space-3); height: 34px; padding: 0 var(--space-2) 2px var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 500 14px/1 var(--font-sans); cursor: pointer; box-shadow: inset 0 -3px 0 var(--line); transition: transform 120ms ease-out, box-shadow 120ms ease-out; }
 /* Rises a pixel on hover and drops on press, so the travel reads as a real keystroke. */
-.sc-key:hover:not(:disabled):not(.is-busy) { transform: translateY(-1px); box-shadow: inset 0 -3px 0 var(--line), 0 3px 6px rgba(0,0,0,.14); }
-.sc-key:active:not(:disabled), .sc-key.is-pressed { transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); transition-duration: 60ms; }
+/* :where() keeps hover at the same weight as press, so the later press rule wins mid-click. */
+.sc-key:hover:where(:not(:disabled, .is-busy)) { transform: translateY(-1px); box-shadow: inset 0 -3px 0 var(--line), 0 3px 6px rgba(0,0,0,.14); }
+.sc-key:active:where(:not(:disabled)), .sc-key.is-pressed { transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); transition-duration: 60ms; }
 .sc-key:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sc-key kbd { font: 500 11px/1 var(--font-mono); padding: 3px 5px; border-radius: var(--radius-sm); border: 1px solid var(--line); color: var(--ink-muted); }
 .sc-key--primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: inset 0 -3px 0 rgba(0,0,0,.28); }
-.sc-key--primary:hover:not(:disabled):not(.is-busy) { box-shadow: inset 0 -3px 0 rgba(0,0,0,.28), 0 3px 6px rgba(0,0,0,.2); }
-.sc-key--primary:active:not(:disabled), .sc-key--primary.is-pressed { box-shadow: inset 0 -1px 0 rgba(0,0,0,.28); }
+.sc-key--primary:hover:where(:not(:disabled, .is-busy)) { box-shadow: inset 0 -3px 0 rgba(0,0,0,.28), 0 3px 6px rgba(0,0,0,.2); }
+.sc-key--primary:active:where(:not(:disabled)), .sc-key--primary.is-pressed { box-shadow: inset 0 -1px 0 rgba(0,0,0,.28); }
 .sc-key--primary kbd { border-color: currentColor; color: inherit; opacity: .75; }
 /* Neutral at rest so a row of them does not shout; red only once you reach for one. */
 .sc-key--hold { overflow: hidden; }
