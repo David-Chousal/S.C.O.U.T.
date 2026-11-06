@@ -130,7 +130,7 @@ export async function createInvite(db, actor, email, role) {
     .bind(id, await sha256Hex(token), email.toLowerCase(), role, actor.id, now, now + INVITE_TTL_MS)
     .run();
   await record(db, { actor, action: "invite.create", target: email.toLowerCase(), after: { role } });
-  return { token };
+  return { token, email: email.toLowerCase(), role, expiresAt: now + INVITE_TTL_MS };
 }
 
 export async function revokeInvite(db, actor, id) {
@@ -176,14 +176,15 @@ export async function createResetLink(db, actor, userId) {
   const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
   if (!user) return { error: "No such user." };
   const token = randomToken(24);
+  const expiresAt = Date.now() + RESET_TTL_MS;
   // A new link replaces any earlier unused one for this user.
   await db.batch([
     db.prepare("DELETE FROM password_resets WHERE user_id = ? AND used_at IS NULL").bind(userId),
     db.prepare("INSERT INTO password_resets (token_hash, user_id, created_by, expires_at) VALUES (?, ?, ?, ?)")
-      .bind(await sha256Hex(token), userId, actor.id, Date.now() + RESET_TTL_MS),
+      .bind(await sha256Hex(token), userId, actor.id, expiresAt),
   ]);
   await record(db, { actor, action: "user.reset_link", target: user.email });
-  return { token, email: user.email };
+  return { token, email: user.email, expiresAt };
 }
 
 export async function validReset(db, token, now = Date.now()) {

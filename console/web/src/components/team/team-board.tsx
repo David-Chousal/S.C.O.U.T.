@@ -9,12 +9,13 @@ import { initials } from "@/components/shell/account-menu";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Member, Role, Team } from "@/lib/api/types";
+import type { LinkIssued, Member, Role, Team } from "@/lib/api/types";
 import { plural } from "@/lib/format";
 import { can, ROLE_LABEL, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
 import { useViewOnlyNote } from "@/lib/view-only-note";
+import { DeliveryNote } from "./delivery-note";
 import { InviteDialog } from "./invite-dialog";
 
 /** The Team page: people, roles, reset links, offboarding, and open invites. Admins change it;
@@ -25,7 +26,7 @@ export function TeamBoard() {
   const { show } = useToast();
   const { data, error, reload } = useApi<Team>(api.team);
   const [inviting, setInviting] = useState(false);
-  const [resetLink, setResetLink] = useState<{ email: string; link: string } | null>(null);
+  const [resetLink, setResetLink] = useState<LinkIssued | null>(null);
   const [removing, setRemoving] = useState<Member | null>(null);
   const canManage = can(user.role, "invites.write");
   useViewOnlyNote(canManage ? null : "View only: inviting people, changing roles and disabling accounts needs the admin role.");
@@ -42,8 +43,7 @@ export function TeamBoard() {
 
   async function makeResetLink(member: Member) {
     try {
-      const { link } = await api.resetLink(member.id);
-      setResetLink({ email: member.email, link });
+      setResetLink(await api.resetLink(member.id));
     } catch (failure) {
       show({ tone: "failed", title: "No reset link", detail: failure instanceof Error ? failure.message : undefined });
     }
@@ -76,7 +76,8 @@ export function TeamBoard() {
     <>
       {resetLink && (
         <Banner tone="info" icon="lock" action={<Key size="sm" onClick={() => setResetLink(null)}>Done</Key>}>
-          <strong>Password reset link for {resetLink.email}</strong>: send it yourself. It works once, for 24 hours, and is not shown again.
+          <strong>Password reset link for {resetLink.email}</strong>: it works once, for 24 hours, and is not shown again.{" "}
+          <DeliveryNote delivery={resetLink.delivery} email={resetLink.email} />
           <code className="sc-secret">{resetLink.link}</code>
         </Banner>
       )}

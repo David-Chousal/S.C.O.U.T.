@@ -126,6 +126,16 @@ export interface Invite {
   expires_at: number;
 }
 
+/** Whether the console emailed an invite or reset link (SCO-300). Anything but "sent" means the
+ * admin sends the link by hand. */
+export type EmailDelivery = "sent" | "failed" | "not_configured" | "rate_limited";
+
+export interface LinkIssued {
+  link: string;
+  email: string;
+  delivery: EmailDelivery;
+}
+
 export interface Team {
   members: Member[];
   invites: Invite[];

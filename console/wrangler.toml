@@ -29,9 +29,21 @@ GOOGLE_CLIENT_ID = ""
 # notice, so these are vars, not code. Members and admins share one cap; guests get a lower one.
 ASSISTANT_DAILY_CAP = "40"
 ASSISTANT_DAILY_CAP_GUEST = "10"
+# Invite and reset emails a day (UTC), per admin and console-wide (SCO-300, ADR-0014). A send over
+# either cap is skipped and the admin copies the link instead.
+EMAIL_DAILY_CAP_ADMIN = "20"
+EMAIL_DAILY_CAP_TOTAL = "50"
 
-# Fred's fallback when Gemini is rate-limited (Workers AI, free allocation). `wrangler dev` runs it
-# against the real service, so it needs `wrangler login` locally.
+# Invite and reset emails through Cloudflare Email Sending (ADR-0014). No API key: the binding is
+# the credential, limited to sending from console@scoutscu.com. LEFT OFF until the account owner
+# finishes console/README.md → Email runbook: on 2026-11-06 Cloudflare refused to accept a Worker
+# carrying this binding (edge-preview, code 10013), so turning it on now would likely break deploys.
+# Until then the console reports "email isn't set up" and admins copy the link. Never add
+# `remote = true`: it would send real email from `wrangler dev`.
+# [[send_email]]
+# name = "EMAIL"
+# allowed_sender_addresses = ["console@scoutscu.com"]
+
 [ai]
 binding = "AI"
 

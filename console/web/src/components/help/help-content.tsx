@@ -95,6 +95,15 @@ export const PROBLEMS: readonly HelpProblem[] = [
     symptom: "There is a gap in a chart",
     fix: <>The buoy was silent for more than 26 hours. It keeps a copy on its SD card, which can be imported later to fill the gap.</>,
   },
+  {
+    symptom: "An invite or reset email didn’t arrive",
+    fix: (
+      <>When an admin invites someone on <b>Team</b> or issues a reset link, the console emails the link from console@scoutscu.com and
+        says “Email sent to …”. If it says “Couldn’t email”, or the person sees nothing (check spam), copy the link from the same card
+        and send it yourself; it works the same way. Links are shown once, so if you closed it, revoke the invite and make a new one.
+        Each admin can send 20 emails a day, the whole console 50.</>
+    ),
+  },
 ];
 
 export const ROLES: readonly { role: string; can: string }[] = [

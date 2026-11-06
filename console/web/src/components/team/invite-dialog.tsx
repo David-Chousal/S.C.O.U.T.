@@ -5,7 +5,8 @@ import { useToast } from "@/components/feedback/toaster";
 import { Dialog } from "@/components/overlays/dialog";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
-import type { Role } from "@/lib/api/types";
+import type { LinkIssued, Role } from "@/lib/api/types";
+import { DeliveryNote } from "./delivery-note";
 
 const ROLES: { value: Role; label: string; detail: string }[] = [
   { value: "guest", label: "Guest", detail: "Sees every page and setting; changes nothing." },
@@ -19,18 +20,19 @@ interface InviteDialogProps {
   onInvited: () => void;
 }
 
-/** Invite one person by email. The single-use link is shown once, here, and never again. */
+/** Invite one person by email. The console emails the link when it can; either way the
+ * single-use link is shown once, here, and never again. */
 export function InviteDialog({ open, onClose, onInvited }: InviteDialogProps) {
   const { show } = useToast();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("member");
-  const [link, setLink] = useState("");
+  const [issued, setIssued] = useState<LinkIssued | null>(null);
   const [error, setError] = useState("");
 
   function close() {
     setEmail("");
     setRole("member");
-    setLink("");
+    setIssued(null);
     setError("");
     onClose();
   }
@@ -39,9 +41,9 @@ export function InviteDialog({ open, onClose, onInvited }: InviteDialogProps) {
     event.preventDefault();
     try {
       const result = await api.createInvite(email.trim(), role);
-      setLink(result.link);
+      setIssued(result);
       setError("");
-      show({ tone: "ok", title: `Invite created for ${email.trim()}` });
+      show({ tone: "ok", title: result.delivery === "sent" ? `Invite emailed to ${result.email}` : `Invite created for ${result.email}` });
       onInvited();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "The invite was not created.");
@@ -49,12 +51,13 @@ export function InviteDialog({ open, onClose, onInvited }: InviteDialogProps) {
   }
 
   return (
-    <Dialog open={open} title={link ? "Send this link" : "Invite someone"} onClose={close}
-      footer={link ? <Key variant="primary" onClick={close}>Done</Key> : undefined}>
-      {link ? (
+    <Dialog open={open} title={issued ? (issued.delivery === "sent" ? "Invite sent" : "Send this link") : "Invite someone"} onClose={close}
+      footer={issued ? <Key variant="primary" onClick={close}>Done</Key> : undefined}>
+      {issued ? (
         <div className="sc-fieldset">
-          <span className="sc-help">Send it to {email.trim()} yourself. It works once, for 7 days, and is not shown again.</span>
-          <code className="sc-secret">{link}</code>
+          <DeliveryNote delivery={issued.delivery} email={issued.email} />
+          <span className="sc-help">The link works once, for 7 days, and is not shown again.</span>
+          <code className="sc-secret">{issued.link}</code>
         </div>
       ) : (
         <form className="sc-fieldset" onSubmit={onSubmit}>
