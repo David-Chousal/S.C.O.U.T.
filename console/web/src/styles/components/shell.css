@@ -21,18 +21,15 @@
 .sc-side--rail .sc-nav a { justify-content: center; gap: 0; padding: 0; }
 .sc-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-nav a > .sc-ico { flex: none; }
-.sc-side__toggle { display: flex; align-items: center; gap: var(--space-3); flex: none; height: 34px; margin-top: auto; padding: 0 var(--space-2); overflow: hidden; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); font: 500 13px/1 var(--font-sans); white-space: nowrap; cursor: pointer; }
+/* Collapse or expand the menu: an icon in line with the menu's own icons. */
+.sc-side__toggle { display: grid; place-items: center; flex: none; width: 36px; height: 34px; margin-top: auto; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); cursor: pointer; }
 .sc-side__toggle:hover { background: var(--surface-sunken); color: var(--ink); }
 .sc-side__toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.sc-side__toggle > .sc-ico { flex: none; transition: transform 240ms; }
-.sc-side__toggle[aria-expanded="true"] > .sc-ico { transform: rotate(180deg); }
-.sc-side--rail .sc-side__toggle { justify-content: center; padding: 0; }
-/* The drag handle on a panel's inner edge: a thin hit area that shows an accent line on hover,
-   drag and keyboard focus. */
+.sc-side--rail .sc-side__toggle { align-self: center; }
+/* The drag handle on a panel's inner edge: an invisible hit area; the resize cursor is the only
+   cue. Keyboard focus shows a neutral line, so the handle can still be found from the keyboard. */
 .sc-resize { position: absolute; top: 0; bottom: 0; z-index: var(--z-sticky); width: 8px; cursor: col-resize; touch-action: none; }
-.sc-resize::after { content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 2px; background: transparent; transition: background 120ms; }
-.sc-resize:hover::after, .sc-resize:focus-visible::after, .sc-shell--resizing .sc-resize::after { background: var(--accent); }
-.sc-resize:focus-visible { outline: none; }
+.sc-resize:focus-visible { outline: none; box-shadow: inset -1px 0 0 var(--line-strong), inset 1px 0 0 var(--line-strong); }
 .sc-resize--side { right: 0; }
 /* The S.C.O.U.T. wordmark: the sign-in page and the printed report. */
 .sc-wordmark { display: flex; align-items: baseline; gap: var(--space-2); padding: 0 var(--space-2); color: var(--ink); font: 700 22px/1 var(--font-sans); letter-spacing: -.04em; }
@@ -55,7 +52,10 @@
 /* Above the page's own sticky table headers and dragged bays, so the account menu is never covered;
    below dialogs, so a dialog's backdrop still covers the bar. */
 .sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: var(--side-w) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); transition: grid-template-columns 240ms cubic-bezier(.2, .7, .2, 1); }
-.sc-top__brand { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); overflow: hidden; border-right: 1px solid var(--line); }
+/* No overflow clipping here: the account menu hangs below this block, and a clipped block scrolls
+   when focus moves into the menu, which pushed the menu off the top of the screen. */
+.sc-top__brand { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); border-right: 1px solid var(--line); }
+.sc-top__brand .sc-account { flex: 0 1 auto; }
 /* With the menu as an icon rail the mark sits alone over it, and the account moves right. */
 .sc-shell:has(.sc-side--rail) .sc-top__brand { justify-content: center; padding: 0; }
 .sc-top__end .sc-account__panel { right: 0; left: auto; }

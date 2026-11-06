@@ -25,6 +25,7 @@ export const ICON_PATHS = {
   "eye": "M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
   "filter": "M2 3h12l-4.5 5.5V13l-3 1.5V8.5z",
   "layout": "M2.5 2.5h11v11h-11z M2.5 6.5h11 M7 6.5v7",
+  "sidebar": "M2.5 2.5h11v11h-11z M6.5 2.5v11",
   "logout": "M6 2.5H2.5v11H6 M10 5l3 3-3 3 M13 8H6",
   "trash": "M2.5 4h11 M6 4V2.5h4V4 M3.5 4l.8 9.5h7.4l.8-9.5 M6.5 6.5v5 M9.5 6.5v5",
 } as const;

@@ -43,9 +43,8 @@ export function Sidebar({ shortcuts = false, collapsed = false, width = SIDE.max
         </div>
         {onToggle && (
           <button type="button" className="sc-side__toggle" onClick={onToggle} aria-expanded={!collapsed}
-            title={collapsed ? "Expand the menu" : "Collapse the menu to icons"}>
-            <Icon name="chevron-right" size={16} />
-            <span className={collapsed ? "sc-visually-hidden" : undefined}>{collapsed ? "Expand menu" : "Collapse menu"}</span>
+            aria-label={collapsed ? "Expand menu" : "Collapse menu"} title={collapsed ? "Expand menu" : "Collapse menu"}>
+            <Icon name="sidebar" size={20} />
           </button>
         )}
         {onResize && (

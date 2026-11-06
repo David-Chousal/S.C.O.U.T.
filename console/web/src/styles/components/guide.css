@@ -48,7 +48,7 @@
 .sc-guide__step::before { content: counter(step); position: absolute; left: 0; top: -2px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: var(--radius-full); background: var(--ink); color: var(--bg); font: 600 14px/1 var(--font-mono); }
 .sc-guide__step:not(:last-child)::after { content: ""; position: absolute; left: 14px; top: 34px; bottom: calc(-1 * var(--space-6) + 4px); width: 2px; background: var(--line); }
 .sc-guide__step-title { margin: 0; font: 600 16px/24px var(--font-sans); }
-.sc-guide__done { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; padding: var(--space-3) var(--space-4); border-left: 3px solid var(--positive); background: var(--positive-soft); font: 400 14px/20px var(--font-sans); }
+.sc-guide__done { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; padding: var(--space-3) var(--space-4) calc(var(--space-3) + 3px); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 -3px 0 var(--line); font: 400 14px/20px var(--font-sans); }
 .sc-guide__done .sc-ico { flex: none; margin-top: 2px; color: var(--positive); }
 
 .sc-guide__flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 960px; margin: 0; padding: 0; list-style: none; }
