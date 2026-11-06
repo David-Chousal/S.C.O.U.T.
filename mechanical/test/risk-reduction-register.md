@@ -51,7 +51,7 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-20 | Hang-Hole Static FEA, Through-Hole Floatation, 2026-10-30 | Pass (analysis only) | [`rr-20-hang-hole-fea-2026-10-30.md`](rr-20-hang-hole-fea-2026-10-30.md) |
 | RR-21 | Tub Plain-Salt Water vs Santa Cruz Seawater, Float Waterline, 2026-11-01 | Running | [`rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md`](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) |
 | RR-22 | Electronics Housing Cap Assembly and Gland Fit, 2026-11-01 | Partial | [`rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md`](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md) |
-| RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Fail (Stage 1) | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
+| RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Fail (Stage 1), closed 2026-11-06 | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
 | RR-24 | PG11 Gland Fit Coupon, Cap Gland Interface, 2026-11-02 | Partial | [`rr-24-gland-fit-coupon-2026-11-02.md`](rr-24-gland-fit-coupon-2026-11-02.md) |
 | RR-25 | Electronics Bench — Controller, Sensor and Clock Bring-Up, 2026-10-29 | Pass | [`rr-25-controller-and-sensor-bring-up-2026-10-29.md`](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md) |
 | RR-26 | Water-Temperature Probe — Step Response in Water, 2026-11-03 | Partial | [`rr-26-ds18b20-water-step-response-2026-11-03.md`](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md) |
