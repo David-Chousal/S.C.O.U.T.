@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { Icon } from "@/components/ui/icon";
 import { Key } from "@/components/ui/key";
@@ -117,6 +117,15 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
     if (!open) return;
     input.current?.focus();
   }, [open]);
+
+  // The question box grows with what is typed, up to its CSS max-height, then scrolls. Set through
+  // the DOM (no inline style attribute), so the strict CSP holds.
+  useLayoutEffect(() => {
+    const box = input.current;
+    if (!box) return;
+    box.style.height = "auto";
+    box.style.height = `${box.scrollHeight + 2}px`;
+  }, [draft]);
 
   // Keep the newest text and card, with its Confirm key, in view as the reply streams in.
   useEffect(() => {
