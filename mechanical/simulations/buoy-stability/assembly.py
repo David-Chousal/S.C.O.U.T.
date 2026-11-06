@@ -3,6 +3,7 @@
 A registry entry with an `"assembly"` block lists its parts; each part is a STEP file placed by:
   count / overlap_mm   stack `count` copies, each one's lowest point on the previous one's highest, minus the connector overlap
   around: N            copy N times about the vertical axis (a wedge given once becomes N around the chassis)
+  z_offset_mm          lift the part straight up by this much from its STEP position (default 0)
   mate: "bottom"       place the part's lowest point on the highest point of the part before it (default: keep STEP coordinates)
   kind                 chassis | wedge | wedge-cap | wedge-bottom | section: picks the mass rule below
 
@@ -74,7 +75,7 @@ def place(gmsh, it):
         lo = min(gmsh.model.getBoundingBox(*dt)[2] for dt in solids)
         hi = max(gmsh.model.getBoundingBox(*dt)[5] for dt in solids)
         count, over = p.get("count", 1), p.get("overlap_mm", 0.0)
-        dz0 = (prev_top - lo) if (p.get("mate") == "bottom" and prev_top is not None) else 0.0
+        dz0 = (prev_top - lo) if (p.get("mate") == "bottom" and prev_top is not None) else p.get("z_offset_mm", 0.0)
         copies = [solids]
         for _ in range(count - 1):
             copies.append(gmsh.model.occ.copy(solids))

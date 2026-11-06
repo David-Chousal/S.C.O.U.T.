@@ -41,6 +41,7 @@ come from [`assembly.py`](assembly.py) (the v5/v6/v7 assemblies still use the or
 
 - **Parts placed from the STEP files**, not sketched: sections stacked (v3 and v4: three; v5: bottom with top on it; v7: bottom with two on it), and
   a wedge given once in the STEP copied to **six, 60 degrees apart** around the chassis (v9, wedge-snap v3, wedge-bolted v3 and v4).
+- **Pegs seated (added 2026-11-06):** `v5-pegs-seated` and `v5b-pegs-seated` stack the v5 sections the way they assemble, each peg slid into the next socket, with no trimming. A part's `z_offset_mm` lifts it straight up from its STEP position: 63.5 mm for the middle, 127 mm for the top, the lowest heights where the solids do not overlap. `v5b` uses the redesigned top section.
 - **Real 3D hull**: a 3 mm voxel union of the parts. Each column is filled from its lowest to its highest surface crossing, so a cavity sealed
   by the part above counts as displacement and an open cup or through-hole (v1, v2 centre; the top v4 cup) floods. The wedges are open tubes
   that the real build fills with foam, so their whole plan outline counts as displacement. The electronics housing (127 mm body, flange on

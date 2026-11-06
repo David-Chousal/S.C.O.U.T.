@@ -35,7 +35,8 @@ All 15 designs in the stability simulator, plus two floats that are not in it. N
 | `mushroom` | Mushroom float as the simulator has it (2026-10-28 file) | `floatation/float-mushroom.step` |
 | `assembly-v7`, `assembly-v6`, `assembly-v5` | Full buoy assemblies | `full-buoy-assembly-v*.step` |
 | `wedge-bolted-v4`, `wedge-bolted-v3`, `wedge-snap-v3` | Chassis, wedges and caps | `floatation/` |
-| `v5-pegs-seated` | The three v5 sections with each peg slid into the next socket, no trimming (2026-11-06). Same STEP files as `v5-concept`; each section is lifted by the body height of the one below (63.5 mm, then 127 mm), the lowest height with zero overlap | `floatation/floatation-v5-*-section.step` |
+| `v5-pegs-seated` | The three v5 sections with each peg slid into the next socket, no trimming (2026-11-06). Each section is lifted by the body height of the one below (63.5 mm, then 127 mm), the lowest height with zero overlap | `floatation/floatation-v5-*-section.step` |
+| `v5b-pegs-seated` | Same stack with the redesigned top section (79.8 mm tall instead of 125.4), same lift heights | `floatation/floatation-v5b-top-section.step` and the v5 bottom and middle |
 | `v9-bottom`, `v9-concept`, `v7-concept`, `v5-concept`, `v4-concept`, `v3`, `v2`, `v1` | Earlier concepts | `floatation/` |
 
 The ids match `buoy-stability/iterations.json`, so the viewer and the simulator can name the same design.
@@ -45,7 +46,7 @@ body/flange (simulator)", a plain cylinder, not your CAD). Single-file entries a
 
 **To update a design:** replace the STEP in `mechanical/cad/` (same name) or point its registry entry at a new
 file, then rebuild. **To add one:** add it to `iterations.json` (it then also appears in the simulator) or to
-`EXTRA` (single file) or `EXTRA_STACKS` (placed parts, with `z_offset_mm`) in `convert_models.py`. A new id goes in `ORDER` to set its place in the picker; otherwise it lands last.
+`EXTRA` in `convert_models.py` (single files only). Registry entries can lift parts with `z_offset_mm`. A new id goes in `ORDER` to set its place in the picker; otherwise it lands last.
 
 ## Rebuild after the CAD changes
 
