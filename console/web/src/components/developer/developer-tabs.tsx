@@ -1,30 +1,42 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AuditTable } from "@/components/audit/audit-table";
+import { can, useSession } from "@/lib/session";
 import { DeveloperBoard } from "./developer-board";
+import { StoragePanel } from "./storage-panel";
 
-const TABS = [
+const ALL_TABS = [
   { id: "tokens", label: "API tokens" },
   { id: "audit", label: "Audit log" },
+  { id: "storage", label: "Storage" },
 ] as const;
-type TabId = (typeof TABS)[number]["id"];
+type TabId = (typeof ALL_TABS)[number]["id"];
+type Tab = (typeof ALL_TABS)[number];
 
-function tabOf(wanted: string | null): TabId {
-  return TABS.find((tab) => tab.id === wanted)?.id ?? "tokens";
+function tabOf(tabs: readonly Tab[], wanted: string | null): TabId {
+  return tabs.find((tab) => tab.id === wanted)?.id ?? "tokens";
 }
 
-/** The Developer page: API tokens and the audit log as two tabs. "?tab=audit" opens the log, so
- * the old /audit/ address and links can land on it, and keeps following the address when it
- * changes. Tabs follow the WAI-ARIA pattern. */
+const PANELS: Record<TabId, () => ReactNode> = {
+  tokens: () => <DeveloperBoard />,
+  audit: () => <AuditTable />,
+  storage: () => <StoragePanel />,
+};
+
+/** The Developer page: API tokens, the audit log and, for admins, storage (R2 use, backups and
+ * Fred's use today) as tabs. "?tab=audit" opens the log, so the old /audit/ address and links can
+ * land on it, and keeps following the address when it changes. Tabs follow the WAI-ARIA pattern. */
 export function DeveloperTabs() {
+  const { user } = useSession();
+  const TABS = ALL_TABS.filter((tab) => tab.id !== "storage" || can(user.role, "storage.read"));
   const tabParam = useSearchParams()?.get("tab") ?? null;
-  const [active, setActive] = useState<TabId>(() => tabOf(tabParam));
+  const [active, setActive] = useState<TabId>(() => tabOf(TABS, tabParam));
   const [seenParam, setSeenParam] = useState(tabParam);
   if (tabParam !== seenParam) {
     setSeenParam(tabParam);
-    setActive(tabOf(tabParam));
+    setActive(tabOf(TABS, tabParam));
   }
   const buttons = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -60,7 +72,7 @@ export function DeveloperTabs() {
       {TABS.map((tab) => (
         <div key={tab.id} id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} hidden={active !== tab.id}
           className="sc-tabpanel">
-          {active === tab.id && (tab.id === "tokens" ? <DeveloperBoard /> : <AuditTable />)}
+          {active === tab.id && PANELS[tab.id]()}
         </div>
       ))}
     </>
