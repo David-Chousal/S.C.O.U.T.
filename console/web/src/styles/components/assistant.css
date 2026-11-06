@@ -30,11 +30,11 @@
 .sc-fred__form { display: grid; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line); }
 /* The question box with its send key inside, at the bottom right; room is kept for it on the right. */
 .sc-fred__compose { position: relative; }
-.sc-fred__form textarea { box-sizing: border-box; display: block; width: 100%; min-height: 56px; max-height: 160px; padding: var(--space-2) 44px var(--space-2) var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 400 14px/20px var(--font-sans); resize: vertical; }
-.sc-fred__send { position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); cursor: pointer; }
-.sc-fred__send:hover:not(:disabled) { filter: brightness(1.08); }
-.sc-fred__send:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.sc-fred__send:disabled { background: var(--surface-sunken); color: var(--ink-muted); cursor: default; }
+.sc-fred__form textarea { box-sizing: border-box; display: block; width: 100%; min-height: 56px; max-height: 160px; padding: var(--space-2) 44px var(--space-2) var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 400 14px/20px var(--font-sans); resize: none; }
+.sc-fred__send { position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--accent); cursor: pointer; }
+.sc-fred__send:hover:not(:disabled) { color: var(--ink); }
+.sc-fred__send:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
+.sc-fred__send:disabled { color: var(--ink-muted); opacity: .6; cursor: default; }
 .sc-fred__form textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
 
 /* Confirm cards (Phase 2). */
