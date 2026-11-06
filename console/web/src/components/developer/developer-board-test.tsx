@@ -51,7 +51,8 @@ describe("DeveloperBoard", () => {
     vi.spyOn(api, "createToken").mockResolvedValue({ token: "sct_secret_value_123456789012345", id: "t2" });
     renderBoard("member");
     await userEvent.type(await screen.findByLabelText("Token name"), "station");
-    await userEvent.selectOptions(screen.getByLabelText("Expires after"), "Never");
+    await userEvent.click(screen.getByLabelText("Expires after"));
+    await userEvent.click(screen.getByRole("option", { name: "Never" }));
     await userEvent.click(screen.getByRole("checkbox", { name: /read:telemetry/ }));
     await userEvent.click(screen.getByRole("button", { name: /Create token/ }));
     expect(api.createToken).toHaveBeenCalledWith("station", ["read:telemetry"], 0);

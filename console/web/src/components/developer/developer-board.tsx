@@ -6,6 +6,7 @@ import { useToast } from "@/components/feedback/toaster";
 import { Ago } from "@/components/ui/ago";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
+import { Select } from "@/components/ui/select";
 import { api } from "@/lib/api/client";
 import type { ApiToken, TokenList } from "@/lib/api/types";
 import { useWhen } from "@/lib/preferences-context";
@@ -44,12 +45,11 @@ function NewToken({ list, allowed, onCreated }: { list: TokenList; allowed: bool
         <input className="sc-input" maxLength={60} required placeholder="e.g. analysis notebook" value={name}
           disabled={!allowed} onChange={(event) => setName(event.target.value)} />
       </label>
-      <label className="sc-fieldset">
-        <span className="sc-fieldset__label"><span className="sc-tag">Expires after</span></span>
-        <select className="sc-input" value={days} disabled={!allowed} onChange={(event) => setDays(Number(event.target.value))}>
-          {list.expiryDays.map((d) => <option key={d} value={d}>{d === 0 ? "Never" : `${d} days`}</option>)}
-        </select>
-      </label>
+      <div className="sc-fieldset">
+        <span className="sc-fieldset__label"><label className="sc-tag" htmlFor="token-expiry">Expires after</label></span>
+        <Select id="token-expiry" value={days} disabled={!allowed} onChange={setDays}
+          options={list.expiryDays.map((d) => ({ value: d, label: d === 0 ? "Never" : `${d} days` }))} />
+      </div>
       <fieldset className="sc-settings-choices sc-token-form__wide">
         <legend className="sc-label">Scopes</legend>
         {list.scopes.map((scope) => (

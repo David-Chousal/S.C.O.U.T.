@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/icon";
 import type { IconName } from "@/components/ui/icon-paths";
+import { useDismiss, usePopover } from "./use-popover";
 
 interface ActionMenuItemBase {
   label: string;
@@ -33,15 +35,11 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
 
+  usePopover(open, triggerRef, menuRef, { align: "end" });
+  useDismiss(open, [menuRef, triggerRef], useCallback(() => setOpen(false), []));
+
   useEffect(() => {
-    if (!open) return;
-    menuItems(menuRef.current)[0]?.focus();
-    function onPointerDown(event: PointerEvent) {
-      const target = event.target as Node;
-      if (!menuRef.current?.contains(target) && !triggerRef.current?.contains(target)) setOpen(false);
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
+    if (open) menuItems(menuRef.current)[0]?.focus();
   }, [open]);
 
   function close(returnFocus: boolean) {
@@ -79,8 +77,8 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
       >
         <Icon name="more" />
       </button>
-      {open && (
-        <div ref={menuRef} id={menuId} role="menu" aria-label={label} className="sc-menu sc-menu--floating" onKeyDown={onMenuKeyDown}>
+      {open && createPortal(
+        <div ref={menuRef} id={menuId} role="menu" aria-label={label} className="sc-menu sc-popover" onKeyDown={onMenuKeyDown}>
           {items.map((item) => {
             const className = item.danger ? "sc-menu__item sc-menu__item--danger" : "sc-menu__item";
             const content = (
@@ -108,7 +106,8 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body,
       )}
     </span>
   );

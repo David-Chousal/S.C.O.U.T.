@@ -74,7 +74,8 @@ describe("SettingsBoard", () => {
     const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
     renderBoard("member");
     const interval = await screen.findByLabelText("Reading interval");
-    await userEvent.selectOptions(interval, "15");
+    await userEvent.click(interval);
+    await userEvent.click(screen.getByRole("option", { name: "15 min" }));
     const humidity = screen.getByLabelText("Housing humidity alert");
     await userEvent.clear(humidity);
     await userEvent.type(humidity, "80");
@@ -85,7 +86,8 @@ describe("SettingsBoard", () => {
   test("a new transmit count asks first, showing battery life, and sends only on confirm", async () => {
     const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
     renderBoard("member");
-    await userEvent.selectOptions(await screen.findByLabelText("Transmits a day"), "1");
+    await userEvent.click(await screen.findByLabelText("Transmits a day"));
+    await userEvent.click(screen.getByRole("option", { name: "1" }));
     await userEvent.click(screen.getByRole("button", { name: "Send 1 change" }));
     expect(send).not.toHaveBeenCalled();
     expect(screen.getByRole("dialog", { name: "Change SCOUT-01 to 1 a day?" })).toBeDefined();
@@ -97,6 +99,7 @@ describe("SettingsBoard", () => {
   test("the hydrophone clip offers Off, and the radio never appears as a control", async () => {
     renderBoard("member");
     const clip = await screen.findByLabelText("Hydrophone clip");
+    await userEvent.click(clip);
     expect(screen.getAllByRole("option", { name: "Off" }).length).toBe(1);
     expect(clip).toBeDefined();
     expect(screen.queryByLabelText("Radio")).toBeNull();
@@ -112,7 +115,7 @@ describe("SettingsBoard", () => {
       </SessionContext>,
     );
     expect(((await screen.findByLabelText("Name in the console")) as HTMLInputElement).disabled).toBe(true);
-    expect((screen.getByLabelText("Reading interval") as HTMLSelectElement).disabled).toBe(true);
+    expect((screen.getByLabelText("Reading interval") as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByText(/View only/)).toBeNull();
     expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy or changing its settings needs the member role.");
   });
