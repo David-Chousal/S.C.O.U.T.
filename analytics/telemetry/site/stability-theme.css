@@ -27,4 +27,7 @@ svg text{fill:var(--text);font-size:12px;font-family:'DM Sans',system-ui,sans-se
 .how{margin:0 0 6px;font-size:.85rem;color:var(--muted)}.how summary{cursor:pointer;color:var(--accent)}.how span{display:block;margin-top:4px;max-width:68ch}
 .key{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:.82rem;color:var(--muted)}
 .key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.key b{color:var(--text)}.key .g{background:#BA7517}.key .b{background:#185FA5}.key .m{background:#534AB7}
+/* Inside the design explorer (?embed=1): the shared slider above owns the title and the design picker. */
+.embed h1,.embed p.note,.embed #itbar,.embed #itn,.embed #itw{display:none}
+.embed body{padding:0;max-width:none}
 </style>

@@ -19,8 +19,10 @@ RDP_TOL = 0.15         # mm; polyline simplification, below drawing resolution
 GAP = 30.0             # mm between parts in layout "row"
 
 
-def _slice_solid(gmsh, dim_tag):
-    """Cut one solid of an already-meshed model (the caller meshes the file once, not once per solid)."""
+def _slice_solid(gmsh, dim_tag, spin=0.0):
+    """Cut one solid of an already-meshed model (the caller meshes the file once, not once per solid).
+
+    ``spin`` (radians) turns the solid about the vertical axis first, so the cut lands on another plane through the axis."""
     V, T = [], []
     off = 0
     for d, t in gmsh.model.getBoundary([dim_tag], oriented=False, recursive=False):
@@ -38,6 +40,9 @@ def _slice_solid(gmsh, dim_tag):
     key = np.round(V, 4)
     _, first, inv = np.unique(key, axis=0, return_index=True, return_inverse=True)
     V = V[first]; T = inv.ravel()[T]
+    if spin:
+        c, s_ = np.cos(spin), np.sin(spin)
+        V = np.column_stack([V[:, 0] * c - V[:, 1] * s_, V[:, 0] * s_ + V[:, 1] * c, V[:, 2]])
     d = V[:, 0] - EPS
     pos = d[T] > 0                                   # (n, 3) side of the plane per corner
     cross = pos.any(1) & ~pos.all(1)
@@ -105,8 +110,13 @@ def build(registry_path=HERE / "iterations.json"):
         parts = []
         if it.get("assembly"):           # stacked sections / wedges around the chassis, placed by assembly.py
             A = assembly.build(it)
+            # "section_deg": cut along the vertical plane at that angle from the X axis instead of x = 0. Sections whose
+            # parts are ribbed or slotted (v5, v6) look disconnected on the plane between the ribs. Only the drawing
+            # is spun (inside _slice_solid); the placed parts and the hydrostatics are untouched.
+            deg = it["assembly"].get("section_deg")
+            spin = np.radians(90.0 - deg) if deg is not None else 0.0
             for pt in A["parts"]:
-                loops = [np.array(l) for l in _slice_solid(gmsh, pt["dimtag"]) if len(l) > 3]
+                loops = [np.array(l) for l in _slice_solid(gmsh, pt["dimtag"], spin) if len(l) > 3]
                 if loops:
                     parts.append(dict(file=pt["file"], z=(0, 0), loops=loops))
             it = dict(it, files=[], keel_z_mm=A["keel"])

@@ -36,8 +36,8 @@ All 15 designs in the stability simulator, plus two floats that are not in it. N
 | `assembly-v7`, `assembly-v6`, `assembly-v5` | Full buoy assemblies | `full-buoy-assembly-v*.step` |
 | `wedge-bolted-v4`, `wedge-bolted-v3`, `wedge-snap-v3` | Chassis, wedges and caps | `floatation/` |
 | `v5-pegs-seated` | The three v5 sections with each peg slid into the next socket, no trimming (2026-11-06). Each section is lifted by the body height of the one below (63.5 mm, then 127 mm), the lowest height with zero overlap | `floatation/floatation-v5-*-section.step` |
-| `v5b-pegs-seated` | Same stack with the redesigned top section (79.8 mm tall instead of 125.4), same lift heights | `floatation/floatation-v5b-top-section.step` and the v5 bottom and middle |
-| `v9-bottom`, `v9-concept`, `v7-concept`, `v4-concept`, `v3`, `v2`, `v1` | Earlier concepts | `floatation/` |
+| `v6-pegs-seated` | Same stack with the redesigned top section (79.8 mm tall instead of 125.4), same lift heights | `floatation/floatation-v5b-top-section.step` and the v5 bottom and middle |
+| `v10-bottom`, `v10-concept`, `v8-concept`, `v4-concept`, `v3`, `v2`, `v1` | Earlier concepts (v8 was v7 and v10 was v9 before the 2026-11-06 renumbering; CAD file names unchanged) | `floatation/` |
 
 The ids match `buoy-stability/iterations.json`, so the viewer and the simulator can name the same design.
 Entries with an `assembly` block there (stacked sections, wedges copied around the chassis, trims) are placed
@@ -65,6 +65,13 @@ python3 build_viewer.py
 `convert_models.py` writes `data/<id>.json` (mesh arrays, part names, volumes) and `data/index.json` (picker order). It also takes ids to rebuild just those, for example `convert_models.py assembly-v7`. `build_viewer.py`
 inlines those plus the vendored three.js into `buoy-viewer.html`. The second step needs no CAD
 library, so a teammate without `cadquery` can still rebuild from the committed `data/`.
+
+## On the website
+
+The public Technology page embeds this viewer together with the stability explorer, driven by one slider
+(`analytics/telemetry/site/design_explorer.py`, which also writes the site copy under `static/viewer/`). After
+changing a model or this page, rebuild here, then run `python3 -m telemetry.site.design_explorer` from `analytics/`.
+Opened with `?embed=1` the page hides its own title and design picker and keeps the controls.
 
 ## Things to know
 

@@ -45,8 +45,8 @@ code,.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 select{border-radius:0;padding:.6rem .9rem;background:var(--surface);flex:1;min-width:min(100%,260px);max-width:440px;font-weight:400}
 select:hover{border-color:var(--text)}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:clamp(.8rem,.4rem + .8vw,1.2rem)}
-@media (max-width:760px){.main{grid-template-columns:1fr}}
-.stage{position:relative;background:var(--stage);border:1px solid var(--line);aspect-ratio:4/3;min-height:300px;touch-action:none}
+@media (max-width:760px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;width:100%;background:var(--stage);border:1px solid var(--line);aspect-ratio:4/3;min-height:300px;touch-action:none}
 .stage canvas{width:100%;height:100%;display:block}
 .hint{position:absolute;left:14px;bottom:12px;pointer-events:none}
 .dims{position:absolute;right:14px;top:12px;text-align:right;pointer-events:none;font-size:.78rem;line-height:1.5;color:var(--muted)}
@@ -66,18 +66,26 @@ input[type=range]{accent-color:var(--accent);width:100%}
 .ctl label{font-size:.875rem}
 .ctl span.v{font-family:var(--font-mono);font-size:.78rem;color:var(--subtle);text-align:right;min-width:4.4em}
 .ctl input{grid-column:1/-1;margin:0 0 .5rem}
+.hint-line{grid-column:1/-1;font-size:.8rem;color:var(--subtle);margin:0 0 .6rem;line-height:1.45}
+p.hint-line{margin:0 0 .5rem}
+.embed .intro,.embed .pick,.embed #model{display:none}
+.embed body{padding:0}
+.embed .bar{margin:0 0 .75rem}
+.embed .side{max-height:none}
 .src{margin:.9rem 0 0;font-family:var(--font-mono);font-size:.72rem;color:var(--subtle);word-break:break-all;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.btn,select{transition:none}}
 </style>
 </head>
 <body>
+<div class="intro">
 <p class="eyebrow">Mechanical &middot; 3D model</p>
 <h1>See the buoy</h1>
 <p class="note">Pick a design, drag to turn it, scroll to zoom. Switch parts off to look inside, spread them apart, or cut the buoy in half. Every shape is drawn straight from the CAD file.</p>
+</div>
 <div class="bar">
-  <button class="btn icon" id="prev" aria-label="Previous design">&larr;</button>
+  <span class="pick"><button class="btn icon" id="prev" aria-label="Previous design">&larr;</button>
   <select id="model" aria-label="Design"></select>
-  <button class="btn icon" id="next" aria-label="Next design">&rarr;</button>
+  <button class="btn icon" id="next" aria-label="Next design">&rarr;</button></span>
   <button class="btn" id="wire" aria-pressed="false">Wireframe</button>
   <button class="btn" id="reset">Reset view</button>
 </div>
@@ -90,10 +98,11 @@ input[type=range]{accent-color:var(--accent);width:100%}
     <p class="micro">Design</p>
     <p class="blurb" id="blurb"></p>
     <p class="micro">Parts</p>
+    <p class="hint-line">Tick to show a part, untick to hide it. Hover a name to light it up.</p>
     <div id="parts"></div>
     <div class="ctl">
-      <label for="explode">Spread apart</label><span class="v" id="explodeV">0%</span><input id="explode" type="range" min="0" max="100" value="0">
-      <label for="cut">Cut through</label><span class="v" id="cutV">off</span><input id="cut" type="range" min="0" max="100" value="100">
+      <label for="explode">Spread apart</label><span class="v" id="explodeV">0%</span><input id="explode" type="range" min="0" max="100" value="0" aria-describedby="explodeH"><span class="hint-line" id="explodeH">Pulls the parts away from each other.</span>
+      <label for="cut">Cut through</label><span class="v" id="cutV">off</span><input id="cut" type="range" min="0" max="100" value="100" aria-describedby="cutH"><span class="hint-line" id="cutH">Slides a cutting plane through the model so you can see inside. Slide fully right for off.</span>
     </div>
     <div class="src" id="src"></div>
   </div>
@@ -220,6 +229,12 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT'||e.target
 $('wire').onclick=e=>{e.currentTarget.setAttribute('aria-pressed',e.currentTarget.getAttribute('aria-pressed')!=='true');applyAll()};
 $('reset').onclick=()=>{camera.position.copy(home.p);controls.target.copy(home.t);controls.update()};
 $('explode').oninput=applyAll;$('cut').oninput=applyAll;
+
+// Embedded in the site's design explorer: ?embed=1 hides the page title and picker (the shared slider owns them) and
+// reports this page's height to the frame holding it so the frame can fit it with no inner scrollbar.
+if(new URLSearchParams(location.search).get('embed')){document.documentElement.classList.add('embed');
+  const fit=()=>parent.postMessage({scoutFit:Math.ceil(document.body.getBoundingClientRect().height),from:'viewer'},location.origin);
+  new ResizeObserver(fit).observe(document.body);addEventListener('load',fit)}
 // Linked pages can pick a design with ?model=<id> or postMessage({model:'<id>'}).
 addEventListener('message',e=>{if(e.data&&e.data.model&&MODELS.some(m=>m.id===e.data.model)){sel.value=e.data.model;load(e.data.model)}});
 const q=new URLSearchParams(location.search).get('model');

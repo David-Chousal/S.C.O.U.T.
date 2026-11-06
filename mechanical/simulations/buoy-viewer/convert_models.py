@@ -64,8 +64,8 @@ EXTRA = [
 
 # Picker order: newest first. Anything in the registry that is not listed here is added at the end.
 ORDER = ["float-regular", "float-mushroom-corrected", "mushroom", "assembly-v7", "assembly-v6", "assembly-v5",
-         "wedge-bolted-v4", "wedge-bolted-v3", "wedge-snap-v3", "v9-bottom", "v9-concept", "v7-concept",
-         "v5-pegs-seated", "v5b-pegs-seated", "v4-concept", "v3", "v2", "v1"]
+         "wedge-bolted-v4", "wedge-bolted-v3", "wedge-snap-v3", "v10-bottom", "v10-concept", "v8-concept",
+         "v6-pegs-seated", "v5-pegs-seated", "v4-concept", "v3", "v2", "v1"]
 
 # Electronics housing the simulator adds on top of the hull (assembly.py: body 127 mm, flange on top).
 HOUSING_R, HOUSING_L, FLANGE_R, FLANGE_T = 57.15, 127.0, 95.25, 8.9
