@@ -1,5 +1,6 @@
-/* Invite and password-reset emails (SCO-300, ADR-0014), sent through Cloudflare Email Sending's
- * Workers binding (EMAIL in wrangler.toml). Email is a convenience on top of the link the admin
+/* Invite and password-reset emails (SCO-300, ADR-0014), sent through Resend's free plan when the
+ * RESEND_API_KEY secret is set, else Cloudflare Email Sending's Workers binding (EMAIL, which needs
+ * Workers Paid and is off in wrangler.toml). Email is a convenience on top of the link the admin
  * already gets: a missing binding, a refused send or a spent daily cap never blocks the invite or
  * the reset, and the reply says which happened so the Team page can tell the admin.
  *
@@ -116,13 +117,36 @@ function page(parts) {
     `color:#1a1a1a;max-width:560px">${parts.join("")}</body></html>`;
 }
 
+const RESEND_URL = "https://api.resend.com/emails";
+
+function configured(env) {
+  return Boolean(env.RESEND_API_KEY) || typeof env.EMAIL?.send === "function";
+}
+
+/** Hand the message to whichever provider is set up. Throws { code } on a refusal. */
+async function deliver(env, message) {
+  if (!env.RESEND_API_KEY) {
+    await env.EMAIL.send({ ...message, from: SENDER });
+    return;
+  }
+  const response = await fetch(RESEND_URL, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ ...message, to: [message.to], from: `${SENDER.name} <${SENDER.email}>` }),
+  });
+  if (response.ok) return;
+  const body = await response.json().catch(() => ({}));
+  const name = typeof body.name === "string" ? body.name : "error";
+  throw Object.assign(new Error("resend refused"), { code: `resend_${response.status}_${name}` });
+}
+
 /**
  * Email an invite or reset link. Never throws; returns { status, to } where status is one of
  * "sent", "failed", "not_configured" or "rate_limited".
  * @param {{ kind: "invite" | "reset", to: string, link: string, role?: string, expiresAt: number }} message
  */
 export async function sendLinkEmail(env, actor, { kind, to, link, role, expiresAt }, now = Date.now()) {
-  if (!env.EMAIL || typeof env.EMAIL.send !== "function") return { status: "not_configured", to };
+  if (!configured(env)) return { status: "not_configured", to };
   const action = `${kind}.email`;
   const masked = maskEmail(to);
   const counts = await sentToday(env.DB, actor.id, now);
@@ -137,11 +161,11 @@ export async function sendLinkEmail(env, actor, { kind, to, link, role, expiresA
   let status = "sent";
   let code;
   try {
-    await env.EMAIL.send({ to, from: SENDER, ...content });
+    await deliver(env, { to, ...content });
   } catch (error) {
     status = "failed";
     code = typeof error?.code === "string" ? error.code.slice(0, 64) : "unknown";
-    // The code only: the binding's message could echo the recipient or the body (and so the link).
+    // The code only: a provider's message could echo the recipient or the body (and so the link).
     console.error(`console: ${action} not sent: ${code}`);
   }
   await record(env.DB, { actor, action, target: masked, after: code ? { status, code } : { status } });

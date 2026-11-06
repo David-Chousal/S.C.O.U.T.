@@ -145,3 +145,58 @@ test("maskEmail keeps the first letter and the domain", () => {
   assert.equal(maskEmail("david@scoutscu.com"), "d***@scoutscu.com");
   assert.equal(maskEmail("not-an-email"), "***");
 });
+
+/** Stands in for Resend's API: records each request and answers with `reply`. */
+function stubResend(t, reply = { status: 200, body: { id: "r1" } }) {
+  const calls = [];
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), init, body: JSON.parse(init.body) });
+    return new Response(JSON.stringify(reply.body), { status: reply.status });
+  };
+  t.after(() => { globalThis.fetch = real; });
+  return calls;
+}
+
+test("with RESEND_API_KEY set, the invite goes through Resend from the console's address", async (t) => {
+  const calls = stubResend(t);
+  const env = makeEnv({ RESEND_API_KEY: "re_test_key" });
+  const { client } = await signedIn(env);
+  const { body } = await client.post("/api/team/invites", { email: "n@example.com", role: "member" });
+  assert.equal(body.delivery, "sent");
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, "https://api.resend.com/emails");
+  assert.equal(calls[0].init.headers.Authorization, "Bearer re_test_key");
+  assert.deepEqual(calls[0].body.to, ["n@example.com"]);
+  assert.equal(calls[0].body.from, "S.C.O.U.T. Console <console@scoutscu.com>");
+  assert.ok(calls[0].body.text.includes(body.link));
+});
+
+test("Resend is used even when the Cloudflare binding is also present", async (t) => {
+  const calls = stubResend(t);
+  const EMAIL = stubEmail();
+  const env = makeEnv({ RESEND_API_KEY: "re_test_key", EMAIL });
+  const { client } = await signedIn(env);
+  await client.post("/api/team/invites", { email: "n@example.com", role: "member" });
+  assert.equal(calls.length, 1);
+  assert.equal(EMAIL.sent.length, 0);
+});
+
+test("a Resend refusal falls back to the link and logs neither the key, the token nor the address", async (t) => {
+  stubResend(t, { status: 403, body: { statusCode: 403, name: "validation_error", message: "The scoutscu.com domain is not verified." } });
+  const env = makeEnv({ RESEND_API_KEY: "re_test_key" });
+  const { client } = await signedIn(env);
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => logged.push(args.join(" "));
+  t.after(() => { console.error = original; });
+  const { status, body } = await client.post("/api/team/invites", { email: "n@example.com", role: "member" });
+  assert.equal(status, 200);
+  assert.equal(body.delivery, "failed");
+  assert.ok(logged.some((line) => line.includes("resend_403_validation_error")));
+  const secrets = ["re_test_key", tokenOf(body.link), "n@example.com"];
+  assert.ok(logged.every((line) => secrets.every((secret) => !line.includes(secret))));
+  const audit = JSON.stringify(env.DB.raw.prepare("SELECT * FROM audit_log").all());
+  assert.ok(!audit.includes("re_test_key") && !audit.includes(tokenOf(body.link)));
+  assert.deepEqual(JSON.parse(emailAudit(env)[0].after_json), { status: "failed", code: "resend_403_validation_error" });
+});
