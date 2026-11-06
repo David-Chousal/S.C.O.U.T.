@@ -8,6 +8,7 @@ import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, CountState, Estimates, RemoteSetting } from "@/lib/api/types";
 import { TransmitConfirm } from "./transmit-confirm";
+import { Select } from "@/components/ui/select";
 
 export const SETTINGS_SIGNAL: Record<CountState, { state: "ok" | "stale" | "failed"; lit: number; word: string; detail: string }> = {
   confirmed: { state: "ok", lit: 4, word: "Confirmed", detail: "The buoy reports running exactly these settings." },
@@ -62,18 +63,16 @@ function Field({ spec, help, buoyId, value, requested, disabled, onChange }: Fie
   const id = `buoy-${buoyId}-${spec.key}`;
   const options = optionsOf(spec);
   return (
-    <div className="sc-fieldset sc-fieldset--tip">
+    <div className="sc-fieldset sc-tip-host">
       <span className="sc-fieldset__label"><label className="sc-tag" htmlFor={id}>{spec.label}</label></span>
       {options ? (
-        <select id={id} className="sc-input" value={value} disabled={disabled} aria-describedby={`${id}-help`}
-          onChange={(event) => onChange(Number(event.target.value))}>
-          {options.map((option) => <option key={option} value={option}>{display(spec, option)}</option>)}
-        </select>
+        <Select id={id} value={value} disabled={disabled} aria-describedby={`${id}-help`} onChange={onChange}
+          options={options.map((option) => ({ value: option, label: display(spec, option) }))} />
       ) : (
         <input id={id} className="sc-input" type="number" inputMode="numeric" min={spec.min} max={spec.max} step={spec.step}
           value={value} disabled={disabled} aria-describedby={`${id}-help`} onChange={(event) => onChange(Number(event.target.value))} />
       )}
-      <span id={`${id}-help`} className="sc-tip sc-fieldset__tip">{help ?? spec.help} Default {display(spec, spec.default)}{requested ? " · requested" : ""}.</span>
+      <span id={`${id}-help`} className="sc-tip sc-tip--hover">{help ?? spec.help} Default {display(spec, spec.default)}{requested ? " · requested" : ""}.</span>
     </div>
   );
 }

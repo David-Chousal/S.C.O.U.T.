@@ -380,3 +380,12 @@ depends on them.
   leave the file out of the public repo and keep the DOI link.
 - Strip tracking parameters (`?utm_source=…`) from every URL per
   [CONVENTIONS.md → Citing sources](../../CONVENTIONS.md#citing-sources).
+
+## Test-site environment (California vs Hawaii)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `noaa-mbnms-physical` | NOAA Monterey Bay National Marine Sanctuary, physical oceanography site profile. [link](https://montereybay.noaa.gov/sitechar/phys22.html) | 🔓 web page | — | Nearshore salinity about 33.2 to 34.0 psu, floods not below about 31; offshore temperature 12.2 to 15.5 °C ([test assumptions](../../planning/california-vs-hawaii-test-assumptions.md)) |
+| `bathen-1968` | Bathen (1968). A descriptive study of the physical oceanography of Kāneʻohe Bay, Oʻahu, Hawaii. University of Hawaiʻi master's thesis. [pdf](https://www.soest.hawaii.edu/oceanography/masters/1968-Bathen.PDF) | ❓ | — | Bay yearly mean temperature higher than open ocean; daily swing about one fifth of the seasonal swing (as summarized from a search result; not read in full) |
+| `usgs-monterey-waves` | USGS. Local wave climate and long-term bed shear stress characteristics, Monterey Bay, CA. [link](https://www.usgs.gov/publications/local-wave-climate-and-long-term-bed-shear-stress-characteristics-monterey-bay-ca) | 🔓 | — | Winter wave heights differ strongly between sites in the same bay (as summarized from a search result; not read in full) |
+

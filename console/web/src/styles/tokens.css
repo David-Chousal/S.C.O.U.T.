@@ -2,9 +2,9 @@
 
 :root {
   color-scheme: light;
-  --bg: #f8f3ef;
-  --surface: #fffcfa;
-  --surface-sunken: #ede7e1;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-sunken: #f1f1f0;
   --line: #ddd6d0;
   --line-strong: #867f78;
   --rail: var(--ink);

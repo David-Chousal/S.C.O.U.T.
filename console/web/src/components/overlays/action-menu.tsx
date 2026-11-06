@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/icon";
 import type { IconName } from "@/components/ui/icon-paths";
+import { useDismiss, usePopover } from "./use-popover";
 
 interface ActionMenuItemBase {
   label: string;
@@ -21,27 +23,25 @@ interface ActionMenuProps {
   items: ActionMenuItem[];
   /** The trigger is shown but switched off (a role that can view but not change). */
   disabled?: boolean;
+  /** The trigger's icon: ⋯ by default. */
+  icon?: IconName;
 }
 
 function menuItems(menu: HTMLElement | null): HTMLElement[] {
   return menu ? [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')] : [];
 }
 
-export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) {
+export function ActionMenu({ label, items, disabled = false, icon = "more" }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
 
+  usePopover(open, triggerRef, menuRef, { align: "end" });
+  useDismiss(open, [menuRef, triggerRef], useCallback(() => setOpen(false), []));
+
   useEffect(() => {
-    if (!open) return;
-    menuItems(menuRef.current)[0]?.focus();
-    function onPointerDown(event: PointerEvent) {
-      const target = event.target as Node;
-      if (!menuRef.current?.contains(target) && !triggerRef.current?.contains(target)) setOpen(false);
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
+    if (open) menuItems(menuRef.current)[0]?.focus();
   }, [open]);
 
   function close(returnFocus: boolean) {
@@ -77,10 +77,10 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
         disabled={disabled || items.length === 0}
         onClick={() => setOpen((isOpen) => !isOpen)}
       >
-        <Icon name="more" />
+        <Icon name={icon} />
       </button>
-      {open && (
-        <div ref={menuRef} id={menuId} role="menu" aria-label={label} className="sc-menu sc-menu--floating" onKeyDown={onMenuKeyDown}>
+      {open && createPortal(
+        <div ref={menuRef} id={menuId} role="menu" aria-label={label} className="sc-menu sc-popover" onKeyDown={onMenuKeyDown}>
           {items.map((item) => {
             const className = item.danger ? "sc-menu__item sc-menu__item--danger" : "sc-menu__item";
             const content = (
@@ -108,7 +108,8 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body,
       )}
     </span>
   );

@@ -97,7 +97,7 @@ export async function restoreDefaults(db, actor, buoyId) {
  * Only a buoy's command station hears about it; a lone station is everyone's. */
 export async function wantedForDevice(db, deviceId) {
   const { results } = await db
-    .prepare("SELECT * FROM buoys WHERE (command_device_id = ? OR (command_device_id IS NULL AND " +
+    .prepare("SELECT * FROM buoys WHERE disconnected_at IS NULL AND (command_device_id = ? OR (command_device_id IS NULL AND " +
       "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1)) ORDER BY buoy_id")
     .bind(deviceId)
     .all();
@@ -115,10 +115,43 @@ export async function addBuoy(db, actor, buoyId, label) {
   const id = Number(buoyId);
   if (!Number.isInteger(id) || id < 1 || id > 65535) return { error: "Buoy ID must be 1-65535." };
   const name = (label || `SCOUT-${String(id).padStart(2, "0")}`).slice(0, 40);
-  const existing = await db.prepare("SELECT buoy_id FROM buoys WHERE buoy_id = ?").bind(id).first();
+  const existing = await db.prepare("SELECT buoy_id, label, disconnected_at FROM buoys WHERE buoy_id = ?").bind(id).first();
+  if (existing?.disconnected_at) {
+    // Adding a disconnected buoy reconnects it: its packets are stored again from now on.
+    await db.prepare("UPDATE buoys SET disconnected_at = NULL WHERE buoy_id = ?").bind(id).run();
+    await record(db, { actor, action: "buoy.reconnect", target: existing.label });
+    return { reconnected: true };
+  }
   if (existing) return { error: `Buoy ${id} is already listed.` };
   await db.prepare("INSERT INTO buoys (buoy_id, label) VALUES (?, ?)").bind(id, name).run();
   await record(db, { actor, action: "buoy.add", target: name });
+  return {};
+}
+
+/** Stop listening to a buoy: its packets are ignored and no station is sent its settings until it is
+ * added again on Fleet. The radio cannot be reached from here, so the buoy itself keeps running. */
+export async function disconnectBuoy(db, actor, buoyId, now = Date.now()) {
+  const buoy = await db.prepare("SELECT * FROM buoys WHERE buoy_id = ?").bind(Number(buoyId)).first();
+  if (!buoy) return { error: "No such buoy." };
+  if (buoy.disconnected_at) return { error: `${buoy.label} is already disconnected.` };
+  await db.prepare("UPDATE buoys SET disconnected_at = ? WHERE buoy_id = ?").bind(now, buoy.buoy_id).run();
+  await record(db, { actor, action: "buoy.disconnect", target: buoy.label });
+  return {};
+}
+
+/** Remove a disconnected buoy from the console for good: its row, requested settings and readings.
+ * A connected buoy must be disconnected first, so nothing live is deleted by one click. */
+export async function deleteBuoy(db, actor, buoyId) {
+  const buoy = await db.prepare("SELECT * FROM buoys WHERE buoy_id = ?").bind(Number(buoyId)).first();
+  if (!buoy) return { error: "No such buoy." };
+  if (!buoy.disconnected_at) return { error: "Disconnect the buoy before deleting it." };
+  const { n } = await db.prepare("SELECT COUNT(*) AS n FROM readings WHERE buoy_id = ?").bind(buoy.buoy_id).first();
+  await db.batch([
+    db.prepare("DELETE FROM readings WHERE buoy_id = ?").bind(buoy.buoy_id),
+    db.prepare("DELETE FROM buoy_settings WHERE buoy_id = ?").bind(buoy.buoy_id),
+    db.prepare("DELETE FROM buoys WHERE buoy_id = ?").bind(buoy.buoy_id),
+  ]);
+  await record(db, { actor, action: "buoy.delete", target: buoy.label, before: { buoy_id: buoy.buoy_id, readings: n } });
   return {};
 }
 

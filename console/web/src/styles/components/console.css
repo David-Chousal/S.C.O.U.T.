@@ -14,7 +14,8 @@
 .sc-pair dd small { display: block; font: 400 12px/16px var(--font-mono); color: var(--ink-muted); letter-spacing: 0; }
 /* A secret shown once (invite link, reset link, device token). */
 .sc-secret { display: block; padding: var(--space-3); border: 1px dashed var(--line-strong); background: var(--surface-sunken); font: 400 13px/18px var(--font-mono); word-break: break-all; }
-.sc-login__art h1 { margin: 0; font: 700 44px/46px var(--font-sans); letter-spacing: -.035em; }
+.sc-login__art h1 { margin: 0; font: italic 700 34px/38px var(--font-sans); letter-spacing: -.03em; }
+.sc-login__about { margin: 0; font: 400 17px/26px var(--font-sans); opacity: .86; }
 .sc-login__slots { width: 100%; max-width: 520px; }
 .sc-login__slots svg { display: block; width: 100%; height: 40px; }
 .sc-login__slots rect { fill: var(--bg); opacity: .35; } .sc-login__slots rect.on { opacity: 1; }
@@ -33,30 +34,17 @@
 .sc-auth-guest__divider::before, .sc-auth-guest__divider::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
 .sc-auth-guest__open { justify-content: center; }
 .sc-login__lede { display: grid; gap: var(--space-4); max-width: 460px; position: relative; z-index: 1; }
-.sc-login__lede .sc-tag { margin: 0; color: var(--bg); opacity: .8; }
 .sc-providers { display: grid; gap: var(--space-2); }
 .sc-providers .sc-key { justify-content: center; text-decoration: none; }
 .sc-providers__or { text-align: center; padding-top: var(--space-2); }
-.sc-input--plain { padding-left: var(--space-3); }
+/* No leading icon (the password field): text starts where every other input's does, and room is
+   kept on the right for the show/hide key. Beats .sc-input-wrap > .sc-input's icon padding. */
+.sc-input-wrap > .sc-input--plain { padding-left: var(--space-3); padding-right: 40px; }
 .sc-input-wrap__toggle { cursor: pointer; }
 /* Settings: tab panels lay out like a page; firmware rows keep the value and note together. */
 .sc-tabpanel { display: grid; gap: var(--space-8); }
 .sc-tabpanel[hidden] { display: none; }
 .sc-settings-count { gap: var(--space-3); }
-.sc-firmware-table { table-layout: fixed; }
-.sc-firmware-table thead th:nth-child(1) { width: 52%; }
-.sc-firmware-table thead th:nth-child(3) { width: 112px; }
-.sc-firmware-table th[scope="row"] .sub { display: block; margin-top: 2px; color: var(--ink-muted); font: 400 13px/18px var(--font-sans); }
-.sc-firmware-table th[scope="row"] { white-space: normal; vertical-align: top; }
-.sc-firmware-table td { vertical-align: top; white-space: normal; overflow-wrap: break-word; }
-.sc-firmware-table td .sub { display: block; white-space: normal; }
-.sc-firmware-table .sc-badge { max-width: 100%; white-space: normal; text-align: left; }
-@container page (max-width: 767px) {
-  .sc-firmware-table, .sc-firmware-table tbody, .sc-firmware-table tr { display: block; }
-  .sc-firmware-table thead { display: none; }
-  .sc-firmware-table tr { padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
-  .sc-firmware-table th, .sc-firmware-table th[scope="row"], .sc-firmware-table td { display: block; padding: 2px 0; border: 0; }
-}
 /* Stations: each buoy's command station sits under its freshness line. */
 .sc-command-station { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
 .sc-command-station__select { width: auto; min-width: 180px; height: 28px; }
@@ -66,9 +54,11 @@
 .sc-readings-latest dd small { margin-left: 4px; font: 500 14px/1 var(--font-sans); color: var(--ink-muted); letter-spacing: 0; }
 @container page (max-width: 767px) { .sc-readings-latest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); } .sc-readings-latest dd { font-size: 24px; } }
 /* Developer: a token's scopes and dates under its name. */
-.sc-token-form { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4) var(--space-6); max-width: 760px; }
-.sc-token-form__wide { grid-column: 1 / -1; }
-@container page (max-width: 767px) { .sc-token-form { grid-template-columns: minmax(0, 1fr); } }
+/* The New API token card (a dialog). */
+.sc-token-card { gap: var(--space-4); }
+/* One scope: its box, then the name and what it allows, wrapping beside the box. */
+.sc-token-scope { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--space-3); font: 400 14px/20px var(--font-sans); cursor: pointer; }
+.sc-token-scope input { margin: 3px 0 0; }
 /* Reports: the composer, and the printable report (no shell, paper first). */
 .sc-report-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-6); }
 .sc-report-form__dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }

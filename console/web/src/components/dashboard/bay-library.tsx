@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import type { Buoy } from "@/lib/api/types";
 import { BAY_KINDS, DASHBOARD_VARIABLES, isOnBoard, type BayConfig, type BayKind } from "@/lib/dashboard/layout";
 import { variableLabel } from "@/lib/variables";
+import { Select } from "@/components/ui/select";
 
 interface BayLibraryProps {
   bays: BayConfig[];
@@ -32,14 +33,12 @@ function LibraryItem({ kind, bays, buoys, onAdd }: BayLibraryProps & { kind: Bay
       {(info.buoy || info.variable) && (
         <span className="sc-lib__choices">
           {info.buoy && (
-            <select className="sc-input" aria-label={`${info.name} buoy`} value={buoy} onChange={(e) => setBuoy(Number(e.target.value))}>
-              {buoys.map((b) => <option key={b.buoy_id} value={b.buoy_id}>{b.label}</option>)}
-            </select>
+            <Select aria-label={`${info.name} buoy`} value={buoy} onChange={setBuoy}
+              options={buoys.map((b) => ({ value: b.buoy_id, label: b.label }))} />
           )}
           {info.variable && (
-            <select className="sc-input" aria-label={`${info.name} variable`} value={variable} onChange={(e) => setVariable(e.target.value)}>
-              {DASHBOARD_VARIABLES.map((v) => <option key={v} value={v}>{variableLabel(v)}</option>)}
-            </select>
+            <Select aria-label={`${info.name} variable`} value={variable} onChange={setVariable}
+              options={DASHBOARD_VARIABLES.map((v) => ({ value: v, label: variableLabel(v) }))} />
           )}
         </span>
       )}

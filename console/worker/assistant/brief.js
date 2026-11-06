@@ -35,6 +35,8 @@ export async function briefFacts(env, now = Date.now()) {
   const facts = [];
   const buoys = await listBuoys(env.DB);
   for (const buoy of buoys) {
+    // A buoy someone disconnected on Fleet is quiet on purpose: no alarm.
+    if (buoy.disconnected_at) continue;
     const state = health(buoy, now);
     if (state === "silent" || state === "late") {
       const since = buoy.last_seen_at ? `, last heard ${readableUtc(buoy.last_seen_at)}` : "";

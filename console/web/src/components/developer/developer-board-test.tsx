@@ -40,18 +40,36 @@ describe("DeveloperBoard", () => {
   test("a new token is shown once, in full", async () => {
     vi.spyOn(api, "createToken").mockResolvedValue({ token: "sct_secret_value_123456789012345", id: "t2" });
     renderBoard("member");
-    await userEvent.type(await screen.findByLabelText("Token name"), "laptop");
+    await userEvent.click(await screen.findByRole("button", { name: "New token" }));
+    expect(screen.getByRole("dialog", { name: "New API token" })).toBeDefined();
+    await userEvent.type(screen.getByLabelText("Token name"), "laptop");
     await userEvent.click(screen.getByRole("checkbox", { name: /read:telemetry/ }));
     await userEvent.click(screen.getByRole("button", { name: /Create token/ }));
     expect(api.createToken).toHaveBeenCalledWith("laptop", ["read:telemetry"], 30);
     expect(await screen.findByText("sct_secret_value_123456789012345")).toBeDefined();
+    expect(screen.queryByRole("dialog", { name: "New API token" })).toBeNull();
+  });
+
+  test("the form lives in the card, not on the page; Escape in its dropdown closes only the list", async () => {
+    renderBoard("member");
+    await screen.findByText("notebook");
+    expect(screen.queryByLabelText("Token name")).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "New token" }));
+    await userEvent.click(screen.getByLabelText("Expires after"));
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(screen.getByRole("dialog", { name: "New API token" })).toBeDefined();
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "New API token" })).toBeNull();
   });
 
   test("a token can be made to never expire", async () => {
     vi.spyOn(api, "createToken").mockResolvedValue({ token: "sct_secret_value_123456789012345", id: "t2" });
     renderBoard("member");
-    await userEvent.type(await screen.findByLabelText("Token name"), "station");
-    await userEvent.selectOptions(screen.getByLabelText("Expires after"), "Never");
+    await userEvent.click(await screen.findByRole("button", { name: "New token" }));
+    await userEvent.type(screen.getByLabelText("Token name"), "station");
+    await userEvent.click(screen.getByLabelText("Expires after"));
+    await userEvent.click(screen.getByRole("option", { name: "Never" }));
     await userEvent.click(screen.getByRole("checkbox", { name: /read:telemetry/ }));
     await userEvent.click(screen.getByRole("button", { name: /Create token/ }));
     expect(api.createToken).toHaveBeenCalledWith("station", ["read:telemetry"], 0);
@@ -60,11 +78,9 @@ describe("DeveloperBoard", () => {
   test("a guest sees the page but every control is off", async () => {
     const setNote = vi.fn();
     renderBoard("guest", setNote);
-    expect(await screen.findByLabelText("Token name")).toBeDefined();
+    expect(((await screen.findByRole("button", { name: "New token" })) as HTMLButtonElement).disabled).toBe(true);
     expect(setNote).toHaveBeenCalledWith("View only: making API tokens needs the member role.");
     expect(screen.queryByText(/View only/)).toBeNull();
-    expect((screen.getByLabelText("Token name") as HTMLInputElement).disabled).toBe(true);
-    expect((screen.getByRole("button", { name: /Create token/ }) as HTMLButtonElement).disabled).toBe(true);
   });
 
   test("links the OpenAPI file", async () => {

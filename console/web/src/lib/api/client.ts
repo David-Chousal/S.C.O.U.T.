@@ -127,7 +127,9 @@ export const api = {
     call<{ ok: true }>("POST", `/api/resets/${encodeURIComponent(token)}`, { password }),
 
   fleet: () => call<Fleet>("GET", "/api/fleet"),
-  addBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", "/api/fleet/buoys", { buoy_id: buoyId, label }),
+  addBuoy: (buoyId: number, label: string) => call<{ ok: true; reconnected?: boolean }>("POST", "/api/fleet/buoys", { buoy_id: buoyId, label }),
+  disconnectBuoy: (buoyId: number) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/disconnect`),
+  deleteBuoy: (buoyId: number) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/delete`),
   settings: () => call<BuoySettings>("GET", "/api/settings"),
   renameBuoy: (buoyId: number, label: string) => call<{ ok: true }>("POST", `/api/fleet/buoys/${buoyId}/label`, { label }),
   requestSettings: (buoyId: number, settings: Record<string, number | null>) =>

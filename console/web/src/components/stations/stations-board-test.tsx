@@ -36,29 +36,56 @@ function renderBoard(role: Role, devices = DEVICES) {
 afterEach(() => vi.restoreAllMocks());
 
 describe("StationsBoard", () => {
-  test("an active token can be revoked; a revoked one has a delete key that deletes it", async () => {
+  test("an active station's ⋯ menu revokes after a confirmation, then says how to bring it back", async () => {
+    const revoke = vi.spyOn(api, "revokeDevice").mockResolvedValue({ ok: true });
+    renderBoard("admin");
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual(["Info", "Revoke"]);
+    await userEvent.click(screen.getByRole("menuitem", { name: "Revoke" }));
+    expect(revoke).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Revoke" }));
+    expect(revoke).toHaveBeenCalledWith("a");
+    expect(screen.getByRole("dialog", { name: "Kaneohe shore is revoked" }).textContent).toContain("New token");
+    expect(screen.getByRole("link", { name: "How to connect a shore station" }).getAttribute("href")).toMatch(/^\/help\/?#shore$/);
+  });
+
+  test("a revoked station has a delete key that asks first", async () => {
     const remove = vi.spyOn(api, "deleteDevice").mockResolvedValue({ ok: true });
     renderBoard("admin");
-    expect(await screen.findByRole("button", { name: "Hold to revoke Kaneohe shore's token" })).toBeDefined();
     expect(screen.queryByRole("button", { name: /Delete Kaneohe/ })).toBeNull();
-    await userEvent.click(screen.getByRole("button", { name: "Delete Old pier's revoked token" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Delete Old pier" }));
+    expect(remove).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Delete" }));
     expect(remove).toHaveBeenCalledWith("b");
   });
 
-  test("each station lists the buoys it commands; a lone station commands them all", async () => {
+  test("Info shows what the station does and which buoys it commands", async () => {
+    renderBoard("member");
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual(["Info"]);
+    await userEvent.click(screen.getByRole("menuitem", { name: "Info" }));
+    const card = screen.getByRole("dialog", { name: "Kaneohe shore" });
+    expect(card.textContent).toContain("Reef north");
+    expect(card.textContent).toContain("every 10 minutes");
+  });
+
+  test("no Buoys it commands column: a lone station's Info lists every buoy, and there is nothing to assign", async () => {
     renderBoard("admin");
-    expect(await screen.findByText("Reef north")).toBeDefined();
-    expect(screen.getByText("Reef south")).toBeDefined();
-    expect(screen.queryByText(/only active station/)).toBeNull();
-    expect(screen.queryByRole("button", { name: /Assign buoys/ })).toBeNull();
-    expect(screen.queryByRole("columnheader", { name: "Commands from" })).toBeNull();
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    expect(screen.queryByRole("columnheader", { name: "Buoys it commands" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: "Assign buoys" })).toBeNull();
+    await userEvent.click(screen.getByRole("menuitem", { name: "Info" }));
+    const card = screen.getByRole("dialog", { name: "Kaneohe shore" });
+    expect(card.textContent).toContain("Reef north");
+    expect(card.textContent).toContain("Reef south");
   });
 
   test("with two stations, an unassigned buoy is flagged and Assign moves it to a station", async () => {
     const assign = vi.spyOn(api, "setCommandStation").mockResolvedValue({ ok: true });
     renderBoard("admin", { devices: [...DEVICES.devices, { id: "c", name: "Campus bench", created_at: 0, revoked_at: null, last_seen_at: null }] });
     expect(await screen.findByText(/have no station/)).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Assign buoys to Campus bench" }));
+    await userEvent.click(screen.getByRole("button", { name: "Actions for Campus bench" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Assign buoys" }));
     await userEvent.click(screen.getByRole("checkbox", { name: /Reef south/ }));
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(assign).toHaveBeenCalledWith(2, "c");
@@ -72,7 +99,7 @@ describe("StationsBoard", () => {
 
   test("a member sees the delete key disabled", async () => {
     renderBoard("member");
-    expect(((await screen.findByRole("button", { name: "Delete Old pier's revoked token" })) as HTMLButtonElement).disabled).toBe(true);
+    expect(((await screen.findByRole("button", { name: "Delete Old pier" })) as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByRole("button", { name: "New token" }) as HTMLButtonElement).disabled).toBe(true);
   });
 });

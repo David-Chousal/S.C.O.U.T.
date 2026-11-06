@@ -36,6 +36,8 @@ export interface Buoy {
   clock_lost: number;
   /** The one shore station that sends this buoy's downlink commands; null until an admin picks. */
   command_device_id: string | null;
+  /** Set when an admin disconnected it on Fleet: its packets are not stored until it is added again. */
+  disconnected_at?: number | null;
   state: CountState;
   /** Remote settings (worker/buoy-settings.js): each one's requested value, null = default. */
   settings_requested: Record<string, number | null>;

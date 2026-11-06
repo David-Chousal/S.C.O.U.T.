@@ -70,6 +70,10 @@
 .sc-top__account .sc-avatar { width: 24px; height: 24px; font-size: 10px; }
 .sc-top__account-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-top__account > .sc-ico { flex: none; color: var(--ink-muted); }
+/* The ☰ menu of pages missing from the phone bottom bar; phones only. */
+.sc-top__more { display: none; }
+/* The same size as Ask Fred beside it. */
+.sc-top__more .sc-key { width: 34px; height: 34px; padding: 0 0 2px; }
 .sc-top__end { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3); min-width: 0; padding-right: var(--space-6); }
 /* The page's "View only: …" note: plain muted italics on the bar's left, one line, no fill. */
 .sc-top__note { flex: 1 1 auto; min-width: 0; margin: 0 auto 0 0; padding-left: var(--space-6); overflow: hidden; color: var(--ink-muted); font: italic 400 13px/18px var(--font-sans); text-overflow: ellipsis; white-space: nowrap; }
@@ -99,6 +103,7 @@
   .sc-top__account { padding: 4px; }
   .sc-top__end { padding-right: var(--space-4); }
   .sc-top__note { display: none; }
+  .sc-top__more { display: inline-flex; }
 }
 
 /* The account popover under the top bar's account. */
@@ -115,10 +120,8 @@
 .sc-account__link:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 
 /* Ask Fred, the console's assistant (ADR-0013); its panel is in assistant.css. */
-.sc-ask { display: inline-flex; align-items: center; gap: var(--space-2); height: 32px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 500 13px/1 var(--font-sans); cursor: pointer; }
-.sc-ask:hover:not(:disabled), .sc-ask[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
-.sc-ask:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.sc-ask:disabled { color: var(--ink-muted); cursor: not-allowed; }
+/* Ask Fred is a plain key (key.css), like Printable report; while Fred is open it stays pressed. */
+.sc-ask[aria-expanded="true"] { box-shadow: inset 0 -1px 0 var(--line); transform: translateY(1px); }
 
 /* Each page's title, back on the page under the top bar. */
 .sc-page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
@@ -126,7 +129,6 @@
 .sc-page-head__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 @media (max-width: 767px) {
   .sc-account__panel { position: fixed; top: calc(var(--bar-h) + 6px); right: var(--space-4); left: var(--space-4); width: auto; }
-  .sc-ask { padding: 0 var(--space-2); }
 }
 @container page (min-width: 520px) and (max-width: 1031px) {
   .span-3 { grid-column: span 6; }

@@ -8,6 +8,7 @@ import { Dialog } from "@/components/overlays/dialog";
 import { initials } from "@/components/shell/account-menu";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
+import { Select, type SelectOption } from "@/components/ui/select";
 import { api } from "@/lib/api/client";
 import type { LinkIssued, Member, Role, Team } from "@/lib/api/types";
 import { plural } from "@/lib/format";
@@ -17,6 +18,10 @@ import { useApi } from "@/lib/use-api";
 import { useViewOnlyNote } from "@/lib/view-only-note";
 import { DeliveryNote } from "./delivery-note";
 import { InviteDialog } from "./invite-dialog";
+
+const ROLE_OPTIONS: SelectOption<Role>[] = [
+  { value: "guest", label: "Guest" }, { value: "member", label: "Member" }, { value: "admin", label: "Admin" },
+];
 
 /** The Team page: people, roles, reset links, offboarding, and open invites. Admins change it;
  * everyone else sees all of it, controls disabled. */
@@ -108,14 +113,10 @@ export function TeamBoard() {
                       </span>
                     </td>
                     <td>
-                      <select className="sc-input sc-team-table__select" aria-label={`Role for ${member.email}`} value={member.role}
+                      <Select className="sc-team-table__select" aria-label={`Role for ${member.email}`} value={member.role} options={ROLE_OPTIONS}
                         disabled={!canManage || Boolean(member.self_signup)}
                         title={member.self_signup ? "Signed in with just an email, so anyone could use it. Invite them to give them a role." : undefined}
-                        onChange={(event) => run(() => api.setRole(member.id, event.target.value as Role), `${member.email} is now ${ROLE_LABEL[event.target.value as Role]}`)}>
-                        <option value="guest">Guest</option>
-                        <option value="member">Member</option>
-                        <option value="admin">Admin</option>
-                      </select>
+                        onChange={(role) => run(() => api.setRole(member.id, role), `${member.email} is now ${ROLE_LABEL[role]}`)} />
                     </td>
                     <td className="n sc-team-table__menu">
                       <ActionMenu label={`Actions for ${member.name || member.email}`} items={actionsFor(member)} disabled={!canManage} />

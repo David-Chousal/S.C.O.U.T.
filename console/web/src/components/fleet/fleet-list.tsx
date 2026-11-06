@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { ActionMenu, type ActionMenuItem } from "@/components/overlays/action-menu";
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
+import { Icon } from "@/components/ui/icon";
 import type { Buoy, RemoteSetting } from "@/lib/api/types";
 import { buoyHealth, nextTransmit, runningSettings, slotsInUse, untilLabel, utcClock } from "@/lib/buoy-status";
 import { lastHeard } from "@/lib/format";
@@ -22,11 +23,25 @@ interface FleetListProps {
   slotsSod: number[];
   /** The time status is judged at; the page advances it as it refreshes. */
   now: number;
+  /** Admins can disconnect a buoy, and delete one already disconnected. */
+  canManage?: boolean;
+  onDisconnect?: (buoy: Buoy) => void;
+  onDelete?: (buoy: Buoy) => void;
+}
+
+function menuFor(buoy: Buoy, canManage: boolean, onDisconnect?: (buoy: Buoy) => void): ActionMenuItem[] {
+  const items: ActionMenuItem[] = [
+    { label: "Buoy info", icon: "data", href: `/readings/?buoy=${buoy.buoy_id}` },
+    { label: "Settings", icon: "settings", href: `/settings/?buoy=${buoy.buoy_id}` },
+  ];
+  if (canManage && onDisconnect) items.push({ label: "Disconnect", icon: "close", danger: true, onSelect: () => onDisconnect(buoy) });
+  return items;
 }
 
 /** Every buoy on one row: how often it sends, when it was last heard, when it next transmits,
- * whether it is alive and connected, and a link to its settings. Readings belong on the Dashboard and Reports. */
-export function FleetList({ buoys, remote, slotsSod, now }: FleetListProps) {
+ * whether it is alive and connected, and a ⋯ menu (its readings, its settings, disconnect). A
+ * disconnected buoy shows a delete key instead. */
+export function FleetList({ buoys, remote, slotsSod, now, canManage = false, onDisconnect, onDelete }: FleetListProps) {
   return (
     <div className="sc-table-wrap">
       <table className="sc-table sc-fleet-table">
@@ -34,15 +49,16 @@ export function FleetList({ buoys, remote, slotsSod, now }: FleetListProps) {
           <tr>
             <th scope="col">Buoy</th><th scope="col">Transmits</th><th scope="col">Last heard</th>
             <th scope="col">Next transmission</th><th scope="col">Status</th>
-            <th scope="col"><span className="sc-visually-hidden">Settings</span></th>
+            <th scope="col"><span className="sc-visually-hidden">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           {buoys.map((buoy) => {
             const running = runningSettings(buoy, remote);
             const slots = slotsInUse(slotsSod, running.tx_count, running.slot_phase_h);
-            const health = buoyHealth(lastHeard(buoy), slots, now);
-            const next = nextTransmit(slots, now);
+            const off = Boolean(buoy.disconnected_at);
+            const health = off ? { state: "off" as const, lit: 0, word: "Disconnected" } : buoyHealth(lastHeard(buoy), slots, now);
+            const next = off ? null : nextTransmit(slots, now);
             const transmits = transmitsLabel(buoy);
             return (
               <tr key={buoy.buoy_id}>
@@ -52,7 +68,12 @@ export function FleetList({ buoys, remote, slotsSod, now }: FleetListProps) {
                 <td>{next ? <>{untilLabel(next, now)}<span className="sub">{utcClock(next)}</span></> : "—"}</td>
                 <td><SignalMeter state={health.state} lit={health.lit} word={health.word} /></td>
                 <td className="sc-fleet-table__go">
-                  <Link className="sc-link" href={`/settings/?buoy=${buoy.buoy_id}`} aria-label={`Settings for ${buoy.label}`}>Settings</Link>
+                  {off ? (
+                    <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label={`Delete ${buoy.label}`} title="Delete from the console"
+                      disabled={!canManage || !onDelete} onClick={() => onDelete?.(buoy)}>
+                      <Icon name="trash" />
+                    </button>
+                  ) : <ActionMenu label={`Actions for ${buoy.label}`} items={menuFor(buoy, canManage, onDisconnect)} />}
                 </td>
               </tr>
             );

@@ -26,6 +26,7 @@ export const ICON_PATHS = {
   "filter": "M2 3h12l-4.5 5.5V13l-3 1.5V8.5z",
   "layout": "M2.5 2.5h11v11h-11z M2.5 6.5h11 M7 6.5v7",
   "sidebar": "M2.5 2.5h11v11h-11z M6.5 2.5v11",
+  "menu": "M2.5 4.5h11 M2.5 8h11 M2.5 11.5h11",
   "return": "M13 3.5v5a2 2 0 0 1-2 2H3.5 M6.5 7.5l-3 3 3 3",
   "logout": "M6 2.5H2.5v11H6 M10 5l3 3-3 3 M13 8H6",
   "trash": "M2.5 4h11 M6 4V2.5h4V4 M3.5 4l.8 9.5h7.4l.8-9.5 M6.5 6.5v5 M9.5 6.5v5",
