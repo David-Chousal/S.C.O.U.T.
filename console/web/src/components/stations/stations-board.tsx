@@ -117,9 +117,6 @@ export function StationsBoard() {
             </table>
           </div>
         )}
-        {active.length === 1 && buoys.length > 0 && (
-          <p className="sc-help">{active[0].name} is the only active station, so it sends every buoy&rsquo;s commands.</p>
-        )}
         {active.length > 1 && routes.orphans.length > 0 && (
           <Banner tone="caution">
             <strong>{routes.orphans.map((b) => b.label).join(", ")}</strong> {routes.orphans.length === 1 ? "has" : "have"} no station
