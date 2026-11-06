@@ -44,7 +44,7 @@
 /* Stations table: same rhythm as Fleet, status before the actions. */
 .sc-stations-table { table-layout: fixed; }
 .sc-stations-table th:nth-child(1) { width: 24%; } .sc-stations-table th:nth-child(3) { width: 130px; }
-.sc-stations-table th:nth-child(4) { width: 190px; } .sc-stations-table th:nth-child(5) { width: 150px; }
+.sc-stations-table th:nth-child(4) { width: 190px; } .sc-stations-table th:nth-child(5) { width: 96px; }
 .sc-stations-table__when { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
 /* The buoys a station commands, as chips. */
 .sc-chips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }

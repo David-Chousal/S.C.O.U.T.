@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { Banner } from "@/components/feedback/banner";
-import { useToast } from "@/components/feedback/toaster";
 import { SignalMeter, type SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
-import { HoldKey } from "@/components/ui/hold-key";
+import { ActionMenu, type ActionMenuItem } from "@/components/overlays/action-menu";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { BuoySettings, Device } from "@/lib/api/types";
@@ -16,6 +15,7 @@ import { usePoll } from "@/lib/use-poll";
 import { AssignDialog } from "./assign-dialog";
 import { commandRoutes } from "./command-routes";
 import { NewTokenDialog } from "./new-token-dialog";
+import { DeleteStationDialog, RevokeDialog, StationInfoDialog } from "./station-dialogs";
 
 const HOUR = 3600 * 1000;
 const REFRESH_MS = 30 * 1000;
@@ -31,15 +31,17 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
 }
 
 /** Stations: every shore station, the buoys whose commands it sends, when it was last seen, and
- * its token: a key to make one, hold to revoke, and delete once revoked. Buoys' own state lives on
+ * a ⋯ menu (Info, Revoke); a revoked station shows a delete key instead. Buoys' own state lives on
  * Fleet. */
 export function StationsBoard() {
   const { user } = useSession();
-  const { show } = useToast();
   const settings = useApi<BuoySettings>(api.settings);
   const devices = useApi<{ devices: Device[] }>(api.devices);
   const [adding, setAdding] = useState(false);
   const [assigning, setAssigning] = useState<Device | null>(null);
+  const [info, setInfo] = useState<Device | null>(null);
+  const [revoking, setRevoking] = useState<Device | null>(null);
+  const [deleting, setDeleting] = useState<Device | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const allowed = can(user.role, "devices.write");
   const active = (devices.data?.devices ?? []).filter((device) => !device.revoked_at);
@@ -49,15 +51,15 @@ export function StationsBoard() {
     setNow(Date.now());
   }, REFRESH_MS);
 
-  async function run(action: () => Promise<unknown>, ok: string, detail: string, failed: string) {
-    try {
-      await action();
-      show({ tone: "ok", title: ok, detail });
-      devices.reload();
-      settings.reload();
-    } catch (failure) {
-      show({ tone: "failed", title: failed, detail: failure instanceof Error ? failure.message : undefined });
-    }
+  function changed() {
+    devices.reload();
+    settings.reload();
+  }
+
+  function menuFor(device: Device): ActionMenuItem[] {
+    const items: ActionMenuItem[] = [{ label: "Info", icon: "info", onSelect: () => setInfo(device) }];
+    if (allowed) items.push({ label: "Revoke", icon: "close", danger: true, onSelect: () => setRevoking(device) });
+    return items;
   }
 
   const error = settings.error || devices.error;
@@ -103,13 +105,9 @@ export function StationsBoard() {
                       : <SignalMeter {...freshness(device.last_seen_at, now, 2 * HOUR)} />}</td>
                     <td className="sc-stations-table__actions">
                       {device.revoked_at ? (
-                        <Key size="sm" iconOnly icon="trash" aria-label={`Delete ${device.name}'s revoked token`} disabled={!allowed}
-                          title="Delete for good"
-                          onClick={() => run(() => api.deleteDevice(device.id), `Deleted ${device.name}'s token`, "It is gone from the list; the audit log keeps the record.", "Not deleted")} />
-                      ) : (
-                        <HoldKey size="sm" label="Hold to revoke" holdLabel={`Hold to revoke ${device.name}'s token`} disabled={!allowed}
-                          onConfirm={() => run(() => api.revokeDevice(device.id), `Revoked ${device.name}'s token`, "It can no longer push readings or read settings.", "Not revoked")} />
-                      )}
+                        <Key size="sm" iconOnly icon="trash" aria-label={`Delete ${device.name}`} disabled={!allowed}
+                          title="Delete from the console" onClick={() => setDeleting(device)} />
+                      ) : <ActionMenu label={`Actions for ${device.name}`} items={menuFor(device)} />}
                     </td>
                   </tr>
                 ))}
@@ -128,6 +126,10 @@ export function StationsBoard() {
       <AssignDialog key={assigning?.id ?? "none"} station={assigning} buoys={buoys} active={active}
         onClose={() => setAssigning(null)} onSaved={settings.reload} />
       <NewTokenDialog open={adding} onClose={() => setAdding(false)} onCreated={devices.reload} />
+      <StationInfoDialog device={info} commands={info ? routes.byStation.get(info.id) ?? [] : []} onlyStation={active.length === 1}
+        onClose={() => setInfo(null)} />
+      <RevokeDialog device={revoking} onClose={() => setRevoking(null)} onDone={changed} />
+      <DeleteStationDialog device={deleting} onClose={() => setDeleting(null)} onDone={changed} />
     </>
   );
 }
