@@ -197,13 +197,13 @@ export const READ_TOOLS = [
   },
   {
     name: "link_to",
-    description: "A console link for a page, optionally a tab or a buoy. Pages: dashboard, fleet, stations, readings, reports, team, settings (tabs buoys, account, browser), developer (tabs tokens, audit), help.",
+    description: "A console link for a page, optionally a tab or a buoy. Pages: dashboard, fleet, stations, readings, reports, team, settings (tabs buoys, account, browser), developer (tabs tokens, audit, storage), help.",
     parameters: { type: "object", properties: {
       page: { type: "string" }, tab: { type: "string" }, buoy_id: buoyIdParam,
     }, required: ["page"] },
     run: async (_, { page, tab, buoy_id: buoy }) => {
       const PAGES = { dashboard: [], fleet: [], stations: [], readings: [], reports: [], team: [], help: [],
-        settings: ["buoys", "account", "browser"], developer: ["tokens", "audit"], audit: [] };
+        settings: ["buoys", "account", "browser"], developer: ["tokens", "audit", "storage"], audit: [] };
       const key = String(page || "").toLowerCase().replace(/[^a-z]/g, "");
       if (key.startsWith("audit")) return { path: "/developer/?tab=audit" };
       if (!Object.hasOwn(PAGES, key)) return { error: `No page called ${page}.` };

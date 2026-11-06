@@ -119,7 +119,7 @@ browser ── POST /api/assistant (session + CSRF) ──► Worker
   is still busy, or there is no key, Workers AI answers that question with **propose tools
   off**, is told it cannot draft changes, and the panel says a smaller model answered. If both
   are out, Fred says it is over today's limit. Admins see the day's questions, model calls,
-  fallbacks and tokens on Settings → Buoys → File storage; check it before a demo.
+  fallbacks and tokens on Developer → Storage (moved from Settings on 2026-11-06); check it before a demo.
 - **The panel.** Ask Fred in the top bar (or A, with shortcuts on) opens a panel on the right, a
   full-screen sheet on phones. Fred is told the page, tab and buoy in view. Replies render a
   safe Markdown subset as React elements (never HTML), console paths become in-app links and

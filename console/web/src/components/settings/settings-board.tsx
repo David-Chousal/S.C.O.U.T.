@@ -4,13 +4,11 @@ import { useSearchParams } from "next/navigation";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { api } from "@/lib/api/client";
 import type { BuoySettings } from "@/lib/api/types";
-import { can, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
 import { AccountPanel } from "@/components/account/account-panel";
 import { BrowserSettingsPanel } from "./browser-settings";
 import { BuoySettingsPanel } from "./buoy-settings";
 import { NotificationsPanel } from "./notifications-panel";
-import { StoragePanel } from "./storage-panel";
 
 const TABS = [
   { id: "buoys", label: "Buoys" },
@@ -29,7 +27,6 @@ function tabOf(wanted: string | null): TabId {
  * such as the account menu's "Account settings" switches tabs even when Settings is already open.
  * Tabs follow the WAI-ARIA pattern: arrow keys move between them, Home and End jump to the ends. */
 export function SettingsBoard() {
-  const { user } = useSession();
   const tabParam = useSearchParams()?.get("tab") ?? null;
   const [active, setActiveState] = useState<TabId>(() => tabOf(tabParam));
   // Follow the address when it changes from outside this page (adjusting state during render,
@@ -74,10 +71,7 @@ export function SettingsBoard() {
         <div key={tab.id} id={`panel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} hidden={active !== tab.id}
           className="sc-tabpanel">
           {tab.id === "buoys"
-            ? <>
-              <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
-              {can(user.role, "storage.read") && <StoragePanel />}
-            </>
+            ? <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
             : tab.id === "account" ? <AccountPanel />
               : tab.id === "notifications" ? (active === "notifications" && <NotificationsPanel />) : <BrowserSettingsPanel />}
         </div>
