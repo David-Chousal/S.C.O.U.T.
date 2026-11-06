@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-21 · Running (Part A locked 2026-11-02) |
+| **Test ID / status** | RR-21 · Plain-salt part only; the seawater comparison was cancelled 2026-11-06 (Part A locked 2026-11-02) |
 | **Date, duration, who** | Plain-salt part started Mon 2026-11-02, read Tue 2026-11-03 (24 h float); seawater part tentative, Not set; John Ryan Myrdal |
 | **Requirement tested** | Floats at the modelled waterline (R-17), here: does cheap plain salt give the same waterline as real seawater |
 | **Tracking issue** | [SCO-292](https://linear.app/scout1/issue/SCO-292); runs with [SCO-172](https://linear.app/scout1/issue/SCO-172) |
@@ -19,7 +19,7 @@
 | M1 salt mass (g) | Scale | Within 1% of 35 g per kg of the water | 725 g for 20 kg (target 725 g) | Pass |
 | M5 freeboard of each float with 429 g inside vs the model (in) | Ruler, from the top to the waterline | Within ±0.5 in of the model | Regular: 4.5 in vs 4.66 in (-0.16 in). Mushroom: 4.5 in vs 3.38 in (+1.12 in) | Regular pass; mushroom fail (unverified, under check) |
 | M3 24 h drift of each raw draft (in) | Ruler, bottom up to the waterline | Within 0.1 in of today's | Due 2026-11-03 about 11:00 | Not measured |
-| M2 plain salt vs Santa Cruz seawater (in) | Ruler | Within 0.1 in | Seawater run not done (tentative) | Not measured |
+| M2 plain salt vs Santa Cruz seawater (in) | Ruler | Within 0.1 in | Cancelled 2026-11-06: the salt substitute vs seawater comparison is not being run; tub tests use plain salt water | Cancelled |
 
 **How and steps.** Raw floats (mushroom and regular), own container, 20 L of water, no fresh-water reading taken. At 11:00 on 2026-11-02, 725 g of salt (weighed in a cup on a scale) was dissolved; draft was read bottom up for each float (mean of three); at 11:40 a 429 g breadcrumb can was placed in each float's bore and freeboard read from the top (mean); the can was removed and the raw floats soak for 24 h. Results are compared with the simulator's displacement tool ([charts and log](../simulations/buoy-stability/float-displacement/README.md)).
 
@@ -186,6 +186,7 @@ Open questions:
 
 | Time | What differed from A7 | Why | Effect on validity |
 |---|---|---|---|
+| 2026-11-04 | M3 re-done. The day-0 draft (bottom up, 1.6875 in) and the 24 h reading (top down, 5.375 in) used different methods, so drift could not be judged without assuming the STEP height (6.50 in), which gave 1.125 in and a −0.56 in change (inconclusive). The regular float is read again about 24 h after the Nov 3 13:00 reading, **top of the buoy to the water, the same way as 2026-11-03**, and compared with 5.375 in. Mushroom excluded | The two readings were not comparable | M3 becomes a like-for-like check, 5.375 in (2026-11-03 13:00) against the re-read (about 2026-11-04 13:00), pass if within 0.1 in. The previous 24 h reading is the new baseline, so this is a 24 h repeat, not the 48 h drift. Which mark is read and the water temperature to be recorded this time |
 | 2026-11-02 | No fresh-water freeboard reading was taken before the salt was added (step 3 not done); M4 dropped from A5 before the lock | John did not measure it | The fresh-to-salt waterline shift cannot be derived from this run. What remains: salt-water freeboard of the raw floats, reading noise (M3) and the 24 h seam-leak check. Option: float them in fresh water after the salt read to get the baseline |
 
 ## Part C — Results and decision (fill after)
@@ -195,8 +196,8 @@ Open questions:
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
 | M1 salt mass | 725 g for 20 kg (target 725 g) | on target | **Pass** |
-| M2 plain salt vs seawater | Not yet run | — | Not measured |
-| M3 24 h drift | Due 2026-11-03 | — | Not measured |
+| M2 plain salt vs seawater | Cancelled 2026-11-06 (John): plain salt water only | — | Cancelled |
+| M3 24 h drift | Re-read due about 2026-11-04 13:00, top down, against 5.375 in (see B3) | — | Not measured |
 | M4 fresh lowest | Dropped: no fresh reading | — | Not measured |
 | M5 weighted vs model | Regular: 4.5 in measured vs 4.66 in predicted (-0.16 in). Mushroom: 4.5 in vs 3.38 in (+1.12 in) | ±0.5 in | Regular **Pass**; mushroom **Fail** (unverified, under check) |
 
