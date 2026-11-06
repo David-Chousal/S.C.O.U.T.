@@ -54,13 +54,11 @@ export function TeamBoard() {
     }
   }
 
-  /** A row's ⋯ menu: a reset link, and Remove (or Restore for someone already removed). */
+  /** A row's ⋯ menu: a reset link, and Remove. Removed people leave the list (the audit log keeps them). */
   function actionsFor(member: Member): ActionMenuItem[] {
     const items: ActionMenuItem[] = [];
     if (!member.self_signup) items.push({ label: "Reset link", icon: "lock", onSelect: () => makeResetLink(member) });
-    if (member.disabled) {
-      items.push({ label: "Restore", icon: "sync", onSelect: () => run(() => api.setDisabled(member.id, false), `Restored ${member.email}`) });
-    } else if (member.id !== user.id) {
+    if (member.id !== user.id) {
       items.push({ label: "Remove", icon: "trash", danger: true, onSelect: () => setRemoving(member) });
     }
     return items;
@@ -107,7 +105,7 @@ export function TeamBoard() {
                       <span className="sc-person">
                         <span className="sc-avatar" aria-hidden="true">{initials(member)}</span>
                         <span className="sc-list__main">
-                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.disabled ? <span className="sc-badge sc-badge--muted">Removed</span> : null} {member.self_signup ? <span className="sc-badge sc-badge--muted">Self-signed-up</span> : null}</strong>
+                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.self_signup ? <span className="sc-badge sc-badge--muted">Self-signed-up</span> : null}</strong>
                           <span>{member.email}</span>
                         </span>
                       </span>
@@ -154,8 +152,8 @@ export function TeamBoard() {
           <Key variant="primary" onClick={confirmRemove} data-autofocus>Remove</Key>
         </>}>
         <p className="sc-help">
-          They are signed out everywhere and can no longer sign in. What they changed stays in the audit log. You can restore them
-          from this menu later.
+          They leave the People list, are signed out everywhere and can no longer sign in. What they changed stays in the audit
+          log, which records the removal. This cannot be undone from the console.
         </p>
       </Dialog>
     </>

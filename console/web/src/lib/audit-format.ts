@@ -15,7 +15,7 @@ const ACTIONS: Record<string, string> = {
   "invite.accept": "Accepted invite",
   "invite.revoke": "Revoked invite",
   "user.role": "Changed role",
-  "user.disable": "Disabled",
+  "user.disable": "Removed from team",
   "user.enable": "Re-enabled",
   "user.reset_link": "Made reset link",
   "user.password_reset": "Reset password",
