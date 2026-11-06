@@ -64,7 +64,7 @@ function NewToken({ list, open, onClose, onCreated }: NewTokenProps) {
         <fieldset className="sc-settings-choices">
           <legend className="sc-tag">Scopes</legend>
           {list.scopes.map((scope) => (
-            <label key={scope} className="sc-row">
+            <label key={scope} className="sc-token-scope">
               <input type="checkbox" checked={scopes.includes(scope)} onChange={() => toggle(scope)} />
               <span><span className="sc-num">{scope}</span> <span className="sc-help">{SCOPE_HELP[scope]}</span></span>
             </label>

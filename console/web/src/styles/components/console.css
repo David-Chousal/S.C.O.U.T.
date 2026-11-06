@@ -56,6 +56,9 @@
 /* Developer: a token's scopes and dates under its name. */
 /* The New API token card (a dialog). */
 .sc-token-card { gap: var(--space-4); }
+/* One scope: its box, then the name and what it allows, wrapping beside the box. */
+.sc-token-scope { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--space-3); font: 400 14px/20px var(--font-sans); cursor: pointer; }
+.sc-token-scope input { margin: 3px 0 0; }
 /* Reports: the composer, and the printable report (no shell, paper first). */
 .sc-report-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-6); }
 .sc-report-form__dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }
