@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { api } from "@/lib/api/client";
 import { ApiError, type FredEvent } from "@/lib/api/types";
-import { contextFrom, FredPanel, historyFor, PRIVACY_NOTICE, reportText, type FredTurn } from "./fred-panel";
+import { contextFrom, FredPanel, historyFor, reportText, type FredTurn } from "./fred-panel";
 import { FredMarkdown } from "./fred-markdown";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/fleet/" }));
@@ -25,9 +25,9 @@ function open(onClose = vi.fn(), user = member) {
 }
 
 describe("FredPanel", () => {
-  test("shows the privacy notice and suggestions, and today's usage", async () => {
+  test("shows suggestions and today's usage, and no standing notice", async () => {
     open();
-    expect(screen.getByText(PRIVACY_NOTICE)).toBeDefined();
+    expect(screen.queryByText(/Google may review/)).toBeNull();
     expect(screen.getByRole("button", { name: /missed a transmission/ })).toBeDefined();
     expect(await screen.findByText("2 of 40 questions today")).toBeDefined();
   });

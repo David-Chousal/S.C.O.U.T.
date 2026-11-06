@@ -2,7 +2,8 @@
 // Fred's panel on the right. Per browser, like the page preferences, and every storage read and
 // write tolerates storage being blocked.
 
-export const SIDE = Object.freeze({ max: 248, min: 160, rail: 64 });
+/** rail: 60 px centres the menu's icons, which sit 30 px from the left at every width (shell.css). */
+export const SIDE = Object.freeze({ max: 248, min: 160, rail: 60 });
 export const FRED = Object.freeze({ min: 320, max: 720, start: 400 });
 /** Narrowest the page itself may get between the two panels. */
 export const PAGE_MIN = 420;

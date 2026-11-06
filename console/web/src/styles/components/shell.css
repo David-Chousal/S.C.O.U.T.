@@ -17,15 +17,16 @@
   .sc-shell, .sc-top { transition: none; }
 }
 .sc-side { grid-row: 2; position: sticky; top: var(--bar-h); align-self: start; box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-3); height: calc(100dvh - var(--bar-h)); padding: var(--space-3); overflow: hidden auto; border-right: 1px solid var(--line); background: var(--surface); }
-.sc-side--rail { padding: var(--space-3) var(--space-2); }
-.sc-side--rail .sc-nav a { justify-content: center; gap: 0; padding: 0; }
+/* The icons never move when the menu collapses or expands: the menu's padding and each link's
+   padding stay the same, so an icon's centre is always 30 px from the left, and the rail is 60 px
+   wide to centre it. (Centring the icons in the rail made them jump right while the column was
+   still animating from its full width.) */
 .sc-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-nav a > .sc-ico { flex: none; }
 /* Collapse or expand the menu: an icon in line with the menu's own icons. */
 .sc-side__toggle { display: grid; place-items: center; flex: none; width: 36px; height: 34px; margin-top: auto; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); cursor: pointer; }
 .sc-side__toggle:hover { background: var(--surface-sunken); color: var(--ink); }
 .sc-side__toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.sc-side--rail .sc-side__toggle { align-self: center; }
 /* The drag handle on a panel's inner edge: an invisible hit area; the resize cursor is the only
    cue. Keyboard focus shows a neutral line, so the handle can still be found from the keyboard. */
 .sc-resize { position: absolute; top: 0; bottom: 0; z-index: var(--z-sticky); width: 8px; cursor: col-resize; touch-action: none; }
@@ -54,10 +55,10 @@
 .sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: var(--side-w) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); transition: grid-template-columns 240ms cubic-bezier(.2, .7, .2, 1); }
 /* No overflow clipping here: the account menu hangs below this block, and a clipped block scrolls
    when focus moves into the menu, which pushed the menu off the top of the screen. */
-.sc-top__brand { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); border-right: 1px solid var(--line); }
+.sc-top__brand { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 14px; border-right: 1px solid var(--line); }
 .sc-top__brand .sc-account { flex: 0 1 auto; }
-/* With the menu as an icon rail the mark sits alone over it, and the account moves right. */
-.sc-shell:has(.sc-side--rail) .sc-top__brand { justify-content: center; padding: 0; }
+/* The mark's centre is also 30 px from the left (14 px + half of 32), over the menu's icons, so it
+   stays put too. With the menu as an icon rail the account moves to the right end. */
 .sc-top__end .sc-account__panel { right: 0; left: auto; }
 .sc-top__end .sc-top__account-name, .sc-top__end .sc-top__account > .sc-ico { display: none; }
 .sc-account { position: relative; min-width: 0; }

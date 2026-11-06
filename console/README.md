@@ -157,7 +157,8 @@ tier of Google's Gemini API.
 - **Nothing you type is stored.** The conversation lives in the open panel and goes when the tab
   closes. D1 keeps only pending cards (`assistant_actions`) and daily counts
   (`assistant_usage`), migration `0011-assistant.sql`. **Report this answer** copies one exchange
-  for a Linear issue. Google may review what you type on the free tier; the panel says so.
+  for a Linear issue. Google may review what you type on the free tier; the Help page says so (the panel no longer
+  carries a notice, removed 2026-11-06 at David's request).
 - **Limits:** `ASSISTANT_DAILY_CAP` (40) and `ASSISTANT_DAILY_CAP_GUEST` (10) questions a day per
   person, from `wrangler.toml`. When Gemini is rate-limited it retries once, then a smaller
   Workers AI model answers with no drafting (the `[ai]` binding). Admins see today's use under

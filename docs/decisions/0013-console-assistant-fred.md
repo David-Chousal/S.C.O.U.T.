@@ -34,7 +34,7 @@ Three free routes were weighed on 2026-11-05:
 | C. Anthropic API (Claude) | Strongest at tool use | No free tier; a Claude Pro subscription does not include API access |
 
 Gemini wins on capability for zero cost. Its weaknesses shape the design: the **rate limits**
-(caps and a fallback) and the **data terms** (what is never sent, and a standing notice).
+(caps and a fallback) and the **data terms** (what is never sent, and telling people).
 
 ## Decision
 
@@ -52,7 +52,8 @@ Gemini wins on capability for zero cost. Its weaknesses shape the design: the **
    Moving to a paid key or another provider is a change to that one file.
 2. **🟡 Open: is the free tier's data use acceptable?** The working answer is yes for project
    data (readings, settings and station names are not sensitive and much is public on the
-   project site), with the panel notice below. It needs a word with the advisors, since the
+   project site); people are told on the Help page (the panel notice was removed on 2026-11-06,
+   asked for by David). It needs a word with the advisors, since the
    console is a university project. Built as if accepted.
 3. **The key is on David's own Google account** (decided 2026-11-05). It lives only as the Worker
    secret `GEMINI_API_KEY` (locally in the gitignored `console/.dev.vars`). At handover, whoever
@@ -122,8 +123,9 @@ browser ── POST /api/assistant (session + CSRF) ──► Worker
 - **The panel.** Ask Fred in the top bar (or A, with shortcuts on) opens a panel on the right, a
   full-screen sheet on phones. Fred is told the page, tab and buoy in view. Replies render a
   safe Markdown subset as React elements (never HTML), console paths become in-app links and
-  cited repo files link to GitHub. Under the input, always: *"Fred uses Google Gemini's free
-  tier. Google may review what you type. Don't share personal information."*
+  cited repo files link to GitHub. The panel carried a standing line under the input saying
+  Google may review what you type; **David removed it on 2026-11-06**. The Help page's Ask Fred
+  section still says so.
 
 ## Data and privacy
 

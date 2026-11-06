@@ -9,7 +9,6 @@ import type { FredCard, FredContext, FredEvent, FredMessage, User } from "@/lib/
 import { FredConfirmCard } from "./fred-card";
 import { FredMarkdown } from "./fred-markdown";
 
-export const PRIVACY_NOTICE = "Fred uses Google Gemini's free tier. Google may review what you type. Don't share personal information.";
 
 const SUGGESTIONS = [
   "Which buoys missed a transmission today?",
@@ -199,7 +198,6 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
           <span className="sc-fred__usage">{usage ? `${usage.used} of ${usage.cap} questions today` : ""}</span>
           <Key variant="primary" size="sm" type="submit" disabled={busy || !draft.trim()}>Send</Key>
         </div>
-        <p className="sc-fred__privacy">{PRIVACY_NOTICE}</p>
       </form>
     </aside>
   );
