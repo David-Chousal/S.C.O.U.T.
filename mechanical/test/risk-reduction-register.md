@@ -49,14 +49,15 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-18 | Sensor Pod Fresh-Water Seal Check, PETG, Inserts Pressed from Below, 2026-10-21 | Pass | [`rr-18-sensor-pod-petg-fresh-water-2026-10-21.md`](rr-18-sensor-pod-petg-fresh-water-2026-10-21.md) |
 | RR-19 | Raw PETG Water Absorption Soak, Fresh then Salt, 2026-10-21 | Planned | [`rr-19-petg-water-absorption-soak-2026-10-21.md`](rr-19-petg-water-absorption-soak-2026-10-21.md) |
 | RR-20 | Hang-Hole Static FEA, Through-Hole Floatation, 2026-10-30 | Pass (analysis only) | [`rr-20-hang-hole-fea-2026-10-30.md`](rr-20-hang-hole-fea-2026-10-30.md) |
-| RR-21 | Tub Plain-Salt Water vs Santa Cruz Seawater, Float Waterline, 2026-11-01 | Running | [`rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md`](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) |
+| RR-21 | Tub Plain-Salt Water vs Santa Cruz Seawater, Float Waterline, 2026-11-01 | Plain-salt part only; seawater comparison cancelled 2026-11-06 | [`rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md`](rr-21-tub-salt-substitute-vs-seawater-2026-11-01.md) |
 | RR-22 | Electronics Housing Cap Assembly and Gland Fit, 2026-11-01 | Partial | [`rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md`](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md) |
-| RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Fail (Stage 1) | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
+| RR-23 | Housing Cap Seal and PG11 Gland Seal Tests, 2026-11-01 | Fail (Stage 1), closed 2026-11-06 | [`rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md`](rr-23-housing-cap-and-gland-seal-tests-2026-11-01.md) |
 | RR-24 | PG11 Gland Fit Coupon, Cap Gland Interface, 2026-11-02 | Partial | [`rr-24-gland-fit-coupon-2026-11-02.md`](rr-24-gland-fit-coupon-2026-11-02.md) |
 | RR-25 | Electronics Bench — Controller, Sensor and Clock Bring-Up, 2026-10-29 | Pass | [`rr-25-controller-and-sensor-bring-up-2026-10-29.md`](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md) |
 | RR-26 | Water-Temperature Probe — Step Response in Water, 2026-11-03 | Partial | [`rr-26-ds18b20-water-step-response-2026-11-03.md`](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md) |
 | RR-27 | Small Test Chamber, Cap Face Seal Test, 2026-11-03 | Planned | [`rr-27-small-chamber-face-seal-test-2026-11-03.md`](rr-27-small-chamber-face-seal-test-2026-11-03.md) |
 | RR-28 | Water-Temperature Probe — Ice-Point Re-Run in Water, 2026-11-04 | Partial | [`rr-28-ds18b20-ice-point-rerun-2026-11-04.md`](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md) |
+| RR-29 | Self-Righting Tilt Test, Regular Buoy Body, 2026-11-06 | Pass (regular buoy only) | [`rr-29-self-righting-tilt-regular-buoy-2026-11-06.md`](rr-29-self-righting-tilt-regular-buoy-2026-11-06.md) |
 
 ## Tests run
 
@@ -77,6 +78,7 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-26 | 2026-11-03 | DS18B20 probe in water: hot, room and ice-water steps | Probe misbehaves wet; its lag matters at 30 min sampling | works-like (bench) | 1 Hz, 0 dropouts; ice point 0.0 ± 0.5 °C | **Partial** — 0 dropouts, steady to 1 step, τ ≈ 12–13 s in water (vs 150–170 s in air); ice point inconclusive (bath not at 0 °C) | [record](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md), [SCO-259](https://linear.app/scout1/issue/SCO-259) |
 | RR-27 | 2026-11-03 | Small test chamber, greased 5-5/8 in ring in a matched groove, face seal only (fresh then plain salt) | Face seal design leaks (RR-23 flooded) | works-like | Towel dry and mass unchanged after 24 h just below the surface, then salt water 24 h and 1 week | **Planned** — Part A locked 2026-11-03 | [record](rr-27-small-chamber-face-seal-test-2026-11-03.md) |
 | RR-28 | 2026-11-04 | DS18B20 probe in water, re-run with marks: air, ice cup, warm water (live demo) | Probe inaccurate at 0 °C; RR-26 results do not repeat | works-like (bench) | 1 Hz, 0 dropouts; ice point 0.0 ± 0.5 °C | **Partial** — 0 dropouts, steady to 1 step, τ ≈ 13.7–14.4 s (repeats RR-26); ice cup bottomed at ≈ 1.35 °C then drifted up, so the bath was not at 0 °C: ice point still inconclusive | [record](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md), [SCO-259](https://linear.app/scout1/issue/SCO-259) |
+| RR-29 | 2026-11-06 | Self-righting tilt test, regular buoy body (retroactive; mushroom not tested) | Buoy stays capsized | works-like | Rights itself unaided | **Passed 2026-11-06** (John: it self-righted; angles and count not recorded) | [record](rr-29-self-righting-tilt-regular-buoy-2026-11-06.md) |
 
 ⚠️ **Not yet recorded:** John has run several informal "is the paper towel wet inside the
 capsule" checks and more drop tests than RR-10. Add them as rows if dates and outcomes can be

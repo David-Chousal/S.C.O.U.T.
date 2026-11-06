@@ -33,6 +33,12 @@ adjacent to the boat. This is option O5 in [Hawaii permitting](../research/hawai
   differ; the murk is accepted.
 - **Needs:** a written yes from the club first (slip agreement, permit S-5407, insurance); DOBOR in writing after.
 - **Status:** club email drafted, not sent.
+- **First deployment (tentative, set 2026-11-06):** Monday 2026-12-14, the day after the Honolulu Marathon. Depends on the club's written yes ([SCO-194](https://linear.app/scout1/issue/SCO-194)); the date is not yet checked against all three members' availability and no backup site is chosen.
+
+## Why California stands in for Hawaii
+
+The differences between the two sites, and which ones limit what a California test shows, are in
+[California vs Hawaii: test assumptions](california-vs-hawaii-test-assumptions.md) ([SCO-210](https://linear.app/scout1/issue/SCO-210)).
 
 ## Rules
 
