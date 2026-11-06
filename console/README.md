@@ -227,46 +227,42 @@ Providers without a client ID and secret are simply hidden from the sign-in page
 
 ## Email: invites and reset links (one-time, needs the account owner)
 
-The console emails invite and password-reset links through Cloudflare Email Sending
-([ADR-0014](../docs/decisions/0014-console-email-delivery.md), `worker/mail.js`). The code is in
-place; **the binding is commented out in `wrangler.toml`** because the account is not set up for
-it yet, so today every invite says "email isn't set up" and the admin copies the link.
+The console emails invite and password-reset links from `console@scoutscu.com` through
+**Resend's free plan** ([ADR-0014](../docs/decisions/0014-console-email-delivery.md),
+`worker/mail.js`): 3,000 emails a month, 100 a day. Without the `RESEND_API_KEY` secret every
+invite says "email isn't set up" and the admin copies the link, as before. The console's own caps
+are 20 emails a day per admin and 50 a day overall (`EMAIL_DAILY_CAP_ADMIN`,
+`EMAIL_DAILY_CAP_TOTAL`).
 
-What it costs and what it needs (Cloudflare docs, read 2026-11-06):
+Claude cannot do steps 1–2; they need the Resend account and the Cloudflare dashboard.
 
-- **Workers Paid is required.** Email Sending is not available on Workers Free (which can only
-  send to the account's verified addresses). Workers Paid is **$5 a month** and includes
-  **3,000 emails a month**, then $0.35 per 1,000. No daily number is published: new accounts
-  start on "a conservative daily quota" that grows with good sending.
-- **The domain must use Cloudflare DNS** (`scoutscu.com` does). Onboarding adds MX, SPF (TXT)
-  and DKIM (TXT) records under `cf-bounce.scoutscu.com` and a DMARC TXT at `_dmarc.scoutscu.com`;
-  it does not touch the GitHub Pages records.
-- **Limits:** 50 recipients per message, 25 MiB per message. The console's own caps are 20 emails
-  a day per admin and 50 a day overall (`EMAIL_DAILY_CAP_ADMIN`, `EMAIL_DAILY_CAP_TOTAL`).
-
-Claude cannot do steps 1–3; they need the account owner signed in to the Cloudflare dashboard.
-
-1. **Upgrade the account** to Workers Paid in the dashboard (**Workers & Pages**, then the plan's upgrade option).
-2. **Onboard the domain:** **Compute** → **Email Service** → **Email Sending** → **Onboard
-   Domain** → `scoutscu.com` → review the records → **Done**. Wait for the records to verify
-   (usually 5–15 minutes). `npx wrangler email sending dns get scoutscu.com` shows them, with a
-   token that has Email Sending permission (the default `wrangler login` token does not).
-3. **Check DMARC:** if `scoutscu.com` already had a `_dmarc` record, keep one, not two.
-4. **Turn the binding on:** uncomment the `[[send_email]]` block in `wrangler.toml`, merge, and
-   deploy. Never add `remote = true`: it would send real email from `wrangler dev`.
-5. **Test:** invite an address you control from Team. The card should say "Email sent to …",
-   the message should arrive from `console@scoutscu.com` and pass SPF/DKIM (Gmail: **Show
+1. **Resend:** create the account, add `scoutscu.com` under **Domains**, and create an API key
+   with **Sending access** only, limited to that domain.
+2. **DNS:** add the records Resend lists to the `scoutscu.com` zone in Cloudflare (**DNS** →
+   **Records**), with the proxy **off**: a DKIM TXT at `resend._domainkey`, and an MX and an SPF
+   TXT at `send` (Resend's bounce subdomain, so the apex's mail records are untouched). Add a
+   DMARC TXT at `_dmarc` if the zone has none, e.g. `v=DMARC1; p=none;`. Then press **Verify**
+   in Resend and wait for **Verified**. Check from a terminal:
+   `dig +short TXT resend._domainkey.scoutscu.com`.
+3. **Secret:** `npx wrangler secret put RESEND_API_KEY` and paste the key. This saves a new
+   version of the live Worker with the secret; nothing else changes.
+4. **Test:** invite an address you control from Team. The card should say "Email sent to …",
+   the message should arrive from `console@scoutscu.com` and pass SPF and DKIM (Gmail: **Show
    original**), and Developer → Audit log should show `invite.email` with the address masked.
-   If it says "Couldn't email", `npx wrangler tail` shows the error code (for example
-   `E_SENDER_NOT_VERIFIED`).
+   If it says "Couldn't email", `npx wrangler tail` shows the code, e.g.
+   `resend_403_validation_error` when the domain is not verified yet.
 
-To turn email off again, comment the block out and deploy; invites fall back to copying links.
+To turn email off, `npx wrangler secret delete RESEND_API_KEY`. If the key leaks, revoke it in
+Resend and put a new one.
 
-**Local development:** `wrangler dev` simulates the binding and sends nothing: each message is
-written to `console/.wrangler/tmp/email/` (git-ignored) and the log prints where. While the
-binding is commented out, test with a scratch copy of `wrangler.toml` that has it uncommented
-and the `[ai]` block removed (the AI binding starts a remote preview session, which Cloudflare
-refuses while the account has no Email Sending).
+**Local development:** put `RESEND_API_KEY=…` in `console/.dev.vars` (git-ignored) and
+`wrangler dev` **sends real email**; invite Resend's test inbox `delivered@resend.dev` instead
+of a person. Without the key, nothing is sent.
+
+**Cloudflare Email Sending instead** (the commented `[[send_email]]` block in `wrangler.toml`)
+needs Workers Paid ($5 a month, 3,000 emails included, then $0.35 per 1,000) and the domain
+onboarded under **Compute** → **Email Service** → **Email Sending**. When `RESEND_API_KEY` is
+set, Resend is used even if the binding is on.
 
 ## Automatic deploy (on merge to main)
 
