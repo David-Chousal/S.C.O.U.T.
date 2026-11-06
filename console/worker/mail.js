@@ -8,6 +8,7 @@
  * line or the audit log. The audit log names each attempt with the address masked. */
 
 import { record } from "./audit.js";
+import { emailHtml } from "./mail-layout.js";
 
 export const SENDER = { email: "console@scoutscu.com", name: "S.C.O.U.T. Console" };
 
@@ -16,6 +17,8 @@ export const SENDER = { email: "console@scoutscu.com", name: "S.C.O.U.T. Console
 const DEFAULT_CAP_PER_ADMIN = 20;
 const DEFAULT_CAP_TOTAL = 50;
 const DAY_MS = 24 * 3600 * 1000;
+
+const ROLE_LABEL = { guest: "Guest", member: "Member", admin: "Admin" };
 
 const ROLE_WORDS = {
   guest: "a guest (sees every page, changes nothing)",
@@ -27,10 +30,6 @@ const ROLE_WORDS = {
 export function maskEmail(email) {
   const [local, domain] = String(email).split("@");
   return domain ? `${local.slice(0, 1)}***@${domain}` : "***";
-}
-
-function escapeHtml(text) {
-  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 function formatExpiry(ms) {
@@ -71,13 +70,19 @@ function inviteMessage({ inviter, role, link, expiresAt }) {
       `The link works once and expires on ${expires}.`,
       "If you weren't expecting this, ignore this email; nothing happens unless the link is used.",
     ].join("\n"),
-    html: page([
-      `<p>${escapeHtml(who)} invited you to the S.C.O.U.T. Console as ${escapeHtml(roleWords)}.</p>`,
-      "<p>The console is where the S.C.O.U.T. team watches the buoys' readings and manages the fleet.</p>",
-      button(link, "Accept the invite"),
-      `<p>The link works once and expires on ${escapeHtml(expires)}.</p>`,
-      "<p>If you weren't expecting this, ignore this email; nothing happens unless the link is used.</p>",
-    ]),
+    html: emailHtml({
+      title: "You're invited",
+      intro: [
+        `You're invited to join the S.C.O.U.T. Console as ${roleWords}.`,
+        "The console is where the S.C.O.U.T. team watches the buoys' readings and manages the fleet.",
+      ],
+      facts: [["Invited by", who], ["Role", ROLE_LABEL[role] ?? role], ["Expires", expires]],
+      action: { label: "Accept the invite", href: link },
+      notes: [
+        "The link works once.",
+        "If you weren't expecting this, ignore this email; nothing happens unless the link is used.",
+      ],
+    }),
   };
 }
 
@@ -95,26 +100,17 @@ function resetMessage({ inviter, link, expiresAt }) {
       `The link works once and expires on ${expires}. Setting a new password signs you out everywhere.`,
       "If you didn't ask for this, ignore this email and tell an admin; your password stays the same.",
     ].join("\n"),
-    html: page([
-      `<p>${escapeHtml(who)}, an admin of the S.C.O.U.T. Console, issued a password reset link for your account.</p>`,
-      button(link, "Choose a new password"),
-      `<p>The link works once and expires on ${escapeHtml(expires)}. Setting a new password signs you out everywhere.</p>`,
-      "<p>If you didn't ask for this, ignore this email and tell an admin; your password stays the same.</p>",
-    ]),
+    html: emailHtml({
+      title: "Reset your password",
+      intro: ["An admin of the S.C.O.U.T. Console issued a password reset link for your account."],
+      facts: [["Issued by", who], ["Expires", expires]],
+      action: { label: "Choose a new password", href: link },
+      notes: [
+        "The link works once. Setting a new password signs you out everywhere.",
+        "If you didn't ask for this, ignore this email and tell an admin; your password stays the same.",
+      ],
+    }),
   };
-}
-
-// Inline styles only: no remote images, fonts or stylesheets, and nothing that tracks opens.
-function button(link, label) {
-  const href = escapeHtml(link);
-  return `<p><a href="${href}" style="display:inline-block;padding:10px 16px;background:#0b5d6b;color:#ffffff;` +
-    `text-decoration:none;border-radius:6px">${escapeHtml(label)}</a></p>` +
-    `<p style="font-size:13px;color:#555555">Or paste this address into your browser:<br>${href}</p>`;
-}
-
-function page(parts) {
-  return '<!DOCTYPE html><html><body style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;' +
-    `color:#1a1a1a;max-width:560px">${parts.join("")}</body></html>`;
 }
 
 const RESEND_URL = "https://api.resend.com/emails";

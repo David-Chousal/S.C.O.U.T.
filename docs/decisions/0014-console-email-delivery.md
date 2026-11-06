@@ -54,7 +54,7 @@ when it turned out to need Workers Paid, David asked for a free route and set up
    logs a short code only (`resend_<status>_<name>`, or the binding's `E_*` code), never the
    provider's message, the address, the link or the key. Each attempt is audited as
    `invite.email` or `reset.email` with the address masked (`n***@example.com`).
-6. **Content:** plain text plus a simple HTML part with inline styles only: no images, remote
+6. **Content:** plain text plus an HTML part styled like a console dialog (`worker/mail-layout.js`: ink rail, mono tags, the primary key, the dashed link box), inline styles and tables only: no images, remote
    fonts, stylesheets or tracking pixels.
 
 ## Consequences
