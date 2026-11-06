@@ -19,12 +19,21 @@ not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
 
 # Public config only. Secrets are set with `wrangler secret put` and never committed:
-#   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET
+#   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY (Fred; locally in .dev.vars)
 [vars]
 APP_URL = "https://console.scoutscu.com"
 BOOTSTRAP_ADMIN_EMAIL = ""                              # first admin; only used while no users exist
 GITHUB_CLIENT_ID = ""
 GOOGLE_CLIENT_ID = ""
+# Fred's questions a day per person (ADR-0013). Google changes the free tier's limits without
+# notice, so these are vars, not code. Members and admins share one cap; guests get a lower one.
+ASSISTANT_DAILY_CAP = "40"
+ASSISTANT_DAILY_CAP_GUEST = "10"
+
+# Fred's fallback when Gemini is rate-limited (Workers AI, free allocation). `wrangler dev` runs it
+# against the real service, so it needs `wrangler login` locally.
+[ai]
+binding = "AI"
 
 [[d1_databases]]
 binding = "DB"
@@ -41,7 +50,8 @@ migrations_dir = "migrations"
 binding = "FILES"
 bucket_name = "scout-console-files"
 
-# The nightly backup to R2, at 10:30 UTC (00:30 in Hawaii, after the buoys' 00:10 slot).
+# The nightly backup to R2 and Fred's morning brief, at 10:30 UTC (00:30 in Hawaii, after the
+# buoys' 00:10 slot).
 [triggers]
 crons = ["30 10 * * *"]
 

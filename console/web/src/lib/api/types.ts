@@ -192,6 +192,8 @@ export interface StorageReport {
   budget: { writesPerMonth: number; readsPerMonth: number; storedBytes: number; maxObjectBytes: number };
   lastBackup: { key: string; bytes: number } | null;
   bound: boolean;
+  /** Fred's use today (UTC), across everyone; counts only. */
+  assistant?: { day: string; questions: number; model_calls: number; tokens_in: number; tokens_out: number; fallbacks: number; people: number };
 }
 
 export interface ReportRequest {
@@ -217,3 +219,48 @@ export interface ReportList {
   reports: ReportItem[];
   columns: string[];
 }
+
+/** Fred, the console's assistant (console/worker/assistant/route.js). */
+export interface FredMessage {
+  role: "user" | "assistant";
+  text: string;
+}
+
+export interface FredContext {
+  page?: string;
+  tab?: string;
+  buoy?: number;
+}
+
+export interface FredStatus {
+  enabled: boolean;
+  used: number;
+  cap: number;
+}
+
+/** Fred's morning brief, written by the daily cron (console/worker/assistant/brief.js). */
+export interface FredBrief {
+  day: string;
+  text: string;
+  provider: "gemini" | "facts";
+  created_at: number;
+}
+
+/** A change Fred proposed; it runs only on Confirm, within 10 minutes. */
+export interface FredCard {
+  id: string;
+  kind: string;
+  title: string;
+  details: [string, string][];
+  expiresAt: number;
+}
+
+/** One server-sent event from POST /api/assistant. */
+export type FredEvent =
+  | { event: "text"; data: { delta: string } }
+  | { event: "tool"; data: { name: string; label: string } }
+  | { event: "action"; data: FredCard }
+  | { event: "notice"; data: { message: string } }
+  | { event: "reset"; data: Record<string, never> }
+  | { event: "done"; data: { provider: string; used: number; cap: number } }
+  | { event: "error"; data: { message: string } };

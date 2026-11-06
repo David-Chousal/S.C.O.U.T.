@@ -113,6 +113,7 @@ export const SHORTCUTS: readonly { keys: readonly string[]; action: string; toge
   { keys: ["G", "P"], action: "Settings" },
   { keys: ["G", "D"], action: "Developer" },
   { keys: ["G", "Y"], action: "Help" },
+  { keys: ["A"], action: "Ask Fred" },
   { keys: ["E"], action: "Customize (on Dashboard)" },
   { keys: ["⌘", "S"], action: "Save (on Dashboard)", together: true },
 ];

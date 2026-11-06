@@ -6,6 +6,7 @@ import { api } from "@/lib/api/client";
 import type { Fleet, Reading } from "@/lib/api/types";
 import { DEFAULT_VIEW_ID, systemDefault, type SavedView } from "@/lib/dashboard/layout";
 import { can, needs, useSession } from "@/lib/session";
+import { useViewOnlyNote } from "@/lib/view-only-note";
 import type { BoardData } from "./bay-content";
 import { LayoutBoard } from "./layout-board";
 
@@ -19,6 +20,7 @@ export function DashboardBoard() {
   const [data, setData] = useState<BoardData | null>(null);
   const [error, setError] = useState("");
   const canEdit = can(user.role, "dashboards.write");
+  useViewOnlyNote(canEdit ? null : `View only: arranging dashboards needs the ${needs("dashboards.write")} role.`);
 
   const loadViews = useCallback(() => {
     api.dashboards().then((reply) => setViews(reply.dashboards), (failure: unknown) => setError(failure instanceof Error ? failure.message : "Could not load the views."));
@@ -40,7 +42,6 @@ export function DashboardBoard() {
   const overview: SavedView = { id: DEFAULT_VIEW_ID, name: "Overview", shared: true, bays: systemDefault(data.buoys.map((b) => b.buoy_id)) };
   return (
     <>
-      {!canEdit && <Banner tone="info" icon="lock">View only: arranging dashboards needs the {needs("dashboards.write")} role.</Banner>}
       <LayoutBoard views={[overview, ...views]} data={data} canEdit={canEdit} onChanged={loadViews} />
     </>
   );

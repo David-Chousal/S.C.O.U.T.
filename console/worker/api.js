@@ -5,6 +5,8 @@
  * CSRF token in X-CSRF-Token. Roles are checked here on every write (roles.js); the front end's
  * disabled controls are only a courtesy. Replies use the envelope { ok, ...data } / { ok:false, error }. */
 
+import { handleAssistant } from "./assistant/route.js";
+import { usageToday } from "./assistant/usage.js";
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, deleteDevice, listDevices, revokeDevice } from "./device.js";
@@ -122,7 +124,8 @@ async function reads(env, path, session, url) {
       return json({ entries: await recent(env.DB) });
     case "/api/storage":
       if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
-      return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES) });
+      return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES),
+        assistant: await usageToday(env.DB) });
     case "/api/dashboards":
       return json({ dashboards: await listDashboards(env.DB, session.user.id) });
     case "/api/reports":
@@ -197,6 +200,8 @@ async function writes(request, env, path, session, body) {
 }
 
 export async function handleApi(request, env, path) {
+  // Fred reads its own, larger body (the open conversation) and streams its reply.
+  if (path === "/api/assistant" || path.startsWith("/api/assistant/")) return handleAssistant(request, env, path);
   let body = {};
   if (request.method === "POST") {
     if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);

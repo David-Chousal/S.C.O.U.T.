@@ -28,7 +28,7 @@ describe("TopBar", () => {
     renderBar();
     expect(screen.getByRole("link", { name: /S\.C\.O\.U\.T\. Console/ }).getAttribute("href")).toMatch(/^\/dashboard\/?$/);
     expect(screen.getByRole("button", { name: "Account: David Chousal" })).toBeDefined();
-    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole("button", { name: /Ask Fred/ })).toBeDefined();
     expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   });
 
@@ -53,6 +53,37 @@ describe("TopBar", () => {
     await userEvent.click(screen.getByRole("button", { name: "Account: David Chousal" }));
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Account" })).toBeNull();
+  });
+});
+
+describe("Ask Fred", () => {
+  test("asks the shell to open Fred and says whether it is open", async () => {
+    const onToggleFred = vi.fn();
+    const { rerender } = render(<TopBar user={user} onToggleFred={onToggleFred} />);
+    const ask = screen.getByRole("button", { name: /Ask Fred/ });
+    expect(ask.getAttribute("aria-expanded")).toBe("false");
+    await userEvent.click(ask);
+    expect(onToggleFred).toHaveBeenCalledTimes(1);
+    rerender(<TopBar user={user} onToggleFred={onToggleFred} fredOpen />);
+    expect(screen.getByRole("button", { name: /Ask Fred/ }).getAttribute("aria-expanded")).toBe("true");
+  });
+
+  test("is disabled before the session loads", () => {
+    render(<TopBar />);
+    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  test("shows the page's view-only note as plain text in the bar", () => {
+    const { container } = render(<TopBar user={user} onToggleFred={vi.fn()} note="View only: making API tokens needs the member role." />);
+    const note = container.querySelector(".sc-top__note");
+    expect(note?.textContent).toBe("View only: making API tokens needs the member role.");
+    expect(note?.closest(".sc-banner")).toBeNull();
+  });
+
+  test("with the menu as an icon rail, the account moves to the right end", () => {
+    const { container } = render(<TopBar user={user} onToggleFred={vi.fn()} railMenu />);
+    expect(container.querySelector(".sc-top__end .sc-top__account")).not.toBeNull();
+    expect(container.querySelector(".sc-top__brand .sc-top__account")).toBeNull();
   });
 });
 

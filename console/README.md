@@ -25,6 +25,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Folder | What |
 |---|---|
 | `worker/` | The Worker: JSON API, OAuth, device API, static assets. Plain ES modules, no build |
+| `worker/assistant/` | Fred, the assistant ([ADR-0013](../docs/decisions/0013-console-assistant-fred.md)): model interface, tools, confirm, brief |
 | `migrations/` | D1 schema |
 | `test/` | Worker tests on Node's built-in SQLite (`npm test`) |
 | `web/` | The front end: Next.js 16 / React 19, **static export** to `web/out`, served by the Worker |
@@ -43,6 +44,8 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Developer | member, admin (guests view) | Two tabs. **API tokens:** personal tokens (scopes `read:telemetry`, `write:settings`; 7, 30, 90 or 365 days, or never (migration `0009-tokens-never-expire.sql`); shown once, stored hashed, revocable) and how to call `/api/v1`. **Audit log** (read only, `?tab=audit`): every change, who, what, before → after. The old `/audit/` address forwards here |
 | Settings | member (buoys); yourself (page) | **Buoys:** an overview table of every buoy (settings state, what differs from the defaults, last heard); picking one (kept as `?buoy=N`) opens its editor: its name and its **eight remote settings**; changing the transmit count first asks for confirmation, showing battery life before and after (estimate) (transmit count, slot phase, reading interval, hydrophone clip, power thresholds, conserve spacing, humidity alert; registry in `firmware/lib/scout_settings`, D1 migration `0010-remote-settings.sql`) with Pending/Confirmed from the digest in v5 packets and hold-to-restore-defaults, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **Account:** how you sign in; sign out of this browser; hold to sign out everywhere (`?tab=account`). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account menu | yourself | The account in the top bar opens a menu: your name, email and role, **Appearance** (light, dark, match system) and **Times** (UTC or your time zone), the same two settings as Settings → This browser, a link to Settings → Account, and **Sign out**. The old `/account/` address forwards to Settings → Account |
+| Ask Fred (top bar, every page) | members and admins confirm changes; guests ask only | The assistant ([below](#fred-the-assistant)): a panel docked on the right that squeezes the page as it opens (it floats over the page under 1024 px and is a full-screen sheet that fills a phone's screen), opened with **A** when shortcuts are on. Drag its left edge, or focus the edge and use the arrow keys, to resize it (320–720 px, never leaving the page under 420 px) |
+| Menu (left, every page) | yourself | Drag its right edge to narrow it, down to an icon rail; the panel icon at its foot collapses and expands it in one click. Both widths are remembered in this browser. Page layouts follow the room the page actually has (CSS container queries), not the window width |
 | Help | (read only) | Task-first guide: a picker of four tasks, then how data gets from the buoy to the console (diagram), connecting a shore station (S3 over WiFi, or the USB computer fallback), adding a buoy, changing its settings, troubleshooting by symptom, roles, keyboard shortcuts, and the API |
 | Sign in, invite, reset | — | GitHub, Google or password, or **Sign in as guest** (name and email, view only); the invite and reset token is read from `?token=` |
 
@@ -134,6 +137,62 @@ request a count in 1–3, which the buoy also range-checks.
   ([SCO-239](https://linear.app/scout1/issue/SCO-239)).
 - Request bodies are refused before they are read when over the limit or sent without a length.
 
+## Fred, the assistant
+
+Fred ([ADR-0013](../docs/decisions/0013-console-assistant-fred.md), [SCO-299](https://linear.app/scout1/issue/SCO-299))
+answers questions about the console, the project and the live fleet, and drafts changes that run
+only when the person clicks **Confirm**. It runs in this Worker (`worker/assistant/`) on the free
+tier of Google's Gemini API.
+
+- **What it can read:** buoys (health, next transmit, settings state), one buoy in full, readings
+  (at most 200 points with min/max/mean), shore stations and routes, your reports and dashboards,
+  the audit log (names, never emails), file storage (admins), the repo docs (`search_docs`), and
+  console links.
+- **What it can draft** (a card with the effect, valid for 10 minutes): buoy settings, restore
+  defaults, rename, a CSV report (members and admins); a buoy's command station and revoking a
+  station token (admins). Confirm re-checks your role and runs the same handler the page would;
+  the audit log shows `<email> via Fred`. Guests are never offered these.
+- **What it never does:** reveal or create secrets, change roles, disable accounts, delete
+  anything, or change anything without your click.
+- **Nothing you type is stored.** The conversation lives in the open panel and goes when the tab
+  closes. D1 keeps only pending cards (`assistant_actions`) and daily counts
+  (`assistant_usage`), migration `0011-assistant.sql`. **Report this answer** copies one exchange
+  for a Linear issue. Google may review what you type on the free tier; the Help page says so (the panel no longer
+  carries a notice, removed 2026-11-06 at David's request).
+- **Limits:** `ASSISTANT_DAILY_CAP` (40) and `ASSISTANT_DAILY_CAP_GUEST` (10) questions a day per
+  person, from `wrangler.toml`. When Gemini is rate-limited it retries once, then a smaller
+  Workers AI model answers with no drafting (the `[ai]` binding). Admins see today's use under
+  Settings → Buoys → File storage; check it before a demo.
+- **Morning brief:** the daily cron (with the backup) writes a note to the top of the Dashboard
+  from facts worked out in code (silent or late buoys, rejected or stuck settings, quiet
+  stations, storage near budget); Gemini Flash-Lite phrases them, or the facts show as they are.
+  Migration `0012-assistant-brief.sql`.
+- **Knowledge:** `scripts/build_assistant_knowledge.py` builds `worker/assistant/knowledge.json`
+  (generated, not committed) from the Help page, the settings registry, `docs/hub/facts.md` and
+  every tracked doc. `npm test`, `npm run dev` and the deploy workflow run it first.
+- **Model:** `gemini-3.5-flash-lite` for everything. On the free tier the stronger
+  `gemini-3.8-flash` allows only 20 requests a day per project, and one question takes 2–9 model
+  calls. Model IDs live in one constant in `worker/assistant/model.js`; Google retires them often.
+  Eval score 2026-11-05: 41/41.
+
+**Set up the key** (David's Google account, ADR-0013 decision 3). In Google AI Studio, create the
+key in a project **with no billing enabled**, or Google refuses every model instead of serving the
+free tier. Then, from `console/`:
+
+```bash
+npx wrangler secret put GEMINI_API_KEY
+```
+
+For local development put `GEMINI_API_KEY=…` in `console/.dev.vars` (gitignored). Never put it in
+`wrangler.toml`, a commit or a chat.
+
+**Before a prompt or model change**, run the eval set against the real model and record the score
+in the PR:
+
+```bash
+cd console && node scripts/run-assistant-evals.mjs --out /tmp/fred-evals.json
+```
+
 ## Deploy (one-time, needs the account owner)
 
 Claude cannot do these steps. They need your Cloudflare and OAuth accounts.
@@ -143,6 +202,7 @@ cd console/web && npm ci && npm run build && cd ..   # the front end the Worker 
 npx wrangler login
 npx wrangler d1 create scout-console          # paste the database_id into wrangler.toml
 npx wrangler d1 migrations apply scout-console --remote
+npx wrangler secret put GEMINI_API_KEY        # Fred (see "Fred, the assistant"); optional
 npx wrangler deploy                           # prints the workers.dev URL → APP_URL in wrangler.toml
 ```
 
@@ -292,4 +352,4 @@ JSON drifts. After changing a Tideline colour, run `python3 scripts/export_conso
 B: API tokens + REST API + OpenAPI ([SCO-240](https://linear.app/scout1/issue/SCO-240)) · C:
 customizable dashboards · D: downloadable reports (R2) · E: nightly backups, custom domain
 ([SCO-241](https://linear.app/scout1/issue/SCO-241)). COR's layout editor and report composer are
-the starting points for C and D.
+the starting points for C and D. Fred, the assistant, was built 2026-11-05 (ADR-0013).

@@ -16,9 +16,11 @@
  *   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET                             secrets
  *   DB (D1), ASSETS (static assets), FILES (R2, guarded by storage.js)     bindings
  *
- * A cron trigger (wrangler.toml) runs the nightly backup to R2 (backup.js). */
+ * A cron trigger (wrangler.toml) runs the nightly backup to R2 (backup.js) and writes Fred's
+ * morning brief (assistant/brief.js). */
 
 import { handleApi } from "./api.js";
+import { runBrief } from "./assistant/brief.js";
 import { runBackup } from "./backup.js";
 import { FLASH_COOKIE, staticAsset } from "./assets.js";
 import { b64url, fromB64url } from "./crypto.js";
@@ -119,6 +121,10 @@ export default {
 
   async scheduled(event, env, ctx) {
     ctx.waitUntil?.(Promise.resolve());
-    await runBackup(env, event.scheduledTime);
+    // Each job runs even if the other fails; a failure still fails the cron run so it shows.
+    const results = await Promise.allSettled([runBackup(env, event.scheduledTime), runBrief(env, event.scheduledTime)]);
+    const failed = results.filter((r) => r.status === "rejected");
+    for (const f of failed) console.error("console: scheduled job failed", f.reason instanceof Error ? f.reason.stack : f.reason);
+    if (failed.length) throw failed[0].reason;
   },
 };

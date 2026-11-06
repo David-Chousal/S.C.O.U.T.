@@ -60,6 +60,12 @@ jobs:
             exit 1
           fi
 
+      # Fred's knowledge pack and doc index (ADR-0013), generated from this commit's docs so the
+      # assistant is always as current as main. `npm test` would build it too; this step makes
+      # the dependency explicit. The Worker bundles console/worker/assistant/knowledge.json.
+      - name: Build Fred's knowledge pack
+        run: python3 console/scripts/build_assistant_knowledge.py
+
       # The same checks ci.yml runs; repeated here so nothing untested reaches the live site,
       # even from a manual run.
       - name: Worker tests

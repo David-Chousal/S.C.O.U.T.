@@ -1,6 +1,6 @@
 /* JSON responses, redirects, security headers and cookies for the console Worker. */
 
-const SECURITY_HEADERS = {
+export const SECURITY_HEADERS = {
   "Content-Security-Policy":
     "default-src 'none'; style-src 'self'; img-src 'self'; form-action 'self' https://github.com " +
     "https://accounts.google.com; frame-ancestors 'none'; base-uri 'none'",

@@ -3,7 +3,7 @@
 .sc-guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; min-width: 0; }
 .sc-guide__body { display: grid; gap: 56px; min-width: 0; }
 .sc-guide__index { display: none; }
-@media (min-width: 1280px) {
+@container page (min-width: 1032px) {
   .sc-guide { grid-template-columns: minmax(0, 1fr) 208px; column-gap: var(--space-8); }
   .sc-guide__intro { grid-column: 1 / -1; }
   .sc-guide__tasks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -48,7 +48,7 @@
 .sc-guide__step::before { content: counter(step); position: absolute; left: 0; top: -2px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: var(--radius-full); background: var(--ink); color: var(--bg); font: 600 14px/1 var(--font-mono); }
 .sc-guide__step:not(:last-child)::after { content: ""; position: absolute; left: 14px; top: 34px; bottom: calc(-1 * var(--space-6) + 4px); width: 2px; background: var(--line); }
 .sc-guide__step-title { margin: 0; font: 600 16px/24px var(--font-sans); }
-.sc-guide__done { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; padding: var(--space-3) var(--space-4); border-left: 3px solid var(--positive); background: var(--positive-soft); font: 400 14px/20px var(--font-sans); }
+.sc-guide__done { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; padding: var(--space-3) var(--space-4) calc(var(--space-3) + 3px); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 -3px 0 var(--line); font: 400 14px/20px var(--font-sans); }
 .sc-guide__done .sc-ico { flex: none; margin-top: 2px; color: var(--positive); }
 
 .sc-guide__flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 960px; margin: 0; padding: 0; list-style: none; }
@@ -93,7 +93,7 @@
 .sc-guide__shortcuts dd { margin: 0; font: 400 14px/20px var(--font-sans); }
 .sc-guide kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 -2px 0 var(--line); font: 500 12px/1 var(--font-mono); color: var(--ink); }
 
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-guide { gap: 40px; }
   .sc-guide__tasks, .sc-guide__reference { grid-template-columns: 1fr; }
   .sc-guide__body { gap: 40px; }

@@ -24,4 +24,4 @@
 [data-disabled].sc-key { opacity: .45; box-shadow: none; }
 .sc-data { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: var(--space-8); align-items: start; }
 .sc-data__detail { display: grid; gap: var(--space-8); min-width: 0; }
-@media (max-width: 1023px) { .sc-data { grid-template-columns: 1fr; } }
+@container page (max-width: 775px) { .sc-data { grid-template-columns: 1fr; } }

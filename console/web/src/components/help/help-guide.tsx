@@ -96,6 +96,7 @@ const PAGE_INDEX = [
   { id: "buoy", label: "Add a buoy" },
   { id: "settings", label: "Change how a buoy behaves" },
   { id: "trouble", label: "Fix something that looks wrong" },
+  { id: "fred", label: "Ask Fred" },
   { id: "roles", label: "Who can do what" },
   { id: "keys", label: "Keyboard shortcuts" },
   { id: "api", label: "Scripts and notebooks" },
@@ -204,6 +205,25 @@ export function HelpGuide() {
               </details>
             ))}
           </div>
+        </GuideSection>
+
+        <GuideSection id="fred" eyebrow="Anyone" title="Ask Fred"
+          lead={<>Fred is the console&rsquo;s assistant. Open it with <b>Ask Fred</b> in the top bar on any page.</>}>
+          <p className="sc-guide__text">
+            Ask about a page, the project or the live fleet: &ldquo;Which buoys missed a transmission today?&rdquo;, &ldquo;Why is buoy 2
+            still Pending?&rdquo;, &ldquo;Why can&rsquo;t we send audio over LoRa?&rdquo; Fred looks things up with the same data the pages
+            show, cites the repo files it used, and says when it does not know.
+          </p>
+          <p className="sc-guide__text">
+            Members can ask for a change, such as &ldquo;drop buoy 1 to two transmits a day&rdquo;. Fred shows a card with the effect, and
+            nothing changes until you click <b>Confirm</b> within 10 minutes. The audit log records it as made by you, via Fred. Guests can
+            ask questions but not changes.
+          </p>
+          <p className="sc-guide__text sc-guide__aside">
+            Fred runs on Google Gemini&rsquo;s free tier: Google may review what you type, so don&rsquo;t share personal information. Nothing you
+            type is kept by the console; the conversation goes when you close the tab. If an answer is wrong, use <b>Report this answer</b> and
+            paste it into a Linear issue. Each person has a daily limit, and when Gemini is busy a smaller model answers and cannot draft changes.
+          </p>
         </GuideSection>
 
         <Reference />

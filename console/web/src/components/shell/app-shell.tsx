@@ -2,16 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { FredPanel } from "@/components/assistant/fred-panel";
 import { Banner } from "@/components/feedback/banner";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
 import { ApiError, type Session } from "@/lib/api/types";
 import { applyTheme, DEFAULT_PREFERENCES, loadPreferences, savePreferences, type Preferences } from "@/lib/preferences";
+import { FRED } from "@/lib/shell-layout";
+import { ViewOnlyNoteContext } from "@/lib/view-only-note";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
 import { cachedSession, forgetSession, rememberSession } from "./session-cache";
+import { ResizeHandle } from "./resize-handle";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
+import { useShellLayout } from "./use-shell-layout";
 
 /** The page's title, with its own actions beside it. */
 function PageHead({ title, actions }: { title: string; actions?: ReactNode }) {
@@ -46,6 +51,20 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     typeof window === "undefined" ? DEFAULT_PREFERENCES : loadPreferences(),
   );
   const [stored, setStored] = useState(true);
+  // Fred mounts on first open and then stays, so it can slide shut and keep its conversation.
+  const [fredOpen, setFredOpen] = useState(false);
+  const [fredMounted, setFredMounted] = useState(false);
+  // The open page's "View only: …" note, shown in the top bar (lib/view-only-note.tsx).
+  const [viewOnlyNote, setViewOnlyNote] = useState<string | null>(null);
+  const { shellRef, layout, fred, fredMax, dragging, setDragging, resizeSide, toggleSide, resizeFred } = useShellLayout(fredOpen);
+  const toggleFred = useCallback(() => {
+    setFredMounted(true);
+    setFredOpen((open) => !open);
+  }, []);
+  const closeFred = useCallback(() => {
+    setFredOpen(false);
+    document.querySelector<HTMLButtonElement>(".sc-ask")?.focus();
+  }, []);
 
   const update = useCallback((change: Partial<Preferences>) => {
     const next = { ...preferences, ...change };
@@ -77,9 +96,9 @@ export function AppShell({ title, actions, children }: AppShellProps) {
   if (load.kind !== "ready") {
     // The frame stays up while the session loads, so the page never flashes blank.
     return (
-      <div className="sc-shell">
-        <TopBar />
-        <Sidebar shortcuts={preferences.shortcuts} />
+      <div className="sc-shell" ref={shellRef}>
+        <TopBar railMenu={layout.sideCollapsed} />
+        <Sidebar shortcuts={preferences.shortcuts} collapsed={layout.sideCollapsed} width={layout.sideWidth} />
         <div className="sc-shell__page">
           <main className="sc-main" aria-busy={load.kind === "loading"}>
             <PageHead title={title} />
@@ -95,11 +114,25 @@ export function AppShell({ title, actions, children }: AppShellProps) {
     <SessionContext value={load.session}>
     <PreferencesContext value={preferencesValue}>
       <Toaster>
-        <div className="sc-shell">
-          <TopBar user={load.session.user} />
-          <Sidebar shortcuts={preferences.shortcuts} />
+        <div ref={shellRef}
+          className={`sc-shell${fredOpen ? " sc-shell--fred" : ""}${dragging ? " sc-shell--resizing" : ""}`}>
+          <TopBar user={load.session.user} fredOpen={fredOpen} onToggleFred={toggleFred} railMenu={layout.sideCollapsed} note={viewOnlyNote} />
+          <Sidebar shortcuts={preferences.shortcuts} collapsed={layout.sideCollapsed} width={layout.sideWidth}
+            onResize={resizeSide} onDragging={setDragging} onToggle={toggleSide} />
           <div className="sc-shell__page">
-            <main className="sc-main"><PageHead title={title} actions={actions} />{children}</main>
+            <main className="sc-main">
+              <PageHead title={title} actions={actions} />
+              <ViewOnlyNoteContext value={setViewOnlyNote}>{children}</ViewOnlyNoteContext>
+            </main>
+          </div>
+          <div id="sc-fred-dock" className="sc-fred-dock" aria-hidden={!fredOpen} inert={!fredOpen}>
+            {fredMounted && (
+              <>
+                <ResizeHandle label="Fred's panel width" value={fred} min={FRED.min} max={fredMax} grows="left"
+                  onResize={resizeFred} onDragging={setDragging} className="sc-resize--fred" />
+                <FredPanel user={load.session.user} open={fredOpen} onClose={closeFred} />
+              </>
+            )}
           </div>
         </div>
       </Toaster>

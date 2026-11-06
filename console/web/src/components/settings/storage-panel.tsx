@@ -41,6 +41,14 @@ export function StoragePanel() {
       <p className="sc-help">
         Newest backup: {data.lastBackup ? <span className="sc-num">{data.lastBackup.key} ({mb(data.lastBackup.bytes)})</span> : "none yet"}. It runs nightly at 10:30 UTC.
       </p>
+      {data.assistant && (
+        <p className="sc-help">
+          Fred today: <span className="sc-num">{n(data.assistant.questions)}</span> questions from {n(data.assistant.people)} people,{" "}
+          <span className="sc-num">{n(data.assistant.model_calls)}</span> model calls ({n(data.assistant.fallbacks)} on the fallback),{" "}
+          <span className="sc-num">{n(data.assistant.tokens_in + data.assistant.tokens_out)}</span> tokens. Check this before a demo:
+          Gemini&rsquo;s free tier is shared by everyone.
+        </p>
+      )}
     </section>
   );
 }

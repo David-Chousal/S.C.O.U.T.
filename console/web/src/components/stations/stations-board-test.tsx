@@ -49,7 +49,7 @@ describe("StationsBoard", () => {
     renderBoard("admin");
     expect(await screen.findByText("Reef north")).toBeDefined();
     expect(screen.getByText("Reef south")).toBeDefined();
-    expect(screen.getByText(/only active station/)).toBeDefined();
+    expect(screen.queryByText(/only active station/)).toBeNull();
     expect(screen.queryByRole("button", { name: /Assign buoys/ })).toBeNull();
     expect(screen.queryByRole("columnheader", { name: "Commands from" })).toBeNull();
   });

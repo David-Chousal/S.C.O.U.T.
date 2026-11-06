@@ -8,6 +8,12 @@ import {
   type Device,
   type BuoySettings,
   type Fleet,
+  type FredBrief,
+  type FredCard,
+  type FredContext,
+  type FredEvent,
+  type FredMessage,
+  type FredStatus,
   type Invite,
   type Providers,
   type Reading,
@@ -50,6 +56,54 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
     throw new ApiError(response.status, data.error ?? `The console answered ${response.status}.`);
   }
   return payload as T;
+}
+
+/** Each `event:`/`data:` block of a text/event-stream body, as it arrives. */
+async function readEvents(body: ReadableStream<Uint8Array>, onEvent: (event: FredEvent) => void): Promise<void> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+    let cut = buffer.indexOf("\n\n");
+    while (cut !== -1) {
+      const block = buffer.slice(0, cut);
+      buffer = buffer.slice(cut + 2);
+      const event = /^event: (.*)$/m.exec(block)?.[1];
+      const data = /^data: (.*)$/m.exec(block)?.[1];
+      if (event && data) onEvent({ event, data: JSON.parse(data) } as FredEvent);
+      cut = buffer.indexOf("\n\n");
+    }
+    if (done) return;
+  }
+}
+
+/** Ask Fred: the open conversation goes up, the reply streams back through `onEvent`. */
+async function askFred(messages: FredMessage[], context: FredContext, onEvent: (event: FredEvent) => void, signal?: AbortSignal): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch("/api/assistant", {
+      method: "POST",
+      headers: { Accept: "text/event-stream", "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+      credentials: "same-origin",
+      body: JSON.stringify({ messages, context }),
+      signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new ApiError(0, "Can't reach the console. Check your connection and try again.");
+  }
+  if (!response.ok || !response.body) {
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    throw new ApiError(response.status, payload.error ?? `The console answered ${response.status}.`);
+  }
+  try {
+    await readEvents(response.body, onEvent);
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new ApiError(0, "Fred's reply was cut off. Check your connection and ask again.");
+  }
 }
 
 export const api = {
@@ -110,4 +164,10 @@ export const api = {
   deleteDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/delete`),
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),
+
+  fredBrief: () => call<{ brief: FredBrief | null }>("GET", "/api/assistant/brief"),
+  fredStatus: () => call<FredStatus>("GET", "/api/assistant/status"),
+  askFred,
+  confirmFred: (id: FredCard["id"]) => call<{ message: string; link?: string }>("POST", "/api/assistant/confirm", { id }),
+  declineFred: (id: FredCard["id"]) => call<{ ok: true }>("POST", "/api/assistant/decline", { id }),
 };
