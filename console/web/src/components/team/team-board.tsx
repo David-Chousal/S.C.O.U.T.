@@ -12,6 +12,7 @@ import { plural } from "@/lib/format";
 import { can, ROLE_LABEL, useSession } from "@/lib/session";
 import { useWhen } from "@/lib/preferences-context";
 import { useApi } from "@/lib/use-api";
+import { useViewOnlyNote } from "@/lib/view-only-note";
 import { InviteDialog } from "./invite-dialog";
 
 function signsInWith(member: Member): string {
@@ -29,6 +30,7 @@ export function TeamBoard() {
   const [inviting, setInviting] = useState(false);
   const [resetLink, setResetLink] = useState<{ email: string; link: string } | null>(null);
   const canManage = can(user.role, "invites.write");
+  useViewOnlyNote(canManage ? null : "View only: inviting people, changing roles and disabling accounts needs the admin role.");
 
   async function run(action: () => Promise<unknown>, ok: string) {
     try {
@@ -55,7 +57,6 @@ export function TeamBoard() {
 
   return (
     <>
-      {!canManage && <Banner tone="info" icon="lock">View only: inviting people, changing roles and disabling accounts needs the admin role.</Banner>}
       {resetLink && (
         <Banner tone="info" icon="lock" action={<Key size="sm" onClick={() => setResetLink(null)}>Done</Key>}>
           <strong>Password reset link for {resetLink.email}</strong>: send it yourself. It works once, for 24 hours, and is not shown again.

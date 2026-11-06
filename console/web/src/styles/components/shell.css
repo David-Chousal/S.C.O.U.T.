@@ -70,7 +70,9 @@
 .sc-top__account .sc-avatar { width: 24px; height: 24px; font-size: 10px; }
 .sc-top__account-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-top__account > .sc-ico { flex: none; color: var(--ink-muted); }
-.sc-top__end { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3); padding-right: var(--space-6); }
+.sc-top__end { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3); min-width: 0; padding-right: var(--space-6); }
+/* The page's "View only: …" note: plain muted italics on the bar's left, one line, no fill. */
+.sc-top__note { flex: 1 1 auto; min-width: 0; margin: 0 auto 0 0; padding-left: var(--space-6); overflow: hidden; color: var(--ink-muted); font: italic 400 13px/18px var(--font-sans); text-overflow: ellipsis; white-space: nowrap; }
 .sc-main { display: grid; align-content: start; gap: var(--space-8); padding: var(--space-6); min-width: 0; }
 .sc-grid12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); }
 .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; } .span-6 { grid-column: span 6; } .span-8 { grid-column: span 8; } .span-12 { grid-column: 1 / -1; }
@@ -96,6 +98,7 @@
   .sc-top__account-name, .sc-top__account > .sc-ico { display: none; }
   .sc-top__account { padding: 4px; }
   .sc-top__end { padding-right: var(--space-4); }
+  .sc-top__note { display: none; }
 }
 
 /* The account popover under the top bar's account. */

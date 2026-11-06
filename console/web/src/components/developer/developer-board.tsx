@@ -11,6 +11,7 @@ import type { ApiToken, TokenList } from "@/lib/api/types";
 import { useWhen } from "@/lib/preferences-context";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
+import { useViewOnlyNote } from "@/lib/view-only-note";
 
 const SCOPE_HELP: Record<string, string> = {
   "read:telemetry": "read buoys, readings and settings",
@@ -100,12 +101,12 @@ export function DeveloperBoard() {
   const [created, setCreated] = useState<string | null>(null);
   const [now] = useState(() => Date.now());
   const allowed = can(user.role, "tokens.write");
+  useViewOnlyNote(allowed ? null : `View only: making API tokens needs the ${needs("tokens.write")} role.`);
 
   if (list.error) return <Banner tone="failed">{list.error}</Banner>;
   if (!list.data) return <span className="sc-tag" aria-busy="true">Loading tokens…</span>;
   return (
     <>
-      {!allowed && <Banner tone="info" icon="lock">View only: making API tokens needs the {needs("tokens.write")} role.</Banner>}
       <section className="sc-bay" aria-labelledby="tokens-title">
         <div className="sc-bay__head"><h2 className="sc-bay__title" id="tokens-title">Your API tokens</h2><span className="sc-tag">Shown once · stored hashed</span></div>
         {created && (

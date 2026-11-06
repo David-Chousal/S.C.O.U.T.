@@ -9,6 +9,7 @@ import { api } from "@/lib/api/client";
 import { ApiError, type Session } from "@/lib/api/types";
 import { applyTheme, DEFAULT_PREFERENCES, loadPreferences, savePreferences, type Preferences } from "@/lib/preferences";
 import { FRED } from "@/lib/shell-layout";
+import { ViewOnlyNoteContext } from "@/lib/view-only-note";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
 import { cachedSession, forgetSession, rememberSession } from "./session-cache";
@@ -53,6 +54,8 @@ export function AppShell({ title, actions, children }: AppShellProps) {
   // Fred mounts on first open and then stays, so it can slide shut and keep its conversation.
   const [fredOpen, setFredOpen] = useState(false);
   const [fredMounted, setFredMounted] = useState(false);
+  // The open page's "View only: …" note, shown in the top bar (lib/view-only-note.tsx).
+  const [viewOnlyNote, setViewOnlyNote] = useState<string | null>(null);
   const { shellRef, layout, fred, fredMax, dragging, setDragging, resizeSide, toggleSide, resizeFred } = useShellLayout(fredOpen);
   const toggleFred = useCallback(() => {
     setFredMounted(true);
@@ -113,11 +116,14 @@ export function AppShell({ title, actions, children }: AppShellProps) {
       <Toaster>
         <div ref={shellRef}
           className={`sc-shell${fredOpen ? " sc-shell--fred" : ""}${dragging ? " sc-shell--resizing" : ""}`}>
-          <TopBar user={load.session.user} fredOpen={fredOpen} onToggleFred={toggleFred} railMenu={layout.sideCollapsed} />
+          <TopBar user={load.session.user} fredOpen={fredOpen} onToggleFred={toggleFred} railMenu={layout.sideCollapsed} note={viewOnlyNote} />
           <Sidebar shortcuts={preferences.shortcuts} collapsed={layout.sideCollapsed} width={layout.sideWidth}
             onResize={resizeSide} onDragging={setDragging} onToggle={toggleSide} />
           <div className="sc-shell__page">
-            <main className="sc-main"><PageHead title={title} actions={actions} />{children}</main>
+            <main className="sc-main">
+              <PageHead title={title} actions={actions} />
+              <ViewOnlyNoteContext value={setViewOnlyNote}>{children}</ViewOnlyNoteContext>
+            </main>
           </div>
           <div id="sc-fred-dock" className="sc-fred-dock" aria-hidden={!fredOpen} inert={!fredOpen}>
             {fredMounted && (

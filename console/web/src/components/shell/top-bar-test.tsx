@@ -73,6 +73,13 @@ describe("Ask Fred", () => {
     expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
   });
 
+  test("shows the page's view-only note as plain text in the bar", () => {
+    const { container } = render(<TopBar user={user} onToggleFred={vi.fn()} note="View only: making API tokens needs the member role." />);
+    const note = container.querySelector(".sc-top__note");
+    expect(note?.textContent).toBe("View only: making API tokens needs the member role.");
+    expect(note?.closest(".sc-banner")).toBeNull();
+  });
+
   test("with the menu as an icon rail, the account moves to the right end", () => {
     const { container } = render(<TopBar user={user} onToggleFred={vi.fn()} railMenu />);
     expect(container.querySelector(".sc-top__end .sc-top__account")).not.toBeNull();

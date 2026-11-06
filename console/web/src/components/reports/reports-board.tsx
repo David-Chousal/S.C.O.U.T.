@@ -9,6 +9,7 @@ import type { Fleet, ReportItem, ReportList } from "@/lib/api/types";
 import { useWhen } from "@/lib/preferences-context";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
+import { useViewOnlyNote } from "@/lib/view-only-note";
 import { ReportComposer } from "./report-composer";
 
 function RecentReports({ reports, canDownload, now }: { reports: ReportItem[]; canDownload: boolean; now: number }) {
@@ -54,12 +55,12 @@ export function ReportsBoard() {
   const list = useApi<ReportList>(api.reports);
   const [now] = useState(() => Date.now());
   const canDownload = can(user.role, "reports.write");
+  useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. The printable report works for everyone.`);
 
   if (fleet.error || list.error) return <Banner tone="failed">{fleet.error || list.error}</Banner>;
   if (!fleet.data || !list.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
   return (
     <>
-      {!canDownload && <Banner tone="info" icon="lock">View only: CSV downloads need the {needs("reports.write")} role. The printable report works for everyone.</Banner>}
       <ReportComposer buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload}
         today={new Date(now).toISOString().slice(0, 10)}
         onCreated={(link) => { list.reload(); window.location.assign(link); }} />

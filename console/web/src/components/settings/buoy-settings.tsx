@@ -5,6 +5,7 @@ import { Banner } from "@/components/feedback/banner";
 import { EmptyState } from "@/components/feedback/empty-state";
 import type { Buoy, BuoySettings, FirmwareSetting } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
+import { useViewOnlyNote } from "@/lib/view-only-note";
 import { BuoyOverview } from "./buoy-overview";
 import { RemoteSettings } from "./remote-settings";
 
@@ -53,6 +54,7 @@ function selectedFromUrl(buoys: Buoy[]): number {
 export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings | null; error: string; reload: () => void }) {
   const { user } = useSession();
   const canEdit = can(user.role, "settings.write");
+  useViewOnlyNote(canEdit ? null : `View only: renaming a buoy or changing its settings needs the ${needs("settings.write")} role.`);
   const [picked, setPicked] = useState<number | null>(null);
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!data) return <span className="sc-tag" aria-busy="true">Loading buoy settings…</span>;
@@ -68,7 +70,6 @@ export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings 
 
   return (
     <>
-      {!canEdit && <Banner tone="info" icon="lock">View only: renaming a buoy or changing its settings needs the {needs("settings.write")} role.</Banner>}
       <section className="sc-bay" aria-labelledby="buoys-overview-title">
         <div className="sc-bay__head">
           <h3 className="sc-bay__title" id="buoys-overview-title">Buoys</h3>

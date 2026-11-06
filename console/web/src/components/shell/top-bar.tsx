@@ -17,12 +17,14 @@ interface TopBarProps {
   onToggleFred?: () => void;
   /** The menu is an icon rail, too narrow for the account: it moves to the right end. */
   railMenu?: boolean;
+  /** The page's "View only: …" note for this person's role, or null. */
+  note?: string | null;
 }
 
 /** The bar across the top of every page: the S.C.O.U.T. mark and the signed-in account over the
  * menu, and on the right Ask Fred, the console's assistant. With shortcuts on, A opens Fred.
  * Page titles live on the pages themselves. */
-export function TopBar({ user, fredOpen = false, onToggleFred, railMenu = false }: TopBarProps) {
+export function TopBar({ user, fredOpen = false, onToggleFred, railMenu = false, note = null }: TopBarProps) {
   const { preferences } = usePreferences();
 
   useEffect(() => {
@@ -47,6 +49,7 @@ export function TopBar({ user, fredOpen = false, onToggleFred, railMenu = false 
         {user && !railMenu && <AccountMenu user={user} />}
       </div>
       <div className="sc-top__end">
+        {note && <p className="sc-top__note" title={note}>{note}</p>}
         {user && railMenu && <AccountMenu user={user} />}
         <button type="button" className="sc-ask" disabled={!user || !onToggleFred} aria-expanded={fredOpen} aria-controls="sc-fred-dock"
           title={preferences.shortcuts ? "Ask Fred, the console's assistant (A)" : "Ask Fred, the console's assistant"}

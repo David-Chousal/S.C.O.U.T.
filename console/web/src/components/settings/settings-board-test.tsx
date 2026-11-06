@@ -5,6 +5,7 @@ import estimates from "../../../../worker/battery-life.json";
 import firmware from "../../../../worker/buoy-config.json";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
+import { ViewOnlyNoteContext } from "@/lib/view-only-note";
 import type { BuoySettings, Role, Session } from "@/lib/api/types";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
@@ -101,11 +102,19 @@ describe("SettingsBoard", () => {
     expect(screen.queryByLabelText("Radio")).toBeNull();
   });
 
-  test("a guest sees the buoy settings but cannot rename", async () => {
-    renderBoard("guest");
+  test("a guest sees the buoy settings but cannot rename; the view-only note goes to the top bar", async () => {
+    const setNote = vi.fn();
+    vi.spyOn(api, "settings").mockResolvedValue(DATA);
+    const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role: "guest", hasPassword: true, github: false, google: false, selfSignup: false } };
+    render(
+      <SessionContext value={session}>
+        <ViewOnlyNoteContext value={setNote}><Toaster><SettingsBoard /></Toaster></ViewOnlyNoteContext>
+      </SessionContext>,
+    );
     expect(((await screen.findByLabelText("Name in the console")) as HTMLInputElement).disabled).toBe(true);
     expect((screen.getByLabelText("Reading interval") as HTMLSelectElement).disabled).toBe(true);
-    expect(screen.getByText(/View only/)).toBeDefined();
+    expect(screen.queryByText(/View only/)).toBeNull();
+    expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy or changing its settings needs the member role.");
   });
 
   test("the Account tab holds sign out, and ?tab=account opens it", async () => {
