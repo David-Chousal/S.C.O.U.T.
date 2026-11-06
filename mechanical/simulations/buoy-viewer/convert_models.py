@@ -62,10 +62,23 @@ EXTRA = [
      "Mushroom float re-exported 2026-11-02. The simulator's own mushroom entry uses the older 2026-10-28 file."),
 ]
 
+# Stacks that are not in the simulator, in the registry's own "assembly" shape. "z_offset_mm" moves a part straight up by
+# that much from where its STEP sits. For the v5 sections it is the body height of the part below (63.5 mm each), the
+# lowest height at which each peg seats in the socket of the next section with no overlap (checked by intersecting the
+# solids: overlap is 0 at 63.5 and 127.0, and grows below that).
+EXTRA_STACKS = [
+    {"id": "v5-pegs-seated", "name": "v5 sections stacked with pegs seated (2026-11-06)",
+     "when": "2026-11-06. Bottom, middle and top sections with each peg slid into the next socket, no trimming",
+     "assembly": {"parts": [
+         {"file": "floatation/floatation-v5-bottom-section.step"},
+         {"file": "floatation/floatation-v5-middle-section.step", "z_offset_mm": 63.5},
+         {"file": "floatation/floatation-v5-top-section.step", "z_offset_mm": 127.0}]}},
+]
+
 # Picker order: newest first. Anything in the registry that is not listed here is added at the end.
 ORDER = ["float-regular", "float-mushroom-corrected", "mushroom", "assembly-v7", "assembly-v6", "assembly-v5",
          "wedge-bolted-v4", "wedge-bolted-v3", "wedge-snap-v3", "v9-bottom", "v9-concept", "v7-concept",
-         "v5-concept", "v4-concept", "v3", "v2", "v1"]
+         "v5-concept", "v5-pegs-seated", "v4-concept", "v3", "v2", "v1"]
 
 # Electronics housing the simulator adds on top of the hull (assembly.py: body 127 mm, flange on top).
 HOUSING_R, HOUSING_L, FLANGE_R, FLANGE_T = 57.15, 127.0, 95.25, 8.9
@@ -212,7 +225,7 @@ def _place_assembly(it):
         lo = min(_zrange(s)[0] for s in solids)
         hi = max(_zrange(s)[1] for s in solids)
         count, over = p.get("count", 1), p.get("overlap_mm", 0.0)
-        dz0 = (prev_top - lo) if (p.get("mate") == "bottom" and prev_top is not None) else 0.0
+        dz0 = (prev_top - lo) if (p.get("mate") == "bottom" and prev_top is not None) else p.get("z_offset_mm", 0.0)
         for k in range(count):
             for s in solids:
                 base = _move(s, dz=dz0 + k * (hi - lo - over))
@@ -261,7 +274,8 @@ def convert_file(model_id, label, rel, blurb):
 
 
 def convert_sim(it):
-    blurb = f"{it.get('when', '')}. Placed as the stability simulator places it.".lstrip(". ")
+    own = any(it["id"] == e["id"] for e in EXTRA_STACKS)
+    blurb = it.get("when", "") if own else f"{it.get('when', '')}. Placed as the stability simulator places it.".lstrip(". ")
     if it.get("assembly"):
         keep, named = _place_assembly(it)
         files = ", ".join(p["file"] for p in it["assembly"]["parts"])
@@ -269,11 +283,11 @@ def convert_sim(it):
     else:
         rel = it["files"][0]
         doc, named = _file_parts(rel)
-        _write(it["id"], it["name"], f"mechanical/cad/{rel}", blurb.replace(" Placed as the stability simulator places it.", ""), named)
+        _write(it["id"], it["name"], f"mechanical/cad/{rel}", blurb, named)
 
 
 def main(wanted):
-    sims = {it["id"]: it for it in json.loads(SIM.read_text(encoding="utf-8"))["iterations"]}
+    sims = {it["id"]: it for it in json.loads(SIM.read_text(encoding="utf-8"))["iterations"] + EXTRA_STACKS}
     extra = {e[0]: e for e in EXTRA}
     order = ORDER + [i for i in list(sims) + list(extra) if i not in ORDER]
     for mid in order:
