@@ -133,6 +133,16 @@ describe("SettingsBoard", () => {
     window.history.replaceState(null, "", "/");
   });
 
+  test("?tab=notifications opens the Notifications tab", async () => {
+    vi.spyOn(api, "alerts").mockRejectedValue(new Error("Sign in first."));
+    vi.spyOn(api, "fleet").mockRejectedValue(new Error("Sign in first."));
+    window.history.replaceState(null, "", "/settings/?tab=notifications");
+    renderBoard("member");
+    expect(screen.getByRole("tab", { name: "Notifications" }).getAttribute("aria-selected")).toBe("true");
+    expect(await screen.findByText("Sign in first.")).toBeDefined();
+    window.history.replaceState(null, "", "/");
+  });
+
   test("a link to ?tab=account switches tabs even when Settings is already open", async () => {
     window.history.replaceState(null, "", "/settings/");
     renderBoard("member");
@@ -144,10 +154,14 @@ describe("SettingsBoard", () => {
   });
 
   test("arrow keys move between tabs, and page settings apply through update", async () => {
+    vi.spyOn(api, "alerts").mockRejectedValue(new Error("not loaded in this test"));
+    vi.spyOn(api, "fleet").mockRejectedValue(new Error("not loaded in this test"));
     const update = renderBoard("guest");
     await userEvent.click(screen.getByRole("tab", { name: "Buoys" }));
     await userEvent.keyboard("{ArrowRight}");
     expect(screen.getByRole("tab", { name: "Account" }).getAttribute("aria-selected")).toBe("true");
+    await userEvent.keyboard("{ArrowRight}");
+    expect(screen.getByRole("tab", { name: "Notifications" }).getAttribute("aria-selected")).toBe("true");
     await userEvent.keyboard("{ArrowRight}");
     expect(screen.getByRole("tab", { name: "This browser" }).getAttribute("aria-selected")).toBe("true");
     expect((screen.getByRole("button", { name: "Light" })).getAttribute("aria-pressed")).toBe("true");

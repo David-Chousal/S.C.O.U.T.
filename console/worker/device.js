@@ -8,6 +8,7 @@
  * (buoy_id, record_seq, timestamp_utc) are ignored, so a shore station may push the same day
  * again safely. The timestamp is in the key because a cold start resets record_seq to 0. */
 
+import { alertsOnIngest } from "./alerts/evaluate.js";
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
 import { wantedForDevice } from "./fleet.js";
@@ -148,7 +149,18 @@ async function updateReported(db, parsed) {
   }));
 }
 
-export async function handleDeviceApi(request, env, path) {
+/** Alerts run after the readings are stored and never change the reply: with a ctx they finish
+ * after the response (waitUntil); without one (tests) they are awaited, and still never throw. */
+async function afterStore(env, kept, ctx) {
+  const work = alertsOnIngest(env, kept).catch((error) => {
+    const code = typeof error?.code === "string" ? error.code : error?.name ?? "unknown";
+    console.error(`console: alerts not checked: ${String(code).slice(0, 64)}`);
+  });
+  if (typeof ctx?.waitUntil === "function") ctx.waitUntil(work);
+  else await work;
+}
+
+export async function handleDeviceApi(request, env, path, ctx) {
   const device = await authenticate(env.DB, request);
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
@@ -175,6 +187,7 @@ export async function handleDeviceApi(request, env, path) {
     const keep = parsed.map((p, i) => [p, rows[i]]).filter(([p]) => !ignored.has(p.buoyId));
     const stored = await storeRows(env.DB, keep.map(([p]) => p), keep.map(([, r]) => r));
     await updateReported(env.DB, keep.map(([p]) => p));
+    await afterStore(env, keep, ctx);
     return json({ stored, ignored: parsed.length - keep.length });
   }
   return apiError("not found", 404);

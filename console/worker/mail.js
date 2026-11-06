@@ -36,7 +36,7 @@ function formatExpiry(ms) {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeStyle: "short", timeZone: "UTC" }).format(ms) + " UTC";
 }
 
-function cap(value, fallback) {
+export function cap(value, fallback) {
   const n = Number.parseInt(value, 10);
   return Number.isFinite(n) && n >= 0 ? n : fallback;
 }
@@ -115,12 +115,13 @@ function resetMessage({ inviter, link, expiresAt }) {
 
 const RESEND_URL = "https://api.resend.com/emails";
 
-function configured(env) {
+export function configured(env) {
   return Boolean(env.RESEND_API_KEY) || typeof env.EMAIL?.send === "function";
 }
 
-/** Hand the message to whichever provider is set up. Throws { code } on a refusal. */
-async function deliver(env, message) {
+/** Hand the message ({ to, subject, text, html, headers? }) to whichever provider is set up.
+ * Throws { code } on a refusal. Alert emails (alerts/send.js) reuse it. */
+export async function deliver(env, message) {
   if (!env.RESEND_API_KEY) {
     await env.EMAIL.send({ ...message, from: SENDER });
     return;

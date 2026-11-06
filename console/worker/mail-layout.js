@@ -51,18 +51,32 @@ function secretBox(href) {
     `font:400 13px/18px ${MONO};color:${T.ink};word-break:break-all">${href}</div>`;
 }
 
+const subtitle = (text) => `<h2 style="margin:0 0 4px;font:700 15px/20px ${SANS};color:${T.ink}">${escapeHtml(text)}</h2>`;
+
+const mutedLink = (href, label) =>
+  `<p style="margin:-12px 0 20px;font:400 13px/18px ${SANS};color:${T.muted}">` +
+  `<a href="${escapeHtml(href)}" style="color:${T.muted};text-decoration:underline">${escapeHtml(label)}</a></p>`;
+
+/** A titled facts table with an optional muted link under it: one per alert in an alert email. */
+function group({ title, facts: rows, link }) {
+  return (title ? subtitle(title) : "") + facts(rows) + (link ? mutedLink(link.href, link.label) : "");
+}
+
 /**
- * @param {{ title: string, intro: string[], facts: [string, string][], action: { label: string, href: string }, notes: string[] }} content
+ * @param {{ title: string, intro: string[], facts?: [string, string][],
+ *   groups?: { title?: string, facts: [string, string][], link?: { label: string, href: string } }[],
+ *   action: { label: string, href: string }, notes: string[] }} content
  * @returns {string}
  */
-export function emailHtml({ title, intro, facts: rows, action, notes }) {
+export function emailHtml({ title, intro, facts: rows = [], groups = [], action, notes }) {
   const href = escapeHtml(action.href);
   const card =
     `<td style="background:${T.surface};border:1px solid ${T.line};border-top:2px solid ${T.ink};border-radius:0 0 4px 4px;padding:16px 24px 24px">` +
     `<div style="margin:0 0 4px">${tag("S.C.O.U.T. Console")}</div>` +
     `<h1 style="margin:0 0 16px;font:700 18px/24px ${SANS};letter-spacing:-.01em;color:${T.ink}">${escapeHtml(title)}</h1>` +
     intro.map(paragraph).join("") +
-    facts(rows) +
+    groups.map(group).join("") +
+    (rows.length ? facts(rows) : "") +
     primaryKey(href, action.label) +
     secretBox(href) +
     notes.map((note) => `<p style="margin:0 0 8px;font:400 13px/18px ${SANS};color:${T.muted}">${escapeHtml(note)}</p>`).join("") +

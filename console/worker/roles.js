@@ -1,7 +1,7 @@
 /* Roles (ADR-0012). Three, ordered. The server checks every write; the UI only mirrors it.
  *
  *   guest  — sees every page and every setting, admin pages included, but changes nothing
- *   member — also changes buoy settings and makes personal API tokens
+ *   member — also changes buoy settings, makes personal API tokens and sets email alerts
  *   admin  — also invites, changes roles, disables accounts, issues reset links and manages
  *            shore-station tokens */
 
@@ -15,6 +15,7 @@ const NEEDS = {
   "tokens.write": "member",
   "reports.write": "member",
   "dashboards.write": "member",
+  "alerts.write": "member",
   "buoys.add": "admin",
   "invites.write": "admin",
   "users.role": "admin",

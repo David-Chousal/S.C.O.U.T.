@@ -65,6 +65,6 @@ library, so a teammate without `cadquery` can still rebuild from the committed `
 - **Mesh accuracy:** 0.25 mm deflection from the true surface. Colours are assigned by part size
   and mean nothing physical.
 - **Cut through** is a visual cut only; it draws no cap on the cut face.
-- **Vendored libraries:** `vendor/three.min.js` and `vendor/OrbitControls.js` are three.js r147
-  (MIT, [`vendor/LICENSE-three.txt`](vendor/LICENSE-three.txt)), kept in the repo because the site
+- **Vendored libraries:** `vendor/three.min.js` and `vendor/orbit-controls.js` are three.js r147
+  (MIT, [`vendor/license-three.txt`](vendor/license-three.txt)), kept in the repo because the site
   never loads scripts from another host.

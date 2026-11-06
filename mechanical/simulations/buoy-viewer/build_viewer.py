@@ -17,7 +17,7 @@ def main() -> None:
     models = [json.loads((HERE / "data" / f"{i}.json").read_text(encoding="utf-8")) for i in ORDER]
     html = (HERE / "viewer-template.html").read_text(encoding="utf-8")
     subs = {"/*THREE*/": (HERE / "vendor" / "three.min.js").read_text(encoding="utf-8"),
-            "/*CONTROLS*/": (HERE / "vendor" / "OrbitControls.js").read_text(encoding="utf-8"),
+            "/*CONTROLS*/": (HERE / "vendor" / "orbit-controls.js").read_text(encoding="utf-8"),
             "/*MODELS*/": json.dumps(models, separators=(",", ":"))}
     for token, text in subs.items():
         assert html.count(token) == 1, token

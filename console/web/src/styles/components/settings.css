@@ -37,14 +37,21 @@ input.sc-slot--channel { width: 148px; }
 .sc-alert-table__paused { color: var(--ink-muted); }
 .sc-alert-table__buttons { gap: var(--space-2); justify-content: flex-end; }
 
+/* Alert builder rows: presets wrap; a condition, its value and unit sit on one line. */
+.sc-alert-presets { flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.sc-alert-form__value { gap: var(--space-2); align-items: center; flex-wrap: nowrap; }
+.sc-alert-form__value > .sc-input { width: 112px; flex: none; }
+.sc-alert-form__value > .sc-input--select { width: auto; min-width: 96px; }
+
 /* Recent alerts feed. */
 .sc-feed { display: grid; margin: 0; padding: 0; list-style: none; }
-.sc-feed__row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: baseline; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); font: 400 14px/20px var(--font-sans); }
+.sc-feed__row { display: grid; grid-template-columns: 136px minmax(0, 1fr); align-items: baseline; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); font: 400 14px/20px var(--font-sans); }
 
 @container page (max-width: 767px) {
   .sc-settings-form { grid-template-columns: minmax(0, 1fr); }
   .sc-remote-form__actions { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .sc-notify-table__channel { width: 72px; }
+  .sc-feed__row { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
   .sc-alert-table, .sc-alert-table tbody { display: block; }
   .sc-alert-table colgroup, .sc-alert-table thead { display: none; }
   .sc-settings-tabs { flex-wrap: nowrap; gap: var(--space-4); overflow-x: auto; scrollbar-width: none; }
