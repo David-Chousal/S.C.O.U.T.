@@ -40,7 +40,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | admin (add); everyone (read) | One table, a row per buoy, refreshed every 30 s: how often it sends (and what was asked when that differs), when it was last heard, its **next transmission** (countdown and UTC slot, from its count and slot phase), its **status** (Live, Late, Silent or Not heard, judged against the longest gap between its own slots plus an hour), and a **Settings** link. **Add buoy** (admins) opens a dialog that ends in a success or error card. Readings belong on Dashboard and Reports |
 | Stations | admin | One table of shore stations, refreshed every 30 s: name, **the buoys it sends commands to** (as chips), last seen, and status; hold to revoke an active token, a trash key deletes a revoked one for good (audited). With two or more active stations, **Assign** opens a checklist of buoys for that station, and a warning names any buoy no station commands. **New token** opens a dialog that shows the token once, then watches for the first check-in. Buoys' own state is on Fleet |
-| Team | admin | People with a real account (not self-signed-up guests), roles, reset links, hold-to-disable, invites (single-use link, 7 days) |
+| Team | admin | People with a real account (not self-signed-up guests), roles, reset links, hold-to-disable, invites (single-use link, 7 days). **Invite and reset links are emailed** from `console@scoutscu.com` when email is set up ([below](#email-invites-and-reset-links-one-time-needs-the-account-owner), ADR-0014); the card says "Email sent to …" or "Couldn't email …; copy the link instead", and the link is always shown once to copy |
 | Developer | member, admin (guests view) | Two tabs. **API tokens:** personal tokens (scopes `read:telemetry`, `write:settings`; 7, 30, 90 or 365 days, or never (migration `0009-tokens-never-expire.sql`); shown once, stored hashed, revocable) and how to call `/api/v1`. **Audit log** (read only, `?tab=audit`): every change, who, what, before → after. The old `/audit/` address forwards here |
 | Settings | member (buoys); yourself (page) | **Buoys:** an overview table of every buoy (settings state, what differs from the defaults, last heard); picking one (kept as `?buoy=N`) opens its editor: its name and its **eight remote settings**; changing the transmit count first asks for confirmation, showing battery life before and after (estimate) (transmit count, slot phase, reading interval, hydrophone clip, power thresholds, conserve spacing, humidity alert; registry in `firmware/lib/scout_settings`, D1 migration `0010-remote-settings.sql`) with Pending/Confirmed from the digest in v5 packets and hold-to-restore-defaults, and every firmware setting read from `config.h` (`scripts/export_buoy_config.py` → `worker/buoy-config.json`, drift-tested). **Account:** how you sign in; sign out of this browser; hold to sign out everywhere (`?tab=account`). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account menu | yourself | The account in the top bar opens a menu: your name, email and role, **Appearance** (light, dark, match system) and **Times** (UTC or your time zone), the same two settings as Settings → This browser, a link to Settings → Account, and **Sign out**. The old `/account/` address forwards to Settings → Account |
@@ -224,6 +224,49 @@ Then:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
+
+## Email: invites and reset links (one-time, needs the account owner)
+
+The console emails invite and password-reset links through Cloudflare Email Sending
+([ADR-0014](../docs/decisions/0014-console-email-delivery.md), `worker/mail.js`). The code is in
+place; **the binding is commented out in `wrangler.toml`** because the account is not set up for
+it yet, so today every invite says "email isn't set up" and the admin copies the link.
+
+What it costs and what it needs (Cloudflare docs, read 2026-11-06):
+
+- **Workers Paid is required.** Email Sending is not available on Workers Free (which can only
+  send to the account's verified addresses). Workers Paid is **$5 a month** and includes
+  **3,000 emails a month**, then $0.35 per 1,000. No daily number is published: new accounts
+  start on "a conservative daily quota" that grows with good sending.
+- **The domain must use Cloudflare DNS** (`scoutscu.com` does). Onboarding adds MX, SPF (TXT)
+  and DKIM (TXT) records under `cf-bounce.scoutscu.com` and a DMARC TXT at `_dmarc.scoutscu.com`;
+  it does not touch the GitHub Pages records.
+- **Limits:** 50 recipients per message, 25 MiB per message. The console's own caps are 20 emails
+  a day per admin and 50 a day overall (`EMAIL_DAILY_CAP_ADMIN`, `EMAIL_DAILY_CAP_TOTAL`).
+
+Claude cannot do steps 1–3; they need the account owner signed in to the Cloudflare dashboard.
+
+1. **Upgrade the account** to Workers Paid in the dashboard (**Workers & Pages**, then the plan's upgrade option).
+2. **Onboard the domain:** **Compute** → **Email Service** → **Email Sending** → **Onboard
+   Domain** → `scoutscu.com` → review the records → **Done**. Wait for the records to verify
+   (usually 5–15 minutes). `npx wrangler email sending dns get scoutscu.com` shows them, with a
+   token that has Email Sending permission (the default `wrangler login` token does not).
+3. **Check DMARC:** if `scoutscu.com` already had a `_dmarc` record, keep one, not two.
+4. **Turn the binding on:** uncomment the `[[send_email]]` block in `wrangler.toml`, merge, and
+   deploy. Never add `remote = true`: it would send real email from `wrangler dev`.
+5. **Test:** invite an address you control from Team. The card should say "Email sent to …",
+   the message should arrive from `console@scoutscu.com` and pass SPF/DKIM (Gmail: **Show
+   original**), and Developer → Audit log should show `invite.email` with the address masked.
+   If it says "Couldn't email", `npx wrangler tail` shows the error code (for example
+   `E_SENDER_NOT_VERIFIED`).
+
+To turn email off again, comment the block out and deploy; invites fall back to copying links.
+
+**Local development:** `wrangler dev` simulates the binding and sends nothing: each message is
+written to `console/.wrangler/tmp/email/` (git-ignored) and the log prints where. While the
+binding is commented out, test with a scratch copy of `wrangler.toml` that has it uncommented
+and the `[ai]` block removed (the AI binding starts a remote preview session, which Cloudflare
+refuses while the account has no Email Sending).
 
 ## Automatic deploy (on merge to main)
 
