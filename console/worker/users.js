@@ -56,6 +56,18 @@ async function claimSelfSignup(db, user, changes = {}) {
   return db.prepare("SELECT * FROM users WHERE id = ?").bind(user.id).first();
 }
 
+/** Whether an invite may take this account: a self-signed-up guest proved nothing about the email,
+ * and a removed (disabled) person is being invited back. */
+const reclaimable = (user) => Boolean(user.self_signup || user.disabled);
+
+/** Claim an existing account through an invite. A removed person comes back on the same account
+ * (the audit log keeps referring to it) but starts clean: old password and sign-in links are
+ * dropped, and only the credential used to accept the invite is kept. */
+async function claimForInvite(db, user, changes) {
+  const cleared = { password_hash: null, github_id: null, google_sub: null, disabled: 0 };
+  return claimSelfSignup(db, user, user.disabled ? { ...cleared, ...changes } : changes);
+}
+
 async function markAccepted(db, invite, user) {
   await record(db, { actor: user, action: "invite.accept", target: invite.email, after: { role: invite.role } });
 }
@@ -71,12 +83,14 @@ export async function userForIdentity(db, identity, inviteToken, env) {
       return { error: `This invite is for ${invite.email}; you signed in as ${identity.email}.` };
     }
     const existing = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
-    if (existing && !existing.self_signup) return { error: "An account with this email already exists. Sign in instead." };
+    if (existing && !reclaimable(existing)) return { error: "An account with this email already exists. Sign in instead." };
     const linked = await db.prepare(`SELECT id FROM users WHERE ${column} = ?`).bind(identity.subject).first();
-    if (linked) return { error: `That ${identity.provider} account already belongs to another console account.` };
+    if (linked && linked.id !== existing?.id) {
+      return { error: `That ${identity.provider} account already belongs to another console account.` };
+    }
     if (!(await claimInvite(db, invite))) return { error: "This invite was just used." };
     const user = existing
-      ? await claimSelfSignup(db, existing, { role: invite.role, name: identity.name.slice(0, 120), [column]: identity.subject })
+      ? await claimForInvite(db, existing, { role: invite.role, name: identity.name.slice(0, 120), [column]: identity.subject })
       : await insertUser(db, { email, name: identity.name, role: invite.role, column, subject: identity.subject });
     await markAccepted(db, invite, user);
     return { user };
@@ -106,11 +120,11 @@ export async function acceptInviteWithPassword(db, token, name, password) {
   const problem = passwordProblem(password);
   if (problem) return { error: problem };
   const existing = await db.prepare("SELECT * FROM users WHERE email = ?").bind(invite.email).first();
-  if (existing && !existing.self_signup) return { error: "An account with this email already exists. Sign in instead." };
+  if (existing && !reclaimable(existing)) return { error: "An account with this email already exists. Sign in instead." };
   if (!(await claimInvite(db, invite))) return { error: "This invite was just used." };
   const passwordHash = await hashPassword(password);
   const user = existing
-    ? await claimSelfSignup(db, existing, { role: invite.role, name: (name || existing.name).slice(0, 120), password_hash: passwordHash })
+    ? await claimForInvite(db, existing, { role: invite.role, name: (name || existing.name).slice(0, 120), password_hash: passwordHash })
     : await insertUser(db, { email: invite.email.toLowerCase(), name: name || "", role: invite.role, passwordHash });
   await markAccepted(db, invite, user);
   return { user };
@@ -119,9 +133,9 @@ export async function acceptInviteWithPassword(db, token, name, password) {
 export async function createInvite(db, actor, email, role) {
   if (!validEmail(email)) return { error: "Enter a valid email address." };
   if (!isRole(role)) return { error: "Pick a role." };
-  // A self-signed-up guest proves nothing about the email, so an invite can still take it over.
-  const taken = await db.prepare("SELECT id, self_signup FROM users WHERE email = ?").bind(email).first();
-  if (taken && !taken.self_signup) return { error: `${email} already has an account.` };
+  // A self-signed-up guest or a removed person can still be invited; an active account cannot.
+  const taken = await db.prepare("SELECT id, self_signup, disabled FROM users WHERE email = ?").bind(email).first();
+  if (taken && !reclaimable(taken)) return { error: `${email} already has an account.` };
   const token = randomToken(24);
   const id = crypto.randomUUID();
   const now = Date.now();

@@ -153,7 +153,7 @@ export function TeamBoard() {
         </>}>
         <p className="sc-help">
           They leave the People list, are signed out everywhere and can no longer sign in. What they changed stays in the audit
-          log, which records the removal. This cannot be undone from the console.
+          log, which records the removal. To bring them back, invite their email again.
         </p>
       </Dialog>
     </>
