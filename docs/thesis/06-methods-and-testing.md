@@ -43,4 +43,8 @@ _Draft here._
 
 ## 6.7 Field Deployment Procedure
 
+The California systems test stands in for Hawaii. What differs between the sites, and why each difference is an
+acceptable test condition or a stated limit, is in
+[California vs Hawaii: test assumptions](../planning/california-vs-hawaii-test-assumptions.md).
+
 _Draft here._

@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-23 · Fail at Stage 1 (started 2026-11-02 10:47 PST; read 2026-11-03) |
+| **Test ID / status** | RR-23 · Fail at Stage 1, **closed 2026-11-06** (started 2026-11-02 10:47 PST; read 2026-11-03) |
 | **Date, duration, who** | Part A locked 2026-11-02; run dates Not set (this week, see the weekly plan); 24 h per stage; John Ryan Myrdal |
 | **Requirement tested** | Cap seals and glands stay dry (R-14); housing stays dry in salt water (R-12) |
 | **Tracking issue** | [SCO-294](https://linear.app/scout1/issue/SCO-294); related [SCO-270](https://linear.app/scout1/issue/SCO-270), [SCO-293](https://linear.app/scout1/issue/SCO-293) |
@@ -22,7 +22,7 @@
 
 **How and steps.** An initial screening test, deliberately simple: assemble the housing as built (O-ring in the cap, a dry paper towel inside, the three printed pegs clamped in the PG11 glands, which "work great" per John, 2026-11-02; [photo](housing-glands-with-pegs-2026-11-02-01.jpg)), put the whole thing in a tub just below the surface, held down with weights, for 24 h in fresh water, open it and look at the towel. Dry: go on to real cable (Stage 2) and plain salt water. Wet: do not guess; run the isolation tests in A6b, one leak path at a time.
 
-**Result.** Stage 1 failed (John, 2026-11-03): the housing flooded, 1113 g full of water against 518 g dry (+595 g). The three PG11 glands did not leak; the leak path was the cap face seal. The cap O-ring had no grease. Stages 2 and 3 not run.
+**Result.** Stage 1 failed (John, 2026-11-03): the housing flooded, 1113 g full of water against 518 g dry (+595 g). The three PG11 glands did not leak; the leak path was the cap face seal. The cap O-ring had no grease. The paper towel inside was soaked and the chamber full of water (John, 2026-11-06). On inspection one bolt was not properly tensioned, and the cap and body flexed and compressed under clamping because the housing was printed at the same low infill as the floatation (value Not recorded). Stages 2 and 3 not run; the record is closed as a fail on 2026-11-06 and the re-run is a new test on the redesigned housing.
 
 **Does not establish.**
 
@@ -217,14 +217,16 @@ Not yet run.
 | Question | Answer |
 |---|---|
 | Good enough to stop redesigning? | No: the housing is being redesigned (John, 2026-11-03) |
-| Design change driven by this test | Whole-housing redesign ([SCO-293](https://linear.app/scout1/issue/SCO-293)): the mounting holes that attach to the buoy no longer sit inside the cap's outer diameter, so the cap has a uniform circular outer diameter; the O-ring gets grease next time |
-| Re-run needed? | Yes, on the redesigned housing, with a greased and measured ring; Stage 2 (real cable) and salt water still to run |
+| Design change driven by this test | Whole-housing redesign ([SCO-293](https://linear.app/scout1/issue/SCO-293)): the mounting holes that attach to the buoy no longer sit inside the cap's outer diameter, so the cap has a uniform circular outer diameter; the O-ring gets grease next time. **Added 2026-11-06 (John):** the cap and body are printed at higher infill with **gyroid** (the first housing used the floatation's low infill and flexed under the bolts), and the **number of bolts is increased**; one bolt was found under-tensioned, so all bolts are tightened to the same feel and rechecked. New infill percentage and bolt count Not recorded |
+| Re-run needed? | Yes, as a new record on the redesigned housing, with a greased and measured ring; Stage 2 (real cable) and salt water not run here. RR-23 is closed as a fail |
 | Next test | Pressure test ([SCO-177](https://linear.app/scout1/issue/SCO-177)) |
 | Issues filed | [SCO-294](https://linear.app/scout1/issue/SCO-294) |
 
 ### C5. Evidence and traceability
 
 - Photos, 2026-11-02 (Stage 1 setup in a bowl of fresh water): [wide](housing-dunk-rr-23-2026-11-02-01.jpg), [closer](housing-dunk-rr-23-2026-11-02-02.jpg), [closest](housing-dunk-rr-23-2026-11-02-03.jpg). They show the cap end down with the body standing above the water and the water level near the flange. John confirms the housing seal (cap, O-ring, glands) is fully submerged; the body walls are not under water, so this stage tests the cap end only
+- Photos, 2026-11-02 (housing weighted down in the bowl; the cap bolts stand proud of the flange): [view 1](housing-dunk-rr-23-2026-11-02-04.jpg), [view 2](housing-dunk-rr-23-2026-11-02-05.jpg)
+- Likely causes found at close-out (2026-11-06, John; not isolated by test): ungreased O-ring, one under-tensioned bolt, and cap and body flex from low infill. The first two are fixes, the third is a hypothesis for the redesign
 - Requirements R-12, R-14 → this test → [SCO-294](https://linear.app/scout1/issue/SCO-294); related: [RR-22](rr-22-housing-cap-assembly-and-gland-fit-2026-11-01.md)
 
 Format: [Test Record Template](../../docs/engineering/test-record-template.md). Index: [risk-reduction register](risk-reduction-register.md).
