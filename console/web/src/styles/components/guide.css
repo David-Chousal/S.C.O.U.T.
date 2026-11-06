@@ -3,7 +3,7 @@
 .sc-guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; min-width: 0; }
 .sc-guide__body { display: grid; gap: 56px; min-width: 0; }
 .sc-guide__index { display: none; }
-@media (min-width: 1280px) {
+@container page (min-width: 1032px) {
   .sc-guide { grid-template-columns: minmax(0, 1fr) 208px; column-gap: var(--space-8); }
   .sc-guide__intro { grid-column: 1 / -1; }
   .sc-guide__tasks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -93,7 +93,7 @@
 .sc-guide__shortcuts dd { margin: 0; font: 400 14px/20px var(--font-sans); }
 .sc-guide kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 -2px 0 var(--line); font: 500 12px/1 var(--font-mono); color: var(--ink); }
 
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-guide { gap: 40px; }
   .sc-guide__tasks, .sc-guide__reference { grid-template-columns: 1fr; }
   .sc-guide__body { gap: 40px; }

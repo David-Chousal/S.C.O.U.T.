@@ -3,8 +3,37 @@
    (the Help index, the Dashboard bay library, anchor jumps). */
 /* The top bar spans the page; the menu and the page sit under it. The bar's left block is exactly
    as wide as the menu, so the mark and the account line up over it. */
-.sc-shell { --side-w: 248px; --bar-h: 52px; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); grid-template-rows: var(--bar-h) 1fr; min-height: 100%; }
-.sc-side { grid-row: 2; display: flex; flex-direction: column; padding: var(--space-3); border-right: 1px solid var(--line); background: var(--surface); }
+/* Three columns: the menu, the page, and Fred's dock (0 px while Fred is closed). The widths are
+   set by use-shell-layout.ts; changing them animates the columns, so opening Fred or collapsing
+   the menu squeezes the page smoothly. No animation while a handle is being dragged. */
+.sc-shell { --side-w: 248px; --fred-w: 400px; --fred-col: 0px; --bar-h: 52px; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr) var(--fred-col); grid-template-rows: var(--bar-h) 1fr; min-height: 100%; transition: grid-template-columns 240ms cubic-bezier(.2, .7, .2, 1); }
+/* Under 1024 px Fred floats over the page (assistant.css), so its column stays empty. */
+@media (max-width: 1023px) {
+  .sc-shell { grid-template-columns: var(--side-w) minmax(0, 1fr) 0px; }
+}
+.sc-shell--resizing { cursor: col-resize; user-select: none; }
+.sc-shell--resizing, .sc-shell--resizing .sc-top { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sc-shell, .sc-top { transition: none; }
+}
+.sc-side { grid-row: 2; position: sticky; top: var(--bar-h); align-self: start; box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-3); height: calc(100dvh - var(--bar-h)); padding: var(--space-3); overflow: hidden auto; border-right: 1px solid var(--line); background: var(--surface); }
+.sc-side--rail { padding: var(--space-3) var(--space-2); }
+.sc-side--rail .sc-nav a { justify-content: center; gap: 0; padding: 0; }
+.sc-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-nav a > .sc-ico { flex: none; }
+.sc-side__toggle { display: flex; align-items: center; gap: var(--space-3); flex: none; height: 34px; margin-top: auto; padding: 0 var(--space-2); overflow: hidden; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); font: 500 13px/1 var(--font-sans); white-space: nowrap; cursor: pointer; }
+.sc-side__toggle:hover { background: var(--surface-sunken); color: var(--ink); }
+.sc-side__toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.sc-side__toggle > .sc-ico { flex: none; transition: transform 240ms; }
+.sc-side__toggle[aria-expanded="true"] > .sc-ico { transform: rotate(180deg); }
+.sc-side--rail .sc-side__toggle { justify-content: center; padding: 0; }
+/* The drag handle on a panel's inner edge: a thin hit area that shows an accent line on hover,
+   drag and keyboard focus. */
+.sc-resize { position: absolute; top: 0; bottom: 0; z-index: var(--z-sticky); width: 8px; cursor: col-resize; touch-action: none; }
+.sc-resize::after { content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 2px; background: transparent; transition: background 120ms; }
+.sc-resize:hover::after, .sc-resize:focus-visible::after, .sc-shell--resizing .sc-resize::after { background: var(--accent); }
+.sc-resize:focus-visible { outline: none; }
+.sc-resize--side { right: 0; }
 /* The S.C.O.U.T. wordmark: the sign-in page and the printed report. */
 .sc-wordmark { display: flex; align-items: baseline; gap: var(--space-2); padding: 0 var(--space-2); color: var(--ink); font: 700 22px/1 var(--font-sans); letter-spacing: -.04em; }
 /* The buoy-and-ripples mark (public/brand/scout-mark.png, from the site) used as a mask, so it is
@@ -19,11 +48,18 @@
 .sc-nav a[aria-current="page"] .sc-ico { color: var(--accent); }
 .sc-nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .sc-nav kbd { margin-left: auto; color: var(--ink-muted); font: 400 11px/1 var(--font-mono); }
-.sc-shell__page { grid-row: 2; min-width: 0; }
+/* The page is a size container: its tables, forms and grids switch layout on the room the page
+   actually has (@container page), which changes as the menu and Fred's panel resize. Anything
+   fixed-position must render outside it (dialogs portal to <body>). */
+.sc-shell__page { grid-row: 2; min-width: 0; container: page / inline-size; }
 /* Above the page's own sticky table headers and dragged bays, so the account menu is never covered;
    below dialogs, so a dialog's backdrop still covers the bar. */
-.sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: minmax(var(--side-w), max-content) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); }
-.sc-top__brand { display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); border-right: 1px solid var(--line); }
+.sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: var(--side-w) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); transition: grid-template-columns 240ms cubic-bezier(.2, .7, .2, 1); }
+.sc-top__brand { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); overflow: hidden; border-right: 1px solid var(--line); }
+/* With the menu as an icon rail the mark sits alone over it, and the account moves right. */
+.sc-shell:has(.sc-side--rail) .sc-top__brand { justify-content: center; padding: 0; }
+.sc-top__end .sc-account__panel { right: 0; left: auto; }
+.sc-top__end .sc-top__account-name, .sc-top__end .sc-top__account > .sc-ico { display: none; }
 .sc-account { position: relative; min-width: 0; }
 .sc-top__account { display: flex; align-items: center; gap: var(--space-2); min-width: 0; max-width: 100%; padding: 4px var(--space-2) 4px 4px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink); font: 500 13px/1 var(--font-sans); cursor: pointer; }
 .sc-top__account:hover, .sc-top__account[aria-expanded="true"] { background: var(--surface-sunken); }
@@ -39,7 +75,10 @@
   .sc-shell { grid-template-columns: 1fr; }
   .sc-shell__page { grid-row: 2; grid-column: 1; }
   .sc-side { display: none; }
+}
+@container page (max-width: 767px) {
   .sc-grid12 > * { grid-column: 1 / -1; }
+  .sc-page-head__title { font-size: 22px; line-height: 28px; }
 }
 .sc-bottomnav { display: none; }
 @media (max-width: 767px) {
@@ -79,11 +118,10 @@
 .sc-page-head__title { margin: 0; font: 700 28px/32px var(--font-sans); letter-spacing: -.02em; }
 .sc-page-head__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 @media (max-width: 767px) {
-  .sc-page-head__title { font-size: 22px; line-height: 28px; }
   .sc-account__panel { position: fixed; top: calc(var(--bar-h) + 6px); right: var(--space-4); left: var(--space-4); width: auto; }
   .sc-ask { padding: 0 var(--space-2); }
 }
-@media (min-width: 768px) and (max-width: 1279px) {
+@container page (min-width: 520px) and (max-width: 1031px) {
   .span-3 { grid-column: span 6; }
   .span-6 { grid-column: 1 / -1; }
 }

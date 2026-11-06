@@ -9,7 +9,7 @@ a.sc-tab { text-decoration: none; }
 /* Send, Undo and Hold to restore: one height and one width, sized to the longest label. */
 .sc-remote-form__actions { display: grid; grid-template-columns: repeat(3, minmax(max-content, 1fr)); justify-content: start; width: max-content; max-width: 100%; }
 .sc-remote-form__actions > .sc-key { justify-content: center; width: 100%; }
-@media (max-width: 1100px) { .sc-remote-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container page (max-width: 852px) { .sc-remote-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .sc-settings-form > .sc-fieldset { align-content: start; }
 .sc-settings-choices { display: grid; align-content: start; gap: var(--space-2); min-width: 0; margin: 0; padding: 0; border: 0; }
 .sc-settings-choices legend { margin-bottom: var(--space-2); padding: 0; }
@@ -41,7 +41,7 @@ input.sc-slot--channel { width: 148px; }
 .sc-feed { display: grid; margin: 0; padding: 0; list-style: none; }
 .sc-feed__row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: baseline; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); font: 400 14px/20px var(--font-sans); }
 
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-settings-form { grid-template-columns: minmax(0, 1fr); }
   .sc-remote-form__actions { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .sc-notify-table__channel { width: 72px; }

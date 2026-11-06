@@ -28,7 +28,7 @@ describe("TopBar", () => {
     renderBar();
     expect(screen.getByRole("link", { name: /S\.C\.O\.U\.T\. Console/ }).getAttribute("href")).toMatch(/^\/dashboard\/?$/);
     expect(screen.getByRole("button", { name: "Account: David Chousal" })).toBeDefined();
-    expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.getByRole("button", { name: /Ask Fred/ })).toBeDefined();
     expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
   });
 
@@ -57,18 +57,26 @@ describe("TopBar", () => {
 });
 
 describe("Ask Fred", () => {
-  test("opens and closes Fred's panel", async () => {
-    vi.spyOn(api, "fredStatus").mockResolvedValue({ ok: true, enabled: true, used: 0, cap: 10 } as never);
-    renderBar();
-    await userEvent.click(screen.getByRole("button", { name: /Ask Fred/ }));
-    expect(screen.getByRole("dialog", { name: "Ask Fred" })).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Close Fred" }));
-    expect(screen.queryByRole("dialog", { name: "Ask Fred" })).toBeNull();
+  test("asks the shell to open Fred and says whether it is open", async () => {
+    const onToggleFred = vi.fn();
+    const { rerender } = render(<TopBar user={user} onToggleFred={onToggleFred} />);
+    const ask = screen.getByRole("button", { name: /Ask Fred/ });
+    expect(ask.getAttribute("aria-expanded")).toBe("false");
+    await userEvent.click(ask);
+    expect(onToggleFred).toHaveBeenCalledTimes(1);
+    rerender(<TopBar user={user} onToggleFred={onToggleFred} fredOpen />);
+    expect(screen.getByRole("button", { name: /Ask Fred/ }).getAttribute("aria-expanded")).toBe("true");
   });
 
   test("is disabled before the session loads", () => {
     render(<TopBar />);
     expect((screen.getByRole("button", { name: /Ask Fred/ }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  test("with the menu as an icon rail, the account moves to the right end", () => {
+    const { container } = render(<TopBar user={user} onToggleFred={vi.fn()} railMenu />);
+    expect(container.querySelector(".sc-top__end .sc-top__account")).not.toBeNull();
+    expect(container.querySelector(".sc-top__brand .sc-top__account")).toBeNull();
   });
 });
 

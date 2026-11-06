@@ -1,5 +1,11 @@
-/* Fred, the console's assistant (ADR-0013): a panel on the right, a full-screen sheet on phones. */
-.sc-fred { grid-template-rows: auto minmax(0, 1fr) auto; align-content: stretch; gap: var(--space-3); top: var(--bar-h); padding-bottom: var(--space-4); overflow: hidden; }
+/* Fred, the console's assistant (ADR-0013). From 1024 px it is docked in the shell's third column
+   (shell.css), so opening it squeezes the page; narrower, it slides in over the page; on phones it
+   is a full-screen sheet. The panel keeps its own width while the column animates, so its content
+   never reflows mid-slide. */
+.sc-fred-dock { grid-column: 3; grid-row: 2; position: sticky; top: var(--bar-h); align-self: start; display: flex; height: calc(100dvh - var(--bar-h)); min-width: 0; overflow: hidden; }
+.sc-shell--fred .sc-fred-dock { border-left: 1px solid var(--line); }
+.sc-fred { box-sizing: border-box; display: grid; flex: none; grid-template-rows: auto minmax(0, 1fr) auto; gap: var(--space-3); width: var(--fred-w); height: 100%; padding: var(--space-4) var(--space-6); background: var(--surface); overflow: hidden; }
+.sc-resize--fred { left: 0; }
 .sc-fred__head-keys { display: flex; gap: var(--space-2); }
 .sc-fred__empty { display: grid; align-content: start; gap: var(--space-3); color: var(--ink-muted); font: 400 14px/20px var(--font-sans); }
 .sc-fred__empty p { margin: 0; }
@@ -47,6 +53,17 @@
 .sc-brief__meta { color: var(--ink-muted); font: 500 11px/14px var(--font-mono); }
 .sc-brief .sc-fred__a p:last-child, .sc-brief .sc-fred__a ul:last-child { margin-bottom: 0; }
 
+@media (max-width: 1023px) {
+  .sc-fred-dock { position: fixed; top: var(--bar-h); right: 0; bottom: 0; z-index: var(--z-drawer); width: min(var(--fred-w), 100vw); height: auto;
+    border-left: 1px solid var(--line); box-shadow: var(--shadow-pop); transform: translateX(105%); transition: transform 240ms cubic-bezier(.2, .7, .2, 1); }
+  .sc-shell--fred .sc-fred-dock { transform: none; }
+  .sc-fred { width: 100%; }
+}
 @media (max-width: 767px) {
-  .sc-fred { top: 0; width: 100%; border-left: 0; padding: var(--space-3) var(--space-4) var(--space-4); }
+  .sc-fred-dock { top: 0; width: 100vw; border-left: 0; }
+  .sc-fred { padding: var(--space-3) var(--space-4) var(--space-4); }
+  .sc-resize--fred { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-fred-dock { transition: none; }
 }

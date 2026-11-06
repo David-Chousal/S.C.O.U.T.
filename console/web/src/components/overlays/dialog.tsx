@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/icon";
 
 interface DialogProps {
@@ -17,7 +18,8 @@ function focusables(root: HTMLElement | null): HTMLElement[] {
   return root ? [...root.querySelectorAll<HTMLElement>(FOCUSABLE)] : [];
 }
 
-/** Modal task. Focus moves in, is trapped, and returns to the trigger on close. */
+/** Modal task. Focus moves in, is trapped, and returns to the trigger on close. Rendered into
+ * document.body, so the page column's container query (shell.css) cannot contain its backdrop. */
 export function Dialog({ open, title, onClose, children, footer }: DialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
@@ -61,7 +63,7 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
   }, [open]);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="sc-scrim sc-scrim--fixed" onPointerDown={(event) => event.target === event.currentTarget && onClose()}>
       <div ref={dialogRef} className="sc-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <div className="sc-dialog__head">
@@ -73,6 +75,7 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
         {children}
         {footer && <div className="sc-dialog__foot">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

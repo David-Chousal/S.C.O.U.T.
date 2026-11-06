@@ -96,10 +96,13 @@ function Exchange({ turn }: { turn: FredTurn }) {
 
 interface FredPanelProps {
   user: User;
+  /** Shown now. The panel stays mounted while closed, so the conversation lasts until the tab
+   * closes and the panel can slide shut. */
+  open?: boolean;
   onClose: () => void;
 }
 
-export function FredPanel({ user, onClose }: FredPanelProps) {
+export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
   const pathname = usePathname() ?? "/";
   const [turns, setTurns] = useState<FredTurn[]>([]);
   const [draft, setDraft] = useState("");
@@ -109,11 +112,13 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
   const log = useRef<HTMLOListElement>(null);
   const busy = turns.some((t) => !t.done);
 
+  useEffect(() => () => abort.current?.abort(), []);
+
   useEffect(() => {
+    if (!open) return;
     input.current?.focus();
     api.fredStatus().then((s) => setUsage({ used: s.used, cap: s.cap }), () => setUsage(null));
-    return () => abort.current?.abort();
-  }, []);
+  }, [open]);
 
   // Keep the newest text and card, with its Confirm key, in view as the reply streams in.
   useEffect(() => {
@@ -168,7 +173,7 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
   }
 
   return (
-    <aside className="sc-drawer sc-drawer--fixed sc-fred" role="dialog" aria-label="Ask Fred" onKeyDown={onKeyDown}>
+    <aside className="sc-fred" role="dialog" aria-label="Ask Fred" onKeyDown={onKeyDown}>
       <div className="sc-drawer__head">
         <h2 className="sc-drawer__title">Fred</h2>
         <div className="sc-fred__head-keys">

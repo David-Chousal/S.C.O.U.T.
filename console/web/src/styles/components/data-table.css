@@ -30,10 +30,16 @@
 .sc-buoy-table__pick:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-buoy-table__changed { color: var(--ink-muted); }
 .sc-buoy-table__when, .sc-fleet-table td:nth-child(3) { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-fleet-table, .sc-buoy-table { table-layout: auto; }
   .sc-fleet-table th:nth-child(n), .sc-buoy-table th:nth-child(n) { width: auto; }
   .sc-buoy-table th:nth-child(3), .sc-buoy-table td:nth-child(3), .sc-fleet-table th:nth-child(2), .sc-fleet-table td:nth-child(2), .sc-fleet-table th:nth-child(3), .sc-fleet-table td:nth-child(3) { display: none; }
+}
+/* Between phone width and roomy, the fixed columns stop fitting (a page squeezed by the menu or
+   Fred's panel): let the browser size them from their content, every column still shown. */
+@container page (max-width: 960px) {
+  .sc-fleet-table, .sc-buoy-table, .sc-stations-table { table-layout: auto; }
+  .sc-fleet-table th:nth-child(n), .sc-buoy-table th:nth-child(n), .sc-stations-table th:nth-child(n) { width: auto; }
 }
 /* Stations table: same rhythm as Fleet, status before the actions. */
 .sc-stations-table { table-layout: fixed; }
@@ -46,7 +52,7 @@
 .sc-assign { display: grid; gap: 2px; margin: var(--space-3) 0 0; padding: 0; border: 0; }
 .sc-assign__row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--line); cursor: pointer; }
 .sc-table td.sc-stations-table__actions { padding-right: var(--space-4); text-align: right; }
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-stations-table { table-layout: auto; }
   .sc-stations-table th:nth-child(n) { width: auto; }
   .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
@@ -61,7 +67,7 @@
 .sc-invite-roles { display: grid; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
 .sc-invite-roles legend { margin-bottom: var(--space-2); }
 /* Phones: each row stacks the person above a role | status | actions grid, so the controls still line up. */
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-team-table, .sc-team-table tbody { display: block; }
   .sc-team-table colgroup, .sc-team-table thead { display: none; }
   .sc-team-table tr { display: grid; grid-template-columns: calc(28px + var(--space-3) + 128px) minmax(0, 1fr) auto; grid-template-areas: "who who who" "role when act"; column-gap: var(--space-3); align-items: center; row-gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
@@ -76,7 +82,7 @@
 /* Audit log: the time never wraps; on phones each change stacks as when · who, then what. */
 .sc-audit-table__when { font: 400 13px/20px var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sc-audit-table__who { overflow-wrap: anywhere; }
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-audit-table, .sc-audit-table tbody { display: block; }
   .sc-audit-table thead { display: none; }
   .sc-audit-table tr { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }

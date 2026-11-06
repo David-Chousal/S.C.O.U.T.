@@ -18,7 +18,7 @@
 .sc-login__slots { width: 100%; max-width: 520px; }
 .sc-login__slots svg { display: block; width: 100%; height: 40px; }
 .sc-login__slots rect { fill: var(--bg); opacity: .35; } .sc-login__slots rect.on { opacity: 1; }
-@media (max-width: 767px) { .sc-pair { gap: var(--space-4); } .sc-pair dd { font-size: 24px; line-height: 28px; } }
+@container page (max-width: 767px) { .sc-pair { gap: var(--space-4); } .sc-pair dd { font-size: 24px; line-height: 28px; } }
 .sc-pair .sc-account__value { font: 500 15px/20px var(--font-sans); letter-spacing: 0; overflow-wrap: anywhere; }
 .sc-team-actions { justify-content: flex-end; gap: var(--space-2); flex-wrap: nowrap; }
 .sc-banner .sc-secret { margin-top: var(--space-2); }
@@ -43,7 +43,7 @@
 /* Team: two keys sit in the actions column (reset link + hold to disable), wider than COR's one. */
 .sc-team-table .sc-team-table__actions { width: 252px; }
 /* Phones: the two action keys get their own row under role and sign-in method. */
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-team-table tr { grid-template-areas: "who who who" "role when when" "act act act"; row-gap: var(--space-2); }
   .sc-team-table td:nth-child(4) { grid-area: act; padding-left: calc(28px + var(--space-3)); }
   .sc-team-actions { justify-content: flex-start; flex-wrap: wrap; }
@@ -60,7 +60,7 @@
 .sc-firmware-table td { vertical-align: top; white-space: normal; overflow-wrap: break-word; }
 .sc-firmware-table td .sub { display: block; white-space: normal; }
 .sc-firmware-table .sc-badge { max-width: 100%; white-space: normal; text-align: left; }
-@media (max-width: 767px) {
+@container page (max-width: 767px) {
   .sc-firmware-table, .sc-firmware-table tbody, .sc-firmware-table tr { display: block; }
   .sc-firmware-table thead { display: none; }
   .sc-firmware-table tr { padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
@@ -73,11 +73,11 @@
 .sc-readings-latest { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); margin: 0; }
 .sc-readings-latest dd { margin: var(--space-1) 0 0; font: 700 28px/32px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .sc-readings-latest dd small { margin-left: 4px; font: 500 14px/1 var(--font-sans); color: var(--ink-muted); letter-spacing: 0; }
-@media (max-width: 767px) { .sc-readings-latest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); } .sc-readings-latest dd { font-size: 24px; } }
+@container page (max-width: 767px) { .sc-readings-latest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); } .sc-readings-latest dd { font-size: 24px; } }
 /* Developer: a token's scopes and dates under its name. */
 .sc-token-form { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4) var(--space-6); max-width: 760px; }
 .sc-token-form__wide { grid-column: 1 / -1; }
-@media (max-width: 767px) { .sc-token-form { grid-template-columns: minmax(0, 1fr); } }
+@container page (max-width: 767px) { .sc-token-form { grid-template-columns: minmax(0, 1fr); } }
 /* Reports: the composer, and the printable report (no shell, paper first). */
 .sc-report-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-6); }
 .sc-report-form__dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }
@@ -92,7 +92,7 @@ a.sc-key { text-decoration: none; }
 .sc-print__buoy { display: grid; gap: var(--space-4); break-inside: avoid-page; }
 .sc-print__buoy h2 { margin: 0; font: 700 18px/24px var(--font-sans); }
 .sc-print__buoy h2 small { margin-left: var(--space-2); font: 400 13px/1 var(--font-sans); color: var(--ink-muted); }
-@media (max-width: 767px) { .sc-report-form { grid-template-columns: minmax(0, 1fr); } }
+@container page (max-width: 767px) { .sc-report-form { grid-template-columns: minmax(0, 1fr); } }
 @media print {
   :root { color-scheme: light; }
   body { background: #fff; }
