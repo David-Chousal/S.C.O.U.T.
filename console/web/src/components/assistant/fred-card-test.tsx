@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { api } from "@/lib/api/client";
 import { ApiError, type FredCard } from "@/lib/api/types";
+import { DATA_CHANGED } from "@/lib/data-changed";
 import { FredConfirmCard } from "./fred-card";
 
 const NOW = Date.parse("2026-11-05T12:00:00Z");
@@ -21,6 +22,21 @@ describe("FredConfirmCard", () => {
     expect(confirm).toHaveBeenCalledWith("a1");
     expect(screen.getByRole("status").textContent).toContain("Requested.");
     expect(screen.queryByRole("button", { name: "Confirm" })).toBeNull();
+  });
+
+  test("a confirmed change tells the page to reload; a declined one does not", async () => {
+    vi.spyOn(api, "confirmFred").mockResolvedValue({ message: "Requested." });
+    vi.spyOn(api, "declineFred").mockResolvedValue({ ok: true });
+    const heard = vi.fn();
+    window.addEventListener(DATA_CHANGED, heard);
+    const { unmount } = render(<FredConfirmCard card={card} now={NOW} />);
+    await userEvent.click(screen.getByRole("button", { name: "Decline" }));
+    expect(heard).not.toHaveBeenCalled();
+    unmount();
+    render(<FredConfirmCard card={{ ...card, id: "a2" }} now={NOW} />);
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(heard).toHaveBeenCalledTimes(1);
+    window.removeEventListener(DATA_CHANGED, heard);
   });
 
   test("Decline drops it and changes nothing", async () => {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
+import { announceDataChanged } from "@/lib/data-changed";
 import type { FredCard as Card } from "@/lib/api/types";
 
 type CardState = { kind: "open" } | { kind: "busy" } | { kind: "done"; message: string; link?: string }
@@ -33,6 +34,7 @@ export function FredConfirmCard({ card, now: initialNow }: { card: Card; now?: n
     try {
       const done = await api.confirmFred(card.id);
       setState({ kind: "done", message: done.message, link: done.link });
+      announceDataChanged();
     } catch (error) {
       const message = error instanceof Error ? error.message : "That did not go through.";
       setState(/expired/i.test(message) ? { kind: "expired" } : { kind: "failed", message });
