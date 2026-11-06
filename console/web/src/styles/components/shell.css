@@ -10,7 +10,6 @@
 /* The buoy-and-ripples mark (public/brand/scout-mark.png, from the site) used as a mask, so it is
    drawn in the ink colour and follows the light and dark themes. */
 .sc-logo { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: var(--radius-sm); color: var(--ink); }
-.sc-logo:hover { background: var(--surface-sunken); }
 .sc-logo:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .sc-logo__mark { width: 26px; height: 26px; background: currentColor; -webkit-mask: url("/brand/scout-mark.png") center / contain no-repeat; mask: url("/brand/scout-mark.png") center / contain no-repeat; }
 .sc-nav { display: grid; gap: 2px; }
@@ -23,9 +22,9 @@
 .sc-shell__page { grid-row: 2; min-width: 0; }
 /* Above the page's own sticky table headers and dragged bays, so the account menu is never covered;
    below dialogs, so a dialog's backdrop still covers the bar. */
-.sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: var(--side-w) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); }
+.sc-top { grid-column: 1 / -1; position: sticky; top: 0; z-index: var(--z-drawer); display: grid; grid-template-columns: minmax(var(--side-w), max-content) 1fr; align-items: center; height: var(--bar-h); border-bottom: 1px solid var(--line); background: var(--surface); }
 .sc-top__brand { display: flex; align-items: center; gap: var(--space-3); height: 100%; min-width: 0; padding: 0 var(--space-3) 0 var(--space-4); border-right: 1px solid var(--line); }
-.sc-account { position: relative; margin-left: auto; min-width: 0; }
+.sc-account { position: relative; min-width: 0; }
 .sc-top__account { display: flex; align-items: center; gap: var(--space-2); min-width: 0; max-width: 100%; padding: 4px var(--space-2) 4px 4px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink); font: 500 13px/1 var(--font-sans); cursor: pointer; }
 .sc-top__account:hover, .sc-top__account[aria-expanded="true"] { background: var(--surface-sunken); }
 .sc-top__account:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
