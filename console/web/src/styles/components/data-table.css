@@ -34,6 +34,8 @@
   .sc-fleet-table, .sc-buoy-table { table-layout: auto; }
   .sc-fleet-table th:nth-child(n), .sc-buoy-table th:nth-child(n) { width: auto; }
   .sc-buoy-table th:nth-child(3), .sc-buoy-table td:nth-child(3), .sc-fleet-table th:nth-child(2), .sc-fleet-table td:nth-child(2), .sc-fleet-table th:nth-child(3), .sc-fleet-table td:nth-child(3) { display: none; }
+  /* Phones: buoy, status and the ⋯ menu; the next transmission is in Buoy info. */
+  .sc-fleet-table th:nth-child(4), .sc-fleet-table td:nth-child(4) { display: none; }
 }
 /* Between phone width and roomy, the fixed columns stop fitting (a page squeezed by the menu or
    Fred's panel): let the browser size them from their content, every column still shown. */
@@ -56,6 +58,8 @@
   .sc-stations-table { table-layout: auto; }
   .sc-stations-table th:nth-child(n) { width: auto; }
   .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
+  /* Phones: station, status and the ⋯ menu; the buoys it commands are in Info. */
+  .sc-stations-table th:nth-child(2), .sc-stations-table td:nth-child(2) { display: none; }
 }
 /* Team tables: fixed columns so members and invites line up. */
 .sc-team-table { table-layout: fixed; }

@@ -70,6 +70,8 @@
 .sc-top__account .sc-avatar { width: 24px; height: 24px; font-size: 10px; }
 .sc-top__account-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-top__account > .sc-ico { flex: none; color: var(--ink-muted); }
+/* The ☰ menu of pages missing from the phone bottom bar; phones only. */
+.sc-top__more { display: none; }
 .sc-top__end { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3); min-width: 0; padding-right: var(--space-6); }
 /* The page's "View only: …" note: plain muted italics on the bar's left, one line, no fill. */
 .sc-top__note { flex: 1 1 auto; min-width: 0; margin: 0 auto 0 0; padding-left: var(--space-6); overflow: hidden; color: var(--ink-muted); font: italic 400 13px/18px var(--font-sans); text-overflow: ellipsis; white-space: nowrap; }
@@ -99,6 +101,7 @@
   .sc-top__account { padding: 4px; }
   .sc-top__end { padding-right: var(--space-4); }
   .sc-top__note { display: none; }
+  .sc-top__more { display: inline-flex; }
 }
 
 /* The account popover under the top bar's account. */

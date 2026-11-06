@@ -23,13 +23,15 @@ interface ActionMenuProps {
   items: ActionMenuItem[];
   /** The trigger is shown but switched off (a role that can view but not change). */
   disabled?: boolean;
+  /** The trigger's icon: ⋯ by default. */
+  icon?: IconName;
 }
 
 function menuItems(menu: HTMLElement | null): HTMLElement[] {
   return menu ? [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')] : [];
 }
 
-export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) {
+export function ActionMenu({ label, items, disabled = false, icon = "more" }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -75,7 +77,7 @@ export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) 
         disabled={disabled || items.length === 0}
         onClick={() => setOpen((isOpen) => !isOpen)}
       >
-        <Icon name="more" />
+        <Icon name={icon} />
       </button>
       {open && createPortal(
         <div ref={menuRef} id={menuId} role="menu" aria-label={label} className="sc-menu sc-popover" onKeyDown={onMenuKeyDown}>

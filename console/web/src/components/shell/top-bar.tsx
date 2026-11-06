@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 import type { User } from "@/lib/api/types";
 import { usePreferences } from "@/lib/preferences-context";
+import { ActionMenu } from "@/components/overlays/action-menu";
 import { AccountMenu } from "./account-menu";
+import { NAV_ITEMS } from "./nav";
+
+/** Phones: the pages the bottom bar has no room for. */
+const MORE_PAGES = NAV_ITEMS.filter((item) => item.desktopOnly).map((item) => ({ label: item.label, icon: item.icon, href: item.href }));
 
 function isTypingTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -56,6 +61,7 @@ export function TopBar({ user, fredOpen = false, onToggleFred, railMenu = false,
           onClick={onToggleFred}>
           Ask Fred
         </button>
+        {user && <span className="sc-top__more"><ActionMenu label="More pages" icon="menu" items={MORE_PAGES} /></span>}
       </div>
     </header>
   );
