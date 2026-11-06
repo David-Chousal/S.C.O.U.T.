@@ -4,6 +4,9 @@
 
 import {
   ApiError,
+  type AlertRuleInput,
+  type AlertsView,
+  type EmailDelivery,
   type AuditEntry,
   type Device,
   type BuoySettings,
@@ -167,6 +170,16 @@ export const api = {
   deleteDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/delete`),
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),
+
+  alerts: () => call<AlertsView>("GET", "/api/alerts"),
+  setAlertsEnabled: (enabled: boolean) => call<{ enabled: boolean }>("POST", "/api/alerts/switch", { enabled }),
+  createAlertRule: (rule: AlertRuleInput) => call<{ id: string }>("POST", "/api/alerts/rules", rule),
+  updateAlertRule: (id: string, rule: Partial<AlertRuleInput>) =>
+    call<{ ok: true }>("POST", `/api/alerts/rules/${encodeURIComponent(id)}`, rule),
+  deleteAlertRule: (id: string) => call<{ ok: true }>("POST", `/api/alerts/rules/${encodeURIComponent(id)}/delete`),
+  testAlert: () => call<{ delivery: EmailDelivery }>("POST", "/api/alerts/test"),
+  alertOffInfo: (token: string) => call<{ description: string; buoy_id: number | null }>("GET", `/api/alerts/off/${encodeURIComponent(token)}`),
+  alertOff: (token: string) => call<{ description: string }>("POST", `/api/alerts/off/${encodeURIComponent(token)}`),
 
   fredBrief: () => call<{ brief: FredBrief | null }>("GET", "/api/assistant/brief"),
   fredStatus: () => call<FredStatus>("GET", "/api/assistant/status"),

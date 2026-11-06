@@ -104,6 +104,16 @@ export const PROBLEMS: readonly HelpProblem[] = [
         Each admin can send 20 emails a day, the whole console 50.</>
     ),
   },
+  {
+    symptom: "I want an email when a buoy needs attention",
+    fix: (
+      <>Open <b>Settings → Notifications</b>, turn on <b>Email me when one of my alerts fires</b>, and add an alert: start from a
+        preset (battery low, housing humidity, water temperature, buoy silent) or build one. Alerts go only to your own account
+        email, at most one email per batch of readings, and each alert emails once until it clears. Use <b>Send test email</b> to
+        check it arrives. Each email has a link that turns that one alert off. Guests can&rsquo;t have alerts. Each person gets at most
+        10 alert emails a day and the console 30; an alert over a cap shows under <b>Recent alerts</b> instead.</>
+    ),
+  },
 ];
 
 export const ROLES: readonly { role: string; can: string }[] = [
