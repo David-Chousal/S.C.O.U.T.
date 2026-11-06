@@ -46,7 +46,9 @@ def _pair(light: str, dark: str, usage: str) -> dict:
 def colours() -> dict[str, dict]:
     day_surface, night_surface = P["p-stone-0"], P["p-abyss-800"]
     return {
-        "bg": _pair(P["p-stone-100"], P["p-abyss-900"], "The page ground: Tideline's warm-stone canvas by day, the abyss by night."),
+        # White by day (David, 2026-11-06), not the site's warm-stone canvas: the console reads as a tool,
+        # and its bays, inputs and the sign-in art keep their contrast against it.
+        "bg": _pair("#ffffff", P["p-abyss-900"], "The page ground: white by day, the abyss by night."),
         "surface": _pair(day_surface, night_surface, "Floating layers (menus, dialogs, drawers) and the sidebar."),
         "surface-sunken": _pair(P["p-stone-200"], P["p-abyss-950"], "Inputs, table header rows, empty-state wells."),
         "line": _pair(P["p-stone-300"], P["p-abyss-700"], "1px hairlines: table rules, gridlines, range tracks."),

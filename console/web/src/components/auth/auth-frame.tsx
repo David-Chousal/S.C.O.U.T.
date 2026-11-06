@@ -10,8 +10,12 @@ export function AuthFrame({ children }: { children: ReactNode }) {
       <div className="sc-login__art">
         <span className="sc-wordmark">S.C.O.U.T. <span className="sc-tag">Console</span></span>
         <div className="sc-login__lede">
-          <h1>One buoy.<br />Every signal.</h1>
-          <p className="sc-tag">Fleet settings · shore stations · the team</p>
+          <h1>Low-cost reef monitoring, run from the shore.</h1>
+          <p className="sc-login__about">
+            The S.C.O.U.T. Console brings every buoy&rsquo;s readings, its radio settings, the shore stations that relay them and the
+            team behind them into one place, with an assistant that knows the project, so a small team can run a fleet of reef
+            sensors from anywhere.
+          </p>
         </div>
         <div className="sc-login__slots" aria-hidden="true">
           <svg viewBox="0 0 420 40" preserveAspectRatio="none">

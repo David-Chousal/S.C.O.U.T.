@@ -41,7 +41,7 @@ export function LoginForm() {
     <form className="sc-auth-form" onSubmit={onSubmit}>
       <div className="sc-auth-form__head">
         <h2>Sign in</h2>
-        <span className="sc-help">The S.C.O.U.T. team console. Team accounts are by invitation.</span>
+        <span className="sc-help">The command center for the S.C.O.U.T. buoys: live readings, remote settings, shore stations and the team.</span>
       </div>
       {error && <Banner tone="failed">{error}</Banner>}
       <ProviderLinks />
