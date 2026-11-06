@@ -10,11 +10,11 @@ import json
 from pathlib import Path
 
 HERE = Path(__file__).parent
-ORDER = ["float-regular", "float-mushroom", "assembly-v6", "assembly-v7"]  # picker order, same as MODELS
 
 
 def main() -> None:
-    models = [json.loads((HERE / "data" / f"{i}.json").read_text(encoding="utf-8")) for i in ORDER]
+    order = json.loads((HERE / "data" / "index.json").read_text(encoding="utf-8"))
+    models = [json.loads((HERE / "data" / f"{i}.json").read_text(encoding="utf-8")) for i in order]
     html = (HERE / "viewer-template.html").read_text(encoding="utf-8")
     subs = {"/*THREE*/": (HERE / "vendor" / "three.min.js").read_text(encoding="utf-8"),
             "/*CONTROLS*/": (HERE / "vendor" / "orbit-controls.js").read_text(encoding="utf-8"),
