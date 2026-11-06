@@ -9,8 +9,9 @@ const FREE = { writes: 1_000_000, reads: 10_000_000, bytes: 10e9 };
 const n = (value: number) => value.toLocaleString("en-US");
 const mb = (bytes: number) => `${(bytes / 1e6).toFixed(bytes < 1e7 ? 2 : 0)} MB`;
 
-/** Settings → Buoys, admins only: R2 use this month against the console's own ceilings, which
- * sit well under Cloudflare's free tier (worker/storage.js), and the newest nightly backup. */
+/** Developer → Storage, admins only: R2 use this month against the console's own ceilings, which
+ * sit well under Cloudflare's free tier (worker/storage.js), the newest nightly backup, and Fred's
+ * use today. */
 export function StoragePanel() {
   const { data, error } = useApi<StorageReport>(api.storage);
   if (error) return <Banner tone="failed">{error}</Banner>;

@@ -11,10 +11,10 @@ import { DeveloperTabs } from "./developer-tabs";
 
 vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams(window.location.search) }));
 
-function renderTabs() {
+function renderTabs(role: Session["user"]["role"] = "member") {
   vi.spyOn(api, "tokens").mockResolvedValue({ tokens: [], scopes: ["read:telemetry"], expiryDays: [30, 0] });
   vi.spyOn(api, "audit").mockResolvedValue({ entries: [] });
-  const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role: "member", hasPassword: true, github: false, google: false, selfSignup: false } };
+  const session: Session = { csrf: "t", user: { id: "u", email: "u@scout.test", name: "U", role, hasPassword: true, github: false, google: false, selfSignup: false } };
   render(
     <SessionContext value={session}>
       <PreferencesContext value={{ preferences: DEFAULT_PREFERENCES, update: vi.fn(), stored: true }}>
@@ -30,6 +30,25 @@ afterEach(() => {
 });
 
 describe("DeveloperTabs", () => {
+  test("admins get a Storage tab with file storage and Fred's use; members do not", async () => {
+    vi.spyOn(api, "storage").mockResolvedValue({
+      usage: { month: "2026-11", writes: 6, reads: 0, storedBytes: 1200, objects: 1 },
+      budget: { writesPerMonth: 100000, readsPerMonth: 1000000, storedBytes: 2000000000, maxObjectBytes: 25000000 },
+      lastBackup: null, bound: true,
+    });
+    renderTabs("admin");
+    await userEvent.click(screen.getByRole("tab", { name: "Storage" }));
+    expect(await screen.findByRole("heading", { name: "File storage" })).toBeDefined();
+    expect(window.location.search).toBe("?tab=storage");
+  });
+
+  test("a member has no Storage tab, and ?tab=storage falls back to API tokens", () => {
+    window.history.replaceState(null, "", "/developer/?tab=storage");
+    renderTabs("member");
+    expect(screen.queryByRole("tab", { name: "Storage" })).toBeNull();
+    expect(screen.getByRole("tab", { name: "API tokens" }).getAttribute("aria-selected")).toBe("true");
+  });
+
   test("opens on API tokens", async () => {
     renderTabs();
     expect(screen.getByRole("tab", { name: "API tokens" }).getAttribute("aria-selected")).toBe("true");
