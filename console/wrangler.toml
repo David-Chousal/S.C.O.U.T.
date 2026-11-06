@@ -34,6 +34,10 @@ ASSISTANT_DAILY_CAP_GUEST = "10"
 # either cap is skipped and the admin copies the link instead.
 EMAIL_DAILY_CAP_ADMIN = "20"
 EMAIL_DAILY_CAP_TOTAL = "50"
+# Alert emails a day (UTC), per person and console-wide (SCO-301, ADR-0015). With the 50 above this
+# keeps the console at 80 of Resend's 100 a day; an alert over a cap is recorded, not sent.
+ALERT_DAILY_CAP_PERSON = "10"
+ALERT_DAILY_CAP_TOTAL = "30"
 
 # Invite and reset emails go through Resend (RESEND_API_KEY above). This Cloudflare Email Sending
 # binding is the alternative if the account ever moves to Workers Paid (ADR-0014); it stays off:
@@ -62,7 +66,8 @@ binding = "FILES"
 bucket_name = "scout-console-files"
 
 # The nightly backup to R2 and Fred's morning brief, at 10:30 UTC (00:30 in Hawaii, after the
-# buoys' 00:10 slot).
+# buoys' 00:10 slot). Hourly, on the hour: email-alert checks only (silence rules, ADR-0015); the
+# Worker tells the two apart by event.cron (worker/index.js HOURLY_CRON).
 [triggers]
-crons = ["30 10 * * *"]
+crons = ["30 10 * * *", "0 * * * *"]
 

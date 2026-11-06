@@ -16,9 +16,11 @@
  *   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET                             secrets
  *   DB (D1), ASSETS (static assets), FILES (R2, guarded by storage.js)     bindings
  *
- * A cron trigger (wrangler.toml) runs the nightly backup to R2 (backup.js) and writes Fred's
- * morning brief (assistant/brief.js). */
+ * Two cron triggers (wrangler.toml): daily at 10:30 UTC, the nightly backup to R2 (backup.js) and
+ * Fred's morning brief (assistant/brief.js); hourly, the email-alert checks (alerts/evaluate.js,
+ * ADR-0015) and nothing else. */
 
+import { alertsHourly, HOURLY_CRON } from "./alerts/evaluate.js";
 import { handleApi } from "./api.js";
 import { runBrief } from "./assistant/brief.js";
 import { runBackup } from "./backup.js";
@@ -87,10 +89,10 @@ function otherHostRedirect(request, appUrl) {
   return Response.redirect(new URL(url.pathname + url.search, home).toString(), 301);
 }
 
-async function route(request, env) {
+async function route(request, env, ctx) {
   const path = new URL(request.url).pathname;
   if (path === "/healthz") return new Response("ok");
-  if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path);
+  if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path, ctx);
   if (path.startsWith("/api/v1/")) {
     if (!bodyWithin(request, 16 * 1024)) return apiError("The request was too large, or sent without a length.", 413);
     return handleRest(request, env, path);
@@ -109,10 +111,10 @@ async function route(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (!env.APP_URL || !env.DB) return new Response("Console is not configured (APP_URL, DB).", { status: 500 });
     try {
-      return await route(request, env);
+      return await route(request, env, ctx);
     } catch (error) {
       console.error("console: unhandled", error instanceof Error ? error.stack : error);
       return apiError("Something failed on our side. It has been logged.", 500);
@@ -121,8 +123,12 @@ export default {
 
   async scheduled(event, env, ctx) {
     ctx.waitUntil?.(Promise.resolve());
+    // The hourly trigger only checks alerts; the daily jobs keep their own 10:30 UTC trigger.
+    const jobs = event.cron === HOURLY_CRON
+      ? [alertsHourly(env, event.scheduledTime)]
+      : [runBackup(env, event.scheduledTime), runBrief(env, event.scheduledTime)];
     // Each job runs even if the other fails; a failure still fails the cron run so it shows.
-    const results = await Promise.allSettled([runBackup(env, event.scheduledTime), runBrief(env, event.scheduledTime)]);
+    const results = await Promise.allSettled(jobs);
     const failed = results.filter((r) => r.status === "rejected");
     for (const f of failed) console.error("console: scheduled job failed", f.reason instanceof Error ? f.reason.stack : f.reason);
     if (failed.length) throw failed[0].reason;

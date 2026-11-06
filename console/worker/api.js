@@ -5,6 +5,8 @@
  * CSRF token in X-CSRF-Token. Roles are checked here on every write (roles.js); the front end's
  * disabled controls are only a courtesy. Replies use the envelope { ok, ...data } / { ok:false, error }. */
 
+import { alertsView, createRule, deleteRule, offLinkInfo, setAlertsEnabled, updateRule, useOffLink } from "./alerts/rules.js";
+import { sendTestEmail } from "./alerts/send.js";
 import { handleAssistant } from "./assistant/route.js";
 import { usageToday } from "./assistant/usage.js";
 import { recent } from "./audit.js";
@@ -127,6 +129,8 @@ async function reads(env, path, session, url) {
       if (!can(session.user, "storage.read")) return apiError("Only admins see file storage.", 403);
       return json({ usage: await usage(env.DB), budget: BUDGET, lastBackup: await lastBackup(env.DB), bound: Boolean(env.FILES),
         assistant: await usageToday(env.DB) });
+    case "/api/alerts":
+      return json(await alertsView(env, session.user));
     case "/api/dashboards":
       return json({ dashboards: await listDashboards(env.DB, session.user.id) });
     case "/api/reports":
@@ -172,6 +176,11 @@ const WRITES = [
     return { link: url, email: result.email, delivery: sent.status };
   }],
   [/^\/api\/team\/users\/([\w-]{1,64})\/(disable|enable)$/, "users.disable", (db, b, m, a) => setDisabled(db, a, m[1], m[2] === "disable")],
+  [/^\/api\/alerts\/switch$/, "alerts.write", (db, b, m, a) => setAlertsEnabled(db, a, b.enabled === true)],
+  [/^\/api\/alerts\/rules$/, "alerts.write", (db, b, m, a) => createRule(db, a, b)],
+  [/^\/api\/alerts\/rules\/([\w-]{1,64})\/delete$/, "alerts.write", (db, b, m, a) => deleteRule(db, a, m[1])],
+  [/^\/api\/alerts\/rules\/([\w-]{1,64})$/, "alerts.write", (db, b, m, a) => updateRule(db, a, m[1], b)],
+  [/^\/api\/alerts\/test$/, "alerts.write", async (db, b, m, a, env) => ({ delivery: (await sendTestEmail(env, a)).status })],
   [/^\/api\/dashboards$/, "dashboards.write", (db, b, m, a) => createDashboard(db, a, b)],
   [/^\/api\/dashboards\/([\w-]{1,64})\/delete$/, "dashboards.write", (db, b, m, a) => deleteDashboard(db, a, m[1])],
   [/^\/api\/dashboards\/([\w-]{1,64})$/, "dashboards.write", (db, b, m, a) => saveDashboard(db, a, m[1], b.bays)],
@@ -208,7 +217,22 @@ async function writes(request, env, path, session, body) {
   return apiError("not found", 404);
 }
 
+/** An alert email's off link: GET says what it would turn off, POST turns it off. No session: the
+ * token is the proof. POST takes the page's JSON or a mail client's RFC 8058 one-click form post
+ * ("List-Unsubscribe=One-Click", no Origin), so it is answered before the same-origin check. */
+async function alertOff(request, env, token) {
+  if (request.method === "GET") {
+    const info = await offLinkInfo(env.DB, token);
+    return info.error ? apiError(info.error, info.status) : json(info);
+  }
+  if (request.method !== "POST") return apiError("method not allowed", 405);
+  const done = await useOffLink(env.DB, token);
+  return done.error ? apiError(done.error, done.status) : json(done);
+}
+
 export async function handleApi(request, env, path) {
+  const off = /^\/api\/alerts\/off\/([\w-]{20,64})$/.exec(path);
+  if (off) return alertOff(request, env, off[1]);
   // Fred reads its own, larger body (the open conversation) and streams its reply.
   if (path === "/api/assistant" || path.startsWith("/api/assistant/")) return handleAssistant(request, env, path);
   let body = {};

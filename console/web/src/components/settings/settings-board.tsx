@@ -9,11 +9,13 @@ import { useApi } from "@/lib/use-api";
 import { AccountPanel } from "@/components/account/account-panel";
 import { BrowserSettingsPanel } from "./browser-settings";
 import { BuoySettingsPanel } from "./buoy-settings";
+import { NotificationsPanel } from "./notifications-panel";
 import { StoragePanel } from "./storage-panel";
 
 const TABS = [
   { id: "buoys", label: "Buoys" },
   { id: "account", label: "Account" },
+  { id: "notifications", label: "Notifications" },
   { id: "browser", label: "This browser" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
@@ -22,8 +24,8 @@ function tabOf(wanted: string | null): TabId {
   return TABS.find((tab) => tab.id === wanted)?.id ?? "buoys";
 }
 
-/** The Settings page: buoy settings for the team, your account (how you sign in, signing out), and
- * page settings for this browser. The address's "?tab=" picks the tab, and keeps picking it: a link
+/** The Settings page: buoy settings for the team, your account (how you sign in, signing out), your
+ * email alerts (Notifications), and page settings for this browser. The address's "?tab=" picks the tab, and keeps picking it: a link
  * such as the account menu's "Account settings" switches tabs even when Settings is already open.
  * Tabs follow the WAI-ARIA pattern: arrow keys move between them, Home and End jump to the ends. */
 export function SettingsBoard() {
@@ -59,7 +61,7 @@ export function SettingsBoard() {
 
   return (
     <>
-      <div className="sc-tabs" role="tablist" aria-label="Settings" onKeyDown={onKeyDown}>
+      <div className="sc-tabs sc-settings-tabs" role="tablist" aria-label="Settings" onKeyDown={onKeyDown}>
         {TABS.map((tab) => (
           <button key={tab.id} ref={(el) => { buttons.current[tab.id] = el; }} id={`tab-${tab.id}`} className="sc-tab"
             type="button" role="tab" aria-selected={active === tab.id} aria-controls={`panel-${tab.id}`}
@@ -76,7 +78,8 @@ export function SettingsBoard() {
               <BuoySettingsPanel data={buoys.data} error={buoys.error} reload={buoys.reload} />
               {can(user.role, "storage.read") && <StoragePanel />}
             </>
-            : tab.id === "account" ? <AccountPanel /> : <BrowserSettingsPanel />}
+            : tab.id === "account" ? <AccountPanel />
+              : tab.id === "notifications" ? (active === "notifications" && <NotificationsPanel />) : <BrowserSettingsPanel />}
         </div>
       ))}
     </>

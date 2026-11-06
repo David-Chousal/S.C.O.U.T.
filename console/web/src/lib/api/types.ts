@@ -276,3 +276,55 @@ export type FredEvent =
   | { event: "reset"; data: Record<string, never> }
   | { event: "done"; data: { provider: string; used: number; cap: number } }
   | { event: "error"; data: { message: string } };
+
+export type AlertKind = "threshold" | "flag" | "silence";
+
+/** One alert rule as the Notifications tab edits it (worker/alerts/catalog.js validRule). */
+export interface AlertRuleInput {
+  buoy_id: number | null;
+  kind: AlertKind;
+  metric: string | null;
+  op: "above" | "below" | null;
+  value: number | null;
+  remind_hours: number | null;
+  enabled?: boolean;
+}
+
+export interface AlertRule extends AlertRuleInput {
+  id: string;
+  enabled: boolean;
+  description: string;
+  firing: boolean;
+}
+
+export interface AlertHistoryItem {
+  id: number;
+  rule_id: string | null;
+  buoy_id: number | null;
+  at: number;
+  kind: "alert" | "reminder" | "test";
+  summary: string;
+  status: EmailDelivery;
+  reason: string | null;
+}
+
+export interface AlertPreset {
+  id: string;
+  label: string;
+  kind: AlertKind;
+  metric: string | null;
+  op: "above" | "below" | null;
+  value: number | null;
+  source: string;
+}
+
+export interface AlertsView {
+  enabled: boolean;
+  email: string;
+  rules: AlertRule[];
+  history: AlertHistoryItem[];
+  caps: { person: number; total: number; sentToday: number; cappedToday: number };
+  metrics: { key: string; label: string; unit: string }[];
+  flags: { key: string; label: string }[];
+  presets: AlertPreset[];
+}
