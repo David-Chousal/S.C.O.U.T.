@@ -164,3 +164,39 @@ test("the sign-in page lists only the providers that are set up", async () => {
   const { body } = await new Client(makeEnv({ GOOGLE_CLIENT_ID: "id", GOOGLE_CLIENT_SECRET: "s" })).get("/api/providers");
   assert.deepEqual({ github: body.github, google: body.google }, { github: false, google: true });
 });
+
+test("a removed person can be invited back: same account, the invite's role, a fresh password", async () => {
+  const env = makeEnv();
+  const { client: admin } = await signedIn(env, "admin");
+  const gone = await addUser(env, "gone@scout.test", "member", "the old password here");
+  await admin.post(`/api/team/users/${gone.id}/disable`);
+  const invited = await admin.post("/api/team/invites", { email: "gone@scout.test", role: "admin" });
+  assert.equal(invited.status, 200);
+  const token = inviteToken(invited.body.link);
+  const accepted = await new Client(env).post(`/api/invites/${token}/accept`, { name: "Back", password: "a brand new password" });
+  assert.equal(accepted.status, 200);
+  const row = env.DB.raw.prepare("SELECT id, role, disabled, name FROM users WHERE email = ?").get("gone@scout.test");
+  assert.deepEqual({ ...row }, { id: gone.id, role: "admin", disabled: 0, name: "Back" });
+  assert.equal((await new Client(env).signIn(gone.email, "the old password here")).body.error, "Wrong email or password.");
+  assert.equal((await new Client(env).signIn(gone.email, "a brand new password")).status, 200);
+});
+
+test("a removed person can come back through OAuth with the account they had linked before", async () => {
+  const env = makeEnv();
+  const { client: admin } = await signedIn(env, "admin");
+  const gone = await addUser(env, "gh@scout.test", "member");
+  env.DB.raw.prepare("UPDATE users SET github_id = '77' WHERE id = ?").run(gone.id);
+  await admin.post(`/api/team/users/${gone.id}/disable`);
+  const token = inviteToken((await admin.post("/api/team/invites", { email: "gh@scout.test", role: "member" })).body.link);
+  const back = await userForIdentity(env.DB, { provider: "github", subject: "77", email: "gh@scout.test", name: "GH" }, token, env);
+  assert.equal(back.user?.id, gone.id);
+  assert.equal(back.user.disabled, 0);
+  assert.equal(back.user.password_hash, null);
+});
+
+test("an invite still cannot take over an active account", async () => {
+  const env = makeEnv();
+  const { client: admin } = await signedIn(env, "admin");
+  await addUser(env, "here@scout.test", "member");
+  assert.match((await admin.post("/api/team/invites", { email: "here@scout.test", role: "admin" })).body.error, /already has an account/);
+});

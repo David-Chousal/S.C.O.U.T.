@@ -15,7 +15,6 @@ const TEAM: Team = {
   members: [
     member("me", "Ada", { role: "admin" }),
     member("john", "John"),
-    member("gone", "Gina", { disabled: 1 }),
     member("visitor", "Vic", { role: "guest", self_signup: 1 }),
   ],
   invites: [],
@@ -77,13 +76,10 @@ describe("TeamBoard actions menu", () => {
     expect(await screen.findByText(/Couldn't email john@scout.test .*copy the link instead/)).toBeDefined();
   });
 
-  test("you cannot remove yourself; a removed person can be restored; a self-signed-up guest gets no reset link", async () => {
+  test("you cannot remove yourself; a self-signed-up guest gets no reset link", async () => {
     renderBoard();
     await userEvent.click(await menuFor("Ada"));
     expect(itemsIn()).toEqual(["Reset link"]);
-    await userEvent.keyboard("{Escape}");
-    await userEvent.click(await menuFor("Gina"));
-    expect(itemsIn()).toEqual(["Reset link", "Restore"]);
     await userEvent.keyboard("{Escape}");
     await userEvent.click(await menuFor("Vic"));
     expect(itemsIn()).toEqual(["Remove"]);

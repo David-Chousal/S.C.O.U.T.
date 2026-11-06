@@ -36,6 +36,17 @@ test("a disabled user is signed out everywhere and cannot sign in again", async 
   assert.equal((await new Client(env).signIn(user.email, user.password)).body.error, "Wrong email or password.");
 });
 
+test("a removed person drops off the team list, and the audit log still names them", async () => {
+  const env = makeEnv();
+  const { client: admin } = await signedIn(env, "admin");
+  const { user } = await signedIn(env, "member");
+  await admin.post(`/api/team/users/${user.id}/disable`);
+  const emails = (await admin.get("/api/team")).body.members.map((m) => m.email);
+  assert.ok(!emails.includes(user.email));
+  const audit = (await admin.get("/api/audit")).body.entries;
+  assert.ok(audit.some((e) => e.action === "user.disable" && e.target === user.email));
+});
+
 test("an admin cannot disable themself", async () => {
   const env = makeEnv();
   const { client, user } = await signedIn(env, "admin");
