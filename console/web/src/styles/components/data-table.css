@@ -15,7 +15,9 @@
 .sc-table tr[aria-selected="true"] td { background: var(--accent-soft); }
 .sc-table tfoot td { border-top: 2px solid var(--rail); border-bottom: 0; font-weight: 500; }
 .sc-table td .sub, .sc-table tbody th .sub { display: block; color: var(--ink-muted); font: 400 12px/16px var(--font-mono); }
-.sc-table tr[aria-selected="true"] > th { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+/* The selected row: tinted, with a line along its top edge across every cell. */
+.sc-table tr[aria-selected="true"] > th { background: var(--accent-soft); }
+.sc-table tr[aria-selected="true"] > * { box-shadow: inset 0 2px 0 var(--accent); }
 .sc-minibar { display: inline-block; height: 6px; width: var(--w); vertical-align: middle; background: var(--ink-muted); }
 .sc-pager { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3); padding-top: var(--space-3); }
 /* Fleet and Settings buoy tables: one row per buoy. */
@@ -25,7 +27,6 @@
 .sc-table td.sc-fleet-table__go { padding-right: var(--space-4); text-align: right; }
 .sc-buoy-table th:nth-child(1) { width: 26%; } .sc-buoy-table th:nth-child(2) { width: 150px; } .sc-buoy-table th:nth-child(4) { width: 130px; }
 .sc-buoy-table tbody tr { cursor: pointer; }
-.sc-buoy-table tr[aria-selected="true"] > th { padding-left: var(--space-3); }
 .sc-buoy-table__pick { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
 .sc-buoy-table__pick:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-buoy-table__changed { color: var(--ink-muted); }
