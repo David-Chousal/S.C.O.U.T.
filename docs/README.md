@@ -108,6 +108,7 @@ Schedule, meetings, and administrative records.
 | [Team Timeline](planning/team-timeline.md) | Phase 0–6 work plan from kickoff through Hawaii deployment, with parallel per-discipline tracks |
 | [Meeting Notes](planning/meeting-notes.md) | Running team design meeting notes |
 | [Deployment Strategy](planning/deployment-strategy.md) | Hawaii for reef data, Monterey or Santa Cruz for a systems test, and the permitting next steps |
+| [California vs Hawaii: Test Assumptions](planning/california-vs-hawaii-test-assumptions.md) | What differs between the California stand-in test and Hawaii, and why each difference is acceptable or a limit |
 | [Gantt Chart and WBS](planning/gantt-and-wbs.md) | How the CSV, script and PDF task plan fit together |
 | [Senior Design Time Log](planning/time-log.md) | John Ryan Myrdal's hours on S.C.O.U.T., estimated for the past and reported going forward |
 | [Advisor Progress Sheet](planning/advisor-progress-sheet/README.md) | One-page weekly sheet for advisor meetings: criteria scored pass or fail against a target, phase Gantt, per-discipline lanes, plan vs actual |

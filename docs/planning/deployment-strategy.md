@@ -34,6 +34,11 @@ adjacent to the boat. This is option O5 in [Hawaii permitting](../research/hawai
 - **Needs:** a written yes from the club first (slip agreement, permit S-5407, insurance); DOBOR in writing after.
 - **Status:** club email drafted, not sent.
 
+## Why California stands in for Hawaii
+
+The differences between the two sites, and which ones limit what a California test shows, are in
+[California vs Hawaii: test assumptions](california-vs-hawaii-test-assumptions.md) ([SCO-210](https://linear.app/scout1/issue/SCO-210)).
+
 ## Rules
 
 1. **Reef claims come only from Hawaii data.** Monterey or Santa Cruz readings are real seawater readings but are not evidence about coral reefs.
