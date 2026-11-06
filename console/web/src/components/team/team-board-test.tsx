@@ -61,11 +61,20 @@ describe("TeamBoard actions menu", () => {
   });
 
   test("Reset link shows the link to send", async () => {
-    vi.spyOn(api, "resetLink").mockResolvedValue({ link: "https://console.test/reset/?token=abc" });
+    vi.spyOn(api, "resetLink").mockResolvedValue({ link: "https://console.test/reset/?token=abc", email: "john@scout.test", delivery: "sent" });
     renderBoard();
     await userEvent.click(await menuFor("John"));
     await userEvent.click(screen.getByRole("menuitem", { name: "Reset link" }));
     expect(await screen.findByText("https://console.test/reset/?token=abc")).toBeDefined();
+    expect(screen.getByText(/Email sent to john@scout.test/)).toBeDefined();
+  });
+
+  test("a reset link that couldn't be emailed says to copy it instead", async () => {
+    vi.spyOn(api, "resetLink").mockResolvedValue({ link: "https://console.test/reset/?token=abc", email: "john@scout.test", delivery: "failed" });
+    renderBoard();
+    await userEvent.click(await menuFor("John"));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Reset link" }));
+    expect(await screen.findByText(/Couldn't email john@scout.test .*copy the link instead/)).toBeDefined();
   });
 
   test("you cannot remove yourself; a removed person can be restored; a self-signed-up guest gets no reset link", async () => {

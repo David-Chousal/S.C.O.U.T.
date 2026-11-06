@@ -40,7 +40,7 @@ browser (team) ──sign in──►  Worker ─┬─ /api/*         JSON API 
 | Readings | (read only) | Each buoy's newest values (water temperature, turbidity, battery, housing humidity) and its last 50 readings, newest first, as the shore stations pushed them |
 | Fleet | admin (add, disconnect, delete); everyone (read) | One table, a row per buoy, refreshed every 30 s: how often it sends, when it was last heard, its **next transmission**, its **status** (Live, Late, Silent, Not heard or Disconnected), and a **⋯ menu**: **Buoy info** (Readings, opened on that buoy), **Settings**, and for admins **Disconnect**. Disconnect asks first, then says how to reconnect (Add buoy with the same ID); a disconnected buoy's packets are accepted but not stored, no station is sent its settings, and its row shows a **trash key** that deletes it with its settings and readings after a confirmation (D1 migration `0013-buoy-disconnect.sql`). **Add buoy** (admins) opens a dialog that ends in a success or error card, and reconnects a disconnected buoy. On phones: buoy, status and ⋯ |
 | Stations | admin (revoke, delete, assign); everyone (read) | One table of shore stations, refreshed every 30 s: name, last seen, status, and a **⋯ menu**: **Info** (a card: token status, made, last check-in, the buoys it commands, how it connects), **Assign buoys** (with two or more active stations) and for admins **Revoke**, which asks first and then says how to bring the station back (a new token in `shore_secrets.h`). A revoked station shows a trash key that deletes it after a confirmation. With two or more active stations, a warning names any buoy no station commands. **New token** opens a dialog that shows the token once, then watches for the first check-in. On phones: station, status and ⋯ |
-| Team | admin | People with a real account (not self-signed-up guests): person, role (the console's dropdown) and a **⋯ menu** with **Reset link** and **Remove**. Remove disables the account after a confirmation (signed out everywhere, cannot sign in; there is no account deletion, since the audit log and station tokens refer to people) and the person's menu then offers **Restore**. You cannot remove yourself. **Invite** (single-use link, 7 days) shows just Guest, Member and Admin, each explained on hover |
+| Team | admin | People with a real account (not self-signed-up guests): person, role (the console's dropdown) and a **⋯ menu** with **Reset link** and **Remove**. Remove disables the account after a confirmation (signed out everywhere, cannot sign in; there is no account deletion, since the audit log and station tokens refer to people) and the person's menu then offers **Restore**. You cannot remove yourself. **Invite** (single-use link, 7 days) shows just Guest, Member and Admin, each explained on hover **Invite and reset links are emailed** from `console@scoutscu.com` when email is set up ([below](#email-invites-and-reset-links-one-time-needs-the-account-owner), ADR-0014); the invite card and reset banner say "Email sent to …" or "Couldn't email …; copy the link instead", and the link is always shown once to copy |
 | Developer | member, admin (guests view) | Two tabs. **API tokens:** a **New token** key in the header opens a card (name; 7, 30, 90 or 365 days, or never (migration `0009-tokens-never-expire.sql`); scopes `read:telemetry`, `write:settings`); the token is shown once on the page, stored hashed, revocable; and how to call `/api/v1`. **Audit log** (read only, `?tab=audit`): every change, who, what, before → after. The old `/audit/` address forwards here |
 | Settings | member (buoys); yourself (page) | **Buoys:** an overview table of every buoy (settings state, what differs from the defaults, last heard); picking one (kept as `?buoy=N`) opens its editor: its name and its **eight remote settings**; changing the transmit count first asks for confirmation, showing battery life before and after (estimate) (transmit count, slot phase, reading interval, hydrophone clip, power thresholds, conserve spacing, humidity alert; registry in `firmware/lib/scout_settings`, D1 migration `0010-remote-settings.sql`) with Pending/Confirmed from the digest in v5 packets and hold-to-restore-defaults; each setting's description appears on hover after a short delay. **Account:** how you sign in; sign out of this browser; hold to sign out everywhere (`?tab=account`). **This browser:** theme (light by default), UTC or local times, keyboard shortcuts, kept in this browser's storage |
 | Account menu | yourself | The account in the top bar opens a menu: your name, email and role, **Appearance** (light, dark, match system) and **Times** (UTC or your time zone), the same two settings as Settings → This browser, a link to Settings → Account, and **Sign out**. The old `/account/` address forwards to Settings → Account |
@@ -224,6 +224,45 @@ Then:
    `SCOUT_CONSOLE_URL=<APP_URL> SCOUT_CONSOLE_TOKEN=scd_… python shore/scripts/sync_console.py`.
 
 Providers without a client ID and secret are simply hidden from the sign-in page.
+
+## Email: invites and reset links (one-time, needs the account owner)
+
+The console emails invite and password-reset links from `console@scoutscu.com` through
+**Resend's free plan** ([ADR-0014](../docs/decisions/0014-console-email-delivery.md),
+`worker/mail.js`): 3,000 emails a month, 100 a day. Without the `RESEND_API_KEY` secret every
+invite says "email isn't set up" and the admin copies the link, as before. The console's own caps
+are 20 emails a day per admin and 50 a day overall (`EMAIL_DAILY_CAP_ADMIN`,
+`EMAIL_DAILY_CAP_TOTAL`).
+
+Claude cannot do steps 1–2; they need the Resend account and the Cloudflare dashboard.
+
+1. **Resend:** create the account, add `scoutscu.com` under **Domains**, and create an API key
+   with **Sending access** only, limited to that domain.
+2. **DNS:** add the records Resend lists to the `scoutscu.com` zone in Cloudflare (**DNS** →
+   **Records**), with the proxy **off**: a DKIM TXT at `resend._domainkey`, and an MX and an SPF
+   TXT at `send` (Resend's bounce subdomain, so the apex's mail records are untouched). Add a
+   DMARC TXT at `_dmarc` if the zone has none, e.g. `v=DMARC1; p=none;`. Then press **Verify**
+   in Resend and wait for **Verified**. Check from a terminal:
+   `dig +short TXT resend._domainkey.scoutscu.com`.
+3. **Secret:** `npx wrangler secret put RESEND_API_KEY` and paste the key. This saves a new
+   version of the live Worker with the secret; nothing else changes.
+4. **Test:** invite an address you control from Team. The card should say "Email sent to …",
+   the message should arrive from `console@scoutscu.com` and pass SPF and DKIM (Gmail: **Show
+   original**), and Developer → Audit log should show `invite.email` with the address masked.
+   If it says "Couldn't email", `npx wrangler tail` shows the code, e.g.
+   `resend_403_validation_error` when the domain is not verified yet.
+
+To turn email off, `npx wrangler secret delete RESEND_API_KEY`. If the key leaks, revoke it in
+Resend and put a new one.
+
+**Local development:** put `RESEND_API_KEY=…` in `console/.dev.vars` (git-ignored) and
+`wrangler dev` **sends real email**; invite Resend's test inbox `delivered@resend.dev` instead
+of a person. Without the key, nothing is sent.
+
+**Cloudflare Email Sending instead** (the commented `[[send_email]]` block in `wrangler.toml`)
+needs Workers Paid ($5 a month, 3,000 emails included, then $0.35 per 1,000) and the domain
+onboarded under **Compute** → **Email Service** → **Email Sending**. When `RESEND_API_KEY` is
+set, Resend is used even if the binding is on.
 
 ## Automatic deploy (on merge to main)
 

@@ -19,6 +19,7 @@ import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { listReadings, readingsQuery } from "./readings.js";
+import { sendLinkEmail } from "./mail.js";
 import { createReport, download, listReports, newLink, REPORT_COLUMNS } from "./reports.js";
 import { configured } from "./oauth.js";
 import { can } from "./roles.js";
@@ -55,7 +56,7 @@ async function withSession(env, user) {
 }
 
 function actorOf(session) {
-  return { id: session.user.id, email: session.user.email, label: session.user.email };
+  return { id: session.user.id, email: session.user.email, name: session.user.name || "", label: session.user.email };
 }
 
 function link(env, kind, token) {
@@ -156,13 +157,19 @@ const WRITES = [
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/delete$/, "buoys.add", (db, b, m, a) => deleteBuoy(db, a, m[1])],
   [/^\/api\/team\/invites$/, "invites.write", async (db, b, m, a, env) => {
     const result = await createInvite(db, a, String(b.email || "").trim(), b.role);
-    return result.error ? result : { link: link(env, "invite", result.token) };
+    if (result.error) return result;
+    const url = link(env, "invite", result.token);
+    const sent = await sendLinkEmail(env, a, { kind: "invite", to: result.email, link: url, role: result.role, expiresAt: result.expiresAt });
+    return { link: url, email: result.email, delivery: sent.status };
   }],
   [/^\/api\/team\/invites\/([\w-]{1,64})\/revoke$/, "invites.write", (db, b, m, a) => revokeInvite(db, a, m[1])],
   [/^\/api\/team\/users\/([\w-]{1,64})\/role$/, "users.role", (db, b, m, a) => setRole(db, a, m[1], b.role)],
   [/^\/api\/team\/users\/([\w-]{1,64})\/reset$/, "users.reset", async (db, b, m, a, env) => {
     const result = await createResetLink(db, a, m[1]);
-    return result.error ? result : { link: link(env, "reset", result.token), email: result.email };
+    if (result.error) return result;
+    const url = link(env, "reset", result.token);
+    const sent = await sendLinkEmail(env, a, { kind: "reset", to: result.email, link: url, expiresAt: result.expiresAt });
+    return { link: url, email: result.email, delivery: sent.status };
   }],
   [/^\/api\/team\/users\/([\w-]{1,64})\/(disable|enable)$/, "users.disable", (db, b, m, a) => setDisabled(db, a, m[1], m[2] === "disable")],
   [/^\/api\/dashboards$/, "dashboards.write", (db, b, m, a) => createDashboard(db, a, b)],

@@ -19,7 +19,8 @@ not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
 
 # Public config only. Secrets are set with `wrangler secret put` and never committed:
-#   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY (Fred; locally in .dev.vars)
+#   GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY (Fred; locally in .dev.vars),
+#   RESEND_API_KEY (invite and reset emails, ADR-0014; a send-only key; locally in .dev.vars)
 [vars]
 APP_URL = "https://console.scoutscu.com"
 BOOTSTRAP_ADMIN_EMAIL = ""                              # first admin; only used while no users exist
@@ -29,9 +30,19 @@ GOOGLE_CLIENT_ID = ""
 # notice, so these are vars, not code. Members and admins share one cap; guests get a lower one.
 ASSISTANT_DAILY_CAP = "40"
 ASSISTANT_DAILY_CAP_GUEST = "10"
+# Invite and reset emails a day (UTC), per admin and console-wide (SCO-300, ADR-0014). A send over
+# either cap is skipped and the admin copies the link instead.
+EMAIL_DAILY_CAP_ADMIN = "20"
+EMAIL_DAILY_CAP_TOTAL = "50"
 
-# Fred's fallback when Gemini is rate-limited (Workers AI, free allocation). `wrangler dev` runs it
-# against the real service, so it needs `wrangler login` locally.
+# Invite and reset emails go through Resend (RESEND_API_KEY above). This Cloudflare Email Sending
+# binding is the alternative if the account ever moves to Workers Paid (ADR-0014); it stays off:
+# on 2026-11-06 Cloudflare refused a Worker carrying it on this account (edge-preview, code
+# 10013). Never add `remote = true`: it would send real email from `wrangler dev`.
+# [[send_email]]
+# name = "EMAIL"
+# allowed_sender_addresses = ["console@scoutscu.com"]
+
 [ai]
 binding = "AI"
 
