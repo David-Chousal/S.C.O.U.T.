@@ -37,7 +37,7 @@ All 15 designs in the stability simulator, plus two floats that are not in it. N
 | `wedge-bolted-v4`, `wedge-bolted-v3`, `wedge-snap-v3` | Chassis, wedges and caps | `floatation/` |
 | `v5-pegs-seated` | The three v5 sections with each peg slid into the next socket, no trimming (2026-11-06). Each section is lifted by the body height of the one below (63.5 mm, then 127 mm), the lowest height with zero overlap | `floatation/floatation-v5-*-section.step` |
 | `v5b-pegs-seated` | Same stack with the redesigned top section (79.8 mm tall instead of 125.4), same lift heights | `floatation/floatation-v5b-top-section.step` and the v5 bottom and middle |
-| `v9-bottom`, `v9-concept`, `v7-concept`, `v5-concept`, `v4-concept`, `v3`, `v2`, `v1` | Earlier concepts | `floatation/` |
+| `v9-bottom`, `v9-concept`, `v7-concept`, `v4-concept`, `v3`, `v2`, `v1` | Earlier concepts | `floatation/` |
 
 The ids match `buoy-stability/iterations.json`, so the viewer and the simulator can name the same design.
 Entries with an `assembly` block there (stacked sections, wedges copied around the chassis, trims) are placed

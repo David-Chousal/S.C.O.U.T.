@@ -189,13 +189,13 @@ function hover(g){
 function applyAll(){
   const w=$('wire').getAttribute('aria-pressed')==='true';
   const ex=$('explode').value/100;$('explodeV').textContent=Math.round(ex*100)+'%';
-  const c=bbox.getCenter(new THREE.Vector3()),span=bbox.getSize(new THREE.Vector3()).length();
+  const c=bbox.getCenter(new THREE.Vector3());
   groups.forEach(g=>g.meshes.forEach(m=>{
     m.visible=g.visible;m.material.wireframe=w;
-    // Spread each part away from the model centre; vertical gaps count double so stacked sections separate.
-    const dir=m.userData.centre.clone().sub(c);dir.z*=2;
-    if(dir.lengthSq()>1)dir.normalize();else dir.set(0,0,0);
-    m.position.copy(dir.multiplyScalar(ex*span*0.2));
+    // Spread each part away from the model centre in proportion to how far it already is from it, so stacked parts that
+    // share an axis separate from each other (equal steps would move them together). Vertical gaps count extra.
+    const d=m.userData.centre.clone().sub(c);d.z*=2;
+    m.position.copy(d.multiplyScalar(ex*0.4));
   }));
   const cut=$('cut').value/100;
   if(cut>=1){clip.constant=1e9;$('cutV').textContent='off'}
