@@ -10,7 +10,6 @@ import type { BuoySettings, Role, Session } from "@/lib/api/types";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
-import { keepUnits } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
 vi.mock("next/navigation", () => ({
@@ -49,13 +48,10 @@ let lastRerender = () => {};
 afterEach(() => vi.restoreAllMocks());
 
 describe("SettingsBoard", () => {
-  test("lists every firmware setting exported from config.h", async () => {
+  test("shows no firmware-defaults section: each setting explains itself on hover", async () => {
     renderBoard("member");
-    expect(await screen.findByText("Firmware defaults")).toBeDefined();
-    for (const setting of firmware.settings) expect(screen.getByText(setting.description)).toBeDefined();
-    expect(screen.queryByText(/provisional|decided/i)).toBeNull();
-    const badges = [...document.querySelectorAll(".sc-firmware-table .sc-badge")].map((b) => b.textContent);
-    expect(badges.filter((text) => text === "By radio")).toHaveLength(firmware.settings.filter((s) => s.change === "radio").length);
+    expect(await screen.findByLabelText("Reading interval")).toBeDefined();
+    expect(screen.queryByText("Firmware defaults")).toBeNull();
   });
 
   test("a member can rename a buoy; the save key wakes once the name changes", async () => {
@@ -162,10 +158,3 @@ describe("SettingsBoard", () => {
   });
 });
 
-describe("firmware table helpers", () => {
-  test("a number keeps its unit and a code keeps its number", () => {
-    expect(keepUnits("critical below 3.10 V")).toBe("critical below 3.10\u00a0V");
-    expect(keepUnits("SF12 · CR 4/8")).toBe("SF12 · CR\u00a04/8");
-  });
-
-});

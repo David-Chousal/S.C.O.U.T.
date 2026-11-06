@@ -43,20 +43,6 @@
 .sc-tabpanel { display: grid; gap: var(--space-8); }
 .sc-tabpanel[hidden] { display: none; }
 .sc-settings-count { gap: var(--space-3); }
-.sc-firmware-table { table-layout: fixed; }
-.sc-firmware-table thead th:nth-child(1) { width: 52%; }
-.sc-firmware-table thead th:nth-child(3) { width: 112px; }
-.sc-firmware-table th[scope="row"] .sub { display: block; margin-top: 2px; color: var(--ink-muted); font: 400 13px/18px var(--font-sans); }
-.sc-firmware-table th[scope="row"] { white-space: normal; vertical-align: top; }
-.sc-firmware-table td { vertical-align: top; white-space: normal; overflow-wrap: break-word; }
-.sc-firmware-table td .sub { display: block; white-space: normal; }
-.sc-firmware-table .sc-badge { max-width: 100%; white-space: normal; text-align: left; }
-@container page (max-width: 767px) {
-  .sc-firmware-table, .sc-firmware-table tbody, .sc-firmware-table tr { display: block; }
-  .sc-firmware-table thead { display: none; }
-  .sc-firmware-table tr { padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
-  .sc-firmware-table th, .sc-firmware-table th[scope="row"], .sc-firmware-table td { display: block; padding: 2px 0; border: 0; }
-}
 /* Stations: each buoy's command station sits under its freshness line. */
 .sc-command-station { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
 .sc-command-station__select { width: auto; min-width: 180px; height: 28px; }

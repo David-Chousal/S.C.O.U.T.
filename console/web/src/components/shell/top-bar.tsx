@@ -51,7 +51,7 @@ export function TopBar({ user, fredOpen = false, onToggleFred, railMenu = false,
       <div className="sc-top__end">
         {note && <p className="sc-top__note" title={note}>{note}</p>}
         {user && railMenu && <AccountMenu user={user} />}
-        <button type="button" className="sc-ask" disabled={!user || !onToggleFred} aria-expanded={fredOpen} aria-controls="sc-fred-dock"
+        <button type="button" className="sc-key sc-ask" disabled={!user || !onToggleFred} aria-expanded={fredOpen} aria-controls="sc-fred-dock"
           title={preferences.shortcuts ? "Ask Fred, the console's assistant (A)" : "Ask Fred, the console's assistant"}
           onClick={onToggleFred}>
           Ask Fred
