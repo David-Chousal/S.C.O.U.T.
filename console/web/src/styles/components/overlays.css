@@ -3,6 +3,7 @@
 .sc-dialog { box-sizing: border-box; display: grid; gap: var(--space-4); width: min(480px, 100%); padding: var(--space-4) var(--space-6) var(--space-6); border-top: 2px solid var(--rail); border-radius: 0 0 var(--radius-md) var(--radius-md); background: var(--surface); box-shadow: var(--shadow-pop); }
 .sc-dialog__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .sc-dialog__title { margin: 0; font: 700 18px/24px var(--font-sans); letter-spacing: -.01em; }
+.sc-dialog__body { display: grid; gap: var(--space-3); }
 .sc-dialog__foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); padding-top: var(--space-2); }
 .sc-drawer { box-sizing: border-box; display: grid; align-content: start; gap: var(--space-4); width: 440px; max-width: 100%; padding: var(--space-4) var(--space-6) var(--space-6); border-left: 2px solid var(--rail); background: var(--surface); box-shadow: var(--shadow-pop); }
 .sc-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--ink-muted); font: 500 11px/14px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }

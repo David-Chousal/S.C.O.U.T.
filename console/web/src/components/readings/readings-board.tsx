@@ -72,13 +72,29 @@ function ReadingsTable({ readings }: { readings: Reading[] }) {
   );
 }
 
+/** The buoy named in the address (?buoy=2, as Fleet's "Buoy info" links), if it is listed. */
+function buoyFromUrl(ids: number[]): number | null {
+  if (typeof window === "undefined") return null;
+  const wanted = Number(new URLSearchParams(window.location.search).get("buoy"));
+  return ids.includes(wanted) ? wanted : null;
+}
+
 /** The Readings page: what each buoy measured, newest first, as the shore stations pushed it. */
 export function ReadingsBoard() {
   const fleet = useApi<Fleet>(api.fleet);
   const [picked, setPicked] = useState<number | null>(null);
   const [readings, setReadings] = useState<Reading[] | null>(null);
   const [error, setError] = useState("");
-  const buoyId = picked ?? fleet.data?.buoys[0]?.buoy_id ?? null;
+  const ids = fleet.data?.buoys.map((b) => b.buoy_id) ?? [];
+  const buoyId = picked ?? buoyFromUrl(ids) ?? ids[0] ?? null;
+
+  function pick(id: number) {
+    setReadings(null);
+    setPicked(id);
+    const url = new URL(window.location.href);
+    url.searchParams.set("buoy", String(id));
+    window.history.replaceState(null, "", url);
+  }
 
   useEffect(() => {
     if (buoyId === null) return;
@@ -102,7 +118,7 @@ export function ReadingsBoard() {
       <div className="sc-seg" role="group" aria-label="Buoy">
         {fleet.data.buoys.map((buoy) => (
           <button key={buoy.buoy_id} type="button" aria-pressed={buoy.buoy_id === buoyId}
-            onClick={() => { setReadings(null); setPicked(buoy.buoy_id); }}>{buoy.label}</button>
+            onClick={() => pick(buoy.buoy_id)}>{buoy.label}</button>
         ))}
       </div>
       {readings === null && <span className="sc-tag" aria-busy="true">Loading readings…</span>}

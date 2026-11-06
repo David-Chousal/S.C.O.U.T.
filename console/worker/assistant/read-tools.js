@@ -40,6 +40,7 @@ function slotsFor(buoy) {
 
 /** Live / Late / Silent / Not heard, as the Fleet page works it out (web/src/lib/buoy-status.ts). */
 export function health(buoy, now) {
+  if (buoy.disconnected_at) return "disconnected";
   if (!buoy.last_seen_at) return "not heard";
   const slots = slotsFor(buoy);
   const gaps = slots.map((s, i) => ((slots[(i + 1) % slots.length] - s + DAY_S) % DAY_S) || DAY_S);
@@ -81,7 +82,7 @@ const buoyIdParam = { type: "integer", description: "The buoy's numeric ID, e.g.
 export const READ_TOOLS = [
   {
     name: "list_buoys",
-    description: "Every buoy: label, health (live/late/silent/not heard), last heard, next transmit, transmits a day, settings state, battery voltage.",
+    description: "Every buoy: label, health (live/late/silent/not heard/disconnected), last heard, next transmit, transmits a day, settings state, battery voltage.",
     parameters: { type: "object", properties: {} },
     run: async ({ env, now }) => ({ buoys: await Promise.all((await listBuoys(env.DB)).map((b) => buoySummary(env.DB, b, now))) }),
   },
