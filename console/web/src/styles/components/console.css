@@ -66,9 +66,8 @@
 .sc-readings-latest dd small { margin-left: 4px; font: 500 14px/1 var(--font-sans); color: var(--ink-muted); letter-spacing: 0; }
 @container page (max-width: 767px) { .sc-readings-latest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); } .sc-readings-latest dd { font-size: 24px; } }
 /* Developer: a token's scopes and dates under its name. */
-.sc-token-form { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4) var(--space-6); max-width: 760px; }
-.sc-token-form__wide { grid-column: 1 / -1; }
-@container page (max-width: 767px) { .sc-token-form { grid-template-columns: minmax(0, 1fr); } }
+/* The New API token card (a dialog). */
+.sc-token-card { gap: var(--space-4); }
 /* Reports: the composer, and the printable report (no shell, paper first). */
 .sc-report-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-6); }
 .sc-report-form__dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }

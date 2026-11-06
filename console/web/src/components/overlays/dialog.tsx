@@ -35,6 +35,8 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
     (dialogRef.current?.querySelector<HTMLElement>("[data-autofocus]") ?? focusables(dialogRef.current)[0] ?? dialogRef.current)?.focus();
 
     function onKeyDown(event: KeyboardEvent) {
+      // A dropdown or menu inside the dialog handled this key (Escape closes just the list).
+      if (event.defaultPrevented) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onCloseRef.current();

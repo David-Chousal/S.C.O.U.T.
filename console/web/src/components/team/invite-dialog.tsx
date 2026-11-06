@@ -66,11 +66,11 @@ export function InviteDialog({ open, onClose, onInvited }: InviteDialogProps) {
           <fieldset className="sc-invite-roles">
             <legend className="sc-tag">Role</legend>
             {ROLES.map((option) => (
-              <label key={option.value} className="sc-tx-option">
+              <label key={option.value} className="sc-tx-option sc-tip-host">
                 <input type="radio" name="invite-role" value={option.value} checked={role === option.value}
-                  onChange={() => setRole(option.value)} />
-                <span><strong>{option.label}</strong><span className="sc-tx-option__slots">{option.detail}</span></span>
-                <span />
+                  aria-describedby={`invite-role-${option.value}-help`} onChange={() => setRole(option.value)} />
+                <strong>{option.label}</strong>
+                <span id={`invite-role-${option.value}-help`} className="sc-tip sc-tip--hover">{option.detail}</span>
               </label>
             ))}
           </fieldset>

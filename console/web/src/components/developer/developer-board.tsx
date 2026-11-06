@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
+import { Dialog } from "@/components/overlays/dialog";
 import { Ago } from "@/components/ui/ago";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
@@ -19,7 +20,16 @@ const SCOPE_HELP: Record<string, string> = {
   "write:settings": "request a transmit count (members and admins only)",
 };
 
-function NewToken({ list, allowed, onCreated }: { list: TokenList; allowed: boolean; onCreated: (token: string) => void }) {
+interface NewTokenProps {
+  list: TokenList;
+  open: boolean;
+  onClose: () => void;
+  onCreated: (token: string) => void;
+}
+
+/** The New token card: name, expiry and scopes, then Create. The token itself is shown once, on
+ * the page, after the card closes. */
+function NewToken({ list, open, onClose, onCreated }: NewTokenProps) {
   const { show } = useToast();
   const [name, setName] = useState("");
   const [scopes, setScopes] = useState<string[]>([]);
@@ -39,30 +49,31 @@ function NewToken({ list, allowed, onCreated }: { list: TokenList; allowed: bool
 
   const toggle = (scope: string) => setScopes((now) => (now.includes(scope) ? now.filter((s) => s !== scope) : [...now, scope]));
   return (
-    <form className="sc-token-form" onSubmit={onSubmit}>
-      <label className="sc-fieldset">
-        <span className="sc-fieldset__label"><span className="sc-tag">Token name</span></span>
-        <input className="sc-input" maxLength={60} required placeholder="e.g. analysis notebook" value={name}
-          disabled={!allowed} onChange={(event) => setName(event.target.value)} />
-      </label>
-      <div className="sc-fieldset">
-        <span className="sc-fieldset__label"><label className="sc-tag" htmlFor="token-expiry">Expires after</label></span>
-        <Select id="token-expiry" value={days} disabled={!allowed} onChange={setDays}
-          options={list.expiryDays.map((d) => ({ value: d, label: d === 0 ? "Never" : `${d} days` }))} />
-      </div>
-      <fieldset className="sc-settings-choices sc-token-form__wide">
-        <legend className="sc-label">Scopes</legend>
-        {list.scopes.map((scope) => (
-          <label key={scope} className="sc-row">
-            <input type="checkbox" checked={scopes.includes(scope)} disabled={!allowed} onChange={() => toggle(scope)} />
-            <span><span className="sc-num">{scope}</span> <span className="sc-help">{SCOPE_HELP[scope]}</span></span>
-          </label>
-        ))}
-      </fieldset>
-      <div className="sc-token-form__wide">
-        <Key type="submit" icon="plus" disabled={!allowed || scopes.length === 0}>Create token</Key>
-      </div>
-    </form>
+    <Dialog open={open} title="New API token" onClose={onClose}>
+      <form className="sc-fieldset sc-token-card" onSubmit={onSubmit}>
+        <label className="sc-fieldset">
+          <span className="sc-fieldset__label"><span className="sc-tag">Token name</span></span>
+          <input className="sc-input" maxLength={60} required placeholder="e.g. analysis notebook" value={name} data-autofocus
+            onChange={(event) => setName(event.target.value)} />
+        </label>
+        <div className="sc-fieldset">
+          <span className="sc-fieldset__label"><label className="sc-tag" htmlFor="token-expiry">Expires after</label></span>
+          <Select id="token-expiry" value={days} onChange={setDays}
+            options={list.expiryDays.map((d) => ({ value: d, label: d === 0 ? "Never" : `${d} days` }))} />
+        </div>
+        <fieldset className="sc-settings-choices">
+          <legend className="sc-tag">Scopes</legend>
+          {list.scopes.map((scope) => (
+            <label key={scope} className="sc-row">
+              <input type="checkbox" checked={scopes.includes(scope)} onChange={() => toggle(scope)} />
+              <span><span className="sc-num">{scope}</span> <span className="sc-help">{SCOPE_HELP[scope]}</span></span>
+            </label>
+          ))}
+        </fieldset>
+        <p className="sc-help">It acts with your current role, limited to these scopes, and is shown only once after you create it.</p>
+        <Key type="submit" variant="primary" disabled={scopes.length === 0}>Create token</Key>
+      </form>
+    </Dialog>
   );
 }
 
@@ -99,6 +110,7 @@ export function DeveloperBoard() {
   const { user } = useSession();
   const list = useApi<TokenList>(api.tokens);
   const [created, setCreated] = useState<string | null>(null);
+  const [making, setMaking] = useState(false);
   const [now] = useState(() => Date.now());
   const allowed = can(user.role, "tokens.write");
   useViewOnlyNote(allowed ? null : `View only: making API tokens needs the ${needs("tokens.write")} role.`);
@@ -108,7 +120,14 @@ export function DeveloperBoard() {
   return (
     <>
       <section className="sc-bay" aria-labelledby="tokens-title">
-        <div className="sc-bay__head"><h2 className="sc-bay__title" id="tokens-title">Your API tokens</h2><span className="sc-tag">Shown once · stored hashed</span></div>
+        <div className="sc-bay__head">
+          <h2 className="sc-bay__title" id="tokens-title">Your API tokens</h2>
+          <span className="sc-row">
+            <span className="sc-tag">Shown once · stored hashed</span>
+            <Key size="sm" variant="primary" icon="plus" disabled={!allowed} onClick={() => setMaking(true)}
+              title={allowed ? undefined : `Making a token needs the ${needs("tokens.write")} role`}>New token</Key>
+          </span>
+        </div>
         {created && (
           <Banner tone="info" icon="lock" action={<Key size="sm" onClick={() => setCreated(null)}>Done</Key>}>
             <strong>Copy it now</strong>: it is shown only once.
@@ -119,7 +138,8 @@ export function DeveloperBoard() {
           {list.data.tokens.length === 0 && <p className="sc-help">No tokens yet.</p>}
           {list.data.tokens.map((token) => <TokenRow key={token.id} token={token} allowed={allowed} now={now} onRevoked={list.reload} />)}
         </div>
-        <NewToken list={list.data} allowed={allowed} onCreated={(token) => { setCreated(token); list.reload(); }} />
+        <NewToken list={list.data} open={making} onClose={() => setMaking(false)}
+          onCreated={(token) => { setMaking(false); setCreated(token); list.reload(); }} />
       </section>
       <section className="sc-bay" aria-labelledby="rest-title">
         <div className="sc-bay__head"><h2 className="sc-bay__title" id="rest-title">REST API</h2><span className="sc-tag">/api/v1</span></div>

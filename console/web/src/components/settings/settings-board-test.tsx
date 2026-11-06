@@ -124,9 +124,9 @@ describe("SettingsBoard", () => {
     renderBoard("member");
     const interval = await screen.findByLabelText("Reading interval");
     const tip = document.getElementById(interval.getAttribute("aria-describedby") ?? "");
-    expect(tip?.classList.contains("sc-fieldset__tip")).toBe(true);
+    expect(tip?.classList.contains("sc-tip--hover")).toBe(true);
     expect(tip?.textContent).toContain("Default 30 min");
-    expect(tip?.closest(".sc-fieldset--tip")?.contains(interval)).toBe(true);
+    expect(tip?.closest(".sc-tip-host")?.contains(interval)).toBe(true);
   });
 
   test("the Account tab holds sign out, and ?tab=account opens it", async () => {
