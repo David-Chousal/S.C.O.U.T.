@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { briefFacts, runBrief } from "../worker/assistant/brief.js";
+import { briefFacts, readableUtc, runBrief } from "../worker/assistant/brief.js";
 import { MODELS } from "../worker/assistant/model.js";
 import worker from "../worker/index.js";
 import { stubGemini, stubWorkersAi } from "./assistant-helpers.js";
@@ -32,6 +32,15 @@ test("facts: silent buoys, rejected settings and quiet stations; a healthy fleet
   const healthy = makeEnv();
   healthy.DB.raw.prepare("INSERT INTO buoys (buoy_id, label, tx_count_reported, last_seen_at) VALUES (1, 'A', 3, ?)").run(NOW);
   assert.deepEqual((await briefFacts(healthy, NOW)).facts, []);
+});
+
+test("last heard reads as a plain date and time, not an ISO stamp", async () => {
+  assert.equal(readableUtc(Date.parse("2026-11-05T02:17:00Z")), "Thu 5 Nov, 02:17 UTC");
+  const env = makeEnv();
+  seed(env);
+  const { facts } = await briefFacts(env, NOW);
+  assert.match(facts.join(" "), /Reef south \(buoy 2\) is silent, last heard Sun 1 Nov, 10:30 UTC\./);
+  assert.ok(!/\d{4}-\d{2}-\d{2}T/.test(facts.join(" ")));
 });
 
 test("the brief model phrases the facts; with no model the facts are stored as they are", async (t) => {

@@ -14,6 +14,15 @@ import { health } from "./read-tools.js";
 import { today } from "./usage.js";
 
 const DAY_MS = 24 * 3600 * 1000;
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** "Thu 5 Nov, 02:17 UTC": easy to read, and UTC like the rest of the console. */
+export function readableUtc(ms) {
+  const d = new Date(ms);
+  const time = `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+  return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}, ${time} UTC`;
+}
 const NEAR_BUDGET = 0.8;
 
 const STYLE = "You write the S.C.O.U.T. console's morning brief for a student engineering team. Turn the facts below into " +
@@ -28,7 +37,7 @@ export async function briefFacts(env, now = Date.now()) {
   for (const buoy of buoys) {
     const state = health(buoy, now);
     if (state === "silent" || state === "late") {
-      const since = buoy.last_seen_at ? `, last heard ${new Date(buoy.last_seen_at).toISOString().slice(0, 16)}Z` : "";
+      const since = buoy.last_seen_at ? `, last heard ${readableUtc(buoy.last_seen_at)}` : "";
       facts.push(`${buoy.label} (buoy ${buoy.buoy_id}) is ${state}${since}.`);
     }
     if (buoy.settings_state === "rejected") facts.push(`${buoy.label} rejected its requested settings.`);
