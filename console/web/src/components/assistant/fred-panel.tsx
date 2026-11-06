@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Banner } from "@/components/feedback/banner";
+import { Icon } from "@/components/ui/icon";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { FredCard, FredContext, FredEvent, FredMessage, User } from "@/lib/api/types";
@@ -105,7 +106,6 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
   const pathname = usePathname() ?? "/";
   const [turns, setTurns] = useState<FredTurn[]>([]);
   const [draft, setDraft] = useState("");
-  const [usage, setUsage] = useState<{ used: number; cap: number } | null>(null);
   const abort = useRef<AbortController | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const log = useRef<HTMLOListElement>(null);
@@ -116,7 +116,6 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
   useEffect(() => {
     if (!open) return;
     input.current?.focus();
-    api.fredStatus().then((s) => setUsage({ used: s.used, cap: s.cap }), () => setUsage(null));
   }, [open]);
 
   // Keep the newest text and card, with its Confirm key, in view as the reply streams in.
@@ -136,7 +135,6 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
     try {
       await api.askFred(history, contextFrom(pathname, window.location.search), (event) => {
         update((t) => apply(t, event));
-        if (event.event === "done") setUsage({ used: event.data.used, cap: event.data.cap });
       }, abort.current.signal);
       // A stream that closes without "done" was cut off on the way.
       update((t) => (t.done ? t : { ...t, done: true, error: "Fred's reply was cut off. Ask again." }));
@@ -192,11 +190,12 @@ export function FredPanel({ user, open = true, onClose }: FredPanelProps) {
       )}
       <form className="sc-fred__form" onSubmit={submit}>
         <label className="sc-visually-hidden" htmlFor="fred-input">Your question</label>
-        <textarea id="fred-input" ref={input} rows={2} maxLength={4000} value={draft} placeholder="Ask Fred…"
-          onChange={(e) => setDraft(e.target.value)} onKeyDown={onInputKey} />
-        <div className="sc-fred__form-foot">
-          <span className="sc-fred__usage">{usage ? `${usage.used} of ${usage.cap} questions today` : ""}</span>
-          <Key variant="primary" size="sm" type="submit" disabled={busy || !draft.trim()}>Send</Key>
+        <div className="sc-fred__compose">
+          <textarea id="fred-input" ref={input} rows={2} maxLength={4000} value={draft} placeholder="Ask Fred…"
+            onChange={(e) => setDraft(e.target.value)} onKeyDown={onInputKey} />
+          <button type="submit" className="sc-fred__send" aria-label="Send" title="Send (Return)" disabled={busy || !draft.trim()}>
+            <Icon name="return" />
+          </button>
         </div>
       </form>
     </aside>

@@ -28,10 +28,14 @@
 .sc-fred__table th { color: var(--ink-muted); font-weight: 600; }
 .sc-fred__turn-foot { display: flex; justify-content: flex-end; gap: var(--space-2); }
 .sc-fred__form { display: grid; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line); }
-.sc-fred__form textarea { box-sizing: border-box; width: 100%; min-height: 56px; max-height: 160px; padding: var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 400 14px/20px var(--font-sans); resize: vertical; }
+/* The question box with its send key inside, at the bottom right; room is kept for it on the right. */
+.sc-fred__compose { position: relative; }
+.sc-fred__form textarea { box-sizing: border-box; display: block; width: 100%; min-height: 56px; max-height: 160px; padding: var(--space-2) 44px var(--space-2) var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 400 14px/20px var(--font-sans); resize: vertical; }
+.sc-fred__send { position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); cursor: pointer; }
+.sc-fred__send:hover:not(:disabled) { filter: brightness(1.08); }
+.sc-fred__send:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-fred__send:disabled { background: var(--surface-sunken); color: var(--ink-muted); cursor: default; }
 .sc-fred__form textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
-.sc-fred__form-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.sc-fred__usage { color: var(--ink-muted); font: 500 11px/14px var(--font-mono); }
 
 /* Confirm cards (Phase 2). */
 /* Cards and the brief share the Help flow cards' look, which is the key's: a strong border and a

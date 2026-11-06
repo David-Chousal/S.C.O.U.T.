@@ -29,7 +29,7 @@ describe("FredPanel", () => {
     open();
     expect(screen.queryByText(/Google may review/)).toBeNull();
     expect(screen.getByRole("button", { name: /missed a transmission/ })).toBeDefined();
-    expect(await screen.findByText("2 of 40 questions today")).toBeDefined();
+    expect(screen.queryByText(/questions today/)).toBeNull();
   });
 
   test("streams an answer with the tools Fred used, and sends the page as context", async () => {
@@ -44,7 +44,7 @@ describe("FredPanel", () => {
     expect(screen.getByText("Looked at Fleet")).toBeDefined();
     expect(ask.mock.calls[0][0]).toEqual([{ role: "user", text: "Which are late?" }]);
     expect(ask.mock.calls[0][1]).toMatchObject({ page: "fleet" });
-    expect(screen.getByText("3 of 40 questions today")).toBeDefined();
+    expect(screen.queryByText(/questions today/)).toBeNull();
   });
 
   test("shows a refusal (over the cap) as an error, and a fallback notice", async () => {
@@ -68,6 +68,18 @@ describe("FredPanel", () => {
     expect(screen.getByRole("button", { name: "Copied" })).toBeDefined();
     await userEvent.click(screen.getByRole("button", { name: "New conversation" }));
     expect(screen.queryByText("Two buoys.")).toBeNull();
+  });
+
+  test("the send key sits in the question box, waits for text, and sends", async () => {
+    const ask = scripted([{ event: "text", data: { delta: "Hi." } }, { event: "done", data: { provider: "gemini", used: 1, cap: 40 } }]);
+    open();
+    const send = screen.getByRole("button", { name: "Send" });
+    expect(send.closest(".sc-fred__compose")?.querySelector("textarea")).not.toBeNull();
+    expect((send as HTMLButtonElement).disabled).toBe(true);
+    await userEvent.type(screen.getByLabelText("Your question"), "Hello");
+    await userEvent.click(send);
+    expect(ask).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("Hi.")).toBeDefined();
   });
 
   test("Escape closes the panel", async () => {
