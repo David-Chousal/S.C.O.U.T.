@@ -7,7 +7,7 @@ import type { FredBrief } from "@/lib/api/types";
 import { FredMarkdown } from "./fred-markdown";
 
 const SOURCE: Record<FredBrief["provider"], string> = {
-  gemini: "Fred · Gemini",
+  gemini: "Fred",
   facts: "Fred · facts only",
 };
 

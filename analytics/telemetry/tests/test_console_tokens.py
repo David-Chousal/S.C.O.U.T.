@@ -51,8 +51,10 @@ class Drift(unittest.TestCase):
     def test_the_accent_is_tideline_lagoon(self):
         self.assertEqual(COLOURS["accent"]["light"], PRIMITIVES["p-lagoon-600"][1])
 
-    def test_the_ground_is_tideline_stone_by_day_and_abyss_by_night(self):
-        self.assertEqual(COLOURS["bg"]["light"], PRIMITIVES["p-stone-100"][1])
+    def test_the_ground_is_white_by_day_and_tideline_abyss_by_night(self):
+        # White by day since 2026-11-06 (decision log): the page, the menu and the top bar.
+        self.assertEqual(COLOURS["bg"]["light"], "#ffffff")
+        self.assertEqual(COLOURS["surface"]["light"], "#ffffff")
         self.assertEqual(COLOURS["bg"]["dark"], PRIMITIVES["p-abyss-900"][1])
 
 

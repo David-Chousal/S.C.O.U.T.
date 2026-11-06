@@ -101,6 +101,7 @@ export function parseRow(row, now = Date.now()) {
 }
 
 async function storeRows(db, parsed, rows) {
+  if (parsed.length === 0) return 0;
   const now = Date.now();
   const inserts = parsed.map((p, i) =>
     db.prepare("INSERT OR IGNORE INTO readings (buoy_id, record_seq, timestamp_utc, row_json, received_at) VALUES (?, ?, ?, ?, ?)")
@@ -116,6 +117,7 @@ async function storeRows(db, parsed, rows) {
  * in a push are all clock-lost, the last one in push order (the shore's arrival order) sets the
  * count and marks the buoy clock_lost, and its timestamp is not used. */
 async function updateReported(db, parsed) {
+  if (parsed.length === 0) return;
   const trusted = new Map();
   const clockLost = new Map();
   for (const p of parsed) {
@@ -167,9 +169,13 @@ export async function handleDeviceApi(request, env, path) {
     const parsed = rows.map((r) => parseRow(r));
     const bad = parsed.findIndex((p) => p === null);
     if (bad !== -1) return apiError(`row ${bad} is not a valid schema row`, 400);
-    const stored = await storeRows(env.DB, parsed, rows);
-    await updateReported(env.DB, parsed);
-    return json({ stored });
+    // Rows from a buoy disconnected on Fleet are accepted (so the station moves on) but not kept.
+    const { results: off } = await env.DB.prepare("SELECT buoy_id FROM buoys WHERE disconnected_at IS NOT NULL").all();
+    const ignored = new Set(off.map((b) => b.buoy_id));
+    const keep = parsed.map((p, i) => [p, rows[i]]).filter(([p]) => !ignored.has(p.buoyId));
+    const stored = await storeRows(env.DB, keep.map(([p]) => p), keep.map(([, r]) => r));
+    await updateReported(env.DB, keep.map(([p]) => p));
+    return json({ stored, ignored: parsed.length - keep.length });
   }
   return apiError("not found", 404);
 }

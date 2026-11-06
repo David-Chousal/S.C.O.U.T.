@@ -87,6 +87,16 @@ describe("Ask Fred", () => {
   });
 });
 
+describe("More pages (phones)", () => {
+  test("lists the pages the bottom bar has no room for", async () => {
+    renderBar();
+    await userEvent.click(screen.getByRole("button", { name: "More pages" }));
+    const items = screen.getAllByRole("menuitem");
+    expect(items.map((i) => i.textContent)).toEqual(["Stations", "Reports", "Developer", "Help"]);
+    expect(items[3].getAttribute("href")).toMatch(/^\/help\/?$/);
+  });
+});
+
 describe("initials", () => {
   test("come from the name, else the email", () => {
     expect(initials({ name: "Isabella Rodriguez", email: "" })).toBe("IR");

@@ -10,8 +10,8 @@ export function AuthFrame({ children }: { children: ReactNode }) {
       <div className="sc-login__art">
         <span className="sc-wordmark">S.C.O.U.T. <span className="sc-tag">Console</span></span>
         <div className="sc-login__lede">
-          <h1>One buoy.<br />Every signal.</h1>
-          <p className="sc-tag">Fleet settings · shore stations · the team</p>
+          <h1>Low-cost reef monitoring, run from the shore.</h1>
+          <p className="sc-login__about">Every buoy&rsquo;s readings and settings, the shore stations and the team, in one place.</p>
         </div>
         <div className="sc-login__slots" aria-hidden="true">
           <svg viewBox="0 0 420 40" preserveAspectRatio="none">

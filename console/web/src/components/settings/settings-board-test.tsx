@@ -10,7 +10,6 @@ import type { BuoySettings, Role, Session } from "@/lib/api/types";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/preferences";
 import { PreferencesContext } from "@/lib/preferences-context";
 import { SessionContext } from "@/lib/session";
-import { keepUnits } from "./buoy-settings";
 import { SettingsBoard } from "./settings-board";
 
 vi.mock("next/navigation", () => ({
@@ -49,13 +48,10 @@ let lastRerender = () => {};
 afterEach(() => vi.restoreAllMocks());
 
 describe("SettingsBoard", () => {
-  test("lists every firmware setting exported from config.h", async () => {
+  test("shows no firmware-defaults section: each setting explains itself on hover", async () => {
     renderBoard("member");
-    expect(await screen.findByText("Firmware defaults")).toBeDefined();
-    for (const setting of firmware.settings) expect(screen.getByText(setting.description)).toBeDefined();
-    expect(screen.queryByText(/provisional|decided/i)).toBeNull();
-    const badges = [...document.querySelectorAll(".sc-firmware-table .sc-badge")].map((b) => b.textContent);
-    expect(badges.filter((text) => text === "By radio")).toHaveLength(firmware.settings.filter((s) => s.change === "radio").length);
+    expect(await screen.findByLabelText("Reading interval")).toBeDefined();
+    expect(screen.queryByText("Firmware defaults")).toBeNull();
   });
 
   test("a member can rename a buoy; the save key wakes once the name changes", async () => {
@@ -74,7 +70,8 @@ describe("SettingsBoard", () => {
     const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
     renderBoard("member");
     const interval = await screen.findByLabelText("Reading interval");
-    await userEvent.selectOptions(interval, "15");
+    await userEvent.click(interval);
+    await userEvent.click(screen.getByRole("option", { name: "15 min" }));
     const humidity = screen.getByLabelText("Housing humidity alert");
     await userEvent.clear(humidity);
     await userEvent.type(humidity, "80");
@@ -85,7 +82,8 @@ describe("SettingsBoard", () => {
   test("a new transmit count asks first, showing battery life, and sends only on confirm", async () => {
     const send = vi.spyOn(api, "requestSettings").mockResolvedValue({ ok: true });
     renderBoard("member");
-    await userEvent.selectOptions(await screen.findByLabelText("Transmits a day"), "1");
+    await userEvent.click(await screen.findByLabelText("Transmits a day"));
+    await userEvent.click(screen.getByRole("option", { name: "1" }));
     await userEvent.click(screen.getByRole("button", { name: "Send 1 change" }));
     expect(send).not.toHaveBeenCalled();
     expect(screen.getByRole("dialog", { name: "Change SCOUT-01 to 1 a day?" })).toBeDefined();
@@ -97,6 +95,7 @@ describe("SettingsBoard", () => {
   test("the hydrophone clip offers Off, and the radio never appears as a control", async () => {
     renderBoard("member");
     const clip = await screen.findByLabelText("Hydrophone clip");
+    await userEvent.click(clip);
     expect(screen.getAllByRole("option", { name: "Off" }).length).toBe(1);
     expect(clip).toBeDefined();
     expect(screen.queryByLabelText("Radio")).toBeNull();
@@ -112,7 +111,7 @@ describe("SettingsBoard", () => {
       </SessionContext>,
     );
     expect(((await screen.findByLabelText("Name in the console")) as HTMLInputElement).disabled).toBe(true);
-    expect((screen.getByLabelText("Reading interval") as HTMLSelectElement).disabled).toBe(true);
+    expect((screen.getByLabelText("Reading interval") as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByText(/View only/)).toBeNull();
     expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy or changing its settings needs the member role.");
   });
@@ -121,9 +120,9 @@ describe("SettingsBoard", () => {
     renderBoard("member");
     const interval = await screen.findByLabelText("Reading interval");
     const tip = document.getElementById(interval.getAttribute("aria-describedby") ?? "");
-    expect(tip?.classList.contains("sc-fieldset__tip")).toBe(true);
+    expect(tip?.classList.contains("sc-tip--hover")).toBe(true);
     expect(tip?.textContent).toContain("Default 30 min");
-    expect(tip?.closest(".sc-fieldset--tip")?.contains(interval)).toBe(true);
+    expect(tip?.closest(".sc-tip-host")?.contains(interval)).toBe(true);
   });
 
   test("the Account tab holds sign out, and ?tab=account opens it", async () => {
@@ -159,10 +158,3 @@ describe("SettingsBoard", () => {
   });
 });
 
-describe("firmware table helpers", () => {
-  test("a number keeps its unit and a code keeps its number", () => {
-    expect(keepUnits("critical below 3.10 V")).toBe("critical below 3.10\u00a0V");
-    expect(keepUnits("SF12 · CR 4/8")).toBe("SF12 · CR\u00a04/8");
-  });
-
-});

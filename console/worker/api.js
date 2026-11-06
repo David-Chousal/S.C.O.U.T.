@@ -11,8 +11,8 @@ import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
 import { createDevice, deleteDevice, listDevices, revokeDevice } from "./device.js";
 import {
-  addBuoy, buoyConfig, estimates, listBuoys, renameBuoy, requestSettings, requestTxCount, restoreDefaults,
-  setCommandStation, SLOT_LABELS,
+  addBuoy, buoyConfig, deleteBuoy, disconnectBuoy, estimates, listBuoys, renameBuoy, requestSettings, requestTxCount,
+  restoreDefaults, setCommandStation, SLOT_LABELS,
 } from "./fleet.js";
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
@@ -152,6 +152,8 @@ const WRITES = [
   [/^\/api\/settings\/buoys\/(\d{1,5})\/defaults$/, "settings.write", (db, b, m, a) => restoreDefaults(db, a, m[1])],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/command-station$/, "devices.write", (db, b, m, a) => setCommandStation(db, a, m[1], b.device_id)],
   [/^\/api\/fleet\/buoys$/, "buoys.add", (db, b, m, a) => addBuoy(db, a, b.buoy_id, String(b.label || "").trim())],
+  [/^\/api\/fleet\/buoys\/(\d{1,5})\/disconnect$/, "buoys.add", (db, b, m, a) => disconnectBuoy(db, a, m[1])],
+  [/^\/api\/fleet\/buoys\/(\d{1,5})\/delete$/, "buoys.add", (db, b, m, a) => deleteBuoy(db, a, m[1])],
   [/^\/api\/team\/invites$/, "invites.write", async (db, b, m, a, env) => {
     const result = await createInvite(db, a, String(b.email || "").trim(), b.role);
     return result.error ? result : { link: link(env, "invite", result.token) };

@@ -24,6 +24,17 @@ describe("InviteDialog", () => {
     create.mockRestore();
   });
 
+  test("each role shows just its name; its description is a hover tip linked to the choice", () => {
+    renderDialog();
+    for (const [role, words] of [["Guest", "changes nothing"], ["Member", "buoy settings"], ["Admin", "invites people"]]) {
+      const radio = screen.getByRole("radio", { name: new RegExp(role) });
+      const tip = document.getElementById(radio.getAttribute("aria-describedby") ?? "");
+      expect(tip?.classList.contains("sc-tip--hover")).toBe(true);
+      expect(tip?.textContent).toContain(words);
+      expect(radio.closest("label")?.querySelector("strong")?.textContent).toBe(role);
+    }
+  });
+
   test("says why the console refused it", async () => {
     const create = vi.spyOn(api, "createInvite").mockRejectedValue(new ApiError(400, "new@scout.test already has an account."));
     renderDialog();

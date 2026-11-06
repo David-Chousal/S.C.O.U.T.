@@ -9,7 +9,9 @@ import type { BuoySettings } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
 import { usePoll } from "@/lib/use-poll";
+import type { Buoy } from "@/lib/api/types";
 import { AddBuoyDialog } from "./add-buoy-dialog";
+import { DeleteBuoyDialog, DisconnectDialog } from "./buoy-dialogs";
 import { FleetList } from "./fleet-list";
 
 /** The Fleet page: every buoy at a glance, and adding one. Readings live on the Dashboard and
@@ -18,6 +20,8 @@ export function FleetBoard() {
   const { user } = useSession();
   const settings = useApi<BuoySettings>(api.settings);
   const [adding, setAdding] = useState(false);
+  const [disconnecting, setDisconnecting] = useState<Buoy | null>(null);
+  const [deleting, setDeleting] = useState<Buoy | null>(null);
   const [now, setNow] = useState(() => Date.now());
   // New packets, and each buoy's status, update without a reload.
   usePoll(() => { settings.reload(); setNow(Date.now()); }, 30 * 1000);
@@ -43,9 +47,11 @@ export function FleetBoard() {
             A buoy appears when its shore station first pushes a reading, or when it is added here.
           </EmptyState>
         ) : <FleetList buoys={buoys} remote={settings.data.firmware.remote} slotsSod={settings.data.firmware.slotsSod}
-            now={now} />}
+            now={now} canManage={canAdd} onDisconnect={setDisconnecting} onDelete={setDeleting} />}
       </section>
       <AddBuoyDialog open={adding} onClose={() => setAdding(false)} onAdded={settings.reload} />
+      <DisconnectDialog buoy={disconnecting} onClose={() => setDisconnecting(null)} onDone={settings.reload} />
+      <DeleteBuoyDialog buoy={deleting} onClose={() => setDeleting(null)} onDone={settings.reload} />
     </>
   );
 }
