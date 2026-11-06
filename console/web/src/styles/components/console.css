@@ -20,7 +20,6 @@
 .sc-login__slots rect { fill: var(--bg); opacity: .35; } .sc-login__slots rect.on { opacity: 1; }
 @container page (max-width: 767px) { .sc-pair { gap: var(--space-4); } .sc-pair dd { font-size: 24px; line-height: 28px; } }
 .sc-pair .sc-account__value { font: 500 15px/20px var(--font-sans); letter-spacing: 0; overflow-wrap: anywhere; }
-.sc-team-actions { justify-content: flex-end; gap: var(--space-2); flex-wrap: nowrap; }
 .sc-banner .sc-secret { margin-top: var(--space-2); }
 .sc-caption { caption-side: top; text-align: left; padding-bottom: var(--space-2); }
 /* Signed-out forms (login, invite, reset). */
@@ -40,14 +39,6 @@
 .sc-providers__or { text-align: center; padding-top: var(--space-2); }
 .sc-input--plain { padding-left: var(--space-3); }
 .sc-input-wrap__toggle { cursor: pointer; }
-/* Team: two keys sit in the actions column (reset link + hold to disable), wider than COR's one. */
-.sc-team-table .sc-team-table__actions { width: 252px; }
-/* Phones: the two action keys get their own row under role and sign-in method. */
-@container page (max-width: 767px) {
-  .sc-team-table tr { grid-template-areas: "who who who" "role when when" "act act act"; row-gap: var(--space-2); }
-  .sc-team-table td:nth-child(4) { grid-area: act; padding-left: calc(28px + var(--space-3)); }
-  .sc-team-actions { justify-content: flex-start; flex-wrap: wrap; }
-}
 /* Settings: tab panels lay out like a page; firmware rows keep the value and note together. */
 .sc-tabpanel { display: grid; gap: var(--space-8); }
 .sc-tabpanel[hidden] { display: none; }

@@ -60,8 +60,8 @@
 /* Team tables: fixed columns so members and invites line up. */
 .sc-team-table { table-layout: fixed; }
 .sc-team-table__role { width: 160px; }
-.sc-team-table__when { width: 140px; }
-.sc-team-table__actions { width: 184px; }
+/* One ⋯ menu per row. */
+.sc-team-table__actions { width: 64px; }
 .sc-team-table__select { height: 28px; width: 128px; }
 .sc-person { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
 .sc-invite-roles { display: grid; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
@@ -70,14 +70,12 @@
 @container page (max-width: 767px) {
   .sc-team-table, .sc-team-table tbody { display: block; }
   .sc-team-table colgroup, .sc-team-table thead { display: none; }
-  .sc-team-table tr { display: grid; grid-template-columns: calc(28px + var(--space-3) + 128px) minmax(0, 1fr) auto; grid-template-areas: "who who who" "role when act"; column-gap: var(--space-3); align-items: center; row-gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+  /* Phones: the person and the ⋯ menu on one line, the role under the person. */
+  .sc-team-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "who act" "role role"; column-gap: var(--space-3); align-items: center; row-gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
   .sc-team-table td { border: 0; padding: 0; }
   .sc-team-table td:nth-child(1) { grid-area: who; }
   .sc-team-table td:nth-child(2) { grid-area: role; padding-left: calc(28px + var(--space-3)); }
-  .sc-team-table td:nth-child(3) { grid-area: when; white-space: nowrap; }
-  .sc-team-table--members td:nth-child(3) { display: none; }
-  .sc-team-table--invites tr { grid-template-columns: calc(28px + var(--space-3) + 80px) minmax(0, 1fr) auto; }
-  .sc-team-table td:nth-child(4) { grid-area: act; }
+  .sc-team-table td:nth-child(3) { grid-area: act; }
 }
 /* Audit log: the time never wraps; on phones each change stacks as when · who, then what. */
 .sc-audit-table__when { font: 400 13px/20px var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }

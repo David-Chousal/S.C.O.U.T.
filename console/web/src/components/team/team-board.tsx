@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
+import { ActionMenu, type ActionMenuItem } from "@/components/overlays/action-menu";
+import { Dialog } from "@/components/overlays/dialog";
 import { initials } from "@/components/shell/account-menu";
 import { HoldKey } from "@/components/ui/hold-key";
 import { Key } from "@/components/ui/key";
@@ -15,11 +17,6 @@ import { useApi } from "@/lib/use-api";
 import { useViewOnlyNote } from "@/lib/view-only-note";
 import { InviteDialog } from "./invite-dialog";
 
-function signsInWith(member: Member): string {
-  if (member.self_signup) return "Guest sign-in";
-  return [member.has_password && "password", member.has_github && "GitHub", member.has_google && "Google"].filter(Boolean).join(" · ") || "—";
-}
-
 /** The Team page: people, roles, reset links, offboarding, and open invites. Admins change it;
  * everyone else sees all of it, controls disabled. */
 export function TeamBoard() {
@@ -29,6 +26,7 @@ export function TeamBoard() {
   const { data, error, reload } = useApi<Team>(api.team);
   const [inviting, setInviting] = useState(false);
   const [resetLink, setResetLink] = useState<{ email: string; link: string } | null>(null);
+  const [removing, setRemoving] = useState<Member | null>(null);
   const canManage = can(user.role, "invites.write");
   useViewOnlyNote(canManage ? null : "View only: inviting people, changing roles and disabling accounts needs the admin role.");
 
@@ -49,6 +47,25 @@ export function TeamBoard() {
     } catch (failure) {
       show({ tone: "failed", title: "No reset link", detail: failure instanceof Error ? failure.message : undefined });
     }
+  }
+
+  /** A row's ⋯ menu: a reset link, and Remove (or Restore for someone already removed). */
+  function actionsFor(member: Member): ActionMenuItem[] {
+    const items: ActionMenuItem[] = [];
+    if (!member.self_signup) items.push({ label: "Reset link", icon: "lock", onSelect: () => makeResetLink(member) });
+    if (member.disabled) {
+      items.push({ label: "Restore", icon: "sync", onSelect: () => run(() => api.setDisabled(member.id, false), `Restored ${member.email}`) });
+    } else if (member.id !== user.id) {
+      items.push({ label: "Remove", icon: "trash", danger: true, onSelect: () => setRemoving(member) });
+    }
+    return items;
+  }
+
+  function confirmRemove() {
+    if (!removing) return;
+    const member = removing;
+    setRemoving(null);
+    void run(() => api.setDisabled(member.id, true), `Removed ${member.email}; their sessions ended`);
   }
 
   if (error) return <Banner tone="failed">{error}</Banner>;
@@ -73,8 +90,8 @@ export function TeamBoard() {
         </div>
         <div className="sc-table-wrap">
           <table className="sc-table sc-team-table">
-            <colgroup><col /><col className="sc-team-table__role" /><col className="sc-team-table__when" /><col className="sc-team-table__actions" /></colgroup>
-            <thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col">Signs in with</th><th scope="col"><span className="sc-visually-hidden">Actions</span></th></tr></thead>
+            <colgroup><col /><col className="sc-team-table__role" /><col className="sc-team-table__actions" /></colgroup>
+            <thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col"><span className="sc-visually-hidden">Actions</span></th></tr></thead>
             <tbody>
               {data.members.map((member) => {
                 const you = member.id === user.id;
@@ -84,7 +101,7 @@ export function TeamBoard() {
                       <span className="sc-person">
                         <span className="sc-avatar" aria-hidden="true">{initials(member)}</span>
                         <span className="sc-list__main">
-                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.disabled ? <span className="sc-badge sc-badge--muted">Disabled</span> : null} {member.self_signup ? <span className="sc-badge sc-badge--muted">Self-signed-up</span> : null}</strong>
+                          <strong>{member.name || member.email} {you && <span className="sc-tag">You</span>} {member.disabled ? <span className="sc-badge sc-badge--muted">Removed</span> : null} {member.self_signup ? <span className="sc-badge sc-badge--muted">Self-signed-up</span> : null}</strong>
                           <span>{member.email}</span>
                         </span>
                       </span>
@@ -99,17 +116,8 @@ export function TeamBoard() {
                         <option value="admin">Admin</option>
                       </select>
                     </td>
-                    <td><span className="sc-tag">{signsInWith(member)}</span></td>
-                    <td className="n">
-                      <span className="sc-row sc-team-actions">
-                        <Key size="sm" disabled={!canManage || Boolean(member.self_signup)} onClick={() => makeResetLink(member)}>Reset link</Key>
-                        {member.disabled ? (
-                          <Key size="sm" disabled={!canManage} onClick={() => run(() => api.setDisabled(member.id, false), `Re-enabled ${member.email}`)}>Enable</Key>
-                        ) : (
-                          <HoldKey size="sm" label="Hold to disable" holdLabel={`Hold to disable ${member.email}`} disabled={!canManage || you}
-                            onConfirm={() => run(() => api.setDisabled(member.id, true), `Disabled ${member.email}; their sessions ended`)} />
-                        )}
-                      </span>
+                    <td className="n sc-team-table__menu">
+                      <ActionMenu label={`Actions for ${member.name || member.email}`} items={actionsFor(member)} disabled={!canManage} />
                     </td>
                   </tr>
                 );
@@ -138,6 +146,16 @@ export function TeamBoard() {
         )}
       </section>
       <InviteDialog open={inviting} onClose={() => setInviting(false)} onInvited={reload} />
+      <Dialog open={removing !== null} title={`Remove ${removing?.name || removing?.email || ""}?`} onClose={() => setRemoving(null)}
+        footer={<>
+          <Key onClick={() => setRemoving(null)}>Cancel</Key>
+          <Key variant="primary" onClick={confirmRemove} data-autofocus>Remove</Key>
+        </>}>
+        <p className="sc-help">
+          They are signed out everywhere and can no longer sign in. What they changed stays in the audit log. You can restore them
+          from this menu later.
+        </p>
+      </Dialog>
     </>
   );
 }

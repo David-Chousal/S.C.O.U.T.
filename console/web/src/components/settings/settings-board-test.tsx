@@ -117,6 +117,15 @@ describe("SettingsBoard", () => {
     expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy or changing its settings needs the member role.");
   });
 
+  test("each setting's description is a hover tooltip, still linked to its field for screen readers", async () => {
+    renderBoard("member");
+    const interval = await screen.findByLabelText("Reading interval");
+    const tip = document.getElementById(interval.getAttribute("aria-describedby") ?? "");
+    expect(tip?.classList.contains("sc-fieldset__tip")).toBe(true);
+    expect(tip?.textContent).toContain("Default 30 min");
+    expect(tip?.closest(".sc-fieldset--tip")?.contains(interval)).toBe(true);
+  });
+
   test("the Account tab holds sign out, and ?tab=account opens it", async () => {
     window.history.replaceState(null, "", "/settings/?tab=account");
     renderBoard("member");

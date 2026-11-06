@@ -19,13 +19,15 @@ interface ActionMenuProps {
   /** Names the object, e.g. "Meta Ads actions"; used for the trigger and the menu. */
   label: string;
   items: ActionMenuItem[];
+  /** The trigger is shown but switched off (a role that can view but not change). */
+  disabled?: boolean;
 }
 
 function menuItems(menu: HTMLElement | null): HTMLElement[] {
   return menu ? [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')] : [];
 }
 
-export function ActionMenu({ label, items }: ActionMenuProps) {
+export function ActionMenu({ label, items, disabled = false }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -72,6 +74,7 @@ export function ActionMenu({ label, items }: ActionMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
+        disabled={disabled || items.length === 0}
         onClick={() => setOpen((isOpen) => !isOpen)}
       >
         <Icon name="more" />
