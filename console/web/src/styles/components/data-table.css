@@ -46,8 +46,8 @@
 }
 /* Stations table: same rhythm as Fleet, status before the actions. */
 .sc-stations-table { table-layout: fixed; }
-.sc-stations-table th:nth-child(1) { width: 24%; } .sc-stations-table th:nth-child(3) { width: 130px; }
-.sc-stations-table th:nth-child(4) { width: 190px; } .sc-stations-table th:nth-child(5) { width: 96px; }
+.sc-stations-table th:nth-child(2) { width: 160px; } .sc-stations-table th:nth-child(3) { width: 190px; }
+.sc-stations-table th:nth-child(4) { width: 96px; }
 .sc-stations-table__when { color: var(--ink-muted); font: 400 13px/20px var(--font-mono); }
 /* The buoys a station commands, as chips. */
 .sc-chips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
@@ -58,8 +58,7 @@
 @container page (max-width: 767px) {
   .sc-stations-table { table-layout: auto; }
   .sc-stations-table th:nth-child(n) { width: auto; }
-  .sc-stations-table th:nth-child(3), .sc-stations-table td:nth-child(3) { display: none; }
-  /* Phones: station, status and the ⋯ menu; the buoys it commands are in Info. */
+  /* Phones: station, status and the ⋯ menu. */
   .sc-stations-table th:nth-child(2), .sc-stations-table td:nth-child(2) { display: none; }
 }
 /* Team tables: fixed columns so members and invites line up. */

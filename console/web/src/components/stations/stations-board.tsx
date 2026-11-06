@@ -30,9 +30,9 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
   return { state: "failed", lit: 1, word: "Silent" };
 }
 
-/** Stations: every shore station, the buoys whose commands it sends, when it was last seen, and
- * a ⋯ menu (Info, Revoke); a revoked station shows a delete key instead. Buoys' own state lives on
- * Fleet. */
+/** Stations: every shore station, when it was last seen, its status, and a ⋯ menu (Info, which
+ * lists the buoys it commands; Assign buoys; Revoke). A revoked station shows a delete key instead.
+ * Buoys' own state lives on Fleet. */
 export function StationsBoard() {
   const { user } = useSession();
   const settings = useApi<BuoySettings>(api.settings);
@@ -58,6 +58,8 @@ export function StationsBoard() {
 
   function menuFor(device: Device): ActionMenuItem[] {
     const items: ActionMenuItem[] = [{ label: "Info", icon: "info", onSelect: () => setInfo(device) }];
+    // Which buoys it commands is in Info; with two or more stations, Assign buoys changes it.
+    if (canAssign) items.push({ label: "Assign buoys", icon: "connections", onSelect: () => setAssigning(device) });
     if (allowed) items.push({ label: "Revoke", icon: "close", danger: true, onSelect: () => setRevoking(device) });
     return items;
   }
@@ -83,22 +85,12 @@ export function StationsBoard() {
         {devices.data.devices.length === 0 ? <p className="sc-help">No shore stations yet.</p> : (
           <div className="sc-table-wrap">
             <table className="sc-table sc-stations-table">
-              <thead><tr><th scope="col">Station</th><th scope="col">Buoys it commands</th><th scope="col">Last seen</th>
+              <thead><tr><th scope="col">Station</th><th scope="col">Last seen</th>
                 <th scope="col">Status</th><th scope="col"><span className="sc-visually-hidden">Actions</span></th></tr></thead>
               <tbody>
                 {devices.data.devices.map((device) => (
                   <tr key={device.id}>
                     <th scope="row">{device.name}</th>
-                    <td>
-                      <span className="sc-chips">
-                        {(routes.byStation.get(device.id) ?? []).map((buoy) => <span key={buoy.buoy_id} className="sc-chip">{buoy.label}</span>)}
-                        {!device.revoked_at && (routes.byStation.get(device.id) ?? []).length === 0 && <span className="sc-help">None</span>}
-                        {device.revoked_at && <span className="sc-help">—</span>}
-                        {canAssign && !device.revoked_at && (
-                          <Key size="sm" onClick={() => setAssigning(device)} aria-label={`Assign buoys to ${device.name}`}>Assign</Key>
-                        )}
-                      </span>
-                    </td>
                     <td className="sc-stations-table__when"><Ago ms={device.last_seen_at} /></td>
                     <td>{device.revoked_at
                       ? <span className="sc-badge sc-badge--muted">Revoked</span>

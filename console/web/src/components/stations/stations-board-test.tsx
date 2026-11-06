@@ -69,20 +69,23 @@ describe("StationsBoard", () => {
     expect(card.textContent).toContain("every 10 minutes");
   });
 
-  test("each station lists the buoys it commands; a lone station commands them all", async () => {
+  test("no Buoys it commands column: a lone station's Info lists every buoy, and there is nothing to assign", async () => {
     renderBoard("admin");
-    expect(await screen.findByText("Reef north")).toBeDefined();
-    expect(screen.getByText("Reef south")).toBeDefined();
-    expect(screen.queryByText(/only active station/)).toBeNull();
-    expect(screen.queryByRole("button", { name: /Assign buoys/ })).toBeNull();
-    expect(screen.queryByRole("columnheader", { name: "Commands from" })).toBeNull();
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    expect(screen.queryByRole("columnheader", { name: "Buoys it commands" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: "Assign buoys" })).toBeNull();
+    await userEvent.click(screen.getByRole("menuitem", { name: "Info" }));
+    const card = screen.getByRole("dialog", { name: "Kaneohe shore" });
+    expect(card.textContent).toContain("Reef north");
+    expect(card.textContent).toContain("Reef south");
   });
 
   test("with two stations, an unassigned buoy is flagged and Assign moves it to a station", async () => {
     const assign = vi.spyOn(api, "setCommandStation").mockResolvedValue({ ok: true });
     renderBoard("admin", { devices: [...DEVICES.devices, { id: "c", name: "Campus bench", created_at: 0, revoked_at: null, last_seen_at: null }] });
     expect(await screen.findByText(/have no station/)).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Assign buoys to Campus bench" }));
+    await userEvent.click(screen.getByRole("button", { name: "Actions for Campus bench" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Assign buoys" }));
     await userEvent.click(screen.getByRole("checkbox", { name: /Reef south/ }));
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(assign).toHaveBeenCalledWith(2, "c");

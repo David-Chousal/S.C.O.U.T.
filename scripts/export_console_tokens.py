@@ -44,13 +44,16 @@ def _pair(light: str, dark: str, usage: str) -> dict:
 
 
 def colours() -> dict[str, dict]:
+    # day_surface still tints the soft status grounds, so they keep their colour.
     day_surface, night_surface = P["p-stone-0"], P["p-abyss-800"]
     return {
         # White by day (David, 2026-11-06), not the site's warm-stone canvas: the console reads as a tool,
         # and its bays, inputs and the sign-in art keep their contrast against it.
         "bg": _pair("#ffffff", P["p-abyss-900"], "The page ground: white by day, the abyss by night."),
-        "surface": _pair(day_surface, night_surface, "Floating layers (menus, dialogs, drawers) and the sidebar."),
-        "surface-sunken": _pair(P["p-stone-200"], P["p-abyss-950"], "Inputs, table header rows, empty-state wells."),
+        # White and a neutral grey by day too (David, 2026-11-06): the menu, top bar, Fred's panel and
+        # cards match the white page, and inputs are no longer sand-coloured.
+        "surface": _pair("#ffffff", night_surface, "Floating layers (menus, dialogs, drawers), the menu, top bar and Fred's panel."),
+        "surface-sunken": _pair("#f1f1f0", P["p-abyss-950"], "Inputs, table header rows, empty-state wells: a neutral grey by day."),
         "line": _pair(P["p-stone-300"], P["p-abyss-700"], "1px hairlines: table rules, gridlines, range tracks."),
         "line-strong": _pair(P["p-stone-500"], mix(P["p-foam-0"], .42, P["p-abyss-900"]), "Input and control borders (3:1 on surface)."),
         "rail": _pair("{ink}", mix(P["p-foam-0"], .60, P["p-abyss-900"]), "The 2px rule across the top of every bay. The only heavy line; softer than ink by night so the rails do not glare."),
