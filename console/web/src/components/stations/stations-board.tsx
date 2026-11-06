@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Banner } from "@/components/feedback/banner";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { SignalMeter, type SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import { ActionMenu, type ActionMenuItem } from "@/components/overlays/action-menu";
@@ -82,7 +83,11 @@ export function StationsBoard() {
               title={allowed ? undefined : "Making a token needs the admin role"}>New token</Key>
           </span>
         </div>
-        {devices.data.devices.length === 0 ? <p className="sc-help">No shore stations yet.</p> : (
+        {devices.data.devices.length === 0 ? (
+          <EmptyState status="No stations" title="No shore stations yet">
+            A shore station appears here when you make a token for it.
+          </EmptyState>
+        ) : (
           <div className="sc-table-wrap">
             <table className="sc-table sc-stations-table">
               <thead><tr><th scope="col">Station</th><th scope="col">Last seen</th>
