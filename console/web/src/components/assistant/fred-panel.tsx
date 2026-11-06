@@ -106,6 +106,7 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
   const [usage, setUsage] = useState<{ used: number; cap: number } | null>(null);
   const abort = useRef<AbortController | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
+  const log = useRef<HTMLOListElement>(null);
   const busy = turns.some((t) => !t.done);
 
   useEffect(() => {
@@ -113,6 +114,11 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
     api.fredStatus().then((s) => setUsage({ used: s.used, cap: s.cap }), () => setUsage(null));
     return () => abort.current?.abort();
   }, []);
+
+  // Keep the newest text and card, with its Confirm key, in view as the reply streams in.
+  useEffect(() => {
+    log.current?.scrollTo?.({ top: log.current.scrollHeight });
+  }, [turns]);
 
   const send = useCallback(async (question: string) => {
     const text = question.trim();
@@ -178,7 +184,7 @@ export function FredPanel({ user, onClose }: FredPanelProps) {
           </div>
         </div>
       ) : (
-        <ol className="sc-fred__log">{turns.map((turn) => <Exchange key={turn.id} turn={turn} />)}</ol>
+        <ol className="sc-fred__log" ref={log}>{turns.map((turn) => <Exchange key={turn.id} turn={turn} />)}</ol>
       )}
       <form className="sc-fred__form" onSubmit={submit}>
         <label className="sc-visually-hidden" htmlFor="fred-input">Your question</label>

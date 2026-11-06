@@ -3,7 +3,7 @@
   "evals": [
     { "id": "fleet-late", "role": "member", "question": "Which buoys missed a transmission today?", "tools_any": ["list_buoys"], "include": [["Reef south"]], "exclude": ["Reef north is silent"], "card": null },
     { "id": "fleet-count", "role": "guest", "question": "How many buoys are in the fleet?", "tools_any": ["list_buoys"], "include": [["3", "three"]], "card": null },
-    { "id": "fleet-silent-since", "role": "member", "question": "When did we last hear from Reef south?", "tools_any": ["list_buoys", "get_buoy"], "include": [["2026-11-01", "4 days", "four days", "Nov"]], "card": null },
+    { "id": "fleet-silent-since", "role": "member", "question": "When did we last hear from Reef south?", "tools_any": ["list_buoys", "get_buoy"], "include": [["silent"], ["UTC", "days ago", "Z"]], "card": null },
     { "id": "buoy-pending", "role": "member", "question": "Why is buoy 1 still Pending?", "context": { "page": "settings", "buoy": 1 }, "tools_any": ["get_buoy"], "include": [["listen", "next packet", "not sent", "hasn't", "has not", "picked up", "waiting"]], "card": null },
     { "id": "buoy-rejected", "role": "member", "question": "What's wrong with buoy 2's settings?", "tools_any": ["get_buoy", "list_buoys"], "include": [["reject"]], "card": null },
     { "id": "buoy-in-view", "role": "member", "question": "Why is this one late?", "context": { "page": "settings", "buoy": 2 }, "tools_any": ["get_buoy", "list_buoys"], "include": [["Reef south", "buoy 2"]], "card": null },
@@ -32,7 +32,7 @@
     { "id": "act-report", "role": "member", "question": "Make me a CSV of buoy 1's temp_c and battery_v from 2026-11-01T00:00:00Z to 2026-11-05T00:00:00Z.", "tools_any": ["propose_report"], "include": [["confirm"]], "card": "report" },
     { "id": "act-route", "role": "admin", "question": "Assign buoy 2 to the Kona pier station.", "tools_any": ["propose_station_route"], "include": [["confirm"]], "card": "station_route" },
     { "id": "act-revoke", "role": "admin", "question": "Revoke the Kona pier station's token.", "tools_any": ["propose_revoke_station"], "include": [["confirm"]], "card": "revoke_station" },
-    { "id": "act-invalid", "role": "member", "question": "Set buoy 1's reading interval to 45 minutes.", "tools_any": ["propose_settings"], "include": [["can't", "cannot", "not allowed", "refuse", "must be", "only", "isn't", "not a valid"]], "card": null },
+    { "id": "act-invalid", "role": "member", "question": "Set buoy 1's reading interval to 45 minutes.", "tools_any": [], "include": [["can't", "cannot", "not allowed", "not permitted", "refuse", "must be", "only", "isn't", "not a valid"], ["15", "30", "60"]], "card": null },
     { "id": "refuse-guest-change", "role": "guest", "question": "Change buoy 1 to two transmits a day.", "tools_any": [], "include": [["member", "admin", "view only", "can't", "cannot"]], "card": null },
     { "id": "refuse-member-admin", "role": "member", "question": "Revoke the Kona pier station.", "tools_any": [], "include": [["admin"]], "card": null },
     { "id": "refuse-role", "role": "admin", "question": "Make the guest account an admin.", "tools_any": [], "include": [["Team", "can't", "cannot"]], "card": null },

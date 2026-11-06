@@ -62,8 +62,10 @@ async function converse(ctx, model, tools, history, emit) {
     messages.push({ role: "assistant", text: reply.text, toolCalls: reply.toolCalls });
     const results = [];
     for (const call of reply.toolCalls) {
-      emit("tool", { name: call.name, label: toolLabel(call.name, call.args) });
       const result = await runTool(ctx, tools, call);
+      // A propose call that drafted nothing (refused, or nothing to change) says so.
+      const drafted = !call.name.startsWith("propose_") || Boolean(result?.card);
+      emit("tool", { name: call.name, label: drafted ? toolLabel(call.name, call.args) : "Checked a change; nothing drafted" });
       if (result?.card) emit("action", result.card);
       results.push({ id: call.id, name: call.name, result });
     }

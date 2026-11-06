@@ -168,7 +168,10 @@ tier of Google's Gemini API.
 - **Knowledge:** `scripts/build_assistant_knowledge.py` builds `worker/assistant/knowledge.json`
   (generated, not committed) from the Help page, the settings registry, `docs/hub/facts.md` and
   every tracked doc. `npm test`, `npm run dev` and the deploy workflow run it first.
-- **Model IDs** live in one constant in `worker/assistant/model.js`; Google retires them often.
+- **Model:** `gemini-3.5-flash-lite` for everything. On the free tier the stronger
+  `gemini-3.8-flash` allows only 20 requests a day per project, and one question takes 2–9 model
+  calls. Model IDs live in one constant in `worker/assistant/model.js`; Google retires them often.
+  Eval score 2026-11-05: 41/41.
 
 **Set up the key** (David's Google account, ADR-0013 decision 3). In Google AI Studio, create the
 key in a project **with no billing enabled**, or Google refuses every model instead of serving the

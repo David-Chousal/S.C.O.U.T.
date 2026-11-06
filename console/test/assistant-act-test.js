@@ -140,6 +140,14 @@ test("who is offered which propose tools: guests none, members four, admins six"
   assert.deepEqual(offered.map((o) => o.length), [0, 4, 6]);
 });
 
+test("a propose call that drafts nothing is labelled as such", async (t) => {
+  stubGemini(t, [{ calls: [{ name: "propose_settings", args: { buoy_id: 1, changes: { sample_interval_min: 45 } } }] }, { text: "45 isn't allowed." }]);
+  const { client } = await setup();
+  const reply = await ask(client, "Set buoy 1 to 45 minutes");
+  assert.equal(reply.events.find((e) => e.event === "tool").data.label, "Checked a change; nothing drafted");
+  assert.equal(reply.events.filter((e) => e.event === "action").length, 0);
+});
+
 test("a proposal made in conversation streams a card event and the model is told nothing changed", async (t) => {
   const requests = stubGemini(t, [{ calls: [{ name: "propose_settings", args: { buoy_id: 1, changes: { tx_count: 1 } } }] },
     { text: "I've drafted it; click Confirm to send it." }]);

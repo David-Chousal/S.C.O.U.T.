@@ -14,8 +14,10 @@
  * Flash models were checked against Google's model and pricing pages on 2026-11-05. */
 
 export const MODELS = Object.freeze({
-  chat: "gemini-3.8-flash",            // free tier; Google's recommended Flash for new projects
-  brief: "gemini-3.5-flash-lite",      // free tier; its own allowance, for the morning brief
+  // Free tier, 2026-11-05: Flash-Lite allows about 500 requests a day per project; gemini-3.8-flash
+  // and 3.6-flash allow 20, which a single question (2-9 model calls) can nearly use up.
+  chat: "gemini-3.5-flash-lite",
+  brief: "gemini-3.5-flash-lite",
   fallback: "@cf/meta/llama-3.3-70b-instruct-fp8-fast", // Workers AI, supports function calling
 });
 
@@ -64,7 +66,7 @@ async function* sseData(body) {
 async function geminiFailure(response) {
   const detail = await response.json().catch(() => ({}));
   const status = detail?.error?.status ?? "";
-  if (/credit|billing|prepay/i.test(detail?.error?.message ?? "")) {
+  if (/prepayment|credits are depleted/i.test(detail?.error?.message ?? "")) {
     // Not a rate limit: the key's Google project has billing on and no credit left, so it is off
     // the free tier. Fall back like a rate limit, but say why in the log.
     console.error("assistant: gemini key's project has no credit (billing enabled); create the key in a project without billing");

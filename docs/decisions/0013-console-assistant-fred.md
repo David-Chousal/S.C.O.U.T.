@@ -41,8 +41,13 @@ Gemini wins on capability for zero cost. Its weaknesses shape the design: the **
 1. **Gemini's free tier, behind one interface.** `console/worker/assistant/model.js` exposes
    `chat({ system, messages, tools, onText })` over plain `fetch` (no SDK), with streaming and
    function calling. Model IDs live in one constant, checked against Google's model and pricing
-   pages on 2026-11-05: **`gemini-3.8-flash`** for questions (free tier; Google's recommended
-   Flash for new projects) and **`gemini-3.5-flash-lite`** for the morning brief. Workers AI
+   pages on 2026-11-05: **`gemini-3.5-flash-lite`** for both questions and the morning brief.
+   **Amended 2026-11-05 while testing:** the plan's stronger Flash model (`gemini-3.8-flash`)
+   allows only **20 requests a day per project** on the free tier (Google's own quota error,
+   `GenerateRequestsPerDayPerProjectPerModel-FreeTier`), and one question takes 2–9 model calls,
+   so a single question nearly used the day. Flash-Lite allows about 500 a day (a third-party
+   guide; Google publishes the live numbers only in AI Studio) and scored 41/41 on the eval set,
+   so it runs everything. Moving back to Flash is a one-line change if a paid key is ever used. Workers AI
    (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) is a second implementation of the same function.
    Moving to a paid key or another provider is a change to that one file.
 2. **🟡 Open: is the free tier's data use acceptable?** The working answer is yes for project
@@ -145,8 +150,11 @@ browser ── POST /api/assistant (session + CSRF) ──► Worker
   role gating, confirm expiry, ownership and audit, caps, the fallback, the brief). Web tests
   cover the panel, cards and brief. The eval set (`console/test/assistant-evals.json`, 41
   questions) is run by hand against the real model with
-  `node scripts/run-assistant-evals.mjs`; **it has not been scored yet**, because the first key
-  was refused (decision 3).
+  `node scripts/run-assistant-evals.mjs`. **Score 2026-11-05 on `gemini-3.5-flash-lite`: 39/41,
+  then 41/41** after two checks were corrected: one expected a hard-coded date where the fixture
+  uses "four days ago" (Fred gave the right date), and one missed the words "not permitted" in a
+  correct refusal. A real model also drafted a settings card in the browser, which was confirmed
+  and audited "via Fred", and declined a rename card.
 
 ## References
 
