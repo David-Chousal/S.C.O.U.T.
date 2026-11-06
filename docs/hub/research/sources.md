@@ -393,3 +393,8 @@ depends on them.
 | `bathen-1968` | Bathen (1968). A descriptive study of the physical oceanography of Kāneʻohe Bay, Oʻahu, Hawaii. University of Hawaiʻi master's thesis. [pdf](https://www.soest.hawaii.edu/oceanography/masters/1968-Bathen.PDF) | ❓ | — | Bay yearly mean temperature higher than open ocean; daily swing about one fifth of the seasonal swing (as summarized from a search result; not read in full) |
 | `usgs-monterey-waves` | USGS. Local wave climate and long-term bed shear stress characteristics, Monterey Bay, CA. [link](https://www.usgs.gov/publications/local-wave-climate-and-long-term-bed-shear-stress-characteristics-monterey-bay-ca) | 🔓 | — | Winter wave heights differ strongly between sites in the same bay (as summarized from a search result; not read in full) |
 
+## 3D viewer libraries
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `threejs-r147` | three.js r147 (MIT), `build/three.min.js` and `examples/js/controls/OrbitControls.js`. [link](https://github.com/mrdoob/three.js/tree/r147) | 🔓 | [`vendor/`](../../../mechanical/simulations/buoy-viewer/vendor/) | Renders the buoy CAD in the [3D viewer](../../../mechanical/simulations/buoy-viewer/README.md). Vendored so the site loads no outside script |
