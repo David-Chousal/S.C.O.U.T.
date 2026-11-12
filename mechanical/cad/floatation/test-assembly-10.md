@@ -26,6 +26,7 @@
 | Loops | 4, at 0, 90, 180, 270 degrees | 4, at **45, 135, 225, 315 degrees**; same eye (0.83 in outer radius, 0.43 in hole radius), top 0.33 in above the cap |
 | Waterline scale | 1 to 3 in | 1 to 3.5 in, re-cut on the new wall |
 | Cap underside | half-pipe groove | groove filled flush |
+| Cap holes | none | **three through-holes, 0.75 in diameter, straight up in a triangle** (1.15 in between centres, one apex toward +Y, centred on the cap); 0.30 in deep merged recess from the inside leaves a **0.05 in** wall around them. Diameter and wall copied from Test Assembly 7, where the three holes are in a line on the side of the cap |
 
 Other edits: the loop base is one smooth curve with a 0.12 in blend into the float and 0.08 in edge fillets, the
 S.C.O.U.T. lettering is re-engraved 0.05 in deep on one side only, and the housing and cap move down with the wall.
