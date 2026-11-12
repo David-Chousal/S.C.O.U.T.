@@ -1311,3 +1311,57 @@ No Linear issues filed yet; the owners below are as stated in the meeting.
 | Upload the 16th iteration, re-export the failed assembly, add the 3D viewer and electrical visuals | John, Isabella |
 | Send the draft funding letters; put the activity code on every purchase | Department (expected early next week) |
 | Ask Bronco Ventures or the law school about IP protection before publishing more on the site | John |
+
+---
+
+## 2026-11-11 — S.C.O.U.T. Sr. Design GENG & ECEN advisor meeting
+
+**Attendees** — John Ryan Myrdal · Isabella Rodriguez · Shoba Krishnan · Jes Kuczenski. David Chousal Cantu was not present. Source: Granola notes and a
+pasted transcript. The transcript is auto-generated and partly garbled; only points that are clear in it are recorded.
+
+### Status reported
+
+- **John (mechanical):** the electronics housing is now described as one-time-use and epoxy-sealed instead of O-ring sealed: marine-grade epoxy on the seams and a
+  Flex Seal coat as an extra layer, in PETG rather than PLA to cut heat deformation and creep. A test unit was reported submerged for a week with no ingress; checks
+  named were paper towel, soap and underwater bubble, and weight. A leak sensor will be added to log it. Float tab-fin and hydrostatic simulation reported still
+  running during the meeting, with results to be emailed. The 3D buoy viewer on the website shows 16 of 18 design iterations, with wireframe and exploded views, and
+  updates itself when a design is added.
+- **Isabella (electronics):** LoRa from the M0 to the shore station reported working, with temperature logging confirmed locally; the shore station reaches a
+  computer over USB. Wi-Fi to David's console is the next step. Next week: temperature, leak, turbidity and a microphone (software filtering only) together in air.
+  The hydrophone is still on its way and will inform the hardware filter.
+- **Deployment:** reaching out to the yacht club for a mooring site. An advisor offered a contact whose son works on tour and whaling boats near Monterey, and John
+  has a family friend with a boat.
+
+### Decisions and agreements
+
+- **Shore station Wi-Fi:** the school guest network logs devices out, so register the shore station on BroncoFi (the device network, renews yearly) rather than use
+  a hotspot.
+- **Winter-quarter meeting time:** Mondays and Wednesdays before 10:30 AM, with a Zoom link for weeks when an advisor is travelling.
+- **Waterproofing evidence:** line John's tests and results up against the formal water-entry standards (Dr. Kuczenski's request).
+- **Cables:** waterproofing and length are undecided and were deprioritized; they need an answer before deployment.
+- **Timeline correction (Dr. Kuczenski):** the week before Thanksgiving is next week; the weekend after Thanksgiving starts week 10. Isabella is away after next
+  Wednesday and may join by Zoom.
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| Housing is one-time-use and epoxy-sealed, no O-ring | [`facts.md`](../hub/facts.md) still has the electronics housing on a static face seal with an AS568 O-ring; the transcript also says the O-ring versions are kept for testing, and does not say whether the epoxy design is the electronics housing or the turbidity pod. See the 2026-11-06 single-use pod entry in [`decision-log.md`](../hub/decision-log.md) |
+| A test unit was underwater a week with no ingress | No test record for a one-week soak; RR-23 closed as a fail on 2026-11-06 ([`risk-reduction-register.md`](../../mechanical/test/risk-reduction-register.md)). Which unit was soaked is not recorded |
+| LoRa M0 to shore station working | [`status.md`](../hub/status.md) says the radio link has never run on hardware and SCO-155 has no result recorded. Reported only; no test record |
+| Fins "seemed to help" stability in preliminary models | The first OpenFOAM roll-decay run did not resolve damping and is inconclusive ([hull-hydrodynamics](../../mechanical/simulations/hull-hydrodynamics/README.md)) |
+
+### Action items
+
+| Item | Owner | Issue |
+|---|---|---|
+| Cross-check waterproofing methods and results against formal water-entry standards | John | [SCO-303](https://linear.app/scout1/issue/SCO-303) |
+| Register the shore station on BroncoFi | Isabella | [SCO-304](https://linear.app/scout1/issue/SCO-304) |
+| Run temperature, leak, turbidity and microphone together in air | Isabella | [SCO-305](https://linear.app/scout1/issue/SCO-305) |
+| Follow up the Monterey boat contacts | John | [SCO-306](https://linear.app/scout1/issue/SCO-306) |
+| Decide cable waterproofing and length | Isabella, John | [SCO-307](https://linear.app/scout1/issue/SCO-307) |
+| Meet David this weekend to set up shore station software, Wi-Fi and the data format for the console | Isabella | none (small) |
+| Email the hydrostatic simulation results to the group (the OpenFOAM run finished the same day; result is inconclusive) | John | none (small) |
+| Send the winter-quarter meeting invite with a Zoom link | not stated | none (small) |
+| Funding letter expected Thursday | Department | none |
+
