@@ -29,6 +29,7 @@ a PDF, name it `<key>.pdf` (e.g. `duarte-2021.pdf`) and fill the **Local** colum
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `capytaine` | Capytaine, open-source boundary element hydrodynamics (license not checked). [link](https://github.com/capytaine/capytaine) | 🔓 | not vendored | Heave and roll added mass and damping of the float hull in [hull-hydrodynamics](../../../mechanical/simulations/hull-hydrodynamics/README.md) |
+| `openfoam` | OpenFOAM v2606 (ESI), open-source CFD toolbox, GPL. [link](https://www.openfoam.com) | 🔓 | not vendored | `interFoam` roll-decay runs of the float in [hull-hydrodynamics](../../../mechanical/simulations/hull-hydrodynamics/README.md) |
 | `pieretti-2011` | Pieretti et al. (2011). "A new methodology to infer the singing activity of an avian community: The Acoustic Complexity Index (ACI)." *Ecological Indicators* 11(3):868–873. [doi](https://doi.org/10.1016/j.ecolind.2010.11.005) | 🔒 | — | ACI definition — [methodology](../../analysis/coral-bioacoustic-methodology.md) |
 | `boelman-2007` | Boelman et al. (2007). "Multi-trophic invasion resistance in Hawaii: bioacoustics, field surveys, and airborne remote sensing." *Ecological Applications* 17(8):2137–2144. [doi](https://doi.org/10.1890/07-0004.1) | 🔒 | — | Bioacoustic Index (BI) basis |
 | `kasten-2012` | Kasten et al. (2012). "The REAL acoustic library: an archive for studying soundscape ecology." *Ecological Informatics* 12:50–67. [doi](https://doi.org/10.1016/j.ecoinf.2012.01.003) | 🔒 | — | NDSI origin |
