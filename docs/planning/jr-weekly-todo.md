@@ -2,117 +2,100 @@
 
 > John Ryan Myrdal's working task list, by day, with completion. **Linear is the source of truth** for
 > status and dates; this is the day-by-day view. Edit this file as the week changes, then keep it in
-> step with Linear. Built with the `weekly-plan` skill from Linear, WAR Week 6, the 2026-10-30 meeting
-> and last week's plan (kept below under "Carried over").
+> step with Linear. Built with the `weekly-plan` skill from Linear (read 2026-11-09), last week's plan
+> (kept below under "Carried over") and the Phase 2 milestones.
 >
-> **Last updated:** 2026-11-01, afternoon (week of Nov 2 to Nov 6, tail Nov 9 to Nov 13)
+> **Last updated:** 2026-11-10, morning (week of Nov 9 to Nov 13, tail Nov 16 to Nov 20)
 >
-> **Capacity assumed:** 4 to 6 h a day Mon to Thu. **Travel is not confirmed:** the 10/30 meeting says John is
-> travelling to a conference on Fri Nov 6 and the week of Nov 9 (Zoom for the Fri Nov 13 meeting). Fri Nov 6
-> and the Nov 9 tail are planned as remote or light until the dates are confirmed.
+> **Capacity assumed:** 4 to 6 h a day Mon to Thu. **Conference travel is not confirmed** (the 10/30 meeting says
+> John is away the week of Nov 9, Zoom for the Fri Nov 13 meeting). Lab work (print, coat, pressure test) is placed
+> Mon to Wed; Thu and Fri are remote-safe (docs, emails). Tell me the real travel days and I re-slot.
 
-**Status key:** Done · In Review (work finished, PR open) · In Progress · Todo · Waiting (on a person) · Canceled · Moved
+**Status key:** Done · In Review · In Progress · Todo · Waiting (on a person) · Canceled · Moved
 
 ## Needs attention first
 
 | Issue | Task | Why flagged | Was due | Action this week |
 |---|---|---|---|---|
-| SCO-172 | Float the whole buoy in 35 ppt salt water, record waterline | Overdue 2 days. **Table salt decided; buoy float starts Mon Nov 2 in its own container** | Oct 30 | Tue Nov 3: fresh float, then salt float. Read the salt float Wed Nov 4 (salt waits for the housing test). Linear re-dated to Nov 4 |
-| SCO-277 | Buy salt for the tub float test | **Done Nov 1:** plain salt on hand (product and price not recorded) | Nov 2 | None. Record product and price in the purchase log |
-| SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
-| SCO-211 | Hazard form, advisor signature | **Done Nov 2:** signed by Shoba Krishnan and submitted | Oct 26 | None. Check the signed form covers the salt-water tub tests and the housing dunk |
-| SCO-185 | Kaneohe Bay permit determinations | Was overdue 16 days and stale; **moved to Jan 4, 2027 (winter break)** | Oct 16 | None this week. Re-date done in Linear Nov 1 |
-| SCO-171 | Self-righting tilt test from 90° and 180° | Linear due Nov 17 is too late; WAR Week 6 says Nov 3 | Nov 17 | Thu Nov 5. Re-date in Linear |
-| SCO-246 | Choose and source the waterproof coating | Coating decided (Home Depot solution); not yet bought | Nov 3 | Buy Tue Nov 3. Linear re-dated to Nov 6 |
-| SCO-147 | Decide the hung (boat/pier) configuration | **Done Nov 1:** rope is fed through the floatation through-holes as a small hanging harness | Nov 3 | None. SCO-243, 244 and 251 (eye points on top) canceled Nov 1 |
-| SCO-229 | Simulator usable by non-engineers (labels, context) | Reopened at the 10/30 meeting; no due date | none | Thu Nov 5; give it a date |
-| SCO-195 | Ask the Santa Cruz yacht club about a test site | New action from 10/30; no due date | none | Tue Nov 3 message or call; due Nov 13 |
+| SCO-177 | Pressure-test the sealed housings to 8 m equivalent | Due today. The v2 cap passed a 4-day soak (SCO-296), but Linear still lists it as blocked by SCO-49 (final housing dimensions) and **the pressure method is not chosen** (a sealed bucket with a hand pump and gauge was the idea) | Nov 9 | Choose the method and a safe procedure first, then run 24 h; record with the template, pass mark first |
+| SCO-296 | Face-seal test of the redesigned cap | **Done Nov 9** (4-day soak, watertight). Numbers not recorded | none | File the RR record, register and matrix rows. Salt-water and real-cable stages still open |
+| SCO-229 | Simulator usable by non-engineers | Overdue 3 days; In Progress | Nov 6 | Wed Nov 11, then give it a real date |
+| SCO-249 | Hung-from-dock/boat V1 test rig and procedure | **On hold per John (Nov 9): the rig is being modified.** Do not plan or edit until he says | Nov 10 | None. Re-date after he finishes the rig change |
+| SCO-141 | Saltwater-bath leak tests on printed capsules | Due Nov 11, untouched since Oct 21; likely covered by RR-22/RR-23 | Nov 11 | Decide: cancel as superseded, or re-date. Needs your call |
+| SCO-302 | 3D viewer for the buoy CAD (this branch) | In Progress, in the Future-scope milestone, not on the MVP path | none | Finish and open the PR (Mon); do not let it eat the week |
+| SCO-108 | Submersion re-test of the face-seal joint | In Test, no update since Nov 1 | none | Confirm result or fold into SCO-296 |
+| SCO-195 | Santa Cruz yacht club message | **Email sent (John, Nov 9).** Not in the open Linear list | Nov 13 | Watch for a reply |
+| SCO-185 | Kaneohe Bay permits | Moved to Jan 4, 2027 | Jan 4 | None |
 
 ## Plan by day
 
 | Day | Issue | Task | Est. | Status |
 |---|---|---|---|---|
-| Mon Nov 2 | n/a | WAR due at ENGR 194 class | fixed | Todo |
-| Mon Nov 2 | SCO-277 | Plain salt on hand; record the product, label check (no iodine, no anti-caking) and price in the purchase log | 0.1 h | Done (Nov 1) |
-| Mon Nov 2 | SCO-292 | Send the RR-21 plan to Jes (A10); ask to confirm the 0.1 in pass mark | 0.5 h | Todo |
-| Mon Nov 2 | SCO-211 | Hazard form signed by Shoba and submitted; log it | 0 h | Done |
-| Mon Nov 2 | SCO-294, SCO-292 | RR-23 Stage 1 **started 2026-11-02 10:47 PST**: housing (518 g, pegs in, towel inside) in a bucket of fresh water just below the surface with weights. The buoy float uses a separate container | 1.5 h | Running (due Nov 6) |
-| Mon Nov 2 | SCO-270 | Weigh the cap and housing, measure the cap bolt holes, screws and gland bores, log RR-22 fit values (all Not recorded so far); photograph the O-ring seat | 1.5 h | In Progress (due today) |
-| Mon Nov 2 | SCO-172, SCO-292 | **Buoy float test now** in its own container: weigh the water, fresh-water float (freeboard at three marks), salt = water kg × 35/965, dissolve, settle 15 min, read, **start the 24 h salt float**; record times (RR-21 steps 1 to 6) | 3.5 h | Running (SCO-172 due Nov 3) |
-| Tue Nov 3 | SCO-294 | Read RR-23 Stage 1 at 24 h (towel, mass vs 518 g); take the housing and weights out of the bucket. Dry: start Stage 2 (real cable) in the second tub. Wet: isolation plan (A6b) | 1 h | Todo |
-| Tue Nov 3 | SCO-172, SCO-292 | Read the 24 h salt float: freeboard at three marks, seams, water temperature; clean and rinse | 1 h | Todo (due Nov 3) |
-| Tue Nov 3 | SCO-246 | Buy the Home Depot coating (decided); ahead of the Nov 13 coat and cure (SCO-247) | 1 h | In Progress (due Nov 6) |
-| Tue Nov 3 | SCO-195 | Message the Santa Cruz yacht club | 0.5 h | Todo |
-| Wed Nov 4 | n/a | Advisor meeting; Isabella's temperature demo (SCO-259) | fixed | Todo |
-| Wed Nov 4 | SCO-294 | Read RR-23 Stage 2 (second tub) if started Tue | 0.5 h | Todo |
-| Wed Nov 4 | SCO-250 | Reconcile the lid layout: top attachment, SMA bulkhead, two-D-cell bay | 3 h | Todo (due Nov 6; moved from Thu to fit capacity) |
-| Thu Nov 5 | SCO-180 | **Soak no longer starts today.** The 4-week soak moves to real seawater or a marina over winter break; new start and end dates to be set | 0 h | Moved (dates TBD) |
-| Thu Nov 5 | SCO-294 | RR-23: read Stage 2; if both pass, repeat in plain salt water (extends to 1 week) | 0.5 h | Todo |
-| Thu Nov 5 | SCO-293 | Cap v2 CAD exists (Nov 2: Ø4.5 mm holes, extended cable outlet). Decide after the RR-23 result whether more changes are needed; merge the SMA bulkhead and D-cell bay (SCO-162, SCO-250) if not yet in; then print | 2 h | In Progress (due Nov 13) |
-| Thu Nov 5 | SCO-171 | Self-righting tilt test 90° and 180° (buoy is in the tub Tue to Wed); log in the register and matrix row R-18 | 3 h | Todo (moved from Nov 3; Linear re-dated to Nov 5) |
-| Fri Nov 6 | SCO-260 | System architecture and demos for Dr. Krishnan and Dr. Kuczenski; meeting 6 PM, not confirmed | 3 h + meeting | Todo |
-| Fri Nov 6 | SCO-229 | Simulator labels and context (spill-over if Thu runs long) | 1 h | Todo |
-| Fri Nov 6 | n/a | Buffer; travel unconfirmed | | |
+| Mon Nov 9 | SCO-293 | Cap v2 printed, SMA bulkhead and D-cell bay in, screws drop through; passed the 4-day soak | 0 h | Done (Nov 9, per John) |
+| Mon Nov 9 | SCO-249 | On hold: John is modifying the test rig; nothing planned until he says | 0 h | Waiting (on John) |
+| Mon Nov 9 | SCO-302 | 3D viewer for the buoy CAD | 0 h | Done (Nov 9, per John) |
+| Tue Nov 10 | SCO-247 | Apply the waterproof coating (Home Depot, bought Nov 3) to both buoys; start the cure clock | 2 h | Todo (due Nov 13) |
+| Tue Nov 10 | SCO-177 | Choose the pressure method (bucket, hand pump, gauge) and write the safe procedure and pass mark | 1.5 h | Todo (overdue 1 day) |
+| Tue Nov 10 | SCO-141 | Decide: cancel as superseded by RR-22/RR-23, or re-date | 0.25 h | Todo (due Nov 11) |
+| Tue Nov 10 | n/a | Buoy-to-shore link milestone (David, Isabella); nothing for John | fixed | |
+| Wed Nov 11 | SCO-162 | SMA bulkhead and two-D-cell bay confirmed on the printed cap | 1.5 h | Todo (due Nov 13) |
+| Wed Nov 11 | SCO-296 | File the RR record, register and matrix rows for the cap v2 soak (numbers marked Not recorded where missing) | 1 h | Todo (no date) |
+| Wed Nov 11 | SCO-247 | Check coat 1 cure; second coat if the can says to | 0.5 h | Todo |
+| Thu Nov 12 | SCO-207 | Move calculations, permit research and design rationale into the thesis | 3 h | Todo (due Nov 13) |
+| Thu Nov 12 | SCO-222 | Written answers from the Corps, Coast Guard, Coastal Commission: chase | 1 h | Todo (due Nov 13) |
+| Thu Nov 12 | SCO-199 | Send Navid the permitting and tethering research | 0.5 h | Todo (no date) |
+| Fri Nov 13 | n/a | Team meeting (Zoom) | fixed | |
+| Fri Nov 13 | SCO-177 | Pressure-test sealed housings with the v2 cap, if cured and printed; else re-date to Nov 16 | 2 h | Todo (re-date) |
+| Fri Nov 13 | n/a | Buffer; refresh Linear, draft next week's Carried over | | |
 
 ## Carried over from last week
 
 | Issue | Task | Last week | Now |
 |---|---|---|---|
-| SCO-211 | Hazard form, advisor signature | Waiting (Tue Oct 27) | Done Nov 2 (signed by Shoba, submitted) |
-| SCO-219 | PETG soak, pilot stage | Done | Done (longer soak continues) |
-| SCO-242 | Dock/boat attachment decision | Done | Done |
-| SCO-254, SCO-229, SCO-255, SCO-252, SCO-256, SCO-264, SCO-265 | Simulator, drawings, website, advisor sheet, meeting filed | Done | Done; **SCO-229 reopened** Oct 30 |
-| SCO-266, SCO-269 | Housing CAD and print; cap CAD | Done | Done |
-| SCO-270 | Print the housing cap, gland fit coupon first | Cap printed and **assembled Nov 1 (RR-22)**: bolt holes too narrow, screws forced and cut threads; weight, gland fit values not recorded | Oct 30 | Mon Nov 2: weigh the cap, record gland and hole dimensions, close. Linear due Nov 2 |
-| SCO-221 | Requirements test matrix | In Review | Not in Linear's open lists; confirm Done |
-| SCO-246 | Choose and order the coating | In Progress | Moved: confirm Mon Nov 2 |
-| SCO-243 | Eye/attachment point CAD | In Progress | Canceled Nov 1: rope through the floatation through-holes instead |
-| SCO-261, SCO-268 | Partner overview; PG11 lid hole wording | Done | Done |
-| SCO-147 | Decide the hung configuration | Todo | Done Nov 1 |
-| SCO-262 | Tub storage space | Todo | Canceled Nov 1: two tubs already available |
-| SCO-276 | Hang-hole FEA in PETG | Todo | Done Nov 1; filed as RR-20 (min SF about 12.4) |
-| SCO-185 | Kaneohe Bay permits | Not checked | Moved: due Jan 4, 2027 (winter break), per John Nov 1 |
-| SCO-168, SCO-203 | Salt and meter; MBARI outreach | Canceled | SCO-277 now carries the salt only (no meter, no Instant Ocean) |
+| SCO-171 | Self-righting tilt test 90° and 180° | Todo (Nov 5) | Done Nov 6 |
+| SCO-246 | Choose and source the waterproof coating | In Progress | Done Nov 6 |
+| SCO-260 | System architecture and demos for the advisors | Todo (Fri Nov 6) | Done Nov 6 |
+| SCO-164 | Lock the deployment window and backup site | not in plan | Done Nov 6 |
+| SCO-208, SCO-210 | Alternatives analysis (solar), California vs Hawaii assumptions | not in plan | Done Nov 6 |
+| SCO-250 | Reconcile the lid layout | Done Nov 4 | Done |
+| SCO-294 | RR-23 Stage 1 seal test | Done Nov 4 (failed: leak, +595 g) | Closed; follow-up SCO-296 |
+| SCO-172 | Salt-water float, waterline | Todo (Nov 4) | Not in the open list; confirm Done |
+| SCO-229 | Simulator labels | Todo (Fri Nov 6) | **Slipped**, In Progress, overdue 3 days |
+| SCO-293 | Cap v2 | In Progress | Still In Progress (due Nov 13) |
+| SCO-180 | 4-week float soak | Moved to winter break | Linear due Dec 11, still dated inside Phase 2: re-date |
+| SCO-248 and foam tasks | Wedge/ring buoy float test | Canceled Nov 4 | Canceled |
 
 ## Fixed events and dependencies
 
-- **Mon Nov 2:** WAR due. Isabella orders the hydrophone (SCO-158).
-- **Wed Nov 4:** advisor meeting, temperature demo.
-- **Thu Nov 5:** David and Isabella run the LoRa one-hop (SCO-155, due Nov 5). Not John's, but the buoy electronics for SCO-182 depend on it.
-- **Fri Nov 6:** Shoba's team meeting and the SCO-260 review (6 PM, not confirmed). The 10/30 notes record a contradiction: SCO-260 wants John presenting, while the meeting plan says John is travelling.
-- **Nov 9 to Nov 13:** conference; Fri Nov 13 meeting on Zoom.
-- **Needs from others:** Isabella's wiring and Rev A current numbers for the lid layout (SCO-250); David's help on the simulator (SCO-229).
+- **Tue Nov 10:** Buoy-to-shore link milestone (David, Isabella).
+- **Fri Nov 13:** team meeting on Zoom. Power and housing integration milestone date.
+- **Needs from others:** Isabella's Rev A current numbers for the D-cell bay (SCO-162); David's help on the simulator (SCO-229).
+- **Wed Nov 18 onward:** Dr. Krishnan is away after Nov 18 (SCO-260 notes); get advisor sign-offs before then.
 
 ## Phase 2 check
 
-- **Float soak moved out of the MVP chain.** The 4-week soak (SCO-180) now runs in real seawater or at a marina over winter break, so it no longer sets the Dec 4 MVP date. The Float soak and battery endurance milestone (Dec 2) and exit criterion 9 need new dates; propose Jan 2027 once the site is known. Until then the MVP chain is the electronics: SCO-155 LoRa hop (Nov 5), SCO-25, SCO-182 (Dec 4).
-- **Buoy proof tests milestone (Oct 30) is past due at 31%:** open SCO-171, 172, 243, 246, 147, 250, 277 and others. Re-date it or finish the tests; do not leave it showing a past date.
-- **Next milestones:** Duty-cycle firmware on the bench and bench bring-up, Nov 6 (David and Isabella); Buoy-to-shore link Nov 10; Power and housing integration Nov 13 (SCO-162 is John's, due Nov 13 during the conference).
-- **Exit criteria advanced this week:** 3 (salt-water float: SCO-172), 2 (self-righting: SCO-171), 9 (float soak: moved to winter break, SCO-180). Criteria 1, 4 and 8 are not touched this week.
-- **Risk:** SCO-247, 248, 162 and 183/195 are all due Nov 13, the conference week, and need the physical lab. Plan to re-date them Friday.
+- **Next milestone:** Buoy-to-shore link Nov 10 (not John's), then **Power & housing integration Nov 13 at 10%**. It is the one at risk: it needs the v2 cap printed, the two-D-cell bay, and the pressure test. A Nov 13 finish is unlikely with print plus cure; plan on Nov 16 to 17 for the pressure test.
+- **Slack to Dec 4 MVP: 25 days.** The soak left the MVP chain, so the chain is the cap, the sealed housing test, integration build (SCO-279, due Nov 27) and SCO-182 (Dec 4). SCO-279 needs a sealed, passing housing by about Nov 20.
+- **Exit criteria advanced:** 2 (self-righting) and 3 (salt float) closed last week. This week advances the waterproof test (SCO-177), the criterion the phase exit actually names.
+- **Buoy proof tests milestone (Oct 30) is 70% and 10 days past due:** open SCO-176, 245, 247, 249, 253, 108, 273, 274. Re-date it or move items out.
+- **SCO-176** (1-week turbidity pod soak, due Nov 24) must start by Nov 17.
 
-## Next week tail (Nov 9 to Nov 13, conference)
+## Next week tail (Nov 16 to Nov 20)
 
 | Issue | Task | Due |
 |---|---|---|
-| SCO-249 | Hung-from-dock/boat V1 test rig, deployment and retrieval procedure | Nov 10 |
-| SCO-247 | Apply and cure the waterproof coating on both buoys | Nov 13 |
-| SCO-248 | Float-test the wedge/ring buoy with full payload | Nov 13 |
-| SCO-162 | SMA antenna bulkhead and two-D-cell bay in the lid | Nov 13 |
-| SCO-183, SCO-195 | Ocean test plan outline; one named host | Nov 13 |
-| SCO-199 | Send Navid the permitting and tethering research | no date |
-| SCO-188 | Black-box integration doc per subsystem | no date |
+| SCO-176 | Start the 1-week turbidity pod soak (so it ends by Nov 24) | Nov 24 |
+| SCO-183 | Plan the ocean flotation test | Nov 20 |
+| SCO-245 | Submersion re-test with the top attachment (obsolete since the top attachment was canceled: rescope or cancel) | Nov 20 |
+| SCO-253 | Updated drawings of the new components | Nov 20 |
+| SCO-296 | Face-seal test with the redesigned cap | no date |
+| SCO-279 | Integration build | Nov 27 |
 
 ## Open items
 
-- Test standard: `docs/engineering/test-record-template.md` now merges John's and Isabella's standards (SCO-258). Isabella's own draft still needs to be checked against it.
-- Hawaii: John plans to take one buoy to Hawaii; dates, which buoy and which test (attended, hung) not set. SCO-183, SCO-185, SCO-195 and SCO-180 will change once they are.
-- Santa Cruz seawater trip tentative for the weekend of Nov 7 to 8 (SCO-292); may be dropped.
-- Housing: SCO-293 (cap redesign, due Nov 13) and SCO-294 (seal tests, due Nov 6) filed Nov 1 from the first assembly (RR-22). SCO-245 (submersion re-test with the top attachment) is obsolete now the top attachment is canceled: rescope or cancel.
-- Open PR awaiting review: #273 (prototype coating decision).
-- New this branch: RR-20 (hang-hole FEA record), its two Fusion reports, and `float-hang-holes-2026-11-01.step`. The FEA still models the housing as steel and loads +Z; a physical hang check is SCO-274.
-- Gap issues from the requirements matrix: SCO-273 (biofouling test) and SCO-274 (FEA physical check) are John's; SCO-271 (turbidity accuracy) and SCO-272 (hydrophone marks) are Isabella's.
-- Later: SCO-171 follow-ons SCO-253 (updated drawings, Nov 20), SCO-245 (seal re-test with the top attachment, Nov 20), SCO-176 (1-week turbidity pod soak, due Nov 24, so it must start by Nov 17), SCO-182 (integrated MVP test, Dec 4), SCO-183 (ocean test plan, Nov 20).
-- SCO-229, SCO-255 and SCO-252 were closed at John's direction on Oct 28. The V0/V1 labels, the written drawing-sync rule and the drawing revision notes were not done; SCO-229 is now reopened for the non-engineer labels.
+- Test standard: every test uses `docs/engineering/test-record-template.md`; SCO-177 and SCO-296 each need a record with the pass mark written before the run.
+- Flex Seal partnership: first email (Nov 8, pr@) was redirected by support on Nov 9 to humans@flexsealproducts.com; John sent the partnership email there Nov 9. Waiting on a reply. Do not use their name or logo on the site until they answer.
+- Hawaii: one buoy to Hawaii; dates, which buoy and which test not set.
+- Gap issues from the requirements matrix: SCO-273 (biofouling test) and SCO-274 (FEA physical check) are John's.
+- Later: SCO-182 (integrated MVP test, Dec 4); SCO-180 (4-week soak, winter break).
 - Not John's: SCO-206, SCO-258, SCO-259, SCO-158, SCO-216 (Isabella); SCO-263, SCO-237, SCO-289, SCO-290, SCO-291 (David).
-

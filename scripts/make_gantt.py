@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "docs" / "planning" / "wbs-tasks.csv"
 PDF_PATH = ROOT / "docs" / "planning" / "gantt-fall-2026.pdf"
 
-DETAIL_START = date(2026, 11, 4)
+DETAIL_START = date(2026, 11, 9)
 DETAIL_END = date(2026, 12, 11)
 DETAIL_LABEL = f"{DETAIL_START.strftime('%b')} {DETAIL_START.day} &ndash; {DETAIL_END.strftime('%b')} {DETAIL_END.day}, {DETAIL_END.year}"
 OVERVIEW_START = date(2026, 10, 5)  # a Monday
