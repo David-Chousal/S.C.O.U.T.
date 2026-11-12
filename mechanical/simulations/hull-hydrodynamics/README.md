@@ -73,6 +73,56 @@ To redo it properly: a 30 degree or larger start, a finer mesh at the fins, a lo
 as the reference. Saved field files contained denormal numbers (for example `-1.6e-312`) that OpenFOAM cannot read
 back; zero them before `reconstructPar`.
 
+## Test Assembly 10 multi-night run (set up 2026-11-12, not yet run)
+
+Rerun of the roll-decay CFD above on the [Test Assembly 10](../../cad/floatation/test-assembly-10.md) float, as
+[SCO-309](https://linear.app/scout1/issue/SCO-309) asks: a **30 degree** start, a **6 s** run, and a **much finer
+fin mesh**. It runs on this Mac only, stopped each morning and resumed each night. **No result yet; the cases are
+meshed and the stop and resume logic is tested on a short run, but the real solve has not been started.**
+
+| Item | Test Assembly 9 run | Test Assembly 10 run |
+|---|---|---|
+| Fin cells | 5 mm (level 3) | **1.25 mm (level 5)**, fins are their own STL region |
+| Hull cells | 5 mm | 5 mm |
+| Cells with fins / no fins | 141,338 / not recorded | 218,918 / 136,336 (checkMesh OK, max skewness 2.85 / 1.33, max non-orthogonality 64 / 38 degrees) |
+| Start tilt, end time | 10 degrees, 3 s | 30 degrees, 6 s |
+| Float mass | 2.7574 / 2.674 kg | 2.8202 / 2.7518 kg (set for the Test Assembly 10 draft estimate of 2.93 in) |
+| Float geometry | Test Assembly 9 | Test Assembly 10: hull profile and fins read from the Fusion export; tip radius 124.0 mm, fins 26.0 to 44.5 mm above the keel |
+
+Assumptions to check: the centre of gravity is the Test Assembly 9 value (59.9 mm with fins, 60.8 mm without), as
+the Test Assembly 10 note says; the rigid-body inertia is unchanged (0.0131, 0.0131, 0.020 kg m^2); the hull is closed
+at 158 mm above the keel (loops, lip, bore and lettering are not modelled). With those, the hull geometry gives GM of
+1.25 in with fins and 1.27 in without, against the note's hand estimate of 1.30 in. The statics solver has **not**
+been re-run on Test Assembly 10.
+
+**Cost.** Timed on a 0.03 s start-up of the fins case on 7 ranks: about 0.85 s per step at a step of about 5e-4 s.
+Extrapolated (early steps only, it will change once the float is swinging): roughly 3 to 5 hours per case, perhaps
+4 to 7 hours with both cases running together. This replaces the earlier 1 to 2 day guess, which assumed a mesh of
+about 1 million cells.
+
+**How to run it** (scripts in [`openfoam/`](openfoam/); working folder `~/scout-cfd`, outside the repo):
+
+```bash
+# once: export the Float occurrence of Test Assembly 10 from Fusion as STL (mm, high refinement) to ~/scout-cfd/ta10_float_fins_raw.stl
+python make_hull_ta10.py ta10_float_fins_raw.stl .   # watertight hulls, fins as a separate region
+python make_cases_ta10.py                             # case folders in ~/scout-cfd/foam
+./night.sh prepare                                    # mesh, set fields, decompose (done 2026-11-12)
+./night.sh resume                                     # each night: start or continue both cases
+./night.sh stop                                       # each morning: write state and stop cleanly
+./night.sh status
+python analyze_decay.py ~/scout-cfd/foam/ta10-fins ~/scout-cfd/foam/ta10-nofins
+```
+
+`resume` refuses to start on battery power (`--force` overrides), zeroes denormal numbers in the newest saved time
+(they break a restart; 948 were found in the test), and wraps each solver in `caffeinate -dimsu` so the Mac cannot
+sleep while it runs; the hold ends by itself when the solver stops. `resume --until 07:00` also stops both cases
+cleanly at that time. A full write is made every 15 minutes of wall time and the last four are kept, so a crash loses
+at most 15 minutes. Closing the lid still sleeps the Mac. The OpenFOAM app shell crashes on long `&&` chains and on
+`rm -rf` with a glob, so `night.sh` calls it one step at a time and uses `/bin/rm`.
+
+The log reports the rigid-body orientation **relative to the start**, so the absolute tilt is the start tilt plus
+that angle; `analyze_decay.py` prints the relative angle.
+
 ## Limits
 
 - Fins and lugs are not meshed; potential flow cannot capture fin drag. The first OpenFOAM roll-decay case is
