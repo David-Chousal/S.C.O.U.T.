@@ -38,6 +38,30 @@ than sourcing off-the-shelf — not pursued, and the
 option consistent with the project's in-house-additive approach (see
 [floatation → Manufacturing approach](../floatation/README.md)).
 
+## SMA cap and electronics stack CAD, 2026-11-13
+
+From Test Assembly 10 in Fusion ([SCO-162](https://linear.app/scout1/issue/SCO-162)).
+
+| File | What it is |
+|---|---|
+| [`electronics-housing-cap-sma-bulkhead-2026-11-13.step`](electronics-housing-cap-sma-bulkhead-2026-11-13.step) | The Test Assembly 10 electronics cap with an **SMA bulkhead hole**: Ø6.5 mm through, at (0, −42) mm from the cap centre, with a Ø13 × 5 mm spot-face on the underside for the nut. Seal the outside with the marine sealant already chosen. The whip stands straight up from the cap top |
+| [`packaging/electronics-stack-option-c-2026-11-13.step`](packaging/electronics-stack-option-c-2026-11-13.step) | The stackable electronics harness that slides into the housing, batteries on the bottom. See [packaging](packaging/README.md#cad-2026-11-13) |
+
+**Unverified:** the SMA hole size and nut size are assumed (1/4-36 bulkhead), not read from the Adafruit 851 datasheet.
+The cap keeps its three PG11 gland holes and its ten Ø4.5 mm bolt holes (the size corrected on 2026-11-02; physical fit
+of the holes is still unchecked). A cell cradle under the cap was tried and dropped (journal 2026-11-13). Cell venting
+and relief are not in this export.
+
+**Differences from earlier caps, recorded so they are not missed:**
+
+- **Vertical PG11 holes.** In this export the three PG11 bores run straight up through the cap (Test Assembly 10,
+  [`test-assembly-10.md`](../floatation/test-assembly-10.md)), not sideways from a raised gland deck as decided on
+  2026-10-30 ([`electronics-housing-cap-sideways-glands-2026-10-30.step`](electronics-housing-cap-sideways-glands-2026-10-30.step)).
+  Whether Test Assembly 10 deliberately supersedes that decision is not recorded.
+- **Thin gland wall.** The wall at each PG11 bore is about 1.27 mm, below the 3 to 4 mm target of
+  [RR-24](../../test/rr-24-gland-fit-coupon-2026-11-02.md), whose result is Partial. The nut can bottom out on the thread
+  if the wall is too thin. Not yet resolved.
+
 ## Current seal — large AS568-247 O-ring, 2026-10-16
 
 The electronics housing seals with an **AS568-247** O-ring (ID 4.609 in x CS 0.139 in, 117.07 x 3.53 mm) on the
