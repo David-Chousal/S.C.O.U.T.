@@ -812,6 +812,26 @@ cells sealed inside; about 2.6 kg lead ballast; removed at the end.*
 
 ---
 
+## 10a. Sent 2026-11-13: 30-day float test from John's boat
+
+John sent the question email to two agencies. Plan as written: a buoy (about 2.9 kg, 9.8 in wide, 7.5 in tall) floating on a
+line tethered to John's 18 ft Sea Ray in its wet slip at the Kāneʻohe Yacht Club for about 30 days from about 2026-12-14,
+unanchored, no bottom contact, not in a managed area. Each was asked for a written "no permit needed" or its requirements.
+Replies pending ([SCO-185](https://linear.app/scout1/issue/SCO-185)).
+
+| Agency | Sent to | Status |
+|---|---|---|
+| US Coast Guard, Oceania District (formerly D14), Waterways | D14-DG-PJ-dpw@uscg.mil | Sent. Address is on a 2023 Local Notice to Mariners but not labeled as the private-aids contact ⚠️. Sector Honolulu (808) 842-2600 as a phone fallback |
+| Army Corps, Honolulu District Regulatory Branch | CEPOH-RO@usace.army.mil | Sent. Address from a 2018 public notice ⚠️; phone (808) 835-4303 |
+| DLNR DOBOR | not sent | No verified email; Oʻahu District Office (808) 832-3520, Kāneʻohe Bay line (808) 587-1966 |
+| Kāneʻohe Yacht Club | not sent here | John is handling the club ([SCO-194](https://linear.app/scout1/issue/SCO-194)) |
+
+**Checked 2026-11-13 against web sources.** The 72-hours-in-14-days anchoring limit (HAR 13-235-9) and the Sector Honolulu
+number were confirmed. District 14 is now the Oceania District. The Coast Guard's position on a scientific buoy and the
+Corps' position on a 30-day unanchored float are still unconfirmed ❓; only the agencies' written answers settle them.
+
+---
+
 ## 11. Risks and open items
 
 | Item | Why it matters | Next step |
