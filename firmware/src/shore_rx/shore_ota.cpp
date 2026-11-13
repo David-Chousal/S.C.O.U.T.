@@ -83,7 +83,9 @@ static void add_data(const char *args) {
         return;
     }
     size_t n = strlen(end + 1) / 2;
-    if (n == 0 || offset + n > g_job.length || !unhex(end + 1, g_job.image + offset, n)) {
+    // Compare against remaining room first — `offset + n` can wrap on a huge forged offset.
+    if (n == 0 || offset >= g_job.length || n > g_job.length - offset ||
+        !unhex(end + 1, g_job.image + offset, n)) {
         Serial.printf("ota: error data at %lu\n", offset);
         drop_job();
     }

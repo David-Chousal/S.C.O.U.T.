@@ -284,7 +284,7 @@ with only the radio and the WiFi transport left out: a member's request came bac
 **Where the build differs from §3–§7:**
 
 - **The stub gets 24 KB, not 16 KB, and the application starts at `0x8000`.** The stub is
-  21,016 bytes: the Adafruit core links its SPI DMA, USB and UART objects. The core's linker
+  20,980 bytes (21,016 until its build stopped embedding a machine path, SCO-313; a Linux build is a few bytes different, so the header is generated on macOS): the Adafruit core links its SPI DMA, USB and UART objects. The core's linker
   script aligns the application to `0x2000`, so the next slot up is `0x8000`. That costs 8 KB of
   a 256 KB part and caps the image at 224 KB.
 - **Two image slots on the card, `FW/A.BIN` and `FW/B.BIN`, instead of `GOOD.BIN` and

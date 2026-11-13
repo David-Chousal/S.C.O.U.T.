@@ -1,10 +1,13 @@
 /*
  * downlink_key_example.h — TEMPLATE for the settings-downlink HMAC keys (SCO-198).
  *
- * Copy to src/downlink_key.h (gitignored) and replace every key with 32 random bytes, e.g.
+ * Copy to src/downlink_key.h (gitignored), replace every key with 32 random bytes, e.g.
  *     python3 -c "import secrets; print(secrets.token_hex(32))"
- * The same per-buoy key goes on that buoy and on the shore station (SCOUT_CMD_KEY_<id> for the
- * Python service), and nowhere else: not the console, not the repo, not a chat.
+ * then delete the SCOUT_DOWNLINK_KEY_IS_EXAMPLE define below — shipped feather_m0 /
+ * feather_esp32s3_shore builds refuse a downlink_key.h that still has that marker.
+ * The same per-buoy key goes on that buoy and on the shore station (compiled into both;
+ * SCOUT_CMD_KEY_<id> only for the optional Python USB host), and nowhere else: not the console,
+ * not the repo, not a chat.
  *
  * These example keys are public. A build only falls back to this file when it is compiled with
  * -DSCOUT_DOWNLINK_ALLOW_EXAMPLE_KEY (the compile-check environment), and it says so at boot.

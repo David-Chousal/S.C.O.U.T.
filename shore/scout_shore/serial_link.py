@@ -22,13 +22,18 @@ Standard library only, like the rest of the package.
 
 from __future__ import annotations
 
+import logging
 import os
+import select
 import stat
+import time
 import tty
 from collections import deque
 from pathlib import Path
 
 from .bench_frames import parse_rx_line
+
+log = logging.getLogger(__name__)
 
 # The longest real line is an RX line for the 140-byte payload ceiling (~320 characters).
 # Anything far longer is line noise, and must not grow the buffer without bound.
@@ -121,6 +126,26 @@ class SerialFrameLink:
             self.malformed_lines += 1
             return
         if frame is None:
+            if text.startswith("shore_rx: radio=FAIL"):
+                # The S3 repeats this every 30 s; surface it so journalctl shows why nothing arrives.
+                log.error("shore station radio is down: %s", text)
             self.ignored_lines += 1
         else:
             self._payloads.append(frame.payload)
+
+
+def write_all(fd: int, data: bytes, deadline_s: float = 5.0) -> None:
+    """Write every byte even on a non-blocking fd; raise if the port never drains."""
+    view = memoryview(data)
+    deadline = time.monotonic() + deadline_s
+    while view:
+        try:
+            n = os.write(fd, view)
+        except BlockingIOError:
+            n = 0
+        if n:
+            view = view[n:]
+            continue
+        if time.monotonic() >= deadline:
+            raise OSError("timed out writing to the serial port")
+        select.select([], [fd], [], max(0.0, deadline - time.monotonic()))

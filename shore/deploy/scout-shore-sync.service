@@ -1,0 +1,40 @@
+# Optional companion to scout-shore.service: push data-live CSVs to the console and write
+# N…/S… settings lines to the S3 over USB. Preferred first-boot path is the S3's own WiFi
+# device API (no computer); use this only for the USB fallback.
+#
+# Install (after editing the serial path and creating the credential file):
+#   sudo cp shore/deploy/scout-shore-sync.service shore/deploy/scout-shore-sync.timer \
+#       /etc/systemd/system/
+#   sudo install -m 600 /dev/null /etc/scout-shore-sync.env
+#   # put exactly these two lines in /etc/scout-shore-sync.env (mode 600, root-owned):
+#   #   SCOUT_CONSOLE_URL=https://console.scoutscu.com
+#   #   SCOUT_CONSOLE_TOKEN=scd_…
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now scout-shore-sync.timer
+#
+# Do not put the device token in this unit file — systemd exposes Environment= to unprivileged
+# D-Bus clients. Load secrets from EnvironmentFile= instead.
+#
+# The receiver service holds the port open for reads; this unit opens it briefly for writes.
+# If both fight, stop scout-shore for the sync window or rely on WiFi push from the S3.
+
+[Unit]
+Description=S.C.O.U.T. shore station console sync (USB fallback)
+Documentation=https://github.com/David-Chousal/S.C.O.U.T./blob/main/shore/README.md
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=pi
+Group=pi
+SupplementaryGroups=dialout
+WorkingDirectory=/home/pi/S.C.O.U.T./shore
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/scout-shore-sync.env
+ExecStart=/usr/bin/python3 scripts/sync_console.py --data data-live --serial /dev/serial/by-id/REPLACE_ME
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false

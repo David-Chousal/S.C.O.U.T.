@@ -10,9 +10,11 @@ Schematics, PCB layout, wiring diagrams, and electrical test records for the SCO
 >
 > ⚠️ **Rev A is superseded for the prototype build (noted 2026-10-23).** The current wiring
 > reference is the **Rev B** [Electronics Drawing Set](../docs/engineering/electronics-drawing-set.md)
-> (2026-10-12). Two Rev A choices described below no longer apply: the turbidity sensor is the
+> (2026-10-12). Three Rev A choices described below no longer apply: the turbidity sensor is the
 > **Seeed Grove 101020752 at 3.3 V, wired straight to A1 with no divider** (not the 5 V SEN0189),
-> and power is **two primary Li-SOCl₂ D cells** ([ADR-0007](../docs/decisions/0007-primary-cell-power-source.md),
+> the DS18B20 data line is **D12** in firmware and the Rev B set (the Rev A schematic, the
+> interconnect SVG and the Rev A notes below still say D5 — open for the ECE lead, see
+> [`facts.md`](../docs/hub/facts.md)), and power is **two primary Li-SOCl₂ D cells** ([ADR-0007](../docs/decisions/0007-primary-cell-power-source.md),
 > working), not the LiPo + PID 6106 path. The Rev A sections are kept as the record of that
 > design and its verification.
 

@@ -54,21 +54,29 @@ export const SHORE_STEPS: readonly HelpStep[] = [
 ];
 
 export const USB_FALLBACK_COMMAND =
-  "SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…";
+  "cd shore && SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…";
 
 export const BUOY_STEPS: readonly HelpStep[] = [
   {
     title: "Flash the firmware",
     body: (
-      <>Set <code>BUOY_ID</code> in <code>firmware/src/config.h</code> and flash it with PlatformIO. The buoy reports as <code>SCOUT-&lt;id&gt;</code>.
-        To change its settings by radio later, also give it a downlink key in <code>src/downlink_key.h</code> (never committed) and the
-        same key to the shore station as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds that key.</>
+      <>Before flashing, generate gitignored <code>src/ota_pubkey.h</code> (<code>python3 firmware/tools/ota_release.py keygen --key ~/scout-ota.key --header firmware/src/ota_pubkey.h</code>) —
+        the shipped <code>feather_m0</code> env builds with <code>SCOUT_OTA</code> and will not compile without it. Set <code>BUOY_ID</code> in
+        <code>firmware/src/config.h</code> and flash <code>feather_m0</code> (never <code>*_downlink</code>). The buoy reports as <code>SCOUT-01</code>,
+        <code>SCOUT-02</code>, … (two digits). For radio settings, generate <b>one</b> key per buoy and put those <b>same</b> bytes in gitignored
+        <code>downlink_key.h</code> on the buoy (that buoy&rsquo;s row only) and on the S3 (<b>every</b> buoy the station commands — never leave a
+        public example key for an active id). Copy from <code>downlink_key_example.h</code>, add a row if <code>BUOY_ID</code> is not 1 or 2,
+        <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>, and flash both. Only the optional Python USB host also needs that key as
+        <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it. Full order: <code>docs/engineering/first-boot-checklist.md</code>.</>
     ),
   },
   {
     title: "Power it on near a shore station",
-    body: <>Add it first with <b>Add buoy</b> on Fleet, then power it on. It sends one packet straight away, and the dialog turns green
-      as soon as the shore station passes it on. A buoy that is not added shows up on its own with that same first packet.</>,
+    body: <>Add it first with <b>Add buoy</b> on Fleet, then power it on. On a normal cold start with enough battery it sends one packet
+      straight away (boot hello); after a watchdog reset it is skipped — wait for the next UTC slot. In CRITICAL power mode (a flat pack, or a bench
+      supply with no battery on the sense input) it sends <b>nothing</b>, slots included, until the battery recovers: Serial prints
+      <code>power: … mode=CRITICAL</code> at boot. Charge or connect the pack, then reset the buoy. The dialog turns green when the shore station passes a packet on. A buoy that is not added shows up on its
+      own with that same first packet.</>,
   },
   {
     title: "Give it a name",

@@ -241,7 +241,11 @@ static void decide_join(ScoutWifiWatch *w, const ScoutWifiInputs *in, ScoutWifiA
     if (in->connected || !in->configured) {
         a->stop_join = w->joining && !in->connected;
         w->joining = false;
-        w->join_requested = false;
+        if (!in->configured) {
+            w->join_requested = false;
+        }
+        /* A save while connected stays pending: the station drops the old network after a
+         * changed save, and that drop may land a step later. */
         return;
     }
     bool phone_on_setup = w->portal_open && in->ap_clients;

@@ -167,6 +167,7 @@ static void net_task(void *) {
     bool was_up = false;
     bool sntp_started = false;
     uint32_t next_push = 0, next_settings = 0, next_ntp_retry = 0, backoff = BACKOFF_MIN_MS;
+    bool token_refused = false, told_no_token = false;  // one prompt per bad-token episode
     for (;;) {
         uint32_t now_ms = millis();
         bool up = shore_wifi_connected();
@@ -180,30 +181,49 @@ static void net_task(void *) {
             }
             was_up = up;
         }
-        ScoutWifiConfig config;
-        shore_wifi_store_get(&config);
-        if (!up || !config.token[0]) {
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            continue;
-        }
-        if (!sntp_started) {
+        // NTP needs only WiFi — do not wait on a console token that may arrive later via SoftAP.
+        if (up && !sntp_started) {
             sntp_set_time_sync_notification_cb(on_ntp);
             configTime(0, 0, "pool.ntp.org", "time.google.com", "time.cloudflare.com");
             sntp_started = true;
             next_ntp_retry = now_ms + NTP_RETRY_MS;
         }
-        bool ntp_due;
-        {
-            ShoreLock lock;
-            ntp_due = scout_clock_ntp_due(&g_shared.clock, (uint32_t)time(nullptr));
+        if (up && sntp_started) {
+            bool ntp_due;
+            {
+                ShoreLock lock;
+                ntp_due = scout_clock_ntp_due(&g_shared.clock, (uint32_t)time(nullptr));
+            }
+            if (ntp_due && (int32_t)(now_ms - next_ntp_retry) >= 0) {
+                sntp_restart();  // SNTP re-syncs hourly on its own; this covers a sync gone stale
+                next_ntp_retry = now_ms + NTP_RETRY_MS;
+            }
         }
-        if (ntp_due && (int32_t)(now_ms - next_ntp_retry) >= 0) {
-            sntp_restart();  // SNTP re-syncs hourly on its own; this covers a sync gone stale
-            next_ntp_retry = now_ms + NTP_RETRY_MS;
+        if (shore_wifi_store_take_creds_changed()) {
+            backoff = BACKOFF_MIN_MS;
+            next_push = next_settings = now_ms;
+            token_refused = false;
+            told_no_token = false;
+        }
+        ScoutWifiConfig config;
+        shore_wifi_store_get(&config);
+        if (up && !config.token[0] && !told_no_token) {
+            Serial.print("console: no device token saved; paste one on the setup page (hold BOOT 3 s)\n");
+            told_no_token = true;
+        }
+        if (!up || !config.token[0]) {
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
         }
         if ((int32_t)(now_ms - next_push) >= 0) {
             size_t left = 0;
             int code = push_once(&left);
+            if ((code == 401 || code == 403) && !token_refused) {
+                // The setup AP closed a minute after WiFi came up; reopen it once so a new token
+                // can be pasted without the BOOT button or a reflash.
+                token_refused = true;
+                shore_wifi_open_setup();
+            }
             if (code == 0 || code == 200) {
                 backoff = BACKOFF_MIN_MS;
                 next_push = now_ms + (left ? 0 : 1000);

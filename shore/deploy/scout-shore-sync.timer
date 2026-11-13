@@ -1,0 +1,15 @@
+# Runs scout-shore-sync.service every minute (USB fallback to the console). Prefer the S3's
+# own WiFi push when available — then this timer is unnecessary.
+
+[Unit]
+Description=S.C.O.U.T. shore console sync every minute (USB fallback)
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=15s
+Persistent=true
+Unit=scout-shore-sync.service
+
+[Install]
+WantedBy=timers.target

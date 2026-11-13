@@ -4,7 +4,10 @@
 > data to the dashboard over WiFi. It is an **Adafruit ESP32-S3 Feather with a LoRa Radio
 > FeatherWing (RFM95W)**, running FreeRTOS so it can listen to LoRa and use WiFi at the same time.
 > Under [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md) it also sends firmware and
-> settings to the buoys. **Its firmware is not written yet** ([SCO-24](https://linear.app/scout1/issue/SCO-24)).
+> settings to the buoys. **Firmware is written** (`feather_esp32s3_shore` in
+> [`firmware/`](../../firmware/README.md)); ⚠️ **not yet verified end-to-end on the board**
+> ([SCO-24](https://linear.app/scout1/issue/SCO-24)). First-bench steps:
+> [`first-boot-checklist.md`](first-boot-checklist.md).
 >
 > Rewritten 2026-10-19 from the team's decisions. This page used to describe a Raspberry Pi
 > shore station; that design was replaced on 2026-09-24.
@@ -56,8 +59,9 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 
 ## Software
 
-**On the S3 — receive half written, not yet run on the board** (`firmware/src/shore_rx/`, env
-`feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)). It copies the bench
+**On the S3 — receive path written and compiled, ⚠️ not yet run as a whole on the board**
+(`firmware/src/shore_rx/`, env `feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)).
+It copies the bench
 receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
 decodes it with `scout_packet_decode`, drops repeats on `(buoy_id, record_seq, timestamp)`, and tags it in or
 out of the ±2 min window around a slot. **The slots it tags against follow the daily transmit
@@ -76,8 +80,7 @@ build with public example keys, for CI). Straight after a buoy's packet the stat
 HMAC-signed frame at the buoy's +11 dBm (`lib/scout_downlink`): the 43-byte v2 snapshot of every
 remote setting when a v5 buoy's settings digest differs from the console's, or the 28-byte v1
 `SET_TX_COUNT` when a v4 buoy's count does. ⚠️ The FeatherWing's FCC authorization (open item 3)
-is treated as checked on the team's instruction, but no record of the check exists yet. Keys go in the gitignored `firmware/src/downlink_key.h`. **Not written:**
-firmware OTA.
+is treated as checked on the team's instruction, but no record of the check exists yet. Keys go in the gitignored `firmware/src/downlink_key.h`. **Firmware OTA is built and ON** in the shipped `feather_esp32s3_shore` / `feather_m0` builds since 2026-11-12 (`SCOUT_OTA`; needs `ota_pubkey.h`); ⚠️ never run on hardware yet.
 
 **WiFi push — written 2026-10-28, not yet run on the board**
 ([SCO-237](https://linear.app/scout1/issue/SCO-237)). The S3 sends every reading to the console
@@ -192,7 +195,7 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
                                                               (run_receiver --link serial) →
                                                               CSVs → sync_console.py; SD card
         ◄── SET_TX_COUNT in the 1 s listen window ──                   ▼
-            (settings: on since 2026-11-04; firmware OTA not built) team console (ADR-0012)
+            (settings: on since 2026-11-04; OTA on since 2026-11-12, ⚠️ not HW-proven) team console (ADR-0012)
 
    raw audio and the full record stay on each buoy's SD card;
    a retrieved card is merged with shore/scripts/import_sd_card.py
@@ -209,13 +212,14 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
    and `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.
 3. **The RFM95W FeatherWing's own FCC authorization**, now that the station transmits (ADR-0008).
-   **Blocks switching on the SCO-198 downlink off the bench.** Owner: CS lead.
+   Downlink and OTA are **already ON** in shipped builds; this item is the missing FCC *record*
+   and range/power sign-off before leaving the bench, not a build gate. Owner: CS lead.
 4. **WiFi and power at each site** (Monterey or Santa Cruz test, Hawaii yacht-club slip). Owner:
    CS + GENG.
-5. **Downlink protocol** (listen windows, chunking, authentication, rollback):
-   [SCO-197](https://linear.app/scout1/issue/SCO-197). The settings slice is built (SCO-198);
-   the listen window's real current and timing and the downlink range are unmeasured, and the
-   window needs Isabella's sign-off.
+5. **Downlink / OTA bench proof** (listen windows, chunking, authentication, rollback on hardware):
+   [SCO-197](https://linear.app/scout1/issue/SCO-197). Protocol and settings slice are built
+   (SCO-198 / SCOUT_OTA); the listen window's real current and timing and the downlink range are
+   unmeasured, and the window needs Isabella's sign-off.
 6. **A battery-backed clock for the shore station?** After a power cut with no WiFi, the S3's
    clock is unset until NTP or USB sets it, so slot-window tags read `unknown` and the downlink
    holds off; readings are unaffected. An RTC add-on (e.g. a PCF8523 or DS3231 FeatherWing) would

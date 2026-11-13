@@ -6,6 +6,11 @@
 
 #if __has_include("downlink_key.h")
 #include "downlink_key.h"
+/* A copy of downlink_key_example.h renamed to downlink_key.h still defines this — refuse it so a
+ * shipped build cannot silently use the public example HMAC keys. */
+#ifdef SCOUT_DOWNLINK_KEY_IS_EXAMPLE
+#error "src/downlink_key.h still has the EXAMPLE keys — replace every key with random bytes. CI/bench envs use -DSCOUT_DOWNLINK_ALLOW_EXAMPLE_KEY instead of copying the example."
+#endif
 #elif defined(SCOUT_DOWNLINK_ALLOW_EXAMPLE_KEY)
 #include "downlink_key_example.h"
 #else

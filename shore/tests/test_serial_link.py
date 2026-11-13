@@ -62,6 +62,13 @@ class LogFileTests(unittest.TestCase):
         self.assertEqual(link.ignored_lines, 6)
         self.assertTrue(link.finished)
 
+    def test_a_shore_radio_failure_is_logged_as_an_error(self) -> None:
+        line = "shore_rx: radio=FAIL - fix CS=10 RST=11 IRQ=9 jumpers, then press RESET\n"
+        link = SerialFrameLink(self._log(line))
+        with self.assertLogs("scout_shore.serial_link", level="ERROR") as logs:
+            self.assertIsNone(link.receive())
+        self.assertIn("radio=FAIL", logs.output[0])
+
     def test_a_malformed_frame_line_is_counted_not_stored(self) -> None:
         link = SerialFrameLink(self._log("RX len=2 rssi=-41 snr=9 n=1 hex=0G\n" + _rx(_payload())))
         self.assertEqual(link.receive(), _payload())

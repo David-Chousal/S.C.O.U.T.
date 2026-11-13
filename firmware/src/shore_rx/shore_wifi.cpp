@@ -128,6 +128,13 @@ static void handle_save() {
         return;
     }
     g_last_reason = 0;
+    bool network_changed = !configured || strcmp(current.ssid, next.ssid) != 0 ||
+                           strcmp(current.password, next.password) != 0;
+    if (network_changed && WiFi.status() == WL_CONNECTED) {
+        // While connected the join logic ignores a save, so leave the old network; the
+        // disconnect makes the next step rejoin with the saved one (the setup AP stays up).
+        WiFi.disconnect(false, false);
+    }
     scout_wifi_saved(&g_watch);
     Serial.printf("wifi: setup page saved network %s\n", next.ssid);
     send_json(200, "{\"ok\":true}");
