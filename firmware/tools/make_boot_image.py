@@ -8,10 +8,14 @@ src/boot/ or lib/scout_fw_state, then rebuild the application:
     python3 firmware/tools/make_boot_image.py
 
 It refuses a stub over 24 KB: the application starts at 0x8000, so a bigger stub would overlap it.
+
+``--check`` builds the stub and exits 1 if the committed header no longer matches it (CI runs
+this, so a change to src/boot/ cannot ship an application carrying a stale stub).
 """
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import pathlib
 import subprocess
@@ -33,10 +37,18 @@ def render(stub: bytes) -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--check", action="store_true", help="fail if the committed header is stale")
+    args = parser.parse_args()
     subprocess.run(["pio", "run", "-e", "scout_boot"], cwd=FIRMWARE, check=True)
     stub = BIN.read_bytes()
     if len(stub) > STUB_MAX:
         sys.exit(f"scout_boot is {len(stub)} bytes, over the {STUB_MAX}-byte slot")
+    if args.check:
+        if HEADER.read_text() != render(stub):
+            sys.exit(f"{HEADER.relative_to(FIRMWARE)} is stale: run tools/make_boot_image.py and commit it")
+        print(f"{HEADER.relative_to(FIRMWARE)}: matches the scout_boot build")
+        return
     HEADER.write_text(render(stub))
     print(f"{HEADER.relative_to(FIRMWARE)}: {len(stub)} bytes ({STUB_MAX - len(stub)} free)")
 
