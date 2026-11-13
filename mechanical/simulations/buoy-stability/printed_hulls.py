@@ -85,8 +85,9 @@ def load_gaps(step: Path):
     zs = np.arange(0.0, z.max() + 1e-9, 1.0); R = np.zeros(len(zs))
     for i, q in enumerate(zs):
         m = np.abs(z - q) <= 0.4
-        if m.any():
-            R[i] = np.percentile([r[m][b[m] == k].max() for k in range(36) if (b[m] == k).any()], 10)
+        ring = [r[m][b[m] == k].max() for k in range(36) if (b[m] == k).any()]
+        if len(ring) >= 24:                  # the surface covers most of the ring; fewer bins is loops or fins alone
+            R[i] = np.percentile(ring, 10)
     top = float(zs[np.where(R > 20)[0].max()])
     return (zs, R), top, float(z[(r < 50) & (z > 10)].max()), float(com), None
 
