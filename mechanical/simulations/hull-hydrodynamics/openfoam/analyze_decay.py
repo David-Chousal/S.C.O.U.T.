@@ -17,7 +17,7 @@ def load(c):
     for a,b in zip(T,A):u[a]=b
     T=np.array(sorted(u));A=np.array([u[k] for k in T])
     return T,A
-for c in ['rolldecay-nofins','rolldecay-fins']:
+for c in (sys.argv[1:] or ['rolldecay-nofins','rolldecay-fins']):  # case folders; a restarted log is fine (last value per time wins)
     T,A=load(c)
     n=len(T)
     # extrema
