@@ -27,6 +27,7 @@ import { runBackup } from "./backup.js";
 import { FLASH_COOKIE, staticAsset } from "./assets.js";
 import { b64url, fromB64url } from "./crypto.js";
 import { handleDeviceApi } from "./device.js";
+import { FIRMWARE_UPLOAD, MAX_BUNDLE_BYTES } from "./firmware.js";
 import {
   apiError, bodyWithin, clearCookie, json, OAUTH_COOKIE, readCookie, redirect, SESSION_COOKIE, setCookie,
 } from "./http.js";
@@ -94,7 +95,9 @@ async function route(request, env, ctx) {
   if (path === "/healthz") return new Response("ok");
   if (path.startsWith("/api/device/")) return handleDeviceApi(request, env, path, ctx);
   if (path.startsWith("/api/v1/")) {
-    if (!bodyWithin(request, 16 * 1024)) return apiError("The request was too large, or sent without a length.", 413);
+    // A signed firmware bundle is the one large body the REST API takes (SCO-312).
+    const limit = FIRMWARE_UPLOAD.test(path) ? MAX_BUNDLE_BYTES : 16 * 1024;
+    if (!bodyWithin(request, limit)) return apiError("The request was too large, or sent without a length.", 413);
     return handleRest(request, env, path);
   }
   const elsewhere = otherHostRedirect(request, env.APP_URL);

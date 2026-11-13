@@ -18,6 +18,7 @@ import { useViewOnlyNote } from "@/lib/view-only-note";
 const SCOPE_HELP: Record<string, string> = {
   "read:telemetry": "read buoys, readings and settings",
   "write:settings": "request a transmit count (members and admins only)",
+  "write:firmware": "upload or cancel signed buoy firmware (admins only)",
 };
 
 interface NewTokenProps {

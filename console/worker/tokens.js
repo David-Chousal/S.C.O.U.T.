@@ -6,7 +6,7 @@
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
 
-export const SCOPES = ["read:telemetry", "write:settings"];
+export const SCOPES = ["read:telemetry", "write:settings", "write:firmware"];
 /** 0 means the token never expires. */
 export const EXPIRY_DAYS = [7, 30, 90, 365, 0];
 const DAY_MS = 24 * 3600 * 1000;
