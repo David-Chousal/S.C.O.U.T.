@@ -54,5 +54,27 @@ class EvaluateTest(unittest.TestCase):
         self.assertEqual(evaluate(runs)[0], PASS)
 
 
+class ReviewedCommitTest(unittest.TestCase):
+    def _patch(self, runs_by_sha: dict[str, list[dict]]):
+        commits = [{"sha": sha} for sha in runs_by_sha]
+        originals = (check_coderabbit._get, check_coderabbit.fetch_check_runs)
+        check_coderabbit._get = lambda url, token: commits
+        check_coderabbit.fetch_check_runs = lambda repo, sha, token: runs_by_sha[sha]
+        self.addCleanup(setattr, check_coderabbit, "_get", originals[0])
+        self.addCleanup(setattr, check_coderabbit, "fetch_check_runs", originals[1])
+
+    def test_finds_a_successful_review_on_an_earlier_commit(self):
+        self._patch({"a1": [_run("completed", "success")], "b2": [_run("completed", "skipped")]})
+        self.assertEqual(check_coderabbit.reviewed_commit("r", "1", "b2", "t"), "a1")
+
+    def test_returns_none_when_no_earlier_commit_was_reviewed(self):
+        self._patch({"a1": [_run("completed", "skipped")], "b2": []})
+        self.assertIsNone(check_coderabbit.reviewed_commit("r", "1", "b2", "t"))
+
+    def test_ignores_the_head_commit_itself(self):
+        self._patch({"a1": [_run("completed", "success")]})
+        self.assertIsNone(check_coderabbit.reviewed_commit("r", "1", "a1", "t"))
+
+
 if __name__ == "__main__":
     unittest.main()
