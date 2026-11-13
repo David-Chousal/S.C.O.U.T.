@@ -38,6 +38,10 @@
 #include "downlink_key_select.h"
 #include "scout_downlink.h"
 #endif
+#ifdef SCOUT_OTA
+#include "ota/ota_buoy.h"
+#include "scout_ota.h"
+#endif
 #include "scout_link.h"
 #include "scout_packet.h"
 #include "scout_scheduler.h"
@@ -302,6 +306,10 @@ void setup() {
     accept_time_command();
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
+#ifdef SCOUT_OTA
+    ota_begin(g_sd_ok);  // may save the running image to the SD card on its first boot
+    Watchdog.reset();
+#endif
 
     // Device State-of-Health snapshot (boot cause + subsystem init), sent in every packet/row.
     g_soh = 0;
@@ -331,6 +339,9 @@ void setup() {
     Serial.println(g_sample_interval_s);
 #if defined(SCOUT_DOWNLINK) && defined(SCOUT_DOWNLINK_KEY_IS_EXAMPLE)
     Serial.println("WARNING: downlink uses the PUBLIC example key; do not deploy");
+#endif
+#if defined(SCOUT_OTA) && defined(SCOUT_OTA_PUBKEY_IS_EXAMPLE)
+    Serial.println("WARNING: OTA accepts firmware signed with the PUBLIC test key; do not deploy");
 #endif
     if (TX_EVERY_SAMPLE) {
         Serial.println("WARNING: bench build, samples and transmits every minute; do not deploy");
@@ -573,6 +584,9 @@ static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary
         r.flags |= SCOUT_FLAG_CMD_REJECTED;
         g_state.cmd_rejected = 0;
     }
+#ifdef SCOUT_OTA
+    r.flags |= ota_packet_flags();
+#endif
     uint8_t packet[SCOUT_PACKET_SIZE];
     size_t n = scout_packet_encode(&r, packet);
 
@@ -594,24 +608,59 @@ static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary
             Watchdog.reset();
         }
     }
+#ifdef SCOUT_OTA
+    ota_flags_sent();
+#endif
 }
 
 #ifdef SCOUT_DOWNLINK
 // After a send the shore knows this buoy is awake, so this is when it may send a settings
 // command (OTA design §2). One frame at most, v1 (transmit count) or v2 (every setting); the
 // buoy applies all of it or none of it, and the next packet reports the digest it now uses.
-static void listen_for_command() {
+// In SCOUT_OTA builds the frame may instead be a firmware offer or a trial CONFIRM (ota/).
+#ifdef SCOUT_OTA
+static const size_t LISTEN_FRAME_MAX = SCOUT_OTA_FRAME_MAX;  // the longest downlink frame
+
+static scout_power_mode_t power_mode_now() {
+    return scout_power_mode(g_battery.readMillivolts(), setting(SCOUT_SET_CONSERVE_MV),
+                            setting(SCOUT_SET_CRITICAL_MV));
+}
+#else
+static const size_t LISTEN_FRAME_MAX = SCOUT_DL_FRAME_MAX;
+#endif
+
+static void apply_command(const uint8_t *key, const uint8_t *frame, uint8_t len);
+
+static void listen_for_command(bool in_slot) {
     const uint8_t *key = scout_downlink_key(BUOY_ID);
     if (!g_lora_ok || key == nullptr) {
         return;
     }
     Watchdog.reset();  // listen blocks up to DOWNLINK_LISTEN_MS + DOWNLINK_FRAME_MAX_MS ≈ 2.7 s
-    uint8_t frame[SCOUT_DL_FRAME_MAX + 4];
+    uint8_t frame[LISTEN_FRAME_MAX + 4];
     uint8_t len = g_lora.listen(frame, sizeof(frame), DOWNLINK_LISTEN_MS, DOWNLINK_FRAME_MAX_MS);
     Watchdog.reset();
-    if (len == 0) {
-        return;
+#ifdef SCOUT_OTA
+    bool confirmed = false;
+    if (ota_is_frame(frame, len)) {
+        OtaLink link = {&g_lora, BUOY_ID, key, power_mode_now};
+        confirmed = ota_handle(link, frame, len, in_slot, clock_now(), g_rtc_ok ? DOWNLINK_MAX_SKEW_S : 0,
+                               &g_state.last_cmd_counter) == OTA_HEARD_CONFIRM;
+        len = 0;
+        Watchdog.reset();
     }
+    if (in_slot) {
+        ota_after_slot(confirmed);  // a trial image that never hears CONFIRM rolls back
+    }
+#else
+    (void)in_slot;
+#endif
+    if (len != 0) {
+        apply_command(key, frame, len);
+    }
+}
+
+static void apply_command(const uint8_t *key, const uint8_t *frame, uint8_t len) {
     ScoutSettings next;
     uint32_t counter = 0;
     scout_dl_result_t result = scout_dl_decode_any(
@@ -660,7 +709,7 @@ void loop() {
         if (scout_slot_transmits(g_last_mode, slot, setting(SCOUT_SET_CONSERVE_EVERY))) {
             transmit_last_reading(recorded && g_last_mode == SCOUT_POWER_NORMAL, acoustic);
 #ifdef SCOUT_DOWNLINK
-            listen_for_command();
+            listen_for_command(true);
 #endif
         }
     } else if (g_first_cycle && scout_boot_hello_transmits(g_last_mode, g_watchdog_reset)) {
@@ -670,7 +719,7 @@ void loop() {
         ScoutAcousticSummary no_audio = {};
         transmit_last_reading(false, no_audio);
 #ifdef SCOUT_DOWNLINK
-        listen_for_command();
+        listen_for_command(false);
 #endif
     }
 

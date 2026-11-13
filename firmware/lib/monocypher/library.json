@@ -1,0 +1,8 @@
+{
+  "name": "monocypher",
+  "version": "4.0.2",
+  "description": "Monocypher 4.0.2 (BSD-2-Clause or CC0, see licence.txt), vendored unchanged from https://github.com/LoupVaillant/Monocypher, src/ and src/optional/. Ed25519 checks for over-the-air firmware (SCO-197).",
+  "build": {
+    "unflags": "-std=c++11 -Wextra"
+  }
+}

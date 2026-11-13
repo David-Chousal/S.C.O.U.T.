@@ -1,6 +1,6 @@
 # ADR-0008 — Over-the-Air Firmware Updates (Two-Way LoRa Link)
 
-- **Status:** 🟢 Accepted — 2026-10-16 (go decision; protocol design still to be done)
+- **Status:** 🟢 Accepted — 2026-10-16 (go decision). Design drafted 2026-10-23; **built 2026-11-12 behind `SCOUT_OTA`, off by default, never run on hardware** ([design §10](../engineering/ota-firmware-update-design.md#10-as-built-2026-11-12))
 - **Date raised:** 2026-10-16 (proposed by Navid Shaghaghi at the lab session)
 - **Owners:** CS lead (David Chousal Cantu); ECE lead consulted on power and antennas
 - **Blocks:** [SCO-198](https://linear.app/scout1/issue/SCO-198) (configurable transmit count),

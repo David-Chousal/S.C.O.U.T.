@@ -39,6 +39,8 @@ export const FLAGS = {
   SD_RETRY: "SD card write retried",
   RTC_LOST: "Clock lost",
   CMD_REJECTED: "Settings command rejected",
+  FW_TRIAL: "Running a firmware update not yet confirmed",
+  FW_ROLLED_BACK: "Firmware update rolled back",
 };
 
 const conserveMv = remoteDefault("conserve_mv");

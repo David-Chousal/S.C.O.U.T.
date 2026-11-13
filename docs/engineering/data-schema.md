@@ -140,7 +140,10 @@ recurring `WATCHDOG_RESET` means a cycle is hanging. Matches `SOH_BITS` in the p
 placeholder until the calibration in [SCO-204](https://linear.app/scout1/issue/SCO-204)) ·
 `HUMIDITY_FAIL` (the SHT40 did not answer or failed its CRC; added in v2) · `CMD_REJECTED` (a
 settings command addressed to this buoy failed its checks since the last packet, e.g. a bad HMAC
-tag, a replayed counter or a count outside 1–3; bit 10, added in v4) — extend as needed; keep
+tag, a replayed counter or a count outside 1–3; bit 10, added in v4) · `FW_TRIAL` (packet only:
+the buoy runs an over-the-air image the shore has not confirmed yet; bit 11, 2026-11-12,
+[SCO-197](https://linear.app/scout1/issue/SCO-197)) · `FW_ROLLED_BACK` (packet only: the last
+over-the-air update did not stick, reported once; bit 12) — extend as needed; keep
 them SCREAMING_SNAKE_CASE and documented here. **Bits 8–9 of the packet's `flags` are not a
 flag**: they carry `tx_count` (0 = not reported), which the CSV writes as its own column.
 

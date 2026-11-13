@@ -106,4 +106,4 @@ jobs:
         # The shipped feather_m0 and feather_esp32s3_shore builds carry the settings downlink and
         # need the real keys, which CI never has; the two *_downlink envs are those same builds
         # with the public example keys, so they stand in for them. Compile check only.
-        run: pio run -e feather_m0_bench -e feather_m0_wdt_test -e feather_m0_rx -e feather_m0_downlink -e feather_esp32s3_shore_downlink -e feather_esp32s3_shore_link_check
+        run: pio run -e feather_m0_bench -e feather_m0_wdt_test -e feather_m0_rx -e feather_m0_downlink -e feather_esp32s3_shore_downlink -e feather_esp32s3_shore_link_check -e feather_m0_ota_check -e feather_esp32s3_shore_ota_check -e scout_boot
