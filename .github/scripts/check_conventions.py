@@ -43,7 +43,6 @@ ALLOW_BASENAMES = {
     ".gitignore", ".gitattributes", ".gitmodules", ".gitkeep",
     "requirements.txt", "platformio.ini", "Makefile",
     "next.config.ts",  # Next.js reads only this exact name and has no --config flag (console/web)
-    ".coderabbit.yaml",  # CodeRabbit reads only this exact name at the repo root
     "OFL.txt",  # SIL Open Font License — the standard, upper-case name shipped with a font
 }
 
