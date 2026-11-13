@@ -9,8 +9,10 @@ src/boot/ or lib/scout_fw_state, then rebuild the application:
 
 It refuses a stub over 24 KB: the application starts at 0x8000, so a bigger stub would overlap it.
 
-``--check`` builds the stub and exits 1 if the committed header no longer matches it (CI runs
-this, so a change to src/boot/ cannot ship an application carrying a stale stub).
+``--check`` builds the stub and exits 1 if the committed header no longer matches it. Run it on
+macOS before merging a src/boot/ change. It is not in CI: a Linux build of the same sources comes
+out a few bytes different (same text, so the link order, not a path), so only a macOS build
+matches the committed header.
 """
 
 from __future__ import annotations
