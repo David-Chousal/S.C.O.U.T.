@@ -304,7 +304,10 @@ def _stability(ctx: SiteContext) -> str:
         '<details class="how-details"><summary>What it does not tell us yet</summary>'
         "<p>Part masses for the concept designs are estimated from CAD volume, not weighed. Only printed "
         "and weighed parts (the bolted-wedge parts and the mushroom float) use measured weights, so trust "
-        "those results most. The model is still water only: no waves, wind or mooring pull. Every "
+        "those results most. The two newest floats, Test Assembly 9 and 10, are not weighed either: "
+        "their mass and centre of gravity are the values set up for the wave-tank simulation, and "
+        "Test Assembly 10 reuses Test Assembly 9’s centre of gravity, an assumption. Their fins and "
+        "hanging loops are left out of the stability maths. The model is still water only: no waves, wind or mooring pull. Every "
         "estimate is listed in the simulator\u2019s "
         f'<a class="textlink" href="{_REPO}/blob/main/mechanical/simulations/buoy-stability/README.md">README</a>.'
         "</p></details></div></div>"

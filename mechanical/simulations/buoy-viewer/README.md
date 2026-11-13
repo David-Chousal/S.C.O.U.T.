@@ -30,6 +30,7 @@ All 15 designs in the stability simulator, plus two floats that are not in it. N
 
 | Id | Design | Source |
 |---|---|---|
+| `ta10`, `ta9` | Test Assembly 10 and 9 printed floats, float body only, exported from Fusion 2026-11-13 | `floatation/test-assembly-10-float-2026-11-13.step`, `floatation/test-assembly-9-float-2026-11-13.step` |
 | `float-regular` | Regular float (self-righted in RR-29) | `floatation/float-regular-2026-11-02.step` |
 | `float-mushroom-corrected` | Mushroom float, re-exported 2026-11-02 | `floatation/float-mushroom-corrected-2026-11-02.step` |
 | `mushroom` | Mushroom float as the simulator has it (2026-10-28 file) | `floatation/float-mushroom.step` |
