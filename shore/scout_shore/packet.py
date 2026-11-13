@@ -108,6 +108,8 @@ FLAG_BITS = {
     "HUMIDITY_HIGH": 6,
     "HUMIDITY_FAIL": 7,
     "CMD_REJECTED": 10,  # a settings command heard since the last packet failed its checks (v4)
+    "FW_TRIAL": 11,  # running an OTA image the shore has not confirmed yet (SCO-197)
+    "FW_ROLLED_BACK": 12,  # the last OTA update did not stick; reported once (SCO-197)
 }
 
 # Bits 8-9 of flags: the daily transmit count in use (v4). Must equal SCOUT_TX_COUNT_SHIFT/MASK.

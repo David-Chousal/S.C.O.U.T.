@@ -146,6 +146,17 @@ static const uint16_t DOWNLINK_FRAME_MAX_MS = 1739;
 // frame cannot be replayed after a cold start resets the stored counter.
 static const uint32_t DOWNLINK_MAX_SKEW_S = 86400;
 
+/* ── Over-the-air firmware (SCO-197, OTA design §4) ────────────────────────────────────────
+ * SCOUT_OTA builds (on in the shipped feather_m0 since 2026-11-12); needs SCOUT_DOWNLINK for the CONFIRM key. A transfer
+ * session ends after OTA_SESSION_MAX_MS, well before the :30 sensor wake that follows a :10 slot,
+ * or after OTA_SILENT_WINDOWS_MAX windows with no chunk heard. OTA_CHUNK_WAIT_MS covers the
+ * shore's turnaround plus the start of a chunk; a chunk whose header arrived is then received
+ * to its end (DOWNLINK_FRAME_MAX_MS). Every wait is far below WDT_TIMEOUT_MS.
+ * ⚠️ Design figures, not bench-measured. */
+static const uint32_t OTA_SESSION_MAX_MS = 360000;  // 6 min
+static const uint16_t OTA_CHUNK_WAIT_MS = 3000;
+static const uint8_t OTA_SILENT_WINDOWS_MAX = 2;
+
 static const uint8_t LORA_MODEM_CONFIG1 = 0x98;
 static const uint8_t LORA_MODEM_CONFIG2 = 0xC4;
 static const uint8_t LORA_MODEM_CONFIG3 = 0x04;

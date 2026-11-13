@@ -59,6 +59,10 @@
 #define SCOUT_FLAG_HUMIDITY_FAIL (1u << 7)  /* SHT40 read failed (no ACK or bad CRC) */
 /* A settings command heard since the last packet failed its checks (scout_downlink, v4). */
 #define SCOUT_FLAG_CMD_REJECTED (1u << 10)
+/* Over-the-air firmware (SCO-197): running a trial image the shore has not confirmed yet, and
+ * the last update did not stick (rolled back or discarded; reported once). */
+#define SCOUT_FLAG_FW_TRIAL (1u << 11)
+#define SCOUT_FLAG_FW_ROLLED_BACK (1u << 12)
 
 /* Bits 8-9 of flags: the daily transmit count in use (SCO-198, v4). Not a flag name, so it is
  * kept out of the SCOUT_FLAG_ prefix that check_packet_contract.py compares with FLAG_BITS. */

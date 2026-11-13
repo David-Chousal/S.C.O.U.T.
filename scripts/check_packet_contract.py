@@ -18,6 +18,11 @@ command must equal the GOLDEN in ``firmware/test/test_downlink``, and the frame 
 same 140-byte ceiling. The v2 settings frame (every remote setting at once) is held to
 ``GOLDEN_SETTINGS`` in the same test file.
 
+The over-the-air update frames (SCO-197) are held to the goldens in ``firmware/test/test_ota``:
+the shore's ``ota`` module must rebuild the offer's manifest, the chunk, the ACK and the CONFIRM
+byte for byte. The offer's signature is taken from the golden (signing needs a library outside
+the standard library); the firmware test checks it against the test public key with Ed25519.
+
 Standard library only. Exit 0 on match, non-zero on drift.
 """
 
@@ -34,7 +39,7 @@ sys.path.insert(0, str(_ROOT / "shore"))
 sys.path.insert(0, str(_ROOT / "scripts"))
 
 from lora_airtime import PAYLOAD_CEILING_BYTES, airtime_ms  # noqa: E402
-from scout_shore import downlink  # noqa: E402
+from scout_shore import downlink, ota  # noqa: E402
 from scout_shore.packet import (  # noqa: E402
     FLAG_BITS,
     LORA_PAYLOAD_BUDGET_BYTES,
@@ -76,6 +81,10 @@ _DOWNLINK_CANONICAL = downlink.set_tx_count(1, 2, now_epoch=1803859200)
 _DOWNLINK_TEST_KEY = bytes(range(32))
 # Keep identical to GOLDEN_SETTINGS's comment in test_downlink.cpp.
 _SETTINGS_CANONICAL = downlink.SettingsCommand(1, 1803859200, (2, 1, 15, 30, 3300, 3200, 2, 80))
+_OTA_TEST_CPP = _ROOT / "firmware" / "test" / "test_ota" / "test_ota.cpp"
+# Keep identical to the comments in test_ota.cpp: a 300-byte image, byte i = (7i + 3) & 0xFF.
+_OTA_IMAGE = bytes((7 * i + 3) & 0xFF for i in range(300))
+_OTA_VERSION = ota.version_number(0, 2, 0)
 _LINK_H = _ROOT / "firmware" / "lib" / "scout_link" / "scout_link.h"
 _PACKET_H = _ROOT / "firmware" / "lib" / "scout_packet" / "scout_packet.h"
 _CONFIG_H = _ROOT / "firmware" / "src" / "config.h"
@@ -177,6 +186,7 @@ def main() -> None:
     print(check_bit_maps())
     print(check_payload_ceiling())
     print(check_downlink())
+    print(check_ota())
 
 
 def check_downlink() -> str:
@@ -202,6 +212,31 @@ def check_downlink() -> str:
         sys.exit(f"the {downlink.SETTINGS_SIZE}-byte settings frame exceeds the ceiling")
     return (f"downlink contract OK — v1 {downlink.CMD_SIZE} bytes: {python_hex}; "
             f"v2 {downlink.SETTINGS_SIZE} bytes: {settings_hex}")
+
+
+def check_ota() -> str:
+    def golden(name: str) -> bytes:
+        return bytes.fromhex(firmware_golden_hex(_OTA_TEST_CPP, name))
+
+    manifest = ota.manifest_for(_OTA_IMAGE, target_buoy=1, version=_OTA_VERSION, build_time=1803859200)
+    offer = golden("GOLDEN_OFFER")
+    signature = offer[1 + ota.MANIFEST_BYTES:]
+    frames = {
+        "GOLDEN_OFFER": (ota.encode_offer(manifest.encode(), signature), offer),
+        "GOLDEN_CHUNK2": (ota.encode_chunk(manifest.session, 2, ota.chunk_data(_OTA_IMAGE, 2), last=True),
+                          golden("GOLDEN_CHUNK2")),
+        "GOLDEN_ACK": (ota.encode_ack(ota.Ack(1, manifest.session, 16, 0x00FF, 0)), golden("GOLDEN_ACK")),
+        "GOLDEN_CONFIRM": (ota.encode_confirm(1, 1803859200, _OTA_VERSION, _DOWNLINK_TEST_KEY),
+                           golden("GOLDEN_CONFIRM")),
+    }
+    drift = [f"  {name}: shore {mine.hex()}\n  {' ' * len(name)}  firmware {theirs.hex()}"
+             for name, (mine, theirs) in frames.items() if mine != theirs]
+    if drift:
+        sys.exit("OTA CONTRACT DRIFT — firmware and shore disagree on an update frame:\n" + "\n".join(drift))
+    largest = ota.CHUNK_HEADER + ota.CHUNK_BYTES + 2
+    if max(largest, ota.OFFER_SIZE) > LORA_PAYLOAD_BUDGET_BYTES:
+        sys.exit(f"an OTA frame ({largest} B) exceeds the {LORA_PAYLOAD_BUDGET_BYTES}-byte ceiling")
+    return f"OTA contract OK — offer {ota.OFFER_SIZE} B, chunk ≤ {largest} B, ack {ota.ACK_SIZE} B, confirm {ota.CONFIRM_SIZE} B"
 
 
 if __name__ == "__main__":

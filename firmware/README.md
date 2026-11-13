@@ -53,7 +53,9 @@ firmware/
 │   ├── drivers/            Thin hardware wrappers (DS18B20, turbidity, SHT40, PCF8523, SD, RFM95,
 │   │                       battery, audio capture)
 │   ├── bench_rx/           Bench LoRa receiver for a second Feather M0 (env feather_m0_rx)
-│   └── shore_rx/           ESP32-S3 shore-station receiver (env feather_esp32s3_shore)
+│   ├── shore_rx/           ESP32-S3 shore-station receiver (env feather_esp32s3_shore)
+│   ├── ota/                Over-the-air updates on the buoy (SCOUT_OTA, SCO-197)
+│   └── boot/               scout_boot SD-card boot stub (env scout_boot)
 ├── lib/                    Hardware-free, host-testable libraries:
 │   ├── scout_packet/       LoRa packet codec — byte-identical to shore/scout_shore/packet.py
 │   ├── scout_scheduler/    Duty-cycle timing math (sample grid, TX slots, power modes, audio hours)
@@ -62,7 +64,10 @@ firmware/
 │   ├── scout_acoustic/     14-byte acoustic summary — bit-exact port of acoustic_summary.py
 │   ├── scout_capture/      WAV header, 12→16-bit conversion, dropped-sample accounting
 │   ├── scout_sht4x/        SHT40 frame CRC + humidity/temperature conversion
-│   └── scout_timeset/      Bench clock-set command ("T<unix-epoch>") parser
+│   ├── scout_timeset/      Bench clock-set command ("T<unix-epoch>") parser
+│   ├── scout_ota/          OTA frames, manifest, windows — byte-identical to shore/scout_shore/ota.py
+│   ├── scout_fw_state/     Boot state shared by the stub and the app: update, trial, rollback
+│   └── monocypher/         Monocypher 4.0.2 (vendored, unchanged) for Ed25519
 ├── test/                   Unity unit tests (run on the host), one suite per library:
 │   ├── test_packet/        Encoder vs the shore golden vector + CRC + fixed-point helpers
 │   ├── test_scheduler/     Sample grid, TX slots, battery gate, power modes, audio scheduling
@@ -71,8 +76,12 @@ firmware/
 │   ├── test_acoustic/      Summary vs golden vectors written by the Python reference
 │   ├── test_capture/       WAV header and sample conversion
 │   ├── test_sht4x/         Frame CRC and conversion
-│   └── test_timeset/       Clock-set command parsing
+│   ├── test_timeset/       Clock-set command parsing
+│   ├── test_ota/           OTA frames vs shore goldens, Ed25519, windows, CONFIRM
+│   └── test_fw_state/      Every update, trial, confirm and rollback path
 ├── tools/set_rtc.py        Sets the PCF8523 to UTC over USB (SCO-201)
+├── tools/ota_release.py    Signs firmware for OTA (keygen, sign); release machine only
+├── tools/make_boot_image.py  Builds scout_boot into src/ota/scout_boot_image.h
 └── docs/                   pin-assignments.md, flashing-guide.md
 ```
 
