@@ -256,6 +256,28 @@ void test_opening_setup_by_hand_keeps_it_open_while_connected_for_ten_minutes(vo
     TEST_ASSERT_TRUE(step(&w, true, true, false, 1000 + SCOUT_WIFI_FORCED_MS).close_portal);
 }
 
+void test_setup_never_closes_while_the_station_is_offline(void) {
+    /* Nothing saved, or a saved network that is gone: the setup network stays up for hours. */
+    ScoutWifiWatch w;
+    scout_wifi_watch_begin(&w, 0);
+    step(&w, true, false, false, 0);
+    for (uint32_t t = SCOUT_WIFI_PORTAL_AFTER_MS; t < 6u * 3600u * 1000u; t += 60000u) {
+        TEST_ASSERT_FALSE(step(&w, true, false, false, t).close_portal);
+    }
+    TEST_ASSERT_TRUE(w.portal_open);
+}
+
+void test_the_ten_minute_limit_does_not_close_setup_once_the_station_goes_offline(void) {
+    ScoutWifiWatch w;
+    scout_wifi_watch_begin(&w, 0);
+    step(&w, true, true, false, 0);
+    scout_wifi_force_portal(&w, 1000);
+    step(&w, true, true, false, 1000);
+    step(&w, true, false, false, 2000); /* the network drops while setup is open */
+    TEST_ASSERT_FALSE(step(&w, true, false, false, 1000 + SCOUT_WIFI_FORCED_MS + 60000u).close_portal);
+    TEST_ASSERT_TRUE(w.portal_open);
+}
+
 void test_the_timers_survive_the_millisecond_counter_wrapping(void) {
     ScoutWifiWatch w;
     uint32_t start = 0xFFFFFF00u;
@@ -295,6 +317,8 @@ int main(int, char **) {
     RUN_TEST(test_setup_closes_after_a_minute_of_staying_connected);
     RUN_TEST(test_a_dropped_connection_starts_a_new_join_at_once);
     RUN_TEST(test_opening_setup_by_hand_keeps_it_open_while_connected_for_ten_minutes);
+    RUN_TEST(test_setup_never_closes_while_the_station_is_offline);
+    RUN_TEST(test_the_ten_minute_limit_does_not_close_setup_once_the_station_goes_offline);
     RUN_TEST(test_the_timers_survive_the_millisecond_counter_wrapping);
     return UNITY_END();
 }
