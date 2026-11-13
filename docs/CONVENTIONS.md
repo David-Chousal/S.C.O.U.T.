@@ -397,7 +397,7 @@ commit and fails if it never finishes. If it fails, comment `@coderabbitai revie
 re-run the job. Before asking for a merge, the author reads every CodeRabbit comment and either
 fixes it or replies saying why not. CodeRabbit is an extra reviewer, not a replacement: a human
 review is still required. Gemini Code Assist is installed on the repo but is not used; its
-GitHub reviewer needs a paid Google Cloud subscription, so do not link it to one.
+GitHub reviewer needs a Google Cloud project connected to a billing account, so do not link it to one.
 
 ### Two repo gotchas
 

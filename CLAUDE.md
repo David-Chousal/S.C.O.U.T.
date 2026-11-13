@@ -600,7 +600,7 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    resolve a CodeRabbit thread without doing one of those. If the job times out, comment
    `@coderabbitai review` on the PR and re-run it. CodeRabbit does not replace the human review
    in rule 6. **Do not link Gemini Code Assist to Google Cloud billing**: it is installed but
-   unused, because its GitHub reviewer is paid-only (decided 2026-11-12).
+   unused, because its GitHub reviewer needs a Google Cloud project with billing (decided 2026-11-12).
 
 ---
 
