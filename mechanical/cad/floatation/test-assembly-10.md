@@ -38,6 +38,8 @@ hand integration of the new outer profile with the same centre of gravity, calib
 Test Assembly 9. It does not account for the mass and centre of gravity changes from the shorter wall and the
 bore floor. Re-run [buoy-stability](../../simulations/buoy-stability/README.md) before relying on it.
 
+**Solver check, 2026-11-13** (float body from [`test-assembly-10-float-2026-11-13.step`](test-assembly-10-float-2026-11-13.step), hull read between the fins and loops, mass 2.7518 kg and centre of gravity 60.8 mm above the keel carried over from Test Assembly 9, so the centre of gravity is an assumption): draft **2.89 in**, GM **1.24 in**, freeboard 4.59 in to the loop top. That is 0.04 in shallower and 0.06 in less stiff than the hand estimate; the cause is not traced. Fins and loops are not in these numbers. Test Assembly 9 on the same method: draft 2.65 in, GM 1.32 in (earlier solver result 2.71 in, 1.33 in). Both are on the website design explorer.
+
 ## Open items
 
 - The 3.5 in scale tick touches the bottom of the "O" on the lettering face. Remove the tick or raise the lettering 0.2 in.
