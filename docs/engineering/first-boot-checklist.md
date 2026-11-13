@@ -25,11 +25,12 @@
 
 1. Create real keys (never commit):
    - `python3 firmware/tools/ota_release.py keygen --key ~/scout-ota.key --header firmware/src/ota_pubkey.h`
-   - Copy `firmware/src/downlink_key_example.h` → `downlink_key.h` on **both** buoy and S3 with the
-     **same** per-buoy key bytes (one key, two builds). Paste a C initializer, not hex text:
-     `python3 -c "import secrets; print(', '.join(f'0x{b:02x}' for b in secrets.token_bytes(32)))"`.
-     Then **delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1` (shipped builds `#error` if it
-     remains). Optional Python USB host: same 64 hex digits as `SCOUT_CMD_KEY_<id>`.
+   - Copy `firmware/src/downlink_key_example.h` → `downlink_key.h` on **both** buoy and S3. Keep
+     **one** table row whose `buoy_id` matches `BUOY_ID`, paste the **same** 32 random bytes into
+     that row on both builds (`python3 -c "import secrets; print(', '.join(f'0x{b:02x}' for b in secrets.token_bytes(32)))"`),
+     **delete every other example row**, and **delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1`
+     (shipped builds `#error` if the marker remains). Optional Python USB host: same key as 64 hex
+     digits in `SCOUT_CMD_KEY_<id>`.
 2. Confirm `BUOY_ID` in [`firmware/src/config.h`](../../firmware/src/config.h) (reports as
    `SCOUT-01`, two digits).
 3. Flash buoy: `cd firmware && pio run -e feather_m0 -t upload` (double-tap RESET /

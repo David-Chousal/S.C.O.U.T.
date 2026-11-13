@@ -62,9 +62,10 @@ export const BUOY_STEPS: readonly HelpStep[] = [
     body: (
       <>Set <code>BUOY_ID</code> in <code>firmware/src/config.h</code> and flash the shipped <code>feather_m0</code> env (never <code>*_downlink</code>).
         The buoy reports as <code>SCOUT-01</code>, <code>SCOUT-02</code>, … (two digits). For radio settings, generate <b>one</b> per-buoy key,
-        put the <b>same</b> bytes in gitignored <code>downlink_key.h</code> on <b>both</b> the buoy and the S3 (copy from
-        <code>downlink_key_example.h</code>, replace the key, <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>), and flash both. Only the
-        optional Python USB host also needs that same key as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it.</>
+        put the <b>same</b> bytes in gitignored <code>downlink_key.h</code> on <b>both</b> the buoy and the S3: copy from
+        <code>downlink_key_example.h</code>, keep only the row whose <code>buoy_id</code> matches <code>BUOY_ID</code>, remove the other example
+        rows, <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>, and flash both. Only the optional Python USB host also needs that same
+        key as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it.</>
     ),
   },
   {
