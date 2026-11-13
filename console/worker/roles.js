@@ -3,7 +3,7 @@
  *   guest  — sees every page and every setting, admin pages included, but changes nothing
  *   member — also changes buoy settings, makes personal API tokens and sets email alerts
  *   admin  — also invites, changes roles, disables accounts, issues reset links and manages
- *            shore-station tokens */
+ *            shore-station tokens, and uploads or cancels firmware (SCO-312) */
 
 export const ROLES = ["guest", "member", "admin"];
 
@@ -23,6 +23,7 @@ const NEEDS = {
   "users.disable": "admin",
   "devices.write": "admin",
   "storage.read": "admin",
+  "firmware.write": "admin",
 };
 
 export function isRole(value) {

@@ -277,7 +277,7 @@ with only the radio and the WiFi transport left out: a member's request came bac
 | Ed25519 | Monocypher 4.0.2, vendored unchanged in `firmware/lib/monocypher` |
 | Buoy session, trial, confirm | `firmware/src/ota/ota_buoy.cpp`, called from `listen_for_command` in `main.cpp` |
 | Boot stub | `firmware/src/boot/scout_boot.cpp` (env `scout_boot`), generated into `src/ota/scout_boot_image.h` by `tools/make_boot_image.py` |
-| Shore relay | `firmware/src/shore_rx/shore_ota.cpp`; `shore/scripts/push_firmware.py` loads a bundle over USB |
+| Shore relay | `firmware/src/shore_rx/shore_ota.cpp`; `shore/scripts/push_firmware.py` loads a bundle over USB. Since [ADR-0016](../decisions/0016-firmware-delivery-over-wifi.md) the console also stores bundles for the S3 to pull over WiFi (`console/worker/firmware.js`); the S3 side of that is not built yet ([SCO-312](https://linear.app/scout1/issue/SCO-312)) |
 | Release | `firmware/tools/ota_release.py` (`keygen`, `sign`); the private key stays on the release machine |
 | Packet | `flags` bit 11 `FW_TRIAL`, bit 12 `FW_ROLLED_BACK` (packet stays v5: unused bits, no layout change) |
 
