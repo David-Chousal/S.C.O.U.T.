@@ -23,7 +23,7 @@ Buoyancy sets everything else, so every mechanical analysis starts from Archimed
 F_b = ρ g V            ρ = 1025 kg/m³ (seawater), g = 9.81 m/s², V = displaced volume
 ```
 
-Draft is found by integrating the revolved hull profile until the displaced weight equals the buoyant force
+Draft is found by integrating the revolved hull profile until the buoyant force equals the buoy's as-deployed weight
 ([C.4.2](appendix-c-calculations.md#c42-whole-buoy-mass-displacement-and-freeboard-model)).
 
 ![Buoy assembly with cable routing, 2026-09-21 (wedge design)](../../assets/diagrams/buoy-assembly-cable-routing-2026-09-21.png)
@@ -49,7 +49,7 @@ case was wave plus current at about 440 N on v4 and about 330 N on v5, with a 58
 | Side-load FEA, 300 N, 2026-08-17 (RR-01) | Static stress in Fusion | Minimum safety factor 25.4 against a mark of 4 | The walls were over-built, so they were thinned to 0.095 in (outer) and 0.063 in (sides) |
 | Wall check, 2026-09-07 (RR-05) | Hoop stress `σ = pR/t` at 50.3 kPa (5 m) | 4.77 MPa, safety factor 7.3 | Strength was fine, but thin open walls flex on the print bed, so an internal bracing web became mandatory |
 | Ring buckling, 2026-09-09 (RR-06) | Curved-panel buckling, with and without foam | Bare wall safety factor 0.2 to 0.7 (fails); foam-backed 3 to 5 (passes) | Foam fill is required before submersion |
-| v5 load re-scale | Loads recomputed from v4 | Every v5 load 10 to 30% lower than v4 | The v4 FEA bounds v5, so no full re-run was needed |
+| v5 load re-scale and re-check (RR-09, 2026-09-25) | Loads recomputed from v4, then five FEA runs on the v5 geometry | Every v5 load except hydrostatic (50.3 kPa in both) is 10 to 30% lower than v4; the v5 re-check passed with a minimum safety factor of about 3.5 (PETG, unfoamed), apart from artifacts at the stand-in ring | v5 was re-checked on its own geometry, not assumed to be bounded by v4 |
 | Freeboard model | Whole-buoy mass and equilibrium | v4: 8.40 kg, draft 2.69 in, margin 4.75:1; v5: about 7.75 kg, draft 2.53 in, margin 3.84:1 | The design was judged over-floated, which allowed the later move to a smaller float |
 
 **Impact.** The analyses took the wedge ring from "strong enough" to "as light as the loads allow", and they exposed the
@@ -66,21 +66,17 @@ The current geometry is Test Assembly 10 (2026-11-11), not yet printed or weighe
 [ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md)).
 
 **Context.** The buoy will sit near coral, so the mooring has to be both strong and reef-safe: no chain dragging, a line
-that a boat propeller cannot wrap, and an anchor that never touches coral. That is the **permitting-driven** side of the
+whose twisted construction fouls a crossing boat's propeller rather than being cut by it, and an anchor that never touches coral. That is the **permitting-driven** side of the
 design, covered in [9.6](09-professional-issues-and-societal-impact.md#96-legal-and-regulatory-compliance).
 
 **Iteration and result.** The pad-eye was chosen over a rigid U-bolt with a backing plate, a clamped cable loop, a bonded
 flanged eye, a tapped block and a cross-pin clevis. The mooring load cases LC2 to LC9 were run in FEA (RR-04, 2026-08-29)
-and passed with safety factors of 10 to 1450 (ring-contact artifacts aside). The bolt group was hand-checked for the
-combined LC9 snap load (810 N at 37° on v4, 2× the vertical load) and LC7 overturning moment (about 70 N·m)
+and passed with safety factors of 10 to 1450 (ring-contact artifacts aside). The limits matter: the August LC7 run did not apply the overturning moment (it was closed by hand instead), the runs used a McMaster 3076T33 steel ring as a stand-in for the pad-eye, and a dedicated run with the final 316 pad-eye and the LC7 moment is still owed before deployment. The bolt group was hand-checked for the
+combined LC9 snap load (the v5 calculation: 450 N vertical load with a 42 N·m moment)
 ([C.9.11](appendix-c-calculations.md#c911-mooring-bolt-group-check-lc9-with-the-lc7-moment)). The hang-hole version for the
 printed float was checked statically in RR-20 (2026-10-30).
 
-**Impact.** The attachment height was also tested against heel. The force needed to knock the buoy down to its peak
-righting moment (about 21.5 N·m at about 63°) is 604 N at the keel pad-eye, 217 N at a collar 2.5 in below, and only 33 N
-if attached at the stem bottom, against about 21 N of ordinary current drag
-([C.9.18](appendix-c-calculations.md#c918-mooring-attachment-height-knockdown-force)). That is why a low attachment on the float is
-preferred to one on a long stem.
+**Impact.** The attachment height was also studied, but on the v6 buoy (24 in ballast arm, 2.6 kg of lead), statically only. There, the force needed to knock the buoy down to its peak righting moment (about 21.5 N·m at about 63°) was 604 N at the keel pad-eye, 217 N at a collar 2.5 in below, and 33 N at the stem bottom, against about 21 N of ordinary current drag ([C.9.18](appendix-c-calculations.md#c918-mooring-attachment-height-knockdown-force)). The current printed float has no ballast arm, so these results do not set its attachment position; that choice still needs its own analysis.
 
 ### 5.1.3 Electronics Housing, Sensor Pod, and Sealing
 
@@ -95,7 +91,7 @@ porous along layer lines, so purchased off-the-shelf rings were chosen and the g
 **Iteration.** The seal took several rounds. A pod run with a TPU-printed ring failed after about a week (RR-07); three
 coupon runs failed in October (RR-12 slightly damp, RR-14 leaked, RR-15 flooded) because the flange flexed between bolts
 and the 4.76 mm ring did not match a groove cut for 2.62 mm; the fourth matched the groove to the ring (RR-16). Pressing
-the inserts from the bottom and printing in PETG then **passed 24 hours** in fresh water (RR-18, 2026-10-21).
+the inserts from the bottom and printing in PETG then **passed 24 hours** in fresh water (RR-18, 2026-10-21), at negligible depth and without the sensor. That test did **not** validate the 5 m pressure target.
 
 **Result.** The electronics housing is fixed at **4.4 in inside diameter by 5 in tall** (2026-10-08) from a packing
 budget of real component dimensions

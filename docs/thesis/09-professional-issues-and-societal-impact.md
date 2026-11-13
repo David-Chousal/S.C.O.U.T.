@@ -42,9 +42,9 @@ reading of public rules, **not legal advice**, and every claim there is tagged a
 | Does the team hold a permit? | No. The UH group that advised us holds none that could cover the buoy |
 | Who can touch a moored buoy in Kāneʻohe Bay? | Eleven bodies. The ones that matter most: the Army Corps (Rivers and Harbors Act section 10), the state land and conservation offices (DLNR OCCL and Land Division), DOBOR for mooring rules, and the Coast Guard for navigation marking |
 | What decides the burden? | How long it stays, whether anything touches the bottom, and whose structure it hangs from |
-| Lightest legal options | Sensors lowered from an attended boat and retrieved the same day, or connecting to a site someone already has authorization for |
+| Lowest-burden candidates (not confirmed permit-free) | Sensors lowered from an attended boat and retrieved the same day, or connecting to a site someone already has authorization for. Both depend on agency determinations and host consent, and a host's authorization may need amending to cover the buoy |
 | Is the buoy design approved by anyone? | No. Regulators review footprint, anchor, leachable materials, marking and the removal plan, not engineering |
-| Monterey Bay | The sanctuary coordinator said tethered monitoring buoys likely need no sanctuary permit, but anchoring needs an application and discharge is prohibited (15 CFR 922.132) |
+| Monterey Bay | The sanctuary coordinator said tethered monitoring buoys likely need no sanctuary permit, but anchoring needs an application and discharge is prohibited, subject to the regulation's exceptions (15 CFR 922.132) |
 | Lead time | Reported at 3 months to 1 year after a full submission (unverified), so filing is planned by 2026-12-01 for the 2027-03-22 deployment |
 
 **How it changed the design and the plan.**
