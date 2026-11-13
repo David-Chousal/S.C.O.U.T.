@@ -592,13 +592,16 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    `check_conventions.py` enforces the structure. Applies to Isabella's bench tests and David's
    firmware tests exactly as it does to John's.
 
-9. **Every PR gets a CodeRabbit review, and Claude answers it.** CodeRabbit reviews each PR
-   automatically on open and on every push; the `coderabbit` job in `pr-checks.yml` fails until
-   that review has finished on the head commit. After opening or pushing to a PR, Claude waits
-   for CodeRabbit's review (don't poll; check it when CI reports), reads every comment, and
-   either fixes the issue or replies on the thread with the reason it does not apply. Never
-   resolve a CodeRabbit thread without doing one of those. If the job times out, comment
-   `@coderabbitai full review` on the PR and re-run it. CodeRabbit does not replace the human review
+9. **Every PR gets one CodeRabbit review, and Claude answers it.** CodeRabbit reviews each PR
+   once, when it opens (`.coderabbit.yaml` turns off re-reviews on every push, since
+   2026-11-12); the `coderabbit` job in `pr-checks.yml` passes once any commit of the PR has a
+   finished review. After opening a PR, Claude waits for that review (don't poll; check it when
+   CI reports), reads every comment, and either fixes the issue or replies on the thread with
+   the reason it does not apply, in **one round of fixes**. Never resolve a CodeRabbit thread
+   without doing one of those. Do not ask for another review after each fix push; that is the
+   loop that kept PR #321 in review for hours. Request at most one more pass
+   (`@coderabbitai review`), and only when the fixes were large. If the job times out before
+   the first review, comment `@coderabbitai review` on the PR and re-run it. CodeRabbit does not replace the human review
    in rule 6. **Do not install Gemini Code Assist**: it was uninstalled on 2026-11-12 because its
    GitHub reviewer needs a Google Cloud project with billing, and the team will not risk a charge.
 

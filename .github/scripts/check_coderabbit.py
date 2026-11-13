@@ -2,12 +2,14 @@
 """Require a completed CodeRabbit review on the PR's head commit.
 
 CodeRabbit (GitHub App ``coderabbitai``, installed 2026-11-12) posts a check run named
-``CodeRabbit`` on every push to a PR. This gate waits for that run to finish and fails if it
-never appears or ends any way but `success`, so no PR can go green without an AI review. It does not
+``CodeRabbit`` when it reviews a PR. ``.coderabbit.yaml`` turns off re-reviews on every push, so
+it reviews once, when the PR opens. This gate passes as soon as any commit of the PR has a
+successful review; if none has, it waits for the head commit's run and fails if it never appears
+or ends any way but `success`, so no PR can go green without one AI review. It does not
 judge the review's content: reading and answering CodeRabbit's comments is the author's job
 (CLAUDE.md, Standing rule 9).
 
-Reads ``GITHUB_TOKEN``, ``GITHUB_REPOSITORY`` and ``HEAD_SHA`` from the environment.
+Reads ``GITHUB_TOKEN``, ``GITHUB_REPOSITORY``, ``HEAD_SHA`` and ``PR_NUMBER`` from the environment.
 Exit 0 = pass, 1 = fail.
 """
 from __future__ import annotations
@@ -30,7 +32,7 @@ POLL_S = 30
 PASS, FAIL, WAIT = "pass", "fail", "wait"
 
 RERUN_HINT = (
-    "Comment `@coderabbitai full review` on the PR to start a fresh review, then re-run this job. "
+    "Comment `@coderabbitai review` on the PR to start a review, then re-run this job. "
     "If CodeRabbit never responds, check the app is still installed on the repo."
 )
 
@@ -52,8 +54,7 @@ def evaluate(check_runs: list[dict]) -> tuple[str, str]:
     return FAIL, f"CodeRabbit review did not complete (conclusion: {conclusions}). {RERUN_HINT}"
 
 
-def fetch_check_runs(repo: str, sha: str, token: str) -> list[dict]:
-    url = f"https://api.github.com/repos/{repo}/commits/{sha}/check-runs?per_page=100"
+def _get(url: str, token: str):
     request = urllib.request.Request(
         url,
         headers={
@@ -63,7 +64,25 @@ def fetch_check_runs(repo: str, sha: str, token: str) -> list[dict]:
         },
     )
     with urllib.request.urlopen(request, timeout=30) as response:
-        return json.load(response).get("check_runs", [])
+        return json.load(response)
+
+
+def fetch_check_runs(repo: str, sha: str, token: str) -> list[dict]:
+    url = f"https://api.github.com/repos/{repo}/commits/{sha}/check-runs?per_page=100"
+    return _get(url, token).get("check_runs", [])
+
+
+def reviewed_commit(repo: str, pr_number: str, head_sha: str, token: str) -> str | None:
+    """Return the newest earlier commit of the PR that CodeRabbit reviewed successfully, if any.
+
+    A review on an earlier commit is enough: CodeRabbit deliberately does not re-review every
+    push, and re-requesting one each time is what made reviews loop for hours (PR #321).
+    """
+    commits = _get(f"https://api.github.com/repos/{repo}/pulls/{pr_number}/commits?per_page=100", token)
+    for sha in reversed([c["sha"] for c in commits]):
+        if sha != head_sha and evaluate(fetch_check_runs(repo, sha, token))[0] == PASS:
+            return sha
+    return None
 
 
 def main() -> int:
@@ -71,9 +90,19 @@ def main() -> int:
         token = os.environ["GITHUB_TOKEN"]
         repo = os.environ["GITHUB_REPOSITORY"]
         sha = os.environ["HEAD_SHA"]
+        pr_number = os.environ["PR_NUMBER"]
     except KeyError as missing:
         print(f"FATAL: environment variable {missing} is not set.")
         return 1
+
+    try:
+        earlier = reviewed_commit(repo, pr_number, sha, token)
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError) as error:
+        print(f"Could not list earlier reviews, waiting on the head commit instead: {error}")
+        earlier = None
+    if earlier:
+        print(f"CodeRabbit already reviewed this PR at {earlier[:7]}; later pushes are not re-reviewed.")
+        return 0
 
     deadline = time.monotonic() + TIMEOUT_S
     while True:
