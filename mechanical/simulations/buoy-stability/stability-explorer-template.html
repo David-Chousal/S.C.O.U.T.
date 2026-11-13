@@ -94,7 +94,7 @@ function upd(){const n=+$('it').value,it=ITS[n];
  drawSection(it);const hy=!!it.hydro;
  ['h1','h2'].forEach(i=>$(i).setAttribute('display',hy?'inline':'none'));
  ['nohydro','nohydro2'].forEach(i=>$(i).setAttribute('display',hy?'none':'inline'));
- $('hm').disabled=$('bal').disabled=!hy;$('hmv').textContent=m+' g';
+ const fx=hy&&it.hydro.fixed;$('hm').disabled=!hy||!!fx;$('bal').disabled=!hy;$('hmv').textContent=fx?'fixed by set-up':m+' g';
  const ids=['rM','rT','rF','rGM','rRM','rV'];
  if(!hy){ids.forEach(i=>$(i).textContent='–');$('capL').textContent='';$('balL').textContent='ballast';
   $('foot').textContent='Section only, cut through the axis · '+S.toFixed(1)+' px per inch · 100 mm = '+(S*100/MM).toFixed(0)+' px';return}
@@ -102,6 +102,7 @@ function upd(){const n=+$('it').value,it=ITS[n];
  $('wedge_parts').setAttribute('display',pr?'none':'inline');$('bal').parentElement.style.display=pr?'none':'';
  $('legH').textContent=pr?'Gray: float and housing, cut from the STEP (no ballast stem)':'Dashed: electronics housing (flange = chassis cap)';
  if(pr){$('capL').textContent=it.hydro.kind==='assembly'?'Solver hull: 3D voxel hull of this iteration\'s STEP parts (stacks and wedges placed from the STEP), estimated masses, current payload. Heel run toward a wedge and toward a gap, worse shown':'Solver hull: printed float outline from this iteration\'s STEP, no foam, no ballast. Housing mass slider = battery, boards and housing'}
+ if(pr&&it.hydro.fixed)$('capL').textContent='Solver hull: float outline from this iteration\'s STEP (fins and loops left out). Mass '+(it.hydro.fixed.mass_g/1000).toFixed(3)+' kg and centre of gravity '+it.hydro.fixed.kg_mm+' mm above the keel are the CFD set-up values, not a weighed budget'
  else{drawHousing(top);
  $('capL').textContent='Solver hull: '+ck+' in wedge-bottom caps (this iteration\'s STEP), current mass budget';
  $('balL').textContent='24 in ballast ('+LEAD[ck]+' kg lead)';

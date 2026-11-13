@@ -64,8 +64,35 @@ def load(step: Path):
     return (zs, R), float(z.max()), floor, float(com), housing
 
 
-def hull_from(step: Path):
-    (zs, R), top, floor, com, housing = load(step)
+def load_gaps(step: Path):
+    """Same return as ``load`` for a float with fins or loops: the radius at each height is the lower tail (10th
+    percentile) of the outer surface over 10 degree azimuth bins, so fins, loops and lettering do not enter the
+    body of revolution. The hull top is where that profile ends (loops above the cap do not count).
+
+    Mesh 0.8 mm and a 0.4 mm height band keep the radius within about 0.4 mm on the steep bottom cone."""
+    import gmsh
+    gmsh.initialize(); gmsh.option.setNumber("General.Terminal", 0)
+    gmsh.clear()
+    gmsh.model.occ.importShapes(str(step)); gmsh.model.occ.synchronize()
+    solid = sorted(gmsh.model.getEntities(3), key=lambda dt: -gmsh.model.occ.getMass(*dt))[0]
+    gmsh.option.setNumber("Mesh.MeshSizeMax", 0.8); gmsh.model.mesh.generate(2)
+    pts = [gmsh.model.mesh.getNodes(d, t, includeBoundary=True)[1].reshape(-1, 3)
+           for d, t in gmsh.model.getBoundary([solid], oriented=False, recursive=False)]
+    p = np.vstack(pts); keel = float(p[:, 2].min())
+    com = gmsh.model.occ.getCenterOfMass(*solid)[2] - keel
+    gmsh.finalize()
+    z = p[:, 2] - keel; r = np.hypot(p[:, 0], p[:, 1]); b = (np.degrees(np.arctan2(p[:, 1], p[:, 0])) % 360 // 10).astype(int)
+    zs = np.arange(0.0, z.max() + 1e-9, 1.0); R = np.zeros(len(zs))
+    for i, q in enumerate(zs):
+        m = np.abs(z - q) <= 0.4
+        if m.any():
+            R[i] = np.percentile([r[m][b[m] == k].max() for k in range(36) if (b[m] == k).any()], 10)
+    top = float(zs[np.where(R > 20)[0].max()])
+    return (zs, R), top, float(z[(r < 50) & (z > 10)].max()), float(com), None
+
+
+def hull_from(step: Path, gaps: bool = False):
+    (zs, R), top, floor, com, housing = (load_gaps if gaps else load)(step)
     top_flange = top
     if housing:
         top_flange = float(housing[0].max())
@@ -103,9 +130,19 @@ def _use(H):
 
 
 def series(hydro: dict):
-    """Explorer rows [housing_g, mass, draft, KG, KB, KM, GM, supported, gz[]] and the hull top height in inches."""
-    H, top, hb, com = hull_from(CAD / hydro["step"])
+    """Explorer rows [housing_g, mass, draft, KG, KB, KM, GM, supported, gz[]] and the hull top height in inches.
+
+    A ``fixed`` entry (``mass_g``, ``kg_mm``) is a float whose mass and centre of gravity are given, not budgeted:
+    one solve, written as two identical rows so the explorer's housing slider has nothing to change."""
+    H, top, hb, com = hull_from(CAD / hydro["step"], hydro.get("gaps", False))
     rows = []
+    if "fixed" in hydro:
+        fx = hydro["fixed"]
+        with _use(H) as cap:
+            r = bs.solve(cap, [("Float, set-up mass at set-up centre of gravity", fx["mass_g"], fx["kg_mm"] / IN, 1, "")])
+        row = [round(r["mass_kg"], 3), round(r["draft_in"], 3), round(r["KG_in"], 3), round(r["KB_in"], 3),
+               round(r["KM_in"], 3), round(r["GM_in"], 3), round(r["supported_kg"], 3), [round(g, 3) for g in r["gz_in"]]]
+        return [[0] + row, [500] + row], round(top / IN, 3)
     with _use(H) as cap:
         for X in sorted(set(range(0, 4001, 250)) | {round(HOUSING_NOMINAL_G)}):
             try:
