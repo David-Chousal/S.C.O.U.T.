@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Key } from "@/components/ui/key";
 import type { SavedView } from "@/lib/dashboard/layout";
 
@@ -11,10 +12,12 @@ interface ViewTabsProps {
   onSelect: (id: string) => void;
   onNew: () => void;
   onCustomize: () => void;
+  /** Shown in place of Customize while editing. */
+  editActions?: ReactNode;
 }
 
-/** Saved views as tabs (shared ones marked), with + New view and the Customize key. */
-export function ViewTabs({ views, activeViewId, editing, canEdit, onSelect, onNew, onCustomize }: ViewTabsProps) {
+/** Saved views as tabs (shared ones marked), with + New view and the Customize key (or the edit keys while editing). */
+export function ViewTabs({ views, activeViewId, editing, canEdit, onSelect, onNew, onCustomize, editActions }: ViewTabsProps) {
   return (
     <div className="sc-viewbar">
       <div className="sc-tabs" role="tablist" aria-label="Dashboard views">
@@ -26,7 +29,7 @@ export function ViewTabs({ views, activeViewId, editing, canEdit, onSelect, onNe
         ))}
         {canEdit && <button type="button" className="sc-tab" disabled={editing} onClick={onNew}>+ New view</button>}
       </div>
-      {!editing && <Key size="sm" icon="layout" shortcut="E" disabled={!canEdit} onClick={onCustomize}>Customize</Key>}
+      {editing ? editActions : <Key size="sm" icon="layout" shortcut="E" disabled={!canEdit} onClick={onCustomize}>Customize</Key>}
     </div>
   );
 }

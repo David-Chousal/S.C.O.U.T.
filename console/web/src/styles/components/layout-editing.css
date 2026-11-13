@@ -1,6 +1,5 @@
 /* ───── Layout editing (COR's, for dashboards, Phase C) ───── */
-.sc-editbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--ink); color: var(--bg); }
-.sc-editbar .sc-tag { color: var(--bg); }
+.sc-editbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
 .sc-bay--edit { position: relative; border-top-style: dashed; outline: 1px dashed var(--line-strong); outline-offset: 6px; }
 .sc-bay__grip { display: inline-flex; color: var(--ink-muted); cursor: grab; }
 .sc-bay__resize { position: absolute; right: -6px; bottom: -6px; width: 10px; height: 10px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); cursor: nwse-resize; }
@@ -15,7 +14,6 @@
 .sc-viewbar .sc-tab:disabled { opacity: .45; cursor: not-allowed; }
 .sc-viewbar > .sc-key { margin-bottom: var(--space-2); }
 .sc-editbar__dirty { color: var(--caution) !important; }
-.sc-editbar .sc-key { box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .28); }
 .sc-layout { display: grid; gap: var(--space-8); }
 .sc-layout--editing { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
 .sc-lib-rail { position: sticky; top: calc(var(--bar-h, 0px) + var(--space-4)); display: grid; gap: var(--space-3); }
