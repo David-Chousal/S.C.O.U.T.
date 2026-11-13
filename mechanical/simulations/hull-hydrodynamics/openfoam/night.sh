@@ -21,6 +21,8 @@ prepare)
     for step in "blockMesh" "snappyHexMesh -overwrite" "checkMesh" "setFields" "decomposePar -force"; do
       openfoam -c "cd $d && $step > log.${step%% *} 2>&1" || { echo "$c: $step failed"; continue 2; }
     done
+    # a new preparation starts a new run: archive the old solver log so `resume` cannot read its "End" as this run finishing
+    [ -f "$d/log.interFoam" ] && /bin/mv "$d/log.interFoam" "$d/log.interFoam.prev-$(date +%Y%m%d-%H%M%S)"
     echo PREPARED > "$d/PREPARED"
   done
   for c in $CASES; do d=$ROOT/foam/$c; [ -f "$d/PREPARED" ] && echo "$c: prepared. $(grep -m1 'cells:' $d/log.checkMesh) | $(grep -E '^Mesh OK|Failed' $d/log.checkMesh | head -1)" || echo "$c: PREPARE FAILED, see $d/log.*"; done ;;

@@ -1,6 +1,6 @@
 from paraview.simple import *
 import os
-os.chdir(os.path.expanduser('~/scout-cfd/img'))
+img=os.path.expanduser('~/scout-cfd/img'); os.makedirs(img, exist_ok=True); os.chdir(img)
 cases={'ta10-fins':[5.325047725689186,5.537829940248,5.7033457438212],'ta10-nofins':[5.518545662015364,5.670924370695318,5.977083422964]}
 for c,ts in cases.items():
     f=os.path.expanduser(f'~/scout-cfd/foam/{c}/case.foam')

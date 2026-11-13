@@ -15,10 +15,14 @@ START = 30.0
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 
 def load(case):
-    t = None; rows = {}; z0 = None
+    t = None; rows = {}; z0 = None; last = -math.inf
     for l in open(case + "/log.interFoam"):
         m = re.match(r"^Time = ([\d.e+-]+)$", l)
-        if m: t = float(m.group(1)); continue
+        if m:
+            t = float(m.group(1))
+            if t < last: rows = {k: v for k, v in rows.items() if k < t}   # restart: drop the superseded samples
+            last = t
+            continue
         m = re.search(r"Centre of rotation: \(([^)]*)\)", l)
         if m and t is not None: z = float(m.group(1).split()[2]); z0 = z if z0 is None else z0; cur = z
         m = re.search(r"Orientation: \(([^)]*)\)", l)
