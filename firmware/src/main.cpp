@@ -240,7 +240,11 @@ static void accept_time_command() {
     while (!Serial && (int32_t)(deadline - millis()) > 0) {
         delay(10);
     }
-    if (!Serial || !g_rtc_ok) {
+    if (!g_rtc_ok) {
+        Serial.println("time: RTC not found; clock stays unset until the chip is wired");
+        return;
+    }
+    if (!Serial) {
         return;
     }
     Serial.println("time: send T<unix-epoch> (UTC) now to set the clock");
@@ -298,12 +302,18 @@ void setup() {
     g_acoustic_slot.valid = 0;
 
     g_battery.begin();
+    // DS18B20 / turbidity / housing sit behind the sensor-rail gate; leave it OFF and
+    // OneWire begin() finds nothing and the first sample looks like a dead probe.
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_ON);
+    delay(50);
     g_temp.begin();
     g_turbidity.begin();
     g_housing.begin();  // a missing sensor shows up as HUMIDITY_FAIL on every row
+    digitalWrite(PIN_SENSOR_GATE, SENSOR_OFF);
 
     g_rtc_ok = g_rtc.begin();
     accept_time_command();
+    Watchdog.reset();  // the TIME_SET window can burn most of the WDT; re-arm before SD/LoRa
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
 #ifdef SCOUT_OTA

@@ -23,6 +23,7 @@
 static const char *NAMESPACE = "shore_wifi";
 static ScoutWifiConfig g_config;
 static SemaphoreHandle_t g_store_lock = nullptr;
+static bool g_creds_changed = false;
 
 class StoreLock {
 public:
@@ -72,6 +73,8 @@ bool shore_wifi_store_get(ScoutWifiConfig *out) {
 }
 
 bool shore_wifi_store_save(const ScoutWifiConfig &config) {
+    ScoutWifiConfig previous;
+    read_flash(&previous);
     Preferences prefs;
     if (!prefs.begin(NAMESPACE, false)) {
         Serial.print("wifi: could not open flash to save the network\n");
@@ -80,14 +83,27 @@ bool shore_wifi_store_save(const ScoutWifiConfig &config) {
     bool ok = prefs.putString("ssid", config.ssid) > 0 &&
               prefs.putString("password", config.password) == strlen(config.password) &&
               prefs.putString("token", config.token) > 0;
-    prefs.end();
     if (!ok) {
-        Serial.print("wifi: flash refused the new network; nothing changed\n");
+        // Roll back a half-written NVS so a new SSID never sits next to the old password.
+        prefs.putString("ssid", previous.ssid);
+        prefs.putString("password", previous.password);
+        prefs.putString("token", previous.token);
+        prefs.end();
+        Serial.print("wifi: flash refused the new network; previous values restored\n");
         return false;
     }
+    prefs.end();
     StoreLock lock;
     g_config = config;
+    g_creds_changed = true;
     return true;
+}
+
+bool shore_wifi_store_take_creds_changed() {
+    StoreLock lock;
+    bool changed = g_creds_changed;
+    g_creds_changed = false;
+    return changed;
 }
 
 const char *shore_console_url() { return SHORE_CONSOLE_URL; }

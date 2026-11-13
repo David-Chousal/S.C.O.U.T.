@@ -17,6 +17,9 @@ bool shore_wifi_store_get(ScoutWifiConfig *out);
 /* Saves config to flash and memory. Returns false if flash refused it. */
 bool shore_wifi_store_save(const ScoutWifiConfig &config);
 
+/* True once after a successful save; the network task clears it to reset push backoff. */
+bool shore_wifi_store_take_creds_changed();
+
 /* The console the station pushes to: shore_secrets.h's SHORE_CONSOLE_URL, else the live one. */
 const char *shore_console_url();
 

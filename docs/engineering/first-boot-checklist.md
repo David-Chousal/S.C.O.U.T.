@@ -48,7 +48,8 @@ Within a few seconds of USB power you should see a `boot:` line with `rtc=… sd
 |---|---|---|
 | `lora=ok` | RFM95 init | Check SPI / CS8 vs SD CS10 / antenna |
 | `sd=ok` | Card mounted | Format FAT, reseat card |
-| `rtc=ok` after `set_rtc.py` | Wall clock | `python3 firmware/tools/set_rtc.py` in the 8 s window |
+| `rtc=ok` after `set_rtc.py` | Wall clock | `python3 firmware/tools/set_rtc.py` in the 8 s window; if Serial says `RTC not found`, fix I²C wiring first |
+| (silent sensors) | Gate powered during `begin()` | Confirm D11 sensor-rail gate; cold boot now turns it on briefly for probe detect |
 | `WARNING: … EXAMPLE key` | Wrong build | Re-flash shipped env with real keys |
 | `lora: TX FAIL` | Send returned false | SPI / radio; shore will hear nothing |
 
