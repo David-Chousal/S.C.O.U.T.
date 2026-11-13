@@ -234,8 +234,14 @@ test("a report cannot move a job back to a state that could be canceled or repla
 test("a stale report does not reopen a job canceled since it was read", async () => {
   const { env, token, device } = await setup();
   const { job } = await (await upload(env, token, 1, bundle())).json();
-  // The station read the job as pending; the admin cancels before its report lands.
-  env.DB.raw.prepare("UPDATE firmware_jobs SET state = 'canceled', bundle = NULL WHERE id = ?").run(job.id);
+  // The station's report has read the job as pending; the admin cancels just before its write.
+  const realPrepare = env.DB.prepare;
+  env.DB.prepare = (sql) => {
+    if (sql.startsWith("UPDATE firmware_jobs SET state = ?, detail = ?")) {
+      env.DB.raw.prepare("UPDATE firmware_jobs SET state = 'canceled', bundle = NULL WHERE id = ?").run(job.id);
+    }
+    return realPrepare(sql);
+  };
   const late = await call(env, device, `/api/device/firmware/${job.id}/status`, { method: "POST", body: { state: "staged" } });
   assert.equal(late.status, 409);
   assert.equal(env.DB.raw.prepare("SELECT state FROM firmware_jobs WHERE id = ?").get(job.id).state, "canceled");
