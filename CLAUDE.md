@@ -597,7 +597,7 @@ still works as an alias ([SCO-26](https://linear.app/scout1/issue/SCO-26), 2026-
    2026-11-12); the `coderabbit` job in `pr-checks.yml` passes once any commit of the PR has a
    finished review. After opening a PR, Claude waits for that review (don't poll; check it when
    CI reports), reads every comment, and either fixes the issue or replies on the thread with
-   the reason it does not apply, in **one round of fixes**. Never resolve a CodeRabbit thread
+   the reason it does not apply, in **one round of fixes**. **Standing instruction from John (2026-11-13): apply everything CodeRabbit asks for, minor and nitpick comments included, without asking first.** Push the fixes to the same branch, re-run `check_conventions.py`, and reply on each thread saying what changed; give a reason instead only when a request is factually wrong. Whenever a new CodeRabbit review appears after a push, handle it the same way. Never resolve a CodeRabbit thread
    without doing one of those. Do not ask for another review after each fix push; that is the
    loop that kept PR #321 in review for hours. Request at most one more pass
    (`@coderabbitai review`), and only when the fixes were large. If the job times out before
