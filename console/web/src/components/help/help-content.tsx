@@ -73,8 +73,9 @@ export const BUOY_STEPS: readonly HelpStep[] = [
   {
     title: "Power it on near a shore station",
     body: <>Add it first with <b>Add buoy</b> on Fleet, then power it on. On a normal cold start with enough battery it sends one packet
-      straight away (boot hello); that is skipped after a watchdog reset or in CRITICAL power mode — wait for the next UTC slot, or check
-      Serial for <code>boot:</code>. The dialog turns green when the shore station passes a packet on. A buoy that is not added shows up on its
+      straight away (boot hello); after a watchdog reset it is skipped — wait for the next UTC slot. In CRITICAL power mode (a flat pack, or a bench
+      supply with no battery on the sense input) it sends <b>nothing</b>, slots included, until the battery recovers: Serial prints
+      <code>power: … mode=CRITICAL</code> at boot. Charge or connect the pack, then reset the buoy. The dialog turns green when the shore station passes a packet on. A buoy that is not added shows up on its
       own with that same first packet.</>,
   },
   {

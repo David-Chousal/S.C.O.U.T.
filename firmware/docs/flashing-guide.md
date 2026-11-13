@@ -1,7 +1,7 @@
 # Flashing Guide
 
-
 First power-on after flash: [first-boot checklist](../../docs/engineering/first-boot-checklist.md).
+
 How to build, test, and flash the SCOUT firmware: the buoy (Adafruit Feather M0 with RFM95) and
 the shore station (ESP32-S3 Feather with a LoRa FeatherWing). The full bench-to-field procedure,
 stage by stage, is the [Integration Runbook](../../docs/engineering/integration-runbook.md).
