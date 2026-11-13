@@ -8,8 +8,10 @@ name: PR checks
 #   - knowledge-hub  Standing rule 7 (touch docs/hub/** or say "Hub: no relevant surface")
 #   - conventions    filenames, forbidden files, markdown, source registry
 #   - deploy-target  website/deploy changes (analytics/**, shore/**, pages.yml) must base on main
+#   - coderabbit     a finished CodeRabbit review on the PR's head commit
 #
-# All jobs are pure stdlib Python — no pip install, no network, no hardware.
+# All jobs are pure stdlib Python — no pip install, no hardware. Only `coderabbit` uses the
+# network (the GitHub API, to read CodeRabbit's check run).
 
 on:
   pull_request:
@@ -20,6 +22,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
 
 jobs:
   pr-title:
@@ -98,3 +101,20 @@ jobs:
         run: |
           git diff --name-only "$BASE_SHA...HEAD" > changed.txt
           python .github/scripts/check_deploy_target.py --base-ref "$BASE_REF" --changed-file changed.txt
+
+  # Every PR gets a CodeRabbit review (CLAUDE.md, decided 2026-11-12). Waits up to 20 min for
+  # the CodeRabbit app's check run on the head commit; fails if it never finishes or is skipped.
+  coderabbit:
+    name: coderabbit
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Wait for a finished CodeRabbit review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python .github/scripts/check_coderabbit.py
