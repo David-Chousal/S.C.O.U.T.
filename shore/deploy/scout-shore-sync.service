@@ -21,7 +21,8 @@
 [Unit]
 Description=S.C.O.U.T. shore station console sync (USB fallback)
 Documentation=https://github.com/David-Chousal/S.C.O.U.T./blob/main/shore/README.md
-After=network-online.target scout-shore.service
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=oneshot

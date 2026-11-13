@@ -23,12 +23,14 @@ import argparse
 import os
 import pathlib
 import sys
+import termios
 import time
 import tty
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from scout_shore import ota  # noqa: E402
+from scout_shore.serial_link import write_all  # noqa: E402
 
 LINE_GAP_S = 0.01  # the S3 reads USB between radio polls; a short gap keeps its buffer from filling
 REPLY_WAIT_S = 5.0
@@ -36,7 +38,7 @@ REPLY_WAIT_S = 5.0
 
 def write_lines(fd: int, lines: list[str]) -> None:
     for line in lines:
-        os.write(fd, (line + "\n").encode("ascii"))
+        write_all(fd, (line + "\n").encode("ascii"))  # a busy S3 must not drop or truncate a line
         time.sleep(LINE_GAP_S)
 
 
@@ -79,14 +81,20 @@ def main(argv: list[str] | None = None) -> int:
     if not args.serial:
         print("push_firmware: --serial is required unless --dry-run", file=sys.stderr)
         return 1
-    fd = os.open(args.serial, os.O_RDWR | os.O_NONBLOCK | os.O_NOCTTY)
     try:
-        if os.isatty(fd):
-            tty.setraw(fd)  # with echo on, the S3's own output would come back to it as commands
-        write_lines(fd, lines)
-        replies = read_replies(fd, REPLY_WAIT_S)
-    finally:
-        os.close(fd)
+        fd = os.open(args.serial, os.O_RDWR | os.O_NONBLOCK | os.O_NOCTTY)
+        try:
+            if os.isatty(fd):
+                # With echo on, the S3's own output would come back to it as commands. TCSANOW
+                # keeps RX bytes the receiver service already queued (TCSAFLUSH would drop them).
+                tty.setraw(fd, when=termios.TCSANOW)
+            write_lines(fd, lines)
+            replies = read_replies(fd, REPLY_WAIT_S)
+        finally:
+            os.close(fd)
+    except OSError as exc:
+        print(f"push_firmware: {args.serial}: {exc}", file=sys.stderr)
+        return 1
     for reply in replies:
         print(reply)
     if not replies:

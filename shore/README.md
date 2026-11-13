@@ -93,7 +93,7 @@ never interrupt a CSV write.
 ```bash
 python scripts/run_receiver.py --link serial --serial /dev/serial/by-id/… --out data-live   # replace …; never /dev/ttyACM0
 # Optional USB console sync (preferred path is the S3's own WiFi push):
-#   edit shore/deploy/scout-shore-sync.service REPLACE_ME paths + SCOUT_CONSOLE_* then enable the timer.
+#   edit shore/deploy/scout-shore-sync.service the REPLACE_ME path; put SCOUT_CONSOLE_* in /etc/scout-shore-sync.env (mode 600), never in the unit; then enable the timer.
 ```
 
 `data-live/` is **tracked in git** and is what the public dashboard publishes from — see

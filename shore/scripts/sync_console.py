@@ -19,7 +19,6 @@ import argparse
 import csv
 import logging
 import os
-import select
 import sys
 import termios
 import time
@@ -35,30 +34,13 @@ from scout_shore.console import (  # noqa: E402
     set_commands,
     settings_commands,
 )
+from scout_shore.serial_link import write_all  # noqa: E402
 
 log = logging.getLogger("scout_shore.sync")
 
 # Match push_firmware.py: the S3 reads USB between radio polls; a short gap keeps its buffer
 # from filling, and raw mode stops the host from echoing command lines back into the S3.
 LINE_GAP_S = 0.01
-WRITE_DEADLINE_S = 5.0
-
-
-def _write_all(fd: int, data: bytes) -> None:
-    """Write every byte even on a non-blocking fd; raise if the port never drains."""
-    view = memoryview(data)
-    deadline = time.monotonic() + WRITE_DEADLINE_S
-    while view:
-        try:
-            n = os.write(fd, view)
-        except BlockingIOError:
-            n = 0
-        if n:
-            view = view[n:]
-            continue
-        if time.monotonic() >= deadline:
-            raise OSError("timed out writing to the serial port")
-        select.select([], [fd], [], max(0.0, deadline - time.monotonic()))
 
 
 def _write_serial_lines(serial_path: Path, lines: list[str]) -> None:
@@ -68,14 +50,23 @@ def _write_serial_lines(serial_path: Path, lines: list[str]) -> None:
             # TCSANOW keeps any RX bytes the companion receiver already queued (TCSAFLUSH would drop them).
             tty.setraw(fd, when=termios.TCSANOW)
         for line in lines:
-            _write_all(fd, (line + "\n").encode("ascii"))
+            write_all(fd, (line + "\n").encode("ascii"))
             time.sleep(LINE_GAP_S)
     finally:
         os.close(fd)
 
 
+def _newest_per_buoy(data_dir: Path, newest_files: int) -> list[Path]:
+    # Files are SCOUT-NN_YYYYMMDD.csv: a global sort would let the highest buoy id fill the whole
+    # window, so the newest N days are picked per buoy.
+    by_buoy: dict[str, list[Path]] = {}
+    for path in sorted(data_dir.glob("SCOUT-*_*.csv")):
+        by_buoy.setdefault(path.name.split("_", 1)[0], []).append(path)
+    return [path for paths in by_buoy.values() for path in paths[-newest_files:]]
+
+
 def _rows(data_dir: Path, newest_files: int) -> list[dict[str, str]]:
-    files = sorted(data_dir.glob("SCOUT-*_*.csv"))[-newest_files:]
+    files = _newest_per_buoy(data_dir, newest_files)
     rows: list[dict[str, str]] = []
     for path in files:
         with path.open(newline="") as handle:
@@ -86,7 +77,7 @@ def _rows(data_dir: Path, newest_files: int) -> list[dict[str, str]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--data", type=Path, default=Path("data-live"), help="received CSVs")
-    parser.add_argument("--files", type=int, default=2, help="newest daily files to push")
+    parser.add_argument("--files", type=int, default=2, help="newest daily files to push, per buoy")
     parser.add_argument("--serial", type=Path, help="ESP32 USB serial device to write commands to")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
