@@ -310,6 +310,9 @@ static void poll_time_command() {
             g_line[g_line_len++] = c;
             continue;
         }
+        if (g_line_len > 0 && g_line[g_line_len - 1] == '\r') {
+            g_line_len--;  // a terminal sending CRLF must not break W or the hex length of FM
+        }
         g_line[g_line_len] = '\0';
         g_line_len = 0;
         if (strcmp(g_line, "W") == 0) {
@@ -394,7 +397,13 @@ void loop() {
     poll_time_command();
     if (!g_radio_ok) {
         // Broken SPI often makes available() look true forever and floods USB with
-        // "RX bad frame" — keep USB usable for T/N/S/W/F* and WiFi setup instead.
+        // "RX bad frame" — keep USB usable for T/N/S/W/F* and WiFi setup instead. The radio is
+        // only initialised in setup(), so repeat the hint for a monitor opened after boot.
+        static uint32_t last_hint_ms = 0;
+        if (millis() - last_hint_ms >= 30000) {
+            last_hint_ms = millis();
+            Serial.print("shore_rx: radio=FAIL - fix CS=10 RST=11 IRQ=9 jumpers, then press RESET\n");
+        }
         delay(100);
         return;
     }

@@ -231,6 +231,17 @@ void test_saving_starts_a_join_even_with_a_phone_on_the_setup_network(void) {
     TEST_ASSERT_TRUE(w.joining);
 }
 
+void test_a_save_while_still_connected_rejoins_once_the_old_link_drops(void) {
+    ScoutWifiWatch w;
+    scout_wifi_watch_begin(&w, 0);
+    scout_wifi_force_portal(&w, 0);      /* Change WiFi / BOOT opened setup while connected */
+    step(&w, true, true, true, 0);       /* on the old network, phone on setup */
+    scout_wifi_saved(&w);                /* new network saved; the drop has not landed yet */
+    step(&w, true, true, true, 250);     /* still reads connected on this step */
+    ScoutWifiActions a = step(&w, true, false, true, 500);
+    TEST_ASSERT_TRUE(a.begin_join);
+}
+
 void test_setup_closes_after_a_minute_of_staying_connected(void) {
     ScoutWifiWatch w;
     scout_wifi_watch_begin(&w, 0);
@@ -327,6 +338,7 @@ int main(int, char **) {
     RUN_TEST(test_a_join_attempt_is_stopped_after_its_window_and_retried_later);
     RUN_TEST(test_no_new_join_starts_while_a_phone_is_on_the_setup_network);
     RUN_TEST(test_saving_starts_a_join_even_with_a_phone_on_the_setup_network);
+    RUN_TEST(test_a_save_while_still_connected_rejoins_once_the_old_link_drops);
     RUN_TEST(test_setup_closes_after_a_minute_of_staying_connected);
     RUN_TEST(test_setup_opens_10_s_after_a_working_connection_drops);
     RUN_TEST(test_a_dropped_connection_starts_a_new_join_at_once);

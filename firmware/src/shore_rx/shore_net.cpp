@@ -167,6 +167,7 @@ static void net_task(void *) {
     bool was_up = false;
     bool sntp_started = false;
     uint32_t next_push = 0, next_settings = 0, next_ntp_retry = 0, backoff = BACKOFF_MIN_MS;
+    bool token_refused = false, told_no_token = false;  // one prompt per bad-token episode
     for (;;) {
         uint32_t now_ms = millis();
         bool up = shore_wifi_connected();
@@ -201,9 +202,15 @@ static void net_task(void *) {
         if (shore_wifi_store_take_creds_changed()) {
             backoff = BACKOFF_MIN_MS;
             next_push = next_settings = now_ms;
+            token_refused = false;
+            told_no_token = false;
         }
         ScoutWifiConfig config;
         shore_wifi_store_get(&config);
+        if (up && !config.token[0] && !told_no_token) {
+            Serial.print("console: no device token saved; paste one on the setup page (hold BOOT 3 s)\n");
+            told_no_token = true;
+        }
         if (!up || !config.token[0]) {
             vTaskDelay(pdMS_TO_TICKS(1000));
             continue;
@@ -211,6 +218,12 @@ static void net_task(void *) {
         if ((int32_t)(now_ms - next_push) >= 0) {
             size_t left = 0;
             int code = push_once(&left);
+            if ((code == 401 || code == 403) && !token_refused) {
+                // The setup AP closed a minute after WiFi came up; reopen it once so a new token
+                // can be pasted without the BOOT button or a reflash.
+                token_refused = true;
+                shore_wifi_open_setup();
+            }
             if (code == 0 || code == 200) {
                 backoff = BACKOFF_MIN_MS;
                 next_push = now_ms + (left ? 0 : 1000);

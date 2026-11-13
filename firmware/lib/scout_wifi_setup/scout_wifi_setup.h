@@ -75,7 +75,7 @@ const char *scout_wifi_reason_name(uint8_t reason);
 struct ScoutWifiWatch {
     bool portal_open;
     bool joining;
-    bool join_requested; /* set by a save, consumed by the next step */
+    bool join_requested; /* set by a save, consumed by the next join (kept while connected) */
     bool was_connected;
     uint32_t down_since;
     uint32_t up_since;
