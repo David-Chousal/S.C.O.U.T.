@@ -3,7 +3,6 @@
 import { Key } from "@/components/ui/key";
 
 interface EditBarProps {
-  viewName: string;
   dirty: boolean;
   saving: boolean;
   canDelete: boolean;
@@ -13,18 +12,15 @@ interface EditBarProps {
   onSave: () => void;
 }
 
-/** The inverted strip pinned above the grid while a layout is being edited. */
-export function EditBar({ viewName, dirty, saving, canDelete, onReset, onDelete, onCancel, onSave }: EditBarProps) {
+/** The layout-editing keys, shown on the view-tab line in place of Customize. */
+export function EditBar({ dirty, saving, canDelete, onReset, onDelete, onCancel, onSave }: EditBarProps) {
   return (
     <div className="sc-editbar" role="toolbar" aria-label="Layout editing">
-      <span className="sc-tag">Editing layout · {viewName}</span>
       {dirty && <span className="sc-tag sc-editbar__dirty">Unsaved changes</span>}
-      <span className="sc-row" style={{ gap: "var(--space-2)", marginLeft: "auto" }}>
-        <Key size="sm" onClick={onReset}>Reset to default</Key>
-        {canDelete && <Key size="sm" onClick={onDelete}>Delete view</Key>}
-        <Key size="sm" shortcut="Esc" onClick={onCancel}>Cancel</Key>
-        <Key size="sm" variant="primary" shortcut="⌘S" onClick={onSave} disabled={saving} aria-busy={saving}>Save view</Key>
-      </span>
+      <Key size="sm" onClick={onReset}>Reset to default</Key>
+      {canDelete && <Key size="sm" onClick={onDelete}>Delete view</Key>}
+      <Key size="sm" shortcut="Esc" onClick={onCancel}>Cancel</Key>
+      <Key size="sm" variant="primary" shortcut="⌘S" onClick={onSave} disabled={saving} aria-busy={saving}>Save view</Key>
     </div>
   );
 }

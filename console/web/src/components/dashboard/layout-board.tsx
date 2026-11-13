@@ -157,11 +157,9 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
   return (
     <div className="sc-layout-board">
       <ViewTabs views={views} activeViewId={view.id} editing={editing} canEdit={canEdit}
-        onSelect={setActiveViewId} onNew={() => setDialog("new")} onCustomize={() => enter()} />
-      {editing && (
-        <EditBar viewName={view.name} dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID}
-          onReset={() => setDialog("reset")} onDelete={() => setDialog("delete")} onCancel={cancel} onSave={save} />
-      )}
+        onSelect={setActiveViewId} onNew={() => setDialog("new")} onCustomize={() => enter()}
+        editActions={<EditBar dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID}
+          onReset={() => setDialog("reset")} onDelete={() => setDialog("delete")} onCancel={cancel} onSave={save} />} />
       <div className={editing ? "sc-layout sc-layout--editing" : "sc-layout"}>
         <div className="sc-grid12" ref={gridRef}>
           {bays.length === 0 && (
