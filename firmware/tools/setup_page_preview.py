@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve the shore station's WiFi setup page (src/shore_rx/setup_page.html, SCO-310) with a fake
+"""Serve the shore station's WiFi setup page (src/shore_rx/setup-page.html, SCO-310) with a fake
 station behind it, so the page can be designed and checked without hardware.
 
     python3 firmware/tools/setup_page_preview.py            # http://localhost:8823
@@ -16,7 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
 
-PAGE = Path(__file__).resolve().parent.parent / "src" / "shore_rx" / "setup_page.html"
+PAGE = Path(__file__).resolve().parent.parent / "src" / "shore_rx" / "setup-page.html"
 NETWORKS = [
     {"ssid": "David’s iPhone", "rssi": -48, "secured": True},
     {"ssid": "BroncoFi-Devices", "rssi": -61, "secured": True},

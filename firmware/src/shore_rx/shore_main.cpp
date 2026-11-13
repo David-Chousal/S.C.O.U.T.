@@ -21,7 +21,7 @@
  * the S3 has no battery-backed clock.
  *
  * Daily transmit count (SCO-198). The station keeps the count requested for each buoy, read
- * from the console every 10 min over WiFi; "N<buoy>:<count>" over USB sets it without WiFi (the
+ * from the console every minute over WiFi; "N<buoy>:<count>" over USB sets it without WiFi (the
  * next console read replaces it). The window tag uses
  * the slots of the count the frame itself reports (v4), else the requested count, so it checks
  * the buoy's clock against the slots that buoy is actually using. Every OK line ends with

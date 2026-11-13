@@ -147,6 +147,17 @@ void test_a_reply_that_is_not_settings_changes_nothing(void) {
     TEST_ASSERT_EQUAL_UINT8(2, wanted[1].tx_count);
 }
 
+/* Change WiFi from the console (SCO-310): the settings reply carries when an admin asked. */
+void test_a_wifi_setup_request_is_read_from_the_settings_reply(void) {
+    TEST_ASSERT_EQUAL_UINT32(1794530000u,
+                             scout_console_wifi_setup_at("{\"buoys\":[],\"wifi_setup_requested_at\":1794530000}"));
+}
+
+void test_no_wifi_setup_request_reads_as_zero(void) {
+    TEST_ASSERT_EQUAL_UINT32(0, scout_console_wifi_setup_at("{\"buoys\":[],\"wifi_setup_requested_at\":null}"));
+    TEST_ASSERT_EQUAL_UINT32(0, scout_console_wifi_setup_at("{\"buoys\":[]}"));
+}
+
 void setUp(void) {}
 void tearDown(void) {}
 
@@ -164,6 +175,8 @@ static void run_all(void) {
     RUN_TEST(test_wanted_reply_drops_a_snapshot_the_buoy_would_refuse);
     RUN_TEST(test_an_empty_wanted_reply_clears_every_request);
     RUN_TEST(test_a_reply_that_is_not_settings_changes_nothing);
+    RUN_TEST(test_a_wifi_setup_request_is_read_from_the_settings_reply);
+    RUN_TEST(test_no_wifi_setup_request_reads_as_zero);
     UNITY_END();
 }
 

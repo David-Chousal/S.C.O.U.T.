@@ -1,7 +1,8 @@
 /* The shore station's API (bearer device token; never a user session).
  *
  *   POST /api/device/readings  { rows: [schema row, ...] }   ≤ 200 rows, ≤ 256 KB
- *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested, settings, settings_digest }] }
+ *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested, settings, settings_digest }],
+ *                                   wifi_setup_requested_at }   unix seconds of a live request, or null
  *        settings: every remote setting in ID order, "3,0,30,60,3200,3100,3,70" (fleet.js)
  *
  * Rows are validated field by field before anything is stored, and repeats of a
@@ -21,6 +22,9 @@ const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 // A row stamped further ahead than this is refused: a buoy clock gone wrong must not pin the
 // buoy's "newest packet" in the future and hide every real one after it.
 const MAX_FUTURE_MS = 24 * 3600 * 1000;
+// How long a Change WiFi request stays live: a station offline when it was made must not open its
+// setup network days later.
+const WIFI_SETUP_LIVE_MS = 15 * 60 * 1000;
 
 export async function createDevice(db, actor, name) {
   const label = String(name || "").trim().slice(0, 60);
@@ -60,9 +64,24 @@ export async function deleteDevice(db, actor, id) {
   return {};
 }
 
+/** Ask a station that is still online to open its SCOUT-Setup network for 10 minutes, so someone
+ * near it can move it to another WiFi from a phone. It hears about it in its next settings poll. */
+export async function requestWifiSetup(db, actor, id) {
+  const device = await db.prepare("SELECT * FROM devices WHERE id = ? AND revoked_at IS NULL").bind(id).first();
+  if (!device) return { error: "That station's token is revoked or gone." };
+  await db.prepare("UPDATE devices SET wifi_setup_requested_at = ? WHERE id = ?").bind(Date.now(), id).run();
+  await record(db, { actor, action: "device.wifi_setup", target: device.name });
+  return {};
+}
+
+function liveWifiSetup(device, now = Date.now()) {
+  const at = device.wifi_setup_requested_at;
+  return at && now - at < WIFI_SETUP_LIVE_MS ? Math.floor(at / 1000) : null;
+}
+
 export async function listDevices(db) {
   const { results } = await db
-    .prepare("SELECT id, name, created_at, revoked_at, last_seen_at FROM devices ORDER BY created_at DESC")
+    .prepare("SELECT id, name, created_at, revoked_at, last_seen_at, wifi_setup_requested_at FROM devices ORDER BY created_at DESC")
     .all();
   return results;
 }
@@ -165,7 +184,7 @@ export async function handleDeviceApi(request, env, path, ctx) {
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
     // Only this buoy's command station hears about a request; a lone station is everyone's.
-    return json({ buoys: await wantedForDevice(env.DB, device.id) });
+    return json({ buoys: await wantedForDevice(env.DB, device.id), wifi_setup_requested_at: liveWifiSetup(device) });
   }
   if (path === "/api/device/readings" && request.method === "POST") {
     if (!bodyWithin(request, MAX_BODY_BYTES)) return apiError("body too large or without a length", 413);

@@ -8,7 +8,7 @@
 #include "scout_wifi_setup.h"
 #include "shore_wifi_store.h"
 
-/* setup_page.html, linked in by board_build.embed_txtfiles (platformio.ini), NUL-terminated. */
+/* setup-page.html, linked in by board_build.embed_txtfiles (platformio.ini), NUL-terminated. */
 extern const char SETUP_PAGE_START[] asm("_binary_src_shore_rx_setup_page_html_start");
 extern const char SETUP_PAGE_END[] asm("_binary_src_shore_rx_setup_page_html_end");
 

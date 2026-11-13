@@ -11,7 +11,7 @@ import { handleAssistant } from "./assistant/route.js";
 import { usageToday } from "./assistant/usage.js";
 import { recent } from "./audit.js";
 import { constantTimeEqual } from "./crypto.js";
-import { createDevice, deleteDevice, listDevices, revokeDevice } from "./device.js";
+import { createDevice, deleteDevice, listDevices, requestWifiSetup, revokeDevice } from "./device.js";
 import {
   addBuoy, buoyConfig, deleteBuoy, disconnectBuoy, estimates, listBuoys, renameBuoy, requestSettings, requestTxCount,
   restoreDefaults, setCommandStation, SLOT_LABELS,
@@ -191,6 +191,7 @@ const WRITES = [
   [/^\/api\/devices$/, "devices.write", (db, b, m, a) => createDevice(db, a, b.name)],
   [/^\/api\/devices\/([\w-]{1,64})\/revoke$/, "devices.write", (db, b, m, a) => revokeDevice(db, a, m[1])],
   [/^\/api\/devices\/([\w-]{1,64})\/delete$/, "devices.write", (db, b, m, a) => deleteDevice(db, a, m[1])],
+  [/^\/api\/devices\/([\w-]{1,64})\/wifi-setup$/, "devices.write", (db, b, m, a) => requestWifiSetup(db, a, m[1])],
 ];
 
 async function writes(request, env, path, session, body) {

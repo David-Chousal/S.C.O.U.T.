@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <title>S.C.O.U.T. shore station setup</title>
 <!-- The shore station's WiFi setup page (SCO-310), served by the station itself on its
      SCOUT-Setup network. Styled as the console's sign-in screen (COR in Tideline colour, tokens
-     from console/web/design/tokens.json). The phone has no internet here, so nothing loads from
+     from console/web/design/tokens.json), light only so it reads the same on every phone. The phone has no internet here, so nothing loads from
      anywhere: system fonts stand in for DM Sans and JetBrains Mono, and the icons are inline.
      Preview it without a station: python3 firmware/tools/setup_page_preview.py -->
 <style>
@@ -24,18 +24,6 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
   --radius-sm: 2px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: #09181f; --surface: #15272f; --surface-sunken: #050f14;
-    --line: #253842; --line-strong: #6f7679; --rail: #9b9f9f;
-    --ink: #fcf9f5; --ink-muted: #a9acac;
-    --accent: #b0dbd7; --accent-soft: #0d3d3b; --on-accent: #050f14;
-    --positive: #73cd9f; --positive-soft: #244241;
-    --negative: #f18b71; --negative-soft: #38373a;
-    --caution: #e4b572; --caution-soft: #363e3a;
-  }
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }

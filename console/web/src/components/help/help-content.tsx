@@ -39,8 +39,10 @@ export const SHORE_STEPS: readonly HelpStep[] = [
   {
     title: "Give the shore station its WiFi and token",
     body: (
-      <>Copy <code>firmware/src/shore_rx/shore_secrets_example.h</code> to <code>shore_secrets.h</code>, then fill in the WiFi name,
-        password and token. That file is never committed. Flash the <code>feather_esp32s3_shore</code> environment with PlatformIO.</>
+      <>Power the station on. With no WiFi saved it opens its own network, <code>SCOUT-Setup-</code> and four characters. Join it from
+        a phone&rsquo;s WiFi settings, pick the network on the page that opens (a phone&rsquo;s hotspot works, on 2.4 GHz), and paste the
+        token. To move it to another network later, use <b>Change WiFi</b> in its ⋯ menu on <b>Stations</b>, or hold its BOOT button
+        for 3 seconds.</>
     ),
   },
   {
@@ -85,7 +87,7 @@ export const PROBLEMS: readonly HelpProblem[] = [
   },
   {
     symptom: "The shore station gets a 401 error",
-    fix: <>Its device token was revoked or typed wrong. Make a new one on <b>Stations</b> and flash it again.</>,
+    fix: <>Its device token was revoked or typed wrong. Make a new one on <b>Stations</b>, hold the station&rsquo;s BOOT button for 3 seconds, and paste it on its setup page.</>,
   },
   {
     symptom: "A setting stays “pending”",

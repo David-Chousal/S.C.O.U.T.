@@ -67,6 +67,10 @@ typedef struct {
  * if the body is not a settings reply. */
 int scout_console_parse_wanted(const char *body, ScoutWanted *wanted, size_t slots);
 
+/* "wifi_setup_requested_at" from the same reply: when an admin pressed Change WiFi on the Stations
+ * page (unix seconds), or 0 when there is no live request (SCO-310). */
+uint32_t scout_console_wifi_setup_at(const char *body);
+
 #ifdef __cplusplus
 }
 #endif

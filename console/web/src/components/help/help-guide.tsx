@@ -168,7 +168,7 @@ export function HelpGuide() {
           lead="The buoy never talks to the console directly. A shore station listens for it and passes each reading on.">
           <FlowDiagram />
           <p className="sc-guide__text sc-guide__aside">
-            The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 46-byte packet; raw audio stays on the buoy. It also sends one packet the moment it is powered on, so a new buoy shows up within seconds. Every 10 minutes
+            The buoy transmits at 00:10, 08:10 and 16:10 UTC by default, in a 46-byte packet; raw audio stays on the buoy. It also sends one packet the moment it is powered on, so a new buoy shows up within seconds. Every minute
             the shore station also asks the console for setting changes and hands them to the buoy right after its next packet.
           </p>
         </GuideSection>

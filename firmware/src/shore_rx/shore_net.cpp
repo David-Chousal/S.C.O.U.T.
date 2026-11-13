@@ -17,7 +17,8 @@ ShoreShared g_shared;
 static SemaphoreHandle_t g_lock = nullptr;
 
 static const size_t PUSH_BATCH = 20;                  // rows per request (~11 KB)
-static const uint32_t SETTINGS_EVERY_MS = 10u * 60u * 1000u;
+// Every minute, so Change WiFi on the console's Stations page takes effect within a minute.
+static const uint32_t SETTINGS_EVERY_MS = 60u * 1000u;
 static const uint32_t BACKOFF_MIN_MS = 5u * 1000u;
 static const uint32_t BACKOFF_MAX_MS = 10u * 60u * 1000u;
 static const uint32_t NTP_RETRY_MS = 10u * 60u * 1000u;
@@ -117,6 +118,18 @@ static int push_once(size_t *left) {
     return code;
 }
 
+/* Change WiFi on the Stations page: open the setup network once per request. The console stops
+ * sending a request after 15 min, so this never fires for an old one. */
+static void act_on_wifi_setup(const char *reply) {
+    static uint32_t handled = 0;
+    uint32_t at = scout_console_wifi_setup_at(reply);
+    if (at != 0 && at != handled) {
+        handled = at;
+        Serial.print("console: Change WiFi requested\n");
+        shore_wifi_open_setup();
+    }
+}
+
 /* The console is the source of truth for what each buoy should run once it answers. */
 static void pull_settings() {
     String reply;
@@ -126,6 +139,7 @@ static void pull_settings() {
         Serial.printf("console: settings read failed (%d)\n", code);
         return;
     }
+    act_on_wifi_setup(reply.c_str());
     bool changed;
     {
         ShoreLock lock;

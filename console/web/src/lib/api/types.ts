@@ -149,6 +149,8 @@ export interface Device {
   created_at: number;
   revoked_at: number | null;
   last_seen_at: number | null;
+  /** When an admin last asked it to open its WiFi setup network (ms), or null. */
+  wifi_setup_requested_at: number | null;
 }
 
 export interface AuditEntry {
