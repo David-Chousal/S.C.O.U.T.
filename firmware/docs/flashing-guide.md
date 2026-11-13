@@ -75,15 +75,13 @@ copies of each transmission collapse to one CSV row.
 
 ## Over-the-air releases (`SCOUT_OTA`, SCO-197)
 
-Off in the shipped builds and **never run on hardware yet**; the design and what is still open
-are in the [OTA design §10](../../docs/engineering/ota-firmware-update-design.md#10-as-built-2026-11-12).
-
-| Env | What it is |
-|---|---|
-| `feather_m0_ota` | The buoy with OTA: the `scout_boot` stub at `0x2000`, the app at `0x8000`. Needs `src/downlink_key.h` and `src/ota_pubkey.h` |
-| `feather_m0_ota_check` | The same with the **public** test keys, for CI. Never deploy |
-| `scout_boot` | The boot stub alone, ≤ 24 KB; not flashed by itself |
-| `feather_esp32s3_shore_ota` | The shore station that relays signed bundles (`_check`: public keys, CI only) |
+**On in the shipped `feather_m0` and `feather_esp32s3_shore` builds since 2026-11-12**, and
+**never run on hardware yet**. The design and what is still open are in the
+[OTA design §10](../../docs/engineering/ota-firmware-update-design.md#10-as-built-2026-11-12).
+Both builds now need `src/ota_pubkey.h` (below) as well as `src/downlink_key.h`, and refuse to
+compile without them. The `_downlink` compile checks and the bench builds use the **public** test
+key instead; never deploy them. `scout_boot` is the boot stub alone (≤ 24 KB); it is not flashed by
+itself.
 
 **Once, on the release machine:** make the signing key. The private key never goes in the repo
 or on the shore station; the header is gitignored too.
@@ -93,15 +91,15 @@ python3 tools/ota_release.py keygen --key ~/scout-ota.key --header src/ota_pubke
 ```
 
 **First install is over USB** (the layout changes, so the stub must arrive by cable):
-`pio run -e feather_m0_ota -t upload`. On its first boot the buoy copies itself to `FW/A.BIN`
+`pio run -e feather_m0 -t upload`. On its first boot the buoy copies itself to `FW/A.BIN`
 on the SD card as the known-good image (the serial line reads `ota: phase=0 …`).
 
 **Each release:**
 
 1. Bump `FW_MAJOR`/`FW_MINOR`/`FW_PATCH` in `src/config.h`. The buoy refuses any version that is
    not higher than the one it runs.
-2. `pio run -e feather_m0_ota`, then sign:
-   `python3 tools/ota_release.py sign --key ~/scout-ota.key --buoy 1 --bin .pio/build/feather_m0_ota/firmware.bin --out scout-01-vX.Y.Z.scoutfw`
+2. `pio run -e feather_m0`, then sign:
+   `python3 tools/ota_release.py sign --key ~/scout-ota.key --buoy 1 --bin .pio/build/feather_m0/firmware.bin --out scout-01-vX.Y.Z.scoutfw`
 3. On the shore computer: `python3 shore/scripts/push_firmware.py --serial <S3 port> --bundle scout-01-vX.Y.Z.scoutfw --buoy 1`.
    The S3 prints `ota: ready …` once it has checked the hash and signature.
 4. Watch the console: over about a day and a half the transfer runs in the 6-min session after

@@ -210,12 +210,20 @@ static void send_confirm(uint16_t buoy_id, uint32_t version) {
                   (unsigned long)counter, sent ? "yes" : "no");
 }
 
-// Settings go first: one frame fits a listen window, so firmware waits for the next slot.
+// One frame fits a listen window. A trial CONFIRM goes before settings: a trial image rolls
+// back after 3 slots without it, and a settings frame the buoy keeps refusing must not cause
+// that. Settings go before an offer, which waits for a slot with nothing else to send.
+static bool firmware_confirm_due(const ScoutReading &r) {
+    if (shore_ota_step(r) != SCOUT_OTA_STEP_CONFIRM) {
+        return false;
+    }
+    send_confirm(r.buoy_id, shore_ota_job_version());
+    return true;
+}
+
 static void firmware_step(const ScoutReading &r) {
     scout_ota_step_t step = shore_ota_step(r);
-    if (step == SCOUT_OTA_STEP_CONFIRM) {
-        send_confirm(r.buoy_id, shore_ota_job_version());
-    } else if (step == SCOUT_OTA_STEP_OFFER) {
+    if (step == SCOUT_OTA_STEP_OFFER) {
         shore_ota_run_session(g_rf95, r.buoy_id);
     } else if (step == SCOUT_OTA_STEP_DONE || step == SCOUT_OTA_STEP_ABANDON) {
         shore_ota_finish(step);
@@ -274,6 +282,11 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
                   (settings_pending || count_pending) ? " pending" : "",
                   (r.flags & SCOUT_FLAG_CMD_REJECTED) ? " cmd_rejected" : "");
 #ifdef SCOUT_DOWNLINK
+#ifdef SCOUT_OTA
+    if (firmware_confirm_due(r)) {
+        return;
+    }
+#endif
     if (settings_pending) {
         send_settings(r.buoy_id, wanted.settings);
     } else if (count_pending) {

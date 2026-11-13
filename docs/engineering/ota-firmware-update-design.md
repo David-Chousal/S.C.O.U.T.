@@ -13,9 +13,9 @@
 > needs her sign-off, and every current figure is a datasheet estimate until it is measured on
 > the bench.
 >
-> **Built 2026-11-12, off by default** (§10): the whole update path, buoy and shore, compiles and
-> is unit-tested, behind `SCOUT_OTA` in its own builds (`feather_m0_ota`,
-> `feather_esp32s3_shore_ota`). **Never run on hardware.** The image grew to ≈ 95.5 KB with the
+> **Built 2026-11-12 and switched on in the shipped builds the same day** on David's instruction
+> (§10): the whole update path, buoy and shore, compiles and is unit-tested under `SCOUT_OTA`.
+> **Never run on hardware**, and the power and FCC sign-offs are not recorded. The image grew to ≈ 95.5 KB with the
 > signature code, so an update is ≈ 747 chunks, ≈ 4–5 sessions, ≈ 12 mAh.
 >
 > Owner: David Chousal Cantu (CSEN). Power sign-off: Isabella Rodriguez (ECEN). Linear:
@@ -34,7 +34,7 @@
 | Boot stub and rollback | Proposed (§6). Arduino's SDU stub needs rebuilding for the Feather M0 RFM95 |
 | Power budget and ADR-0007 lifetime re-run | Figures in §7. Isabella's budget document not updated yet |
 | Shore transmit compliance | **Open.** The RFM95W FeatherWing's FCC authorization has not been checked (§8) |
-| Firmware OTA | **Built 2026-11-12** behind `SCOUT_OTA`, off in the shipped builds (§10): offer, chunked transfer with resume, Ed25519 + SHA-256 checks, the `scout_boot` stub with A/B slots and rollback, the trial `CONFIRM`, the shore relay and the release tooling. 167 native tests, 9 target builds; **never run on hardware** |
+| Firmware OTA | **Built 2026-11-12**, `SCOUT_OTA` **on in the shipped builds** the same day (§10): offer, chunked transfer with resume, Ed25519 + SHA-256 checks, the `scout_boot` stub with A/B slots and rollback, the trial `CONFIRM`, the shore relay and the release tooling. 167 native tests, 9 target builds; **never run on hardware** |
 | Settings downlink | **Settings slice built 2026-10-25** ([SCO-198](https://linear.app/scout1/issue/SCO-198)), **extended to every remote setting and switched on in the shipped builds 2026-11-04** ([plan](firmware-remote-settings-plan.md)): the 1 s listen window, the `CMD` frame (v1 `SET_TX_COUNT`, v2 full snapshot; HMAC-SHA256, §5), and the shore side, behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware** |
 
 ## 1. Constraints this design has to fit
@@ -263,9 +263,12 @@ still open.
 ## 10. As built (2026-11-12)
 
 Everything in §3–§6 is built ([SCO-197](https://linear.app/scout1/issue/SCO-197)), behind
-`SCOUT_OTA`, which is **off in the shipped `feather_m0` and `feather_esp32s3_shore` builds** until
-the bench test and the power and FCC sign-offs. Both sides compile; the hardware-free parts are
-unit-tested; nothing has run on a Feather.
+`SCOUT_OTA`, which is **on in the shipped `feather_m0` and `feather_esp32s3_shore` builds since
+2026-11-12, on David's instruction**, before the bench test and the power and FCC sign-offs. Both
+sides compile; the hardware-free parts are unit-tested; nothing has run on a Feather. Both shipped
+builds need `src/ota_pubkey.h` to compile. The settings path that OTA rides on (console → S3 over
+WiFi → LoRa → buoy → packet → console) was run end to end through the real code on 2026-11-12,
+with only the radio and the WiFi transport left out: a member's request came back "confirmed".
 
 | Piece | Where |
 |---|---|
@@ -305,7 +308,7 @@ unit-tested; nothing has run on a Feather.
   its session blocks its receive loop for up to ≈ 6.5 min. Another buoy's packets are lost
   during that time.
 
-**Still open before `SCOUT_OTA` can ship:**
+**Still open (the build ships with them open, by decision):**
 
 1. Bench test on a Feather M0 + Adalogger + a second radio: USB-flash the OTA build, push a
    signed v+1 bundle, and check the transfer, the stub flash, `FW_TRIAL`, `CONFIRM`, a forced

@@ -10,9 +10,9 @@ firmware.
     python3 firmware/tools/ota_release.py keygen --key ~/scout-ota.key --header firmware/src/ota_pubkey.h
 
     # per release: build, then sign the .bin for one buoy (or --buoy 0 for any buoy)
-    cd firmware && pio run -e feather_m0_ota && cd ..
+    cd firmware && pio run -e feather_m0 && cd ..
     python3 firmware/tools/ota_release.py sign --key ~/scout-ota.key --buoy 1 \
-        --bin firmware/.pio/build/feather_m0_ota/firmware.bin --out scout-01-v0.2.0.scoutfw
+        --bin firmware/.pio/build/feather_m0/firmware.bin --out scout-01-v0.2.0.scoutfw
 
 The version signed into the manifest is read from FW_MAJOR/FW_MINOR/FW_PATCH in
 firmware/src/config.h, the same constants the image reports in every packet, so the shore can

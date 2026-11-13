@@ -147,7 +147,7 @@ static const uint16_t DOWNLINK_FRAME_MAX_MS = 1739;
 static const uint32_t DOWNLINK_MAX_SKEW_S = 86400;
 
 /* ── Over-the-air firmware (SCO-197, OTA design §4) ────────────────────────────────────────
- * SCOUT_OTA builds only (feather_m0_ota); needs SCOUT_DOWNLINK for the CONFIRM key. A transfer
+ * SCOUT_OTA builds (on in the shipped feather_m0 since 2026-11-12); needs SCOUT_DOWNLINK for the CONFIRM key. A transfer
  * session ends after OTA_SESSION_MAX_MS, well before the :30 sensor wake that follows a :10 slot,
  * or after OTA_SILENT_WINDOWS_MAX windows with no chunk heard. OTA_CHUNK_WAIT_MS covers the
  * shore's turnaround plus the start of a chunk; a chunk whose header arrived is then received

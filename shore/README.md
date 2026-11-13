@@ -108,7 +108,7 @@ is never labelled as a simulation.
 `firmware/tools/ota_release.py`) into the S3 for one buoy. The S3 relays it over LoRa after
 the buoy's next packet. The release steps are in the
 [flashing guide](../firmware/docs/flashing-guide.md#over-the-air-releases-scout_ota-sco-197);
-this needs the `feather_esp32s3_shore_ota` build on the S3. `scout_shore/ota.py` holds the frame
+the shipped `feather_esp32s3_shore` build relays it (`SCOUT_OTA`, on since 2026-11-12). `scout_shore/ota.py` holds the frame
 and bundle formats (standard library only).
 
 ## Recovering a retrieved SD card
