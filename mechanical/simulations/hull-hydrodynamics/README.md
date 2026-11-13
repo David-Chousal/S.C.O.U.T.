@@ -73,12 +73,12 @@ To redo it properly: a 30 degree or larger start, a finer mesh at the fins, a lo
 as the reference. Saved field files contained denormal numbers (for example `-1.6e-312`) that OpenFOAM cannot read
 back; zero them before `reconstructPar`.
 
-## Test Assembly 10 multi-night run (set up 2026-11-12, not yet run)
+## Test Assembly 10 multi-night run (run 2026-11-12 to 2026-11-13)
 
 Rerun of the roll-decay CFD above on the [Test Assembly 10](../../cad/floatation/test-assembly-10.md) float, as
 [SCO-309](https://linear.app/scout1/issue/SCO-309) asks: a **30 degree** start, a **6 s** run, and a **much finer
-fin mesh**. It runs on this Mac only, stopped each morning and resumed each night. **No result yet; the cases are
-meshed and the stop and resume logic is tested on a short run, but the real solve has not been started.**
+fin mesh**. It ran on this Mac only, with a stop and resume each morning and night. Both cases reached 6 s; results
+are below.
 
 | Item | Test Assembly 9 run | Test Assembly 10 run |
 |---|---|---|
@@ -95,10 +95,51 @@ at 158 mm above the keel (loops, lip, bore and lettering are not modelled). With
 1.25 in with fins and 1.27 in without, against the note's hand estimate of 1.30 in. The statics solver has **not**
 been re-run on Test Assembly 10.
 
-**Cost.** Timed on a 0.03 s start-up of the fins case on 7 ranks: about 0.85 s per step at a step of about 5e-4 s.
-Extrapolated (early steps only, it will change once the float is swinging): roughly 3 to 5 hours per case, perhaps
-4 to 7 hours with both cases running together. This replaces the earlier 1 to 2 day guess, which assumed a mesh of
-about 1 million cells.
+**Cost.** The 3 to 5 hours per case estimated from the start-up was too low: the step shrank to about 1.5e-4 s while
+the float swung hard, and the estimate briefly read 13 to 15 hours. Both cases then finished overnight. The fins case
+took 34,981 steps and the no-fins case 19,431 (the second figure includes the 0.02 s re-run described under Quirks).
+
+### Results (Test Assembly 10, 30 degree start, 6 s)
+
+![Roll and heave against time, fins and no fins](../../../assets/diagrams/ta10-roll-decay-series.png)
+
+![Centre-plane sections, fins at 5.33, 5.54 and 5.70 s (top), no fins at 5.52, 5.67 and 5.98 s (bottom)](../../../assets/diagrams/ta10-roll-decay-snapshots.png)
+
+| Quantity | CFD with fins | CFD no fins | Capytaine |
+|---|---|---|---|
+| Roll period | 0.824 s | 0.822 s | 0.78 s |
+| Swing, first to last cycle (peak to peak) | 46.7 to 27.6 degrees | 50.9 to 63.9 degrees | n/a |
+| Fitted damping ratio | +0.012 (decays) | -0.008 (grows) | +0.010 (radiation only) |
+| Tilt range | +30.0 to -27.9 degrees | +30.0 to -35.2 degrees | n/a |
+
+Absolute tilt is 30 degrees minus the logged angle (the log is relative to the start; the sign was checked against the
+logged angular velocity). Peak tables and the 4-step-decimated tilt and heave series are in
+[`openfoam/results/ta10/`](openfoam/results/ta10/), with the case setup in [`case-setup.md`](openfoam/results/ta10/case-setup.md), made by `extract_series.py`. The fit is the slope of the log of each
+half-cycle swing against time, so it is rough.
+
+**Reading it.**
+
+- **The period agrees with Capytaine within 5.6 percent, as the Test Assembly 9 run did.** Fins do not move the period.
+- **The fins case loses energy, at about 1.2 percent of critical damping.** That is inside the hand estimate for the
+  fins alone (1.0 to 1.5 percent) and is about what Capytaine gives for wave radiation alone.
+- **The no-fins case gains energy.** Its tilt reaches 35 degrees on the far side of a 30 degree release, which a float
+  in still water cannot do. This is the same fault as the Test Assembly 9 run, so neither the finer fin mesh nor the
+  larger start angle removed it. Laminar flow or the motion solver are the likely causes; neither was tested.
+- **If the same numerical gain is in both cases, the fins add about 2 percent of critical damping at this amplitude**
+  (1.2 minus -0.8). Treat that as an upper-end estimate. The gain may not be identical in the two meshes.
+- Fin drag is roughly quadratic in speed, so the benefit shrinks at small angles. At the 5 to 10 degree rolls expected in
+  the field it is likely a fraction of the figure above (reasoning, not simulated).
+
+**Engineering view.** Keep the fins. With radiation damping near 1 percent of critical, the float is a near-undamped
+oscillator at 0.82 s, so any added damping matters (a response at resonance scales as 1 over twice the damping ratio).
+Fins cost nothing in stability (GM 1.25 against 1.27 in) and little in print effort. Do not count on them to calm small
+chop, and let the tub roll-decay test with and without fins decide, run from both 10 and 30 degrees. Drop them only if
+they snag lines or foul, or add print risk.
+
+**Limits of this run.** Only the last four or five saved states exist, so the snapshots cover 5.3 to 6 s; the early swing
+is not imaged (the figure for Test Assembly 9 covered 0.05 to 1.7 s). The centre of gravity and inertia are the
+Test Assembly 9 values, the statics solver was not re-run, the flow is laminar, and a single start angle was run. The
+simulation is unverified until the tub test agrees.
 
 **How to run it** (scripts in [`openfoam/`](openfoam/); working folder `~/scout-cfd`, outside the repo):
 
@@ -120,8 +161,19 @@ cleanly at that time. A full write is made every 15 minutes of wall time and the
 at most 15 minutes. Closing the lid still sleeps the Mac. The OpenFOAM app shell crashes on long `&&` chains and on
 `rm -rf` with a glob, so `night.sh` calls it one step at a time and uses `/bin/rm`.
 
-The log reports the rigid-body orientation **relative to the start**, so the absolute tilt is the start tilt plus
-that angle; `analyze_decay.py` prints the relative angle.
+The log reports the rigid-body orientation **relative to the start** and the angle rises as the float rights itself, so
+the absolute tilt is the start tilt **minus** that angle. `./night.sh status` draws a progress bar for simulated time,
+the last restart, and the night's window, with a rough finish estimate. `analyze_decay.py` prints the relative angle;
+`extract_series.py` gives absolute tilt, heave, peaks and the fit; `render_paraview_ta10.py` makes the sections.
+
+**Quirks found in the run.**
+
+- `timePrecision` was 6, which rounded the restart folder `5.461526` to `5.46153` and made every rank abort on resume.
+  `make_cases_ta10.py` now sets 12, and the fins case was patched the same way.
+- A case that ends at its end time without a final write (the log says `End`) looked unfinished to `night.sh resume`,
+  which re-ran the last 0.02 s of the no-fins case. `resume` now reads the log, so a finished case is skipped.
+- A case that is stopped on the clock writes no extra state at its final step, so the newest folder can sit a little
+  before the end time.
 
 ## Limits
 

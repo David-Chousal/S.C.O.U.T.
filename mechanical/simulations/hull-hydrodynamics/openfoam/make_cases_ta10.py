@@ -113,7 +113,7 @@ regions (boxToCell { box (-1 -1 -1) (1 1 0); fieldValues (volScalarFieldValue al
     ctrl = open(f"{case}/system/controlDict").read()
     sub = lambda k, v: re.sub(rf"\n{k}\s+[^;]+;", f"\n{k} {v};", ctrl)
     for k, v in (("startFrom", "latestTime"), ("endTime", A.end), ("deltaT", "0.0001"), ("writeControl", "clockTime"),
-                 ("writeInterval", A.clock_write), ("purgeWrite", 4), ("maxCo", "0.5"), ("maxAlphaCo", "0.5"), ("maxDeltaT", "0.004")):
+                 ("writeInterval", A.clock_write), ("purgeWrite", 4), ("timePrecision", 12), ("maxCo", "0.5"), ("maxAlphaCo", "0.5"), ("maxDeltaT", "0.004")):
         ctrl = sub(k, v)
     open(f"{case}/system/controlDict", "w").write(ctrl)
     dm = open(f"{case}/constant/dynamicMeshDict").read()
