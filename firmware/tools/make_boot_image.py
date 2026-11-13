@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -46,7 +47,11 @@ def main() -> None:
         sys.exit(f"scout_boot is {len(stub)} bytes, over the {STUB_MAX}-byte slot")
     if args.check:
         if HEADER.read_text() != render(stub):
-            sys.exit(f"{HEADER.relative_to(FIRMWARE)} is stale: run tools/make_boot_image.py and commit it")
+            # Text in the stub is the usual cause of a build that differs between machines.
+            for text in re.findall(rb"[ -~]{8,}", stub):
+                print(f"  stub text: {text.decode()}")
+            sys.exit(f"{HEADER.relative_to(FIRMWARE)} is stale ({len(stub)} B, sha256 "
+                     f"{hashlib.sha256(stub).hexdigest()}): run tools/make_boot_image.py and commit it")
         print(f"{HEADER.relative_to(FIRMWARE)}: matches the scout_boot build")
         return
     HEADER.write_text(render(stub))
