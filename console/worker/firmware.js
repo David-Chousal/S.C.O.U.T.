@@ -29,6 +29,8 @@ export const MAX_BUNDLE_BYTES = HEAD_BYTES + MAX_IMAGE;
 export const FIRMWARE_UPLOAD = /^\/api\/v1\/buoys\/(\d{1,5})\/firmware$/;
 
 const FINAL = ["confirmed", "rolled_back", "rejected", "canceled"];
+/** Live states in the order a transfer moves through them; a report may only stay or move on. */
+const LIVE_ORDER = ["pending", "staged", "offering", "transferring", "trial"];
 const CANCELABLE = ["pending", "staged", "offering"];
 /** What a shore station may report; "pending" and "canceled" are the console's alone. */
 const REPORTED = ["staged", "offering", "transferring", "trial", "confirmed", "rolled_back", "rejected"];
@@ -86,13 +88,20 @@ export async function uploadFirmware(db, actor, buoyIdText, bytes) {
   if (blocked) return { error: blocked, status: 409 };
   const now = Date.now();
   const id = crypto.randomUUID();
-  await db.batch([
-    db.prepare("UPDATE firmware_jobs SET state = 'canceled', detail = 'replaced by a newer upload', bundle = NULL, updated_at = ? " +
-      `WHERE buoy_id = ? AND state IN (${CANCELABLE.map(() => "?").join(", ")})`).bind(now, buoyId, ...CANCELABLE),
+  // The checks above give a clear message; these conditions, inside one transaction, are what
+  // hold. The insert happens only if they still do, and older jobs are replaced only if it did.
+  const [inserted] = await db.batch([
     db.prepare("INSERT INTO firmware_jobs (id, buoy_id, version, size, sha256, bundle, state, uploaded_by, uploaded_at, updated_at) " +
-      "VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
-      .bind(id, buoyId, parsed.version, bytes.length, parsed.sha256, bytes, actor.label ?? actor.email, now, now),
+      "SELECT ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM firmware_jobs WHERE buoy_id = ? AND " +
+      "(state IN ('transferring', 'trial') OR (version >= ? AND state NOT IN ('canceled', 'rejected'))))")
+      .bind(id, buoyId, parsed.version, bytes.length, parsed.sha256, bytes, actor.label ?? actor.email, now, now, buoyId, parsed.version),
+    db.prepare("UPDATE firmware_jobs SET state = 'canceled', detail = 'replaced by a newer upload', bundle = NULL, updated_at = ? " +
+      `WHERE buoy_id = ? AND id != ? AND state IN (${CANCELABLE.map(() => "?").join(", ")}) ` +
+      "AND EXISTS (SELECT 1 FROM firmware_jobs WHERE id = ?)").bind(now, buoyId, id, ...CANCELABLE, id),
   ]);
+  if (!inserted.meta?.changes) {
+    return { error: (await blockingJob(db, buoyId, parsed.version)) ?? "Another upload or transfer changed this buoy's jobs. Try again.", status: 409 };
+  }
   await record(db, { actor, action: "firmware.upload", target: `buoy ${buoyId}`, after: { version: versionText(parsed.version), sha256: parsed.sha256 } });
   return { job: publicJob(await db.prepare("SELECT * FROM firmware_jobs WHERE id = ?").bind(id).first()) };
 }
@@ -107,8 +116,10 @@ export async function cancelFirmware(db, actor, jobId) {
   const job = await db.prepare("SELECT * FROM firmware_jobs WHERE id = ?").bind(jobId).first();
   if (!job) return { error: "No such firmware job.", status: 404 };
   if (!CANCELABLE.includes(job.state)) return { error: `The job is ${job.state}; only one the buoy has not accepted can be canceled.`, status: 409 };
-  await db.prepare("UPDATE firmware_jobs SET state = 'canceled', detail = 'canceled', bundle = NULL, updated_at = ? WHERE id = ?")
-    .bind(Date.now(), jobId).run();
+  // The state is checked again in the update: a station may report "transferring" in between.
+  const done = await db.prepare("UPDATE firmware_jobs SET state = 'canceled', detail = 'canceled', bundle = NULL, updated_at = ? " +
+    `WHERE id = ? AND state IN (${CANCELABLE.map(() => "?").join(", ")})`).bind(Date.now(), jobId, ...CANCELABLE).run();
+  if (!done.meta?.changes) return { error: "The buoy accepted the job before it could be canceled.", status: 409 };
   await record(db, { actor, action: "firmware.cancel", target: `buoy ${job.buoy_id}`, before: { version: versionText(job.version), state: job.state } });
   return {};
 }
@@ -146,8 +157,13 @@ export async function reportFirmware(db, device, jobId, body) {
   if (!job) return { error: "not found", status: 404 };
   if (FINAL.includes(job.state)) return { error: `the job is already ${job.state}`, status: 409 };
   const final = FINAL.includes(state);
-  await db.prepare(`UPDATE firmware_jobs SET state = ?, detail = ?, updated_at = ?${final ? ", bundle = NULL" : ""} WHERE id = ?`)
-    .bind(state, detail, Date.now(), jobId).run();
+  if (!final && LIVE_ORDER.indexOf(state) < LIVE_ORDER.indexOf(job.state)) {
+    return { error: `the job is ${job.state}; it cannot go back to ${state}`, status: 409 };
+  }
+  // Conditional on the state read above, so a report racing a cancel or another report is stale.
+  const done = await db.prepare(`UPDATE firmware_jobs SET state = ?, detail = ?, updated_at = ?${final ? ", bundle = NULL" : ""} ` +
+    "WHERE id = ? AND state = ?").bind(state, detail, Date.now(), jobId, job.state).run();
+  if (!done.meta?.changes) return { error: "the job changed while this report was sent; read it again", status: 409 };
   if (final) {
     await record(db, { actor: { label: `device:${device.name}` }, action: `firmware.${state}`, target: `buoy ${job.buoy_id}`,
       after: { version: versionText(job.version), detail } });

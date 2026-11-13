@@ -219,3 +219,41 @@ test("uploads and cancels are in the audit log", async () => {
   assert.ok(actions.includes("firmware.upload"));
   assert.ok(actions.includes("firmware.cancel"));
 });
+
+test("a report cannot move a job back to a state that could be canceled or replaced", async () => {
+  const { env, token, device } = await setup();
+  const { job } = await (await upload(env, token, 1, bundle())).json();
+  const report = (state) => call(env, device, `/api/device/firmware/${job.id}/status`, { method: "POST", body: { state } });
+  assert.equal((await report("transferring")).status, 200);
+  assert.equal((await report("transferring")).status, 200);
+  assert.equal((await report("offering")).status, 409);
+  assert.equal((await report("staged")).status, 409);
+  assert.equal((await call(env, token, `/api/v1/firmware/${job.id}/cancel`, { method: "POST", body: {} })).status, 409);
+});
+
+test("a stale report does not reopen a job canceled since it was read", async () => {
+  const { env, token, device } = await setup();
+  const { job } = await (await upload(env, token, 1, bundle())).json();
+  // The station read the job as pending; the admin cancels before its report lands.
+  env.DB.raw.prepare("UPDATE firmware_jobs SET state = 'canceled', bundle = NULL WHERE id = ?").run(job.id);
+  const late = await call(env, device, `/api/device/firmware/${job.id}/status`, { method: "POST", body: { state: "staged" } });
+  assert.equal(late.status, 409);
+  assert.equal(env.DB.raw.prepare("SELECT state FROM firmware_jobs WHERE id = ?").get(job.id).state, "canceled");
+});
+
+test("an upload whose checks no longer hold when it is written is refused, and replaces nothing", async () => {
+  const { env, token } = await setup();
+  const first = (await (await upload(env, token, 1, bundle({ version: 0x000201 }))).json()).job;
+  const { uploadFirmware } = await import("../worker/firmware.js");
+  // A station reports "transferring" between the checks and the write: simulate by flipping the
+  // state inside the batch's first statement.
+  const realBatch = env.DB.batch.bind(env.DB);
+  env.DB.batch = async (statements) => {
+    env.DB.raw.prepare("UPDATE firmware_jobs SET state = 'transferring' WHERE id = ?").run(first.id);
+    return realBatch(statements);
+  };
+  const result = await uploadFirmware(env.DB, { id: "x", label: "admin" }, "1", bundle({ version: 0x000202 }));
+  assert.equal(result.status, 409);
+  const rows = env.DB.raw.prepare("SELECT state FROM firmware_jobs ORDER BY uploaded_at").all();
+  assert.deepEqual(rows.map((r) => r.state), ["transferring"]);
+});
