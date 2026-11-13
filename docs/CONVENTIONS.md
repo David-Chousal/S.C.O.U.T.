@@ -396,8 +396,8 @@ The `coderabbit` job in `pr-checks.yml` waits up to 20 minutes for that review o
 commit and fails unless it ends as a success; a rate-limited or errored review does not
 count. If it fails, comment `@coderabbitai full review` on the PR and re-run the job. Before asking for a merge, the author reads every CodeRabbit comment and either
 fixes it or replies saying why not. CodeRabbit is an extra reviewer, not a replacement: a human
-review is still required. Gemini Code Assist is installed on the repo but is not used; its
-GitHub reviewer needs a Google Cloud project connected to a billing account, so do not link it to one.
+review is still required. Do not install Gemini Code Assist: its GitHub reviewer needs a
+Google Cloud project connected to a billing account, so it was uninstalled on 2026-11-12.
 
 ### Two repo gotchas
 
