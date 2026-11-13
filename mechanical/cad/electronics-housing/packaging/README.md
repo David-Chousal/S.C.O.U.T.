@@ -78,8 +78,7 @@ Fusion shows no interference with the housing or the cap. Dimensions differ from
 | Rib | 69 mm wide, top level with the cell axis | **77 mm** wide, top 3 mm above the axis | At 69 mm the saddles left walls about 0.4 mm thick |
 | Upper pillars | 38 mm, starting at z 52 | **42 mm**, starting on the L2 tray (z 48) | The explorer's start leaves a gap above the tray. Which is intended is not recorded |
 
-Not modelled: the diode, PTC and JST parts in the power bay, the board standoff holes, cell venting and relief, and
-the cap's bolt holes. The Fusion housing cavity is Ø106.7 mm (4.2 in), not the Ø111.8 mm (4.4 in) above, so the
+Not modelled: the diode, PTC and JST parts in the power bay, the board standoff holes, cell venting and relief. The Fusion housing cavity is Ø106.7 mm (4.2 in), not the Ø111.8 mm (4.4 in) above, so the
 Ø104 discs clear it by only about 1.3 mm a side: check against the printed housing.
 
 ## Open items
