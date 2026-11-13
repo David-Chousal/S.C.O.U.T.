@@ -366,6 +366,8 @@ static void poll_time_command() {
     }
 }
 
+static bool g_radio_ok = false;
+
 void setup() {
     Serial.begin(115200);
     while (!Serial && millis() < 5000) {
@@ -373,10 +375,13 @@ void setup() {
     }
     shore_shared_begin((uint32_t)time(nullptr), MIN_VALID_EPOCH);
     scout_dedupe_init(&g_seen);
-    bool ok = radio_begin();
-    Serial.printf("shore_rx: radio=%s freq=%.1f modem=%X,%X,%X errata=applied\n",
-                  ok ? "ok" : "FAIL", LORA_FREQUENCY_MHZ, LORA_MODEM_CONFIG1, LORA_MODEM_CONFIG2,
-                  LORA_MODEM_CONFIG3);
+    g_radio_ok = radio_begin();
+    // Errata SPI writes only run inside radio_begin() after init succeeds — do not claim
+    // "errata=applied" when radio=FAIL (wrong CS/RST/IRQ jumpers are the usual first-boot cause).
+    Serial.printf("shore_rx: radio=%s freq=%.1f modem=%X,%X,%X%s\n",
+                  g_radio_ok ? "ok" : "FAIL", LORA_FREQUENCY_MHZ, LORA_MODEM_CONFIG1,
+                  LORA_MODEM_CONFIG2, LORA_MODEM_CONFIG3,
+                  g_radio_ok ? " errata=applied" : " (fix CS=10 RST=11 IRQ=9 jumpers)");
     if (clock_valid()) {
         Serial.printf("time: kept across the reset, now=%lu\n", (unsigned long)time(nullptr));
     } else {
@@ -387,6 +392,12 @@ void setup() {
 
 void loop() {
     poll_time_command();
+    if (!g_radio_ok) {
+        // Broken SPI often makes available() look true forever and floods USB with
+        // "RX bad frame" — keep USB usable for T/N/S/W/F* and WiFi setup instead.
+        delay(100);
+        return;
+    }
     if (!g_rf95.available()) {
         delay(1);  // yield to FreeRTOS so the idle task can feed the task watchdog
         return;

@@ -1,5 +1,7 @@
 # Flashing Guide
 
+
+First power-on after flash: [first-boot checklist](../../docs/engineering/first-boot-checklist.md).
 How to build, test, and flash the SCOUT firmware: the buoy (Adafruit Feather M0 with RFM95) and
 the shore station (ESP32-S3 Feather with a LoRa FeatherWing). The full bench-to-field procedure,
 stage by stage, is the [Integration Runbook](../../docs/engineering/integration-runbook.md).
@@ -78,7 +80,7 @@ For about 8 s after a reset, while USB is connected, the firmware accepts one li
 | `feather_m0_wdt_test` | The bench build plus one deliberate hang, to prove the watchdog reset | Runbook Stage 5 only; **never deploy** |
 | `feather_m0_rx` | Bench LoRa receiver for a **second** Feather M0 RFM95, same radio settings plus the 500 kHz erratum; prints `RX len=… rssi=… snr=… hex=…` per frame | Link-test fallback; the shore station is the normal receiver ([SCO-155](https://linear.app/scout1/issue/SCO-155)) |
 | `feather_esp32s3_shore` | The shore station | Everything that might be deployed |
-| `feather_m0_downlink`, `feather_esp32s3_shore_downlink`, `feather_esp32s3_shore_link_check` | The shipped builds with the public example keys (the last also with dummy WiFi values) | Compile checks and CI only; **never flash** |
+| `feather_m0_downlink`, `feather_esp32s3_shore_downlink`, `feather_esp32s3_shore_link_check` | **CI / example-key compile checks only** (the `*_downlink` name is historical — it is *not* “the real downlink build”) | **Never flash** these; use `feather_m0` / `feather_esp32s3_shore` with real `downlink_key.h` + `ota_pubkey.h` |
 | `scout_boot` | The OTA boot stub alone | Not flashed by itself (below) |
 
 ```bash

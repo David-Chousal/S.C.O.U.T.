@@ -7,8 +7,11 @@
 #   journalctl -u scout-shore -f
 #
 # Assumes the repo is cloned at /home/pi/S.C.O.U.T. and runs as the `pi` user. Adjust both
-# below if yours differs. Point --serial at the S3's stable name under /dev/serial/by-id/
-# (`ls /dev/serial/by-id/`); /dev/ttyACM0 can change when another USB device is plugged in. See shore/README.md for the full bring-up.
+# below if yours differs. BEFORE enable: run `ls /dev/serial/by-id/` and replace the
+# REPLACE_ME path in ExecStart with the S3's stable name. Do not use /dev/ttyACM0 — it
+# renumbers when another USB device is plugged in. This unit only receives LoRa frames into
+# data-live/; run sync_console.py (or scout-shore-sync.timer) separately to talk to the console.
+# See shore/README.md and docs/engineering/first-boot-checklist.md.
 
 [Unit]
 Description=S.C.O.U.T. shore station (LoRa receiver)
@@ -29,7 +32,7 @@ Group=pi
 # Serial ports belong to the dialout group on Debian and Raspberry Pi OS.
 SupplementaryGroups=dialout
 WorkingDirectory=/home/pi/S.C.O.U.T./shore
-ExecStart=/usr/bin/python3 scripts/run_receiver.py --link serial --serial /dev/ttyACM0 --out data-live
+ExecStart=/usr/bin/python3 scripts/run_receiver.py --link serial --serial /dev/serial/by-id/REPLACE_ME --out data-live
 
 # Always come back. An unattended station on a coastline is not going to be restarted by hand,
 # and the buoy transmits blind — if nothing is listening, neither end raises an alarm.

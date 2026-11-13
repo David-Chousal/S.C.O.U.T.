@@ -598,7 +598,12 @@ static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary
     uint8_t copies = scout_link_repeat_count(g_last_mode, SCOUT_LINK_REPEATS_NORMAL,
                                              SCOUT_LINK_REPEATS_CONSERVE);
     for (uint8_t i = 0; i < copies; i++) {
-        g_lora.send(packet, (uint8_t)n);
+        // Do not add a packet flag bit here without an ADR + contract update. A failed send on
+        // first bench (SPI contention, antenna) must still print so Serial is the diagnostic.
+        if (!g_lora.send(packet, (uint8_t)n)) {
+            Serial.print("lora: TX FAIL copy=");
+            Serial.println(i);
+        }
         // Pet before the gap, not after: the watchdog must not expire while we wait.
         // scout_link_fits_watchdog asserts this policy leaves 2x headroom.
         Watchdog.reset();
@@ -646,6 +651,11 @@ static void listen_for_command(bool in_slot) {
         OtaLink link = {&g_lora, BUOY_ID, key, power_mode_now};
         confirmed = ota_handle(link, frame, len, in_slot, clock_now(), g_rtc_ok ? DOWNLINK_MAX_SKEW_S : 0,
                                &g_state.last_cmd_counter) == OTA_HEARD_CONFIRM;
+        // CONFIRM advances last_cmd_counter in RAM; persist it so a reset cannot replay an
+        // earlier signed command whose counter sat between the previous save and T_confirm.
+        if (confirmed) {
+            g_store.save(g_state.settings, g_state.last_cmd_counter);
+        }
         len = 0;
         Watchdog.reset();
     }

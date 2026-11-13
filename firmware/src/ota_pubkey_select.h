@@ -7,6 +7,11 @@
 
 #if __has_include("ota_pubkey.h")
 #include "ota_pubkey.h"
+/* A copy of ota_pubkey_example.h renamed to ota_pubkey.h still defines this — refuse it so a
+ * shipped feather_m0 / feather_esp32s3_shore build cannot silently accept the public test key. */
+#ifdef SCOUT_OTA_PUBKEY_IS_EXAMPLE
+#error "src/ota_pubkey.h is the EXAMPLE key — replace it (tools/ota_release.py keygen). CI/bench envs use -DSCOUT_OTA_ALLOW_EXAMPLE_KEY instead of copying the example."
+#endif
 #elif defined(SCOUT_OTA_ALLOW_EXAMPLE_KEY)
 #include "ota_pubkey_example.h"
 #else

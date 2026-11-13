@@ -18,7 +18,10 @@ from __future__ import annotations
 import argparse
 import csv
 import logging
+import os
 import sys
+import time
+import tty
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -32,6 +35,22 @@ from scout_shore.console import (  # noqa: E402
 )
 
 log = logging.getLogger("scout_shore.sync")
+
+# Match push_firmware.py: the S3 reads USB between radio polls; a short gap keeps its buffer
+# from filling, and raw mode stops the host from echoing command lines back into the S3.
+LINE_GAP_S = 0.01
+
+
+def _write_serial_lines(serial_path: Path, lines: list[str]) -> None:
+    fd = os.open(str(serial_path), os.O_RDWR | os.O_NONBLOCK | os.O_NOCTTY)
+    try:
+        if os.isatty(fd):
+            tty.setraw(fd)
+        for line in lines:
+            os.write(fd, (line + "\n").encode("ascii"))
+            time.sleep(LINE_GAP_S)
+    finally:
+        os.close(fd)
 
 
 def _rows(data_dir: Path, newest_files: int) -> list[dict[str, str]]:
@@ -76,9 +95,7 @@ def main() -> int:
             print(line)  # noqa: T201 — this script's output is the commands to type
         return 0
     try:
-        with args.serial.open("w") as port:  # USB CDC: the baud rate does not apply
-            for line in lines:
-                port.write(line + "\n")
+        _write_serial_lines(args.serial, lines)
     except OSError as exc:
         log.error("could not write to %s: %s", args.serial, exc)
         return 1

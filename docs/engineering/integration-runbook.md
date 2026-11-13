@@ -278,6 +278,8 @@ together, suspect chip-select first.
 
 ## 5. Stages
 
+Operator first-power checklist (keys, Serial banners, WiFi vs USB): [first-boot-checklist.md](first-boot-checklist.md).
+
 ### Stage 0 — Prove the software with no hardware ✅ VERIFIED 2026-11-12
 
 **Goal:** every later failure is a hardware or wiring failure, not a software one.

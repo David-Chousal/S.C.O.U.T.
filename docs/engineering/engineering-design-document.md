@@ -168,19 +168,24 @@ The S.C.O.U.T. buoy shall:
 
 #### Communications
 
+> **Capstone build (canonical — flash this):** 915.0 MHz · BW **500 kHz** · **SF12** · CR **4/8** ·
+> **+11 dBm** on the **Feather M0 + RFM95** / shore **ESP32-S3 + RFM95W FeatherWing**. See
+> [`docs/hub/facts.md`](../hub/facts.md) and [`firmware/src/config.h`](../../firmware/src/config.h).
+> Do **not** hand-tune from the production-target numbers below.
+
 - LoRa
 
 - 915 MHz
 
-- +14 dBm
+- +14 dBm *(production-target leftover; build uses +11 dBm)*
 
-- 125 kHz bandwidth
+- 125 kHz bandwidth *(production-target leftover; build uses 500 kHz)*
 
-- SF7
+- SF7 *(production-target leftover; build uses SF12)*
 
-- Coding Rate 4/5
+- Coding Rate 4/5 *(production-target leftover; build uses 4/8)*
 
-- One transmission/day
+- One transmission/day *(build: up to three UTC slots + boot hello)*
 
 ### Storage Requirements
 
