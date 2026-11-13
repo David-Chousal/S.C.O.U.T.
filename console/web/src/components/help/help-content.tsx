@@ -61,9 +61,9 @@ export const BUOY_STEPS: readonly HelpStep[] = [
     title: "Flash the firmware",
     body: (
       <>Set <code>BUOY_ID</code> in <code>firmware/src/config.h</code> and flash the shipped <code>feather_m0</code> env (never <code>*_downlink</code>).
-        The buoy reports as <code>SCOUT-01</code>, <code>SCOUT-02</code>, … (two digits). To change its settings by radio later, also give it a
-        downlink key in <code>src/downlink_key.h</code> (never committed; do not leave the example keys) and the same key to the shore
-        station as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds that key.</>
+        The buoy reports as <code>SCOUT-01</code>, <code>SCOUT-02</code>, … (two digits). For radio settings, put the same per-buoy HMAC key in
+        gitignored <code>firmware/src/downlink_key.h</code> on <b>both</b> the buoy and the S3 (compiled in — the S3 does not read env vars), and
+        do not leave the example keys. Only the optional Python USB host also needs <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds that key.</>
     ),
   },
   {

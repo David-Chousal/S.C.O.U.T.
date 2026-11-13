@@ -67,14 +67,16 @@ wire to D12 for the flight firmware.
 Preferred first contact: empty WiFi store → phone joins `SCOUT-Setup-XXXX` → paste console
 device token → station check-in turns green on **Stations**.
 
-USB fallback (Linux/Pi):
+USB fallback (Linux/Pi) — run from the **repo root**. Keep the receiver and sync in **separate
+terminals** (or stop the receiver briefly before a one-shot sync):
 
 ```bash
 ls /dev/serial/by-id/
 # edit shore/deploy/scout-shore.service REPLACE_ME, then:
-cd shore && python scripts/run_receiver.py --link serial --serial /dev/serial/by-id/… --out data-live
-cd shore && SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… \
-  python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…
+(cd shore && python scripts/run_receiver.py --link serial --serial /dev/serial/by-id/… --out data-live)
+# other terminal, also from repo root:
+(cd shore && SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… \
+  python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…)
 ```
 
 Optional: install `scout-shore-sync.timer` for periodic USB sync (WiFi path does not need it).

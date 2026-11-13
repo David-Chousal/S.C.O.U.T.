@@ -19,7 +19,9 @@ import argparse
 import csv
 import logging
 import os
+import select
 import sys
+import termios
 import time
 import tty
 from pathlib import Path
@@ -39,15 +41,34 @@ log = logging.getLogger("scout_shore.sync")
 # Match push_firmware.py: the S3 reads USB between radio polls; a short gap keeps its buffer
 # from filling, and raw mode stops the host from echoing command lines back into the S3.
 LINE_GAP_S = 0.01
+WRITE_DEADLINE_S = 5.0
+
+
+def _write_all(fd: int, data: bytes) -> None:
+    """Write every byte even on a non-blocking fd; raise if the port never drains."""
+    view = memoryview(data)
+    deadline = time.monotonic() + WRITE_DEADLINE_S
+    while view:
+        try:
+            n = os.write(fd, view)
+        except BlockingIOError:
+            n = 0
+        if n:
+            view = view[n:]
+            continue
+        if time.monotonic() >= deadline:
+            raise OSError("timed out writing to the serial port")
+        select.select([], [fd], [], max(0.0, deadline - time.monotonic()))
 
 
 def _write_serial_lines(serial_path: Path, lines: list[str]) -> None:
     fd = os.open(str(serial_path), os.O_RDWR | os.O_NONBLOCK | os.O_NOCTTY)
     try:
         if os.isatty(fd):
-            tty.setraw(fd)
+            # TCSANOW keeps any RX bytes the companion receiver already queued (TCSAFLUSH would drop them).
+            tty.setraw(fd, when=termios.TCSANOW)
         for line in lines:
-            os.write(fd, (line + "\n").encode("ascii"))
+            _write_all(fd, (line + "\n").encode("ascii"))
             time.sleep(LINE_GAP_S)
     finally:
         os.close(fd)

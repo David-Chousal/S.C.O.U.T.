@@ -6,6 +6,7 @@ import os
 import pathlib
 import sys
 import tempfile
+import termios
 import unittest
 from unittest import mock
 
@@ -19,7 +20,7 @@ class WriteSerialLines(unittest.TestCase):
         writes: list[bytes] = []
 
         def fake_write(fd: int, data: bytes) -> int:
-            writes.append(data)
+            writes.append(bytes(data))
             return len(data)
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -38,9 +39,24 @@ class WriteSerialLines(unittest.TestCase):
         flags = opened.call_args[0][1]
         self.assertTrue(flags & os.O_RDWR)
         self.assertTrue(flags & os.O_NOCTTY)
-        setraw.assert_called_once_with(3)
+        setraw.assert_called_once_with(3, when=termios.TCSANOW)
         self.assertEqual(writes, [b"N1:2\n", b"S1:1,0,0,0,0,0,0,0\n"])
         closed.assert_called_once_with(3)
+
+    def test_retries_a_short_write_until_the_line_is_complete(self) -> None:
+        seen: list[bytes] = []
+
+        def fake_write(fd: int, data: bytes) -> int:
+            seen.append(bytes(data))
+            if len(seen) == 1:
+                return 2  # only "N1" of "N1:2\n"
+            return len(data)
+
+        with mock.patch.object(sync_console.os, "write", side_effect=fake_write), mock.patch.object(
+            sync_console.select, "select", return_value=([], [3], [])
+        ):
+            sync_console._write_all(3, b"N1:2\n")
+        self.assertEqual(seen, [b"N1:2\n", b":2\n"])
 
 
 if __name__ == "__main__":
