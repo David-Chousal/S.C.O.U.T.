@@ -191,7 +191,7 @@ void test_a_configured_station_joins_at_boot_without_opening_setup(void) {
     TEST_ASSERT_FALSE(a.open_portal);
 }
 
-void test_setup_opens_after_90_s_without_a_connection(void) {
+void test_setup_opens_10_s_after_losing_the_connection(void) {
     ScoutWifiWatch w;
     scout_wifi_watch_begin(&w, 0);
     step(&w, true, false, false, 100);
@@ -213,10 +213,12 @@ void test_no_new_join_starts_while_a_phone_is_on_the_setup_network(void) {
     /* A join attempt scans channels, which drops the phone off the setup network mid-typing. */
     ScoutWifiWatch w;
     scout_wifi_watch_begin(&w, 0);
-    step(&w, true, false, false, 0);
-    step(&w, true, false, false, SCOUT_WIFI_JOIN_WINDOW_MS);
-    step(&w, true, false, false, SCOUT_WIFI_PORTAL_AFTER_MS);
-    TEST_ASSERT_FALSE(step(&w, true, false, true, SCOUT_WIFI_PORTAL_AFTER_MS + SCOUT_WIFI_JOIN_RETRY_MS * 3).begin_join);
+    step(&w, true, false, false, 0);                           /* join starts */
+    TEST_ASSERT_TRUE(step(&w, true, false, false, SCOUT_WIFI_PORTAL_AFTER_MS).open_portal);
+    TEST_ASSERT_TRUE(step(&w, true, false, true, SCOUT_WIFI_JOIN_WINDOW_MS).stop_join);
+    for (uint32_t t = SCOUT_WIFI_JOIN_WINDOW_MS; t < SCOUT_WIFI_JOIN_WINDOW_MS + SCOUT_WIFI_JOIN_RETRY_MS * 6; t += 1000) {
+        TEST_ASSERT_FALSE(step(&w, true, false, true, t).begin_join);
+    }
 }
 
 void test_saving_starts_a_join_even_with_a_phone_on_the_setup_network(void) {
@@ -237,6 +239,17 @@ void test_setup_closes_after_a_minute_of_staying_connected(void) {
     TEST_ASSERT_FALSE(step(&w, true, true, true, 1000 + SCOUT_WIFI_PORTAL_CLOSE_MS - 1).close_portal);
     TEST_ASSERT_TRUE(step(&w, true, true, true, 1000 + SCOUT_WIFI_PORTAL_CLOSE_MS).close_portal);
     TEST_ASSERT_FALSE(w.portal_open);
+}
+
+void test_setup_opens_10_s_after_a_working_connection_drops(void) {
+    ScoutWifiWatch w;
+    scout_wifi_watch_begin(&w, 0);
+    step(&w, true, true, false, 0);
+    step(&w, true, true, false, 3600000u);                    /* online for an hour */
+    uint32_t dropped = 3600000u + 500u;
+    step(&w, true, false, false, dropped);
+    TEST_ASSERT_FALSE(step(&w, true, false, false, dropped + SCOUT_WIFI_PORTAL_AFTER_MS - 1).open_portal);
+    TEST_ASSERT_TRUE(step(&w, true, false, false, dropped + SCOUT_WIFI_PORTAL_AFTER_MS).open_portal);
 }
 
 void test_a_dropped_connection_starts_a_new_join_at_once(void) {
@@ -310,11 +323,12 @@ int main(int, char **) {
     RUN_TEST(test_a_failed_handshake_reads_as_a_wrong_password);
     RUN_TEST(test_a_station_with_nothing_saved_opens_setup_at_once_and_never_tries_to_join);
     RUN_TEST(test_a_configured_station_joins_at_boot_without_opening_setup);
-    RUN_TEST(test_setup_opens_after_90_s_without_a_connection);
+    RUN_TEST(test_setup_opens_10_s_after_losing_the_connection);
     RUN_TEST(test_a_join_attempt_is_stopped_after_its_window_and_retried_later);
     RUN_TEST(test_no_new_join_starts_while_a_phone_is_on_the_setup_network);
     RUN_TEST(test_saving_starts_a_join_even_with_a_phone_on_the_setup_network);
     RUN_TEST(test_setup_closes_after_a_minute_of_staying_connected);
+    RUN_TEST(test_setup_opens_10_s_after_a_working_connection_drops);
     RUN_TEST(test_a_dropped_connection_starts_a_new_join_at_once);
     RUN_TEST(test_opening_setup_by_hand_keeps_it_open_while_connected_for_ten_minutes);
     RUN_TEST(test_setup_never_closes_while_the_station_is_offline);

@@ -111,13 +111,13 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
   Encrypt X1/X2, SSL.com 2022 ECC/RSA), because Cloudflare can move the console's certificate
   between those CAs; the bundle was checked against the live console on 2026-10-28.
 - **WiFi is set up from a phone** ([SCO-310](https://linear.app/scout1/issue/SCO-310),
-  2026-11-12). With nothing saved, or no connection for 90 s, the station also puts up an open
+  2026-11-12). With nothing saved, or no connection for 10 s, the station also puts up an open
   network named `SCOUT-Setup-XXXX` (the last two bytes of its MAC). A phone that joins it gets a
   setup page (`src/shore_rx/setup-page.html`, styled like the console's sign-in): pick a network
   or type one, enter its password and the device token from the console's Stations page, and the
   station saves them to flash (`shore_wifi_store.cpp`) and joins. The page is light only, like the
   console's default. The setup network closes a minute after the station is online and stays gone
-  while it is connected. It **comes back by itself** when the station loses its network for 90 s
+  while it is connected. It **comes back by itself** when the station loses its network for 10 s (90 s in the first draft; David, 2026-11-12)
   (it keeps retrying the old one meanwhile). To move a station that is still online, press
   **Change WiFi** in its ⋯ menu on the console's Stations page (the station acts within a minute,
   from its settings poll), hold **BOOT** for 3 s, or send `W` over USB: the setup network opens

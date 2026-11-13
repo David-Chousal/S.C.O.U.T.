@@ -1,6 +1,6 @@
 /* Setting up the shore station's WiFi from a phone (SCO-310), the hardware-free part.
  *
- * With no saved network, or after 90 s without a connection, the station puts up its own open
+ * With no saved network, or after 10 s without a connection, the station puts up its own open
  * WiFi network (SCOUT-Setup-XXXX). A phone that joins it gets the setup page, picks a network
  * (a phone's hotspot works), types the password and the station's device token, and the station
  * saves them to flash. This library checks that form, tidies the network list for the page, and
@@ -20,7 +20,7 @@
 #define SCOUT_WIFI_PASSWORD_MAX 64 /* 8–63 characters, or a 64-digit hex key */
 #define SCOUT_WIFI_TOKEN_MAX 80    /* the console refuses longer device tokens (worker/device.js) */
 
-#define SCOUT_WIFI_PORTAL_AFTER_MS 90000u    /* no connection this long: open setup */
+#define SCOUT_WIFI_PORTAL_AFTER_MS 10000u    /* no connection this long: open setup */
 #define SCOUT_WIFI_PORTAL_CLOSE_MS 60000u    /* connected this long: close setup */
 #define SCOUT_WIFI_FORCED_MS 600000u         /* setup opened by hand stays this long */
 #define SCOUT_WIFI_JOIN_WINDOW_MS 20000u     /* one join attempt */

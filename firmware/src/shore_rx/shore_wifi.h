@@ -1,7 +1,7 @@
 /* The shore station's WiFi link and its setup network (SCO-310).
  *
  * One FreeRTOS task owns the radio's WiFi side: it joins the saved network, and when there is
- * none, or no connection for 90 s, it also puts up the open setup network SCOUT-Setup-XXXX with a
+ * none, or no connection for 10 s, it also puts up the open setup network SCOUT-Setup-XXXX with a
  * captive page (setup-page.html) where a phone picks a network, a phone hotspot included, and
  * pastes the station's device token. lib/scout_wifi_setup decides when to open, close and join.
  *
