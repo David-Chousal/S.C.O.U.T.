@@ -17,8 +17,10 @@ evaluate = check_coderabbit.evaluate
 PASS, FAIL, WAIT = check_coderabbit.PASS, check_coderabbit.FAIL, check_coderabbit.WAIT
 
 
-def _run(status: str, conclusion: str | None = None, slug: str = "coderabbitai") -> dict:
-    return {"name": "CodeRabbit", "status": status, "conclusion": conclusion, "app": {"slug": slug}}
+def _run(
+    status: str, conclusion: str | None = None, slug: str = "coderabbitai", name: str = "CodeRabbit"
+) -> dict:
+    return {"name": name, "status": status, "conclusion": conclusion, "app": {"slug": slug}}
 
 
 class EvaluateTest(unittest.TestCase):
@@ -34,8 +36,12 @@ class EvaluateTest(unittest.TestCase):
     def test_passes_when_review_completed_successfully(self):
         self.assertEqual(evaluate([_run("completed", "success")])[0], PASS)
 
-    def test_passes_when_review_completed_neutral(self):
-        self.assertEqual(evaluate([_run("completed", "neutral")])[0], PASS)
+    def test_fails_when_review_was_rate_limited_or_errored_as_neutral(self):
+        self.assertEqual(evaluate([_run("completed", "neutral")])[0], FAIL)
+
+    def test_ignores_other_coderabbit_check_names(self):
+        runs = [_run("completed", "success", name="CodeRabbit Security"), _run("in_progress")]
+        self.assertEqual(evaluate(runs)[0], WAIT)
 
     def test_fails_when_review_was_skipped(self):
         self.assertEqual(evaluate([_run("completed", "skipped")])[0], FAIL)

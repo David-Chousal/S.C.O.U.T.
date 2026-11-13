@@ -3,9 +3,9 @@
 
 CodeRabbit (GitHub App ``coderabbitai``, installed 2026-11-12) posts a check run named
 ``CodeRabbit`` on every push to a PR. This gate waits for that run to finish and fails if it
-never appears, is skipped, or fails, so no PR can go green without an AI review. It does not
+never appears or ends any way but `success`, so no PR can go green without an AI review. It does not
 judge the review's content: reading and answering CodeRabbit's comments is the author's job
-(CLAUDE.md, "CodeRabbit review on every PR").
+(CLAUDE.md, Standing rule 9).
 
 Reads ``GITHUB_TOKEN``, ``GITHUB_REPOSITORY`` and ``HEAD_SHA`` from the environment.
 Exit 0 = pass, 1 = fail.
@@ -20,21 +20,28 @@ import urllib.error
 import urllib.request
 
 CODERABBIT_SLUG = "coderabbitai"
-OK_CONCLUSIONS = ("success", "neutral")
+CHECK_NAME = "CodeRabbit"
+# Only `success` is a finished review: CodeRabbit ends rate-limited reviews, and errors by
+# default, as `neutral` (docs.coderabbit.ai/pr-reviews/status-check).
+OK_CONCLUSIONS = ("success",)
 TIMEOUT_S = 20 * 60
 POLL_S = 30
 
 PASS, FAIL, WAIT = "pass", "fail", "wait"
 
 RERUN_HINT = (
-    "Comment `@coderabbitai review` on the PR to start a review, then re-run this job. "
+    "Comment `@coderabbitai full review` on the PR to start a fresh review, then re-run this job. "
     "If CodeRabbit never responds, check the app is still installed on the repo."
 )
 
 
 def evaluate(check_runs: list[dict]) -> tuple[str, str]:
     """Return (verdict, message) for the check runs on one commit."""
-    ours = [r for r in check_runs if (r.get("app") or {}).get("slug") == CODERABBIT_SLUG]
+    ours = [
+        r
+        for r in check_runs
+        if (r.get("app") or {}).get("slug") == CODERABBIT_SLUG and r.get("name") == CHECK_NAME
+    ]
     if not ours:
         return WAIT, "CodeRabbit has not started a review on this commit yet."
     if any(r.get("conclusion") in OK_CONCLUSIONS for r in ours):
