@@ -7,7 +7,7 @@
 import { createContext, useContext } from "react";
 import type { Role, Session } from "./api/types";
 
-export type Action = "settings.write" | "buoys.add" | "invites.write" | "users.role" | "users.reset" | "users.disable" | "devices.write" | "tokens.write" | "reports.write" | "dashboards.write" | "storage.read" | "alerts.write";
+export type Action = "settings.write" | "buoys.add" | "invites.write" | "users.role" | "users.reset" | "users.disable" | "devices.write" | "tokens.write" | "reports.write" | "dashboards.write" | "storage.read" | "alerts.write" | "firmware.write";
 
 const RANK: Record<Role, number> = { guest: 0, member: 1, admin: 2 };
 const NEEDS: Record<Action, Role> = {
@@ -23,6 +23,7 @@ const NEEDS: Record<Action, Role> = {
   "users.disable": "admin",
   "devices.write": "admin",
   "storage.read": "admin",
+  "firmware.write": "admin",
 };
 
 export const ROLE_LABEL: Record<Role, string> = { admin: "Admin", member: "Member", guest: "Guest · view only" };

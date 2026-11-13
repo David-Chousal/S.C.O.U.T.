@@ -185,7 +185,7 @@ export type Reading = Record<string, string>;
 export interface ApiToken {
   id: string;
   name: string;
-  /** Space-separated: read:telemetry, write:settings. */
+  /** Space-separated: read:telemetry, write:settings, write:firmware. */
   scopes: string;
   created_at: number;
   /** null: never expires. */

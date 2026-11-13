@@ -4,6 +4,7 @@
  *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested, settings, settings_digest }],
  *                                   wifi_setup_requested_at }   unix seconds of a live request, or null
  *        settings: every remote setting in ID order, "3,0,30,60,3200,3100,3,70" (fleet.js)
+ *   GET  /api/device/firmware, /api/device/firmware/{job}, POST …/{job}/status   firmware.js (SCO-312)
  *
  * Rows are validated field by field before anything is stored, and repeats of a
  * (buoy_id, record_seq, timestamp_utc) are ignored, so a shore station may push the same day
@@ -12,6 +13,7 @@
 import { alertsOnIngest } from "./alerts/evaluate.js";
 import { record } from "./audit.js";
 import { randomToken, sha256Hex } from "./crypto.js";
+import { bundleForDevice, jobsForDevice, reportFirmware } from "./firmware.js";
 import { wantedForDevice } from "./fleet.js";
 import { apiError, bodyWithin, json } from "./http.js";
 
@@ -96,6 +98,31 @@ async function authenticate(db, request) {
     .first();
   if (device) await db.prepare("UPDATE devices SET last_seen_at = ? WHERE id = ?").bind(Date.now(), device.id).run();
   return device;
+}
+
+const FIRMWARE_JOB = /^\/api\/device\/firmware\/([\w-]{1,64})(\/status)?$/;
+
+/** The station's side of firmware over WiFi (SCO-312): what to fetch, the bytes, and its reports. */
+async function deviceFirmware(request, env, path, device) {
+  if (path === "/api/device/firmware" && request.method === "GET") return json({ jobs: await jobsForDevice(env.DB, device.id) });
+  const match = FIRMWARE_JOB.exec(path);
+  if (match && !match[2] && request.method === "GET") {
+    const bytes = await bundleForDevice(env.DB, device.id, match[1]);
+    if (!bytes) return apiError("not found", 404);
+    return new Response(bytes, { headers: { "Content-Type": "application/octet-stream", "Content-Length": String(bytes.length), "Cache-Control": "no-store" } });
+  }
+  if (match && match[2] && request.method === "POST") {
+    if (!bodyWithin(request, 1024)) return apiError("body too large or without a length", 413);
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return apiError("body is not JSON", 400);
+    }
+    const result = await reportFirmware(env.DB, device, match[1], body);
+    return result.error ? apiError(result.error, result.status) : json({});
+  }
+  return apiError("not found", 404);
 }
 
 const DIGEST = /^[0-9a-f]{4}$/;
@@ -186,6 +213,7 @@ export async function handleDeviceApi(request, env, path, ctx) {
     // Only this buoy's command station hears about a request; a lone station is everyone's.
     return json({ buoys: await wantedForDevice(env.DB, device.id), wifi_setup_requested_at: liveWifiSetup(device) });
   }
+  if (path.startsWith("/api/device/firmware")) return deviceFirmware(request, env, path, device);
   if (path === "/api/device/readings" && request.method === "POST") {
     if (!bodyWithin(request, MAX_BODY_BYTES)) return apiError("body too large or without a length", 413);
     const text = await request.text();
