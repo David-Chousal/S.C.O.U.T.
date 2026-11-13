@@ -1,19 +1,23 @@
-# SCOUT code owners — David Chousal Cantu (@David-Chousal) owns all firmware and software.
+# SCOUT code owners — routes PR review by area to the discipline lead who owns it.
 #
-# Hardware, mechanical, docs and everything else is intentionally unowned: those paths need
-# a general approving review, not a code-owner review. There is no global "*" owner.
+# Discipline map (CLAUDE.md → Linear conventions → Labels):
+#   csen  — firmware, analytics pipeline, shore station        → David Chousal Cantu (@David-Chousal)
+#   ece   — PCB, power system, sensors, radio (hardware/**)     → Isabella Rodriguez (@irodriguez2scu)
+#   geng  — hull, enclosure, mooring, deployment (mechanical/**) → John Ryan Myrdal  (@jmyrdal)
+#
+# There is intentionally NO global "*" owner: paths not listed below stay unowned and only
+# require a general approving review, not a discipline-specific one.
 
-# Buoy and shore-station firmware
+# ece — hardware (Isabella Rodriguez)
+/hardware/    @irodriguez2scu
+
+# geng — mechanical (John Ryan Myrdal)
+/mechanical/  @jmyrdal
+
+# csen — software & data (David Chousal Cantu)
 /firmware/    @David-Chousal
-
-# Shore station software and the public website (built from shore/ and analytics/ by pages.yml)
-/shore/       @David-Chousal
 /analytics/   @David-Chousal
-
-# Console (web app + worker) and the chatbot worker
-/console/     @David-Chousal
-/chatbot/     @David-Chousal
-
-# Repo scripts and CI
-/scripts/     @David-Chousal
+/shore/       @David-Chousal
 /.github/     @David-Chousal
+/README.md    @David-Chousal
+/CLAUDE.md    @David-Chousal
