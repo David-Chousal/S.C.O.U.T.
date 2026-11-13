@@ -60,12 +60,14 @@ export const BUOY_STEPS: readonly HelpStep[] = [
   {
     title: "Flash the firmware",
     body: (
-      <>Set <code>BUOY_ID</code> in <code>firmware/src/config.h</code> and flash the shipped <code>feather_m0</code> env (never <code>*_downlink</code>).
-        The buoy reports as <code>SCOUT-01</code>, <code>SCOUT-02</code>, … (two digits). For radio settings, generate <b>one</b> key per buoy and
-        put those <b>same</b> bytes in gitignored <code>downlink_key.h</code> on the buoy (that buoy&rsquo;s row only) and on the S3 (<b>every</b> buoy
-        the station commands — never leave a public example key for an active id). Copy from <code>downlink_key_example.h</code>, add a row if
-        <code>BUOY_ID</code> is not 1 or 2, <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>, and flash both. Only the optional Python USB
-        host also needs that key as <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it.</>
+      <>Before flashing, generate gitignored <code>src/ota_pubkey.h</code> (<code>python3 firmware/tools/ota_release.py keygen --key ~/scout-ota.key --header firmware/src/ota_pubkey.h</code>) —
+        the shipped <code>feather_m0</code> env builds with <code>SCOUT_OTA</code> and will not compile without it. Set <code>BUOY_ID</code> in
+        <code>firmware/src/config.h</code> and flash <code>feather_m0</code> (never <code>*_downlink</code>). The buoy reports as <code>SCOUT-01</code>,
+        <code>SCOUT-02</code>, … (two digits). For radio settings, generate <b>one</b> key per buoy and put those <b>same</b> bytes in gitignored
+        <code>downlink_key.h</code> on the buoy (that buoy&rsquo;s row only) and on the S3 (<b>every</b> buoy the station commands — never leave a
+        public example key for an active id). Copy from <code>downlink_key_example.h</code>, add a row if <code>BUOY_ID</code> is not 1 or 2,
+        <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>, and flash both. Only the optional Python USB host also needs that key as
+        <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it. Full order: <code>docs/engineering/first-boot-checklist.md</code>.</>
     ),
   },
   {

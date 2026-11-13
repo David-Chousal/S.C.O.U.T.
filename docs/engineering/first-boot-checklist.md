@@ -56,7 +56,8 @@ Within a few seconds of USB power you should see a `boot:` line with `rtc=… sd
 Set the clock **once** after flash (and after coin-cell loss):
 
 ```bash
-python3 firmware/tools/set_rtc.py
+# If both boards are on USB, pass the buoy port explicitly (default may be the S3):
+python3 firmware/tools/set_rtc.py --port /dev/ttyACM1   # macOS: /dev/cu.usbmodem…
 ```
 
 Wiring note: firmware temperature pin is **D12**; Rev A schematic annotation may still say D5 —
