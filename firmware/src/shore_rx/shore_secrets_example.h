@@ -2,7 +2,9 @@
  *
  *   cp firmware/src/shore_rx/shore_secrets_example.h firmware/src/shore_rx/shore_secrets.h
  *
- * shore_secrets.h is gitignored. Without it the station builds with WiFi off: it still receives,
+ * shore_secrets.h is gitignored and optional: the station normally gets its network and token from
+ * a phone on its SCOUT-Setup network (SCO-310). These values only fill an empty store on first
+ * boot. Without either, it still receives,
  * prints every frame over USB for the computer bridge (SCO-257), and takes T<epoch> and
  * N<buoy>:<count> over USB, exactly as before.
  *

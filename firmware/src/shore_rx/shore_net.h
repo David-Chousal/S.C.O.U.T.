@@ -38,8 +38,8 @@ public:
 /* Creates the mutex and the shared state; call first in setup(). */
 void shore_shared_begin(uint32_t now, uint32_t min_valid_epoch);
 
-/* Starts the network task when shore_secrets.h gives a WiFi network and a device token; otherwise
- * prints why WiFi is off and returns. */
+/* Loads the saved network, starts the WiFi task (shore_wifi.h, which opens the setup network when
+ * nothing is saved) and the network task, which pushes once joined and a device token is saved. */
 void shore_net_begin();
 
 #endif /* SHORE_NET_H */

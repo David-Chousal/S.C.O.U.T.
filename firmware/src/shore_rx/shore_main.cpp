@@ -50,6 +50,7 @@
 #include "scout_scheduler.h"
 #include "scout_timeset.h"
 #include "shore_net.h"
+#include "shore_wifi.h"
 #ifdef SCOUT_DOWNLINK
 #include "../downlink_key_select.h"
 #endif
@@ -261,6 +262,11 @@ static void poll_time_command() {
         }
         g_line[g_line_len] = '\0';
         g_line_len = 0;
+        if (strcmp(g_line, "W") == 0) {
+            shore_wifi_open_setup();
+            Serial.print("wifi: opening the setup network for 10 min\n");
+            continue;
+        }
         uint16_t buoy = 0;
         uint8_t count = 0;
         ScoutSettings settings;
@@ -292,7 +298,7 @@ static void poll_time_command() {
         }
         uint32_t epoch = 0;
         if (!scout_parse_time_command(g_line, MIN_VALID_EPOCH, &epoch)) {
-            Serial.print("time: ignored, expected T<unix-epoch>, N<buoy>:<count> or S<buoy>:<settings>\n");
+            Serial.print("time: ignored, expected T<unix-epoch>, N<buoy>:<count>, S<buoy>:<settings> or W\n");
             continue;
         }
         struct timeval tv = {(time_t)epoch, 0};

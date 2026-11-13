@@ -10,22 +10,8 @@
 
 #include "console_ca.h"
 #include "scout_console.h"
-
-#if __has_include("shore_secrets.h")
-#include "shore_secrets.h"
-#define SHORE_HAVE_SECRETS 1
-#elif defined(SHORE_NET_LINK_CHECK)
-/* env feather_esp32s3_shore_link_check: dummy values so CI links the whole network path, which a
- * build with no secrets drops as unreachable. Never flash it. */
-#define SHORE_WIFI_SSID "link-check"
-#define SHORE_WIFI_PASSWORD ""
-#define SHORE_CONSOLE_URL "https://console.scoutscu.com"
-#define SHORE_CONSOLE_TOKEN "scd_link_check"
-#define SHORE_HAVE_SECRETS 1
-#else
-#include "shore_secrets_example.h"
-#define SHORE_HAVE_SECRETS 0
-#endif
+#include "shore_wifi.h"
+#include "shore_wifi_store.h"
 
 ShoreShared g_shared;
 static SemaphoreHandle_t g_lock = nullptr;
@@ -61,14 +47,16 @@ static void on_ntp(struct timeval *tv) {
 /* One authenticated request to the console. Returns the HTTP status (negative: no answer). */
 static int console_request(const char *method, const char *path, const uint8_t *body,
                            size_t len, String *reply) {
+    ScoutWifiConfig config;
+    shore_wifi_store_get(&config);
     WiFiClientSecure client;
     client.setCACert(SHORE_CONSOLE_CA_PEM);
     HTTPClient http;
     http.setTimeout(HTTP_TIMEOUT_MS);
-    if (!http.begin(client, String(SHORE_CONSOLE_URL) + path)) {
+    if (!http.begin(client, String(shore_console_url()) + path)) {
         return -1;
     }
-    http.addHeader("Authorization", "Bearer " SHORE_CONSOLE_TOKEN);
+    http.addHeader("Authorization", String("Bearer ") + config.token);
     http.addHeader("Accept", "application/json");
     int code;
     if (strcmp(method, "POST") == 0) {
@@ -162,15 +150,12 @@ static void pull_settings() {
 }
 
 static void net_task(void *) {
-    WiFi.mode(WIFI_STA);
-    WiFi.setAutoReconnect(true);
-    WiFi.begin(SHORE_WIFI_SSID, SHORE_WIFI_PASSWORD);
     bool was_up = false;
     bool sntp_started = false;
     uint32_t next_push = 0, next_settings = 0, next_ntp_retry = 0, backoff = BACKOFF_MIN_MS;
     for (;;) {
         uint32_t now_ms = millis();
-        bool up = WiFi.status() == WL_CONNECTED;
+        bool up = shore_wifi_connected();
         if (up != was_up) {
             if (up) {
                 Serial.printf("wifi: connected ip=%s rssi=%d\n", WiFi.localIP().toString().c_str(),
@@ -181,7 +166,9 @@ static void net_task(void *) {
             }
             was_up = up;
         }
-        if (!up) {
+        ScoutWifiConfig config;
+        shore_wifi_store_get(&config);
+        if (!up || !config.token[0]) {
             vTaskDelay(pdMS_TO_TICKS(1000));
             continue;
         }
@@ -220,15 +207,9 @@ static void net_task(void *) {
 }
 
 void shore_net_begin() {
-    if (!SHORE_HAVE_SECRETS) {
-        Serial.print("wifi: off (no src/shore_rx/shore_secrets.h); USB only\n");
-        return;
-    }
-    if (strlen(SHORE_WIFI_SSID) == 0 || strlen(SHORE_CONSOLE_TOKEN) == 0) {
-        Serial.print("wifi: off (SSID or console token empty in shore_secrets.h); USB only\n");
-        return;
-    }
-    Serial.printf("wifi: joining %s; console %s\n", SHORE_WIFI_SSID, SHORE_CONSOLE_URL);
+    shore_wifi_store_begin();
+    shore_wifi_begin();
+    Serial.printf("wifi: on; console %s\n", shore_console_url());
     // Core 0: the Arduino loop (and the radio) run on core 1.
     xTaskCreatePinnedToCore(net_task, "shore_net", NET_TASK_STACK, nullptr, 1, nullptr, 0);
 }
