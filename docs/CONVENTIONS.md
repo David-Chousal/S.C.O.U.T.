@@ -390,6 +390,15 @@ When an agent (Claude) opens a PR, it **stops there** — it does not merge on i
 only when a human explicitly asks it to (a follow-up "merge it"), or a human merges the PR
 directly.
 
+**Every PR gets a CodeRabbit review (since 2026-11-12).** The CodeRabbit GitHub App reviews
+each PR automatically when it is opened and on every push, posting a summary and line comments.
+The `coderabbit` job in `pr-checks.yml` waits up to 20 minutes for that review on the latest
+commit and fails unless it ends as a success; a rate-limited or errored review does not
+count. If it fails, comment `@coderabbitai full review` on the PR and re-run the job. Before asking for a merge, the author reads every CodeRabbit comment and either
+fixes it or replies saying why not. CodeRabbit is an extra reviewer, not a replacement: a human
+review is still required. Do not install Gemini Code Assist: its GitHub reviewer needs a
+Google Cloud project connected to a billing account, so it was uninstalled on 2026-11-12.
+
 ### Two repo gotchas
 
 **Direct pushes to `main` are blocked.** A local hook reads `git push origin main` as a force
