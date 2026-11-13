@@ -38,6 +38,19 @@ than sourcing off-the-shelf — not pursued, and the
 option consistent with the project's in-house-additive approach (see
 [floatation → Manufacturing approach](../floatation/README.md)).
 
+## SMA cap and electronics stack CAD, 2026-11-13
+
+From Test Assembly 10 in Fusion ([SCO-162](https://linear.app/scout1/issue/SCO-162)).
+
+| File | What it is |
+|---|---|
+| [`electronics-housing-cap-sma-bulkhead-2026-11-13.step`](electronics-housing-cap-sma-bulkhead-2026-11-13.step) | The Test Assembly 10 electronics cap with an **SMA bulkhead hole**: Ø6.5 mm through, at (0, −42) mm from the cap centre, with a Ø13 × 5 mm spot-face on the underside for the nut. Seal the outside with the marine sealant already chosen. The whip stands straight up from the cap top |
+| [`packaging/electronics-stack-option-c-2026-11-13.step`](packaging/electronics-stack-option-c-2026-11-13.step) | The stackable electronics harness that slides into the housing, batteries on the bottom. See [packaging](packaging/README.md#cad-2026-11-13) |
+
+**Unverified:** the SMA hole size and nut size are assumed (1/4-36 bulkhead), not read from the Adafruit 851 datasheet.
+The cap keeps its existing three PG11 gland holes. A cell cradle under the cap was tried and dropped (journal
+2026-11-13). Cell venting, relief and the cap bolt-hole fix are not in this export.
+
 ## Current seal — large AS568-247 O-ring, 2026-10-16
 
 The electronics housing seals with an **AS568-247** O-ring (ID 4.609 in x CS 0.139 in, 117.07 x 3.53 mm) on the

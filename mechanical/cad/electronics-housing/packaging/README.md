@@ -63,6 +63,25 @@ pins or M3 rod through Ø3.2 holes. Pillar lengths: 41 between L1 and L2, 38 bet
 | L2 stack tray | 45 to 76 | 3 tray. Four Ø6 × 4 standoffs at (±22.9, ±8.9). Boards 50.8 × 22.9: M0 z 52 to 60, Adalogger 61 to 69, Proto 70 to 75. Jack 14 × 11 × 6 at x −18, terminal 15 × 8 × 10 at x 16. Cut-outs Ø10 at (38, 0), Ø7 at (−37, 0), Ø8 at (0, −30) |
 | L3 cable deck | 90 to 93 | 3 deck. Four Ø9 cable holes at (±32, ±12): DS18B20, turbidity, hydrophone, antenna. Desiccant pocket 30 × 14 × 8 at (0, −33) |
 
+## CAD, 2026-11-13
+
+Option C is modelled in Fusion as the component **Electronics Stack** in Test Assembly 10 and exported as
+[`electronics-stack-option-c-2026-11-13.step`](electronics-stack-option-c-2026-11-13.step). It sits on the
+housing's cavity floor, batteries in the bottom layer. Bodies: L1 cradle, L2 stack tray, L3 cable deck, six pillar
+tubes, and reference bodies (`REF D cell`, `REF steel pin`, three `REF` boards) to hide or delete before printing.
+Fusion shows no interference with the housing or the cap. Dimensions differ from the explorer above in these places:
+
+| Item | Explorer | CAD | Why |
+|---|---|---|---|
+| Cell | Saft LS33600, Ø33.4 mm | **Tadiran TL5930/T, Ø34.2 mm** (length kept at 61.6 mm) | The latest cell named in the repo; Ø34.2 from Isabella's 2026-10-20 note on SCO-162. Not confirmed as final |
+| Saddle | Ø33.8 mm, cells 34.4 mm apart | Ø34.6 mm, cells **36 mm** apart, axis 21.3 mm above the floor | Clearance for the larger cell |
+| Rib | 69 mm wide, top level with the cell axis | **77 mm** wide, top 3 mm above the axis | At 69 mm the saddles left walls about 0.4 mm thick |
+| Upper pillars | 38 mm, starting at z 52 | **42 mm**, starting on the L2 tray (z 48) | The explorer's start leaves a gap above the tray. Which is intended is not recorded |
+
+Not modelled: the diode, PTC and JST parts in the power bay, the board standoff holes, cell venting and relief, and
+the cap's bolt holes. The Fusion housing cavity is Ø106.7 mm (4.2 in), not the Ø111.8 mm (4.4 in) above, so the
+Ø104 discs clear it by only about 1.3 mm a side: check against the printed housing.
+
 ## Open items
 
 1. **Usable height is unknown.** 127 mm is the decided inside height; whether the lid or cap uses
