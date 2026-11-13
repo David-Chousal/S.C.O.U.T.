@@ -27,7 +27,23 @@ _Draft here._
 
 ### 4.2.3 Flotation and Hull
 
-_Draft here._
+**Concept and context.** The first concept was a ring of six bolted printed wedges, foam-filled, with a lead ballast arm.
+The bolted variant (heat-set inserts and bolts) was chosen over the snap-and-keyhole Master V3 and an outer octagon, and
+a damaged wedge can be replaced in the field.
+
+**Iteration.** Analysis killed the concept in two steps. The buoy was found to be stable upside down (RR-11, 2026-09-29),
+which needed a lead arm, and the thin walls needed foam to survive 5 m (RR-06). Lead is a possible permit objection and
+foam sourcing was put on hold, so on 2026-10-14 to 10-16 the team moved to **a single printed float with no ballast, foam or
+lead**. A mushroom-shaped float was also studied (2026-10-18 to 10-19, candidate N03: about 2.61 kg, 4.80 in draft, GM
+2.29 in) but its two stability results are not yet reconciled.
+
+**Result and impact.** In the v9 model the printed float is lighter (2.87 kg modeled total against about 7.75 kg for v5) and self-rights in the stability study. The current geometry (Test Assembly 10) has not been weighed or re-analyzed for stability, and R-18 is still open. The design also removes the
+foam and lead supply questions. Calculations and results: [5.1.1](05-detailed-design-and-implementation.md#511-flotation-and-hull-structure)
+and [5.1.4](05-detailed-design-and-implementation.md#514-stability-and-self-righting-ballast).
+
+**Mooring and anchoring** ([ADR-0004](../decisions/0004-reef-safe-anchoring-and-mooring.md), 2026-08-17). A marked site
+connects directly by line; an unmarked site gets one mushroom anchor placed next to, never on, coral. Since 2026-10-16 the
+chosen route is to connect to a structure that already has authorization, which avoids a new seabed footprint.
 
 ### 4.2.4 Sensing Payload
 
