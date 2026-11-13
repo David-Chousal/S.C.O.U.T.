@@ -15,8 +15,8 @@ const buoy = (id: number, label: string, device: string | null) => ({ buoy_id: i
 const SETTINGS = { buoys: [buoy(1, "Reef north", null), buoy(2, "Reef south", null)], firmware, estimates } as unknown as BuoySettings;
 const DEVICES: { devices: Device[] } = {
   devices: [
-    { id: "a", name: "Kaneohe shore", created_at: 0, revoked_at: null, last_seen_at: Date.now() },
-    { id: "b", name: "Old pier", created_at: 0, revoked_at: 1, last_seen_at: null },
+    { id: "a", name: "Kaneohe shore", created_at: 0, revoked_at: null, last_seen_at: Date.now(), wifi_setup_requested_at: null },
+    { id: "b", name: "Old pier", created_at: 0, revoked_at: 1, last_seen_at: null, wifi_setup_requested_at: null },
   ],
 };
 
@@ -40,13 +40,30 @@ describe("StationsBoard", () => {
     const revoke = vi.spyOn(api, "revokeDevice").mockResolvedValue({ ok: true });
     renderBoard("admin");
     await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
-    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual(["Info", "Revoke"]);
+    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual(["Info", "Change WiFi", "Revoke"]);
     await userEvent.click(screen.getByRole("menuitem", { name: "Revoke" }));
     expect(revoke).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole("button", { name: "Revoke" }));
     expect(revoke).toHaveBeenCalledWith("a");
     expect(screen.getByRole("dialog", { name: "Kaneohe shore is revoked" }).textContent).toContain("New token");
     expect(screen.getByRole("link", { name: "How to connect a shore station" }).getAttribute("href")).toMatch(/^\/help\/?#shore$/);
+  });
+
+  test("Change WiFi asks first, then tells the station to open its setup network and says what to do on a phone", async () => {
+    const request = vi.spyOn(api, "requestWifiSetup").mockResolvedValue({ ok: true });
+    renderBoard("admin");
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Change WiFi" }));
+    expect(request).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Open setup network" }));
+    expect(request).toHaveBeenCalledWith("a");
+    expect(screen.getByRole("dialog", { name: "Setup network on its way" }).textContent).toContain("SCOUT-Setup-");
+  });
+
+  test("a station asked to change WiFi in the last 15 minutes shows it", async () => {
+    const asked = { devices: [{ ...DEVICES.devices[0], wifi_setup_requested_at: Date.now() - 60_000 }] };
+    renderBoard("member", asked);
+    expect(await screen.findByText("WiFi setup open")).toBeTruthy();
   });
 
   test("a revoked station has a delete key that asks first", async () => {
@@ -66,7 +83,7 @@ describe("StationsBoard", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: "Info" }));
     const card = screen.getByRole("dialog", { name: "Kaneohe shore" });
     expect(card.textContent).toContain("Reef north");
-    expect(card.textContent).toContain("every 10 minutes");
+    expect(card.textContent).toContain("every minute");
   });
 
   test("no Buoys it commands column: a lone station's Info lists every buoy, and there is nothing to assign", async () => {
@@ -82,7 +99,7 @@ describe("StationsBoard", () => {
 
   test("with two stations, an unassigned buoy is flagged and Assign moves it to a station", async () => {
     const assign = vi.spyOn(api, "setCommandStation").mockResolvedValue({ ok: true });
-    renderBoard("admin", { devices: [...DEVICES.devices, { id: "c", name: "Campus bench", created_at: 0, revoked_at: null, last_seen_at: null }] });
+    renderBoard("admin", { devices: [...DEVICES.devices, { id: "c", name: "Campus bench", created_at: 0, revoked_at: null, last_seen_at: null, wifi_setup_requested_at: null }] });
     expect(await screen.findByText(/have no station/)).toBeDefined();
     await userEvent.click(screen.getByRole("button", { name: "Actions for Campus bench" }));
     await userEvent.click(screen.getByRole("menuitem", { name: "Assign buoys" }));

@@ -167,6 +167,7 @@ export const api = {
   devices: () => call<{ devices: Device[] }>("GET", "/api/devices"),
   createDevice: (name: string) => call<{ id: string; token: string; name: string }>("POST", "/api/devices", { name }),
   revokeDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/revoke`),
+  requestWifiSetup: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/wifi-setup`),
   deleteDevice: (id: string) => call<{ ok: true }>("POST", `/api/devices/${encodeURIComponent(id)}/delete`),
 
   audit: () => call<{ entries: AuditEntry[] }>("GET", "/api/audit"),

@@ -95,7 +95,7 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
   from `shore/scout_shore/schema.py` (`python -m scout_shore.row_vectors --write`), checks every
   column, every battery millivolt from 2.0 to 4.4 V and every turbidity count;
   `shore/tests/test_row_vectors.py` fails if the header drifts.
-- **Requested transmit counts** are read from `GET /api/device/settings` every 10 min; the
+- **Requested transmit counts** are read from `GET /api/device/settings` every minute (every 10 min before SCO-310); the
   console's answer replaces any `N<buoy>:<count>` typed over USB.
 - **Clock, best source first** (`lib/scout_shore_clock`): NTP over WiFi (`pool.ntp.org`,
   `time.google.com`, `time.cloudflare.com`; SNTP re-syncs hourly). Without WiFi the S3's
@@ -110,10 +110,36 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
 - **HTTPS trusts eight roots** (`src/shore_rx/console_ca.h`: Google Trust Services R1–R4, Let's
   Encrypt X1/X2, SSL.com 2022 ECC/RSA), because Cloudflare can move the console's certificate
   between those CAs; the bundle was checked against the live console on 2026-10-28.
-- **Credentials** go in the gitignored `src/shore_rx/shore_secrets.h` (copy
-  `shore_secrets_example.h`): WiFi name and password, console URL, device token from the console's
-  Stations page. Without it the station builds with WiFi off and works over USB exactly as before.
-  Env `feather_esp32s3_shore_link_check` builds with dummy values so CI links the network code.
+- **WiFi is set up from a phone** ([SCO-310](https://linear.app/scout1/issue/SCO-310),
+  2026-11-12). With nothing saved, or no connection for 10 s, the station also puts up an open
+  network named `SCOUT-Setup-XXXX` (the last two bytes of its MAC). A phone that joins it gets a
+  setup page (`src/shore_rx/setup-page.html`, styled like the console's sign-in): pick a network
+  or type one, enter its password and the device token from the console's Stations page, and the
+  station saves them to flash (`shore_wifi_store.cpp`) and joins. The page is light only, like the
+  console's default. The setup network closes a minute after the station is online and stays gone
+  while it is connected. It **comes back by itself** when the station loses its network for 10 s (90 s in the first draft; David, 2026-11-12)
+  (it keeps retrying the old one meanwhile). To move a station that is still online, press
+  **Change WiFi** in its ⋯ menu on the console's Stations page (the station acts within a minute,
+  from its settings poll), hold **BOOT** for 3 s, or send `W` over USB: the setup network opens
+  for 10 min while the station stays on its current WiFi. The open/close/join logic is
+  `lib/scout_wifi_setup`, unit-tested.
+  - **Phone hotspots work**, with three limits the page explains: the station is 2.4 GHz only
+    (iPhone: *Maximize Compatibility*; Android: AP band 2.4 GHz); an iPhone only shows its
+    hotspot while the hotspot screen is open, so *Other network* takes a typed name; and a phone
+    cannot run its hotspot while it is on the setup network, so for that phone's own hotspot you
+    save first, then leave and turn the hotspot on. No join starts while a phone is on the setup
+    network, because a join attempt scans other channels and would drop the phone.
+  - ⚠️ **Security risk: the setup network is open** (no password), so anyone in range while it is
+    up could point the station at another network. It is only up when the station has no
+    connection, someone held BOOT, or an admin pressed Change WiFi, and readings still go only to
+    the console over HTTPS, so the risk is an outage, not a leak. **Accepted for the capstone
+    only** (David, 2026-11-12). It must get a per-station password on a label before the product
+    goes to anyone outside the team ([SCO-311](https://linear.app/scout1/issue/SCO-311), Deferred).
+  - A gitignored `src/shore_rx/shore_secrets.h` (copy `shore_secrets_example.h`) still works for
+    developers, but only fills an empty store on first boot; it also sets the console URL. Env
+    `feather_esp32s3_shore_link_check` builds that path with dummy values.
+  - ⚠️ Compiled and previewed (`python3 firmware/tools/setup_page_preview.py` serves the page
+    with a fake station), not yet run on the board.
 - **Footprint** with WiFi on: RAM 26.7 %, flash 64.3 % of the app partition.
 
 **Fallbacks stay** (David, 2026-10-28). The S3 still prints every frame over USB, so a computer

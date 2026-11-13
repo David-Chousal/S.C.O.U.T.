@@ -95,7 +95,7 @@ none of that.
 | `/api/session`, `/api/providers`, `/api/flash` | `/api/login`, `/api/logout`, `/api/account/sign-out-everywhere` |
 | `/api/fleet` (buoys + battery estimates + slot labels) | `/api/fleet/buoys`, `/api/fleet/buoys/:id/tx-count` |
 | `/api/team` | `/api/team/invites`, `…/invites/:id/revoke`, `…/users/:id/role`, `…/users/:id/reset`, `…/users/:id/disable` and `/enable` |
-| `/api/devices`, `/api/audit` | `/api/devices`, `/api/devices/:id/revoke` |
+| `/api/devices`, `/api/audit` | `/api/devices`, `/api/devices/:id/revoke`, `/api/devices/:id/wifi-setup` |
 | `/api/readings?buoy=&from=&to=&limit=`, `/api/tokens` | `/api/tokens`, `/api/tokens/:id/revoke` |
 | `/api/invites/:token`, `/api/resets/:token` | `/api/invites/:token/accept`, `/api/resets/:token` |
 
@@ -115,6 +115,12 @@ listen window would collide, or one would be refused as a repeat and show as `CM
 Revoking a station clears it as a command station. Migration `0004-command-station.sql`.
 The console never holds a buoy's command key, so it cannot forge a radio command; at worst it can
 request a count in 1–3, which the buoy also range-checks.
+
+**Change WiFi** ([SCO-310](https://linear.app/scout1/issue/SCO-310)): an admin picks **Change WiFi** in a
+station's ⋯ menu (`POST /api/devices/:id/wifi-setup`, audited as `device.wifi_setup`). The settings reply then
+carries `wifi_setup_requested_at` (unix seconds) for 15 minutes; the station, which polls every minute, opens
+its `SCOUT-Setup` network for 10 minutes while staying on its current WiFi, and a phone near it picks the new
+network there. Migration `0015-station-wifi-setup.sql`.
 
 ## Security notes
 

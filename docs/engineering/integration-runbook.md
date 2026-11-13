@@ -23,9 +23,21 @@
 > ([SCO-257](https://linear.app/scout1/issue/SCO-257)). §6 now says how to connect a buoy to the
 > console so its readings update there automatically.
 >
+> **Updated 2026-11-12** for: the shore station's WiFi and token set **from a phone** on its
+> `SCOUT-Setup` network instead of `shore_secrets.h`, and **Change WiFi** on the console
+> ([SCO-310](https://linear.app/scout1/issue/SCO-310)); **over-the-air updates built and on** in
+> the shipped builds ([SCO-197](https://linear.app/scout1/issue/SCO-197)); remote settings and
+> packet v5 (2026-11-04); the shore station polling the console every minute; and the electronics
+> bench records so far (RR-25, RR-26, RR-28).
+>
 > **Status:** all parts for Stages 1–5 have arrived (2026-10-16); bench assembly started
-> 2026-10-27. Stage 0 is re-verified on 2026-10-29. **Nothing in Stages 1–9 has been executed
-> yet.** Read §2 before plugging anything in.
+> 2026-10-27. Stage 0 is re-verified on 2026-11-12. **No stage has passed with the S.C.O.U.T.
+> firmware yet.** Isabella's bench sketches have exercised the Stage 1 temperature, humidity and
+> clock hardware ([RR-25](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md),
+> [RR-26](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md),
+> [RR-28](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md)), and on 2026-11-11 she
+> reported the LoRa hop from the M0 to the shore station working, with no test record yet
+> ([SCO-155](https://linear.app/scout1/issue/SCO-155)). Read §2 before plugging anything in.
 
 ---
 
@@ -56,32 +68,34 @@ without evidence** — the value of this runbook is that it never overstates wha
 ### What only the human can do
 
 Wiring and soldering · plugging boards into USB · applying power · anything needing a password,
-including typing the WiFi password and the console device token into `shore_secrets.h` ·
-measuring current or continuity · putting sensors in water · siting antennas · deploying.
+including typing the WiFi password and the console device token on the shore station's setup
+page (§ Stage 4b) · joining a phone to the station's `SCOUT-Setup` network · holding the
+station's BOOT button · measuring current or continuity · putting sensors in water · siting
+antennas · deploying.
 **Claude must never type a password** ([CLAUDE.md → Repo gotchas](../../CLAUDE.md)).
 
 ---
 
-## 1. Ground truth — what exists today (2026-10-29)
+## 1. Ground truth — what exists today (2026-11-12)
 
 | Layer | State | Evidence |
 |---|---|---|
-| Firmware pure logic (packet codec v4, scheduler, link policy, downlink, acoustic summary, shore row builder, upload queue, shore clock) | ✅ 120 native tests pass, CI-gated | `pio test -e native`, 2026-10-29 |
-| Buoy firmware target build | ✅ Compiles for the Feather M0: RAM 70.8%, Flash 27.7% (the audio buffers account for most of the RAM) | `pio run -e feather_m0`, 2026-10-29 |
-| Firmware drivers (sensors, SD, RTC, radio, sleep, audio capture) | ⚠️ Written, never run on hardware | [`firmware/README.md`](../../firmware/README.md) |
+| Firmware pure logic (packet codec v5, scheduler, link policy, downlink and remote settings, acoustic summary, shore row builder, upload queue, shore clock, OTA frames and boot state, WiFi setup) | ✅ 212 native tests pass, CI-gated | `pio test -e native`, 2026-11-12 |
+| Buoy firmware target build | ✅ Compiles for the Feather M0 with OTA: RAM 72.0%, Flash 45.8% (the audio buffers account for most of the RAM) | `pio run -e feather_m0_downlink`, 2026-11-12 |
+| Firmware drivers (sensors, SD, RTC, radio, sleep, audio capture) | ⚠️ Written, never run on hardware. The **sensor hardware** has run under Isabella's Arduino bench sketches: DS18B20, SHT40 and PCF8523 pass on USB ([RR-25](../../hardware/test/rr-25-controller-and-sensor-bring-up-2026-10-29.md)); the DS18B20 in water logs with 0 dropouts and τ ≈ 12–14 s, ice-point accuracy still inconclusive ([RR-26](../../hardware/test/rr-26-ds18b20-water-step-response-2026-11-03.md), [RR-28](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md)) | [`firmware/README.md`](../../firmware/README.md), [`hardware/test/`](../../hardware/test/bench-sketches/README.md) |
 | Buoy wiring reference | ✅ **Rev B drawing set (2026-10-12)** agrees with `config.h`; ⚠️ the Rev A KiCad schematic is stale (§2, G3). Electrical block diagram added 2026-10-28, reviewed by Dr. Krishnan, not yet approved | [Electronics Drawing Set](electronics-drawing-set.md), [block diagram](drawings/scout-electrical-block-diagram.pdf) |
 | Buoy bench parts (Feather M0 RFM95, Adalogger, DS18B20, Grove turbidity, DMG2305UX, SHT40, antennas) | ✅ All arrived 2026-10-16 ([SCO-115](https://linear.app/scout1/issue/SCO-115)); headers soldered and stacked 2026-10-27; second Mouser order in transit (expected week of 2026-11-02) | [Purchase Log](../planning/purchase-log.md) |
 | D cells and battery protection | 🔴 Not bought — "Later order 1", after Stage 2. Cell model not settled (§ Stage 6) | [Build plan](electronics-build-and-test-plan.md#stage-6--run-on-the-batteries) |
-| Hydrophone (Aquarian H2dM) and antenna | 🔴 Not bought — decided 2026-10-28 to order this week through the department | [SCO-8](https://linear.app/scout1/issue/SCO-8), [SCO-158](https://linear.app/scout1/issue/SCO-158) |
-| Shore station hardware (ESP32-S3 Feather + LoRa FeatherWing) | ✅ Arrived 2026-10-16, soldered 2026-10-27; ⚠️ the FeatherWing's CS/RST/IRQ jumpers (10/11/9) are not yet soldered (G8) | [SCO-86](https://linear.app/scout1/issue/SCO-86) |
-| Shore station firmware (ESP32-S3): receive, validate, decode, dedupe, slot tag, **WiFi push to the console**, settings pull, NTP clock | ⚠️ Written and compiled (RAM 26.7%, flash 64.3% with WiFi), logic unit-tested, never run on the board | `firmware/src/shore_rx/`, [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237) |
+| Hydrophone (Aquarian H2dM) and antenna | 🔴 Not here — ordered through the department 2026-11-02; "still on its way" at the 2026-11-11 meeting | [SCO-8](https://linear.app/scout1/issue/SCO-8), [SCO-158](https://linear.app/scout1/issue/SCO-158) |
+| Shore station hardware (ESP32-S3 Feather + LoRa FeatherWing) | ✅ Arrived 2026-10-16, soldered 2026-10-27. ⚠️ Isabella reported it receiving the M0 over LoRa and printing over USB on 2026-11-11 (so the CS/RST/IRQ jumpers are presumably set, G8), but there is no test record | [SCO-86](https://linear.app/scout1/issue/SCO-86), [SCO-155](https://linear.app/scout1/issue/SCO-155) |
+| Shore station firmware (ESP32-S3): receive, validate, decode, dedupe, slot tag, **WiFi push to the console**, settings pull every minute, NTP clock, settings downlink, **OTA relay**, **WiFi set up from a phone** | ⚠️ Written and compiled (`feather_esp32s3_shore_downlink`: flash 70.7%), logic unit-tested and the setup page previewed against a fake station; never run as a whole on the board | `firmware/src/shore_rx/`, [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237), [SCO-310](https://linear.app/scout1/issue/SCO-310) |
 | Settings downlink (v1 count, v2 every remote setting; HMAC-signed) | ⚠️ **On in the shipped builds since 2026-11-04**, treating Isabella's listen-window sign-off and the FeatherWing FCC check as given (neither is recorded yet, G10); unit-tested, never run on hardware | [SCO-198](https://linear.app/scout1/issue/SCO-198) |
 | Bench tooling: clock set (`set_rtc.py`), bench receiver (`feather_m0_rx`), transmit-every-minute build (`feather_m0_bench`), frame decoder (`decode_frames.py`) | ⚠️ Written and built, never run on hardware | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186) |
-| Shore software on a computer (decode, dedupe, CSV store, SD import, publish, **USB bridge from the S3**, console sync) | ✅ 129 tests pass on simulated data and a pseudo-terminal; Python, stdlib only | [`shore/`](../../shore/), [SCO-257](https://linear.app/scout1/issue/SCO-257) |
-| Team console (Cloudflare Worker + D1): sign-in, roles, Fleet, Stations, Team, Audit, device API | ✅ **Live** at <https://console.scoutscu.com> since 2026-10-26; 43 Worker and 41 front-end tests pass | [`console/`](../../console/README.md), [ADR-0012](../decisions/0012-authenticated-console.md) |
-| Analytics pipeline | ✅ 289 telemetry tests and 29 acoustic-reference tests pass on simulated data | [`analytics/`](../../analytics/) |
+| Shore software on a computer (decode, dedupe, CSV store, SD import, publish, **USB bridge from the S3**, console sync, OTA bundle push) | ✅ 155 tests pass on simulated data and a pseudo-terminal; Python, stdlib only | [`shore/`](../../shore/), [SCO-257](https://linear.app/scout1/issue/SCO-257) |
+| Team console (Cloudflare Worker + D1): sign-in, roles, Fleet, Stations (incl. **Change WiFi**), Team, Audit, alerts, remote settings, device API | ✅ **Live** at <https://console.scoutscu.com> since 2026-10-26; 207 Worker and 199 front-end tests pass (2026-11-12) | [`console/`](../../console/README.md), [ADR-0012](../decisions/0012-authenticated-console.md) |
+| Analytics pipeline | ✅ 226 telemetry tests and 29 acoustic-reference tests pass on simulated data (2026-11-12) | [`analytics/`](../../analytics/) |
 | Public site + dashboard | ✅ Deployed (simulated data until real CSVs land in `shore/data-live/`) | [Live Dashboard](live-dashboard.md) |
-| Firmware over-the-air updates | 🔴 Decided, not built — reflashing still needs USB | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [SCO-197](https://linear.app/scout1/issue/SCO-197) |
+| Firmware over-the-air updates | ⚠️ **Built and on in the shipped builds since 2026-11-12**, never run on hardware (G11). The first install of the OTA layout is still over USB | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [OTA design §10](ota-firmware-update-design.md#10-as-built-2026-11-12), [SCO-197](https://linear.app/scout1/issue/SCO-197) |
 
 **Read this honestly:** every line of software is verified against *simulated* data. None of it
 has met a real sensor, a real radio, or real water yet.
@@ -90,20 +104,22 @@ has met a real sensor, a real radio, or real water yet.
 
 ## 2. Gates — known gaps to fix or work around before the stage that needs them
 
-Found in the 2026-10-19 rewrite and updated 2026-10-29. Each names the first stage it blocks.
+Found in the 2026-10-19 rewrite and updated 2026-11-12. Each names the first stage it blocks.
 
 | # | Gap | Blocks | Fix (owner) |
 |---|---|---|---|
 | **G1** ✅ fixed in code | **Nothing ever set the RTC**, so timestamps and the UTC transmit slots were wrong on a new board. Now: for ~8 s after a reset, with USB connected, the firmware accepts `T<unix-epoch>`; `firmware/tools/set_rtc.py` sends it. | Stage 1, 4, 5 | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-201](https://linear.app/scout1/issue/SCO-201) — confirm on hardware that `RTC_LOST` clears |
-| **G2** ✅ design / ✅ built / ⚠️ bench | **Shore data path.** The **ESP32-S3 + LoRa FeatherWing is the shore station**; it receives, validates and **pushes each reading to the team console over WiFi by itself** (decoded schema rows to `POST /api/device/readings`, decided 2026-10-25 in [ADR-0012](../decisions/0012-authenticated-console.md), written 2026-10-28). Fallbacks: a computer reading the S3 over USB ([SCO-257](https://linear.app/scout1/issue/SCO-257)) and the buoy's SD card. **Still open:** none of it has run on the board (Stage 4b). | Stage 4b–4c | CS lead ([SCO-237](https://linear.app/scout1/issue/SCO-237)) |
+| **G2** ✅ design / ✅ built / ⚠️ bench | **Shore data path.** The **ESP32-S3 + LoRa FeatherWing is the shore station**; it receives, validates and **pushes each reading to the team console over WiFi by itself** (decoded schema rows to `POST /api/device/readings`, decided 2026-10-25 in [ADR-0012](../decisions/0012-authenticated-console.md), written 2026-10-28). Its WiFi and token are set from a phone on its `SCOUT-Setup` network since 2026-11-12 ([SCO-310](https://linear.app/scout1/issue/SCO-310)). Fallbacks: a computer reading the S3 over USB ([SCO-257](https://linear.app/scout1/issue/SCO-257)) and the buoy's SD card. **Still open:** the WiFi side has not run on the board (Stage 4b); campus WiFi needs the station registered on BroncoFi ([SCO-304](https://linear.app/scout1/issue/SCO-304)). | Stage 4b–4c | CS lead ([SCO-237](https://linear.app/scout1/issue/SCO-237)) |
 | **G3** ⚠️ | **The Rev A KiCad schematic still says `TEMP_DATA = D5`.** The Rev B drawing set, `pin-assignments.md` and `config.h` all agree on **D12**. | Nothing, if you wire from the Rev B drawing set | Update the KiCad schematic (ECE) |
 | **G4** ✅ fixed in code | **SD file layout.** The firmware wrote `YYYYMMDD.CSV` at the card root and the importer matched `*.csv` case-sensitively, so a retrieved card merged nothing. Now `/DATA/YYYYMMDD.CSV` (8.3-safe), audio at `/AUDIO/YYYYMMDD/HHMMSSZ.WAV`, and a case-insensitive importer ([data-schema](data-schema.md#file-layout-on-the-sd-card)). | Card retrieval (§6) | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-202](https://linear.app/scout1/issue/SCO-202) — confirm with a real card |
 | **G5** ✅ fixed in code | **No receiver for the bench link test.** Now `feather_m0_rx` (a second Feather M0) and `shore/scripts/decode_frames.py`. | Stage 4a | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-155](https://linear.app/scout1/issue/SCO-155) |
 | **G6** ✅ fixed in code | **Forcing a watchdog reset for the Stage 5 test.** Now: env `feather_m0_wdt_test` (the bench build plus `-DSCOUT_WDT_TEST`) logs one reading, then hangs on its second cycle without petting the watchdog. The watchdog fires (~16 s) and the next boot reports `watchdog_reset=yes`. A boot the watchdog caused never hangs, so there is one forced reset per power-on or reset-button press. | Stage 5 | Added 2026-10-30 ([SCO-160](https://linear.app/scout1/issue/SCO-160)) — confirm on hardware |
 | **G7** ⚠️ | **Audio capture is written but has never run.** `drivers/audio_capture.h` records a 60 s clip at 22.05 kHz three times a day ([ADR-0011](../decisions/0011-audio-capture-parameters.md)); the hydrophone has not been bought. (The 2026-10-19 version said no capture code existed; that was superseded.) | Stage 7 | Run it once the H2dM arrives (CSEN + ECE) |
-| **G8** ⚠️ | **The shore FeatherWing's CS/RST/IRQ jumpers have no default.** `shore_main.cpp` assumes **CS 10, RST 11, IRQ 9**; the pads must be soldered to match and confirmed with ECE. | Stage 4a (S3 as receiver), 4b | Isabella |
+| **G8** ⚠️ | **The shore FeatherWing's CS/RST/IRQ jumpers have no default.** `shore_main.cpp` assumes **CS 10, RST 11, IRQ 9**; the pads must be soldered to match and confirmed with ECE. Isabella reported the S3 receiving on 2026-11-11, which suggests they are; record the pads in the Stage 4a test record. | Stage 4a (S3 as receiver), 4b | Isabella |
 | **G9** ⚠️ | **The shore station has no battery-backed clock.** After a power-on with no WiFi it has no time until NTP or `T<epoch>` over USB sets it: slot tags read `win=unknown` and the downlink holds off. Readings are unaffected (they carry the buoy's timestamp). | Nothing (a degraded mode) | ECE to decide on an RTC FeatherWing ([Shore Station](shore-station.md#open-items) item 6) |
-| **G10** 🔴 | **The shore must not transmit off the bench** until the RFM95W FeatherWing's own FCC authorization is checked, and the buoy's 1 s listen window needs Isabella's power sign-off. Until both, the settings downlink stays off and a requested transmit count shows *Pending* on the console. | Changing a buoy's transmit count by radio | CS lead + Isabella ([Shore Station](shore-station.md#open-items) item 3) |
+| **G10** 🔴 | **The shore must not transmit off the bench** until the RFM95W FeatherWing's own FCC authorization is checked, and the buoy's 1 s listen window needs Isabella's power sign-off. **Both are assumed, not recorded:** the settings downlink (2026-11-04) and OTA (2026-11-12) are on in the shipped builds by David's decision, so the shipped shore station *will* transmit. Keep it on the bench until both are recorded. | Any shore transmission off the bench | CS lead + Isabella ([Shore Station](shore-station.md#open-items) item 3, [SCO-104](https://linear.app/scout1/issue/SCO-104)) |
+| **G11** ⚠️ | **OTA has never run on hardware.** Before relying on it: push a signed v+1 bundle on the bench and check the transfer, the stub flash, `FW_TRIAL`, `CONFIRM`, a forced rollback and a power cut mid-flash; measure Ed25519 and SD fill time against the 16.4 s watchdog; generate the real signing key on the release machine (`ota_release.py keygen`). While the S3 relays a bundle it hears no other buoy for up to ≈ 6.5 min. | Stage 8 (sealing): until OTA is proven, a firmware fix means opening the housing | CS lead ([OTA design §10](ota-firmware-update-design.md#10-as-built-2026-11-12) items 1–5) |
+| **G12** ⚠️ | **The shore station's setup network is open** (no password). Anyone in WiFi range while it is up can point the station at another network. Accepted for the capstone only (2026-11-12). | Handing a station to anyone outside the team | [SCO-311](https://linear.app/scout1/issue/SCO-311) (Deferred) |
 
 **Hard safety rule, not a gap:** **never connect a primary (Li-SOCl₂) cell to a Feather that still
 has its MCP73831 charger.** Charging a primary cell is a fire hazard. The charger comes off the
@@ -141,9 +157,13 @@ command below assumes `pio` is on the PATH.)
   needs no serial library. The one exception is the fallback radio-on-a-Raspberry-Pi backend
   [`radio.py`](../../shore/scout_shore/radio.py), never run on hardware, which imports
   `adafruit-circuitpython-rfm9x` lazily so the test suite still runs on a bare machine.
-- **The shore station's secrets are never committed.** `firmware/src/shore_rx/shore_secrets.h`
-  (WiFi and the console device token) and `firmware/src/downlink_key.h` are gitignored; copy
-  their `_example.h` files.
+- **Keys are never committed.** `firmware/src/downlink_key.h` (radio command keys) and
+  `firmware/src/ota_pubkey.h` (the OTA public key; the private key stays on the release machine)
+  are gitignored and the shipped builds refuse to compile without them; copy the `_example.h`
+  files or see the [flashing guide](../../firmware/docs/flashing-guide.md). The shore station's
+  WiFi and console token are **not** in the firmware: they are typed on its setup page from a
+  phone and kept in its flash. `firmware/src/shore_rx/shore_secrets.h` (gitignored) is an
+  optional developer shortcut that only fills an empty station.
 - **The `Arduino Low Power` library ID contains spaces** in `platformio.ini`.
   `arduino-libraries/ArduinoLowPower` does not resolve.
 
@@ -169,6 +189,9 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 - **If an upload cannot find the board**, put it in its ROM bootloader: hold **BOOT**, press and
   release **RESET**, release **BOOT**, then upload again (Adafruit's procedure for this Feather).
   Press RESET after the upload to run the new firmware.
+- **BOOT has a second job while the firmware runs:** held for 3 s it opens the station's
+  `SCOUT-Setup` WiFi network for 10 minutes (§ Stage 4b). Holding it *while pressing RESET* is
+  still the bootloader.
 - The S3 stays awake (it is mains-powered and always listening), so its port does not vanish the
   way the sleeping M0's does.
 - **Antenna on the FeatherWing before power**, and the CS/RST/IRQ jumpers soldered (G8).
@@ -179,10 +202,10 @@ These caught the first bench attempt (2026-10-16); check them before blaming the
 
 | Target | What runs on it | Toolchain | Source of truth | Programmed by |
 |---|---|---|---|---|
-| **Feather M0 RFM95** — the buoy | `firmware/src/` + `firmware/lib/` (C++, Arduino SAMD core) | PlatformIO → BOSSA over USB | `firmware/src/config.h` (pins, schedule, radio) | `pio run -e feather_m0 -t upload`, double-tap RESET |
-| **ESP32-S3 Feather + LoRa FeatherWing** — **the shore station** | `firmware/src/shore_rx/`: LoRa receive and decode, dedupe, slot tag, **push to the console over WiFi**, read requested transmit counts, NTP clock; settings downlink only in a `SCOUT_DOWNLINK` build (off) | PlatformIO `espressif32` (Arduino core) | the buoy's `config.h` radio settings; `shore_secrets.h` (gitignored) for WiFi and the device token; [Shore Station](shore-station.md) | `pio run -e feather_esp32s3_shore -t upload` |
+| **Feather M0 RFM95** — the buoy | `firmware/src/` + `firmware/lib/` (C++, Arduino SAMD core), behind the `scout_boot` stub at `0x2000` (app at `0x8000`) | PlatformIO → BOSSA over USB for the first install; then signed OTA bundles over LoRa | `firmware/src/config.h` (pins, schedule, radio, `FW_*` version) | `pio run -e feather_m0 -t upload`, double-tap RESET; releases per the [flashing guide](../../firmware/docs/flashing-guide.md#over-the-air-releases-scout_ota-sco-197) |
+| **ESP32-S3 Feather + LoRa FeatherWing** — **the shore station** | `firmware/src/shore_rx/`: LoRa receive and decode, dedupe, slot tag, **push to the console over WiFi**, read settings every minute, NTP clock, settings downlink, OTA relay, **phone setup page** | PlatformIO `espressif32` (Arduino core) | the buoy's `config.h` radio settings; WiFi and token from its setup page (flash); [Shore Station](shore-station.md) | `pio run -e feather_esp32s3_shore -t upload` |
 | **Second Feather M0** — bench receiver (optional test instrument) | `firmware/src/bench_rx/` | PlatformIO | the buoy's `config.h` | `pio run -e feather_m0_rx -t upload`. Since 2026-10-28 the S3 is the planned link-test receiver; this is the fallback |
-| **A computer** — Python shore package | `shore/scout_shore/` (Python, stdlib): the **fallback path** when the S3 cannot reach WiFi (reads the S3 over USB, writes CSVs, pushes them to the console), SD-card import, Pages publishing, bench decoding | none | `shore/scout_shore/packet.py` (wire format), `schema.py` (row format) | `run_receiver.py --link serial`, `sync_console.py`, `import_sd_card.py`, `decode_frames.py` |
+| **A computer** — Python shore package | `shore/scout_shore/` (Python, stdlib): the **fallback path** when the S3 cannot reach WiFi (reads the S3 over USB, writes CSVs, pushes them to the console), SD-card import, Pages publishing, bench decoding, loading an OTA bundle into the S3 | none | `shore/scout_shore/packet.py` (wire format), `schema.py` (row format), `ota.py` | `run_receiver.py --link serial`, `sync_console.py`, `import_sd_card.py`, `decode_frames.py`, `push_firmware.py` |
 | **Cloudflare Worker + D1** — the team console | `console/worker/` (API) serving `console/web/` (static Next.js export) | Wrangler via `npx`, Node | `console/wrangler.toml`, `console/migrations/` | `npx wrangler deploy` from `console/` (after `npm run build` in `console/web`); needs the Cloudflare account owner |
 | **Any machine** — analytics | `analytics/telemetry/` (Python, stdlib) | none | [data-schema.md](data-schema.md) | `python3 run_telemetry.py` |
 | **GitHub Pages** — public site | generated HTML | `.github/workflows/pages.yml` | `analytics/telemetry/site/` | CI on push to `main`, hourly cron |
@@ -227,7 +250,10 @@ together, suspect chip-select first.
 ### What the buoy firmware does — so you know what to expect
 
 - **Boot:** prints a `boot:` line, latches both sensor switches **off**, turns the LED off, and
-  **samples once immediately**.
+  **samples once immediately**. After a real power-on (not a watchdog reset, not CRITICAL) it also
+  **sends one packet at once** (the boot hello, 2026-11-04), so a new buoy shows on the console in
+  seconds. With OTA, the very first boot copies the running image to `FW/A.BIN` on the SD card as
+  the known-good image (`ota: phase=0 …`).
 - **Samples** at every :00 and :30 (UTC from the PCF8523) and logs one CSV row per sample.
 - **Transmits** the latest sample **1–3 times a day** (default **3**; the range is pending
   Isabella's sign-off, [SCO-198](https://linear.app/scout1/issue/SCO-198)): 3 → 00:10, 08:10 and
@@ -243,14 +269,16 @@ together, suspect chip-select first.
   not narrow the bandwidth ([facts.md](../hub/facts.md), [FCC brief](../research/fcc-review-brief.md)).
   Since 2026-11-04 the shipped build (`feather_m0`) carries `SCOUT_DOWNLINK`: it listens 1 s after
   each send for a signed settings command (v1 count, or v2 every remote setting) and **needs the
-  real keys in `firmware/src/downlink_key.h` to compile** (G10). Bench builds fall back to the
-  public example keys and say so at boot.
+  real keys in `firmware/src/downlink_key.h` to compile** (G10). Since 2026-11-12 it also carries
+  `SCOUT_OTA`: after a real slot it can accept a signed firmware offer and run a transfer session
+  of up to ≈ 6 min, and it **needs `firmware/src/ota_pubkey.h`** (G11). Bench builds fall back to
+  the public example keys and say so at boot.
 
 ---
 
 ## 5. Stages
 
-### Stage 0 — Prove the software with no hardware ✅ VERIFIED 2026-10-29
+### Stage 0 — Prove the software with no hardware ✅ VERIFIED 2026-11-12
 
 **Goal:** every later failure is a hardware or wiring failure, not a software one.
 
@@ -261,14 +289,17 @@ cd shore && python3 -m unittest discover -s tests && cd ..
 python3 scripts/check_packet_contract.py
 cd console && npm test && cd web && npm ci && npm test && cd ../..
 cd firmware && pio test -e native && pio run -e feather_m0_downlink -e feather_esp32s3_shore_downlink && cd ..
-# (the shipped feather_m0 / feather_esp32s3_shore need the real keys; the *_downlink envs are the
-#  same builds with the public example keys)
+# (the shipped feather_m0 / feather_esp32s3_shore need the real downlink and OTA keys; the
+#  *_downlink envs are the same builds with the public example keys)
 ```
 
-**PASS (as recorded 2026-10-29, on `main` with PRs #231 and #235):** 289 telemetry tests OK · 29
-acoustic-reference tests OK · 129 shore tests OK · `bit maps OK — v4, 9 flags, 4 SoH bits`,
-`payload ceiling OK — 140 B`, `downlink contract OK — 28 bytes` · 43 console Worker tests, 41
-front-end tests · 120 native test cases · `feather_m0` `SUCCESS`, RAM 70.8%, Flash 27.7%.
+**PASS (as recorded 2026-11-12, on the SCO-310 branch merged with `main` after PR #316):** 226
+telemetry tests OK · 29 acoustic-reference tests OK · 155 shore tests OK ·
+`packet contract OK — 46 bytes`, `bit maps OK — v5, 9 flags, 4 SoH bits`,
+`payload ceiling OK — 140 B, 1739 ms of a 2000 ms send timeout; packet 46 B, 756 ms`,
+`downlink contract OK — v1 28 bytes … v2 43 bytes` · 207 console Worker tests, 199 front-end
+tests · 212 native test cases · `feather_m0_downlink` `SUCCESS` (RAM 72.0%, Flash 45.8%),
+`feather_esp32s3_shore_downlink` `SUCCESS` (flash 70.7%).
 **Re-run after every firmware change.** If any fails, stop: the problem is the environment.
 
 ---
@@ -293,7 +324,7 @@ FAT32 · CR1220 in the Adalogger.
 
 ```bash
 cd firmware
-pio run -e feather_m0 -t upload      # needs src/downlink_key.h; double-tap RESET if the port is not found
+pio run -e feather_m0 -t upload      # needs src/downlink_key.h and src/ota_pubkey.h; double-tap RESET if the port is not found
 cd .. && python3 firmware/tools/set_rtc.py              # press RESET once when asked
 pio device monitor -d firmware -b 115200
 ```
@@ -305,10 +336,13 @@ removed.
 **PASS:**
 
 - The boot line reports every subsystem up:
-  `boot: watchdog_reset=no rtc=ok sd=ok lora=ok start=cold resume_seq=0`
+  `boot: watchdog_reset=no rtc=ok sd=ok lora=ok start=cold resume_seq=0`, and on this first
+  boot of the OTA layout an `ota: phase=0 …` line as it copies itself to `FW/A.BIN`.
 - A `seq=1 mode=NORMAL flags=- soh=-` line follows. `RTC_LOST` in flags means the clock was
   never set: run `set_rtc.py`.
-- **Temperature** within ±0.5 °C of a reference thermometer, and it tracks a warm hand.
+- **Temperature** within ±0.5 °C of a reference thermometer, and it tracks a warm hand. (The probe
+  itself already passed under a bench sketch, RR-25/26/28; this checks it under the firmware.
+  Ice-point accuracy is still open, [SCO-259](https://linear.app/scout1/issue/SCO-259).)
 - **Turbidity polarity — the trap.** A **higher** ADC count means **clearer** water. Clear water,
   then a spoon of milk: **the count must go DOWN.** If it goes up, stop; the analytics chain
   depends on this sign ([facts.md](../hub/facts.md)). 50 consecutive readings vary < ~1%.
@@ -361,13 +395,13 @@ at switch-on (rail dip < ~100 mV).
 
 ---
 
-### Stage 4 — Data transmission, buoy → shore ⚠️ UNVERIFIED · [SCO-155](https://linear.app/scout1/issue/SCO-155), [SCO-98](https://linear.app/scout1/issue/SCO-98), [SCO-24](https://linear.app/scout1/issue/SCO-24)
+### Stage 4 — Data transmission, buoy → shore ⚠️ UNVERIFIED (4a reported working 2026-11-11, no record) · [SCO-155](https://linear.app/scout1/issue/SCO-155), [SCO-98](https://linear.app/scout1/issue/SCO-98), [SCO-24](https://linear.app/scout1/issue/SCO-24)
 
 > ⚠️ **Never power an RFM95 without its antenna.** Transmitting unterminated can destroy the PA.
 
 **4a — Bench link** (SCO-155 + SCO-98). **Receiver: the ESP32-S3 shore station** (decided
-2026-10-28; no second Feather M0 needed): flash `feather_esp32s3_shore` as in 4b (WiFi can stay off)
-and watch its USB output, or feed it to `shore/scripts/decode_frames.py`, which reads the S3's `RX`
+2026-10-28; no second Feather M0 needed): flash `feather_esp32s3_shore` as in 4b (it receives over
+LoRa whether or not WiFi is set up) and watch its USB output, or feed it to `shore/scripts/decode_frames.py`, which reads the S3's `RX`
 lines unchanged. The second-Feather receiver below is the fallback if the S3 is not ready (G8).
 
 ```bash
@@ -394,38 +428,48 @@ time on air ≈ **0.76 s** for the 46-byte packet (`SCOUT_LINK_AIRTIME_MS` 756;
 `scripts/lora_airtime.py`) · TX current ≤ 100 mA · RSSI and SNR recorded with the distance. **Record the results on SCO-155 and SCO-98**;
 the register values and sensitivity become verified only here. Then try the real schedule: flash
 `feather_m0`, set the clock a few minutes before a slot, and confirm the slot transmission.
+**Isabella reported this hop working on 2026-11-11** (M0 to the S3, printed over USB, no WiFi);
+it becomes ✅ only with a test record carrying the numbers above (standing rule 8).
 
 **4b — The shore station: ESP32-S3 + LoRa FeatherWing, pushing to the console** ⚠️ UNVERIFIED ·
 [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237).
 Firmware written (receive 2026-10-23, WiFi push 2026-10-28), never run on the board.
 
-**Preconditions:** 4a frames decode · FeatherWing jumpers soldered (G8) · antenna on · a WiFi
-network the S3 can join (2.4 GHz; no captive sign-in page) · a **device token** from the console
-(§6, *Connect a buoy to the console*, step 1).
+**Preconditions:** 4a frames decode · FeatherWing jumpers soldered (G8) · antenna on · a phone ·
+a WiFi network the S3 can join: **2.4 GHz** WPA2/WPA3 or open, **no captive sign-in page** (the
+campus guest network logs devices out, so on campus register the station on BroncoFi,
+[SCO-304](https://linear.app/scout1/issue/SCO-304); a **phone's hotspot works** on 2.4 GHz) · a
+**device token** from the console (§6, *Connect a buoy to the console*, step 1).
 
-1. **Secrets (human types them; Claude never does).** Copy
-   `firmware/src/shore_rx/shore_secrets_example.h` to `shore_secrets.h` (git ignores it) and fill
-   in the WiFi name and password and the device token. An admin creates the token on the console's
-   **Stations** page, which shows it once. **Without this file, WiFi stays off** and the station
-   works over USB exactly as before (4a, and the computer bridge in §6).
-
-   ```bash
-   cp firmware/src/shore_rx/shore_secrets_example.h firmware/src/shore_rx/shore_secrets.h
-   # then edit shore_secrets.h: SHORE_WIFI_SSID, SHORE_WIFI_PASSWORD, SHORE_CONSOLE_TOKEN
-   ```
-
-2. **Flash `feather_esp32s3_shore` and watch.**
+1. **Flash `feather_esp32s3_shore` and watch.** Nothing secret goes into the build.
 
    ```bash
    cd firmware
-   pio run -e feather_esp32s3_shore -t upload        # needs src/downlink_key.h; BOOT + RESET if the port is not found (§3)
+   pio run -e feather_esp32s3_shore -t upload        # needs src/downlink_key.h and src/ota_pubkey.h; BOOT + RESET if the port is not found (§3)
    pio device monitor -e feather_esp32s3_shore
    ```
 
-   Expect, in order: `shore_rx: radio=ok … errata=applied` · `wifi: joining <network>` ·
-   `wifi: connected ip=… rssi=…` · `time: set by ntp to …` · then, after the bench buoy's packet,
-   the `RX …` and `OK buoy=1 seq=… win=in tx=3/0` lines and **`console: pushed 1 readings, 0 queued`**.
-   Within 10 min it also prints `console: requested …` if anyone has asked for a transmit count.
+   On a station with nothing saved, expect `shore_rx: radio=ok … errata=applied`, `wifi: on;
+   console https://console.scoutscu.com` and `wifi: setup network SCOUT-Setup-XXXX is open; join
+   it from a phone`.
+
+2. **Set up its WiFi from a phone (human; Claude never types the password or token).** In the
+   phone's WiFi settings, join `SCOUT-Setup-XXXX` (the last four characters come from the board's
+   MAC). The setup page opens by itself (if not, browse to `http://192.168.4.1`). Pick the network,
+   or **Other network** to type one, enter its password, paste the device token, and **Save and
+   connect**. The page shows *Joining…*, then *Online* with the station's address; the serial log
+   shows `wifi: setup page saved network …`, `wifi: joining …`. The page explains the hotspot cases
+   (2.4 GHz only; an iPhone shows its hotspot only while its screen is open; a phone cannot host a
+   hotspot while it is on the setup network, so save first, then turn the hotspot on).
+
+   Then expect `wifi: connected ip=… rssi=…` · `time: set by ntp to …` · about a minute later
+   `wifi: setup network closed` · after the bench buoy's packet the `RX …` and
+   `OK buoy=1 seq=… win=in tx=3/0` lines and **`console: pushed 1 readings, 0 queued`**. Within a
+   minute it prints `console: wanted …` if anyone has changed a buoy's settings.
+
+   *Developer shortcut:* a gitignored `src/shore_rx/shore_secrets.h` (copy
+   `shore_secrets_example.h`) fills an empty station on first boot instead of the phone; the setup
+   page still works afterwards.
 
 **PASS:**
 
@@ -438,6 +482,11 @@ network the S3 can join (2.4 GHz; no captive sign-in page) · a **device token**
   `time: kept across the reset`, and `win=` still reads `in` or `out`, not `unknown`. (This relies
   on the ESP32's RTC timer surviving resets, per the ESP-IDF docs; it is the claim this step tests.)
 - No `RX` line is ever split by a `wifi:`/`console:` line (the computer bridge depends on it).
+- **Setup network behaviour** ([SCO-310](https://linear.app/scout1/issue/SCO-310)): switch the
+  network off and `SCOUT-Setup-XXXX` appears **about 10 s later** and stays until the station is
+  back online; a wrong password on the page reads *Wrong password*; holding BOOT 3 s, sending `W`
+  over USB, or **Change WiFi** in the station's ⋯ menu on **Stations** (console) opens it for
+  10 min while the station stays online (`console: Change WiFi requested` within a minute).
 
 The S3 must also keep its transmit antenna **≤ 2.15 dBi**, and must not transmit off the bench
 until G10 is cleared ([FCC brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16)).
@@ -527,8 +576,9 @@ through the acoustic pipeline; power budget re-run with the measured draw.
 
 ### Stage 8 — Sealed in the housing ⚠️ UNVERIFIED · [SCO-161](https://linear.app/scout1/issue/SCO-161), [SCO-162](https://linear.app/scout1/issue/SCO-162)
 
-**Preconditions:** Stages 1–6 PASS on the bench. **Never seal an unverified board** — until
-ADR-0008 is built, every firmware fix means opening the housing.
+**Preconditions:** Stages 1–6 PASS on the bench. **Never seal an unverified board** — OTA is built
+but unproven (G11), and until it passes its bench test every firmware fix means opening the
+housing.
 
 Electronics housing: 4.4 in ID × 5 in, sealed with the AS568-247 O-ring; FCC label
 "Contains FCC ID: 2ASEORFM95C" already engraved. Antenna via uFL → SMA bulkhead to a whip of
@@ -553,8 +603,8 @@ temperature and one turbidity reading, a packet reaches the shore.
 
 Before deploying: clock set and verified · `record_seq` checked · SD card empty and seated ·
 antifouling applied · shore link tested at true range · the shore station on the site's WiFi
-and pushing to the console (or the computer fallback running, §6) · a buoy ID unique to this
-deployment.
+(set up from a phone on site, Stage 4b) and pushing to the console (or the computer fallback
+running, §6) · a buoy ID unique to this deployment · G10 cleared before the shore transmits.
 
 **PASS:** data arrives every slot for the whole test; temperature matches a reference logger; no
 leaks; battery use on track for 12 months.
@@ -577,8 +627,9 @@ done, every reading the shore station hears shows up on the console with no one 
    and sends only its hash; everyone else joins by an invite from the **Team** page. Claude never
    types a password.)*
 2. **Give the token to the shore station.**
-   - **Normal path: the S3 itself.** Put the token and the site's WiFi in
-     `firmware/src/shore_rx/shore_secrets.h` and flash it (Stage 4b, steps 1–2).
+   - **Normal path: the S3 itself.** Paste the token on its setup page from a phone, with the
+     site's WiFi (Stage 4b, step 2). No reflash. To change the WiFi later, use **Change WiFi** in
+     the station's ⋯ menu on **Stations**, or hold BOOT for 3 s.
    - **Fallback: a computer reading the S3 over USB**, where the S3 cannot reach WiFi. Plug the S3
      into the computer and run (the token goes in the environment, never in a file in the repo):
 
@@ -604,11 +655,15 @@ done, every reading the shore station hears shows up on the console with no one 
    next runs). **Fleet** shows each buoy's newest packet time and the transmit count it reports;
    **Stations** shows when each shore station's token was last used.
 6. **Changing settings from the console** (member). Change the transmit count or any of the
-   other remote settings on **Settings → Buoys**. The S3 reads them within 10 minutes (or
+   other remote settings on **Settings → Buoys**. The S3 reads them within a minute (or
    `sync_console.py` prints the `N`/`S` lines), sends the whole snapshot right after the buoy's
    next packet, and the console shows **Pending** until a packet reports the matching settings
    digest, then **Confirmed** (**Rejected** if the buoy refused it). The radio parameters and the
-   listen window still need a reflash.
+   listen window still need new firmware: over the air once G11 clears, by USB until then.
+7. **New firmware** (release machine and shore computer): build, sign and push a bundle per the
+   [flashing guide](../../firmware/docs/flashing-guide.md#over-the-air-releases-scout_ota-sco-197).
+   The buoy takes it over about a day and a half of slots and reports `FW_TRIAL` until confirmed.
+   ⚠️ Never run on hardware (G11).
 
 **PASS:** the bench buoy's readings appear on Fleet at every slot with no one at a keyboard, for
 at least a day; Stations shows the station's token in use; a buoy that misses a slot shows its
@@ -691,13 +746,17 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 | Battery voltage implausible on USB | A7 reads the charger output | Expected; only trust A7 on the cells (SCO-83) |
 | Completeness 0%, expected records absurd | A clock-invalid row | `RTC_LOST`/1970 rows are excluded from timing (`clock_invalid`) |
 | Dashboard shows sample data after go-live | Publishing from the wrong directory | Real CSVs belong in `shore/data-live/` |
-| S3 prints `wifi: off (no src/shore_rx/shore_secrets.h)` | Secrets file missing | Copy `shore_secrets_example.h` to `shore_secrets.h`, fill it in, reflash (4b) |
-| `wifi: joining …` and never `connected` | Wrong password, a 5 GHz-only network, or a captive sign-in page | The S3 needs plain 2.4 GHz WPA2; otherwise use the computer fallback (§6) |
-| `console: device token refused (401)` | Token revoked, mistyped, or from another console | Make a new one on **Stations**, update `shore_secrets.h`, reflash |
+| No `SCOUT-Setup-…` network on the phone | The station is connected (setup only shows while offline or for 10 min after BOOT/Change WiFi), or old firmware | Hold BOOT 3 s, send `W` over USB, or use **Change WiFi** on Stations; a build from before 2026-11-12 has no setup page |
+| Phone joins `SCOUT-Setup-…` but no page opens | The phone's captive-portal check did not fire | Browse to `http://192.168.4.1` |
+| Page says *Can’t see that network* | 5 GHz-only network, out of range, or the phone's own hotspot (it cannot host while on the setup network) | 2.4 GHz only (iPhone: Maximize Compatibility); for this phone's hotspot, leave the setup network and turn the hotspot on, the station joins within 30 s |
+| Page says *Wrong password* | Mistyped, or the network uses a captive sign-in page | Retype; captive-portal networks cannot work, use BroncoFi or a hotspot |
+| `wifi: joining …` and never `connected` | Wrong password, a 5 GHz-only network, or a captive sign-in page | The setup network reopens 10 s later; fix it there, or use the computer fallback (§6) |
+| `console: device token refused (401)` | Token revoked, mistyped, or from another console | Make a new one on **Stations**, open the setup network (BOOT 3 s; Change WiFi cannot reach a station whose token is revoked) and paste it there |
 | `console: push failed (-1)` while WiFi is up | No internet past the WiFi, or a TLS failure | Check the site's internet; if Cloudflare moved the console to a CA outside `console_ca.h`, update that file. Readings stay queued (256) meanwhile |
 | `win=unknown` on every `OK` line | Shore clock unset: power-on with no WiFi | Restore WiFi (NTP) or run `firmware/tools/set_rtc.py` against the S3 (G9) |
 | Buoy never appears on Fleet | Nothing reaching the console | Check the S3 shows `console: pushed`; check Stations for the token's last use |
-| Transmit count stuck on **Pending** | The downlink is off in shipped builds | Expected until G10 is cleared |
+| A setting stuck on **Pending** | The buoy has not sent since the shore delivered it, or another station is its command station | Wait for its next slot; check the command station on **Stations** |
+| Buoy reports `FW_ROLLED_BACK` | A new image failed its trial and the stub restored the old one | Expected safety behaviour; the shore drops the job. Check the image on the bench before re-releasing (G11) |
 | A `RX` line looks cut in two | Old shore firmware | Builds from 2026-10-28 write each line in one call; reflash |
 
 ---
@@ -705,9 +764,10 @@ The analytics pipeline needs a 64-bit host: on 32-bit armv7l nine of its package
 ## 8. What Claude cannot do
 
 Wire, solder or power anything · measure current, voltage or continuity · put a sensor in water ·
-type a password, including the WiFi password and console token in `shore_secrets.h` · create the
-console's first admin · flash a board the human has not connected · confirm any ⚠️ claim without
-hardware output.
+type a password, including the WiFi password and console token on the station's setup page ·
+join a phone to the setup network or press BOOT · create the console's first admin · generate or
+hold the OTA private key · flash a board the human has not connected · confirm any ⚠️ claim
+without hardware output.
 
 **Claude can:** run Stage 0 · build and flash a connected board · read serial output · decode
 frames · drive the shore, console and analytics chain · check the console for a buoy's readings ·

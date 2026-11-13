@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import type { Device } from "@/lib/api/types";
 import { commandingStation, commandRoutes } from "./command-routes";
 
-const station = (id: string): Device => ({ id, name: id, created_at: 0, revoked_at: null, last_seen_at: null });
+const station = (id: string): Device => ({ id, name: id, created_at: 0, revoked_at: null, last_seen_at: null, wifi_setup_requested_at: null });
 
 describe("command routes", () => {
   test("a lone active station commands every unpicked buoy", () => {

@@ -421,3 +421,16 @@ int scout_console_parse_wanted(const char *body, ScoutWanted *wanted, size_t slo
     memcpy(wanted, parsed, limit * sizeof(ScoutWanted));
     return set;
 }
+
+uint32_t scout_console_wifi_setup_at(const char *body) {
+    const char *key = "\"wifi_setup_requested_at\":";
+    const char *at = strstr(body, key);
+    if (at == nullptr) {
+        return 0;
+    }
+    at += strlen(key);
+    while (*at == ' ') {
+        at++;
+    }
+    return (*at >= '0' && *at <= '9') ? (uint32_t)strtoul(at, nullptr, 10) : 0;
+}

@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>S.C.O.U.T. shore station setup</title>
+<!-- The shore station's WiFi setup page (SCO-310), served by the station itself on its
+     SCOUT-Setup network. Styled as the console's sign-in screen (COR in Tideline colour, tokens
+     from console/web/design/tokens.json), light only so it reads the same on every phone. The phone has no internet here, so nothing loads from
+     anywhere: system fonts stand in for DM Sans and JetBrains Mono, and the icons are inline.
+     Preview it without a station: python3 firmware/tools/setup_page_preview.py -->
+<style>
+:root {
+  color-scheme: light;
+  --bg: #ffffff; --surface: #ffffff; --surface-sunken: #f1f1f0;
+  --line: #ddd6d0; --line-strong: #867f78; --rail: #2b2520;
+  --ink: #2b2520; --ink-muted: #6f6760;
+  --accent: #1f6763; --accent-soft: #d6eeeb; --on-accent: #fffcfa;
+  --positive: #1b714c; --positive-soft: #e4ebe5;
+  --negative: #a33e25; --negative-soft: #f4e5e0;
+  --caution: #815b1f; --caution-soft: #f0e9e0;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --radius-sm: 2px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 14px/20px var(--font-sans); -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+.sc-tag { font: 500 11px/14px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); }
+.sc-help { margin: 0; font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
+.sc-wordmark { display: flex; align-items: baseline; gap: var(--space-2); color: var(--ink); font: 700 22px/1 var(--font-sans); letter-spacing: -.04em; }
+
+/* Login frame: brand panel left (hidden on phones), the form right */
+.sc-login { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 440px); min-height: 100%; }
+.sc-login__art { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-8); padding: var(--space-8); background: var(--ink); color: var(--bg); }
+.sc-login__art .sc-wordmark, .sc-login__art .sc-tag { color: var(--bg); }
+.sc-login__art .sc-tag { opacity: .7; }
+.sc-login__lede { display: grid; gap: var(--space-4); max-width: 460px; }
+.sc-login__lede h1 { margin: 0; font: 700 40px/44px var(--font-sans); letter-spacing: -.03em; }
+.sc-login__about { margin: 0; font: 400 17px/26px var(--font-sans); opacity: .86; }
+.sc-login__slots svg { display: block; width: 100%; max-width: 520px; height: 40px; }
+.sc-login__slots rect { fill: var(--bg); opacity: .35; } .sc-login__slots rect.on { opacity: 1; }
+.sc-login__form { display: grid; align-content: center; justify-items: center; padding: var(--space-8); background: var(--bg); }
+.sc-phone-head { display: none; }
+@media (max-width: 767px) {
+  .sc-login { grid-template-columns: 1fr; }
+  .sc-login__art { display: none; }
+  .sc-login__form { align-content: start; padding: var(--space-6) var(--space-4) var(--space-8); }
+  .sc-phone-head { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: var(--space-2); border-bottom: 2px solid var(--rail); }
+}
+
+.sc-auth-stack { display: grid; gap: var(--space-6); width: 100%; max-width: 380px; }
+.sc-auth-form { display: grid; gap: var(--space-4); }
+.sc-auth-form__head { display: grid; gap: var(--space-1); }
+.sc-auth-form__head h2 { margin: 0; font: 700 24px/28px var(--font-sans); letter-spacing: -.02em; }
+
+/* Fields */
+.sc-fieldset { display: grid; gap: 6px; min-width: 0; }
+.sc-input { width: 100%; height: 40px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface-sunken); color: var(--ink); font: 400 16px/1 var(--font-sans); }
+.sc-input::placeholder { color: var(--ink-muted); font-style: italic; }
+.sc-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); background: var(--surface); }
+.sc-input--mono { font: 400 15px/1 var(--font-mono); }
+.sc-input[aria-invalid="true"] { border-color: var(--negative); border-width: 1.5px; }
+.sc-input-wrap { position: relative; display: flex; align-items: center; }
+.sc-input-wrap > .sc-input { padding-right: 44px; }
+.sc-input-wrap__toggle { position: absolute; right: 4px; display: grid; place-items: center; width: 34px; height: 32px; border: 0; background: none; color: var(--ink-muted); cursor: pointer; }
+.sc-input-wrap__toggle[aria-pressed="true"] { color: var(--accent); }
+.sc-input-wrap__toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+
+/* Keys: a physical console key with a keybed edge */
+.sc-key { display: inline-flex; align-items: center; gap: var(--space-3); height: 40px; padding: 0 var(--space-2) 2px var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 500 15px/1 var(--font-sans); cursor: pointer; box-shadow: inset 0 -3px 0 var(--line); transition: transform 120ms ease-out, box-shadow 120ms ease-out; -webkit-tap-highlight-color: transparent; }
+.sc-key:active:not(:disabled) { transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); transition-duration: 60ms; }
+.sc-key:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sc-key kbd { font: 500 11px/1 var(--font-mono); padding: 3px 5px; border-radius: var(--radius-sm); border: 1px solid currentColor; opacity: .75; }
+.sc-key--primary { justify-content: space-between; width: 100%; background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: inset 0 -3px 0 rgba(0,0,0,.28); }
+.sc-key--primary:active:not(:disabled) { box-shadow: inset 0 -1px 0 rgba(0,0,0,.28); }
+.sc-key--sm { height: 28px; padding: 0 var(--space-2) 2px; font-size: 13px; }
+.sc-key:disabled { color: var(--ink-muted); background: transparent; border-color: var(--line-strong); border-style: dashed; box-shadow: none; cursor: progress; }
+
+/* Bay: the 2px rail heading a block */
+.sc-bay { display: grid; gap: var(--space-2); border-top: 2px solid var(--rail); padding-top: var(--space-2); }
+.sc-bay__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
+
+/* Network list */
+.sc-nets { display: grid; margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.sc-net { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 44px; padding: 0 var(--space-2); border: 0; border-top: 1px solid var(--line); background: none; color: var(--ink); font: 500 15px/20px var(--font-sans); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.sc-net:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.sc-net[aria-pressed="true"] { background: var(--accent-soft); }
+.sc-net__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-net__other { color: var(--accent); }
+.sc-net svg { flex: none; color: var(--ink-muted); }
+.sc-nets__empty { padding: var(--space-3) var(--space-2); border-top: 1px solid var(--line); }
+.sc-signal { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; color: var(--ink); }
+.sc-signal i { width: 3px; background: currentColor; }
+.sc-signal i:nth-child(1) { height: 4px; } .sc-signal i:nth-child(2) { height: 7px; }
+.sc-signal i:nth-child(3) { height: 10px; } .sc-signal i:nth-child(4) { height: 13px; }
+.sc-signal i.off { background: none; box-shadow: inset 0 0 0 1px currentColor; opacity: .45; }
+
+/* Banners and the live link check */
+.sc-banner { padding: var(--space-2) var(--space-3); background: var(--caution-soft); font: 400 14px/20px var(--font-sans); }
+.sc-banner--failed { background: var(--negative-soft); }
+.sc-banner--info { background: var(--accent-soft); }
+.sc-banner strong { font-weight: 600; }
+.sc-contact { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); color: var(--ink-muted); font: 400 14px/20px var(--font-sans); }
+.sc-contact strong { color: var(--ink); font-weight: 600; }
+.sc-contact--ok { color: var(--positive); border-color: currentColor; }
+.sc-contact--ok strong { color: var(--positive); }
+.sc-contact--failed { color: var(--negative); border-color: currentColor; }
+.sc-contact--failed strong { color: var(--negative); }
+.sc-contact__dot { flex: none; width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: var(--ink-muted); }
+.sc-contact--ok .sc-contact__dot, .sc-contact--failed .sc-contact__dot { background: currentColor; }
+.sc-contact--joining .sc-contact__dot { background: var(--caution); animation: sc-pulse 1.4s ease-in-out infinite; }
+@keyframes sc-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+.sc-progress { position: relative; height: 2px; overflow: hidden; background: var(--line); }
+.sc-progress b { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: var(--accent); transition: width 900ms linear; }
+
+/* Hotspot help */
+.sc-guide { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.sc-guide summary { display: flex; justify-content: space-between; align-items: center; min-height: 44px; cursor: pointer; font: 500 15px/20px var(--font-sans); list-style: none; }
+.sc-guide summary::-webkit-details-marker { display: none; }
+.sc-guide summary::after { content: "+"; font: 500 18px/1 var(--font-mono); color: var(--ink-muted); }
+.sc-guide[open] summary::after { content: "\2212"; }
+.sc-guide ol { display: grid; gap: var(--space-3); margin: 0; padding: 0 0 var(--space-4) 20px; color: var(--ink); font: 400 14px/20px var(--font-sans); }
+.sc-guide b { font-weight: 600; }
+.sc-foot { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="sc-login">
+  <aside class="sc-login__art">
+    <span class="sc-wordmark">S.C.O.U.T. <span class="sc-tag">Shore station</span></span>
+    <div class="sc-login__lede">
+      <h1>Put this shore station online.</h1>
+      <p class="sc-login__about">It relays every buoy&rsquo;s readings to the console. Any WiFi works, a phone&rsquo;s hotspot included.</p>
+    </div>
+    <div class="sc-login__slots" aria-hidden="true">
+      <svg viewBox="0 0 420 40" preserveAspectRatio="none" id="slots"></svg>
+    </div>
+  </aside>
+
+  <main class="sc-login__form">
+    <div class="sc-auth-stack">
+      <div class="sc-phone-head">
+        <span class="sc-wordmark">S.C.O.U.T.</span>
+        <span class="sc-tag">Shore station</span>
+      </div>
+
+      <form class="sc-auth-form" id="setup" novalidate>
+        <div class="sc-auth-form__head">
+          <h2>Connect to WiFi</h2>
+          <p class="sc-help">Pick the network this station uses to reach the console. A phone&rsquo;s hotspot works too.</p>
+        </div>
+
+        <div class="sc-contact" id="now" role="status">
+          <span class="sc-contact__dot"></span><span id="now-text">Checking the station&hellip;</span>
+        </div>
+
+        <div class="sc-banner sc-banner--failed" id="error" role="alert" hidden></div>
+
+        <section class="sc-bay" aria-labelledby="nets-title">
+          <div class="sc-bay__head">
+            <span class="sc-tag" id="nets-title">Networks nearby</span>
+            <button class="sc-key sc-key--sm" type="button" id="rescan">Rescan</button>
+          </div>
+          <ul class="sc-nets" id="nets"><li class="sc-nets__empty sc-help">Looking for networks&hellip;</li></ul>
+        </section>
+
+        <label class="sc-fieldset">
+          <span class="sc-tag">Network name</span>
+          <input class="sc-input" id="ssid" name="ssid" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="32" required>
+        </label>
+
+        <label class="sc-fieldset">
+          <span class="sc-tag">Password</span>
+          <span class="sc-input-wrap">
+            <input class="sc-input" id="password" name="password" type="password" autocomplete="off" maxlength="64">
+            <button class="sc-input-wrap__toggle" type="button" id="show" aria-label="Show password" aria-pressed="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </span>
+          <span class="sc-help" id="password-help">Leave blank for an open network.</span>
+        </label>
+
+        <label class="sc-fieldset">
+          <span class="sc-tag">Station token</span>
+          <input class="sc-input sc-input--mono" id="token" name="token" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="80" placeholder="scd_…">
+          <span class="sc-help" id="token-help">From the console&rsquo;s Stations page, shown once when the station is added.</span>
+        </label>
+
+        <button class="sc-key sc-key--primary" type="submit" id="save">Save and connect <kbd>&#x23CE;</kbd></button>
+      </form>
+
+      <section class="sc-auth-form" id="result" hidden aria-live="polite">
+        <div class="sc-auth-form__head">
+          <h2 id="result-title">Joining&hellip;</h2>
+          <p class="sc-help" id="result-sub">This takes up to 20 seconds.</p>
+        </div>
+        <div class="sc-progress" id="progress"><b></b></div>
+        <div class="sc-contact sc-contact--joining" id="result-box">
+          <span class="sc-contact__dot"></span><span id="result-text"></span>
+        </div>
+        <button class="sc-key sc-key--primary" type="button" id="back">Change network <kbd>&larr;</kbd></button>
+      </section>
+
+      <details class="sc-guide" id="hotspot">
+        <summary>Using a phone&rsquo;s hotspot?</summary>
+        <ol>
+          <li><b>Turn on 2.4 GHz.</b> The station cannot see 5 GHz. On an iPhone: Settings &rsaquo; Personal Hotspot &rsaquo; <b>Maximize Compatibility</b>. On Android: Hotspot &rsaquo; AP band &rsaquo; <b>2.4 GHz</b>.</li>
+          <li><b>Not in the list?</b> Choose <b>Other network</b> and type the name exactly. An iPhone&rsquo;s is under Settings &rsaquo; General &rsaquo; About &rsaquo; Name, with a curly apostrophe (&rsquo;), which the phone&rsquo;s keyboard types for you.</li>
+          <li><b>Hotspot on this phone?</b> Save here first. Then leave this network, turn the hotspot on and keep its screen open. The station joins within 30 seconds and the hotspot shows 1 connection.</li>
+        </ol>
+      </details>
+
+      <div class="sc-foot">
+        <span class="sc-tag" id="station">SCOUT-Setup</span>
+        <span class="sc-tag">Firmware setup page</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { selected: null, saved: "", hasToken: false, polling: null };
+
+  // The console sign-in's slot-rule motif: three slots a day for a week, every third lit.
+  var slots = "";
+  for (var i = 0; i < 21; i++) slots += '<rect' + (i % 3 === 0 ? ' class="on"' : '') + ' x="' + (i * 20 + 7) + '" y="6" width="6" height="28"/>';
+  $("slots").innerHTML = slots;
+
+  function get(path) {
+    return fetch(path, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function bars(rssi) {
+    var lit = rssi >= -55 ? 4 : rssi >= -67 ? 3 : rssi >= -78 ? 2 : 1;
+    var out = '<span class="sc-signal" aria-label="Signal ' + lit + ' of 4">';
+    for (var b = 1; b <= 4; b++) out += '<i' + (b > lit ? ' class="off"' : '') + '></i>';
+    return out + "</span>";
+  }
+
+  var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="Needs a password"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+
+  function row(label, extra, selected, other) {
+    var li = document.createElement("li");
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "sc-net";
+    btn.setAttribute("aria-pressed", selected ? "true" : "false");
+    var name = document.createElement("span");
+    name.className = "sc-net__name" + (other ? " sc-net__other" : "");
+    name.textContent = label;
+    btn.appendChild(name);
+    btn.insertAdjacentHTML("beforeend", extra);
+    li.appendChild(btn);
+    return { li: li, btn: btn };
+  }
+
+  function renderNets(nets, scanning) {
+    var list = $("nets");
+    list.textContent = "";
+    if (!nets.length) {
+      var empty = document.createElement("li");
+      empty.className = "sc-nets__empty sc-help";
+      empty.textContent = scanning ? "Looking for networks…" : "No networks found. A phone hotspot may only show while its screen is open.";
+      list.appendChild(empty);
+    }
+    nets.forEach(function (n) {
+      var r = row(n.ssid, (n.secured ? LOCK : "") + bars(n.rssi), state.selected === n.ssid, false);
+      r.btn.addEventListener("click", function () { choose(n.ssid); });
+      list.appendChild(r.li);
+    });
+    var other = row("Other network…", "", state.selected === "", true);
+    other.btn.addEventListener("click", function () { choose(""); });
+    list.appendChild(other.li);
+  }
+
+  var lastNets = [];
+  function choose(ssid) {
+    state.selected = ssid;
+    $("ssid").value = ssid;
+    renderNets(lastNets, false);
+    (ssid ? $("password") : $("ssid")).focus();
+    passwordHelp();
+  }
+
+  function scan() {
+    $("rescan").disabled = true;
+    get("/api/scan").then(function (s) {
+      lastNets = s.networks;
+      renderNets(s.networks, s.scanning);
+      if (s.scanning) setTimeout(scan, 1500); else $("rescan").disabled = false;
+    }).catch(function () { $("rescan").disabled = false; });
+  }
+
+  function passwordHelp() {
+    var same = state.saved && $("ssid").value === state.saved;
+    $("password-help").textContent = same ? "Leave blank to keep the saved password." : "Leave blank for an open network.";
+  }
+
+  function showNow(s) {
+    var box = $("now"), text = $("now-text");
+    box.className = "sc-contact" + (s.state === "connected" ? " sc-contact--ok" : s.state === "joining" ? " sc-contact--joining" : "");
+    text.textContent = "";
+    var strong = document.createElement("strong");
+    if (s.state === "connected") {
+      strong.textContent = "Online";
+      text.append(strong, " on “" + s.saved + "”. Save below to move it to another network.");
+    } else if (s.saved) {
+      strong.textContent = s.state === "joining" ? "Joining" : "Not connected";
+      text.append(strong, " “" + s.saved + "” is saved" + (s.state === "joining" ? "; trying it now." : " but not reachable."));
+    } else {
+      strong.textContent = "Not set up yet.";
+      text.append(strong, " Nothing is saved on this station.");
+    }
+  }
+
+  function loadStatus() {
+    return get("/api/status").then(function (s) {
+      state.saved = s.saved;
+      state.hasToken = s.has_token;
+      $("station").textContent = s.station;
+      $("token").placeholder = s.has_token ? "Saved. Leave blank to keep it" : "scd_…";
+      if (state.selected === null && s.saved) { state.selected = s.saved; $("ssid").value = s.saved; }
+      passwordHelp();
+      showNow(s);
+      return s;
+    });
+  }
+
+  function fail(message, field) {
+    var e = $("error");
+    e.textContent = message;
+    e.hidden = false;
+    ["ssid", "password", "token"].forEach(function (f) { $(f).removeAttribute("aria-invalid"); });
+    if (field) { $(field).setAttribute("aria-invalid", "true"); $(field).focus(); }
+  }
+
+  function fieldFor(message) {
+    if (/token/i.test(message)) return "token";
+    if (/password/i.test(message)) return "password";
+    return "ssid";
+  }
+
+  $("setup").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    $("error").hidden = true;
+    var body = new URLSearchParams({ ssid: $("ssid").value, password: $("password").value, token: $("token").value });
+    $("save").disabled = true;
+    fetch("/api/save", { method: "POST", body: body }).then(function (r) {
+      return r.json().then(function (j) { return { ok: r.ok, body: j }; });
+    }).then(function (res) {
+      $("save").disabled = false;
+      if (!res.ok) return fail(res.body.error, fieldFor(res.body.error));
+      watchJoin($("ssid").value);
+    }).catch(function () {
+      $("save").disabled = false;
+      fail("Lost touch with the station. Check this phone is still on its SCOUT-Setup network.");
+    });
+  });
+
+  function result(kind, title, sub, html) {
+    $("result-title").textContent = title;
+    $("result-sub").textContent = sub;
+    $("result-box").className = "sc-contact sc-contact--" + kind;
+    $("result-text").innerHTML = html;
+    $("progress").hidden = kind !== "joining";
+  }
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  function watchJoin(ssid) {
+    $("setup").hidden = true;
+    $("result").hidden = false;
+    var started = Date.now(), name = "<strong>“" + esc(ssid) + "”</strong>";
+    result("joining", "Joining…", "This takes up to 20 seconds.", "Saved. Trying " + name + " now.");
+    clearInterval(state.polling);
+    state.polling = setInterval(function () {
+      var t = Math.min(100, (Date.now() - started) / 200);
+      $("progress").style.setProperty("--p", t + "%");
+      get("/api/status").then(function (s) {
+        if (s.state === "connected") {
+          clearInterval(state.polling);
+          result("ok", "Online", "Readings now go to the console.",
+            "Joined " + name + " at " + esc(s.ip) + ". This setup network closes in a minute; the phone goes back to its usual WiFi.");
+        } else if (s.state === "failed" && s.reason === "wrong_password") {
+          clearInterval(state.polling);
+          result("failed", "Wrong password", "Nothing else changed.", "The password for " + name + " was refused. Check it and try again.");
+        } else if (s.state === "failed" || (s.state === "idle" && Date.now() - started > 25000)) {
+          clearInterval(state.polling);
+          result("failed", "Can’t see that network", "It is saved; the station keeps trying.",
+            "The station cannot see " + name + " from here. If it is <strong>this phone’s hotspot</strong>, that is expected: leave this network, turn the hotspot on, and the station joins within 30 seconds. Otherwise check it is 2.4 GHz and in range.");
+          $("hotspot").open = true;
+        }
+      }).catch(function () {
+        if (Date.now() - started > 8000) {
+          clearInterval(state.polling);
+          result("joining", "Out of touch", "This phone left the setup network.",
+            "If you are turning on this phone’s hotspot, that is expected. The hotspot screen shows 1 connection when the station joins, and the console’s Stations page shows it online.");
+        }
+      });
+    }, 1000);
+  }
+
+  $("back").addEventListener("click", function () {
+    clearInterval(state.polling);
+    $("result").hidden = true;
+    $("setup").hidden = false;
+    $("password").value = "";
+    loadStatus().catch(function () {});
+    scan();
+  });
+
+  $("show").addEventListener("click", function () {
+    var shown = $("password").type === "password";
+    $("password").type = shown ? "text" : "password";
+    this.setAttribute("aria-pressed", shown ? "true" : "false");
+    this.setAttribute("aria-label", shown ? "Hide password" : "Show password");
+  });
+  $("ssid").addEventListener("input", function () { state.selected = this.value; renderNets(lastNets, false); passwordHelp(); });
+  $("rescan").addEventListener("click", scan);
+
+  loadStatus().catch(function () { $("now-text").textContent = "Could not reach the station. Check this phone is on its SCOUT-Setup network."; });
+  scan();
+})();
+</script>
+</body>
+</html>

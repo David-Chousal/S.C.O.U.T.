@@ -11,6 +11,7 @@ const ACTIONS: Record<string, string> = {
   "device.create": "Created station token",
   "device.revoke": "Revoked station token",
   "device.delete": "Deleted station token",
+  "device.wifi_setup": "Opened station WiFi setup",
   "invite.create": "Invited",
   "invite.accept": "Accepted invite",
   "invite.revoke": "Revoked invite",

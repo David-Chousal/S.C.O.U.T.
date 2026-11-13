@@ -17,6 +17,7 @@ import { AssignDialog } from "./assign-dialog";
 import { commandRoutes } from "./command-routes";
 import { NewTokenDialog } from "./new-token-dialog";
 import { DeleteStationDialog, RevokeDialog, StationInfoDialog } from "./station-dialogs";
+import { WifiSetupDialog, wifiSetupPending } from "./wifi-setup-dialog";
 
 const HOUR = 3600 * 1000;
 const REFRESH_MS = 30 * 1000;
@@ -32,7 +33,7 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
 }
 
 /** Stations: every shore station, when it was last seen, its status, and a ⋯ menu (Info, which
- * lists the buoys it commands; Assign buoys; Revoke). A revoked station shows a delete key instead.
+ * lists the buoys it commands; Assign buoys; Change WiFi; Revoke). A revoked station shows a delete key instead.
  * Buoys' own state lives on Fleet. */
 export function StationsBoard() {
   const { user } = useSession();
@@ -42,6 +43,7 @@ export function StationsBoard() {
   const [assigning, setAssigning] = useState<Device | null>(null);
   const [info, setInfo] = useState<Device | null>(null);
   const [revoking, setRevoking] = useState<Device | null>(null);
+  const [rewifi, setRewifi] = useState<Device | null>(null);
   const [deleting, setDeleting] = useState<Device | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const allowed = can(user.role, "devices.write");
@@ -61,6 +63,7 @@ export function StationsBoard() {
     const items: ActionMenuItem[] = [{ label: "Info", icon: "info", onSelect: () => setInfo(device) }];
     // Which buoys it commands is in Info; with two or more stations, Assign buoys changes it.
     if (canAssign) items.push({ label: "Assign buoys", icon: "connections", onSelect: () => setAssigning(device) });
+    if (allowed) items.push({ label: "Change WiFi", icon: "sync", onSelect: () => setRewifi(device) });
     if (allowed) items.push({ label: "Revoke", icon: "close", danger: true, onSelect: () => setRevoking(device) });
     return items;
   }
@@ -99,7 +102,10 @@ export function StationsBoard() {
                     <td className="sc-stations-table__when"><Ago ms={device.last_seen_at} /></td>
                     <td>{device.revoked_at
                       ? <span className="sc-badge sc-badge--muted">Revoked</span>
-                      : <SignalMeter {...freshness(device.last_seen_at, now, 2 * HOUR)} />}</td>
+                      : <span className="sc-row">
+                        <SignalMeter {...freshness(device.last_seen_at, now, 2 * HOUR)} />
+                        {wifiSetupPending(device, now) && <span className="sc-badge sc-badge--pending">WiFi setup open</span>}
+                      </span>}</td>
                     <td className="sc-stations-table__actions">
                       {device.revoked_at ? (
                         <Key size="sm" iconOnly icon="trash" aria-label={`Delete ${device.name}`} disabled={!allowed}
@@ -125,6 +131,7 @@ export function StationsBoard() {
       <NewTokenDialog open={adding} onClose={() => setAdding(false)} onCreated={devices.reload} />
       <StationInfoDialog device={info} commands={info ? routes.byStation.get(info.id) ?? [] : []} onlyStation={active.length === 1}
         onClose={() => setInfo(null)} />
+      <WifiSetupDialog device={rewifi} onClose={() => setRewifi(null)} onDone={changed} />
       <RevokeDialog device={revoking} onClose={() => setRevoking(null)} onDone={changed} />
       <DeleteStationDialog device={deleting} onClose={() => setDeleting(null)} onDone={changed} />
     </>

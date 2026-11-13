@@ -49,8 +49,9 @@ export function RevokeDialog({ device, onClose, onDone }: StationDialogProps) {
       {done ? (
         <div className="sc-dialog__body">
           <p className="sc-help">Its token no longer works: it cannot push readings or fetch settings. Buoys it commanded need another station.</p>
-          <p className="sc-help"><strong>To bring it back</strong>, make a new token with <strong>New token</strong> here and put it in the
-            station&rsquo;s <code>shore_secrets.h</code>, then flash it again.</p>
+          <p className="sc-help"><strong>To bring it back</strong>, make a new token with <strong>New token</strong> here. Then hold the
+            station&rsquo;s <strong>BOOT</strong> button for 3 seconds, join its <strong>SCOUT-Setup</strong> network from a phone, and paste the
+            token there.</p>
           <Link className="sc-link" href="/help/#shore" onClick={close}>How to connect a shore station</Link>
         </div>
       ) : (
@@ -112,7 +113,7 @@ export function StationInfoDialog({ device, commands, onlyStation, onClose }: St
     ["Sends settings to", device.revoked_at ? "No buoys (revoked)"
       : commands.length ? commands.map((b) => b.label).join(", ") + (onlyStation ? " (the only active station, so every buoy)" : "")
         : "No buoys"],
-    ["How it connects", "Pushes each reading over WiFi with its token, and asks for settings changes every 10 minutes."],
+    ["How it connects", "Pushes each reading over WiFi with its token, and asks for settings changes every minute. Its WiFi is set from a phone on its SCOUT-Setup network."],
   ];
   return (
     <Dialog open title={device.name} onClose={onClose} footer={<Key variant="primary" onClick={onClose} data-autofocus>Done</Key>}>
