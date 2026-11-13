@@ -46,7 +46,13 @@ public:
         if (!rf95_.send(data, len)) {
             return false;
         }
-        return rf95_.waitPacketSent(2000);
+        if (rf95_.waitPacketSent(2000)) {
+            return true;
+        }
+        // No TX-done IRQ (DIO0 not wired, or the radio wedged): RadioHead stays in TX mode and
+        // its next send() waits forever on it until the watchdog resets the buoy. Drop to idle.
+        rf95_.setModeIdle();
+        return false;
     }
 
     void sleep() { rf95_.sleep(); }

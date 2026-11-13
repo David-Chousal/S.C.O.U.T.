@@ -302,8 +302,8 @@ void setup() {
     g_acoustic_slot.valid = 0;
 
     g_battery.begin();
-    // DS18B20 / turbidity / housing sit behind the sensor-rail gate; leave it OFF and
-    // OneWire begin() finds nothing and the first sample looks like a dead probe.
+    // Turbidity sits behind the sensor-rail gate (DS18B20 and SHT40 are on 3V3 per the runbook);
+    // power it for begin() so a gated probe is not mistaken for a dead one on the first sample.
     digitalWrite(PIN_SENSOR_GATE, SENSOR_ON);
     delay(50);
     g_temp.begin();
@@ -314,6 +314,10 @@ void setup() {
     g_rtc_ok = g_rtc.begin();
     accept_time_command();
     Watchdog.reset();  // the TIME_SET window can burn most of the WDT; re-arm before SD/LoRa
+    // RFM95 shares SPI with the SD card; RadioHead only drives its CS in begin(), so hold it
+    // deselected first or a floating CS can corrupt SD init (scout_boot does the same).
+    pinMode(PIN_RFM95_CS, OUTPUT);
+    digitalWrite(PIN_RFM95_CS, HIGH);
     g_sd_ok = g_sd.begin();
     g_lora_ok = g_lora.begin();
 #ifdef SCOUT_OTA
@@ -347,6 +351,20 @@ void setup() {
     Serial.print(setting(SCOUT_SET_SLOT_PHASE));
     Serial.print(" interval_s=");
     Serial.println(g_sample_interval_s);
+    {
+        // A bench supply on 3V or USB with no battery on the sense divider reads as a flat pack on A7: CRITICAL then
+        // suppresses the boot hello and every TX slot, which looks like a dead radio.
+        uint16_t boot_mv = g_battery.readMillivolts();
+        scout_power_mode_t boot_mode = scout_power_mode(boot_mv, setting(SCOUT_SET_CONSERVE_MV),
+                                                        setting(SCOUT_SET_CRITICAL_MV));
+        Serial.print("power: battery_mv=");
+        Serial.print(boot_mv);
+        if (boot_mode == SCOUT_POWER_CRITICAL) {
+            Serial.println(" mode=CRITICAL - TX and boot hello OFF until the pack recovers (battery on the A7 sense?)");
+        } else {
+            Serial.println(boot_mode == SCOUT_POWER_CONSERVE ? " mode=CONSERVE" : " mode=NORMAL");
+        }
+    }
 #if defined(SCOUT_DOWNLINK) && defined(SCOUT_DOWNLINK_KEY_IS_EXAMPLE)
     Serial.println("WARNING: downlink uses the PUBLIC example key; do not deploy");
 #endif
@@ -578,7 +596,11 @@ static void sample_and_log() {
 // with nothing sent is simply missed — the next slot carries a fresher reading, and the full
 // record is on the SD card regardless.
 static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary &acoustic) {
-    if (!g_lora_ok || !g_have_reading) {
+    if (!g_have_reading) {
+        return;
+    }
+    if (!g_lora_ok) {
+        Serial.println("lora: TX skipped - radio init failed at boot (check RFM95 CS8/RST4/IRQ3)");
         return;
     }
     // Pet the watchdog before the slowest step (LoRa TX blocks up to ~2 s per copy).
@@ -612,7 +634,8 @@ static void transmit_last_reading(bool audio_present, const ScoutAcousticSummary
         // first bench (SPI contention, antenna) must still print so Serial is the diagnostic.
         if (!g_lora.send(packet, (uint8_t)n)) {
             Serial.print("lora: TX FAIL copy=");
-            Serial.println(i);
+            Serial.print(i);
+            Serial.println(" (no TX-done IRQ? check DIO0 -> pin 3)");
         }
         // Pet before the gap, not after: the watchdog must not expire while we wait.
         // scout_link_fits_watchdog asserts this policy leaves 2x headroom.
