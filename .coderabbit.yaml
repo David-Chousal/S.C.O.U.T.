@@ -1,0 +1,12 @@
+# CodeRabbit settings (decided 2026-11-12; see docs/CONVENTIONS.md, Pull requests).
+# Review each PR once, when it opens. Re-reviewing every push made PR #321 loop for hours:
+# each fix pushed for a comment drew a new round of comments. Ask for another pass by
+# commenting `@coderabbitai review` on the PR.
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    auto_incremental_review: false
+    drafts: false

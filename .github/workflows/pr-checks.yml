@@ -102,8 +102,9 @@ jobs:
           git diff --name-only "$BASE_SHA...HEAD" > changed.txt
           python .github/scripts/check_deploy_target.py --base-ref "$BASE_REF" --changed-file changed.txt
 
-  # Every PR gets a CodeRabbit review (CLAUDE.md, decided 2026-11-12). Waits up to 20 min for
-  # the CodeRabbit app's check run on the head commit; fails if it never finishes or is skipped.
+  # Every PR gets one CodeRabbit review (CLAUDE.md, decided 2026-11-12). Passes at once if any
+  # earlier commit of the PR was reviewed; otherwise waits up to 20 min for the head commit's
+  # review and fails if it never finishes or is skipped.
   coderabbit:
     name: coderabbit
     runs-on: ubuntu-latest
@@ -117,4 +118,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python .github/scripts/check_coderabbit.py
