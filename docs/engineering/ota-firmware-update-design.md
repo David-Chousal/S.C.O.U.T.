@@ -13,6 +13,11 @@
 > needs her sign-off, and every current figure is a datasheet estimate until it is measured on
 > the bench.
 >
+> **Built 2026-11-12 and switched on in the shipped builds the same day** on David's instruction
+> (§10): the whole update path, buoy and shore, compiles and is unit-tested under `SCOUT_OTA`.
+> **Never run on hardware**, and the power and FCC sign-offs are not recorded. The image grew to ≈ 95.5 KB with the
+> signature code, so an update is ≈ 747 chunks, ≈ 4–5 sessions, ≈ 12 mAh.
+>
 > Owner: David Chousal Cantu (CSEN). Power sign-off: Isabella Rodriguez (ECEN). Linear:
 > [SCO-197](https://linear.app/scout1/issue/SCO-197). Unblocks
 > [SCO-198](https://linear.app/scout1/issue/SCO-198) (configurable transmit count).
@@ -29,7 +34,8 @@
 | Boot stub and rollback | Proposed (§6). Arduino's SDU stub needs rebuilding for the Feather M0 RFM95 |
 | Power budget and ADR-0007 lifetime re-run | Figures in §7. Isabella's budget document not updated yet |
 | Shore transmit compliance | **Open.** The RFM95W FeatherWing's FCC authorization has not been checked (§8) |
-| Firmware | **Settings slice built 2026-10-25** ([SCO-198](https://linear.app/scout1/issue/SCO-198)), **extended to every remote setting and switched on in the shipped builds 2026-11-04** ([plan](firmware-remote-settings-plan.md)): the 1 s listen window, the `CMD` frame (v1 `SET_TX_COUNT`, v2 full snapshot; HMAC-SHA256, §5), and the shore side, behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware**. Firmware OTA (offer, chunks, signatures, boot stub, rollback) not started |
+| Firmware OTA | **Built 2026-11-12**, `SCOUT_OTA` **on in the shipped builds** the same day (§10): offer, chunked transfer with resume, Ed25519 + SHA-256 checks, the `scout_boot` stub with A/B slots and rollback, the trial `CONFIRM`, the shore relay and the release tooling. 167 native tests, 9 target builds; **never run on hardware** |
+| Settings downlink | **Settings slice built 2026-10-25** ([SCO-198](https://linear.app/scout1/issue/SCO-198)), **extended to every remote setting and switched on in the shipped builds 2026-11-04** ([plan](firmware-remote-settings-plan.md)): the 1 s listen window, the `CMD` frame (v1 `SET_TX_COUNT`, v2 full snapshot; HMAC-SHA256, §5), and the shore side, behind `SCOUT_DOWNLINK`. Compiles and is unit-tested natively; **never run on hardware** |
 
 ## 1. Constraints this design has to fit
 
@@ -251,13 +257,69 @@ everything behind `SCOUT_DOWNLINK` (on in the shipped builds since 2026-11-04):
   `downlink_key_example.h`) and the shore's `SCOUT_CMD_KEY_<id>`. Never in the console or the
   repo.
 
-Still to do for firmware OTA:
+Firmware OTA itself was built on 2026-11-12; §10 has what changed from this design and what is
+still open.
 
-- Packet contract: one status bit for update outcome (`scout_packet.h`, `shore/scout_shore/packet.py`,
-  `check_packet_contract.py`).
-- Shore: transmit path, offer/burst scheduler, signed-bundle intake (the shore relays bundles that
-  were signed on the release machine and never signs firmware itself).
-- Release tooling: a script that builds, hashes, signs and writes the manifest.
+## 10. As built (2026-11-12)
+
+Everything in §3–§6 is built ([SCO-197](https://linear.app/scout1/issue/SCO-197)), behind
+`SCOUT_OTA`, which is **on in the shipped `feather_m0` and `feather_esp32s3_shore` builds since
+2026-11-12, on David's instruction**, before the bench test and the power and FCC sign-offs. Both
+sides compile; the hardware-free parts are unit-tested; nothing has run on a Feather. Both shipped
+builds need `src/ota_pubkey.h` to compile. The settings path that OTA rides on (console → S3 over
+WiFi → LoRa → buoy → packet → console) was run end to end through the real code on 2026-11-12,
+with only the radio and the WiFi transport left out: a member's request came back "confirmed".
+
+| Piece | Where |
+|---|---|
+| Frames, manifest, windows, shore decision | `firmware/lib/scout_ota` ⇄ `shore/scout_shore/ota.py`; goldens in `test/test_ota`, held by `check_packet_contract.py` |
+| Boot state machine | `firmware/lib/scout_fw_state` (`test/test_fw_state`: update, trial, confirm, crash rollback, unconfirmed rollback, torn writes, bad files) |
+| Ed25519 | Monocypher 4.0.2, vendored unchanged in `firmware/lib/monocypher` |
+| Buoy session, trial, confirm | `firmware/src/ota/ota_buoy.cpp`, called from `listen_for_command` in `main.cpp` |
+| Boot stub | `firmware/src/boot/scout_boot.cpp` (env `scout_boot`), generated into `src/ota/scout_boot_image.h` by `tools/make_boot_image.py` |
+| Shore relay | `firmware/src/shore_rx/shore_ota.cpp`; `shore/scripts/push_firmware.py` loads a bundle over USB |
+| Release | `firmware/tools/ota_release.py` (`keygen`, `sign`); the private key stays on the release machine |
+| Packet | `flags` bit 11 `FW_TRIAL`, bit 12 `FW_ROLLED_BACK` (packet stays v5: unused bits, no layout change) |
+
+**Where the build differs from §3–§7:**
+
+- **The stub gets 24 KB, not 16 KB, and the application starts at `0x8000`.** The stub is
+  21,016 bytes: the Adafruit core links its SPI DMA, USB and UART objects. The core's linker
+  script aligns the application to `0x2000`, so the next slot up is `0x8000`. That costs 8 KB of
+  a 256 KB part and caps the image at 224 KB.
+- **Two image slots on the card, `FW/A.BIN` and `FW/B.BIN`, instead of `GOOD.BIN` and
+  `UPDATE.BIN`.** The state names the good slot, and a new image is received straight into the
+  other one. Arduino's SD library cannot rename files, so confirming is a state change, not a
+  copy of the image.
+- **The image is ≈ 95.5 KB, not 66.6 KB** (Monocypher and the OTA code). That is 747 chunks,
+  ≈ 21.7 min on air, ≈ 25 min with the 200 ms gaps: **4–5 sessions, about a day and a half of
+  slots**. Scaling §7, one update costs **≈ 12 mAh** with 25% retries, still under 0.6% of two
+  cells a year at 12 releases.
+- **Frames as built:** the offer is 117 B (the manifest carries the buoy ID; no separate header).
+  A chunk has a flags byte, whose `LAST` bit ends a window, so a chunk frame is ≤ 137 B. `CONFIRM` is 29 B.
+- **Windows are fixed and the buoy drives them.** Each ACK names the first 16-chunk window that
+  still has a gap and which of its chunks are held. The shore sends only those, so a resumed
+  transfer picks up where the card left off.
+- **The buoy takes an offer or a `CONFIRM` only after a real slot**, not after the boot hello,
+  so a trial image has slept and woken at least once before it can be confirmed.
+- **One update at a time:** offers are ignored until a trial settles. A rollback makes the shore
+  drop its job instead of offering the same image again.
+- **The shore checks the bundle itself** (hash and signature) before it relays anything, and
+  its session blocks its receive loop for up to ≈ 6.5 min. Another buoy's packets are lost
+  during that time.
+
+**Still open (the build ships with them open, by decision):**
+
+1. Bench test on a Feather M0 + Adalogger + a second radio: USB-flash the OTA build, push a
+   signed v+1 bundle, and check the transfer, the stub flash, `FW_TRIAL`, `CONFIRM`, a forced
+   rollback (an image that hangs) and a power cut mid-flash. Needs a test record (standing rule 8).
+2. Measure Ed25519 time and SD fill time on the M0. Both are assumed to stay well under the
+   16.4 s watchdog, and the shore waits 15 s for the first ACK.
+3. Isabella's sign-off on the listen window and the session current
+   ([SCO-225](https://linear.app/scout1/issue/SCO-225), [SCO-226](https://linear.app/scout1/issue/SCO-226),
+   [SCO-227](https://linear.app/scout1/issue/SCO-227)).
+4. The shore FeatherWing's FCC authorization (§8, [SCO-104](https://linear.app/scout1/issue/SCO-104)).
+5. Generate the real signing key on the release machine (`ota_release.py keygen`).
 
 ## Sources
 
@@ -266,7 +328,8 @@ Still to do for firmware OTA:
 - Arduino `SDUBoot.ino`, ArduinoCore-samd —
   <https://github.com/arduino/ArduinoCore-samd/tree/master/libraries/SDU> (layout, default CS pin,
   no verification or rollback, read 2026-10-23).
-- Monocypher — <https://monocypher.org/> (Ed25519 via its optional `monocypher-ed25519`).
+- Monocypher 4.0.2 — <https://monocypher.org/>, source <https://github.com/LoupVaillant/Monocypher>
+  (Ed25519 via its optional `monocypher-ed25519`; vendored 2026-11-12).
 - RFC 8032 (Ed25519) — <https://www.rfc-editor.org/rfc/rfc8032>; RFC 2104 (HMAC) —
   <https://www.rfc-editor.org/rfc/rfc2104>.
 - [Power Budget Update 2026-10-05](power-budget-update-2026-10-05.md) — base budget, cell

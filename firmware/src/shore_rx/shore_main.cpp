@@ -54,6 +54,10 @@
 #ifdef SCOUT_DOWNLINK
 #include "../downlink_key_select.h"
 #endif
+#ifdef SCOUT_OTA
+#include "scout_ota.h"
+#include "shore_ota.h"
+#endif
 
 /* FeatherWing jumper pads → S3 Feather pins. ⚠️ PROVISIONAL: the FeatherWing has no default
  * wiring; these three pads must be soldered to match, and confirmed with ECE (Isabella). */
@@ -74,7 +78,7 @@ static uint32_t g_frames = 0;
 #ifdef SCOUT_DOWNLINK
 static uint32_t g_last_counter[SHORE_MAX_BUOY_ID + 1];
 #endif
-static char g_line[96];  // room for an S line: "S65535:" and eight values
+static char g_line[256];  // room for an FM line (232 hex digits), the longest USB command
 static size_t g_line_len = 0;
 
 static bool radio_begin() {
@@ -192,6 +196,42 @@ static void send_settings(uint16_t buoy_id, const ScoutSettings &settings) {
 }
 #endif
 
+#ifdef SCOUT_OTA
+// The trial image of the armed job is running: confirm it, so it becomes the buoy's good image.
+static void send_confirm(uint16_t buoy_id, uint32_t version) {
+    uint32_t counter = 0;
+    const uint8_t *key = command_key(buoy_id, &counter);
+    if (key == nullptr) {
+        return;
+    }
+    uint8_t frame[SCOUT_OTA_CONFIRM_SIZE];
+    scout_ota_confirm_encode(buoy_id, counter, version, key, frame);
+    bool sent = transmit(frame, sizeof(frame));
+    Serial.printf("CONFIRM buoy=%u version=%06lx counter=%lu sent=%s\n", buoy_id, (unsigned long)version,
+                  (unsigned long)counter, sent ? "yes" : "no");
+}
+
+// One frame fits a listen window. A trial CONFIRM goes before settings: a trial image rolls
+// back after 3 slots without it, and a settings frame the buoy keeps refusing must not cause
+// that. Settings go before an offer, which waits for a slot with nothing else to send.
+static bool firmware_confirm_due(const ScoutReading &r) {
+    if (shore_ota_step(r) != SCOUT_OTA_STEP_CONFIRM) {
+        return false;
+    }
+    send_confirm(r.buoy_id, shore_ota_job_version());
+    return true;
+}
+
+static void firmware_step(const ScoutReading &r) {
+    scout_ota_step_t step = shore_ota_step(r);
+    if (step == SCOUT_OTA_STEP_OFFER) {
+        shore_ota_run_session(g_rf95, r.buoy_id);
+    } else if (step == SCOUT_OTA_STEP_DONE || step == SCOUT_OTA_STEP_ABANDON) {
+        shore_ota_finish(step);
+    }
+}
+#endif
+
 static void handle_frame(const uint8_t *buf, uint8_t len) {
     g_frames++;
     print_rx_line(buf, len);
@@ -243,11 +283,21 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
                   (settings_pending || count_pending) ? " pending" : "",
                   (r.flags & SCOUT_FLAG_CMD_REJECTED) ? " cmd_rejected" : "");
 #ifdef SCOUT_DOWNLINK
+#ifdef SCOUT_OTA
+    if (firmware_confirm_due(r)) {
+        return;
+    }
+#endif
     if (settings_pending) {
         send_settings(r.buoy_id, wanted.settings);
     } else if (count_pending) {
         send_tx_count(r.buoy_id, wanted.tx_count);
     }
+#ifdef SCOUT_OTA
+    else {
+        firmware_step(r);
+    }
+#endif
 #endif
 }
 
@@ -267,6 +317,11 @@ static void poll_time_command() {
             Serial.print("wifi: opening the setup network for 10 min\n");
             continue;
         }
+#ifdef SCOUT_OTA
+        if (shore_ota_line(g_line)) {
+            continue;
+        }
+#endif
         uint16_t buoy = 0;
         uint8_t count = 0;
         ScoutSettings settings;
