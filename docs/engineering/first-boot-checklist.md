@@ -25,10 +25,11 @@
 
 1. Create real keys (never commit):
    - `python3 firmware/tools/ota_release.py keygen --key ~/scout-ota.key --header firmware/src/ota_pubkey.h`
-   - Copy `firmware/src/downlink_key_example.h` → `downlink_key.h`, replace every key with
-     `secrets.token_hex(32)` bytes, and **delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1`
-     (shipped builds `#error` if that marker remains). Same key on buoy + S3; optional host
-     also sets `SCOUT_CMD_KEY_<id>`.
+   - Copy `firmware/src/downlink_key_example.h` → `downlink_key.h` on **both** buoy and S3 with the
+     **same** per-buoy key bytes (one key, two builds). Paste a C initializer, not hex text:
+     `python3 -c "import secrets; print(', '.join(f'0x{b:02x}' for b in secrets.token_bytes(32)))"`.
+     Then **delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1` (shipped builds `#error` if it
+     remains). Optional Python USB host: same 64 hex digits as `SCOUT_CMD_KEY_<id>`.
 2. Confirm `BUOY_ID` in [`firmware/src/config.h`](../../firmware/src/config.h) (reports as
    `SCOUT-01`, two digits).
 3. Flash buoy: `cd firmware && pio run -e feather_m0 -t upload` (double-tap RESET /
