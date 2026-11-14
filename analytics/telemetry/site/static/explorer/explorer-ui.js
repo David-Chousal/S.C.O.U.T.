@@ -113,7 +113,8 @@
         ['Freeboard', 'height above water', (st.top - r.T).toFixed(2) + ' in', mm(st.top - r.T)],
         ['GM', 'stiffness, higher is better', r.GM.toFixed(2) + ' in', mm(r.GM)],
         ['Max righting', 'strongest push upright', X.moment(r.W, pk.gz).toFixed(1) + ' N·m', 'at ' + pk.deg + '°'],
-        ['Tips over at', 'point of no return', vv === null ? 'never' : Math.round(vv) + '°', ''],
+        // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
+        ['Tips over at', 'point of no return', vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never', ''],
       ];
       ui.stats.textContent = '';
       rows.forEach(function (row) {
@@ -153,7 +154,8 @@
       st.chart = { X: X_, Y: Y_, cursor: cursor, m: m, pw: pw };
       var pk = X.peak(gz), vv = X.vanishing(gz);
       svgEl.setAttribute('aria-label', 'Righting lever against tilt. Peaks at ' + pk.gz.toFixed(2) + ' inches at ' + pk.deg +
-        ' degrees; ' + (vv === null ? 'it pushes back upright at every tilt.' : 'past ' + Math.round(vv) + ' degrees it tips further over.'));
+        ' degrees; ' + (vv !== null ? 'past ' + Math.round(vv) + ' degrees it tips further over.'
+          : st.r.GM <= 0 ? 'it is unstable upright and tips further over from any tilt.' : 'it pushes back upright at every tilt.'));
     }
     // Green where the lever pushes back upright, red where it tips the hull further; split exactly at each zero.
     function areas(svgEl, gz, X_, Y_) {
@@ -260,10 +262,13 @@
       if (!st.stage) return;
       var x = d(), token = ++st.token, cached = st.models.get(x.id);
       ui.status.textContent = cached ? '' : 'Loading the 3D model…';
+      // Never show the last design's hull at this design's waterline while the new one loads (or if it fails).
+      if (!cached) st.stage.hide();
       (cached ? Promise.resolve(cached) : X.json(base + 'models/' + x.id + '.json')).then(function (model) {
         st.models.set(x.id, model);
         if (token !== st.token) return;
         st.stage.show(model, x.keel_mm, st.r ? st.r.T : 0);
+        if (ui.cut.getAttribute('aria-pressed') === 'true') st.stage.cut(true);
         ui.status.textContent = '';
         applyTilt();
       }).catch(function (err) {
@@ -274,8 +279,9 @@
     /* -- start -------------------------------------------------------------------------------------------- */
     ui.tilt.addEventListener('input', function () { stopAnim(); setDeg(+ui.tilt.value); });
     ui.go.addEventListener('click', letGo);
-    ui.pay.addEventListener('input', function () { st.payload = +ui.pay.value; recompute(); });
-    ui.bal.addEventListener('change', recompute);
+    // A new payload or ballast is a new curve: a running "Let go" would settle on the old one.
+    ui.pay.addEventListener('input', function () { stopAnim(); st.payload = +ui.pay.value; recompute(); });
+    ui.bal.addEventListener('change', function () { stopAnim(); recompute(); });
     ui.cut.addEventListener('click', function () {
       var on = ui.cut.getAttribute('aria-pressed') !== 'true';
       ui.cut.setAttribute('aria-pressed', on);
