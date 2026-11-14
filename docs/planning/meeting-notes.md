@@ -1365,3 +1365,65 @@ pasted transcript. The transcript is auto-generated and partly garbled; only poi
 | Send the winter-quarter meeting invite with a Zoom link | not stated | none (small) |
 | Funding letter expected Thursday | Department | none |
 
+
+---
+
+## 2026-11-13 — S.C.O.U.T. team sync (John, Isabella, David)
+
+**Attendees** — John Ryan Myrdal · Isabella Rodriguez · David Chousal Cantu. Source: John's Granola notes and a pasted transcript (auto-generated, partly
+garbled; only points that are clear in it are recorded). Social talk and grade discussion are left out.
+
+### Status reported
+
+- **John (mechanical):** a new buoy (Test Assembly 10) with waterline markings and drag fins, hung from the top, with an antenna hole; the full print is running.
+  The overnight roll-decay CFD (6 s of simulated time) was shown. The electronics stack (packaging harness) and the shore-station housing are modelled; a
+  third housing print is running, to reach Isabella's cap and housing tomorrow. The first Flex Seal coat is on a buoy and drying. The website has a 3D viewer
+  for every buoy with pan, zoom, wireframe, exploded and cutout views.
+- **David (software):** the shore-station Wi-Fi setup and the console were built over the last week. The station powers up and broadcasts a setup network
+  (named "scout 01 setup" in the transcript; [`status.md`](../hub/status.md) says `SCOUT-Setup-XXXX`); joining it asks for an API key made in the console with **Add station**, so
+  data goes to the console, not to a laptop. Three setup guides sit in the repo (Wi-Fi, general, buoy station), written for an agent to follow end to end; the
+  console's Help tab has the plain-language version. He reports a local M0 compiler and about 200 firmware and 200 console tests, over-the-air firmware
+  updates over LoRa from the console or a computer, and a scheme so two or more buoys sending to one station do not collide on LoRa. Reported, not verified.
+- **Isabella (electronics):** the temperature and turbidity sensors work on the bench; she still needs benchmarks and calibration. The leak (humidity)
+  sensor is the third. All sensors are wired to the documented pins, and she is checking each against the software. She had lost her console invite
+  (expired) and signed back in during the call. She plans a PCB over Thanksgiving break.
+
+### Decisions and agreements
+
+- **Cables leave the sealed housing, run through the outer buoy and out the bottom**, all of them including the hydrophone or microphone and the turbidity
+  sensor: easier to swap parts on site and easier to waterproof (John, agreed).
+- **Skip the intermediate compact-prototype step**: current sensors go in the current buoy for testing, with a little shrinking, then straight to the PCB
+  (Isabella, no objection).
+- **Isabella gives John rough PCB dimensions, then John prints the housing over winter break.** Dimensions are due around the end of Thanksgiving break.
+- **Wednesday demo (next Wednesday, 2026-11-18, for Dr. Krishnan):** sensors in the buoy reading through the shore station to the console to Isabella's
+  laptop. The transcript names temperature, turbidity and the leak sensor. The microphone is not part of it.
+- **Sync Sunday 2026-11-15 afternoon** (David, Isabella, John if free). Isabella sets everything up Saturday from David's guides first; Tuesday is for fixes.
+- **CodeRabbit** reviews each PR once (David set one review per PR after a three-hour loop); more reviews can be requested by hand.
+
+### Contradictions with the repo (not reconciled)
+
+| Meeting said | Repo says |
+|---|---|
+| A small microphone connected to the board replaces the hydrophone for now; Isabella may order one overnight from Amazon. Funding is approved, and a teammate who places orders is out of town | [`facts.md`](../hub/facts.md) has the hydrophone as the Aquarian H2dM, decided 2026-10-12 and waiting for funding ([SCO-158](https://linear.app/scout1/issue/SCO-158)). The 2026-11-11 meeting called the hydrophone "on its way". Nothing records a decision to drop it, or that a microphone was ordered |
+| Fins "work", with "really successful" damping, and nobody else puts fins on buoys | The Test Assembly 10 run is not a clean measurement: the no-fins case gains energy, so the fin benefit (about 2 percent of critical at best) is an estimate ([SCO-309](https://linear.app/scout1/issue/SCO-309), [hull-hydrodynamics](../../mechanical/simulations/hull-hydrodynamics/README.md)). "No one else uses fins" has no source in the repo |
+| The simulation was an "FEA" tilt test | It is a CFD roll-decay run (OpenFOAM `interFoam`) |
+| Wednesday demo is two sensors | The same discussion lists temperature, turbidity and the leak sensor, which is three |
+| The console, Wi-Fi setup, over-the-air updates and anti-collision scheme are ready | [`status.md`](../hub/status.md) has the LoRa link never run on hardware. It records software tests for the console (38), Wi-Fi setup (unit-tested, previewed) and over-the-air updates (167 native), none run on hardware. It has no anti-collision test record. Reported only |
+
+### Open questions
+
+- **IP and the public repo:** Dr. Jack advised being careful what goes online. The repo is public. David would move it to private "at some point"; John said
+  copyright may already be lost. Not a legal opinion; nobody has decided. Needs a team decision.
+- **Hydrophone or microphone for the first demo and for deployment** (see the table).
+
+### Action items
+
+| Item | Owner | Issue |
+|---|---|---|
+| Set up sensors and station from David's three guides, then sync Sunday | Isabella | [SCO-155](https://linear.app/scout1/issue/SCO-155) |
+| Sync on console and troubleshooting, Sunday 2026-11-15 | David, Isabella, John | none (small) |
+| Look into ordering a microphone, overnight if possible | Isabella | [SCO-158](https://linear.app/scout1/issue/SCO-158) |
+| Send rough PCB dimensions to John by the end of Thanksgiving break | Isabella | none (small) |
+| CAD and print the PCB housing over winter break | John | none until dimensions arrive |
+| Deliver the third housing print and the cap to Isabella | John | [SCO-162](https://linear.app/scout1/issue/SCO-162) |
+| Decide whether to make the repo private | Team | none (needs a decision) |
