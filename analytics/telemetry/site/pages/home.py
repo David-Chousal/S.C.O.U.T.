@@ -111,6 +111,32 @@ def _senses() -> str:
     )
 
 
+_HABITAT_PHOTOS = (
+    "shallow-reef", "reef-flat", "green-turtle", "coral-detail", "coral-bommie",
+    "anemonefish", "sponge-garden", "anthias-swarm", "kelp-column", "open-water",
+)
+
+
+def _habitat(ctx: SiteContext) -> str:
+    pills = "".join(
+        imagery.pill(key, ctx.base, uid=101 + i, img_dir=ctx.img_dir)
+        for i, key in enumerate(_HABITAT_PHOTOS)
+    )
+    # The carousel is full-bleed: the heading stays in the wrap, the carousel spans
+    # the page (section is emitted with wrap="" so the carousel is a direct, full-width child).
+    return c.section(
+        '<div class="wrap">'
+        + c.head_block("The environment", "The nearshore zone",
+                       "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
+                       "productive, and it is also where remote sensing is least accurate.")
+        + "</div>"
+        + c.carousel(pills, label="Nearshore zone photographs", cls="carousel-full"),
+        cls="section-sm",
+        sid="habitat",
+        wrap="",
+    )
+
+
 def _live_band(ctx: SiteContext) -> str:
     live = ctx.live
     note = ("Sample data, simulated until the buoy is deployed."
@@ -151,7 +177,9 @@ def body(ctx: SiteContext) -> str:
         + _mission()
         + '<div class="wrap"><div class="divider"></div></div>'
         + _senses()
+        + _habitat(ctx)
         + c.slot_divider()
         + c.data_path()
         + _live_band(ctx)
+        + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
     )
