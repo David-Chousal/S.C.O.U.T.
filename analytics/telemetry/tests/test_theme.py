@@ -14,7 +14,9 @@ bundle, and for the Reef sound panel (acoustic summary series colour and band ba
 dashboard bundle only, the site bundle is byte-identical), and for the stability-explorer
 frame on the Technology page (``.sim-frame``), and for dropping the dashboard bundle once the
 Analytics and Fleet pages moved to the console (2026-10-30): the pins are now the site bundle,
-byte-identical to what the authored pages already shipped.
+byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 when the
+stability explorer stopped being an iframe (the ``.sim-frame`` rule went; its stage ships its own
+``assets/explorer/explorer.css``).
 """
 
 import hashlib
@@ -31,19 +33,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "7cb521dd5796f393dea575b7fc45f8f8a43fb79670315aa7314d1450967e8a49",
+            "567aaef91c84ae8bebf5b99700fc350b4b9e7bfe00b5877260ea80d00ed1189a",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "70083e593a66cb24d1859fab23fa7d376bb313ca83e2322646fb76670df5be46",
+            "7db8027363c948b7b3631c10c468515652fe68347f60f799ec9a0d36c4c0500a",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "3f1aece2565603943792e7cd386786d27b67054714100c5743aa49c2a59b07da",
+            "0d6e6e4b151f2dfb77732731baacec5b8ac2c69dbb1a9e299121eb821b7ded20",
         )
 
     def test_favicon_is_unchanged(self):
