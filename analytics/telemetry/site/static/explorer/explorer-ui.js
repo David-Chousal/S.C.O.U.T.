@@ -112,7 +112,7 @@
         ['Draft', 'how deep it sits', r.T.toFixed(2) + ' in', mm(r.T)],
         ['Freeboard', 'height above water', (st.top - r.T).toFixed(2) + ' in', mm(st.top - r.T)],
         ['GM', 'stiffness, higher is better', r.GM.toFixed(2) + ' in', mm(r.GM)],
-        ['Max righting', 'strongest push upright', X.moment(r.W, pk.gz).toFixed(1) + ' N·m', 'at ' + pk.deg + '°'],
+        ['Max righting', 'strongest push upright', pk.gz > 0 ? X.moment(r.W, pk.gz).toFixed(1) + ' N·m' : 'none', pk.gz > 0 ? 'at ' + pk.deg + '°' : ''],
         // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
         ['Tips over at', 'point of no return', vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never', ''],
       ];
@@ -153,9 +153,9 @@
       svgEl.append(cursor);
       st.chart = { X: X_, Y: Y_, cursor: cursor, m: m, pw: pw };
       var pk = X.peak(gz), vv = X.vanishing(gz);
-      svgEl.setAttribute('aria-label', 'Righting lever against tilt. Peaks at ' + pk.gz.toFixed(2) + ' inches at ' + pk.deg +
-        ' degrees; ' + (vv !== null ? 'past ' + Math.round(vv) + ' degrees it tips further over.'
-          : st.r.GM <= 0 ? 'it is unstable upright and tips further over from any tilt.' : 'it pushes back upright at every tilt.'));
+      svgEl.setAttribute('aria-label', 'Righting lever against tilt. ' + (pk.gz > 0 ? 'Peaks at ' + pk.gz.toFixed(2) + ' inches at ' + pk.deg +
+        ' degrees; ' : '') + (vv !== null ? 'past ' + Math.round(vv) + ' degrees it tips further over.'
+          : st.r.GM <= 0 ? 'Unstable upright: it tips further over from any tilt.' : 'it pushes back upright at every tilt.'));
     }
     // Green where the lever pushes back upright, red where it tips the hull further; split exactly at each zero.
     function areas(svgEl, gz, X_, Y_) {
@@ -175,6 +175,7 @@
     function marks(svgEl, gz, X_, Y_, W) {
       var pk = X.peak(gz), vv = X.vanishing(gz);
       var px = X_(pk.deg), anchor = px > W - 150 ? 'end' : 'start';
+      if (pk.gz <= 0) return; // never rights itself: no strongest push and no crossing to mark
       svgEl.append(svg('circle', { cx: px, cy: Y_(pk.gz), r: 3.5, class: 'xp-mark' }),
                    svg('text', { x: px + (anchor === 'end' ? -8 : 8), y: Y_(pk.gz) - 8, 'text-anchor': anchor, class: 'xp-label' },
                        'strongest ' + pk.gz.toFixed(2) + ' in at ' + pk.deg + '°'));
