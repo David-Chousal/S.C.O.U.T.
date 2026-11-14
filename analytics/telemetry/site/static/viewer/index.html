@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Buoy 3D viewer</title>
+<script>/* Embedded (?embed=1): set before first paint, so the 8 MB model data loading below never flashes the standalone page or its dark theme. The site is light only. */
+if(new URLSearchParams(location.search).get('embed')){document.documentElement.classList.add('embed');document.documentElement.dataset.theme='light'}</script>
 <style>
 /* Tideline tokens, copied from analytics/telemetry/site/theme/tokens.py (this page is an iframe and cannot see the site stylesheet). */
 @font-face{font-family:'DM Sans';font-style:normal;font-weight:100 1000;font-display:swap;src:url('../fonts/dmsans-latin.woff2') format('woff2')}
@@ -71,7 +73,7 @@ p.hint-line{margin:0 0 .5rem}
 .embed .intro,.embed .pick,.embed #model{display:none}
 .embed body{padding:0}
 .embed .bar{margin:0 0 .75rem}
-.embed .side{max-height:none}
+.embed .side{max-height:none;background:none;border:0;border-top:1px solid var(--line);box-shadow:none;padding:1rem 0 0}
 .src{margin:.9rem 0 0;font-family:var(--font-mono);font-size:.72rem;color:var(--subtle);word-break:break-all;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.btn,select{transition:none}}
 </style>

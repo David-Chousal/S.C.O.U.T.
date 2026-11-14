@@ -39,6 +39,9 @@ _WORDS = [
     ("Righting arm GZ vs heel", "Push back upright vs tilt"),
     ("heel angle, deg", "tilt angle (degrees)"),
     ("Green: rights itself \u00b7 Red: keeps rolling to inverted", "Green: pushes back upright \u00b7 Red: tips it further"),
+    ("Gray: float and housing, cut from the STEP (no ballast stem)", "Gray: float and housing, cut from the CAD"),
+    # The verdict above the chart already says it; the label only crowded the curve's peak.
+    ("'rights itself from any angle'", "''"),
 ]
 
 _VERDICT = '<div id="verdict" class="verdict" role="status" aria-live="polite"></div>'
@@ -67,9 +70,11 @@ verdict()})();
 
 _EMBED_JS = """<script>
 (function(){
-// ?embed=1: follow the shared slider (postMessage {design:'<id>'}), report height so the holding frame can fit it.
+// ?embed=1: follow the shared design picker (postMessage {design:'<id>'}), report height so the holding frame can fit it.
 if(!new URLSearchParams(location.search).get('embed'))return;
 document.documentElement.classList.add('embed');
+// The shared picker owns design changes; keep this page's own arrow-key stepping from drifting out of sync with it.
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight')e.stopPropagation()},true);
 addEventListener('message',e=>{const d=e.data&&e.data.design;if(!d)return;const i=ITS.findIndex(x=>x.id===d);
  if(i>=0){IT.value=i;IT.dispatchEvent(new Event('input'))}});
 const fit=()=>parent.postMessage({scoutFit:Math.ceil(document.body.getBoundingClientRect().height),from:'stability'},location.origin);
@@ -94,8 +99,13 @@ def themed(raw: str) -> str:
         out = _swap(out, f'<div class="l">{label}</div>', f'<div class="l">{label}<span class="s">{sub}</span></div>')
     for old, new in _WORDS:
         out = _swap(out, old, new)
+    # The design note moves into the "How this design was modelled" fold below.
+    out, moved = re.subn(r'<div id="itx"[^>]*></div>', "", out, count=1)
+    if not moved:
+        raise ValueError("explorer markup changed; the design note (#itx) was not found")
     out = _swap(out, '<div class="ctl"><span id="capL"></span>',
-                '<details class="how"><summary>How this design was modelled</summary><span id="capL"></span></details>\n<div class="ctl">')
+                '<details class="how"><summary>How this design was modelled</summary><span id="itx"></span>'
+                '<span id="capL"></span></details>\n<div class="ctl">')
     out = _swap(out, '<div class="row">', _VERDICT + '\n<div class="row">')
     out = _swap(out, "</svg>\n<script>", "</svg>\n" + _KEY + "\n<script>")
     out = _swap(out, "</script>\n</body>", "</script>\n" + _VERDICT_JS + "\n" + _EMBED_JS + "\n</body>")

@@ -1,13 +1,13 @@
-"""Build the site's design explorer: one slider that drives the 3D viewer and the stability explorer together.
+"""Build the site's design explorer: one design picker that drives the 3D viewer and the stability explorer together.
 
 Writes two generated files into ``static/`` (copied to ``assets/`` at build time, like the stability explorer):
 
 * ``static/viewer/``: the 3D buoy viewer from ``mechanical/simulations/buoy-viewer/``, split for the site into a small
   ``index.html`` plus ``three.min.js``, ``orbit-controls.js`` and ``models.js`` (the standalone viewer inlines all of
   these into one file; on the site they are separate, cacheable and kept out of the HTML the self-containment test reads).
-* ``static/design-explorer/index.html``: the page the Technology page embeds. It holds the shared slider and two
-  frames (the viewer and ``static/stability/index.html``, both opened with ``?embed=1``) and tells both which design
-  to show whenever the slider moves.
+* ``static/design-explorer/index.html``: the page the Technology page embeds. It holds the shared design picker (a timeline of
+  chips) and two frames (the viewer and ``static/stability/index.html``, both opened with ``?embed=1``) and tells both which design
+  to show whenever the pick changes.
 
 The design list, its order and names come from ``mechanical/simulations/buoy-stability/iterations.json``, the same
 registry the stability explorer and the viewer are built from, so the three cannot disagree. Refresh after the
@@ -20,6 +20,7 @@ simulator, the viewer or the registry changes (run from ``analytics/``)::
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 _HERE = Path(__file__).parent
@@ -32,16 +33,32 @@ _OUT = _HERE / "static" / "design-explorer" / "index.html"
 _TEMPLATE = _HERE / "design-explorer-template.html"
 
 
+_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _chip_date(when: str) -> str:
+    """The one date a timeline chip shows: the first date for a dated design, "concept" for an undated one."""
+    found = _DATE.search(when)
+    return "concept" if when.startswith("concept") or not found else found.group()
+
+
+def _short_names(names: list[str]) -> list[str]:
+    """Chip labels: each name up to its first " — " or " (", keeping more of the name where that would repeat a label."""
+    cut = [n.split(" (")[0].split(" — ")[0].replace("Full buoy assembly", "Assembly") for n in names]
+    return [c if cut.count(c) == 1 else n.split(" (")[0].replace(" — ", " ") for c, n in zip(cut, names)]
+
+
 def designs() -> list[dict]:
-    """Every design in the stability registry, oldest to newest, as the explorer's slider orders them."""
+    """Every design in the stability registry, oldest to newest, as the explorer's timeline orders them."""
     reg = json.loads(_REGISTRY.read_text(encoding="utf-8"))["iterations"]
-    return [{"id": it["id"], "name": it["name"], "when": it["when"]} for it in reg]
+    shorts = _short_names([it["name"] for it in reg])
+    return [{"id": it["id"], "name": it["name"], "when": it["when"], "short": s, "date": _chip_date(it["when"])}
+            for it, s in zip(reg, shorts)]
 
 
 def build() -> str:
-    items = designs()
-    return (_TEMPLATE.read_text(encoding="utf-8").replace("__MAX__", str(len(items) - 1))
-            .replace("__DESIGNS__", json.dumps(items, ensure_ascii=False, separators=(",", ":"))))
+    return _TEMPLATE.read_text(encoding="utf-8").replace(
+        "__DESIGNS__", json.dumps(designs(), ensure_ascii=False, separators=(",", ":")))
 
 
 def build_viewer() -> dict[str, str]:
