@@ -107,16 +107,19 @@
       ui.stats.textContent = ''; ui.chart.textContent = ''; st.chart = null;
       applyTilt();
     }
+    // One classification for the readouts and the comparison table, so the two can never disagree.
+    function maxRighting(r) { var pk = X.peak(r.gz); return pk.gz > 0 ? X.moment(r.W, pk.gz).toFixed(1) + ' N·m' : 'none'; }
+    // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
+    function tipsOver(r) { var vv = X.vanishing(r.gz); return vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never'; }
     function stats() {
-      var r = st.r, vv = X.vanishing(r.gz), pk = X.peak(r.gz), mm = function (inch) { return Math.round(inch * X.MM) + ' mm'; };
+      var r = st.r, pk = X.peak(r.gz), mm = function (inch) { return Math.round(inch * X.MM) + ' mm'; };
       var rows = [
         ['Total mass', 'what it weighs', r.M.toFixed(2) + ' kg', ''],
         ['Draft', 'how deep it sits', r.T.toFixed(2) + ' in', mm(r.T)],
         ['Freeboard', 'height above water', (st.top - r.T).toFixed(2) + ' in', mm(st.top - r.T)],
         ['GM', 'stiffness, higher is better', r.GM.toFixed(2) + ' in', mm(r.GM)],
-        ['Max righting', 'strongest push upright', pk.gz > 0 ? X.moment(r.W, pk.gz).toFixed(1) + ' N·m' : 'none', pk.gz > 0 ? 'at ' + pk.deg + '°' : ''],
-        // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
-        ['Tips over at', 'point of no return', vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never', ''],
+        ['Max righting', 'strongest push upright', maxRighting(r), pk.gz > 0 ? 'at ' + pk.deg + '°' : ''],
+        ['Tips over at', 'point of no return', tipsOver(r), ''],
       ];
       ui.stats.textContent = '';
       rows.forEach(function (row) {
@@ -130,12 +133,16 @@
 
     /* -- compare: pin one design's curve and numbers, then pick another ------------------------------------ */
     function keyNumbers(r, top) {
-      var vv = X.vanishing(r.gz);
       return [['Draft', r.T.toFixed(2) + ' in'], ['Freeboard', (top - r.T).toFixed(2) + ' in'], ['GM', r.GM.toFixed(2) + ' in'],
-              ['Max righting', X.moment(r.W, X.peak(r.gz).gz).toFixed(1) + ' N\u00b7m'],
-              ['Tips over at', vv === null ? 'never' : Math.round(vv) + '\u00b0']];
+              ['Max righting', maxRighting(r)], ['Tips over at', tipsOver(r)]];
     }
-    function label(x, payload) { return x.short + (x.hydro && !x.hydro.fixed ? ' \u00b7 ' + Math.round(payload) + ' g' : ''); }
+    // Design, then payload where it can change, then ballast where the design has the stem: the same curve twice
+    // never gets two labels, and two different configurations never share one.
+    function label(x, payload) {
+      var h = x.hydro;
+      return x.short + (h && !h.fixed ? ' \u00b7 ' + Math.round(payload) + ' g' : '') +
+        (h && !h.kind ? (ui.bal.checked ? ' \u00b7 ballast' : ' \u00b7 no ballast') : '');
+    }
     function togglePin() {
       if (st.pin) { st.pin = null; }
       else if (st.r) {
