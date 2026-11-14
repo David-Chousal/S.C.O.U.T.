@@ -335,6 +335,7 @@ def _mechanical(ctx: SiteContext) -> str:
             ctx.base, eyebrow="Mechanical design", heading="The printed parts",
             sub="John Ryan Myrdal's CAD for the two printed floats, the electronics housing "
                 "and its cap, and the turbidity-sensor housing, printed in PETG. Each drawing links to its full sheet.")
+        + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
         + _stability(ctx),
         cls="section-sm",
         sid="mechanical",

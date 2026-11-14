@@ -109,6 +109,13 @@ CSS = """/* ── Grid / bento ────────────────
 @media(max-width:560px){.drawings-grid{grid-template-columns:1fr}}
 /* Single-item variant (Rev A electrical schematic) — one large card, not the two-up grid. */
 .drawings-grid.single{grid-template-columns:1fr}
+/* Printed-parts carousel: the CAD sheets as slides, same breakpoints as the photo carousel. */
+.carousel-track>.drawing{flex:0 0 82%;scroll-snap-align:center}
+@media(min-width:721px){.carousel-track>.drawing{flex-basis:calc(50% - 6px)}}
+@media(min-width:1000px){.carousel-track>.drawing{flex-basis:calc(33.333% - 8px)}}
+.carousel-drawings .carousel-track{padding-block:6px 10px}
+/* The turbidity sheet is a shorter page; letterbox it so every caption lines up. */
+.carousel-track>.drawing img{aspect-ratio:1650/2550;object-fit:contain}
 /* .drawing is a <figure>; its UA margin is handled by the scoped `main figure{margin:0}` reset. */
 .drawing{background:#fff;border-radius:var(--radius-none);overflow:hidden;
   box-shadow:var(--shadow-1);transition:transform var(--dur-settle) var(--ease-settle),box-shadow var(--dur-settle) var(--ease-settle)}
