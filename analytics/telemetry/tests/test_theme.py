@@ -14,9 +14,10 @@ bundle, and for the Reef sound panel (acoustic summary series colour and band ba
 dashboard bundle only, the site bundle is byte-identical), and for the stability-explorer
 frame on the Technology page (``.sim-frame``), and for dropping the dashboard bundle once the
 Analytics and Fleet pages moved to the console (2026-10-30): the pins are now the site bundle,
-byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 when the
-stability explorer stopped being an iframe (the ``.sim-frame`` rule went; its stage ships its own
-``assets/explorer/explorer.css``).
+byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 for the
+printed-parts carousel (one slide rule for every carousel; the two-column drawings grid, now unused, went),
+and again the same day when the stability explorer stopped being an iframe (the ``.sim-frame`` rule went;
+its stage ships its own ``assets/explorer/explorer.css``).
 """
 
 import hashlib
@@ -33,19 +34,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "567aaef91c84ae8bebf5b99700fc350b4b9e7bfe00b5877260ea80d00ed1189a",
+            "21aa34bb1777723853e8fd460b007c644c47516ec95a52859ac55f0aa9651093",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "7db8027363c948b7b3631c10c468515652fe68347f60f799ec9a0d36c4c0500a",
+            "550d092da7cb87c88a3b2b4f963abbbf6f2e501c2f50008d56ae6a32d10fc5c6",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "0d6e6e4b151f2dfb77732731baacec5b8ac2c69dbb1a9e299121eb821b7ded20",
+            "22b3e8e142ce744bfd3591ab2a0a5aa75795e77d4bd6c59b04ee50c4424ea028",
         )
 
     def test_favicon_is_unchanged(self):
