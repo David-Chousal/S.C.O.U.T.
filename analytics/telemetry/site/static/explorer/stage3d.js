@@ -43,6 +43,8 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.localClippingEnabled = true;
     el.insertBefore(renderer.domElement, el.firstChild);
+    renderer.domElement.setAttribute('role', 'img');
+    renderer.domElement.setAttribute('aria-label', '3D model of the selected design floating at its waterline');
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(30, 1, 1, 50000);
     camera.up.set(0, 0, 1);
@@ -106,7 +108,8 @@
     var clip = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 1e9);
     var tags = { g: overlay('xp-tag-g', 'G'), b: overlay('xp-tag-b', 'B'), gz: overlay('xp-tag-gz', '') };
     Object.keys(tags).forEach(function (k) { el.appendChild(tags[k]); });
-    var cur = null, size = 1, home = null, visible = true, hasForces = false, lever = 0, spreadNow = 0, spreadAnim = 0;
+    var cur = null, size = 1, home = null, visible = true, hasForces = false, lever = 0, ready = false;
+    var spreadNow = 0, spreadTarget = 0, spreadAnim = 0;
 
     function placeParts(t) {
       spreadNow = t;
@@ -152,6 +155,7 @@
       show: function (model, keelMm, draftIn) {
         body.children.slice().forEach(function (m) { body.remove(m); m.geometry.dispose(); m.material.dispose(); });
         makeMeshes(model, keelMm, clip).forEach(function (m) { body.add(m); });
+        heel.visible = true; ready = true;
         var lo = model.bbox_mm[0], hi = model.bbox_mm[1];
         // Spread each part away from the model centre in proportion to its distance from it, as the standalone
         // viewer does, so stacked parts separate; vertical gaps count double.
@@ -161,7 +165,9 @@
           var off = m.geometry.boundingBox.getCenter(new THREE.Vector3()).sub(centre); off.z *= 2;
           m.userData.spread = off.multiplyScalar(0.4);
         });
+        // A model swapped in mid-animation keeps going where the last one was heading, not where it was cut off.
         cancelAnimationFrame(spreadAnim); placeParts(spreadNow);
+        if (spreadNow !== spreadTarget) this.spread(spreadTarget, 700);
         size = new THREE.Vector3(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]).length();
         cur = { lowZ: lo[2] - keelMm, highZ: hi[2] - keelMm, midZ: 0 };
         this.float(draftIn);
@@ -180,7 +186,7 @@
       tilt: function (deg, gzIn, kgIn, kbIn, draftIn) {
         heel.rotation.x = deg * Math.PI / 180;
         heel.updateMatrixWorld(true);
-        hasForces = kgIn != null; lever = gzIn;
+        hasForces = ready && kgIn != null; lever = gzIn;
         [forces.g, forces.b, forces.weight, forces.lift, forces.gLine, forces.bLine, forces.lever]
           .forEach(function (o) { o.visible = hasForces; });
         if (!hasForces) return;
@@ -202,6 +208,7 @@
       /* to: 0 assembled, 1 fully spread; ms: 0 to jump there. */
       spread: function (to, ms) {
         cancelAnimationFrame(spreadAnim);
+        spreadTarget = to;
         if (!ms) { placeParts(to); return; }
         var from = spreadNow, t0 = performance.now();
         (function step(now) {
@@ -210,6 +217,8 @@
           if (k < 1) spreadAnim = requestAnimationFrame(step);
         })(t0);
       },
+      // While a model loads: no hull and no forces, until show() puts the new one in.
+      hide: function () { ready = false; heel.visible = false; this.tilt(0, 0, null); },
       reset: function () { if (!home) return; s3.camera.position.copy(home.p); s3.controls.target.copy(home.t); s3.controls.update(); },
     };
   };

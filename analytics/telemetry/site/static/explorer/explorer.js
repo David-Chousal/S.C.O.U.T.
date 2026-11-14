@@ -66,7 +66,8 @@
   }
   function payloadRange(data, d) {
     var rows = data.series[d.hydro.cap + '_0'];
-    return { max: (rows.length - 1) * 500, start: d.hydro.housing_g || 770 };
+    // The last row is the heaviest payload the simulator solved; past it the read-outs would be extrapolated.
+    return { max: rows[rows.length - 1][0], start: d.hydro.housing_g || 770 };
   }
   function topIn(data, d) { return d.hydro.kind ? d.hydro.top_in : data.cap_top_in[d.hydro.cap]; }
   function method(d) {
@@ -98,7 +99,7 @@
         '<div class="xp-now" aria-live="polite"><h3 class="xp-name"></h3><p class="xp-when"></p></div>' +
       '</div>' +
       '<div class="xp-body">' +
-        '<div class="xp-stage" role="img" aria-label="3D model of the selected design floating at its waterline">' +
+        '<div class="xp-stage" role="group" aria-label="3D model of the selected design floating at its waterline">' +
           '<p class="xp-tilt-big"><span class="xp-micro">Tilt</span> <b class="xp-tilt-val">0°</b></p>' +
           '<div class="xp-tools"><button type="button" class="xp-btn xp-spread" aria-pressed="false">Spread parts</button>' +
           '<button type="button" class="xp-btn xp-cut" aria-pressed="false">Cut in half</button>' +
