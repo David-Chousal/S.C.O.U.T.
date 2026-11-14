@@ -355,7 +355,8 @@ Rule: inline `style="margin-top:…"` in page builders is replaced by a stack ut
 |---|---|---|
 | `--radius-none` | 0 | Cards, plates, panels, tables, photographs, drawings, chart frames |
 | `--radius-xs` | 4 px | Inline code, focus-ring corners, keyboard keys |
-| `--radius-pill` | 999 px | Buttons, chips, badges, inputs, carousel arrows, chat |
+| `--radius-pill` | 999 px | Chips, badges, inputs, carousel arrows, chat |
+| (console key) | 2 px | Buttons, since 2026-11-13: square, with a 3 px keybed edge and a pixel of travel, primary in lagoon, matching the console's `sc-key` ([ADR-0009 addendum](../decisions/0009-tideline-design-system.md#consequences)) |
 
 ## Elevation and borders
 

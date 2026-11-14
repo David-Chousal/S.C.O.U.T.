@@ -194,6 +194,6 @@ def body(ctx: SiteContext) -> str:
         + _roadmap()
         + c.cta("Open source", "The project is open source under the MIT License",
                 f'<a class="btn btn-primary" href="{REPO_URL}">View on GitHub</a>'
-                f'<a class="btn btn-key" href="{CONSOLE_URL}">See the live data</a>')
+                f'<a class="btn" href="{CONSOLE_URL}">See the live data</a>')
     )
     return docnav.page(title="About", items=_NAV, content=content, base=ctx.base)

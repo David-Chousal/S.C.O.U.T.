@@ -1,23 +1,18 @@
 """Buttons, text links, the photographic hero, and section heading blocks."""
 
 CSS = """/* ── Buttons ──────────────────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
-  border-radius:var(--radius-pill);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
-  white-space:nowrap;max-width:100%;
+/* Every button is a console key (console/web key.css): square corners, a keybed edge, a pixel
+   of travel, and a lagoon primary, so the site and the console press the same way. */
+.btn{--bed:color-mix(in srgb,var(--color-text) 16%,transparent);
+  display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem calc(0.8rem + 2px);
+  border-radius:2px;font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
+  white-space:nowrap;max-width:100%;box-shadow:inset 0 -3px 0 var(--bed);
   border:1px solid var(--color-line-strong);color:var(--color-text);background:transparent;cursor:pointer;
-  transition:transform var(--dur-settle) var(--ease-settle),background var(--dur-quick) var(--ease-standard),
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background var(--dur-quick) var(--ease-standard),
     border-color var(--dur-quick) var(--ease-standard),color var(--dur-quick) var(--ease-standard)}
-.btn:hover{transform:translateY(-2px);border-color:var(--color-text);opacity:1}
-.btn-primary{background:var(--color-text);color:var(--color-canvas);border-color:var(--color-text)}
-.btn-primary:hover{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-on-accent)}
-/* Buttons that open the console are console keys (console/web key.css): square, a keybed
-   edge, a pixel of travel; the primary key is lagoon, as there. .btn.btn-key outranks
-   .card-ink .btn so the key survives on the ink cards. */
-.btn.btn-key{--bed:color-mix(in srgb,var(--color-text) 16%,transparent);border-radius:2px;
-  box-shadow:inset 0 -3px 0 var(--bed);transition-duration:120ms}
-.btn.btn-key:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16)}
-.btn.btn-key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed)}
-.btn.btn-key.btn-primary,.btn.btn-key.btn-primary:hover{--bed:rgb(0 0 0/.28);background:var(--color-accent);
+.btn:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16);opacity:1}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed);transition-duration:60ms}
+.btn-primary,.btn-primary:hover{--bed:rgb(0 0 0/.28);background:var(--color-accent);
   border-color:var(--color-accent);color:var(--color-on-accent)}
 .btn svg{width:1.05em;height:1.05em}
 .btn-row{display:flex;flex-wrap:wrap;gap:0.9rem;align-items:center}

@@ -164,7 +164,7 @@ class ConsoleHandoverTests(unittest.TestCase):
             # The footer's link lists stay plain text; the header and page body are the seam.
             body = page.read_text().split("<footer", 1)[0]
             for anchor in re.findall(rf'<a [^>]*href="{re.escape(CONSOLE_URL)}"[^>]*>', body):
-                self.assertRegex(anchor, r'class="[^"]*\b(btn-key|nav-key)\b', str(page))
+                self.assertRegex(anchor, r'class="[^"]*\b(btn|nav-key)\b', str(page))
 
     def test_old_data_addresses_forward_to_the_console(self):
         for old in ("analytics", "fleet"):
