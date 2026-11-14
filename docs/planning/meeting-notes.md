@@ -1380,7 +1380,7 @@ garbled; only points that are clear in it are recorded). Social talk and grade d
   third housing print is running, to reach Isabella's cap and housing tomorrow. The first Flex Seal coat is on a buoy and drying. The website has a 3D viewer
   for every buoy with pan, zoom, wireframe, exploded and cutout views.
 - **David (software):** the shore-station Wi-Fi setup and the console were built over the last week. The station powers up and broadcasts a setup network
-  (named "scout 01 setup" in the transcript; not checked against the firmware); joining it asks for an API key made in the console with **Add station**, so
+  (named "scout 01 setup" in the transcript; [`status.md`](../hub/status.md) says `SCOUT-Setup-XXXX`); joining it asks for an API key made in the console with **Add station**, so
   data goes to the console, not to a laptop. Three setup guides sit in the repo (Wi-Fi, general, buoy station), written for an agent to follow end to end; the
   console's Help tab has the plain-language version. He reports a local M0 compiler and about 200 firmware and 200 console tests, over-the-air firmware
   updates over LoRa from the console or a computer, and a scheme so two or more buoys sending to one station do not collide on LoRa. Reported, not verified.
@@ -1408,7 +1408,7 @@ garbled; only points that are clear in it are recorded). Social talk and grade d
 | Fins "work", with "really successful" damping, and nobody else puts fins on buoys | The Test Assembly 10 run is not a clean measurement: the no-fins case gains energy, so the fin benefit (about 2 percent of critical at best) is an estimate ([SCO-309](https://linear.app/scout1/issue/SCO-309), [hull-hydrodynamics](../../mechanical/simulations/hull-hydrodynamics/README.md)). "No one else uses fins" has no source in the repo |
 | The simulation was an "FEA" tilt test | It is a CFD roll-decay run (OpenFOAM `interFoam`) |
 | Wednesday demo is two sensors | The same discussion lists temperature, turbidity and the leak sensor, which is three |
-| The console, Wi-Fi setup, over-the-air updates and anti-collision scheme are ready | [`status.md`](../hub/status.md) has the LoRa link never run on hardware; none of these has a test record. Reported only |
+| The console, Wi-Fi setup, over-the-air updates and anti-collision scheme are ready | [`status.md`](../hub/status.md) has the LoRa link never run on hardware. It records software tests for the console (38), Wi-Fi setup (unit-tested, previewed) and over-the-air updates (167 native), none run on hardware. It has no anti-collision test record. Reported only |
 
 ### Open questions
 
