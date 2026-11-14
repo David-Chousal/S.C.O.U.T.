@@ -87,7 +87,8 @@
     /* -- numbers ------------------------------------------------------------------------------------------ */
     function recompute() {
       var x = d();
-      if (!x.hydro) { st.r = null; showNoResult(); return; }
+      // Keep any pinned snapshot for later, but hide the comparison while there is nothing to compare it with.
+      if (!x.hydro) { st.r = null; showNoResult(); compare(); return; }
       st.r = X.interp(X.seriesFor(st.data, x, ui.bal.checked), st.payload);
       st.top = X.topIn(st.data, x);
       ui.payVal.textContent = Math.round(st.payload) + ' g';
@@ -148,7 +149,9 @@
       else if (st.r) {
         st.pin = { id: d().id, label: label(d(), st.payload), gz: st.r.gz.slice(), nums: keyNumbers(st.r, st.top) };
       }
-      markPinned(); compare(); drawChart(); applyTilt();
+      markPinned(); compare();
+      if (st.r) drawChart(); // a design with no result has no chart; unpinning from it still works
+      applyTilt();
     }
     function markPinned() {
       st.chips.forEach(function (b, k) { b.classList.toggle('xp-chip-pinned', !!st.pin && st.data.designs[k].id === st.pin.id); });
