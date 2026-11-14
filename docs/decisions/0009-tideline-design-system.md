@@ -103,8 +103,8 @@ plan is approved; the ADR moves to Accepted when PR 1 merges.
 - *(Addendum 2026-11-13.)* The public site is **not** restyled to the console's COR layout. The
   two share Tideline's tokens; the site keeps its own story layout and the console keeps COR.
   The site borrows the console's controls: **every button is a console key** (square corners,
-  keybed edge, a pixel of travel; primary keys in lagoon), including the 3D viewer and stability
-  simulator embeds, since mixing keys and pills read as jarring (David). The navbar Console link
+  keybed edge, a pixel of travel; primary keys in lagoon), including the Technology page
+  stability explorer and the standalone 3D viewer, since mixing keys and pills read as jarring (David). The navbar Console link
   is plain text with an ↗ arrow, and the focus ring uses `--color-focus` with the console's 2 px offset,
   lagoon-200 over the hero. Footer link lists stay plain text. The CSS budget was raised to
   9.5 KB gzip to pay for it

@@ -487,7 +487,7 @@ enforces the compressed budget, with a 40 KB raw ceiling to catch regressions.
 
 *Budget revision (2026-11-13):* raised to 9.5 KB gzip and a 42 KB raw ceiling. The site bundle had grown to exactly
 9 KB (9,216 B) and every class in it is in use, so the console keys (about 190 B) could not be
-paid for by deleting dead rules. The bundle is now 9,396 B gzip, 41.3 KB raw.
+paid for by deleting dead rules. The bundle is now 9,323 B gzip, 41.0 KB raw.
 
 **Image rules.** `<picture>` with AVIF → WebP → JPEG, AVIF built by
 `scripts/encode_site_images.py`. *As built:* no width-variant `srcset` — every card photo is
