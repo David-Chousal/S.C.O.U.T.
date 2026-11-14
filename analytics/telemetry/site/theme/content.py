@@ -70,11 +70,12 @@ CSS = """/* ── Grid / bento ────────────────
    Without JS the track is still a scrollable, snapping strip; carousel.js adds arrows + dots. */
 .carousel-viewport{position:relative}
 .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
-  scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:6px 2px}
+  scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:6px 2px 10px}
 .carousel-track::-webkit-scrollbar{display:none}
-.carousel-track>.pill{flex:0 0 82%;scroll-snap-align:center}
-@media(min-width:721px){.carousel-track>.pill{flex-basis:calc(50% - 6px)}}
-@media(min-width:1000px){.carousel-track>.pill{flex-basis:calc(33.333% - 8px)}}
+/* Every slide (photo pill or CAD sheet) shares the breakpoints: one, two, then three across. */
+.carousel-track>*{flex:0 0 82%;scroll-snap-align:center}
+@media(min-width:721px){.carousel-track>*{flex-basis:calc(50% - 6px)}}
+@media(min-width:1000px){.carousel-track>*{flex-basis:calc(33.333% - 8px)}}
 .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
   width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;color:var(--color-text);
   background:color-mix(in srgb,var(--color-surface) 86%,transparent);box-shadow:var(--shadow-1);
@@ -105,15 +106,9 @@ CSS = """/* ── Grid / bento ────────────────
 .drawings-head{margin-bottom:1.6rem}
 .drawings-head h3{margin-top:0.4rem}
 .drawings-sub{color:var(--color-text-muted);font-size:0.98rem;margin:0.5rem 0 0;max-width:58ch}
-.drawings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
-@media(max-width:560px){.drawings-grid{grid-template-columns:1fr}}
-/* Single-item variant (Rev A electrical schematic) — one large card, not the two-up grid. */
-.drawings-grid.single{grid-template-columns:1fr}
-/* Printed-parts carousel: the CAD sheets as slides, same breakpoints as the photo carousel. */
-.carousel-track>.drawing{flex:0 0 82%;scroll-snap-align:center}
-@media(min-width:721px){.carousel-track>.drawing{flex-basis:calc(50% - 6px)}}
-@media(min-width:1000px){.carousel-track>.drawing{flex-basis:calc(33.333% - 8px)}}
-.carousel-drawings .carousel-track{padding-block:6px 10px}
+/* Only the Rev A electrical schematic still uses the grid (one large card); the printed parts are a carousel. */
+.drawings-grid{display:grid;gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
+/* Printed-parts carousel: the CAD sheets as slides. */
 /* The turbidity sheet is a shorter page; letterbox it so every caption lines up. */
 .carousel-track>.drawing img{aspect-ratio:1650/2550;object-fit:contain}
 /* .drawing is a <figure>; its UA margin is handled by the scoped `main figure{margin:0}` reset. */
