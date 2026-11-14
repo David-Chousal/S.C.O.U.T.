@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, drawings, imagery
+from .. import components as c, imagery
 from ..context import SiteContext
 from ..layout import CONSOLE_URL
 
@@ -111,38 +111,6 @@ def _senses() -> str:
     )
 
 
-_HABITAT_PHOTOS = (
-    "shallow-reef", "reef-flat", "green-turtle", "coral-detail", "coral-bommie",
-    "anemonefish", "sponge-garden", "anthias-swarm", "kelp-column", "open-water",
-)
-
-
-def _habitat(ctx: SiteContext) -> str:
-    pills = "".join(
-        imagery.pill(key, ctx.base, uid=101 + i, img_dir=ctx.img_dir)
-        for i, key in enumerate(_HABITAT_PHOTOS)
-    )
-    # The carousel is full-bleed: heading and CAD gallery stay in the wrap, the carousel spans
-    # the page (section is emitted with wrap="" so the carousel is a direct, full-width child).
-    return c.section(
-        '<div class="wrap">'
-        + c.head_block("The environment", "The nearshore zone",
-                       "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
-                       "productive, and it is also where remote sensing is least accurate.")
-        + "</div>"
-        + c.carousel(pills, label="Nearshore zone photographs", cls="carousel-full")
-        + '<div class="wrap">'
-        + drawings.gallery(
-            ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
-            sub="CAD drawings by John Ryan Myrdal. The two printed floats, the electronics housing and its "
-                "cap, and the turbidity-sensor housing, printed in PETG.")
-        + "</div>",
-        cls="section-sm",
-        sid="habitat",
-        wrap="",
-    )
-
-
 def _live_band(ctx: SiteContext) -> str:
     live = ctx.live
     note = ("Sample data, simulated until the buoy is deployed."
@@ -183,9 +151,7 @@ def body(ctx: SiteContext) -> str:
         + _mission()
         + '<div class="wrap"><div class="divider"></div></div>'
         + _senses()
-        + _habitat(ctx)
         + c.slot_divider()
         + c.data_path()
         + _live_band(ctx)
-        + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
     )

@@ -18,7 +18,8 @@ byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 
 printed-parts carousel (one slide rule for every carousel; the two-column drawings grid, now unused, went),
 and again the same day when the stability explorer stopped being an iframe (the ``.sim-frame`` rule went;
 its stage ships its own ``assets/explorer/explorer.css``). Re-pinned 2026-11-13 for drawing every button as a
-console key with the console's focus ring.
+console key with the console's focus ring, and again when the Home nearshore-zone section and its
+full-bleed carousel variant (``.carousel-full``) were removed.
 """
 
 import hashlib
@@ -35,19 +36,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "6e99df9d27adf586327aaaa0e3291e9cd948b465d7441ce939f9b1f1118c7183",
+            "94f85dd6920e38fce87682bdf0feb6e0352775116ff89cf74e89780bedf721a7",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "aea06cd28542b2b552a9e291f095a6ec4cb4822ec7b107a4ba036202c5167011",
+            "c7b9a804cef1eafaf268721bc3a5ea1a207b43651a51abf8e9700939a33cc6fe",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "94d48a6d39ac27319812726d3940af0de58190c4b860910f9467507244f8b175",
+            "3d8c02e28035f053a056c1652bb892761d10d9da6021d4c5c81d9476d115dd0d",
         )
 
     def test_favicon_is_unchanged(self):

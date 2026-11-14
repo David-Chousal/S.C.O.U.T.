@@ -68,7 +68,7 @@ CSS = """/* ── Grid / bento ────────────────
   color:rgba(246,242,236,0.9);text-align:right;max-width:72%;letter-spacing:0.02em;
   text-shadow:0 1px 4px rgba(15,12,8,0.6)}
 .pill-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
-/* Carousel (Home "The nearshore zone") — native scroll-snap; each .pill is a slide.
+/* Carousel (Technology printed-parts drawings) — native scroll-snap; each child is a slide.
    Without JS the track is still a scrollable, snapping strip; carousel.js adds arrows + dots. */
 .carousel-viewport{position:relative}
 .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
@@ -97,13 +97,8 @@ CSS = """/* ── Grid / bento ────────────────
   transition:background var(--dur-quick) var(--ease-standard),transform var(--dur-settle) var(--ease-settle)}
 .carousel-dot[aria-current="true"]::before{background:var(--color-accent);transform:scale(1.3)}
 @media(prefers-reduced-motion:reduce){.carousel-track{scroll-behavior:auto}}
-/* Full-bleed variant: spans the page width; slides get edge padding, arrows inset. */
-.carousel-full{margin-block:2.8rem clamp(3rem,2rem + 4vw,5.5rem)}
-.carousel-full .carousel-track{padding-inline:clamp(1rem,4vw,4rem)}
-.carousel-full .carousel-prev{left:clamp(10px,2.5vw,32px)}
-.carousel-full .carousel-next{right:clamp(10px,2.5vw,32px)}
 
-/* ── Mechanical drawings gallery (home) — John's CAD prints, framed on the sand ─── */
+/* ── Mechanical drawings gallery (technology) — John's CAD prints, framed on the sand ─── */
 .drawings{margin-top:clamp(2.2rem,1.6rem + 2vw,3.6rem)}
 .drawings-head{margin-bottom:1.6rem}
 .drawings-head h3{margin-top:0.4rem}
