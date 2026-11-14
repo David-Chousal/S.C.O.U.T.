@@ -60,6 +60,7 @@
       st.i = i;
       var x = d(), c = st.chips[i];
       st.chips.forEach(function (b, k) { b.setAttribute('aria-checked', k === i); b.tabIndex = k === i ? 0 : -1; });
+      markPinned();
       ui.strip.scrollTo({ left: c.offsetLeft - (ui.strip.clientWidth - c.offsetWidth) / 2,
                           behavior: byUser && !X.still.matches ? 'smooth' : 'auto' });
       if (byUser) c.focus({ preventScroll: true });
@@ -94,6 +95,7 @@
       ui.verdict.className = 'xp-verdict xp-' + v.cls;
       ui.verdict.firstChild.textContent = v.head; ui.verdict.lastChild.textContent = v.sub;
       stats();
+      compare();
       drawChart();
       if (st.stage) st.stage.float(st.r.T);
       applyTilt();
@@ -125,11 +127,48 @@
       });
     }
 
+    /* -- compare: pin one design's curve and numbers, then pick another ------------------------------------ */
+    function keyNumbers(r, top) {
+      var vv = X.vanishing(r.gz);
+      return [['Draft', r.T.toFixed(2) + ' in'], ['Freeboard', (top - r.T).toFixed(2) + ' in'], ['GM', r.GM.toFixed(2) + ' in'],
+              ['Max righting', X.moment(r.W, X.peak(r.gz).gz).toFixed(1) + ' N\u00b7m'],
+              ['Tips over at', vv === null ? 'never' : Math.round(vv) + '\u00b0']];
+    }
+    function label(x, payload) { return x.short + (x.hydro && !x.hydro.fixed ? ' \u00b7 ' + Math.round(payload) + ' g' : ''); }
+    function togglePin() {
+      if (st.pin) { st.pin = null; }
+      else if (st.r) {
+        st.pin = { id: d().id, label: label(d(), st.payload), gz: st.r.gz.slice(), nums: keyNumbers(st.r, st.top) };
+      }
+      markPinned(); compare(); drawChart(); applyTilt();
+    }
+    function markPinned() {
+      st.chips.forEach(function (b, k) { b.classList.toggle('xp-chip-pinned', !!st.pin && st.data.designs[k].id === st.pin.id); });
+      ui.pin.textContent = st.pin ? 'Unpin ' + st.pin.label : 'Pin this curve to compare';
+      ui.pin.setAttribute('aria-pressed', !!st.pin);
+    }
+    function compare() {
+      var on = !!(st.pin && st.r);
+      ui.pinKey.hidden = ui.vs.hidden = !on;
+      if (!on) return;
+      var now = label(d(), st.payload), mine = keyNumbers(st.r, st.top);
+      ui.keyNow.textContent = now; ui.keyPin.textContent = st.pin.label + ' (pinned)';
+      ui.vsNow.textContent = now; ui.vsPin.textContent = st.pin.label;
+      ui.vsBody.textContent = '';
+      mine.forEach(function (row, k) {
+        var tr = X.el('tr');
+        tr.append(X.el('th', null, row[0]), X.el('td', null, row[1]), X.el('td', null, st.pin.nums[k][1]));
+        tr.firstChild.scope = 'row';
+        ui.vsBody.appendChild(tr);
+      });
+    }
+
     /* -- the curve ---------------------------------------------------------------------------------------- */
     function drawChart() {
       var gz = st.r.gz, svgEl = ui.chart, W = Math.max(svgEl.clientWidth, 280), H = W < 480 ? 210 : 240;
       var m = { l: 56, r: 14, t: 18, b: 40 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
-      var top = Math.max.apply(null, gz.map(Math.abs)) * 1.2 || 1, step = niceStep(top), lim = Math.ceil(top / step) * step;
+      var all = st.pin ? gz.concat(st.pin.gz) : gz;
+      var top = Math.max.apply(null, all.map(Math.abs)) * 1.2 || 1, step = niceStep(top), lim = Math.ceil(top / step) * step;
       var X_ = function (deg) { return m.l + deg / 180 * pw; }, Y_ = function (g) { return m.t + (lim - g) / (2 * lim) * ph; };
       svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       svgEl.style.height = H + 'px';
@@ -145,6 +184,7 @@
                    svg('text', { x: 12, y: m.t + ph / 2, 'text-anchor': 'middle', class: 'xp-axis',
                                  transform: 'rotate(-90 12 ' + (m.t + ph / 2) + ')' }, 'Lever, in'));
       areas(svgEl, gz, X_, Y_);
+      if (st.pin) svgEl.append(svg('polyline', { class: 'xp-line-pin', points: st.pin.gz.map(function (v, k) { return X_(k * X.STEP) + ',' + Y_(v); }).join(' ') }));
       svgEl.append(svg('polyline', { class: 'xp-line', points: gz.map(function (v, k) { return X_(k * X.STEP) + ',' + Y_(v); }).join(' ') }));
       marks(svgEl, gz, X_, Y_, W);
       var cursor = svg('g', { class: 'xp-cursor' });
@@ -264,6 +304,7 @@
         st.models.set(x.id, model);
         if (token !== st.token) return;
         st.stage.show(model, x.keel_mm, st.r ? st.r.T : 0);
+        intro();
         ui.status.textContent = '';
         applyTilt();
       }).catch(function (err) {
@@ -271,9 +312,30 @@
       });
     }
 
+    // Once, the first time the stage is half on screen: the parts come together, so the reader sees what the float
+    // is made of before it is tilted. Triggered by scrolling, never driving it; skipped under reduced motion.
+    function intro() {
+      if (st.introDone || X.still.matches) return;
+      st.stage.spread(1, 0);
+      if (st.introWatch) return;
+      st.introWatch = new IntersectionObserver(function (e) {
+        if (!e[0].isIntersecting) return;
+        st.introWatch.disconnect(); st.introDone = true;
+        if (ui.spread.getAttribute('aria-pressed') !== 'true') st.stage.spread(0, 1400);
+      }, { threshold: 0.5 });
+      st.introWatch.observe(ui.stage);
+    }
+
     /* -- start -------------------------------------------------------------------------------------------- */
     ui.tilt.addEventListener('input', function () { stopAnim(); setDeg(+ui.tilt.value); });
     ui.go.addEventListener('click', letGo);
+    ui.pin.addEventListener('click', togglePin);
+    ui.spread.addEventListener('click', function () {
+      var on = ui.spread.getAttribute('aria-pressed') !== 'true';
+      ui.spread.setAttribute('aria-pressed', on);
+      st.introDone = true;
+      if (st.stage) st.stage.spread(on ? 1 : 0, X.still.matches ? 0 : 700);
+    });
     ui.pay.addEventListener('input', function () { st.payload = +ui.pay.value; recompute(); });
     ui.bal.addEventListener('change', recompute);
     ui.cut.addEventListener('click', function () {

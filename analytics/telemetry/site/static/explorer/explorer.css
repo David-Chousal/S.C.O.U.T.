@@ -8,7 +8,7 @@
   --xp-accent:var(--color-accent,#1f6763);--xp-on-accent:var(--color-on-accent,#fffcfa);--xp-focus:var(--color-focus,#1f6763);
   --xp-sans:var(--font-sans,'DM Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif);
   --xp-mono:var(--font-mono,'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace);
-  --xp-good:#1d9e75;--xp-warn:#ba7517;--xp-bad:#e24b4a;--xp-g:#ba7517;--xp-b:#185fa5;
+  --xp-pin:#8a5e3a;--xp-good:#1d9e75;--xp-warn:#ba7517;--xp-bad:#e24b4a;--xp-g:#ba7517;--xp-b:#185fa5;
   color-scheme:light;color:var(--xp-text);font-family:var(--xp-sans);line-height:1.55;margin-block:var(--space-6,1.5rem) var(--space-7,2rem)}
 .xp *,.xp *::before,.xp *::after{box-sizing:border-box}
 .xp :focus-visible{outline:2px solid var(--xp-focus);outline-offset:3px;border-radius:4px}
@@ -85,6 +85,24 @@
 .xp-tilt-row input{flex:1;min-width:0;accent-color:var(--xp-accent)}
 .xp-fine{margin:.5rem 0 0;font-size:.78rem;color:var(--xp-subtle);max-width:62ch}
 
+/* Compare: one pinned curve, dashed, under the live one. */
+.xp-compare{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1rem;margin:.1rem 0 .4rem}
+.xp-pin[aria-pressed=true]{background:var(--xp-surface);color:var(--xp-text);border-color:var(--xp-text)}
+.xp-pin-key{display:flex;flex-wrap:wrap;gap:.2rem 1rem;margin:0;font-size:.8rem;color:var(--xp-muted)}
+.xp-pin-key[hidden]{display:none}
+.xp-pin-key span::before{content:"";display:inline-block;width:18px;height:0;margin-right:.4rem;vertical-align:middle;border-top:2px solid var(--xp-text)}
+.xp-pin-key .xp-key-pin::before{border-top:2px dashed var(--xp-pin)}
+.xp-line-pin{fill:none;stroke:var(--xp-pin);stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round}
+.xp-chip-pinned::after{content:"pinned";position:absolute;right:.75rem;top:.6rem;font-family:var(--xp-mono);font-size:.62rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--xp-pin)}
+.xp-vs{width:100%;border-collapse:collapse;margin:1rem 0 0;font-size:.85rem}
+.xp-vs[hidden]{display:none}
+.xp-vs caption{text-align:left;font-family:var(--xp-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--xp-subtle);padding:0 0 .4rem}
+.xp-vs th,.xp-vs td{text-align:left;padding:.4rem .5rem .4rem 0;border-top:1px solid var(--xp-line);font-weight:400}
+.xp-vs thead th{font-weight:500;color:var(--xp-text)}.xp-vs thead .xp-vs-pin{color:var(--xp-pin)}
+.xp-vs tbody th{color:var(--xp-muted)}
+.xp-vs td{font-family:var(--xp-mono);font-variant-numeric:tabular-nums}.xp-vs td+td{color:var(--xp-pin)}
+
 /* Right column: verdict, numbers, controls. */
 .xp-verdict{display:flex;flex-direction:column;gap:.15rem;padding:.8rem 1rem;border-left:5px solid var(--xp-line-strong);background:var(--xp-surface)}
 .xp-verdict b{font-size:1.1rem;font-weight:600;line-height:1.3}.xp-verdict span{font-size:.875rem;color:var(--xp-muted)}
@@ -103,6 +121,16 @@
 .xp-ballast{display:flex;gap:.5rem}.xp-ballast input{accent-color:var(--xp-accent)}
 .xp-how{margin:.2rem 0 0;padding:.7rem 0 0;border-top:1px solid var(--xp-line);font-size:.85rem;color:var(--xp-muted)}
 .xp-how summary{cursor:pointer;color:var(--xp-accent)}.xp-how p{margin:.5rem 0 0;max-width:62ch}
+
+/* "How we know": the method in three numbers, under the stage on the Technology page. */
+.xp-facts{margin:0 0 var(--space-5,1.25rem);padding:var(--space-5,1.25rem) 0 0;border-top:1px solid var(--color-line,rgb(43 37 32 / .10))}
+.xp-facts-head{margin:0 0 .8rem;font-family:var(--font-mono,'JetBrains Mono',ui-monospace,monospace);font-size:.75rem;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-subtle,#6f6760)}
+.xp-facts dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem 1.75rem;margin:0}
+@media (max-width:719.98px){.xp-facts dl{grid-template-columns:minmax(0,1fr)}}
+.xp-facts dt{font-family:var(--font-mono,'JetBrains Mono',ui-monospace,monospace);font-size:1.6rem;font-weight:500;line-height:1.1;
+  color:var(--color-accent,#1f6763)}
+.xp-facts dd{margin:.35rem 0 0;font-size:.9rem;line-height:1.5;color:var(--color-text-muted,#534c45)}
 
 /* Full-screen page. */
 .xp-page{margin:0;background:#f8f3ef;color:#2b2520;font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
