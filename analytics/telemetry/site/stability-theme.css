@@ -7,8 +7,10 @@ body{margin:0;padding:clamp(12px,2.4vw,24px);background:var(--bg);color:var(--te
 h1{font-size:1.15rem;font-weight:600;margin:0 0 .25rem}
 p.note{font-size:.88rem;color:var(--muted);margin:0 0 .8rem;max-width:68ch}
 code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.85em}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin:0 0 12px}
-.card{background:var(--card);border:1px solid var(--line);padding:.55rem .75rem}
+/* Six readouts as an even 3 x 2 (2 x 3 on phones) grid of hairline-topped cells, not boxed tiles. */
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 16px;margin:0 0 16px}
+@media (max-width:480px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{border-top:1px solid var(--line);padding:.55rem 0 .65rem}
 .card .l{font-size:.75rem;color:var(--muted);letter-spacing:.02em}.card .v{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:1.05rem;font-weight:500}
 .ctl{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:4px 0 10px;font-size:.92rem}
 .ctl input[type=range]{flex:1;min-width:160px;accent-color:var(--accent)}
@@ -18,7 +20,7 @@ button:hover{background:var(--tint)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #it{flex:1}
 svg{background:var(--card);border:1px solid var(--line)}
-svg text{fill:var(--text);font-size:12px;font-family:'DM Sans',system-ui,sans-serif}svg text.h{font-size:14px;font-weight:600}
+svg text{fill:var(--text);font-size:13px;font-family:'DM Sans',system-ui,sans-serif}svg text.h{font-size:15px;font-weight:600}
 
 .card .s{display:block;font-size:.68rem;color:var(--muted);margin-top:1px}
 .verdict{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;padding:.7rem 1rem;border-left:6px solid var(--border);background:var(--card);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -27,7 +29,12 @@ svg text{fill:var(--text);font-size:12px;font-family:'DM Sans',system-ui,sans-se
 .how{margin:0 0 6px;font-size:.85rem;color:var(--muted)}.how summary{cursor:pointer;color:var(--accent)}.how span{display:block;margin-top:4px;max-width:68ch}
 .key{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:.82rem;color:var(--muted)}
 .key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.key b{color:var(--text)}.key .g{background:#BA7517}.key .b{background:#185FA5}.key .m{background:#534AB7}
-/* Inside the design explorer (?embed=1): the shared slider above owns the title and the design picker. */
-.embed h1,.embed p.note,.embed #itbar,.embed #itn,.embed #itw{display:none}
-.embed body{padding:0;max-width:none}
+/* Inside the design explorer (?embed=1): the shared picker above owns the title and the design choice.
+   Verdict first, then the numbers and the chart; the controls and how it was modelled come last. */
+.embed h1,.embed p.note,.embed #itbar,.embed #itn,.embed #itw,.embed #foot{display:none}
+.embed body{padding:0;max-width:none;display:flex;flex-direction:column}
+.embed #verdict{order:1}.embed .row{order:2}.embed svg{order:3;background:none;border:0;border-top:1px solid var(--line)}.embed .key{order:4;margin:4px 0 14px}
+.embed .ctl{order:5;margin:0 0 6px}.embed .how{order:6;margin:4px 0 0}
+/* A payload slider that is fixed by the design's set-up does nothing, so it is not shown. */
+.ctl:has(#hm:disabled){display:none}
 </style>

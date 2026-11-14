@@ -283,20 +283,15 @@ def _stability(ctx: SiteContext) -> str:
     src = f"{ctx.base}assets/design-explorer/index.html"
     return (
         '<div class="drawings sim">'
-        '<div class="drawings-head reveal"><p class="eyebrow">Mechanical design</p>'
+        '<div class="drawings-head reveal"><p class="eyebrow">Stability</p>'
         "<h3>See it, then test it</h3>"
         '<p class="drawings-sub">Battery, electronics and antenna sit above the waterline, so a buoy is '
-        "top-heavy by nature. We float every design in software before printing it. Slide through them "
-        "and the 3D model and the stability results change together.</p></div>"
-        + c.steps([
-            ("Pick a design", "Slide through every design we have modelled, oldest to newest."),
-            ("Look closely", "Turn the 3D model, pull its parts apart, or cut it in half."),
-            ("Read the verdict", "Change the electronics weight. Green means it rights itself."),
-        ])
+        "top-heavy by nature. We float every design in software before printing it. Pick one and the "
+        "3D model and the stability results change together. "
+        f'<a class="textlink" href="{src}">Open full screen&nbsp;↗</a></p></div>'
         + f'<iframe class="sim-frame reveal" data-fit src="{src}" title="Buoy design explorer: 3D model, draft, '
         'freeboard and righting-arm curve for each flotation design" loading="lazy"></iframe>'
         f'<script defer src="{ctx.base}assets/js/embed-fit.js"></script>'
-        f'<p class="drawings-sub"><a class="textlink" href="{src}">Open the explorer full screen</a></p>'
         '<div class="prose reveal">'
         "<p>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline is where the "
         "water it displaces weighs as much as the buoy; then it is tilted in 5\u00b0 steps to see which way "
