@@ -293,10 +293,14 @@ def _stability(ctx: SiteContext) -> str:
         f'<div class="xp" data-explorer data-base="{base}"></div>'
         f'<script defer src="{base}explorer.js"></script>'
         f'<script defer src="{base}explorer-ui.js"></script>'
+        '<div class="xp-facts reveal"><p class="xp-facts-head">How we know</p><dl>'
+        "<div><dt>3 mm</dt><dd>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline "
+        "sits where the water it displaces weighs as much as the buoy.</dd></div>"
+        "<div><dt>5\u00b0</dt><dd>Then it is tilted in 5\u00b0 steps, from upright to upside down, to see "
+        "which way the lift pushes at each angle.</dd></div>"
+        "<div><dt>~1%</dt><dd>Checked against a plain cylinder, it matches draft and stiffness to about "
+        "1%.</dd></div></dl></div>"
         '<div class="prose reveal">'
-        "<p>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline is where the "
-        "water it displaces weighs as much as the buoy; then it is tilted in 5\u00b0 steps to see which way "
-        "the lift pushes. Checked against a plain cylinder, it matches draft and stiffness to about 1%.</p>"
         '<details class="how-details"><summary>What it does not tell us yet</summary>'
         "<p>Part masses for the concept designs are estimated from CAD volume, not weighed. Only printed "
         "and weighed parts (the bolted-wedge parts and the mushroom float) use measured weights, so trust "

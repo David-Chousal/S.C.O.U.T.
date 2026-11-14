@@ -109,7 +109,12 @@
     var tags = { g: overlay('xp-tag-g', 'G'), b: overlay('xp-tag-b', 'B'), gz: overlay('xp-tag-gz', '') };
     Object.keys(tags).forEach(function (k) { el.appendChild(tags[k]); });
     var cur = null, size = 1, home = null, visible = true, hasForces = false, lever = 0, ready = false;
+    var spreadNow = 0, spreadTarget = 0, spreadAnim = 0;
 
+    function placeParts(t) {
+      spreadNow = t;
+      body.children.forEach(function (m) { if (m.userData.spread) m.position.copy(m.userData.spread).multiplyScalar(t); });
+    }
     function frame() {
       var c = new THREE.Vector3(0, 0, cur.midZ);
       s3.controls.target.copy(c);
@@ -152,6 +157,17 @@
         makeMeshes(model, keelMm, clip).forEach(function (m) { body.add(m); });
         heel.visible = true; ready = true;
         var lo = model.bbox_mm[0], hi = model.bbox_mm[1];
+        // Spread each part away from the model centre in proportion to its distance from it, as the standalone
+        // viewer does, so stacked parts separate; vertical gaps count double.
+        var centre = new THREE.Vector3((lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2 - keelMm);
+        body.children.forEach(function (m) {
+          m.geometry.computeBoundingBox();
+          var off = m.geometry.boundingBox.getCenter(new THREE.Vector3()).sub(centre); off.z *= 2;
+          m.userData.spread = off.multiplyScalar(0.4);
+        });
+        // A model swapped in mid-animation keeps going where the last one was heading, not where it was cut off.
+        cancelAnimationFrame(spreadAnim); placeParts(spreadNow);
+        if (spreadNow !== spreadTarget) this.spread(spreadTarget, 700);
         size = new THREE.Vector3(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]).length();
         cur = { lowZ: lo[2] - keelMm, highZ: hi[2] - keelMm, midZ: 0 };
         this.float(draftIn);
@@ -189,6 +205,18 @@
         tags.gz.textContent = 'GZ ' + Math.abs(gzIn).toFixed(2) + ' in';
       },
       cut: function (on) { clip.constant = on ? 0 : 1e9; },
+      /* to: 0 assembled, 1 fully spread; ms: 0 to jump there. */
+      spread: function (to, ms) {
+        cancelAnimationFrame(spreadAnim);
+        spreadTarget = to;
+        if (!ms) { placeParts(to); return; }
+        var from = spreadNow, t0 = performance.now();
+        (function step(now) {
+          var k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+          placeParts(from + (to - from) * e);
+          if (k < 1) spreadAnim = requestAnimationFrame(step);
+        })(t0);
+      },
       // While a model loads: no hull and no forces, until show() puts the new one in.
       hide: function () { ready = false; heel.visible = false; this.tilt(0, 0, null); },
       reset: function () { if (!home) return; s3.camera.position.copy(home.p); s3.controls.target.copy(home.t); s3.controls.update(); },

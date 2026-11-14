@@ -101,7 +101,8 @@
       '<div class="xp-body">' +
         '<div class="xp-stage" role="group" aria-label="3D model of the selected design floating at its waterline">' +
           '<p class="xp-tilt-big"><span class="xp-micro">Tilt</span> <b class="xp-tilt-val">0°</b></p>' +
-          '<div class="xp-tools"><button type="button" class="xp-btn xp-cut" aria-pressed="false">Cut in half</button>' +
+          '<div class="xp-tools"><button type="button" class="xp-btn xp-spread" aria-pressed="false">Spread parts</button>' +
+          '<button type="button" class="xp-btn xp-cut" aria-pressed="false">Cut in half</button>' +
           '<button type="button" class="xp-btn xp-reset">Reset view</button></div>' +
           '<p class="xp-legend"><span><i class="xp-dot-g"></i>G weight</span><span><i class="xp-dot-b"></i>B buoyancy</span>' +
           '<span>Drag to turn · scroll to zoom</span></p>' +
@@ -109,6 +110,8 @@
         '</div>' +
         '<div class="xp-curve">' +
           '<div class="xp-curve-head"><h4>Push back upright, by tilt</h4><p class="xp-at" aria-live="polite"></p></div>' +
+          '<div class="xp-compare"><button type="button" class="xp-btn xp-pin">Pin this curve to compare</button>' +
+          '<p class="xp-pin-key" hidden><span class="xp-key-now"></span><span class="xp-key-pin"></span></p></div>' +
           '<svg class="xp-chart" role="img"></svg>' +
           '<div class="xp-tilt-row"><label for="xp-tilt-' + host.dataset.n + '">Tilt</label>' +
           '<input type="range" class="xp-tilt" id="xp-tilt-' + host.dataset.n + '" min="0" max="180" step="1" value="0">' +
@@ -119,6 +122,8 @@
         '<div class="xp-right">' +
           '<div class="xp-verdict" role="status"><b></b><span></span></div>' +
           '<dl class="xp-stats"></dl>' +
+          '<table class="xp-vs" hidden><caption>Side by side</caption><thead><tr><th scope="col"></th>' +
+          '<th scope="col" class="xp-vs-now"></th><th scope="col" class="xp-vs-pin"></th></tr></thead><tbody></tbody></table>' +
           '<div class="xp-controls">' +
             '<div class="xp-ctl xp-payload"><label for="xp-pay-' + host.dataset.n + '">Electronics payload</label>' +
             '<output class="xp-pay-val"></output><input type="range" id="xp-pay-' + host.dataset.n + '" min="0" step="50"></div>' +
@@ -133,7 +138,9 @@
              reset: q('.xp-reset'), chart: q('.xp-chart'), at: q('.xp-at'), tilt: q('.xp-tilt'), go: q('.xp-go'),
              verdict: q('.xp-verdict'), stats: q('.xp-stats'), payload: q('.xp-payload'), pay: q('.xp-payload input'),
              payVal: q('.xp-pay-val'), ballast: q('.xp-ballast'), bal: q('.xp-ballast input'), balText: q('.xp-ballast span'),
-             note: q('.xp-note'), method: q('.xp-method'), legend: q('.xp-legend') };
+             note: q('.xp-note'), method: q('.xp-method'), legend: q('.xp-legend'), spread: q('.xp-spread'),
+             pin: q('.xp-pin'), pinKey: q('.xp-pin-key'), keyNow: q('.xp-key-now'), keyPin: q('.xp-key-pin'),
+             vs: q('.xp-vs'), vsNow: q('.xp-vs-now'), vsPin: q('.xp-vs-pin'), vsBody: q('.xp-vs tbody') };
   }
 
   window.ScoutExplorer = { interp: interp, gzAt: gzAt, vanishing: vanishing, peak: peak, moment: moment,
