@@ -14,7 +14,8 @@ bundle, and for the Reef sound panel (acoustic summary series colour and band ba
 dashboard bundle only, the site bundle is byte-identical), and for the stability-explorer
 frame on the Technology page (``.sim-frame``), and for dropping the dashboard bundle once the
 Analytics and Fleet pages moved to the console (2026-10-30): the pins are now the site bundle,
-byte-identical to what the authored pages already shipped.
+byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 for the
+printed-parts carousel (one slide rule for every carousel; the two-column drawings grid, now unused, went).
 """
 
 import hashlib
@@ -31,19 +32,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "7cb521dd5796f393dea575b7fc45f8f8a43fb79670315aa7314d1450967e8a49",
+            "3b06297517a4581eda9b3cf64b74da496d45e7223c92ecbef80c54b52c1a47d7",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "70083e593a66cb24d1859fab23fa7d376bb313ca83e2322646fb76670df5be46",
+            "849621ef3a94731e12678df21ab2ebe1436093a671dfe90fbc08591974c60b5a",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "3f1aece2565603943792e7cd386786d27b67054714100c5743aa49c2a59b07da",
+            "54e4fb07ac7e0fe2aeafb63e0aeadfe32b30f5489c5e6958b889e7d8f6fd1660",
         )
 
     def test_favicon_is_unchanged(self):
