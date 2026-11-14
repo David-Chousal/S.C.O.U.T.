@@ -60,6 +60,7 @@
       st.i = i;
       var x = d(), c = st.chips[i];
       st.chips.forEach(function (b, k) { b.setAttribute('aria-checked', k === i); b.tabIndex = k === i ? 0 : -1; });
+      markPinned();
       ui.strip.scrollTo({ left: c.offsetLeft - (ui.strip.clientWidth - c.offsetWidth) / 2,
                           behavior: byUser && !X.still.matches ? 'smooth' : 'auto' });
       if (byUser) c.focus({ preventScroll: true });
@@ -86,7 +87,8 @@
     /* -- numbers ------------------------------------------------------------------------------------------ */
     function recompute() {
       var x = d();
-      if (!x.hydro) { st.r = null; showNoResult(); return; }
+      // Keep any pinned snapshot for later, but hide the comparison while there is nothing to compare it with.
+      if (!x.hydro) { st.r = null; showNoResult(); compare(); return; }
       st.r = X.interp(X.seriesFor(st.data, x, ui.bal.checked), st.payload);
       st.top = X.topIn(st.data, x);
       ui.payVal.textContent = Math.round(st.payload) + ' g';
@@ -94,6 +96,7 @@
       ui.verdict.className = 'xp-verdict xp-' + v.cls;
       ui.verdict.firstChild.textContent = v.head; ui.verdict.lastChild.textContent = v.sub;
       stats();
+      compare();
       drawChart();
       if (st.stage) st.stage.float(st.r.T);
       applyTilt();
@@ -105,16 +108,19 @@
       ui.stats.textContent = ''; ui.chart.textContent = ''; st.chart = null;
       applyTilt();
     }
+    // One classification for the readouts and the comparison table, so the two can never disagree.
+    function maxRighting(r) { var pk = X.peak(r.gz); return pk.gz > 0 ? X.moment(r.W, pk.gz).toFixed(1) + ' N·m' : 'none'; }
+    // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
+    function tipsOver(r) { var vv = X.vanishing(r.gz); return vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never'; }
     function stats() {
-      var r = st.r, vv = X.vanishing(r.gz), pk = X.peak(r.gz), mm = function (inch) { return Math.round(inch * X.MM) + ' mm'; };
+      var r = st.r, pk = X.peak(r.gz), mm = function (inch) { return Math.round(inch * X.MM) + ' mm'; };
       var rows = [
         ['Total mass', 'what it weighs', r.M.toFixed(2) + ' kg', ''],
         ['Draft', 'how deep it sits', r.T.toFixed(2) + ' in', mm(r.T)],
         ['Freeboard', 'height above water', (st.top - r.T).toFixed(2) + ' in', mm(st.top - r.T)],
         ['GM', 'stiffness, higher is better', r.GM.toFixed(2) + ' in', mm(r.GM)],
-        ['Max righting', 'strongest push upright', pk.gz > 0 ? X.moment(r.W, pk.gz).toFixed(1) + ' N·m' : 'none', pk.gz > 0 ? 'at ' + pk.deg + '°' : ''],
-        // No crossing on an unstable hull means the lever is negative from the start: it tips at 0 degrees.
-        ['Tips over at', 'point of no return', vv !== null ? Math.round(vv) + '°' : r.GM <= 0 ? '0°' : 'never', ''],
+        ['Max righting', 'strongest push upright', maxRighting(r), pk.gz > 0 ? 'at ' + pk.deg + '°' : ''],
+        ['Tips over at', 'point of no return', tipsOver(r), ''],
       ];
       ui.stats.textContent = '';
       rows.forEach(function (row) {
@@ -126,11 +132,54 @@
       });
     }
 
+    /* -- compare: pin one design's curve and numbers, then pick another ------------------------------------ */
+    function keyNumbers(r, top) {
+      return [['Draft', r.T.toFixed(2) + ' in'], ['Freeboard', (top - r.T).toFixed(2) + ' in'], ['GM', r.GM.toFixed(2) + ' in'],
+              ['Max righting', maxRighting(r)], ['Tips over at', tipsOver(r)]];
+    }
+    // Design, then payload where it can change, then ballast where the design has the stem: the same curve twice
+    // never gets two labels, and two different configurations never share one.
+    function label(x, payload) {
+      var h = x.hydro;
+      return x.short + (h && !h.fixed ? ' \u00b7 ' + Math.round(payload) + ' g' : '') +
+        (h && !h.kind ? (ui.bal.checked ? ' \u00b7 ballast' : ' \u00b7 no ballast') : '');
+    }
+    function togglePin() {
+      if (st.pin) { st.pin = null; }
+      else if (st.r) {
+        st.pin = { id: d().id, label: label(d(), st.payload), gz: st.r.gz.slice(), nums: keyNumbers(st.r, st.top) };
+      }
+      markPinned(); compare();
+      if (st.r) drawChart(); // a design with no result has no chart; unpinning from it still works
+      applyTilt();
+    }
+    function markPinned() {
+      st.chips.forEach(function (b, k) { b.classList.toggle('xp-chip-pinned', !!st.pin && st.data.designs[k].id === st.pin.id); });
+      ui.pin.textContent = st.pin ? 'Unpin ' + st.pin.label : 'Pin this curve to compare';
+      ui.pin.setAttribute('aria-pressed', !!st.pin);
+    }
+    function compare() {
+      var on = !!(st.pin && st.r);
+      ui.pinKey.hidden = ui.vs.hidden = !on;
+      if (!on) return;
+      var now = label(d(), st.payload), mine = keyNumbers(st.r, st.top);
+      ui.keyNow.textContent = now; ui.keyPin.textContent = st.pin.label + ' (pinned)';
+      ui.vsNow.textContent = now; ui.vsPin.textContent = st.pin.label;
+      ui.vsBody.textContent = '';
+      mine.forEach(function (row, k) {
+        var tr = X.el('tr');
+        tr.append(X.el('th', null, row[0]), X.el('td', null, row[1]), X.el('td', null, st.pin.nums[k][1]));
+        tr.firstChild.scope = 'row';
+        ui.vsBody.appendChild(tr);
+      });
+    }
+
     /* -- the curve ---------------------------------------------------------------------------------------- */
     function drawChart() {
       var gz = st.r.gz, svgEl = ui.chart, W = Math.max(svgEl.clientWidth, 280), H = W < 480 ? 210 : 240;
       var m = { l: 56, r: 14, t: 18, b: 40 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
-      var top = Math.max.apply(null, gz.map(Math.abs)) * 1.2 || 1, step = niceStep(top), lim = Math.ceil(top / step) * step;
+      var all = st.pin ? gz.concat(st.pin.gz) : gz;
+      var top = Math.max.apply(null, all.map(Math.abs)) * 1.2 || 1, step = niceStep(top), lim = Math.ceil(top / step) * step;
       var X_ = function (deg) { return m.l + deg / 180 * pw; }, Y_ = function (g) { return m.t + (lim - g) / (2 * lim) * ph; };
       svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       svgEl.style.height = H + 'px';
@@ -146,6 +195,7 @@
                    svg('text', { x: 12, y: m.t + ph / 2, 'text-anchor': 'middle', class: 'xp-axis',
                                  transform: 'rotate(-90 12 ' + (m.t + ph / 2) + ')' }, 'Lever, in'));
       areas(svgEl, gz, X_, Y_);
+      if (st.pin) svgEl.append(svg('polyline', { class: 'xp-line-pin', points: st.pin.gz.map(function (v, k) { return X_(k * X.STEP) + ',' + Y_(v); }).join(' ') }));
       svgEl.append(svg('polyline', { class: 'xp-line', points: gz.map(function (v, k) { return X_(k * X.STEP) + ',' + Y_(v); }).join(' ') }));
       marks(svgEl, gz, X_, Y_, W);
       var cursor = svg('g', { class: 'xp-cursor' });
@@ -270,6 +320,8 @@
         if (token !== st.token) return;
         st.stage.show(model, x.keel_mm, st.r ? st.r.T : 0);
         if (ui.cut.getAttribute('aria-pressed') === 'true') st.stage.cut(true);
+        if (ui.spread.getAttribute('aria-pressed') === 'true') st.stage.spread(1, 0);
+        intro();
         ui.status.textContent = '';
         applyTilt();
       }).catch(function (err) {
@@ -277,9 +329,30 @@
       });
     }
 
+    // Once, the first time the stage is half on screen: the parts come together, so the reader sees what the float
+    // is made of before it is tilted. Triggered by scrolling, never driving it; skipped under reduced motion.
+    function intro() {
+      if (st.introDone || X.still.matches) return;
+      st.stage.spread(1, 0);
+      if (st.introWatch) return;
+      st.introWatch = new IntersectionObserver(function (e) {
+        if (!e[0].isIntersecting || e[0].intersectionRatio < 0.5) return;
+        st.introWatch.disconnect(); st.introDone = true;
+        if (ui.spread.getAttribute('aria-pressed') !== 'true') st.stage.spread(0, 1400);
+      }, { threshold: 0.5 });
+      st.introWatch.observe(ui.stage);
+    }
+
     /* -- start -------------------------------------------------------------------------------------------- */
     ui.tilt.addEventListener('input', function () { stopAnim(); setDeg(+ui.tilt.value); });
     ui.go.addEventListener('click', letGo);
+    ui.pin.addEventListener('click', togglePin);
+    ui.spread.addEventListener('click', function () {
+      var on = ui.spread.getAttribute('aria-pressed') !== 'true';
+      ui.spread.setAttribute('aria-pressed', on);
+      st.introDone = true;
+      if (st.stage) st.stage.spread(on ? 1 : 0, X.still.matches ? 0 : 700);
+    });
     // A new payload or ballast is a new curve: a running "Let go" would settle on the old one.
     ui.pay.addEventListener('input', function () { stopAnim(); st.payload = +ui.pay.value; recompute(); });
     ui.bal.addEventListener('change', function () { stopAnim(); recompute(); });
