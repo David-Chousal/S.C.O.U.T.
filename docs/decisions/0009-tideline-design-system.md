@@ -100,6 +100,14 @@ plan is approved; the ADR moves to Accepted when PR 1 merges.
   separate decision this ADR does not make. *(Update 2026-10-23: adopted, [SCO-212](https://linear.app/scout1/issue/SCO-212).)*
 - The hero keeps a stock reef photograph until a real photograph or labelled render of the buoy
   exists; that is the largest remaining gap in the system's own self-critique.
+- *(Addendum 2026-11-13.)* The public site is **not** restyled to the console's COR layout. The
+  two share Tideline's tokens; the site keeps its own story layout and the console keeps COR.
+  Where a visitor crosses from one to the other, the site borrows the console's look: every
+  link to the console in the header or a page body is a console key (square corners, keybed
+  edge, a pixel of travel; primary keys in lagoon), and the focus ring uses `--color-focus` with
+  the console's 2 px offset, lagoon-200 over the hero. Footer link lists stay plain text. The
+  CSS budget was raised to 9.5 KB gzip to pay for it
+  ([Design System → performance budget](../engineering/design-system.md)).
 
 ## References
 

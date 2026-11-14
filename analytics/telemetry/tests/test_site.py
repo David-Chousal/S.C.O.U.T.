@@ -156,6 +156,16 @@ class ConsoleHandoverTests(unittest.TestCase):
         self.assertIn(f'href="{CONSOLE_URL}"', home)
         self.assertNotIn('href="analytics/"', home)
 
+    def test_every_console_link_is_drawn_as_a_console_key(self):
+        """The hand-off to the console looks like the console: each link to it is a key."""
+        pages = [p for p in self.out.rglob("index.html")
+                 if f'url={CONSOLE_URL}' not in p.read_text()]
+        for page in pages:
+            # The footer's link lists stay plain text; the header and page body are the seam.
+            body = page.read_text().split("<footer", 1)[0]
+            for anchor in re.findall(rf'<a [^>]*href="{re.escape(CONSOLE_URL)}"[^>]*>', body):
+                self.assertRegex(anchor, r'class="[^"]*\b(btn-key|nav-key)\b', str(page))
+
     def test_old_data_addresses_forward_to_the_console(self):
         for old in ("analytics", "fleet"):
             page = (self.out / old / "index.html").read_text()

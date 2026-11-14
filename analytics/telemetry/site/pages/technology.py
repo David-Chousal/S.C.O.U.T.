@@ -384,6 +384,6 @@ def body(ctx: SiteContext) -> str:
         + _refs()
         + c.cta("Next", "The science behind the metrics",
                 '<a class="btn btn-primary" href="../science/">Read the science</a>'
-                f'<a class="btn" href="{CONSOLE_URL}">See live data</a>')
+                f'<a class="btn btn-key" href="{CONSOLE_URL}">See live data</a>')
     )
     return docnav.page(title="Technology", items=_NAV, content=content, base=ctx.base)

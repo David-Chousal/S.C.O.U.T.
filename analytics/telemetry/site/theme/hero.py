@@ -10,6 +10,15 @@ CSS = """/* ── Buttons ─────────────────�
 .btn:hover{transform:translateY(-2px);border-color:var(--color-text);opacity:1}
 .btn-primary{background:var(--color-text);color:var(--color-canvas);border-color:var(--color-text)}
 .btn-primary:hover{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-on-accent)}
+/* Buttons that open the console are console keys (console/web key.css): square, a keybed
+   edge, a pixel of travel; the primary key is lagoon, as there. .btn.btn-key outranks
+   .card-ink .btn so the key survives on the ink cards. */
+.btn.btn-key{--bed:color-mix(in srgb,var(--color-text) 16%,transparent);border-radius:2px;
+  box-shadow:inset 0 -3px 0 var(--bed);transition-duration:120ms}
+.btn.btn-key:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16)}
+.btn.btn-key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed)}
+.btn.btn-key.btn-primary,.btn.btn-key.btn-primary:hover{--bed:rgb(0 0 0/.28);background:var(--color-accent);
+  border-color:var(--color-accent);color:var(--color-on-accent)}
 .btn svg{width:1.05em;height:1.05em}
 .btn-row{display:flex;flex-wrap:wrap;gap:0.9rem;align-items:center}
 .center .btn-row{justify-content:center}
@@ -56,6 +65,7 @@ html.at-top .page-home .site-header .nav-chat:hover{color:#fff}}
   --color-text-muted:rgba(251,248,244,0.80);
   --color-text-subtle:rgba(251,248,244,0.80);  /* eyebrow, hero-expand: measured on the scrim */
   --color-line-strong:rgba(251,248,244,0.42);  /* .btn border */
+  --color-focus:#b0dbd7;            /* the console's night focus ring, visible on the scrim */
   position:relative;isolation:isolate;padding-block:0;text-align:center;overflow:hidden;
   /* Pulled up under the sticky header so the photograph runs to the very top of the page and
      the first screen is a true full viewport, not a viewport minus the nav. `.hero-body`
