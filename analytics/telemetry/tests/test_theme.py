@@ -15,7 +15,9 @@ dashboard bundle only, the site bundle is byte-identical), and for the stability
 frame on the Technology page (``.sim-frame``), and for dropping the dashboard bundle once the
 Analytics and Fleet pages moved to the console (2026-10-30): the pins are now the site bundle,
 byte-identical to what the authored pages already shipped. Re-pinned 2026-11-13 for the
-printed-parts carousel (one slide rule for every carousel; the two-column drawings grid, now unused, went).
+printed-parts carousel (one slide rule for every carousel; the two-column drawings grid, now unused, went),
+and again the same day when the stability explorer stopped being an iframe (the ``.sim-frame`` rule went;
+its stage ships its own ``assets/explorer/explorer.css``).
 """
 
 import hashlib
@@ -32,19 +34,19 @@ class ThemeOutputIsUnchanged(unittest.TestCase):
     def test_styles_without_fonts_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles()),
-            "3b06297517a4581eda9b3cf64b74da496d45e7223c92ecbef80c54b52c1a47d7",
+            "21aa34bb1777723853e8fd460b007c644c47516ec95a52859ac55f0aa9651093",
         )
 
     def test_styles_with_fonts_at_the_site_root_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="", fonts_present=True)),
-            "849621ef3a94731e12678df21ab2ebe1436093a671dfe90fbc08591974c60b5a",
+            "550d092da7cb87c88a3b2b4f963abbbf6f2e501c2f50008d56ae6a32d10fc5c6",
         )
 
     def test_styles_with_fonts_one_level_deep_matches_the_pinned_css(self):
         self.assertEqual(
             _digest(theme.styles(base="../", fonts_present=True)),
-            "54e4fb07ac7e0fe2aeafb63e0aeadfe32b30f5489c5e6958b889e7d8f6fd1660",
+            "22b3e8e142ce744bfd3591ab2a0a5aa75795e77d4bd6c59b04ee50c4424ea028",
         )
 
     def test_favicon_is_unchanged(self):

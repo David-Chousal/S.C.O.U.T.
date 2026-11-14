@@ -8,13 +8,11 @@ static/
 ├── fonts/        Self-hosted WOFF2 (optional): DM Sans (prose) and JetBrains Mono (measured
 │                 values), built by scripts/subset_site_fonts.py. If dmsans-latin.woff2 is
 │                 absent the pages fall back to the system sans and mono stacks.
-├── stability/    The buoy stability explorer (index.html), embedded on the Technology page. Generated, not
-│                 hand-edited: python3 -m telemetry.site.stability_embed <explorer.html> (from analytics/).
-├── viewer/       The 3D buoy viewer (index.html + three.min.js, orbit-controls.js, models.js). Generated, not hand-edited:
-│                 python3 -m telemetry.site.design_explorer (from analytics/), from mechanical/simulations/buoy-viewer/.
-├── design-explorer/  The page the Technology page embeds: one slider that drives the viewer and the stability explorer
-│                 together (same command). Its design list comes from mechanical/simulations/buoy-stability/iterations.json.
-├── js/embed-fit.js   Fits a data-fit iframe to its content (the design explorer reports its height).
+├── explorer/     The stability stage on the Technology page: pick a design, see it float in 3D, tilt it, read
+│                 whether it comes back. explorer.js, explorer-ui.js, stage3d.js and explorer.css are hand-written;
+│                 data.json, models/, vendor/ and index.html are generated, not hand-edited:
+│                 python3 -m telemetry.site.design_explorer <stability-explorer.html> (from analytics/), from
+│                 mechanical/simulations/buoy-stability/ and mechanical/simulations/buoy-viewer/.
 └── img/          Curated reef photographs (optional). A photo appears on a pill card only
                   when the file is here AND its exact credit is recorded in imagery.py
                   (Ocean Image Bank licence: every photographer must be credited).

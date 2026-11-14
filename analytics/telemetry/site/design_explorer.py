@@ -1,39 +1,57 @@
-"""Build the site's design explorer: one design picker that drives the 3D viewer and the stability explorer together.
+"""Build the data behind the Technology page's stability stage: every buoy design, floated and tilted in 3D.
 
-Writes two generated files into ``static/`` (copied to ``assets/`` at build time, like the stability explorer):
+The stage itself is hand-written (``static/explorer/explorer.js`` and ``explorer.css``). This writes what it reads,
+all under ``static/explorer/`` (copied to ``assets/explorer/`` at build time):
 
-* ``static/viewer/``: the 3D buoy viewer from ``mechanical/simulations/buoy-viewer/``, split for the site into a small
-  ``index.html`` plus ``three.min.js``, ``orbit-controls.js`` and ``models.js`` (the standalone viewer inlines all of
-  these into one file; on the site they are separate, cacheable and kept out of the HTML the self-containment test reads).
-* ``static/design-explorer/index.html``: the page the Technology page embeds. It holds the shared design picker (a timeline of
-  chips) and two frames (the viewer and ``static/stability/index.html``, both opened with ``?embed=1``) and tells both which design
-  to show whenever the pick changes.
+* ``data.json``: every design in ``mechanical/simulations/buoy-stability/iterations.json`` order, with its draft and
+  righting-arm series exactly as the stability simulator computed them, and where its keel sits in the 3D model.
+* ``models/<id>.json``: one 3D model per design from ``mechanical/simulations/buoy-viewer/data/``, so the page loads
+  only the design being looked at instead of every model at once.
+* ``vendor/``: the three.js build and orbit controls the standalone viewer already vendors.
+* ``index.html``: the stage on a page of its own, for "Open full screen".
 
-The design list, its order and names come from ``mechanical/simulations/buoy-stability/iterations.json``, the same
-registry the stability explorer and the viewer are built from, so the three cannot disagree. Refresh after the
-simulator, the viewer or the registry changes (run from ``analytics/``)::
+The solver results are read from the simulator's generated ``stability-explorer.html``, the one file that holds the
+per-design series (``explorer-data.json`` keeps only the base sweep). Refresh after the simulator, the 3D models or the
+registry change (run from ``analytics/``)::
 
-    python3 -m telemetry.site.stability_embed <path to stability-explorer.html>
-    python3 -m telemetry.site.design_explorer
+    python3 -m telemetry.site.design_explorer ../mechanical/simulations/buoy-stability/results/<date>/stability-explorer.html
 """
 
 from __future__ import annotations
 
 import json
 import re
+import shutil
+import sys
 from pathlib import Path
 
 _HERE = Path(__file__).parent
 _REPO = _HERE.parents[2]
 _REGISTRY = _REPO / "mechanical" / "simulations" / "buoy-stability" / "iterations.json"
 _VIEWER_DIR = _REPO / "mechanical" / "simulations" / "buoy-viewer"
-_VIEWER_OUT = _HERE / "static" / "viewer"
-_OUT = _HERE / "static" / "design-explorer" / "index.html"
-
-_TEMPLATE = _HERE / "design-explorer-template.html"
-
+_OUT = _HERE / "static" / "explorer"
 
 _DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buoy stability stage · S.C.O.U.T.</title>
+<link rel="stylesheet" href="explorer.css">
+</head>
+<body class="xp-page">
+<main class="xp-solo">
+<p class="xp-eyebrow">S.C.O.U.T. · Stability</p>
+<h1>See it, then test it</h1>
+<div class="xp" data-explorer data-base="./"></div>
+</main>
+<script defer src="explorer.js"></script>
+<script defer src="explorer-ui.js"></script>
+</body>
+</html>
+"""
 
 
 def _chip_date(when: str) -> str:
@@ -48,43 +66,81 @@ def _short_names(names: list[str]) -> list[str]:
     return [c if cut.count(c) == 1 else n.split(" (")[0].replace(" — ", " ") for c, n in zip(cut, names)]
 
 
-def designs() -> list[dict]:
-    """Every design in the stability registry, oldest to newest, as the explorer's timeline orders them."""
+def solver_results(explorer_html: str) -> dict:
+    """The series, lead masses and per-design inputs the simulator embedded in its generated page."""
+    line = next((ln for ln in explorer_html.splitlines() if ln.startswith("const D=")), None)
+    if line is None:
+        raise ValueError("stability-explorer.html changed; no `const D=` line")
+    dec, out, at = json.JSONDecoder(), {}, 0
+    for name in ("D", "LEAD", "ITS"):
+        start = line.find(name + "=", at)
+        if start < 0:
+            raise ValueError(f"stability-explorer.html changed; {name} not found")
+        out[name], at = dec.raw_decode(line, start + len(name) + 1)
+    # Housing-top height of the two wedge-bottom cap sweeps (the assemblies that carry no top_in of their own).
+    top = explorer_html.find("const CAPTOP=")
+    if top < 0:
+        raise ValueError("stability-explorer.html changed; CAPTOP not found")
+    out["CAPTOP"], _ = dec.raw_decode(explorer_html, top + len("const CAPTOP="))
+    return out
+
+
+def _keel_mm(reg_item: dict, model: dict) -> float:
+    """Height of the keel in the 3D model's frame: recorded for placed assemblies, else the model's lowest point.
+
+    The simulator measures every height from the keel, and its cross-sections start at 0 there, so this is the one
+    offset that puts the solver's waterline and centre of gravity on the 3D model."""
+    keel = reg_item.get("keel_z_mm")
+    return float(keel) if keel is not None else float(model["bbox_mm"][0][2])
+
+
+def build_data(solver: dict, models: dict[str, dict]) -> dict:
     reg = json.loads(_REGISTRY.read_text(encoding="utf-8"))["iterations"]
+    its = {it["id"]: it for it in solver["ITS"]}
     shorts = _short_names([it["name"] for it in reg])
-    return [{"id": it["id"], "name": it["name"], "when": it["when"], "short": s, "date": _chip_date(it["when"])}
-            for it, s in zip(reg, shorts)]
+    designs = []
+    for item, short in zip(reg, shorts):
+        it = its.get(item["id"])
+        if it is None:
+            raise ValueError(f"{item['id']} is in iterations.json but not in the simulator's page; re-run it")
+        designs.append({
+            "id": item["id"], "name": item["name"], "short": short, "when": item["when"],
+            "date": _chip_date(item["when"]), "note": it.get("note") or "", "hydro": it.get("hydro"),
+            "keel_mm": round(_keel_mm(item, models[item["id"]]), 2),
+        })
+    keys = {f"{d['hydro']['cap']}_{b}" for d in designs if d["hydro"] for b in (0, 1)}
+    return {"designs": designs, "lead_kg": solver["LEAD"], "cap_top_in": solver["CAPTOP"],
+            "series": {k: v for k, v in solver["D"].items() if k in keys}}
 
 
-def build() -> str:
-    return _TEMPLATE.read_text(encoding="utf-8").replace(
-        "__DESIGNS__", json.dumps(designs(), ensure_ascii=False, separators=(",", ":")))
-
-
-def build_viewer() -> dict[str, str]:
-    """The site's viewer files, by name: the template with its inlined library and model data pulled out into scripts."""
-    html = (_VIEWER_DIR / "viewer-template.html").read_text(encoding="utf-8")
-    for token, line in (("<script>/*THREE*/</script>", '<script src="three.min.js"></script>'),
-                        ("<script>/*CONTROLS*/</script>", '<script src="orbit-controls.js"></script>\n<script src="models.js"></script>'),
-                        ("const MODELS = /*MODELS*/;", "const MODELS = window.SCOUT_MODELS;")):
-        if html.count(token) != 1:
-            raise ValueError(f"viewer template changed; {token!r} not found exactly once")
-        html = html.replace(token, line)
+def _models() -> dict[str, dict]:
     order = json.loads((_VIEWER_DIR / "data" / "index.json").read_text(encoding="utf-8"))
-    models = [json.loads((_VIEWER_DIR / "data" / f"{i}.json").read_text(encoding="utf-8")) for i in order]
-    return {"index.html": html,
-            "three.min.js": (_VIEWER_DIR / "vendor" / "three.min.js").read_text(encoding="utf-8"),
-            "orbit-controls.js": (_VIEWER_DIR / "vendor" / "orbit-controls.js").read_text(encoding="utf-8"),
-            "models.js": "window.SCOUT_MODELS=" + json.dumps(models, separators=(",", ":")) + ";"}
+    return {i: json.loads((_VIEWER_DIR / "data" / f"{i}.json").read_text(encoding="utf-8")) for i in order}
+
+
+def write(explorer_html: str) -> int:
+    """Write everything under ``static/explorer/`` except the hand-written stage; returns the bytes written."""
+    models = _models()
+    data = build_data(solver_results(explorer_html), models)
+    (_OUT / "models").mkdir(parents=True, exist_ok=True)
+    (_OUT / "vendor").mkdir(parents=True, exist_ok=True)
+    files = {"data.json": json.dumps(data, ensure_ascii=False, separators=(",", ":")), "index.html": _PAGE}
+    for d in data["designs"]:
+        m = models[d["id"]]
+        files[f"models/{d['id']}.json"] = json.dumps({"bbox_mm": m["bbox_mm"], "parts": m["parts"]},
+                                                     separators=(",", ":"))
+    stale = {p.name for p in (_OUT / "models").glob("*.json")} - {f"{d['id']}.json" for d in data["designs"]}
+    for name in stale:
+        (_OUT / "models" / name).unlink()
+    for name, text in files.items():
+        (_OUT / name).write_text(text, encoding="utf-8")
+    for name in ("three.min.js", "orbit-controls.js"):
+        shutil.copyfile(_VIEWER_DIR / "vendor" / name, _OUT / "vendor" / name)
+    return sum(len(t) for t in files.values())
 
 
 if __name__ == "__main__":
-    _VIEWER_OUT.parent.mkdir(parents=True, exist_ok=True)
-    _VIEWER_OUT.mkdir(parents=True, exist_ok=True)
-    files = build_viewer()
-    for name, text in files.items():
-        (_VIEWER_OUT / name).write_text(text, encoding="utf-8")
-    _OUT.parent.mkdir(parents=True, exist_ok=True)
-    _OUT.write_text(build(), encoding="utf-8")
-    mb = sum(len(t) for t in files.values()) / 1e6
-    print(f"wrote viewer/ ({len(files)} files, {mb:.2f} MB) and design-explorer/index.html, {len(designs())} designs")
+    if len(sys.argv) != 2:
+        sys.exit(__doc__)
+    size = write(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    print(f"wrote static/explorer/ ({size / 1e6:.2f} MB of data and pages)")
