@@ -5,115 +5,101 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Buoy design explorer · S.C.O.U.T.</title>
 <style>
+/* Light only, like the rest of scoutscu.com: the stability frame inside has no dark theme, so a dark shell would clash. */
 @font-face{font-family:'DM Sans';font-style:normal;font-weight:100 1000;font-display:swap;src:url('../fonts/dmsans-latin.woff2') format('woff2')}
 @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:100 800;font-display:swap;src:url('../fonts/jetbrainsmono-latin.woff2') format('woff2')}
-:root{color-scheme:light;--canvas:#f8f3ef;--sunken:#ede7e1;--surface:#fdf9f7;--text:#2b2520;--muted:#534c45;--subtle:#6f6760;
+:root{color-scheme:light only;--canvas:#f8f3ef;--sunken:#ede7e1;--surface:#fdf9f7;--text:#2b2520;--muted:#534c45;--subtle:#6f6760;
   --line:rgb(43 37 32 / .10);--line-strong:#867f78;--accent:#1f6763;--accent-hover:#16524f;--tint:#d6eeeb;--on-accent:#fffcfa;--focus:#1f6763;
-  --shadow-1:0 12px 32px -22px rgba(42,37,32,.18);--ease:cubic-bezier(.22,1,.36,1);
+  --ease:cubic-bezier(.22,1,.36,1);
   --font-sans:'DM Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--canvas:#09181f;--sunken:#050f14;--surface:#15272f;--text:#fcf9f5;
-  --muted:rgb(252 249 245 / .8);--subtle:rgb(252 249 245 / .74);--line:rgb(252 249 245 / .14);--line-strong:rgb(252 249 245 / .42);
-  --accent:#b0dbd7;--accent-hover:#d6eeeb;--tint:#253842;--on-accent:#09181f;--focus:#b0dbd7;--shadow-1:none}}
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;padding:clamp(.75rem,.4rem + 1.5vw,1.5rem);background:var(--canvas);color:var(--text);font-family:var(--font-sans);line-height:1.6;
+body{margin:0;padding:0;background:var(--canvas);color:var(--text);font-family:var(--font-sans);line-height:1.6;
   -webkit-font-smoothing:antialiased;font-feature-settings:"ss01"}
-.mono,.micro{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
-.micro{font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle);margin:0}
+body.solo{padding:clamp(1rem,.6rem + 2vw,2rem)}
+.micro{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle);margin:0}
 :focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
-button,select{font:inherit;color:var(--text);cursor:pointer}
-.btn{font-size:.95rem;font-weight:500;background:transparent;border:1px solid var(--line-strong);border-radius:2px;padding:.6rem 1.25rem calc(.6rem + 2px);white-space:nowrap;
-  --bed:color-mix(in srgb,var(--text) 16%,transparent);box-shadow:inset 0 -3px 0 var(--bed);
-  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background 180ms,border-color 180ms,color 180ms}
-.btn:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16)}
-.btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed)}
-.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
-.picker{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-1);padding:clamp(1rem,.7rem + 1vw,1.5rem);margin:0 0 clamp(.8rem,.4rem + .8vw,1.2rem)}
-.row{display:flex;align-items:center;gap:.9rem;margin:.7rem 0 .2rem}
-.track{flex:1;min-width:0}
-input[type=range]{width:100%;height:2.2rem;margin:0;accent-color:var(--accent);cursor:pointer}
-.ticks{display:flex;justify-content:space-between;padding:0 8px;margin-top:-.35rem}
-.ticks i{width:1px;height:6px;background:var(--line-strong);opacity:.7}
-.ticks i.on{background:var(--accent);height:10px;width:2px;opacity:1}
-.ends{display:flex;justify-content:space-between;margin-top:.2rem}
-.now{display:flex;align-items:baseline;flex-wrap:wrap;gap:.2rem 1rem;margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line)}
-.now h2{font-size:clamp(1.25rem,1.05rem + .8vw,1.6rem);font-weight:500;letter-spacing:-.015em;line-height:1.2;margin:0}
-.now .count{font-family:var(--font-mono);font-size:.8rem;color:var(--accent);font-weight:500}
-.now .when{flex-basis:100%;margin:0;font-size:.875rem;color:var(--muted)}
-.jump{display:flex;align-items:center;gap:.6rem;margin:.9rem 0 0;font-size:.875rem;color:var(--muted)}
-.jump select{background:var(--canvas);border:1px solid var(--line-strong);border-radius:0;padding:.45rem .7rem;min-width:min(100%,300px);max-width:100%;font-size:.9rem}
-@media (max-width:640px){.row{flex-wrap:wrap}.track{order:-1;flex:1 1 100%}.row .btn{flex:1}
-  .jump{flex-direction:column;align-items:stretch;gap:.35rem}.jump select{min-width:0;width:100%}}
-.panes{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(.8rem,.4rem + .8vw,1.2rem);align-items:start}
-@media (min-width:1000px){.panes{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
-.pane{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-1);padding:clamp(.9rem,.6rem + .8vw,1.3rem)}
-.pane h3{display:flex;align-items:center;gap:.6rem;font-size:1.05rem;font-weight:500;letter-spacing:-.01em;margin:0 0 .25rem}
-.pane h3 .no{display:inline-grid;place-items:center;width:1.5rem;height:1.5rem;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-size:.75rem}
-.pane p.sub{margin:0 0 .8rem;font-size:.875rem;color:var(--muted)}
+.pick-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.25rem 1rem;margin:0 0 .9rem}
+.pick-head .count{color:var(--accent)}
+.pick-head .hint{margin:0;font-size:.8rem;color:var(--subtle)}
+/* The design picker: a timeline of chips, oldest to newest. One control instead of slider + buttons + dropdown. */
+.strip{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:6px 0 .5rem;
+  mask-image:linear-gradient(90deg,transparent,#000 1.5rem,#000 calc(100% - 1.5rem),transparent)}
+.chip{flex:0 0 auto;width:9.25rem;scroll-snap-align:center;display:grid;gap:.1rem;text-align:left;font:inherit;color:var(--muted);cursor:pointer;
+  background:none;border:0;border-top:2px solid var(--line-strong);padding:.65rem .75rem .35rem 0;position:relative;transition:color 180ms,border-color 180ms}
+.chip:first-child{margin-left:1.5rem}.chip:last-child{margin-right:1.5rem}
+.chip::before{content:"";position:absolute;left:0;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--canvas);border:2px solid var(--line-strong);transition:background 180ms,border-color 180ms}
+.chip .i{font-family:var(--font-mono);font-size:.7rem;color:var(--subtle)}
+.chip .t{font-size:.9rem;font-weight:500;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .d{font-family:var(--font-mono);font-size:.7rem;color:var(--subtle)}
+.chip:hover{color:var(--text)}
+.chip[aria-checked=true]{color:var(--text);border-top-color:var(--accent)}
+.chip[aria-checked=true]::before{background:var(--accent);border-color:var(--accent)}
+.chip[aria-checked=true] .t{color:var(--accent)}
+.now{margin:.6rem 0 0}
+.now h2{font-size:clamp(1.2rem,1.05rem + .6vw,1.5rem);font-weight:500;letter-spacing:-.015em;line-height:1.25;margin:0}
+.now .when{margin:.1rem 0 0;font-size:.875rem;color:var(--muted)}
+/* Two panes on one surface, split by a hairline. The stability side is wider: its chart needs the room. */
+.panes{display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;margin:1.25rem 0 0;padding:1.25rem 0 0;border-top:1px solid var(--line);align-items:start}
+@media (min-width:1000px){.panes{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:0}
+  .pane:first-child{padding-right:1.5rem}.pane+.pane{border-left:1px solid var(--line);padding-left:1.5rem}}
+.pane h3{font-size:1.05rem;font-weight:500;letter-spacing:-.01em;margin:0 0 .75rem}
 iframe{display:block;width:100%;border:0;background:transparent}
 #vf{height:760px}#sf{height:980px}
-.keys{margin:.8rem 0 0;font-size:.8rem;color:var(--subtle)}
-@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+@media (prefers-reduced-motion:reduce){.chip,.chip::before{transition:none}}
 </style>
 </head>
 <body>
-<div class="picker">
-  <p class="micro">Step 1 &middot; Pick a design</p>
-  <div class="row">
-    <button class="btn" id="prev" aria-label="Previous design, earlier">&larr; Earlier</button>
-    <div class="track">
-      <input id="d" type="range" min="0" max="__MAX__" step="1" value="__MAX__" aria-label="Design, oldest to newest" aria-describedby="nm">
-      <div class="ticks" id="ticks" aria-hidden="true"></div>
-      <div class="ends micro" aria-hidden="true"><span>Oldest</span><span>Newest</span></div>
-    </div>
-    <button class="btn" id="next" aria-label="Next design, later">Later &rarr;</button>
+<div class="pick">
+  <div class="pick-head">
+    <p class="micro">Design <span class="count" id="cnt"></span></p>
+    <p class="hint">The 3D model and the stability results follow your pick. Arrow keys work too.</p>
   </div>
-  <div class="now" aria-live="polite">
-    <span class="count" id="cnt"></span><h2 id="nm"></h2><p class="when" id="wh"></p>
-  </div>
-  <label class="jump">Or jump straight to <select id="jump" aria-label="Jump to a design"></select></label>
-  <p class="keys">Moving this slider changes the 3D model and the stability results together. Left and right arrow keys work too.</p>
+  <div class="strip" id="strip" role="radiogroup" aria-label="Design, oldest to newest"></div>
+  <div class="now" aria-live="polite"><h2 id="nm"></h2><p class="when" id="wh"></p></div>
 </div>
 <div class="panes">
   <section class="pane" aria-labelledby="h1">
-    <h3 id="h1"><span class="no">2</span>See the shape</h3>
-    <p class="sub">Drag to turn it, scroll to zoom. Pull the parts apart, cut it in half, or switch parts off to look inside.</p>
+    <h3 id="h1">See the shape</h3>
     <iframe id="vf" src="../viewer/index.html?embed=1" title="3D model of the selected buoy design" loading="lazy"></iframe>
   </section>
   <section class="pane" aria-labelledby="h2">
-    <h3 id="h2"><span class="no">3</span>Will it stay upright?</h3>
-    <p class="sub">Change the electronics weight and read the verdict. Green means it rights itself from any tilt.</p>
+    <h3 id="h2">Will it stay upright?</h3>
     <iframe id="sf" src="../stability/index.html?embed=1" title="Stability results for the selected buoy design" loading="lazy"></iframe>
   </section>
 </div>
 <script>
 const DESIGNS=__DESIGNS__;
 (function(){
-const $=id=>document.getElementById(id),N=DESIGNS.length,D=$('d');
-const ticks=$('ticks');DESIGNS.forEach(()=>ticks.appendChild(document.createElement('i')));
-DESIGNS.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=x.name;$('jump').appendChild(o)});
+const $=id=>document.getElementById(id),N=DESIGNS.length,strip=$('strip');
+if(parent===window)document.body.classList.add('solo');
+const still=matchMedia('(prefers-reduced-motion:reduce)');
+let cur=N-1;
+const chips=DESIGNS.map((x,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('role','radio');
+  b.title=x.name;b.innerHTML='<span class="i"></span><span class="t"></span><span class="d"></span>';
+  b.querySelector('.i').textContent=String(i+1).padStart(2,'0');b.querySelector('.t').textContent=x.short;b.querySelector('.d').textContent=x.date;
+  b.addEventListener('click',()=>pick(i,true));strip.appendChild(b);return b});
 const frames=[['vf',(f,id)=>f.postMessage({model:id},location.origin)],['sf',(f,id)=>f.postMessage({design:id},location.origin)]];
-function send(){const id=DESIGNS[+D.value].id;frames.forEach(([fid,fn])=>{const w=$(fid).contentWindow;if(w)fn(w,id)})}
-function show(replace){const i=+D.value,x=DESIGNS[i];
-  $('cnt').textContent=(i+1)+' of '+N;$('nm').textContent=x.name;$('wh').textContent=x.when;$('jump').value=i;
-  $('prev').disabled=i===0;$('next').disabled=i===N-1;
-  [...ticks.children].forEach((t,k)=>t.classList.toggle('on',k===i));
+function send(){const id=DESIGNS[cur].id;frames.forEach(([fid,fn])=>{const w=$(fid).contentWindow;if(w)fn(w,id)})}
+function pick(i,focus){cur=Math.max(0,Math.min(N-1,i));const x=DESIGNS[cur],c=chips[cur];
+  $('cnt').textContent=(cur+1)+' of '+N;$('nm').textContent=x.name;$('wh').textContent=x.when;
+  chips.forEach((b,k)=>{const on=k===cur;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1});
+  strip.scrollTo({left:c.offsetLeft-(strip.clientWidth-c.offsetWidth)/2,behavior:still.matches||!focus?'auto':'smooth'});
+  if(focus)c.focus({preventScroll:true});
   send();try{history.replaceState(null,'','#'+x.id)}catch(e){}}
-D.addEventListener('input',show);
-$('prev').onclick=()=>{D.value=Math.max(0,+D.value-1);show()};
-$('next').onclick=()=>{D.value=Math.min(N-1,+D.value+1);show()};
-$('jump').onchange=e=>{D.value=e.target.value;show()};
-document.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;
-  if(e.key==='ArrowLeft'){$('prev').click();e.preventDefault()}if(e.key==='ArrowRight'){$('next').click();e.preventDefault()}});
+// Keys move the pick only while focus is in the timeline, so the page keeps its own arrow, Home and End scrolling.
+strip.addEventListener('keydown',e=>{
+  if(e.key==='Home'||e.key==='End'){pick(e.key==='Home'?0:N-1,true);e.preventDefault();return}
+  const step={ArrowLeft:-1,ArrowUp:-1,ArrowRight:1,ArrowDown:1}[e.key];if(step){pick(cur+step,true);e.preventDefault()}});
 // A design can be linked to as #<id>. Each frame is told again when it finishes loading, since it starts on its own default.
-const h=location.hash.slice(1),k=DESIGNS.findIndex(x=>x.id===h);if(k>=0)D.value=k;
+const h=location.hash.slice(1),k=DESIGNS.findIndex(x=>x.id===h);if(k>=0)cur=k;
 ['vf','sf'].forEach(f=>$(f).addEventListener('load',send));
 // Frames report their own content height; fit each, then report this page's height to the Technology page.
 function fitSelf(){parent!==window&&parent.postMessage({scoutFit:Math.ceil(document.body.getBoundingClientRect().height),from:'design-explorer'},location.origin)}
 addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.scoutFit)return;
   ['vf','sf'].forEach(f=>{if($(f).contentWindow===e.source)$(f).style.height=e.data.scoutFit+'px'});fitSelf()});
 new ResizeObserver(fitSelf).observe(document.body);
-show();
+pick(cur,false);
 })();
 </script>
 </body>
