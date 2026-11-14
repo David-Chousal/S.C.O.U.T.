@@ -74,7 +74,7 @@ strong{font-weight:600;color:var(--color-text)}
 em{font-style:italic}
 code{font-family:var(--font-mono);font-size:0.9em;background:var(--color-canvas-sunken);
   padding:0.1em 0.4em;border-radius:var(--radius-xs)}
-:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;border-radius:4px}
+:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px;border-radius:4px}
 img{max-width:100%;height:auto;display:block}
 /* Reset the browser default figure margin (margin:1em 40px), scoped to page content only —
    never the header or footer, so their layout is untouched. */

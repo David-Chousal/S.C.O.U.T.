@@ -36,9 +36,11 @@ CSS = """/* ── Grid / bento ────────────────
 .card-ink h2,.card-ink h3{color:var(--color-canvas)}
 .card-ink p{color:color-mix(in srgb,var(--color-canvas) 78%,transparent)}
 .card-ink .kicker{color:color-mix(in srgb,var(--color-canvas) 66%,transparent)}
-.card-ink .btn{border-color:color-mix(in srgb,var(--color-canvas) 34%,transparent);color:var(--color-canvas)}
-.card-ink .btn:hover{background:var(--color-canvas);color:var(--color-text);border-color:var(--color-canvas)}
-.card-ink .btn-primary{background:var(--color-canvas);color:var(--color-text)}
+.card-ink .btn{--bed:color-mix(in srgb,var(--color-canvas) 22%,transparent);
+  border-color:color-mix(in srgb,var(--color-canvas) 34%,transparent);color:var(--color-canvas)}
+.card-ink .btn:hover{border-color:var(--color-canvas)}
+.card-ink .btn-primary,.card-ink .btn-primary:hover{--bed:rgb(0 0 0/.28);border-color:var(--color-accent);
+  color:var(--color-on-accent)}
 .card-ink .stat{background:color-mix(in srgb,var(--color-canvas) 8%,transparent);box-shadow:none;
   border:1px solid color-mix(in srgb,var(--color-canvas) 16%,transparent)}
 .card-ink .stat .stat-label{color:color-mix(in srgb,var(--color-canvas) 62%,transparent)}

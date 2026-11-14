@@ -58,12 +58,14 @@
   margin:-.6rem 0 0 .55rem;padding:0 .3rem;background:rgb(253 249 247 / .85);border-radius:3px;white-space:nowrap}
 .xp-tag-g{color:var(--xp-g)}.xp-tag-b{color:var(--xp-b)}.xp-tag-gz{color:var(--xp-text);margin:-1.5rem 0 0 0;translate:-50% 0}
 
-.xp-btn{font:inherit;font-size:.85rem;font-weight:500;color:var(--xp-text);background:rgb(253 249 247 / .9);border:1px solid var(--xp-line-strong);
-  border-radius:999px;padding:.4rem .95rem;cursor:pointer;white-space:nowrap;transition:background 180ms,border-color 180ms,color 180ms}
-.xp-btn:hover{border-color:var(--xp-text)}
-.xp-btn[aria-pressed=true]{background:var(--xp-text);color:var(--xp-canvas);border-color:var(--xp-text)}
-.xp-solid{background:var(--xp-accent);border-color:var(--xp-accent);color:var(--xp-on-accent)}
-.xp-solid:hover{background:var(--xp-text);border-color:var(--xp-text)}
+/* Console keys, like every button on the site (ADR-0009 addendum, 2026-11-13). */
+.xp-btn{--bed:color-mix(in srgb,var(--xp-text) 16%,transparent);font:inherit;font-size:.85rem;font-weight:500;color:var(--xp-text);
+  background:rgb(253 249 247 / .9);border:1px solid var(--xp-line-strong);border-radius:2px;padding:.4rem .95rem calc(.4rem + 2px);
+  cursor:pointer;white-space:nowrap;box-shadow:inset 0 -3px 0 var(--bed);
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background 180ms,border-color 180ms,color 180ms}
+.xp-btn:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16)}
+.xp-btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed)}
+.xp-btn[aria-pressed=true],.xp-solid{--bed:rgb(0 0 0/.28);background:var(--xp-accent);border-color:var(--xp-accent);color:var(--xp-on-accent)}
 
 /* The curve: drag along it to tilt the model. */
 .xp-curve-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.2rem 1rem;margin:0 0 .25rem}

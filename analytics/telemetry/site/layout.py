@@ -65,6 +65,13 @@ _CHAT_ICON = (
 )
 
 
+_EXTERNAL_ICON = (
+    '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M4 2.5h5.5V8M9.5 2.5 3 9"/></svg>'
+)
+
+
 def _nav_social(base: str) -> str:
     # The chat launcher sits next to LinkedIn on desktop. On mobile the whole .nav-social row is
     # hidden, so the floating .chat-fab (in chat_widget) takes over there — both open the same
@@ -89,6 +96,12 @@ def header(base: str, active: str, social: bool = True) -> str:
         is_active = slug == active_slug
         cur = ' aria-current="page"' if is_active else ""
         cls = ' class="opt"' if optional else ""
+        if slug == CONSOLE_URL:
+            # The one link that leaves the site carries an arrow, so the hand-off reads as a
+            # different app before it is clicked.
+            links.append(f'<li{cls}><a class="nav-ext" href="{slug}">{label}'
+                         f'{_EXTERNAL_ICON}</a></li>')
+            continue
         # A real element (not ::after) so it can carry a view-transition-name and slide
         # between pages during the cross-document transition.
         mark = '<span class="nav-mark"></span>' if is_active else ""
