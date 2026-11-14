@@ -97,9 +97,9 @@ def header(base: str, active: str, social: bool = True) -> str:
         cur = ' aria-current="page"' if is_active else ""
         cls = ' class="opt"' if optional else ""
         if slug == CONSOLE_URL:
-            # The one link that leaves the site is drawn as a console key, so the hand-off reads
-            # as a different app before it is clicked.
-            links.append(f'<li{cls}><a class="nav-key" href="{slug}">{label}'
+            # The one link that leaves the site carries an arrow, so the hand-off reads as a
+            # different app before it is clicked.
+            links.append(f'<li{cls}><a class="nav-ext" href="{slug}">{label}'
                          f'{_EXTERNAL_ICON}</a></li>')
             continue
         # A real element (not ::after) so it can carry a view-transition-name and slide
