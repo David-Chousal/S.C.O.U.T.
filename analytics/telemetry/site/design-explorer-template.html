@@ -87,7 +87,8 @@ function pick(i,focus){cur=Math.max(0,Math.min(N-1,i));const x=DESIGNS[cur],c=ch
   strip.scrollTo({left:c.offsetLeft-(strip.clientWidth-c.offsetWidth)/2,behavior:still.matches||!focus?'auto':'smooth'});
   if(focus)c.focus({preventScroll:true});
   send();try{history.replaceState(null,'','#'+x.id)}catch(e){}}
-document.addEventListener('keydown',e=>{
+// Keys move the pick only while focus is in the timeline, so the page keeps its own arrow, Home and End scrolling.
+strip.addEventListener('keydown',e=>{
   if(e.key==='Home'||e.key==='End'){pick(e.key==='Home'?0:N-1,true);e.preventDefault();return}
   const step={ArrowLeft:-1,ArrowUp:-1,ArrowRight:1,ArrowDown:1}[e.key];if(step){pick(cur+step,true);e.preventDefault()}});
 // A design can be linked to as #<id>. Each frame is told again when it finishes loading, since it starts on its own default.
