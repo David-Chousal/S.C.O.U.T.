@@ -20,6 +20,8 @@ import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setC
 import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
 import { guestSignIn, maskReply } from "./guests.js";
+import { heatStressView } from "./heat-stress-view.js";
+import { setMmm } from "./mmm.js";
 import { listReadings, readingsQuery } from "./readings.js";
 import { sendLinkEmail } from "./mail.js";
 import { createReport, download, listReports, newLink, REPORT_COLUMNS } from "./reports.js";
@@ -119,6 +121,8 @@ async function reads(env, path, session, url) {
       return json({ buoys: await listBuoys(env.DB), estimates, slotLabels: SLOT_LABELS });
     case "/api/settings":
       return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig, estimates });
+    case "/api/heat-stress":
+      return json(await heatStressView(env.DB));
     case "/api/team":
       return json({ members: await listUsers(env.DB), invites: await openInvites(env.DB) });
     case "/api/devices":
@@ -155,6 +159,7 @@ const WRITES = [
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/label$/, "settings.write", (db, b, m, a) => renameBuoy(db, a, m[1], b.label)],
   [/^\/api\/settings\/buoys\/(\d{1,5})$/, "settings.write", (db, b, m, a) => requestSettings(db, a, m[1], b.settings)],
   [/^\/api\/settings\/buoys\/(\d{1,5})\/defaults$/, "settings.write", (db, b, m, a) => restoreDefaults(db, a, m[1])],
+  [/^\/api\/settings\/buoys\/(\d{1,5})\/mmm$/, "settings.write", (db, b, m, a) => setMmm(db, a, m[1], b)],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/command-station$/, "devices.write", (db, b, m, a) => setCommandStation(db, a, m[1], b.device_id)],
   [/^\/api\/fleet\/buoys$/, "buoys.add", (db, b, m, a) => addBuoy(db, a, b.buoy_id, String(b.label || "").trim())],
   [/^\/api\/fleet\/buoys\/(\d{1,5})\/disconnect$/, "buoys.add", (db, b, m, a) => disconnectBuoy(db, a, m[1])],

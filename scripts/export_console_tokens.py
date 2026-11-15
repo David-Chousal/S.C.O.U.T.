@@ -22,7 +22,7 @@ _ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT / "analytics"))
 
 from telemetry.site.theme.colour import mix, oklch_to_hex  # noqa: E402
-from telemetry.site.theme.tokens import CATEGORICAL, DATA, PRIMITIVES, STATUS  # noqa: E402
+from telemetry.site.theme.tokens import ALERTS, CATEGORICAL, DATA, PRIMITIVES, STATUS  # noqa: E402
 
 OUT = _ROOT / "console" / "web" / "design" / "tokens.json"
 
@@ -76,6 +76,11 @@ def colours() -> dict[str, dict]:
         "series-temp": _pair(DATA["data-temp"], _NIGHT_TEMP, "Water temperature, wherever it is plotted (Tideline data-temp)."),
         "series-turb": _pair(DATA["data-turb"], mix(DATA["data-turb"], .55, P["p-foam-0"]), "Turbidity, wherever it is plotted (Tideline data-turb)."),
         "series-other": _pair("{ink-muted}", "{ink-muted}", "Anything past the categorical set, grouped as Other."),
+        # NOAA Coral Reef Watch's alert hues, the same fills the public site's Science page uses (SCO-314).
+        # A fixed swatch in both themes, always with its level named on it in the on-alert colour.
+        **{f"alert-{level}": _pair(fill, fill, f"Bleaching alert swatch, {level} (Tideline, NOAA CRW hue). Always with the level's name.")
+           for level, (fill, _) in ALERTS.items()},
+        **{f"on-alert-{level}": _pair(on, on, f"Label on the {level} swatch (≥ 4.5:1).") for level, (_, on) in ALERTS.items()},
         **{f"seq-{i}": _pair(P[f"p-lagoon-{day}"], P[f"p-lagoon-{night}"], "Sequential scale: lagoon stepping in lightness, never a rainbow.")
            for i, (day, night) in enumerate(((50, 800), (200, 700), (400, 500), (600, 400), (800, 200)))},
     }

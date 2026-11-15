@@ -6,6 +6,7 @@
  * preset leaves the value empty and says so. */
 
 import buoyConfig from "../buoy-config.json" with { type: "json" };
+import { ALERT_LEVELS } from "../heat-stress.js";
 
 const remoteDefault = (key) => buoyConfig.remote.find((spec) => spec.key === key)?.default ?? null;
 
@@ -55,10 +56,19 @@ export const PRESETS = [
     source: "The firmware's default humidity alert (scout_settings), a placeholder until the SCO-204 calibration." },
   { id: "water-warm", label: "Water temperature above", kind: "threshold", metric: "temp_c", op: "above", value: null,
     source: "The repo has no canonical temperature limit, so set your own." },
+  { id: "bleaching-alert", label: "Bleaching Alert Level 1 or worse", kind: "bleaching", metric: null, op: null, value: 3,
+    source: "NOAA Coral Reef Watch: Alert Level 1 (DHW ≥ 4 °C-weeks) is the risk of reef-wide bleaching. Needs the buoy's MMM." },
   { id: "buoy-silent", label: "Buoy silent", kind: "silence", metric: null, op: null, value: null,
     source: "No canonical number: Fleet calls a buoy silent after twice its longest gap between transmits plus an hour, " +
       "which is 18 h at three a day. Set your own." },
 ];
+
+/** Bleaching rules (SCO-314, ADR-0017) store the lowest CRW alert level that fires as its index
+ * in ALERT_LEVELS. No Stress (0) cannot be a trigger. A firing rule re-arms only once the level
+ * is back below the trigger by this many levels, so a day-to-day swing between Warning and
+ * Alert Level 1 does not flap. */
+export const BLEACHING_MARGIN_LEVELS = 1;
+export const BLEACHING_LEVELS = ALERT_LEVELS.map((label, value) => ({ value, label })).slice(1);
 
 export const MAX_RULES = 20;
 const MAX_HOURS = 24 * 14;
@@ -90,7 +100,13 @@ export function validRule(body) {
     if (!(isNumber(body.value) && body.value >= 1 && body.value <= MAX_HOURS)) return { error: `Quiet for 1-${MAX_HOURS} hours.` };
     return { ...base, kind, metric: null, op: null, value: body.value };
   }
-  return { error: "Pick what the alert watches: a reading, a flag, or the buoy going quiet." };
+  if (kind === "bleaching") {
+    if (!(Number.isInteger(body.value) && body.value >= 1 && body.value < ALERT_LEVELS.length)) {
+      return { error: "Pick the bleaching alert level that should email you." };
+    }
+    return { ...base, kind, metric: null, op: null, value: body.value };
+  }
+  return { error: "Pick what the alert watches: a reading, a flag, heat stress, or the buoy going quiet." };
 }
 
 const trim = (n) => String(Math.round(n * 1000) / 1000);
@@ -102,6 +118,7 @@ export function describeRule(rule) {
     return `${metric.label} ${rule.op} ${trim(rule.value)} ${metric.unit}`;
   }
   if (rule.kind === "flag") return `Flag: ${FLAGS[rule.metric]} (${rule.metric})`;
+  if (rule.kind === "bleaching") return `Bleaching alert at or above ${ALERT_LEVELS[rule.value]}`;
   return `Quiet for ${trim(rule.value)} h`;
 }
 
@@ -109,11 +126,13 @@ export function describeRule(rule) {
 export function formatValue(rule, value) {
   if (rule.kind === "threshold") return `${trim(value)} ${METRICS[rule.metric].unit}`;
   if (rule.kind === "silence") return `${Math.round(value * 10) / 10} h without a packet`;
+  if (rule.kind === "bleaching") return ALERT_LEVELS[value] ?? "Unknown";
   return "Raised";
 }
 
 export const catalog = () => ({
   metrics: Object.entries(METRICS).map(([key, { label, unit }]) => ({ key, label, unit })),
   flags: Object.entries(FLAGS).map(([key, label]) => ({ key, label })),
+  bleachingLevels: BLEACHING_LEVELS,
   presets: PRESETS,
 });

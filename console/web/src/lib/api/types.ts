@@ -47,6 +47,15 @@ export interface Buoy {
   /** From the newest v5 packet; null until one arrives. */
   settings_digest_reported: string | null;
   settings_state: CountState;
+  /** Heat stress (SCO-314, ADR-0017): the buoy's position and site MMM, °C. Null until set. */
+  latitude?: number | null;
+  longitude?: number | null;
+  mmm_c?: number | null;
+  mmm_source?: MmmSource | null;
+  mmm_cell_lat?: number | null;
+  mmm_cell_lon?: number | null;
+  mmm_set_by?: string | null;
+  mmm_set_at?: number | null;
 }
 
 /** One remote setting, from the firmware's table (buoy-config.json "remote"). */
@@ -279,7 +288,7 @@ export type FredEvent =
   | { event: "done"; data: { provider: string; used: number; cap: number } }
   | { event: "error"; data: { message: string } };
 
-export type AlertKind = "threshold" | "flag" | "silence";
+export type AlertKind = "threshold" | "flag" | "silence" | "bleaching";
 
 /** One alert rule as the Notifications tab edits it (worker/alerts/catalog.js validRule). */
 export interface AlertRuleInput {
@@ -328,5 +337,48 @@ export interface AlertsView {
   caps: { person: number; total: number; sentToday: number; cappedToday: number };
   metrics: { key: string; label: string; unit: string }[];
   flags: { key: string; label: string }[];
+  /** CRW alert levels a bleaching rule can trigger at, by index (1 Watch … 7 Alert Level 5). */
+  bleachingLevels: { value: number; label: string }[];
   presets: AlertPreset[];
+}
+
+export type MmmSource = "noaa_crw_5km" | "manual";
+
+/** CRW's alert scale, least to most severe (worker/heat-stress.js ALERT_LEVELS). */
+export const ALERT_LEVELS = ["No Stress", "Bleaching Watch", "Bleaching Warning", "Alert Level 1", "Alert Level 2",
+  "Alert Level 3", "Alert Level 4", "Alert Level 5"] as const;
+export type AlertLevel = (typeof ALERT_LEVELS)[number];
+
+/** One calendar day of heat stress (worker/heat-stress.js assessThermalStress). */
+export interface HeatStressDay {
+  day: string;
+  /** Daily mean of trusted readings, °C; null on a day with too few. */
+  sst: number | null;
+  hotspot: number | null;
+  /** Degree Heating Weeks, °C-weeks. */
+  dhw: number;
+  alert: AlertLevel;
+  level: number;
+  window_coverage: number;
+}
+
+export interface BuoyHeatStress {
+  buoy_id: number;
+  label: string;
+  mmm: { value_c: number; source: MmmSource; latitude: number | null; longitude: number | null; cell_latitude: number | null;
+    cell_longitude: number | null; set_by: string | null; set_at: number | null } | null;
+  threshold_c: number | null;
+  samples_per_day?: number;
+  current: (HeatStressDay & { days_old: number }) | null;
+  /** The last 84 days, oldest first. */
+  series: HeatStressDay[];
+  summary: { peak_dhw: number; peak_dhw_day: string | null; peak_alert: AlertLevel; days: number; days_at_or_above_threshold: number } | null;
+  note: string | null;
+}
+
+export interface HeatStressView {
+  window_days: number;
+  alert_levels: AlertLevel[];
+  generated_at: string;
+  buoys: BuoyHeatStress[];
 }

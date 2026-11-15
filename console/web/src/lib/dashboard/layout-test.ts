@@ -13,7 +13,7 @@ describe("dashboard layout", () => {
 
   test("the default board follows the first buoy, and is just fleet and trend with none", () => {
     expect(systemDefault([2, 1]).filter((b) => b.kind === "readout").every((b) => b.buoy === 2)).toBe(true);
-    expect(systemDefault([]).map((b) => b.kind)).toEqual(["trace", "fleet"]);
+    expect(systemDefault([]).map((b) => b.kind)).toEqual(["trace", "heat", "fleet"]);
   });
 
   test("adding gives a unique id at the top, and a bay already on the board is known", () => {

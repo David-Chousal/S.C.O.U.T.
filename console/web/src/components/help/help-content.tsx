@@ -115,10 +115,22 @@ export const PROBLEMS: readonly HelpProblem[] = [
     ),
   },
   {
+    symptom: "Heat stress says “No MMM set”, or I want to read it",
+    fix: (
+      <>The <b>Heat stress</b> bay on the Dashboard runs NOAA Coral Reef Watch&rsquo;s method on the buoy&rsquo;s own water temperature:
+        a daily mean, the HotSpot above the site&rsquo;s MMM (its warmest month&rsquo;s normal temperature), Degree Heating Weeks over
+        12 weeks and the alert level, from No Stress to Alert Level 5. It needs the buoy&rsquo;s MMM: a member opens{" "}
+        <b>Settings → Buoys</b>, picks the buoy, types its latitude and longitude under <b>Heat stress</b> and presses{" "}
+        <b>Look up from NOAA</b>, or types the MMM by hand. A day counts only with at least half of its transmits (2 of 3), so a quiet
+        buoy leaves a gap. The numbers are indicative: the buoy reads water temperature day and night, NOAA&rsquo;s satellite reads
+        the surface at night.</>
+    ),
+  },
+  {
     symptom: "I want an email when a buoy needs attention",
     fix: (
       <>Open <b>Settings → Notifications</b>, turn on <b>Email me when one of my alerts fires</b>, and add an alert: start from a
-        preset (battery low, housing humidity, water temperature, buoy silent) or build one. Alerts go only to your own account
+        preset (battery low, housing humidity, water temperature, bleaching Alert Level 1, buoy silent) or build one. Alerts go only to your own account
         email, at most one email per batch of readings, and each alert emails once until it clears. Use <b>Send test email</b> to
         check it arrives. Each email has a link that turns that one alert off. Guests can&rsquo;t have alerts. Each person gets at most
         10 alert emails a day and the console 30; an alert over a cap shows under <b>Recent alerts</b> instead.</>

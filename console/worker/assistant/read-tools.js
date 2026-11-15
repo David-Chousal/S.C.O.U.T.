@@ -7,6 +7,7 @@ import { REGISTRY } from "../buoy-settings.js";
 import { listDashboards } from "../dashboards.js";
 import { listDevices } from "../device.js";
 import { buoyConfig, listBuoys, SLOT_LABELS } from "../fleet.js";
+import { heatStressView } from "../heat-stress-view.js";
 import { listReadings } from "../readings.js";
 import { listReports } from "../reports.js";
 import { BUDGET, usage } from "../storage.js";
@@ -130,6 +131,26 @@ export const READ_TOOLS = [
         .map((r) => ({ t: r.timestamp_utc, ...Object.fromEntries(vars.map((v) => [v, r[v] === "" ? null : r[v]])), flags: r.flags || undefined }));
       return { buoy_id: Number(args.buoy_id), from, to: to || "now", count: rows.length, shown: points.length,
         stats: Object.fromEntries(vars.map((v) => [v, stats(rows, v)])), points };
+    },
+  },
+  {
+    name: "get_heat_stress",
+    description: "NOAA Coral Reef Watch heat stress per buoy (ADR-0017): MMM and where it came from, bleaching threshold (MMM + 1 °C), " +
+      "the newest day's daily-mean temperature, HotSpot, Degree Heating Weeks (°C-weeks, 84-day window) and CRW alert level, the " +
+      "12-week peak, and weekly DHW points. A buoy with no MMM says so.",
+    parameters: { type: "object", properties: { buoy_id: { ...buoyIdParam, description: "Optional: one buoy. Default: every connected buoy" } } },
+    run: async ({ env, now }, { buoy_id: id } = {}) => {
+      const view = await heatStressView(env.DB, now, id === undefined || id === null ? null : Number(id));
+      if (id !== undefined && id !== null && view.buoys.length === 0) return { error: `No buoy ${id}.` };
+      return {
+        alert_levels: view.alert_levels,
+        buoys: view.buoys.map((b) => ({
+          buoy_id: b.buoy_id, label: b.label, note: b.note, threshold_c: b.threshold_c,
+          mmm: b.mmm && { value_c: b.mmm.value_c, source: b.mmm.source, latitude: b.mmm.latitude, longitude: b.mmm.longitude },
+          current: b.current, summary: b.summary,
+          weekly_dhw: b.series.filter((d, i) => (b.series.length - 1 - i) % 7 === 0).map((d) => ({ day: d.day, dhw: d.dhw, alert: d.alert })),
+        })),
+      };
     },
   },
   {

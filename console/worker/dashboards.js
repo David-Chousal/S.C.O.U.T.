@@ -11,6 +11,7 @@ export const BAY_KINDS = {
   trace: { spans: [6, 12], buoy: false, variable: true },
   fleet: { spans: [4, 6, 12], buoy: false, variable: false },
   latest: { spans: [6, 12], buoy: true, variable: false },
+  heat: { spans: [6, 12], buoy: false, variable: false },
 };
 export const MAX_BAYS = 24;
 const MAX_VIEWS = 20;

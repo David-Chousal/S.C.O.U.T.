@@ -15,6 +15,7 @@ const FALLBACK_NOTE = "You are the smaller backup model because Gemini is busy, 
 
 const LABELS = {
   list_buoys: "Looked at Fleet", get_buoy: "Read buoy {buoy_id}", get_readings: "Read buoy {buoy_id}'s readings",
+  get_heat_stress: "Read heat stress",
   list_stations: "Looked at Stations", list_reports: "Looked at Reports", list_dashboards: "Looked at dashboards",
   get_audit: "Read the audit log", get_storage: "Looked at storage", search_docs: "Searched the docs for “{query}”",
   link_to: "Found a link", propose_settings: "Drafted a settings change", propose_restore_defaults: "Drafted a restore to defaults",

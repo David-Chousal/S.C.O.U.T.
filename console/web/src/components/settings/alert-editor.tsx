@@ -20,8 +20,11 @@ export interface Draft {
 const KINDS: readonly { value: AlertKind; label: string }[] = [
   { value: "threshold", label: "A reading crosses a value" },
   { value: "flag", label: "A firmware flag appears" },
+  { value: "bleaching", label: "Heat stress reaches a bleaching alert level" },
   { value: "silence", label: "The buoy goes quiet" },
 ];
+// Alert Level 1 (DHW ≥ 4, risk of reef-wide bleaching): the level a new bleaching rule starts at.
+const DEFAULT_BLEACHING_LEVEL = "3";
 const OPS = [{ value: "above", label: "above" }, { value: "below", label: "below" }] as const;
 
 export const emptyDraft = (catalog: Pick<AlertsView, "metrics" | "flags">): Draft => ({
@@ -49,6 +52,10 @@ export function inputOf(draft: Draft): AlertRuleInput | string {
   if (remind !== null && !(Number.isInteger(remind) && remind >= 1)) return "Remind every whole number of hours, or leave it empty.";
   const base = { buoy_id: draft.buoy === "any" ? null : draft.buoy, remind_hours: remind };
   if (draft.kind === "flag") return { ...base, kind: "flag", metric: draft.metric, op: null, value: null };
+  if (draft.kind === "bleaching") {
+    if (!(Number.isInteger(value) && value >= 1)) return "Pick the bleaching alert level that should email you.";
+    return { ...base, kind: "bleaching", metric: null, op: null, value };
+  }
   if (!Number.isFinite(value)) return draft.kind === "silence" ? "Give the number of quiet hours." : "Give the value to compare against.";
   if (draft.kind === "silence") return { ...base, kind: "silence", metric: null, op: null, value };
   return { ...base, kind: "threshold", metric: draft.metric, op: draft.op, value };
@@ -83,7 +90,7 @@ export function AlertEditor({ catalog, buoys, draft, onDraft, editing, disabled,
 
   function pickKind(kind: AlertKind) {
     const metric = kind === "flag" ? catalog.flags[0]?.key ?? "" : kind === "threshold" ? catalog.metrics[0]?.key ?? "" : "";
-    set({ kind, metric, value: "", source: "" });
+    set({ kind, metric, value: kind === "bleaching" ? DEFAULT_BLEACHING_LEVEL : "", source: "" });
   }
 
   return (
@@ -125,6 +132,15 @@ export function AlertEditor({ catalog, buoys, draft, onDraft, editing, disabled,
             <span className="sc-fieldset__label"><span className="sc-tag">Flag</span></span>
             <Select aria-label="Flag" value={draft.metric} disabled={disabled}
               options={catalog.flags.map((f) => ({ value: f.key, label: `${f.label} · ${f.key}` }))} onChange={(metric) => set({ metric })} />
+          </div>
+        )}
+        {draft.kind === "bleaching" && (
+          <div className="sc-fieldset">
+            <span className="sc-fieldset__label"><span className="sc-tag">At or above</span></span>
+            <Select aria-label="Bleaching alert level" value={draft.value || DEFAULT_BLEACHING_LEVEL} disabled={disabled}
+              options={catalog.bleachingLevels.map((level) => ({ value: String(level.value), label: level.label }))}
+              onChange={(value) => set({ value })} />
+            <span className="sc-help">NOAA Coral Reef Watch&apos;s level for the buoy&apos;s newest daily mean. Needs the buoy&apos;s MMM (Settings → Buoys).</span>
           </div>
         )}
         {draft.kind === "silence" && (
