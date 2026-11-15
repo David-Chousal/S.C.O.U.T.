@@ -16,6 +16,8 @@ const TOLERANCE = 1e-9;
 
 function assertClose(actual, expected, label) {
   if (expected === null) return assert.equal(actual, null, label);
+  // null - 0 is 0, so a missing value would pass an expected 0 without this.
+  assert.ok(typeof actual === "number" && Number.isFinite(actual), `${label}: ${actual} is not a number`);
   assert.ok(Math.abs(actual - expected) <= TOLERANCE, `${label}: ${actual} vs ${expected}`);
 }
 
@@ -86,4 +88,21 @@ test("no readings give an empty series and a zero summary", () => {
   assert.deepEqual(series, []);
   assert.equal(summary.peak_dhw, 0);
   assert.equal(summary.peak_alert, "No Stress");
+});
+
+test("each day's coverage uses the transmit count its rows report, else the fallback", () => {
+  const rows = [
+    // Day 1: the buoy ran one transmit a day; its one reading is a full day.
+    { timestamp_utc: "2027-03-01T00:10:00Z", temp_c: "30", flags: "", tx_count: "1" },
+    // Day 2: it now runs three; one reading of three is below the floor.
+    { timestamp_utc: "2027-03-02T00:10:00Z", temp_c: "30", flags: "", tx_count: "3" },
+    // Day 3: no count recorded, so the fallback (3) applies.
+    { timestamp_utc: "2027-03-03T00:10:00Z", temp_c: "30", flags: "" },
+  ];
+  const daily = aggregateDaily(rows, 3);
+  assert.deepEqual(daily.map((d) => [d.day, d.temp_mean, d.coverage]),
+    [["2027-03-01", 30, 1], ["2027-03-02", null, 0.333], ["2027-03-03", null, 0.333]]);
+  assert.deepEqual(aggregateDaily(rows.slice(2), 1).map((d) => d.temp_mean), [30], "the fallback decides a day with no count");
+  const { series } = heatStressFromRows(rows, 28, 3);
+  assert.equal(series[0].hotspot, 2, "the one-transmit day keeps its HotSpot after the count changed");
 });

@@ -29,7 +29,9 @@ export async function buoyHeatStress(db, buoy, now = Date.now()) {
   if (!base.mmm) return { ...base, threshold_c: null, current: null, series: [], summary: null, note: NO_MMM };
   const today = isoDay(now);
   const firstShown = isoDay(now - (TREND_DAYS - 1) * DAY_MS);
-  const rows = await rowsSince(db, buoy.buoy_id, isoDay(now - (2 * TREND_DAYS) * DAY_MS));
+  // Ingest accepts stamps up to a day ahead; a row dated after today would add an empty "today".
+  const rows = (await rowsSince(db, buoy.buoy_id, isoDay(now - (2 * TREND_DAYS) * DAY_MS)))
+    .filter((row) => String(row.timestamp_utc).slice(0, 10) <= today);
   const samplesPerDay = buoy.tx_count_reported ?? DEFAULT_TX_COUNT;
   const { series } = heatStressFromRows(rows, base.mmm.value_c, samplesPerDay);
   const shown = series.filter((d) => d.day >= firstShown && d.day <= today).map(withLevel);

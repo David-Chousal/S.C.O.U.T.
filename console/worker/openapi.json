@@ -308,16 +308,10 @@
           },
           "samples_per_day": {
             "type": "integer",
-            "description": "Readings a full day should have (the buoy's transmit count); half are needed for a daily mean"
+            "description": "Fallback transmit count for a day whose readings carry none (the buoy's reported count, else 3); half a day's transmits are needed for a daily mean"
           },
           "current": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HeatStressDay"
-              }
-            ],
-            "nullable": true,
-            "description": "The newest day with a daily mean, plus days_old"
+            "$ref": "#/components/schemas/HeatStressCurrent"
           },
           "series": {
             "type": "array",
@@ -327,7 +321,40 @@
           },
           "summary": {
             "type": "object",
-            "nullable": true
+            "nullable": true,
+            "description": "The last 84 days; null when the buoy has no MMM",
+            "properties": {
+              "peak_dhw": {
+                "type": "number",
+                "description": "Highest DHW, °C-weeks"
+              },
+              "peak_dhw_day": {
+                "type": "string",
+                "nullable": true,
+                "example": "2027-04-02"
+              },
+              "peak_alert": {
+                "type": "string",
+                "enum": [
+                  "No Stress",
+                  "Bleaching Watch",
+                  "Bleaching Warning",
+                  "Alert Level 1",
+                  "Alert Level 2",
+                  "Alert Level 3",
+                  "Alert Level 4",
+                  "Alert Level 5"
+                ]
+              },
+              "days": {
+                "type": "integer",
+                "description": "Calendar days in the series"
+              },
+              "days_at_or_above_threshold": {
+                "type": "integer",
+                "description": "Days whose daily mean reached MMM + 1 °C"
+              }
+            }
           },
           "note": {
             "type": "string",
@@ -358,6 +385,60 @@
             }
           }
         }
+      },
+      "HeatStressCurrent": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "2027-04-02",
+            "description": "UTC calendar day"
+          },
+          "sst": {
+            "type": "number",
+            "nullable": true,
+            "description": "Daily mean of trusted readings, °C; null when the day had too few"
+          },
+          "hotspot": {
+            "type": "number",
+            "nullable": true,
+            "description": "max(0, sst − MMM), °C"
+          },
+          "dhw": {
+            "type": "number",
+            "description": "Degree Heating Weeks, °C-weeks"
+          },
+          "alert": {
+            "type": "string",
+            "enum": [
+              "No Stress",
+              "Bleaching Watch",
+              "Bleaching Warning",
+              "Alert Level 1",
+              "Alert Level 2",
+              "Alert Level 3",
+              "Alert Level 4",
+              "Alert Level 5"
+            ]
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7,
+            "description": "Index of alert in alert_levels"
+          },
+          "window_coverage": {
+            "type": "number",
+            "description": "Share of the 84-day window with a daily mean, 0–1"
+          },
+          "days_old": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Whole days between that day and today (UTC)"
+          }
+        },
+        "nullable": true,
+        "description": "The newest day with a daily mean; null when the buoy has no MMM or no such day in the last 12 weeks"
       }
     }
   },

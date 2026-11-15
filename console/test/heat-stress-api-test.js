@@ -203,3 +203,35 @@ test("Fred's get_heat_stress reads the same numbers, and says when a buoy has no
   assert.match(buoys[1].note, /No MMM/);
   assert.match((await tool.run(ctx, { buoy_id: 9 })).error, /No buoy 9/);
 });
+
+test("a reading stamped tomorrow does not turn today into an empty No Stress day", async () => {
+  const env = makeEnv();
+  addBuoy(env, { mmm: 27 });
+  seedDays(env, range(-5, -1), 29);
+  seedDays(env, [1], 29);
+  const { client } = await signedIn(env, "member");
+  const [buoy] = (await client.get("/api/heat-stress")).body.buoys;
+  assert.equal(buoy.current.day, dayOf(-1));
+  assert.equal(buoy.current.alert, "Bleaching Warning");
+  assert.ok(buoy.series.every((d) => d.day <= dayOf(0)));
+});
+
+test("an MMM change is not kept when its audit entry cannot be written", async () => {
+  const env = makeEnv();
+  addBuoy(env, { mmm: 27 });
+  const { client } = await signedIn(env, "member");
+  env.DB.raw.exec("CREATE TRIGGER no_audit BEFORE INSERT ON audit_log BEGIN SELECT RAISE(ABORT, 'audit down'); END");
+  const reply = await client.post("/api/settings/buoys/1/mmm", { mmm_c: 28.4 });
+  assert.equal(reply.status, 500);
+  assert.equal(env.DB.raw.prepare("SELECT mmm_c FROM buoys").get().mmm_c, 27);
+});
+
+test("the OpenAPI file allows current: null and names the summary fields", async () => {
+  const spec = JSON.parse(readFileSync(new URL("../worker/openapi.json", import.meta.url), "utf8"));
+  const { schemas } = spec.components;
+  assert.equal(schemas.BuoyHeatStress.properties.current.$ref, "#/components/schemas/HeatStressCurrent");
+  assert.equal(schemas.HeatStressCurrent.nullable, true);
+  assert.equal(schemas.HeatStressCurrent.properties.days_old.type, "integer");
+  assert.deepEqual(Object.keys(schemas.BuoyHeatStress.properties.summary.properties),
+    ["peak_dhw", "peak_dhw_day", "peak_alert", "days", "days_at_or_above_threshold"]);
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useState, type PointerEvent } from "react";
 
 /** A daily line chart for the heat-stress bay, drawn by the same rules as the trend bay
  * (trace-bay.tsx): the line's end is labelled, hover shows a crosshair and readout, the pen
@@ -36,16 +36,17 @@ function ticks(min: number, max: number): number[] {
 }
 
 export function DayChart({ points, label, unit, color, references, floor, digits, ariaLabel }: DayChartProps) {
-  const box = useRef<HTMLDivElement>(null);
+  // The wrapper is held in state, not a ref, so the observer attaches whenever it mounts: the
+  // chart can render empty first and get its points later.
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(600);
   const [hover, setHover] = useState<number | null>(null);
   useEffect(() => {
-    const element = box.current;
-    if (!element || typeof ResizeObserver === "undefined") return;
+    if (!box || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(([entry]) => setWidth(Math.max(240, entry.contentRect.width)));
-    observer.observe(element);
+    observer.observe(box);
     return () => observer.disconnect();
-  }, []);
+  }, [box]);
 
   const present = points.filter((p): p is { day: string; value: number } => p.value !== null).map((p) => ({ t: noon(p.day), v: p.value }));
   if (present.length === 0) return <p className="sc-help">No daily {label.toLowerCase()} in the last 12 weeks.</p>;
@@ -72,7 +73,7 @@ export function DayChart({ points, label, unit, color, references, floor, digits
 
   const hovered = hover === null ? null : nearest(hover);
   return (
-    <div className="sc-trace" ref={box}>
+    <div className="sc-trace" ref={setBox}>
       <svg viewBox={`0 0 ${width} ${HEIGHT}`} role="img" aria-label={ariaLabel} onPointerMove={onMove} onPointerLeave={() => setHover(null)}
         style={{ height: HEIGHT }}>
         <g className="sc-trace__grid">{ticks(y0, y1).map((v) => <line key={v} x1={PAD.left} x2={width - PAD.right} y1={y(v)} y2={y(v)} />)}</g>

@@ -9,7 +9,7 @@
  *
  * Every change goes in the audit log. A land or ice cell has no SST, so the lookup says so. */
 
-import { record } from "./audit.js";
+import { recordStatement } from "./audit.js";
 
 export const CRW_DATASET_URL = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW.json";
 export const MMM_RANGE_C = [10, 35];
@@ -110,9 +110,12 @@ export async function setMmm(db, actor, buoyId, body, now = Date.now()) {
   const before = Object.fromEntries(COLUMNS.map((key) => [key, buoy[key] ?? null]));
   const after = Object.fromEntries(COLUMNS.map((key) => [key, wanted[key] ?? null]));
   if (COLUMNS.every((key) => before[key] === after[key])) return { mmm: mmmOf(buoy) };
-  await db.prepare("UPDATE buoys SET latitude = ?, longitude = ?, mmm_c = ?, mmm_source = ?, mmm_cell_lat = ?, mmm_cell_lon = ?, " +
-    "mmm_set_by = ?, mmm_set_at = ? WHERE buoy_id = ?")
-    .bind(...COLUMNS.map((key) => after[key]), actor.email, now, buoy.buoy_id).run();
-  await record(db, { actor, action: "buoy.mmm", target: buoy.label, before, after });
+  // One batch, so the change is never stored without its audit entry.
+  await db.batch([
+    db.prepare("UPDATE buoys SET latitude = ?, longitude = ?, mmm_c = ?, mmm_source = ?, mmm_cell_lat = ?, mmm_cell_lon = ?, " +
+      "mmm_set_by = ?, mmm_set_at = ? WHERE buoy_id = ?")
+      .bind(...COLUMNS.map((key) => after[key]), actor.email, now, buoy.buoy_id),
+    recordStatement(db, { actor, action: "buoy.mmm", target: buoy.label, before, after }),
+  ]);
   return { mmm: mmmOf({ ...buoy, ...after, mmm_set_by: actor.email, mmm_set_at: now }) };
 }

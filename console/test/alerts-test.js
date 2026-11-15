@@ -404,3 +404,26 @@ test("a firing bleaching rule re-arms only once the level is two below its trigg
   assert.equal(decide(rule, firing, 1, 10).firing, 0, "Watch re-arms it");
   assert.equal(decide(rule, null, 2, 10).event, null, "a Warning does not start it");
 });
+
+test("a Watch rule clears at No Stress and fires again on the next Watch", () => {
+  const rule = { kind: "bleaching", value: 1, remind_hours: null };
+  const first = decide(rule, null, 1, 10);
+  assert.equal(first.event, "alert");
+  const cleared = decide(rule, { firing: first.firing, since: first.since, last_sent_at: 10 }, 0, 20);
+  assert.equal(cleared.firing, 0, "No Stress re-arms a Watch rule");
+  assert.equal(decide(rule, { firing: cleared.firing }, 1, 30).event, "alert");
+});
+
+test("a failed bleaching check still lets threshold rules fire", async (t) => {
+  const { env, sent, token, member } = await heatSetup(t);
+  const errors = captureErrors(t);
+  await member.client.post("/api/alerts/rules", bleaching);
+  await member.client.post("/api/alerts/rules", battery);
+  // A stored row that is not JSON makes the heat-stress read throw.
+  env.DB.raw.prepare("INSERT INTO readings (buoy_id, record_seq, timestamp_utc, row_json, received_at) VALUES (1, 999999, ?, '{', 0)")
+    .run(iso(dayStart(-1)));
+  await push(env, token, [row({ battery_v: "3.0" })]);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].subject, /Battery below 3.2 V/);
+  assert.ok(errors.some((line) => line.includes("bleaching alerts not checked: SyntaxError")), "the bleaching check did fail");
+});

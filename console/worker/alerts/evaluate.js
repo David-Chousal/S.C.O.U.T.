@@ -25,7 +25,8 @@ const HISTORY_DAYS = 90;
 export function breached(rule, observed, firing) {
   if (rule.kind === "flag") return observed === true;
   if (rule.kind === "silence") return observed > rule.value;
-  if (rule.kind === "bleaching") return observed >= rule.value - (firing ? BLEACHING_MARGIN_LEVELS : 0);
+  // Never below Watch (1): every level is ≥ 0, so a firing Watch rule would otherwise never clear.
+  if (rule.kind === "bleaching") return observed >= (firing ? Math.max(1, rule.value - BLEACHING_MARGIN_LEVELS) : rule.value);
   const margin = firing ? METRICS[rule.metric].margin : 0;
   return rule.op === "above" ? observed > rule.value - margin : observed < rule.value + margin;
 }
@@ -102,7 +103,13 @@ function observe(rule, row) {
 /** Threshold and flag rules after a push. `kept`: [parsed, row] pairs already stored. */
 export async function alertsOnIngest(env, kept, now = Date.now()) {
   if (kept.length === 0) return;
-  await bleachingOnIngest(env, new Set(kept.map(([p]) => p.buoyId)), now);
+  // A bleaching failure must not hold back the threshold and flag checks below.
+  try {
+    await bleachingOnIngest(env, new Set(kept.map(([p]) => p.buoyId)), now);
+  } catch (error) {
+    const code = typeof error?.code === "string" ? error.code : error?.name ?? "unknown";
+    console.error(`console: bleaching alerts not checked: ${String(code).slice(0, 64)}`);
+  }
   const rules = await liveRules(env.DB, ["threshold", "flag"]);
   if (rules.length === 0) return;
   const newest = newestPerBuoy(kept);

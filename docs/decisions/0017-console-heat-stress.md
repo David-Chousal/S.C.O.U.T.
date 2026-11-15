@@ -50,15 +50,17 @@ takes it as `--mmm`; the console had nowhere to keep one.
 4. **Exposed four ways:** a heat-stress Dashboard bay (in the layout editor and the built-in
    Overview), `GET /api/v1/heat-stress` and `/api/v1/buoys/{id}/heat-stress` under
    `read:telemetry`, a fourth email-rule kind `bleaching` (fires when the newest daily mean's
-   level reaches the rule's level; re-arms one level below, so a Warning ↔ Alert Level 1 swing
-   does not flap; ADR-0015's opt-in, caps and off links unchanged), and Fred's `get_heat_stress`.
+   level reaches the rule's level; re-arms one level below, never below Watch, so a Warning ↔
+   Alert Level 1 swing does not flap and a Watch rule clears at No Stress; ADR-0015's opt-in, caps and off links unchanged), and Fred's `get_heat_stress`.
 
 ## Deviations from the Python, stated plainly
 
 - **Coverage floor.** The Python gives a day a mean only if at least half of its samples are
   present, counting against 48 (the SD log's 30-minute cadence). The console sees only the 1–3
-  rows a day the buoy transmits, so the same 50 % floor counts against the buoy's reported
-  transmit count (3 by default): two of three readings, or one of one. Same rule, different
+  rows a day the buoy transmits, so the same 50 % floor counts against that day's transmit
+  count: the highest `tx_count` its readings report, or the buoy's current count (3 by default)
+  when none does. Two of three readings, or one of one; a buoy whose count changed keeps each
+  past day judged by the count it ran that day (CodeRabbit, PR #340). Same rule, different
   denominator. A daily mean of two or three instantaneous readings is noisier than a mean of 48.
 - **"Current" is the newest day with a daily mean.** The Python's series ends at its last input
   day; so does the console's, and it shows that day's date. Email alerts ignore a newest day

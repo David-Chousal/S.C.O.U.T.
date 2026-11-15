@@ -1,7 +1,8 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ALERT_LEVELS, type BuoyHeatStress, type HeatStressDay, type HeatStressView } from "@/lib/api/types";
+import { DayChart } from "./day-chart";
 import { HeatStressBay } from "./heat-stress-bay";
 
 function days(n: number, sst: (i: number) => number | null, dhw: (i: number) => number): HeatStressDay[] {
@@ -64,4 +65,16 @@ describe("HeatStressBay", () => {
     rerender(<HeatStressBay view={null} />);
     expect(screen.getByText(/could not be loaded/)).toBeDefined();
   });
+
+  test("a chart that starts empty starts measuring its width once its points arrive", () => {
+    const observed: Element[] = [];
+    vi.stubGlobal("ResizeObserver", class { observe(element: Element) { observed.push(element); } disconnect() {} });
+    const props = { label: "DHW", unit: "°C-wk", color: "var(--ink)", references: [], digits: 1, ariaLabel: "DHW chart" };
+    const { rerender } = render(<DayChart {...props} points={[{ day: "2027-03-01", value: null }]} />);
+    expect(observed.length).toBe(0);
+    rerender(<DayChart {...props} points={[{ day: "2027-03-01", value: 1 }, { day: "2027-03-02", value: 2 }]} />);
+    expect(observed.length).toBe(1);
+  });
 });
+
+afterEach(() => vi.unstubAllGlobals());

@@ -11,8 +11,9 @@
  *
  * One deliberate difference, documented in ADR-0017: the Python's 50 % coverage floor counts a
  * day's samples against 48 (the SD log's 30-minute cadence). The console only sees the 1–3 rows a
- * day the buoy transmits, so the floor counts against the buoy's daily transmit count instead.
- * The rule is the same; only the expected sample count differs. Pure: no D1, no fetch. */
+ * day the buoy transmits, so the floor counts against that day's transmit count instead: the
+ * highest `tx_count` its trusted rows carry, or the caller's fallback when none carries one. The
+ * rule is the same; only the expected sample count differs. Pure: no D1, no fetch. */
 
 export const BLEACHING_THRESHOLD_OFFSET_C = 1.0;
 export const HOTSPOT_MIN_C = 1.0;
@@ -57,19 +58,30 @@ function plausibleTemp(raw) {
   return Number.isFinite(value) && value >= TEMP_PLAUSIBLE_C[0] && value <= TEMP_PLAUSIBLE_C[1] ? value : null;
 }
 
+/** The transmit count a row reports (1–3), or null when it carries none. */
+function recordedTxCount(row) {
+  const count = Number(row.tx_count);
+  return row.tx_count !== "" && row.tx_count !== null && row.tx_count !== undefined && [1, 2, 3].includes(count) ? count : null;
+}
+
 /** Schema rows → one entry per UTC day that has rows (aggregate.aggregate_daily, temperature part).
- * temp_mean is null when the day's valid samples fall below MIN_COVERAGE of samplesPerDay. */
+ * temp_mean is null when the day's valid samples fall below MIN_COVERAGE of the day's transmit
+ * count: the highest count its trusted rows report, else `samplesPerDay`. A buoy whose count
+ * changed keeps each past day judged by the count it ran that day. */
 export function aggregateDaily(rows, samplesPerDay) {
   const byDay = new Map();
   for (const row of rows.filter(hasValidClock)) {
     const day = row.timestamp_utc.slice(0, 10);
-    if (!byDay.has(day)) byDay.set(day, []);
+    if (!byDay.has(day)) byDay.set(day, { temps: [], count: null });
+    const entry = byDay.get(day);
     const temp = plausibleTemp(row.temp_c);
-    if (temp !== null) byDay.get(day).push(temp);
+    if (temp !== null) entry.temps.push(temp);
+    const count = recordedTxCount(row);
+    if (count !== null) entry.count = Math.max(entry.count ?? 0, count);
   }
   return [...byDay.keys()].sort().map((day) => {
-    const temps = byDay.get(day);
-    const coverage = Math.min(temps.length / samplesPerDay, 1.0);
+    const { temps, count } = byDay.get(day);
+    const coverage = Math.min(temps.length / (count ?? samplesPerDay), 1.0);
     const mean = temps.length ? temps.reduce((a, b) => a + b, 0) / temps.length : null;
     return { day, temp_mean: mean !== null && coverage >= MIN_COVERAGE ? round(mean, 3) : null, temp_n: temps.length,
       coverage: round(coverage, 3) };
