@@ -81,7 +81,7 @@ Physical and offline work leaves no timestamp the evidence can read. Add hours f
 | 2026-10-07 | 1.08 (*reported*) | Redesigned the turbidity pod, 30 min; printed it, pressed the six heat-set inserts, assembled it and started the soak test, 35 min |
 | 2026-10-15 | 2.0 (*reported*) | Merged six open PRs and resolved their conflicts, Monterey outreach emails and contact research, electronics housing packaging options and the option C layer explorer |
 | 2026-11-12 | 2.0 (*reported*, "at least 2 hours") | Built the final-presentation Google Slides deck (13 slides) with TA and clarity critic review loops; printed the electronics housing upside down, so supports damaged the o-ring channel, then printer maintenance and tuning ahead of a reprint |
-| 2026-11-13 | 0.5 (*reported*) | Printer settings editing (bed adhesion) after the second failed housing print |
+| 2026-11-13 | 2.5 (*reported*, "so far today", still going) | Printer settings editing (bed adhesion) after the second failed housing print; restarted the housing print; SCO-207 thesis review; first coat of waterproof coating; SMA cap and electronics stack CAD review. Hours may be added later today |
 | Any | _?_ | CAD in Fusion/Onshape outside a Claude session, lab time, shopping and ordering parts |
 
 ## Going forward
