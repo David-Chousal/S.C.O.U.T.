@@ -1,0 +1,4946 @@
+{
+ "_about": "Shared fixture for the CRW heat-stress port: analytics/telemetry/bleaching.py is the reference and tests/test_heat_stress_fixture.py checks this file against it; console/test/heat-stress-test.js checks the console Worker's port (console/worker/heat-stress.js) against the same numbers. Regenerate with python3 telemetry/tests/fixtures/make_heat_stress_cases.py from analytics/.",
+ "alert_levels": [
+  "No Stress",
+  "Bleaching Watch",
+  "Bleaching Warning",
+  "Alert Level 1",
+  "Alert Level 2",
+  "Alert Level 3",
+  "Alert Level 4",
+  "Alert Level 5"
+ ],
+ "alert_cases": [
+  [
+   0.0,
+   0.0,
+   "No Stress"
+  ],
+  [
+   -1.0,
+   5.0,
+   "No Stress"
+  ],
+  [
+   0.5,
+   0.0,
+   "Bleaching Watch"
+  ],
+  [
+   0.99,
+   30.0,
+   "Bleaching Watch"
+  ],
+  [
+   1.0,
+   0.0,
+   "Bleaching Warning"
+  ],
+  [
+   1.5,
+   2.0,
+   "Bleaching Warning"
+  ],
+  [
+   1.5,
+   3.999,
+   "Bleaching Warning"
+  ],
+  [
+   1.5,
+   4.0,
+   "Alert Level 1"
+  ],
+  [
+   2.0,
+   8.0,
+   "Alert Level 2"
+  ],
+  [
+   1.5,
+   11.9,
+   "Alert Level 2"
+  ],
+  [
+   1.5,
+   12.0,
+   "Alert Level 3"
+  ],
+  [
+   1.5,
+   15.9,
+   "Alert Level 3"
+  ],
+  [
+   1.5,
+   16.0,
+   "Alert Level 4"
+  ],
+  [
+   1.5,
+   19.9,
+   "Alert Level 4"
+  ],
+  [
+   1.5,
+   20.0,
+   "Alert Level 5"
+  ],
+  [
+   1.5,
+   40.0,
+   "Alert Level 5"
+  ]
+ ],
+ "series_cases": [
+  {
+   "name": "hot_fortnight",
+   "note": "14 days at +2 °C HotSpot: DHW 4.0, Alert Level 1",
+   "mmm": 28.0,
+   "daily": [
+    [
+     "2027-03-01",
+     30.0
+    ],
+    [
+     "2027-03-02",
+     30.0
+    ],
+    [
+     "2027-03-03",
+     30.0
+    ],
+    [
+     "2027-03-04",
+     30.0
+    ],
+    [
+     "2027-03-05",
+     30.0
+    ],
+    [
+     "2027-03-06",
+     30.0
+    ],
+    [
+     "2027-03-07",
+     30.0
+    ],
+    [
+     "2027-03-08",
+     30.0
+    ],
+    [
+     "2027-03-09",
+     30.0
+    ],
+    [
+     "2027-03-10",
+     30.0
+    ],
+    [
+     "2027-03-11",
+     30.0
+    ],
+    [
+     "2027-03-12",
+     30.0
+    ],
+    [
+     "2027-03-13",
+     30.0
+    ],
+    [
+     "2027-03-14",
+     30.0
+    ]
+   ],
+   "expected": [
+    {
+     "day": "2027-03-01",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.286,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.012
+    },
+    {
+     "day": "2027-03-02",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.571,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.024
+    },
+    {
+     "day": "2027-03-03",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.857,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-04",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.048
+    },
+    {
+     "day": "2027-03-05",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.429,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.06
+    },
+    {
+     "day": "2027-03-06",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.714,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.071
+    },
+    {
+     "day": "2027-03-07",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.0,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.083
+    },
+    {
+     "day": "2027-03-08",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.286,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.095
+    },
+    {
+     "day": "2027-03-09",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.571,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-10",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.857,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.119
+    },
+    {
+     "day": "2027-03-11",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.131
+    },
+    {
+     "day": "2027-03-12",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.429,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.143
+    },
+    {
+     "day": "2027-03-13",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.714,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.155
+    },
+    {
+     "day": "2027-03-14",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 4.0,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.167
+    }
+   ],
+   "expected_summary": {
+    "threshold": 29.0,
+    "peak_dhw": 4.0,
+    "peak_dhw_day": "2027-03-14",
+    "peak_alert": "Alert Level 1",
+    "days_at_or_above_threshold": 14,
+    "n_days": 14
+   }
+  },
+  {
+   "name": "subthreshold",
+   "note": "+0.5 °C never reaches the 1 °C HotSpot floor: Watch, DHW 0",
+   "mmm": 28.0,
+   "daily": [
+    [
+     "2027-03-01",
+     28.5
+    ],
+    [
+     "2027-03-02",
+     28.5
+    ],
+    [
+     "2027-03-03",
+     28.5
+    ],
+    [
+     "2027-03-04",
+     28.5
+    ],
+    [
+     "2027-03-05",
+     28.5
+    ],
+    [
+     "2027-03-06",
+     28.5
+    ],
+    [
+     "2027-03-07",
+     28.5
+    ],
+    [
+     "2027-03-08",
+     28.5
+    ],
+    [
+     "2027-03-09",
+     28.5
+    ],
+    [
+     "2027-03-10",
+     28.5
+    ],
+    [
+     "2027-03-11",
+     28.5
+    ],
+    [
+     "2027-03-12",
+     28.5
+    ],
+    [
+     "2027-03-13",
+     28.5
+    ],
+    [
+     "2027-03-14",
+     28.5
+    ],
+    [
+     "2027-03-15",
+     28.5
+    ],
+    [
+     "2027-03-16",
+     28.5
+    ],
+    [
+     "2027-03-17",
+     28.5
+    ],
+    [
+     "2027-03-18",
+     28.5
+    ],
+    [
+     "2027-03-19",
+     28.5
+    ],
+    [
+     "2027-03-20",
+     28.5
+    ],
+    [
+     "2027-03-21",
+     28.5
+    ],
+    [
+     "2027-03-22",
+     28.5
+    ],
+    [
+     "2027-03-23",
+     28.5
+    ],
+    [
+     "2027-03-24",
+     28.5
+    ],
+    [
+     "2027-03-25",
+     28.5
+    ],
+    [
+     "2027-03-26",
+     28.5
+    ],
+    [
+     "2027-03-27",
+     28.5
+    ],
+    [
+     "2027-03-28",
+     28.5
+    ],
+    [
+     "2027-03-29",
+     28.5
+    ],
+    [
+     "2027-03-30",
+     28.5
+    ]
+   ],
+   "expected": [
+    {
+     "day": "2027-03-01",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.012
+    },
+    {
+     "day": "2027-03-02",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.024
+    },
+    {
+     "day": "2027-03-03",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-04",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.048
+    },
+    {
+     "day": "2027-03-05",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.06
+    },
+    {
+     "day": "2027-03-06",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.071
+    },
+    {
+     "day": "2027-03-07",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.083
+    },
+    {
+     "day": "2027-03-08",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.095
+    },
+    {
+     "day": "2027-03-09",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-10",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.119
+    },
+    {
+     "day": "2027-03-11",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.131
+    },
+    {
+     "day": "2027-03-12",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.143
+    },
+    {
+     "day": "2027-03-13",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.155
+    },
+    {
+     "day": "2027-03-14",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.167
+    },
+    {
+     "day": "2027-03-15",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-16",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.19
+    },
+    {
+     "day": "2027-03-17",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.202
+    },
+    {
+     "day": "2027-03-18",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.214
+    },
+    {
+     "day": "2027-03-19",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.226
+    },
+    {
+     "day": "2027-03-20",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.238
+    },
+    {
+     "day": "2027-03-21",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-03-22",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.262
+    },
+    {
+     "day": "2027-03-23",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.274
+    },
+    {
+     "day": "2027-03-24",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.286
+    },
+    {
+     "day": "2027-03-25",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.298
+    },
+    {
+     "day": "2027-03-26",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.31
+    },
+    {
+     "day": "2027-03-27",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-03-28",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.333
+    },
+    {
+     "day": "2027-03-29",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.345
+    },
+    {
+     "day": "2027-03-30",
+     "sst": 28.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.357
+    }
+   ],
+   "expected_summary": {
+    "threshold": 29.0,
+    "peak_dhw": 0.0,
+    "peak_dhw_day": "2027-03-01",
+    "peak_alert": "Bleaching Watch",
+    "days_at_or_above_threshold": 0,
+    "n_days": 30
+   }
+  },
+  {
+   "name": "age_out",
+   "note": "a hot fortnight ages out of the 84-day window",
+   "mmm": 28.0,
+   "daily": [
+    [
+     "2027-03-01",
+     30.0
+    ],
+    [
+     "2027-03-02",
+     30.0
+    ],
+    [
+     "2027-03-03",
+     30.0
+    ],
+    [
+     "2027-03-04",
+     30.0
+    ],
+    [
+     "2027-03-05",
+     30.0
+    ],
+    [
+     "2027-03-06",
+     30.0
+    ],
+    [
+     "2027-03-07",
+     30.0
+    ],
+    [
+     "2027-03-08",
+     30.0
+    ],
+    [
+     "2027-03-09",
+     30.0
+    ],
+    [
+     "2027-03-10",
+     30.0
+    ],
+    [
+     "2027-03-11",
+     30.0
+    ],
+    [
+     "2027-03-12",
+     30.0
+    ],
+    [
+     "2027-03-13",
+     30.0
+    ],
+    [
+     "2027-03-14",
+     30.0
+    ],
+    [
+     "2027-03-15",
+     27.0
+    ],
+    [
+     "2027-03-16",
+     27.0
+    ],
+    [
+     "2027-03-17",
+     27.0
+    ],
+    [
+     "2027-03-18",
+     27.0
+    ],
+    [
+     "2027-03-19",
+     27.0
+    ],
+    [
+     "2027-03-20",
+     27.0
+    ],
+    [
+     "2027-03-21",
+     27.0
+    ],
+    [
+     "2027-03-22",
+     27.0
+    ],
+    [
+     "2027-03-23",
+     27.0
+    ],
+    [
+     "2027-03-24",
+     27.0
+    ],
+    [
+     "2027-03-25",
+     27.0
+    ],
+    [
+     "2027-03-26",
+     27.0
+    ],
+    [
+     "2027-03-27",
+     27.0
+    ],
+    [
+     "2027-03-28",
+     27.0
+    ],
+    [
+     "2027-03-29",
+     27.0
+    ],
+    [
+     "2027-03-30",
+     27.0
+    ],
+    [
+     "2027-03-31",
+     27.0
+    ],
+    [
+     "2027-04-01",
+     27.0
+    ],
+    [
+     "2027-04-02",
+     27.0
+    ],
+    [
+     "2027-04-03",
+     27.0
+    ],
+    [
+     "2027-04-04",
+     27.0
+    ],
+    [
+     "2027-04-05",
+     27.0
+    ],
+    [
+     "2027-04-06",
+     27.0
+    ],
+    [
+     "2027-04-07",
+     27.0
+    ],
+    [
+     "2027-04-08",
+     27.0
+    ],
+    [
+     "2027-04-09",
+     27.0
+    ],
+    [
+     "2027-04-10",
+     27.0
+    ],
+    [
+     "2027-04-11",
+     27.0
+    ],
+    [
+     "2027-04-12",
+     27.0
+    ],
+    [
+     "2027-04-13",
+     27.0
+    ],
+    [
+     "2027-04-14",
+     27.0
+    ],
+    [
+     "2027-04-15",
+     27.0
+    ],
+    [
+     "2027-04-16",
+     27.0
+    ],
+    [
+     "2027-04-17",
+     27.0
+    ],
+    [
+     "2027-04-18",
+     27.0
+    ],
+    [
+     "2027-04-19",
+     27.0
+    ],
+    [
+     "2027-04-20",
+     27.0
+    ],
+    [
+     "2027-04-21",
+     27.0
+    ],
+    [
+     "2027-04-22",
+     27.0
+    ],
+    [
+     "2027-04-23",
+     27.0
+    ],
+    [
+     "2027-04-24",
+     27.0
+    ],
+    [
+     "2027-04-25",
+     27.0
+    ],
+    [
+     "2027-04-26",
+     27.0
+    ],
+    [
+     "2027-04-27",
+     27.0
+    ],
+    [
+     "2027-04-28",
+     27.0
+    ],
+    [
+     "2027-04-29",
+     27.0
+    ],
+    [
+     "2027-04-30",
+     27.0
+    ],
+    [
+     "2027-05-01",
+     27.0
+    ],
+    [
+     "2027-05-02",
+     27.0
+    ],
+    [
+     "2027-05-03",
+     27.0
+    ],
+    [
+     "2027-05-04",
+     27.0
+    ],
+    [
+     "2027-05-05",
+     27.0
+    ],
+    [
+     "2027-05-06",
+     27.0
+    ],
+    [
+     "2027-05-07",
+     27.0
+    ],
+    [
+     "2027-05-08",
+     27.0
+    ],
+    [
+     "2027-05-09",
+     27.0
+    ],
+    [
+     "2027-05-10",
+     27.0
+    ],
+    [
+     "2027-05-11",
+     27.0
+    ],
+    [
+     "2027-05-12",
+     27.0
+    ],
+    [
+     "2027-05-13",
+     27.0
+    ],
+    [
+     "2027-05-14",
+     27.0
+    ],
+    [
+     "2027-05-15",
+     27.0
+    ],
+    [
+     "2027-05-16",
+     27.0
+    ],
+    [
+     "2027-05-17",
+     27.0
+    ],
+    [
+     "2027-05-18",
+     27.0
+    ],
+    [
+     "2027-05-19",
+     27.0
+    ],
+    [
+     "2027-05-20",
+     27.0
+    ],
+    [
+     "2027-05-21",
+     27.0
+    ],
+    [
+     "2027-05-22",
+     27.0
+    ],
+    [
+     "2027-05-23",
+     27.0
+    ],
+    [
+     "2027-05-24",
+     27.0
+    ],
+    [
+     "2027-05-25",
+     27.0
+    ],
+    [
+     "2027-05-26",
+     27.0
+    ],
+    [
+     "2027-05-27",
+     27.0
+    ],
+    [
+     "2027-05-28",
+     27.0
+    ],
+    [
+     "2027-05-29",
+     27.0
+    ],
+    [
+     "2027-05-30",
+     27.0
+    ],
+    [
+     "2027-05-31",
+     27.0
+    ],
+    [
+     "2027-06-01",
+     27.0
+    ],
+    [
+     "2027-06-02",
+     27.0
+    ],
+    [
+     "2027-06-03",
+     27.0
+    ],
+    [
+     "2027-06-04",
+     27.0
+    ],
+    [
+     "2027-06-05",
+     27.0
+    ],
+    [
+     "2027-06-06",
+     27.0
+    ],
+    [
+     "2027-06-07",
+     27.0
+    ],
+    [
+     "2027-06-08",
+     27.0
+    ],
+    [
+     "2027-06-09",
+     27.0
+    ],
+    [
+     "2027-06-10",
+     27.0
+    ],
+    [
+     "2027-06-11",
+     27.0
+    ],
+    [
+     "2027-06-12",
+     27.0
+    ]
+   ],
+   "expected": [
+    {
+     "day": "2027-03-01",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.286,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.012
+    },
+    {
+     "day": "2027-03-02",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.571,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.024
+    },
+    {
+     "day": "2027-03-03",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 0.857,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-04",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.048
+    },
+    {
+     "day": "2027-03-05",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.429,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.06
+    },
+    {
+     "day": "2027-03-06",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 1.714,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.071
+    },
+    {
+     "day": "2027-03-07",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.0,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.083
+    },
+    {
+     "day": "2027-03-08",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.286,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.095
+    },
+    {
+     "day": "2027-03-09",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.571,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-10",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 2.857,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.119
+    },
+    {
+     "day": "2027-03-11",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.131
+    },
+    {
+     "day": "2027-03-12",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.429,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.143
+    },
+    {
+     "day": "2027-03-13",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 3.714,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.155
+    },
+    {
+     "day": "2027-03-14",
+     "sst": 30.0,
+     "hotspot": 2.0,
+     "dhw": 4.0,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.167
+    },
+    {
+     "day": "2027-03-15",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-16",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.19
+    },
+    {
+     "day": "2027-03-17",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.202
+    },
+    {
+     "day": "2027-03-18",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.214
+    },
+    {
+     "day": "2027-03-19",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.226
+    },
+    {
+     "day": "2027-03-20",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.238
+    },
+    {
+     "day": "2027-03-21",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-03-22",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.262
+    },
+    {
+     "day": "2027-03-23",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.274
+    },
+    {
+     "day": "2027-03-24",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.286
+    },
+    {
+     "day": "2027-03-25",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.298
+    },
+    {
+     "day": "2027-03-26",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.31
+    },
+    {
+     "day": "2027-03-27",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-03-28",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.333
+    },
+    {
+     "day": "2027-03-29",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.345
+    },
+    {
+     "day": "2027-03-30",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.357
+    },
+    {
+     "day": "2027-03-31",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.369
+    },
+    {
+     "day": "2027-04-01",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.381
+    },
+    {
+     "day": "2027-04-02",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-03",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.405
+    },
+    {
+     "day": "2027-04-04",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.417
+    },
+    {
+     "day": "2027-04-05",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.429
+    },
+    {
+     "day": "2027-04-06",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.44
+    },
+    {
+     "day": "2027-04-07",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.452
+    },
+    {
+     "day": "2027-04-08",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.464
+    },
+    {
+     "day": "2027-04-09",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.476
+    },
+    {
+     "day": "2027-04-10",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.488
+    },
+    {
+     "day": "2027-04-11",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.5
+    },
+    {
+     "day": "2027-04-12",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.512
+    },
+    {
+     "day": "2027-04-13",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.524
+    },
+    {
+     "day": "2027-04-14",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.536
+    },
+    {
+     "day": "2027-04-15",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.548
+    },
+    {
+     "day": "2027-04-16",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.56
+    },
+    {
+     "day": "2027-04-17",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.571
+    },
+    {
+     "day": "2027-04-18",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.583
+    },
+    {
+     "day": "2027-04-19",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.595
+    },
+    {
+     "day": "2027-04-20",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.607
+    },
+    {
+     "day": "2027-04-21",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.619
+    },
+    {
+     "day": "2027-04-22",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.631
+    },
+    {
+     "day": "2027-04-23",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.643
+    },
+    {
+     "day": "2027-04-24",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.655
+    },
+    {
+     "day": "2027-04-25",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.667
+    },
+    {
+     "day": "2027-04-26",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.679
+    },
+    {
+     "day": "2027-04-27",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.69
+    },
+    {
+     "day": "2027-04-28",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.702
+    },
+    {
+     "day": "2027-04-29",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.714
+    },
+    {
+     "day": "2027-04-30",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.726
+    },
+    {
+     "day": "2027-05-01",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.738
+    },
+    {
+     "day": "2027-05-02",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.75
+    },
+    {
+     "day": "2027-05-03",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.762
+    },
+    {
+     "day": "2027-05-04",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.774
+    },
+    {
+     "day": "2027-05-05",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.786
+    },
+    {
+     "day": "2027-05-06",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.798
+    },
+    {
+     "day": "2027-05-07",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.81
+    },
+    {
+     "day": "2027-05-08",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.821
+    },
+    {
+     "day": "2027-05-09",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.833
+    },
+    {
+     "day": "2027-05-10",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.845
+    },
+    {
+     "day": "2027-05-11",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.857
+    },
+    {
+     "day": "2027-05-12",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.869
+    },
+    {
+     "day": "2027-05-13",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.881
+    },
+    {
+     "day": "2027-05-14",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.893
+    },
+    {
+     "day": "2027-05-15",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.905
+    },
+    {
+     "day": "2027-05-16",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.917
+    },
+    {
+     "day": "2027-05-17",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.929
+    },
+    {
+     "day": "2027-05-18",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.94
+    },
+    {
+     "day": "2027-05-19",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.952
+    },
+    {
+     "day": "2027-05-20",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.964
+    },
+    {
+     "day": "2027-05-21",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.976
+    },
+    {
+     "day": "2027-05-22",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 0.988
+    },
+    {
+     "day": "2027-05-23",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 4.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-24",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 3.714,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-25",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 3.429,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-26",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 3.143,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-27",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 2.857,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-28",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 2.571,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-29",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 2.286,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-30",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 2.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-31",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 1.714,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-01",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 1.429,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-02",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 1.143,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-03",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.857,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-04",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.571,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-05",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.286,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-06",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-07",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-08",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-09",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-10",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-11",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-12",
+     "sst": 27.0,
+     "hotspot": 0.0,
+     "dhw": 0.0,
+     "alert": "No Stress",
+     "window_coverage": 1.0
+    }
+   ],
+   "expected_summary": {
+    "threshold": 29.0,
+    "peak_dhw": 4.0,
+    "peak_dhw_day": "2027-03-14",
+    "peak_alert": "Alert Level 1",
+    "days_at_or_above_threshold": 14,
+    "n_days": 104
+   }
+  },
+  {
+   "name": "ramp_to_level_5",
+   "note": "a warm season that climbs through every level, then cools",
+   "mmm": 27.0,
+   "daily": [
+    [
+     "2027-03-01",
+     27.5
+    ],
+    [
+     "2027-03-02",
+     27.584
+    ],
+    [
+     "2027-03-03",
+     27.668
+    ],
+    [
+     "2027-03-04",
+     27.751
+    ],
+    [
+     "2027-03-05",
+     27.835
+    ],
+    [
+     "2027-03-06",
+     27.918
+    ],
+    [
+     "2027-03-07",
+     28.001
+    ],
+    [
+     "2027-03-08",
+     28.084
+    ],
+    [
+     "2027-03-09",
+     28.167
+    ],
+    [
+     "2027-03-10",
+     28.25
+    ],
+    [
+     "2027-03-11",
+     28.332
+    ],
+    [
+     "2027-03-12",
+     28.413
+    ],
+    [
+     "2027-03-13",
+     28.495
+    ],
+    [
+     "2027-03-14",
+     28.576
+    ],
+    [
+     "2027-03-15",
+     28.656
+    ],
+    [
+     "2027-03-16",
+     28.736
+    ],
+    [
+     "2027-03-17",
+     28.815
+    ],
+    [
+     "2027-03-18",
+     28.894
+    ],
+    [
+     "2027-03-19",
+     28.972
+    ],
+    [
+     "2027-03-20",
+     29.05
+    ],
+    [
+     "2027-03-21",
+     29.127
+    ],
+    [
+     "2027-03-22",
+     29.203
+    ],
+    [
+     "2027-03-23",
+     29.279
+    ],
+    [
+     "2027-03-24",
+     29.353
+    ],
+    [
+     "2027-03-25",
+     29.427
+    ],
+    [
+     "2027-03-26",
+     29.5
+    ],
+    [
+     "2027-03-27",
+     29.572
+    ],
+    [
+     "2027-03-28",
+     29.643
+    ],
+    [
+     "2027-03-29",
+     29.714
+    ],
+    [
+     "2027-03-30",
+     29.783
+    ],
+    [
+     "2027-03-31",
+     29.851
+    ],
+    [
+     "2027-04-01",
+     29.918
+    ],
+    [
+     "2027-04-02",
+     29.985
+    ],
+    [
+     "2027-04-03",
+     30.05
+    ],
+    [
+     "2027-04-04",
+     30.114
+    ],
+    [
+     "2027-04-05",
+     30.177
+    ],
+    [
+     "2027-04-06",
+     30.238
+    ],
+    [
+     "2027-04-07",
+     30.299
+    ],
+    [
+     "2027-04-08",
+     30.358
+    ],
+    [
+     "2027-04-09",
+     30.416
+    ],
+    [
+     "2027-04-10",
+     30.473
+    ],
+    [
+     "2027-04-11",
+     30.528
+    ],
+    [
+     "2027-04-12",
+     30.582
+    ],
+    [
+     "2027-04-13",
+     30.635
+    ],
+    [
+     "2027-04-14",
+     30.686
+    ],
+    [
+     "2027-04-15",
+     30.736
+    ],
+    [
+     "2027-04-16",
+     30.785
+    ],
+    [
+     "2027-04-17",
+     30.832
+    ],
+    [
+     "2027-04-18",
+     30.877
+    ],
+    [
+     "2027-04-19",
+     30.921
+    ],
+    [
+     "2027-04-20",
+     30.964
+    ],
+    [
+     "2027-04-21",
+     31.005
+    ],
+    [
+     "2027-04-22",
+     31.045
+    ],
+    [
+     "2027-04-23",
+     31.083
+    ],
+    [
+     "2027-04-24",
+     31.119
+    ],
+    [
+     "2027-04-25",
+     31.154
+    ],
+    [
+     "2027-04-26",
+     31.187
+    ],
+    [
+     "2027-04-27",
+     31.219
+    ],
+    [
+     "2027-04-28",
+     31.249
+    ],
+    [
+     "2027-04-29",
+     31.278
+    ],
+    [
+     "2027-04-30",
+     31.304
+    ],
+    [
+     "2027-05-01",
+     31.329
+    ],
+    [
+     "2027-05-02",
+     31.353
+    ],
+    [
+     "2027-05-03",
+     31.374
+    ],
+    [
+     "2027-05-04",
+     31.394
+    ],
+    [
+     "2027-05-05",
+     31.413
+    ],
+    [
+     "2027-05-06",
+     31.429
+    ],
+    [
+     "2027-05-07",
+     31.444
+    ],
+    [
+     "2027-05-08",
+     31.457
+    ],
+    [
+     "2027-05-09",
+     31.468
+    ],
+    [
+     "2027-05-10",
+     31.478
+    ],
+    [
+     "2027-05-11",
+     31.486
+    ],
+    [
+     "2027-05-12",
+     31.492
+    ],
+    [
+     "2027-05-13",
+     31.496
+    ],
+    [
+     "2027-05-14",
+     31.499
+    ],
+    [
+     "2027-05-15",
+     31.5
+    ],
+    [
+     "2027-05-16",
+     31.499
+    ],
+    [
+     "2027-05-17",
+     31.496
+    ],
+    [
+     "2027-05-18",
+     31.492
+    ],
+    [
+     "2027-05-19",
+     31.486
+    ],
+    [
+     "2027-05-20",
+     31.478
+    ],
+    [
+     "2027-05-21",
+     31.468
+    ],
+    [
+     "2027-05-22",
+     31.457
+    ],
+    [
+     "2027-05-23",
+     31.444
+    ],
+    [
+     "2027-05-24",
+     31.429
+    ],
+    [
+     "2027-05-25",
+     31.413
+    ],
+    [
+     "2027-05-26",
+     31.394
+    ],
+    [
+     "2027-05-27",
+     31.374
+    ],
+    [
+     "2027-05-28",
+     31.353
+    ],
+    [
+     "2027-05-29",
+     31.329
+    ],
+    [
+     "2027-05-30",
+     31.304
+    ],
+    [
+     "2027-05-31",
+     31.278
+    ],
+    [
+     "2027-06-01",
+     31.249
+    ],
+    [
+     "2027-06-02",
+     31.219
+    ],
+    [
+     "2027-06-03",
+     31.187
+    ],
+    [
+     "2027-06-04",
+     31.154
+    ],
+    [
+     "2027-06-05",
+     31.119
+    ],
+    [
+     "2027-06-06",
+     31.083
+    ],
+    [
+     "2027-06-07",
+     31.045
+    ],
+    [
+     "2027-06-08",
+     31.005
+    ],
+    [
+     "2027-06-09",
+     30.964
+    ],
+    [
+     "2027-06-10",
+     30.921
+    ],
+    [
+     "2027-06-11",
+     30.877
+    ],
+    [
+     "2027-06-12",
+     30.832
+    ],
+    [
+     "2027-06-13",
+     30.785
+    ],
+    [
+     "2027-06-14",
+     30.736
+    ],
+    [
+     "2027-06-15",
+     30.686
+    ],
+    [
+     "2027-06-16",
+     30.635
+    ],
+    [
+     "2027-06-17",
+     30.582
+    ],
+    [
+     "2027-06-18",
+     30.528
+    ],
+    [
+     "2027-06-19",
+     30.473
+    ],
+    [
+     "2027-06-20",
+     30.416
+    ],
+    [
+     "2027-06-21",
+     30.358
+    ],
+    [
+     "2027-06-22",
+     30.299
+    ],
+    [
+     "2027-06-23",
+     30.238
+    ],
+    [
+     "2027-06-24",
+     30.177
+    ],
+    [
+     "2027-06-25",
+     30.114
+    ],
+    [
+     "2027-06-26",
+     30.05
+    ],
+    [
+     "2027-06-27",
+     29.985
+    ],
+    [
+     "2027-06-28",
+     29.918
+    ],
+    [
+     "2027-06-29",
+     29.851
+    ],
+    [
+     "2027-06-30",
+     29.783
+    ],
+    [
+     "2027-07-01",
+     29.714
+    ],
+    [
+     "2027-07-02",
+     29.643
+    ],
+    [
+     "2027-07-03",
+     29.572
+    ],
+    [
+     "2027-07-04",
+     29.5
+    ],
+    [
+     "2027-07-05",
+     29.427
+    ],
+    [
+     "2027-07-06",
+     29.353
+    ],
+    [
+     "2027-07-07",
+     29.279
+    ],
+    [
+     "2027-07-08",
+     29.203
+    ],
+    [
+     "2027-07-09",
+     29.127
+    ],
+    [
+     "2027-07-10",
+     29.05
+    ],
+    [
+     "2027-07-11",
+     28.972
+    ],
+    [
+     "2027-07-12",
+     28.894
+    ],
+    [
+     "2027-07-13",
+     28.815
+    ],
+    [
+     "2027-07-14",
+     28.736
+    ],
+    [
+     "2027-07-15",
+     28.656
+    ],
+    [
+     "2027-07-16",
+     28.576
+    ],
+    [
+     "2027-07-17",
+     28.495
+    ],
+    [
+     "2027-07-18",
+     28.413
+    ],
+    [
+     "2027-07-19",
+     28.332
+    ],
+    [
+     "2027-07-20",
+     28.25
+    ],
+    [
+     "2027-07-21",
+     28.167
+    ],
+    [
+     "2027-07-22",
+     28.084
+    ],
+    [
+     "2027-07-23",
+     28.001
+    ],
+    [
+     "2027-07-24",
+     27.918
+    ],
+    [
+     "2027-07-25",
+     27.835
+    ],
+    [
+     "2027-07-26",
+     27.751
+    ],
+    [
+     "2027-07-27",
+     27.668
+    ],
+    [
+     "2027-07-28",
+     27.584
+    ]
+   ],
+   "expected": [
+    {
+     "day": "2027-03-01",
+     "sst": 27.5,
+     "hotspot": 0.5,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.012
+    },
+    {
+     "day": "2027-03-02",
+     "sst": 27.584,
+     "hotspot": 0.5839999999999996,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.024
+    },
+    {
+     "day": "2027-03-03",
+     "sst": 27.668,
+     "hotspot": 0.6679999999999993,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-04",
+     "sst": 27.751,
+     "hotspot": 0.7510000000000012,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.048
+    },
+    {
+     "day": "2027-03-05",
+     "sst": 27.835,
+     "hotspot": 0.8350000000000009,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.06
+    },
+    {
+     "day": "2027-03-06",
+     "sst": 27.918,
+     "hotspot": 0.9179999999999993,
+     "dhw": 0.0,
+     "alert": "Bleaching Watch",
+     "window_coverage": 0.071
+    },
+    {
+     "day": "2027-03-07",
+     "sst": 28.001,
+     "hotspot": 1.0010000000000012,
+     "dhw": 0.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.083
+    },
+    {
+     "day": "2027-03-08",
+     "sst": 28.084,
+     "hotspot": 1.0839999999999996,
+     "dhw": 0.298,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.095
+    },
+    {
+     "day": "2027-03-09",
+     "sst": 28.167,
+     "hotspot": 1.1670000000000016,
+     "dhw": 0.465,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-10",
+     "sst": 28.25,
+     "hotspot": 1.25,
+     "dhw": 0.643,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.119
+    },
+    {
+     "day": "2027-03-11",
+     "sst": 28.332,
+     "hotspot": 1.3320000000000007,
+     "dhw": 0.833,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.131
+    },
+    {
+     "day": "2027-03-12",
+     "sst": 28.413,
+     "hotspot": 1.4130000000000003,
+     "dhw": 1.035,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.143
+    },
+    {
+     "day": "2027-03-13",
+     "sst": 28.495,
+     "hotspot": 1.495000000000001,
+     "dhw": 1.249,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.155
+    },
+    {
+     "day": "2027-03-14",
+     "sst": 28.576,
+     "hotspot": 1.5760000000000005,
+     "dhw": 1.474,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.167
+    },
+    {
+     "day": "2027-03-15",
+     "sst": 28.656,
+     "hotspot": 1.6559999999999988,
+     "dhw": 1.711,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-16",
+     "sst": 28.736,
+     "hotspot": 1.7360000000000007,
+     "dhw": 1.959,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.19
+    },
+    {
+     "day": "2027-03-17",
+     "sst": 28.815,
+     "hotspot": 1.8150000000000013,
+     "dhw": 2.218,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.202
+    },
+    {
+     "day": "2027-03-18",
+     "sst": 28.894,
+     "hotspot": 1.8939999999999984,
+     "dhw": 2.488,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.214
+    },
+    {
+     "day": "2027-03-19",
+     "sst": 28.972,
+     "hotspot": 1.9720000000000013,
+     "dhw": 2.77,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.226
+    },
+    {
+     "day": "2027-03-20",
+     "sst": 29.05,
+     "hotspot": 2.0500000000000007,
+     "dhw": 3.063,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.238
+    },
+    {
+     "day": "2027-03-21",
+     "sst": 29.127,
+     "hotspot": 2.126999999999999,
+     "dhw": 3.367,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-03-22",
+     "sst": 29.203,
+     "hotspot": 2.2029999999999994,
+     "dhw": 3.682,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.262
+    },
+    {
+     "day": "2027-03-23",
+     "sst": 29.279,
+     "hotspot": 2.279,
+     "dhw": 4.007,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.274
+    },
+    {
+     "day": "2027-03-24",
+     "sst": 29.353,
+     "hotspot": 2.3530000000000015,
+     "dhw": 4.343,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.286
+    },
+    {
+     "day": "2027-03-25",
+     "sst": 29.427,
+     "hotspot": 2.4269999999999996,
+     "dhw": 4.69,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.298
+    },
+    {
+     "day": "2027-03-26",
+     "sst": 29.5,
+     "hotspot": 2.5,
+     "dhw": 5.047,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.31
+    },
+    {
+     "day": "2027-03-27",
+     "sst": 29.572,
+     "hotspot": 2.571999999999999,
+     "dhw": 5.415,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-03-28",
+     "sst": 29.643,
+     "hotspot": 2.6430000000000007,
+     "dhw": 5.792,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.333
+    },
+    {
+     "day": "2027-03-29",
+     "sst": 29.714,
+     "hotspot": 2.7139999999999986,
+     "dhw": 6.18,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.345
+    },
+    {
+     "day": "2027-03-30",
+     "sst": 29.783,
+     "hotspot": 2.7830000000000013,
+     "dhw": 6.577,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.357
+    },
+    {
+     "day": "2027-03-31",
+     "sst": 29.851,
+     "hotspot": 2.850999999999999,
+     "dhw": 6.985,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.369
+    },
+    {
+     "day": "2027-04-01",
+     "sst": 29.918,
+     "hotspot": 2.9179999999999993,
+     "dhw": 7.402,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.381
+    },
+    {
+     "day": "2027-04-02",
+     "sst": 29.985,
+     "hotspot": 2.9849999999999994,
+     "dhw": 7.828,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-03",
+     "sst": 30.05,
+     "hotspot": 3.0500000000000007,
+     "dhw": 8.264,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.405
+    },
+    {
+     "day": "2027-04-04",
+     "sst": 30.114,
+     "hotspot": 3.1140000000000008,
+     "dhw": 8.709,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.417
+    },
+    {
+     "day": "2027-04-05",
+     "sst": 30.177,
+     "hotspot": 3.1769999999999996,
+     "dhw": 9.162,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.429
+    },
+    {
+     "day": "2027-04-06",
+     "sst": 30.238,
+     "hotspot": 3.2379999999999995,
+     "dhw": 9.625,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.44
+    },
+    {
+     "day": "2027-04-07",
+     "sst": 30.299,
+     "hotspot": 3.2989999999999995,
+     "dhw": 10.096,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.452
+    },
+    {
+     "day": "2027-04-08",
+     "sst": 30.358,
+     "hotspot": 3.3580000000000005,
+     "dhw": 10.576,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.464
+    },
+    {
+     "day": "2027-04-09",
+     "sst": 30.416,
+     "hotspot": 3.4160000000000004,
+     "dhw": 11.064,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.476
+    },
+    {
+     "day": "2027-04-10",
+     "sst": 30.473,
+     "hotspot": 3.472999999999999,
+     "dhw": 11.56,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.488
+    },
+    {
+     "day": "2027-04-11",
+     "sst": 30.528,
+     "hotspot": 3.5279999999999987,
+     "dhw": 12.064,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.5
+    },
+    {
+     "day": "2027-04-12",
+     "sst": 30.582,
+     "hotspot": 3.5820000000000007,
+     "dhw": 12.576,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.512
+    },
+    {
+     "day": "2027-04-13",
+     "sst": 30.635,
+     "hotspot": 3.6350000000000016,
+     "dhw": 13.095,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.524
+    },
+    {
+     "day": "2027-04-14",
+     "sst": 30.686,
+     "hotspot": 3.686,
+     "dhw": 13.622,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.536
+    },
+    {
+     "day": "2027-04-15",
+     "sst": 30.736,
+     "hotspot": 3.7360000000000007,
+     "dhw": 14.155,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.548
+    },
+    {
+     "day": "2027-04-16",
+     "sst": 30.785,
+     "hotspot": 3.785,
+     "dhw": 14.696,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.56
+    },
+    {
+     "day": "2027-04-17",
+     "sst": 30.832,
+     "hotspot": 3.8320000000000007,
+     "dhw": 15.244,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.571
+    },
+    {
+     "day": "2027-04-18",
+     "sst": 30.877,
+     "hotspot": 3.876999999999999,
+     "dhw": 15.797,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.583
+    },
+    {
+     "day": "2027-04-19",
+     "sst": 30.921,
+     "hotspot": 3.9209999999999994,
+     "dhw": 16.358,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.595
+    },
+    {
+     "day": "2027-04-20",
+     "sst": 30.964,
+     "hotspot": 3.9639999999999986,
+     "dhw": 16.924,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.607
+    },
+    {
+     "day": "2027-04-21",
+     "sst": 31.005,
+     "hotspot": 4.004999999999999,
+     "dhw": 17.496,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.619
+    },
+    {
+     "day": "2027-04-22",
+     "sst": 31.045,
+     "hotspot": 4.045000000000002,
+     "dhw": 18.074,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.631
+    },
+    {
+     "day": "2027-04-23",
+     "sst": 31.083,
+     "hotspot": 4.082999999999998,
+     "dhw": 18.657,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.643
+    },
+    {
+     "day": "2027-04-24",
+     "sst": 31.119,
+     "hotspot": 4.119,
+     "dhw": 19.246,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.655
+    },
+    {
+     "day": "2027-04-25",
+     "sst": 31.154,
+     "hotspot": 4.154,
+     "dhw": 19.839,
+     "alert": "Alert Level 4",
+     "window_coverage": 0.667
+    },
+    {
+     "day": "2027-04-26",
+     "sst": 31.187,
+     "hotspot": 4.187000000000001,
+     "dhw": 20.437,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.679
+    },
+    {
+     "day": "2027-04-27",
+     "sst": 31.219,
+     "hotspot": 4.219000000000001,
+     "dhw": 21.04,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.69
+    },
+    {
+     "day": "2027-04-28",
+     "sst": 31.249,
+     "hotspot": 4.248999999999999,
+     "dhw": 21.647,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.702
+    },
+    {
+     "day": "2027-04-29",
+     "sst": 31.278,
+     "hotspot": 4.277999999999999,
+     "dhw": 22.258,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.714
+    },
+    {
+     "day": "2027-04-30",
+     "sst": 31.304,
+     "hotspot": 4.3039999999999985,
+     "dhw": 22.873,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.726
+    },
+    {
+     "day": "2027-05-01",
+     "sst": 31.329,
+     "hotspot": 4.329000000000001,
+     "dhw": 23.491,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.738
+    },
+    {
+     "day": "2027-05-02",
+     "sst": 31.353,
+     "hotspot": 4.3530000000000015,
+     "dhw": 24.113,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.75
+    },
+    {
+     "day": "2027-05-03",
+     "sst": 31.374,
+     "hotspot": 4.373999999999999,
+     "dhw": 24.738,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.762
+    },
+    {
+     "day": "2027-05-04",
+     "sst": 31.394,
+     "hotspot": 4.393999999999998,
+     "dhw": 25.366,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.774
+    },
+    {
+     "day": "2027-05-05",
+     "sst": 31.413,
+     "hotspot": 4.413,
+     "dhw": 25.996,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.786
+    },
+    {
+     "day": "2027-05-06",
+     "sst": 31.429,
+     "hotspot": 4.4289999999999985,
+     "dhw": 26.629,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.798
+    },
+    {
+     "day": "2027-05-07",
+     "sst": 31.444,
+     "hotspot": 4.443999999999999,
+     "dhw": 27.264,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.81
+    },
+    {
+     "day": "2027-05-08",
+     "sst": 31.457,
+     "hotspot": 4.457000000000001,
+     "dhw": 27.9,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.821
+    },
+    {
+     "day": "2027-05-09",
+     "sst": 31.468,
+     "hotspot": 4.468,
+     "dhw": 28.539,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.833
+    },
+    {
+     "day": "2027-05-10",
+     "sst": 31.478,
+     "hotspot": 4.4780000000000015,
+     "dhw": 29.178,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.845
+    },
+    {
+     "day": "2027-05-11",
+     "sst": 31.486,
+     "hotspot": 4.486000000000001,
+     "dhw": 29.819,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.857
+    },
+    {
+     "day": "2027-05-12",
+     "sst": 31.492,
+     "hotspot": 4.492000000000001,
+     "dhw": 30.461,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.869
+    },
+    {
+     "day": "2027-05-13",
+     "sst": 31.496,
+     "hotspot": 4.495999999999999,
+     "dhw": 31.103,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.881
+    },
+    {
+     "day": "2027-05-14",
+     "sst": 31.499,
+     "hotspot": 4.498999999999999,
+     "dhw": 31.746,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.893
+    },
+    {
+     "day": "2027-05-15",
+     "sst": 31.5,
+     "hotspot": 4.5,
+     "dhw": 32.389,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.905
+    },
+    {
+     "day": "2027-05-16",
+     "sst": 31.499,
+     "hotspot": 4.498999999999999,
+     "dhw": 33.032,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.917
+    },
+    {
+     "day": "2027-05-17",
+     "sst": 31.496,
+     "hotspot": 4.495999999999999,
+     "dhw": 33.674,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.929
+    },
+    {
+     "day": "2027-05-18",
+     "sst": 31.492,
+     "hotspot": 4.492000000000001,
+     "dhw": 34.316,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.94
+    },
+    {
+     "day": "2027-05-19",
+     "sst": 31.486,
+     "hotspot": 4.486000000000001,
+     "dhw": 34.956,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.952
+    },
+    {
+     "day": "2027-05-20",
+     "sst": 31.478,
+     "hotspot": 4.4780000000000015,
+     "dhw": 35.596,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.964
+    },
+    {
+     "day": "2027-05-21",
+     "sst": 31.468,
+     "hotspot": 4.468,
+     "dhw": 36.234,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.976
+    },
+    {
+     "day": "2027-05-22",
+     "sst": 31.457,
+     "hotspot": 4.457000000000001,
+     "dhw": 36.871,
+     "alert": "Alert Level 5",
+     "window_coverage": 0.988
+    },
+    {
+     "day": "2027-05-23",
+     "sst": 31.444,
+     "hotspot": 4.443999999999999,
+     "dhw": 37.506,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-24",
+     "sst": 31.429,
+     "hotspot": 4.4289999999999985,
+     "dhw": 38.139,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-25",
+     "sst": 31.413,
+     "hotspot": 4.413,
+     "dhw": 38.769,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-26",
+     "sst": 31.394,
+     "hotspot": 4.393999999999998,
+     "dhw": 39.397,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-27",
+     "sst": 31.374,
+     "hotspot": 4.373999999999999,
+     "dhw": 40.022,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-28",
+     "sst": 31.353,
+     "hotspot": 4.3530000000000015,
+     "dhw": 40.644,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-29",
+     "sst": 31.329,
+     "hotspot": 4.329000000000001,
+     "dhw": 41.262,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-30",
+     "sst": 31.304,
+     "hotspot": 4.3039999999999985,
+     "dhw": 41.734,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-05-31",
+     "sst": 31.278,
+     "hotspot": 4.277999999999999,
+     "dhw": 42.19,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-01",
+     "sst": 31.249,
+     "hotspot": 4.248999999999999,
+     "dhw": 42.63,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-02",
+     "sst": 31.219,
+     "hotspot": 4.219000000000001,
+     "dhw": 43.055,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-03",
+     "sst": 31.187,
+     "hotspot": 4.187000000000001,
+     "dhw": 43.462,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-04",
+     "sst": 31.154,
+     "hotspot": 4.154,
+     "dhw": 43.854,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-05",
+     "sst": 31.119,
+     "hotspot": 4.119,
+     "dhw": 44.229,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-06",
+     "sst": 31.083,
+     "hotspot": 4.082999999999998,
+     "dhw": 44.587,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-07",
+     "sst": 31.045,
+     "hotspot": 4.045000000000002,
+     "dhw": 44.928,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-08",
+     "sst": 31.005,
+     "hotspot": 4.004999999999999,
+     "dhw": 45.252,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-09",
+     "sst": 30.964,
+     "hotspot": 3.9639999999999986,
+     "dhw": 45.559,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-10",
+     "sst": 30.921,
+     "hotspot": 3.9209999999999994,
+     "dhw": 45.849,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-11",
+     "sst": 30.877,
+     "hotspot": 3.876999999999999,
+     "dhw": 46.121,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-12",
+     "sst": 30.832,
+     "hotspot": 3.8320000000000007,
+     "dhw": 46.376,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-13",
+     "sst": 30.785,
+     "hotspot": 3.785,
+     "dhw": 46.613,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-14",
+     "sst": 30.736,
+     "hotspot": 3.7360000000000007,
+     "dhw": 46.832,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-15",
+     "sst": 30.686,
+     "hotspot": 3.686,
+     "dhw": 47.033,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-16",
+     "sst": 30.635,
+     "hotspot": 3.6350000000000016,
+     "dhw": 47.216,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-17",
+     "sst": 30.582,
+     "hotspot": 3.5820000000000007,
+     "dhw": 47.381,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-18",
+     "sst": 30.528,
+     "hotspot": 3.5279999999999987,
+     "dhw": 47.528,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-19",
+     "sst": 30.473,
+     "hotspot": 3.472999999999999,
+     "dhw": 47.656,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-20",
+     "sst": 30.416,
+     "hotspot": 3.4160000000000004,
+     "dhw": 47.767,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-21",
+     "sst": 30.358,
+     "hotspot": 3.3580000000000005,
+     "dhw": 47.859,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-22",
+     "sst": 30.299,
+     "hotspot": 3.2989999999999995,
+     "dhw": 47.932,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-23",
+     "sst": 30.238,
+     "hotspot": 3.2379999999999995,
+     "dhw": 47.988,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-24",
+     "sst": 30.177,
+     "hotspot": 3.1769999999999996,
+     "dhw": 48.025,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-25",
+     "sst": 30.114,
+     "hotspot": 3.1140000000000008,
+     "dhw": 48.043,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-26",
+     "sst": 30.05,
+     "hotspot": 3.0500000000000007,
+     "dhw": 48.043,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-27",
+     "sst": 29.985,
+     "hotspot": 2.9849999999999994,
+     "dhw": 48.025,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-28",
+     "sst": 29.918,
+     "hotspot": 2.9179999999999993,
+     "dhw": 47.988,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-29",
+     "sst": 29.851,
+     "hotspot": 2.850999999999999,
+     "dhw": 47.932,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-06-30",
+     "sst": 29.783,
+     "hotspot": 2.7830000000000013,
+     "dhw": 47.859,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-01",
+     "sst": 29.714,
+     "hotspot": 2.7139999999999986,
+     "dhw": 47.767,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-02",
+     "sst": 29.643,
+     "hotspot": 2.6430000000000007,
+     "dhw": 47.656,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-03",
+     "sst": 29.572,
+     "hotspot": 2.571999999999999,
+     "dhw": 47.528,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-04",
+     "sst": 29.5,
+     "hotspot": 2.5,
+     "dhw": 47.381,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-05",
+     "sst": 29.427,
+     "hotspot": 2.4269999999999996,
+     "dhw": 47.216,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-06",
+     "sst": 29.353,
+     "hotspot": 2.3530000000000015,
+     "dhw": 47.033,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-07",
+     "sst": 29.279,
+     "hotspot": 2.279,
+     "dhw": 46.832,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-08",
+     "sst": 29.203,
+     "hotspot": 2.2029999999999994,
+     "dhw": 46.613,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-09",
+     "sst": 29.127,
+     "hotspot": 2.126999999999999,
+     "dhw": 46.376,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-10",
+     "sst": 29.05,
+     "hotspot": 2.0500000000000007,
+     "dhw": 46.121,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-11",
+     "sst": 28.972,
+     "hotspot": 1.9720000000000013,
+     "dhw": 45.849,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-12",
+     "sst": 28.894,
+     "hotspot": 1.8939999999999984,
+     "dhw": 45.559,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-13",
+     "sst": 28.815,
+     "hotspot": 1.8150000000000013,
+     "dhw": 45.252,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-14",
+     "sst": 28.736,
+     "hotspot": 1.7360000000000007,
+     "dhw": 44.928,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-15",
+     "sst": 28.656,
+     "hotspot": 1.6559999999999988,
+     "dhw": 44.587,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-16",
+     "sst": 28.576,
+     "hotspot": 1.5760000000000005,
+     "dhw": 44.229,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-17",
+     "sst": 28.495,
+     "hotspot": 1.495000000000001,
+     "dhw": 43.854,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-18",
+     "sst": 28.413,
+     "hotspot": 1.4130000000000003,
+     "dhw": 43.462,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-19",
+     "sst": 28.332,
+     "hotspot": 1.3320000000000007,
+     "dhw": 43.055,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-20",
+     "sst": 28.25,
+     "hotspot": 1.25,
+     "dhw": 42.63,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-21",
+     "sst": 28.167,
+     "hotspot": 1.1670000000000016,
+     "dhw": 42.19,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-22",
+     "sst": 28.084,
+     "hotspot": 1.0839999999999996,
+     "dhw": 41.734,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-23",
+     "sst": 28.001,
+     "hotspot": 1.0010000000000012,
+     "dhw": 41.262,
+     "alert": "Alert Level 5",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-24",
+     "sst": 27.918,
+     "hotspot": 0.9179999999999993,
+     "dhw": 40.644,
+     "alert": "Bleaching Watch",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-25",
+     "sst": 27.835,
+     "hotspot": 0.8350000000000009,
+     "dhw": 40.022,
+     "alert": "Bleaching Watch",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-26",
+     "sst": 27.751,
+     "hotspot": 0.7510000000000012,
+     "dhw": 39.397,
+     "alert": "Bleaching Watch",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-27",
+     "sst": 27.668,
+     "hotspot": 0.6679999999999993,
+     "dhw": 38.769,
+     "alert": "Bleaching Watch",
+     "window_coverage": 1.0
+    },
+    {
+     "day": "2027-07-28",
+     "sst": 27.584,
+     "hotspot": 0.5839999999999996,
+     "dhw": 38.139,
+     "alert": "Bleaching Watch",
+     "window_coverage": 1.0
+    }
+   ],
+   "expected_summary": {
+    "threshold": 28.0,
+    "peak_dhw": 48.043,
+    "peak_dhw_day": "2027-06-25",
+    "peak_alert": "Alert Level 5",
+    "days_at_or_above_threshold": 139,
+    "n_days": 150
+   }
+  },
+  {
+   "name": "gaps",
+   "note": "three missing days in every nine; coverage below 1",
+   "mmm": 28.0,
+   "daily": [
+    [
+     "2027-03-01",
+     30.2
+    ],
+    [
+     "2027-03-02",
+     30.2
+    ],
+    [
+     "2027-03-03",
+     30.2
+    ],
+    [
+     "2027-03-07",
+     30.2
+    ],
+    [
+     "2027-03-08",
+     30.2
+    ],
+    [
+     "2027-03-09",
+     30.2
+    ],
+    [
+     "2027-03-10",
+     30.2
+    ],
+    [
+     "2027-03-11",
+     30.2
+    ],
+    [
+     "2027-03-12",
+     30.2
+    ],
+    [
+     "2027-03-16",
+     30.2
+    ],
+    [
+     "2027-03-17",
+     30.2
+    ],
+    [
+     "2027-03-18",
+     30.2
+    ],
+    [
+     "2027-03-19",
+     30.2
+    ],
+    [
+     "2027-03-20",
+     30.2
+    ],
+    [
+     "2027-03-21",
+     30.2
+    ],
+    [
+     "2027-03-25",
+     30.2
+    ],
+    [
+     "2027-03-26",
+     30.2
+    ],
+    [
+     "2027-03-27",
+     30.2
+    ],
+    [
+     "2027-03-28",
+     30.2
+    ],
+    [
+     "2027-03-29",
+     30.2
+    ],
+    [
+     "2027-03-30",
+     30.2
+    ],
+    [
+     "2027-04-03",
+     30.2
+    ],
+    [
+     "2027-04-04",
+     30.2
+    ],
+    [
+     "2027-04-05",
+     30.2
+    ],
+    [
+     "2027-04-06",
+     30.2
+    ],
+    [
+     "2027-04-07",
+     30.2
+    ],
+    [
+     "2027-04-08",
+     30.2
+    ],
+    [
+     "2027-04-12",
+     30.2
+    ],
+    [
+     "2027-04-13",
+     30.2
+    ],
+    [
+     "2027-04-14",
+     30.2
+    ],
+    [
+     "2027-04-15",
+     30.2
+    ],
+    [
+     "2027-04-16",
+     30.2
+    ],
+    [
+     "2027-04-17",
+     30.2
+    ],
+    [
+     "2027-04-21",
+     30.2
+    ],
+    [
+     "2027-04-22",
+     30.2
+    ],
+    [
+     "2027-04-23",
+     30.2
+    ],
+    [
+     "2027-04-24",
+     30.2
+    ],
+    [
+     "2027-04-25",
+     30.2
+    ],
+    [
+     "2027-04-26",
+     30.2
+    ]
+   ],
+   "expected": [
+    {
+     "day": "2027-03-01",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 0.314,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.012
+    },
+    {
+     "day": "2027-03-02",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 0.629,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.024
+    },
+    {
+     "day": "2027-03-03",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 0.943,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-04",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 0.943,
+     "alert": "No Stress",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-05",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 0.943,
+     "alert": "No Stress",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-06",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 0.943,
+     "alert": "No Stress",
+     "window_coverage": 0.036
+    },
+    {
+     "day": "2027-03-07",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 1.257,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.048
+    },
+    {
+     "day": "2027-03-08",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 1.571,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.06
+    },
+    {
+     "day": "2027-03-09",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 1.886,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.071
+    },
+    {
+     "day": "2027-03-10",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 2.2,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.083
+    },
+    {
+     "day": "2027-03-11",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 2.514,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.095
+    },
+    {
+     "day": "2027-03-12",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 2.829,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-13",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 2.829,
+     "alert": "No Stress",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-14",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 2.829,
+     "alert": "No Stress",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-15",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 2.829,
+     "alert": "No Stress",
+     "window_coverage": 0.107
+    },
+    {
+     "day": "2027-03-16",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 3.143,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.119
+    },
+    {
+     "day": "2027-03-17",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 3.457,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.131
+    },
+    {
+     "day": "2027-03-18",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 3.771,
+     "alert": "Bleaching Warning",
+     "window_coverage": 0.143
+    },
+    {
+     "day": "2027-03-19",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 4.086,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.155
+    },
+    {
+     "day": "2027-03-20",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 4.4,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.167
+    },
+    {
+     "day": "2027-03-21",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 4.714,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-22",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 4.714,
+     "alert": "No Stress",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-23",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 4.714,
+     "alert": "No Stress",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-24",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 4.714,
+     "alert": "No Stress",
+     "window_coverage": 0.179
+    },
+    {
+     "day": "2027-03-25",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 5.029,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.19
+    },
+    {
+     "day": "2027-03-26",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 5.343,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.202
+    },
+    {
+     "day": "2027-03-27",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 5.657,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.214
+    },
+    {
+     "day": "2027-03-28",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 5.971,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.226
+    },
+    {
+     "day": "2027-03-29",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 6.286,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.238
+    },
+    {
+     "day": "2027-03-30",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 6.6,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-03-31",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 6.6,
+     "alert": "No Stress",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-04-01",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 6.6,
+     "alert": "No Stress",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-04-02",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 6.6,
+     "alert": "No Stress",
+     "window_coverage": 0.25
+    },
+    {
+     "day": "2027-04-03",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 6.914,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.262
+    },
+    {
+     "day": "2027-04-04",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 7.229,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.274
+    },
+    {
+     "day": "2027-04-05",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 7.543,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.286
+    },
+    {
+     "day": "2027-04-06",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 7.857,
+     "alert": "Alert Level 1",
+     "window_coverage": 0.298
+    },
+    {
+     "day": "2027-04-07",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 8.171,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.31
+    },
+    {
+     "day": "2027-04-08",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 8.486,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-04-09",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 8.486,
+     "alert": "No Stress",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-04-10",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 8.486,
+     "alert": "No Stress",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-04-11",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 8.486,
+     "alert": "No Stress",
+     "window_coverage": 0.321
+    },
+    {
+     "day": "2027-04-12",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 8.8,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.333
+    },
+    {
+     "day": "2027-04-13",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 9.114,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.345
+    },
+    {
+     "day": "2027-04-14",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 9.429,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.357
+    },
+    {
+     "day": "2027-04-15",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 9.743,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.369
+    },
+    {
+     "day": "2027-04-16",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 10.057,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.381
+    },
+    {
+     "day": "2027-04-17",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 10.371,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-18",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 10.371,
+     "alert": "No Stress",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-19",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 10.371,
+     "alert": "No Stress",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-20",
+     "sst": null,
+     "hotspot": null,
+     "dhw": 10.371,
+     "alert": "No Stress",
+     "window_coverage": 0.393
+    },
+    {
+     "day": "2027-04-21",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 10.686,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.405
+    },
+    {
+     "day": "2027-04-22",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 11.0,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.417
+    },
+    {
+     "day": "2027-04-23",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 11.314,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.429
+    },
+    {
+     "day": "2027-04-24",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 11.629,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.44
+    },
+    {
+     "day": "2027-04-25",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 11.943,
+     "alert": "Alert Level 2",
+     "window_coverage": 0.452
+    },
+    {
+     "day": "2027-04-26",
+     "sst": 30.2,
+     "hotspot": 2.1999999999999993,
+     "dhw": 12.257,
+     "alert": "Alert Level 3",
+     "window_coverage": 0.464
+    }
+   ],
+   "expected_summary": {
+    "threshold": 29.0,
+    "peak_dhw": 12.257,
+    "peak_dhw_day": "2027-04-26",
+    "peak_alert": "Alert Level 3",
+    "days_at_or_above_threshold": 39,
+    "n_days": 57
+   }
+  }
+ ],
+ "pipeline_case": {
+  "name": "readings_to_dhw",
+  "mmm": 28.4,
+  "samples_per_day": 3,
+  "note": "three transmits a day; RTC_LOST, unset clock, implausible and low-coverage days excluded",
+  "rows": [
+   {
+    "timestamp_utc": "2027-03-01T00:10:00Z",
+    "temp_c": 29.6,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-01T08:10:00Z",
+    "temp_c": 30.0,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-01T16:10:00Z",
+    "temp_c": 30.5,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-02T00:10:00Z",
+    "temp_c": 29.65,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-02T08:10:00Z",
+    "temp_c": 30.05,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-02T16:10:00Z",
+    "temp_c": 30.55,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-03T00:10:00Z",
+    "temp_c": 29.7,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-03T08:10:00Z",
+    "temp_c": 30.1,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-03T16:10:00Z",
+    "temp_c": 30.6,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-04T00:10:00Z",
+    "temp_c": 29.75,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-04T08:10:00Z",
+    "temp_c": 30.15,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-04T16:10:00Z",
+    "temp_c": 30.65,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-05T00:10:00Z",
+    "temp_c": 29.8,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-05T08:10:00Z",
+    "temp_c": 30.2,
+    "flags": "RTC_LOST"
+   },
+   {
+    "timestamp_utc": "2027-03-05T16:10:00Z",
+    "temp_c": 30.7,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-06T00:10:00Z",
+    "temp_c": 29.85,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-06T08:10:00Z",
+    "temp_c": 30.25,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-06T16:10:00Z",
+    "temp_c": 30.75,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-07T00:10:00Z",
+    "temp_c": null,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-07T08:10:00Z",
+    "temp_c": null,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-07T16:10:00Z",
+    "temp_c": 30.8,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-08T00:10:00Z",
+    "temp_c": 29.95,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-08T08:10:00Z",
+    "temp_c": 30.35,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-08T16:10:00Z",
+    "temp_c": 30.85,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-09T00:10:00Z",
+    "temp_c": 30.0,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-09T08:10:00Z",
+    "temp_c": 30.4,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-09T16:10:00Z",
+    "temp_c": 30.9,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-10T00:10:00Z",
+    "temp_c": 30.05,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-10T08:10:00Z",
+    "temp_c": 30.45,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-10T16:10:00Z",
+    "temp_c": 99.0,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-11T00:10:00Z",
+    "temp_c": 30.1,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-11T08:10:00Z",
+    "temp_c": 30.5,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-11T16:10:00Z",
+    "temp_c": 31.0,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-12T00:10:00Z",
+    "temp_c": 30.15,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-12T08:10:00Z",
+    "temp_c": 30.55,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-12T16:10:00Z",
+    "temp_c": 31.05,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-14T00:10:00Z",
+    "temp_c": 30.25,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-14T08:10:00Z",
+    "temp_c": 30.65,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-14T16:10:00Z",
+    "temp_c": 31.15,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-15T00:10:00Z",
+    "temp_c": 30.3,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-15T08:10:00Z",
+    "temp_c": 30.7,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-15T16:10:00Z",
+    "temp_c": 31.2,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-16T00:10:00Z",
+    "temp_c": 30.35,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-16T08:10:00Z",
+    "temp_c": 30.75,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-16T16:10:00Z",
+    "temp_c": 31.25,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-17T00:10:00Z",
+    "temp_c": 30.4,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-17T08:10:00Z",
+    "temp_c": 30.8,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-17T16:10:00Z",
+    "temp_c": 31.3,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-18T00:10:00Z",
+    "temp_c": 30.45,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-18T08:10:00Z",
+    "temp_c": 30.85,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-18T16:10:00Z",
+    "temp_c": 31.35,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-19T00:10:00Z",
+    "temp_c": 30.5,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-19T08:10:00Z",
+    "temp_c": 30.9,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-19T16:10:00Z",
+    "temp_c": 31.4,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-20T00:10:00Z",
+    "temp_c": 30.55,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-20T08:10:00Z",
+    "temp_c": 30.95,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "2027-03-20T16:10:00Z",
+    "temp_c": 31.45,
+    "flags": ""
+   },
+   {
+    "timestamp_utc": "1970-01-01T00:00:00Z",
+    "temp_c": 35.0,
+    "flags": ""
+   }
+  ],
+  "expected_daily": [
+   {
+    "day": "2027-03-01",
+    "temp_mean": 30.033,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-02",
+    "temp_mean": 30.083,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-03",
+    "temp_mean": 30.133,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-04",
+    "temp_mean": 30.183,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-05",
+    "temp_mean": 30.25,
+    "temp_n": 2,
+    "coverage": 0.667
+   },
+   {
+    "day": "2027-03-06",
+    "temp_mean": 30.283,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-07",
+    "temp_mean": null,
+    "temp_n": 1,
+    "coverage": 0.333
+   },
+   {
+    "day": "2027-03-08",
+    "temp_mean": 30.383,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-09",
+    "temp_mean": 30.433,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-10",
+    "temp_mean": 30.25,
+    "temp_n": 2,
+    "coverage": 0.667
+   },
+   {
+    "day": "2027-03-11",
+    "temp_mean": 30.533,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-12",
+    "temp_mean": 30.583,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-14",
+    "temp_mean": 30.683,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-15",
+    "temp_mean": 30.733,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-16",
+    "temp_mean": 30.783,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-17",
+    "temp_mean": 30.833,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-18",
+    "temp_mean": 30.883,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-19",
+    "temp_mean": 30.933,
+    "temp_n": 3,
+    "coverage": 1.0
+   },
+   {
+    "day": "2027-03-20",
+    "temp_mean": 30.983,
+    "temp_n": 3,
+    "coverage": 1.0
+   }
+  ],
+  "expected_thermal": [
+   {
+    "day": "2027-03-01",
+    "sst": 30.033,
+    "hotspot": 1.6330000000000027,
+    "dhw": 0.233,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.012
+   },
+   {
+    "day": "2027-03-02",
+    "sst": 30.083,
+    "hotspot": 1.6829999999999998,
+    "dhw": 0.474,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.024
+   },
+   {
+    "day": "2027-03-03",
+    "sst": 30.133,
+    "hotspot": 1.7330000000000005,
+    "dhw": 0.721,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.036
+   },
+   {
+    "day": "2027-03-04",
+    "sst": 30.183,
+    "hotspot": 1.7830000000000013,
+    "dhw": 0.976,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.048
+   },
+   {
+    "day": "2027-03-05",
+    "sst": 30.25,
+    "hotspot": 1.8500000000000014,
+    "dhw": 1.24,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.06
+   },
+   {
+    "day": "2027-03-06",
+    "sst": 30.283,
+    "hotspot": 1.8830000000000027,
+    "dhw": 1.509,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.071
+   },
+   {
+    "day": "2027-03-07",
+    "sst": null,
+    "hotspot": null,
+    "dhw": 1.509,
+    "alert": "No Stress",
+    "window_coverage": 0.071
+   },
+   {
+    "day": "2027-03-08",
+    "sst": 30.383,
+    "hotspot": 1.9830000000000005,
+    "dhw": 1.793,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.083
+   },
+   {
+    "day": "2027-03-09",
+    "sst": 30.433,
+    "hotspot": 2.0330000000000013,
+    "dhw": 2.083,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.095
+   },
+   {
+    "day": "2027-03-10",
+    "sst": 30.25,
+    "hotspot": 1.8500000000000014,
+    "dhw": 2.347,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.107
+   },
+   {
+    "day": "2027-03-11",
+    "sst": 30.533,
+    "hotspot": 2.1330000000000027,
+    "dhw": 2.652,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.119
+   },
+   {
+    "day": "2027-03-12",
+    "sst": 30.583,
+    "hotspot": 2.183,
+    "dhw": 2.964,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.131
+   },
+   {
+    "day": "2027-03-13",
+    "sst": null,
+    "hotspot": null,
+    "dhw": 2.964,
+    "alert": "No Stress",
+    "window_coverage": 0.131
+   },
+   {
+    "day": "2027-03-14",
+    "sst": 30.683,
+    "hotspot": 2.2830000000000013,
+    "dhw": 3.29,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.143
+   },
+   {
+    "day": "2027-03-15",
+    "sst": 30.733,
+    "hotspot": 2.333000000000002,
+    "dhw": 3.623,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.155
+   },
+   {
+    "day": "2027-03-16",
+    "sst": 30.783,
+    "hotspot": 2.3830000000000027,
+    "dhw": 3.964,
+    "alert": "Bleaching Warning",
+    "window_coverage": 0.167
+   },
+   {
+    "day": "2027-03-17",
+    "sst": 30.833,
+    "hotspot": 2.433,
+    "dhw": 4.311,
+    "alert": "Alert Level 1",
+    "window_coverage": 0.179
+   },
+   {
+    "day": "2027-03-18",
+    "sst": 30.883,
+    "hotspot": 2.4830000000000005,
+    "dhw": 4.666,
+    "alert": "Alert Level 1",
+    "window_coverage": 0.19
+   },
+   {
+    "day": "2027-03-19",
+    "sst": 30.933,
+    "hotspot": 2.5330000000000013,
+    "dhw": 5.028,
+    "alert": "Alert Level 1",
+    "window_coverage": 0.202
+   },
+   {
+    "day": "2027-03-20",
+    "sst": 30.983,
+    "hotspot": 2.583000000000002,
+    "dhw": 5.397,
+    "alert": "Alert Level 1",
+    "window_coverage": 0.214
+   }
+  ]
+ }
+}
