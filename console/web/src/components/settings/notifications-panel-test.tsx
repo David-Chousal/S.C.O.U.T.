@@ -28,6 +28,8 @@ const VIEW: AlertsView = {
   metrics: [{ key: "temp_c", label: "Water temperature", unit: "°C" }, { key: "battery_v", label: "Battery", unit: "V" },
     { key: "internal_humidity_pct", label: "Housing humidity", unit: "%" }],
   flags: [{ key: "HUMIDITY_HIGH", label: "Housing humidity high" }, { key: "RTC_LOST", label: "Clock lost" }],
+  bleachingLevels: [{ value: 1, label: "Bleaching Watch" }, { value: 2, label: "Bleaching Warning" }, { value: 3, label: "Alert Level 1" },
+    { value: 4, label: "Alert Level 2" }, { value: 5, label: "Alert Level 3" }, { value: 6, label: "Alert Level 4" }, { value: 7, label: "Alert Level 5" }],
   presets: [
     { id: "battery-low", label: "Battery low", kind: "threshold", metric: "battery_v", op: "below", value: 3.2, source: "The firmware's default conserve threshold." },
     { id: "humidity-high", label: "Housing humidity high", kind: "threshold", metric: "internal_humidity_pct", op: "above", value: 70, source: "Placeholder until SCO-204." },
@@ -115,6 +117,18 @@ describe("NotificationsPanel", () => {
     await userEvent.click(screen.getByRole("option", { name: "Clock lost · RTC_LOST" }));
     await userEvent.click(screen.getByRole("button", { name: "Add alert" }));
     expect(create).toHaveBeenCalledWith({ buoy_id: null, remind_hours: null, kind: "flag", metric: "RTC_LOST", op: null, value: null });
+  });
+
+  test("builds a bleaching rule at a CRW alert level, starting from Alert Level 1", async () => {
+    const create = vi.spyOn(api, "createAlertRule").mockResolvedValue({ id: "r5" });
+    renderPanel();
+    await userEvent.click(await screen.findByLabelText("Alert when"));
+    await userEvent.click(screen.getByRole("option", { name: "Heat stress reaches a bleaching alert level" }));
+    expect(screen.getByLabelText("Bleaching alert level").textContent).toContain("Alert Level 1");
+    await userEvent.click(screen.getByLabelText("Bleaching alert level"));
+    await userEvent.click(screen.getByRole("option", { name: "Alert Level 2" }));
+    await userEvent.click(screen.getByRole("button", { name: "Add alert" }));
+    expect(create).toHaveBeenCalledWith({ buoy_id: null, remind_hours: null, kind: "bleaching", metric: null, op: null, value: 4 });
   });
 
   test("a rule can be switched off, edited and deleted", async () => {

@@ -113,7 +113,7 @@ describe("SettingsBoard", () => {
     expect(((await screen.findByLabelText("Name in the console")) as HTMLInputElement).disabled).toBe(true);
     expect((screen.getByLabelText("Reading interval") as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByText(/View only/)).toBeNull();
-    expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy or changing its settings needs the member role.");
+    expect(setNote).toHaveBeenCalledWith("View only: renaming a buoy, changing its settings or its MMM needs the member role.");
   });
 
   test("each setting's description is a hover tooltip, still linked to its field for screen readers", async () => {

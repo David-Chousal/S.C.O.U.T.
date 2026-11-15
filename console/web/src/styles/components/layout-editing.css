@@ -48,3 +48,27 @@
 .sc-lib__item--pick { grid-template-columns: 1fr auto; }
 .sc-lib__choices { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-2); }
 .sc-lib__choices .sc-input { height: 28px; }
+/* The heat-stress bay (SCO-314): CRW alert chips, the now-table, reference lines and the charts. */
+.sc-heat { display: grid; gap: var(--space-4); }
+.sc-heat__pick { max-width: 240px; }
+.sc-alert-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--radius-sm); font: 500 12px/1 var(--font-sans); white-space: nowrap; }
+.sc-alert-chip--nostress { background: var(--alert-nostress); color: var(--on-alert-nostress); }
+.sc-alert-chip--watch { background: var(--alert-watch); color: var(--on-alert-watch); }
+.sc-alert-chip--warning { background: var(--alert-warning); color: var(--on-alert-warning); }
+.sc-alert-chip--alert1 { background: var(--alert-alert1); color: var(--on-alert-alert1); }
+.sc-alert-chip--alert2 { background: var(--alert-alert2); color: var(--on-alert-alert2); }
+.sc-alert-chip--alert3 { background: var(--alert-alert3); color: var(--on-alert-alert3); }
+.sc-alert-chip--alert4 { background: var(--alert-alert4); color: var(--on-alert-alert4); }
+.sc-alert-chip--alert5 { background: var(--alert-alert5); color: var(--on-alert-alert5); }
+.sc-heat-legend ul { display: grid; gap: var(--space-2); margin: var(--space-2) 0 0; padding: 0; list-style: none; }
+.sc-heat-legend li { display: grid; grid-template-columns: 132px 1fr; gap: var(--space-3); align-items: center; }
+.sc-heat-legend li .sc-alert-chip { justify-self: start; }
+.sc-heat-table__note { color: var(--ink-muted); white-space: normal; }
+.sc-heat-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }
+.sc-heat-charts > p { grid-column: 1 / -1; margin: 0; }
+.sc-heat-charts svg { height: 200px; }
+.sc-heat-ref line { stroke-width: 1.5; stroke-dasharray: 4 3; }
+.sc-heat-ref text { font: 400 11px/1 var(--font-mono); fill: var(--ink-muted); }
+.sc-heat-ref--annotation line { stroke: var(--annotation); }
+.sc-heat-ref--muted line { stroke: var(--line-strong); }
+@container page (max-width: 520px) { .sc-heat-legend li { grid-template-columns: 1fr; gap: var(--space-1); } }

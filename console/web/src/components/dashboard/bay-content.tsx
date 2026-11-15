@@ -2,11 +2,12 @@
 
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
-import type { Buoy, Reading } from "@/lib/api/types";
+import type { Buoy, HeatStressView, Reading } from "@/lib/api/types";
 import { BAY_KINDS, type BayConfig } from "@/lib/dashboard/layout";
 import { lastHeard } from "@/lib/format";
 import { VARIABLES, variableLabel } from "@/lib/variables";
 import { freshness } from "@/components/stations/stations-board";
+import { HeatStressBay } from "./heat-stress-bay";
 import { TraceBay } from "./trace-bay";
 
 const HOUR = 3600 * 1000;
@@ -16,6 +17,8 @@ export interface BoardData {
   /** Each buoy's last 7 days of readings, oldest first. */
   readings: Record<number, Reading[]>;
   now: number;
+  /** Heat stress per buoy (SCO-314): undefined while loading, null if it failed. */
+  heat?: HeatStressView | null;
 }
 
 const buoyLabel = (data: BoardData, id?: number) => data.buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`;
@@ -25,6 +28,7 @@ export function bayName(bay: BayConfig, data: BoardData): string {
   if (bay.kind === "readout") return `${variableLabel(bay.variable ?? "")} · ${buoyLabel(data, bay.buoy)}`;
   if (bay.kind === "trace") return `${variableLabel(bay.variable ?? "")} · last 7 days`;
   if (bay.kind === "latest") return `Latest readings · ${buoyLabel(data, bay.buoy)}`;
+  if (bay.kind === "heat") return "Heat stress · NOAA Coral Reef Watch";
   return BAY_KINDS[bay.kind].name;
 }
 
@@ -82,6 +86,7 @@ export function BayContent({ bay, data }: { bay: BayConfig; data: BoardData }) {
       {bay.kind === "trace" && <TraceBay buoys={data.buoys} readings={data.readings} variable={bay.variable ?? "temp_c"} now={data.now} />}
       {bay.kind === "fleet" && <Fleet data={data} />}
       {bay.kind === "latest" && <Latest bay={bay} data={data} />}
+      {bay.kind === "heat" && <HeatStressBay view={data.heat} />}
     </section>
   );
 }

@@ -7,6 +7,7 @@ import type { Buoy, BuoySettings } from "@/lib/api/types";
 import { can, needs, useSession } from "@/lib/session";
 import { useViewOnlyNote } from "@/lib/view-only-note";
 import { BuoyOverview } from "./buoy-overview";
+import { HeatStressSettings } from "./heat-stress-settings";
 import { RemoteSettings } from "./remote-settings";
 
 function selectedFromUrl(buoys: Buoy[]): number {
@@ -19,7 +20,7 @@ function selectedFromUrl(buoys: Buoy[]): number {
 export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings | null; error: string; reload: () => void }) {
   const { user } = useSession();
   const canEdit = can(user.role, "settings.write");
-  useViewOnlyNote(canEdit ? null : `View only: renaming a buoy or changing its settings needs the ${needs("settings.write")} role.`);
+  useViewOnlyNote(canEdit ? null : `View only: renaming a buoy, changing its settings or its MMM needs the ${needs("settings.write")} role.`);
   const [picked, setPicked] = useState<number | null>(null);
   if (error) return <Banner tone="failed">{error}</Banner>;
   if (!data) return <span className="sc-tag" aria-busy="true">Loading buoy settings…</span>;
@@ -49,6 +50,9 @@ export function BuoySettingsPanel({ data, error, reload }: { data: BuoySettings 
       {buoy && (
         <RemoteSettings key={`${buoy.buoy_id}-${buoy.settings_digest_wanted}`} buoy={buoy} remote={data.firmware.remote}
           slotsSod={data.firmware.slotsSod} estimates={data.estimates} canEdit={canEdit} onSaved={reload} />
+      )}
+      {buoy && (
+        <HeatStressSettings key={`${buoy.buoy_id}-heat-${buoy.mmm_set_at ?? 0}`} buoy={buoy} canEdit={canEdit} onSaved={reload} />
       )}
     </>
   );

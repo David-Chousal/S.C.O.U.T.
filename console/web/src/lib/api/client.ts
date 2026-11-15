@@ -17,6 +17,7 @@ import {
   type FredEvent,
   type FredMessage,
   type FredStatus,
+  type HeatStressView,
   type Invite,
   type LinkIssued,
   type Providers,
@@ -138,6 +139,10 @@ export const api = {
   requestSettings: (buoyId: number, settings: Record<string, number | null>) =>
     call<{ ok: true }>("POST", `/api/settings/buoys/${buoyId}`, { settings }),
   restoreDefaults: (buoyId: number) => call<{ ok: true }>("POST", `/api/settings/buoys/${buoyId}/defaults`, {}),
+  heatStress: () => call<HeatStressView>("GET", "/api/heat-stress"),
+  /** Look the MMM up from NOAA CRW for a position, set it by hand, or clear it (mmm_c: null). */
+  setMmm: (buoyId: number, body: { lookup: true; latitude: number; longitude: number } | { mmm_c: number | null; latitude?: number | null; longitude?: number | null }) =>
+    call<{ ok: true }>("POST", `/api/settings/buoys/${buoyId}/mmm`, body),
 
   team: () => call<Team>("GET", "/api/team"),
   createInvite: (email: string, role: Role) => call<LinkIssued>("POST", "/api/team/invites", { email, role }),

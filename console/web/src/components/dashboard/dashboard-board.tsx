@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { api } from "@/lib/api/client";
-import type { Fleet, Reading } from "@/lib/api/types";
+import type { Fleet, HeatStressView, Reading } from "@/lib/api/types";
 import { DEFAULT_VIEW_ID, systemDefault, type SavedView } from "@/lib/dashboard/layout";
 import { can, needs, useSession } from "@/lib/session";
 import { useViewOnlyNote } from "@/lib/view-only-note";
@@ -13,11 +13,12 @@ import { LayoutBoard } from "./layout-board";
 const DAY_MS = 24 * 3600 * 1000;
 
 /** The Dashboard page: the built-in Overview, the team's shared views and your own, each a
- * layout of bays over the last 7 days of readings. Guests see every view and change none. */
+ * layout of bays over the last 7 days of readings (and 12 weeks of heat stress). Guests see every view and change none. */
 export function DashboardBoard() {
   const { user } = useSession();
   const [views, setViews] = useState<SavedView[] | null>(null);
   const [data, setData] = useState<BoardData | null>(null);
+  const [heat, setHeat] = useState<HeatStressView | null | undefined>(undefined);
   const [error, setError] = useState("");
   const canEdit = can(user.role, "dashboards.write");
   useViewOnlyNote(canEdit ? null : `View only: arranging dashboards needs the ${needs("dashboards.write")} role.`);
@@ -35,6 +36,8 @@ export function DashboardBoard() {
       const readings: Record<number, Reading[]> = Object.fromEntries(fleet.buoys.map((b, i) => [b.buoy_id, [...replies[i].readings].reverse()]));
       setData({ buoys: fleet.buoys, readings, now });
     }).catch((failure: unknown) => setError(failure instanceof Error ? failure.message : "Could not load the readings."));
+    // Heat stress loads apart: a failure there leaves the rest of the board working.
+    api.heatStress().then(setHeat, () => setHeat(null));
   }, [loadViews]);
 
   if (error) return <Banner tone="failed">{error}</Banner>;
@@ -42,7 +45,7 @@ export function DashboardBoard() {
   const overview: SavedView = { id: DEFAULT_VIEW_ID, name: "Overview", shared: true, bays: systemDefault(data.buoys.map((b) => b.buoy_id)) };
   return (
     <>
-      <LayoutBoard views={[overview, ...views]} data={data} canEdit={canEdit} onChanged={loadViews} />
+      <LayoutBoard views={[overview, ...views]} data={{ ...data, heat }} canEdit={canEdit} onChanged={loadViews} />
     </>
   );
 }
