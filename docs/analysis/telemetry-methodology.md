@@ -140,6 +140,18 @@ standard for anticipating mass bleaching (Liu et al. 2014; Skirving et al. 2020)
 - *Gap bias.* DHW over a window with missing days sums only the days present, biasing it low;
   the pipeline reports each day's `window_coverage` so the bias is visible, not hidden.
 - *MMM dependency.* Results are only as good as the supplied MMM.
+- *Days without data.* `bleaching.py` labels a calendar day with no daily mean **No Stress**,
+  which reads as "measured and fine" when it means "not measured". Surfaced 2026-11-15
+  ([ADR-0017](../decisions/0017-console-heat-stress.md)); not yet changed, since the console's
+  port must change with it.
+
+**The console runs the same method** ([ADR-0017](../decisions/0017-console-heat-stress.md),
+[SCO-314](https://linear.app/scout1/issue/SCO-314)): `console/worker/heat-stress.js` is a port of
+`bleaching.py` and the daily mean in `aggregate.py`, checked against the Python on a shared
+fixture (`analytics/telemetry/tests/fixtures/heat-stress-cases.json`). Its one difference: the
+50 % coverage floor counts against the buoy's daily transmit count (1–3), not the SD log's 48
+samples, because the console sees only transmitted rows. Each buoy's MMM is looked up from CRW's
+5 km product for its position (MMM = CRW SST − CRW HotSpot at that cell) or typed in by hand.
 
 ## 4. Turbidity
 
