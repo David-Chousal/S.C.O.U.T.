@@ -88,7 +88,7 @@ takes it as `--mmm`; the console had nowhere to keep one.
   override.
 - **Compute in Python and push results to D1:** reuses the reference directly, but the console
   has no Python runtime, and a separate job would add a moving part and a lag.
-- **Read the MMM from CRW's climatology NetCDF:** the authoritative file, but ~100 MB and not
+- **Read the MMM from CRW's climatology NetCDF** ([NCEI Accession 0185742](https://www.ncei.noaa.gov/archive/accession/0185742), CoralTemp v1.0, 1985–2012; `noaa-crw-clim-2019` in [sources.md](../hub/research/sources.md)): the authoritative file, but ~100 MB and not
   queryable per point from a Worker. The ERDDAP subtraction gives the same number per cell.
 
 ## Consequences
