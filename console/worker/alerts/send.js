@@ -41,11 +41,13 @@ const oneLine = (text) => String(text).replace(/[\r\n]+/g, " ").slice(0, 120);
 function reading(rule) {
   if (rule.kind === "threshold") return METRICS[rule.metric].label;
   if (rule.kind === "flag") return `Firmware flag ${rule.metric}`;
+  if (rule.kind === "bleaching") return "Heat stress (NOAA Coral Reef Watch)";
   return "Packets";
 }
 
 function when(event) {
   if (event.rule.kind === "silence") return `Last heard ${utc(event.at)}`;
+  if (event.rule.kind === "bleaching") return `Daily mean of ${event.day} UTC, DHW ${event.dhw} °C-weeks`;
   return event.clockLost ? `Received ${utc(event.at)} (buoy clock lost)` : utc(event.at);
 }
 

@@ -3,7 +3,7 @@
   "info": {
     "title": "S.C.O.U.T. Console API",
     "version": "1.0.0",
-    "description": "Read the buoys, their readings and settings; request a transmit count. Make a personal token on the console's Developer page and send it as `Authorization: Bearer sct_…`. A token acts with its owner's current role, limited by its scopes."
+    "description": "Read the buoys, their readings, heat stress and settings; request a transmit count. Make a personal token on the console's Developer page and send it as `Authorization: Bearer sct_…`. A token acts with its owner's current role, limited by its scopes."
   },
   "servers": [
     {
@@ -200,6 +200,162 @@
           },
           "updated_at": {
             "type": "integer"
+          }
+        }
+      },
+      "HeatStressDay": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "2027-04-02",
+            "description": "UTC calendar day"
+          },
+          "sst": {
+            "type": "number",
+            "nullable": true,
+            "description": "Daily mean of trusted readings, °C; null when the day had too few"
+          },
+          "hotspot": {
+            "type": "number",
+            "nullable": true,
+            "description": "max(0, sst − MMM), °C"
+          },
+          "dhw": {
+            "type": "number",
+            "description": "Degree Heating Weeks, °C-weeks"
+          },
+          "alert": {
+            "type": "string",
+            "enum": [
+              "No Stress",
+              "Bleaching Watch",
+              "Bleaching Warning",
+              "Alert Level 1",
+              "Alert Level 2",
+              "Alert Level 3",
+              "Alert Level 4",
+              "Alert Level 5"
+            ]
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7,
+            "description": "Index of alert in alert_levels"
+          },
+          "window_coverage": {
+            "type": "number",
+            "description": "Share of the 84-day window with a daily mean, 0–1"
+          }
+        }
+      },
+      "BuoyHeatStress": {
+        "type": "object",
+        "properties": {
+          "buoy_id": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "mmm": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "value_c": {
+                "type": "number"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "noaa_crw_5km",
+                  "manual"
+                ]
+              },
+              "latitude": {
+                "type": "number",
+                "nullable": true
+              },
+              "longitude": {
+                "type": "number",
+                "nullable": true
+              },
+              "cell_latitude": {
+                "type": "number",
+                "nullable": true,
+                "description": "CRW 5 km cell the MMM came from"
+              },
+              "cell_longitude": {
+                "type": "number",
+                "nullable": true
+              },
+              "set_by": {
+                "type": "string",
+                "nullable": true
+              },
+              "set_at": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Unix ms"
+              }
+            }
+          },
+          "threshold_c": {
+            "type": "number",
+            "nullable": true,
+            "description": "Bleaching threshold, MMM + 1 °C"
+          },
+          "samples_per_day": {
+            "type": "integer",
+            "description": "Readings a full day should have (the buoy's transmit count); half are needed for a daily mean"
+          },
+          "current": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HeatStressDay"
+              }
+            ],
+            "nullable": true,
+            "description": "The newest day with a daily mean, plus days_old"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HeatStressDay"
+            }
+          },
+          "summary": {
+            "type": "object",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "HeatStressView": {
+        "type": "object",
+        "properties": {
+          "window_days": {
+            "type": "integer",
+            "example": 84
+          },
+          "alert_levels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "buoys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuoyHeatStress"
+            }
           }
         }
       }
@@ -833,6 +989,104 @@
             }
           },
           "409": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/heat-stress": {
+      "get": {
+        "summary": "Heat stress (DHW and CRW bleaching alert) for every connected buoy",
+        "description": "Scope: read:telemetry. NOAA Coral Reef Watch thermal stress from the buoy's in-water temperature (ADR-0017): the daily mean of trusted readings, HotSpot = daily mean − MMM, Degree Heating Weeks over 84 days and the CRW alert level. `series` covers the last 84 days; a buoy with no MMM has `mmm: null` and a `note`.",
+        "responses": {
+          "200": {
+            "description": "Heat stress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatStressView"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buoys/{buoy_id}/heat-stress": {
+      "get": {
+        "summary": "One buoy's heat stress",
+        "description": "Scope: read:telemetry. NOAA Coral Reef Watch thermal stress from the buoy's in-water temperature (ADR-0017): the daily mean of trusted readings, HotSpot = daily mean − MMM, Degree Heating Weeks over 84 days and the CRW alert level. `series` covers the last 84 days; a buoy with no MMM has `mmm: null` and a `note`.",
+        "parameters": [
+          {
+            "name": "buoy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Heat stress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuoyHeatStress"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
             "description": "Error",
             "content": {
               "application/json": {

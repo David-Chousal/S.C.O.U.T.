@@ -318,11 +318,11 @@ test("the test email goes to the person, rule changes and the switch are audited
   assert.deepEqual(actions, ["alert.switch", "alert.email", "alert.rule.create", "alert.rule.edit", "alert.rule.delete"]);
 });
 
-test("presets take their numbers from the firmware defaults, or leave them empty", async (t) => {
+test("presets take their numbers from the firmware defaults or the CRW scale, or leave them empty", async (t) => {
   const { member } = await setup(t);
   const { presets } = (await member.client.get("/api/alerts")).body;
   const byId = Object.fromEntries(presets.map((p) => [p.id, p.value]));
-  assert.deepEqual(byId, { "battery-low": 3.2, "humidity-high": 70, "water-warm": null, "buoy-silent": null });
+  assert.deepEqual(byId, { "battery-low": 3.2, "humidity-high": 70, "water-warm": null, "bleaching-alert": 3, "buoy-silent": null });
 });
 
 test("with the master switch off nothing is sent", async (t) => {
@@ -331,4 +331,76 @@ test("with the master switch off nothing is sent", async (t) => {
   await member.client.post("/api/alerts/switch", { enabled: false });
   await push(env, token, [row({ battery_v: "3.0" })]);
   assert.equal(sent.length, 0);
+});
+
+/* Bleaching rules (SCO-314, ADR-0017): the CRW alert level of the buoy's newest daily mean. */
+const DAY = 24 * HOUR;
+const dayStart = (offset) => Date.parse(`${new Date(Date.now() + offset * DAY).toISOString().slice(0, 10)}T00:00:00Z`);
+
+/** Three readings a day at `temp` for each day offset, stored as a station would have pushed them. */
+function seedHeat(env, offsets, temp) {
+  const insert = env.DB.raw.prepare("INSERT INTO readings (buoy_id, record_seq, timestamp_utc, row_json, received_at) VALUES (1, ?, ?, ?, ?)");
+  for (const offset of offsets) {
+    for (const minutes of [10, 490, 970]) {
+      const r = row({ temp_c: String(temp) }, { at: dayStart(offset) + minutes * 60_000 });
+      insert.run(Number(r.record_seq), r.timestamp_utc, JSON.stringify(r), Date.now());
+    }
+  }
+}
+const days = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+const bleaching = { kind: "bleaching", value: 3, buoy_id: null };
+
+async function heatSetup(t, mmm = 27) {
+  const ctx = await setup(t);
+  ctx.env.DB.raw.prepare("INSERT INTO buoys (buoy_id, label, tx_count_reported, mmm_c, mmm_source) VALUES (1, 'SCOUT-01', 3, ?, ?)")
+    .run(mmm, mmm === null ? null : "manual");
+  return ctx;
+}
+
+test("a bleaching rule emails once when the buoy reaches Alert Level 1, then holds", async (t) => {
+  const { env, sent, token, member } = await heatSetup(t);
+  assert.equal((await member.client.post("/api/alerts/rules", bleaching)).status, 200);
+  seedHeat(env, days(-14, -2), 29); // 13 days at HotSpot 2 °C: DHW 3.71, a Warning
+  await push(env, token, [row({ temp_c: "29" }, { at: dayStart(-2) + 20 * 3_600_000 })]);
+  assert.equal(sent.length, 0, "a Warning is below the rule's Alert Level 1");
+  await push(env, token, [0, 8, 16].map((h) => row({ temp_c: "29" }, { at: dayStart(-1) + h * 3_600_000 + 600_000 })));
+  assert.equal(sent.length, 1, "day 14 brings DHW to 4.0: Alert Level 1");
+  assert.match(sent[0].subject, /Bleaching alert at or above Alert Level 1/);
+  assert.match(sent[0].text, /Alert Level 1/);
+  assert.match(sent[0].text, /DHW 4 °C-weeks/);
+  await push(env, token, [row({ temp_c: "29" }, { at: dayStart(-1) + 20 * 3_600_000 })]);
+  assert.equal(sent.length, 1, "still at Alert Level 1: no second email");
+});
+
+test("a bleaching rule never fires for a buoy without an MMM, or on a stale day", async (t) => {
+  const { env, sent, token, member } = await heatSetup(t, null);
+  await member.client.post("/api/alerts/rules", bleaching);
+  seedHeat(env, days(-20, -1), 30);
+  await push(env, token, [row({ temp_c: "30" }, { at: dayStart(-1) + 23 * 3_600_000 })]);
+  assert.equal(sent.length, 0, "no MMM, no heat stress");
+  env.DB.raw.prepare("UPDATE buoys SET mmm_c = 27, mmm_source = 'manual'").run();
+  env.DB.raw.prepare("DELETE FROM readings WHERE timestamp_utc >= ?").run(new Date(dayStart(-3)).toISOString());
+  await push(env, token, [row({ temp_c: "30" }, { at: dayStart(-3) - 3_600_000 })]);
+  assert.equal(sent.length, 0, "the newest daily mean is three days old: not alerted on");
+});
+
+test("a bleaching rule must name a level from Watch to Alert Level 5", async (t) => {
+  const { member } = await setup(t);
+  for (const value of [0, 8, 2.5, "3"]) {
+    const reply = await member.client.post("/api/alerts/rules", { kind: "bleaching", value });
+    assert.equal(reply.status, 400, `value ${value}`);
+  }
+  const ok = await member.client.post("/api/alerts/rules", { kind: "bleaching", value: 7 });
+  assert.equal(ok.status, 200);
+  const view = (await member.client.get("/api/alerts")).body;
+  assert.equal(view.rules[0].description, "Bleaching alert at or above Alert Level 5");
+  assert.deepEqual(view.bleachingLevels.map((l) => l.value), [1, 2, 3, 4, 5, 6, 7]);
+});
+
+test("a firing bleaching rule re-arms only once the level is two below its trigger", () => {
+  const rule = { kind: "bleaching", value: 3, remind_hours: null };
+  const firing = { firing: 1, since: 1, last_sent_at: 1 };
+  assert.equal(decide(rule, firing, 2, 10).firing, 1, "Warning keeps an Alert Level 1 rule firing");
+  assert.equal(decide(rule, firing, 1, 10).firing, 0, "Watch re-arms it");
+  assert.equal(decide(rule, null, 2, 10).event, null, "a Warning does not start it");
 });

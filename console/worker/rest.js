@@ -5,6 +5,7 @@
 
 import { cancelFirmware, FIRMWARE_UPLOAD, listFirmware, uploadFirmware } from "./firmware.js";
 import { buoyConfig, listBuoys, requestSettings, requestTxCount } from "./fleet.js";
+import { heatStressView } from "./heat-stress-view.js";
 import { apiError, json } from "./http.js";
 import openapi from "./openapi.json" with { type: "json" };
 import { listReadings, readingsQuery } from "./readings.js";
@@ -13,6 +14,7 @@ import { authenticateToken } from "./tokens.js";
 
 const READINGS = /^\/api\/v1\/buoys\/(\d{1,5})\/readings$/;
 const TX_COUNT = /^\/api\/v1\/buoys\/(\d{1,5})\/tx-count$/;
+const HEAT_STRESS = /^\/api\/v1\/buoys\/(\d{1,5})\/heat-stress$/;
 const SETTINGS = /^\/api\/v1\/buoys\/(\d{1,5})\/settings$/;
 const FIRMWARE_CANCEL = /^\/api\/v1\/firmware\/([\w-]{1,64})\/cancel$/;
 
@@ -28,6 +30,12 @@ async function readJson(request) {
 async function reads(env, url, path) {
   if (path === "/api/v1/buoys") return json({ buoys: await listBuoys(env.DB) });
   if (path === "/api/v1/settings") return json({ buoys: await listBuoys(env.DB), firmware: buoyConfig });
+  if (path === "/api/v1/heat-stress") return json(await heatStressView(env.DB));
+  const heat = HEAT_STRESS.exec(path);
+  if (heat) {
+    const view = await heatStressView(env.DB, Date.now(), heat[1]);
+    return view.buoys.length ? json(view.buoys[0]) : apiError("No such buoy.", 404);
+  }
   const readings = READINGS.exec(path);
   if (readings) {
     const query = readingsQuery(url.searchParams);

@@ -72,3 +72,8 @@ test("a bad layout or a missing name is refused through the API", async () => {
   assert.equal((await client.post("/api/dashboards", { name: "", shared: false, bays: BAYS })).status, 400);
   assert.equal((await client.post("/api/dashboards", { name: "x", shared: false, bays: [{ id: "a", kind: "pie", span: 6 }] })).status, 400);
 });
+
+test("a heat-stress bay (SCO-314) takes no buoy or variable and is 6 or 12 columns wide", () => {
+  assert.deepEqual(validateLayout([{ id: "heat", kind: "heat", span: 12, buoy: 1, variable: "temp_c" }]), [{ id: "heat", kind: "heat", span: 12 }]);
+  assert.throws(() => validateLayout([{ id: "heat", kind: "heat", span: 4 }]), /width of 4/);
+});

@@ -2,6 +2,8 @@
  *
  *   on ingest (device.js, after the readings are stored): threshold and flag rules, against each
  *     buoy's newest trusted row in the push
+ *   on ingest, too: bleaching rules (ADR-0017), against the CRW alert level of each pushed buoy's
+ *     newest daily mean, recomputed from its stored readings
  *   hourly cron (index.js): silence rules, plus clearing out spent off links
  *
  * A rule fires on the transition into breach, re-arms when the value clears the line by the
@@ -10,7 +12,8 @@
  * count; disconnected buoys never alert. Each person gets one email per run (send.js). */
 
 import { sendAlerts } from "./send.js";
-import { METRICS } from "./catalog.js";
+import { BLEACHING_MARGIN_LEVELS, METRICS } from "./catalog.js";
+import { buoyHeatStress } from "../heat-stress-view.js";
 
 const HOUR_MS = 3600 * 1000;
 // Must match the hourly entry in wrangler.toml [triggers] crons. index.js routes on it.
@@ -22,6 +25,7 @@ const HISTORY_DAYS = 90;
 export function breached(rule, observed, firing) {
   if (rule.kind === "flag") return observed === true;
   if (rule.kind === "silence") return observed > rule.value;
+  if (rule.kind === "bleaching") return observed >= rule.value - (firing ? BLEACHING_MARGIN_LEVELS : 0);
   const margin = firing ? METRICS[rule.metric].margin : 0;
   return rule.op === "above" ? observed > rule.value - margin : observed < rule.value + margin;
 }
@@ -67,7 +71,8 @@ async function apply(env, checks, now) {
       .bind(check.rule.id, check.buoy.buoy_id, next.firing, next.since, next.lastSent, typeof check.observed === "number" ? check.observed : null));
     if (!next.event) continue;
     const user = byUser.get(check.rule.user_id) ?? { user: { id: check.rule.user_id, email: check.rule.owner_email }, events: [] };
-    user.events.push({ rule: check.rule, buoy: check.buoy, value: check.observed, at: check.at, kind: next.event, clockLost: check.clockLost });
+    user.events.push({ rule: check.rule, buoy: check.buoy, value: check.observed, at: check.at, kind: next.event, clockLost: check.clockLost,
+      day: check.day, dhw: check.dhw });
     byUser.set(check.rule.user_id, user);
   }
   if (upserts.length) await db.batch(upserts);
@@ -97,6 +102,7 @@ function observe(rule, row) {
 /** Threshold and flag rules after a push. `kept`: [parsed, row] pairs already stored. */
 export async function alertsOnIngest(env, kept, now = Date.now()) {
   if (kept.length === 0) return;
+  await bleachingOnIngest(env, new Set(kept.map(([p]) => p.buoyId)), now);
   const rules = await liveRules(env.DB, ["threshold", "flag"]);
   if (rules.length === 0) return;
   const newest = newestPerBuoy(kept);
@@ -114,6 +120,29 @@ export async function alertsOnIngest(env, kept, now = Date.now()) {
     .filter((j) => rule.buoy_id === null || rule.buoy_id === j.buoy.buoy_id)
     .map((j) => ({ rule, buoy: j.buoy, observed: observe(rule, j.row), at: j.at, clockLost: j.clockLost }))
     .filter((c) => c.observed !== null));
+  await apply(env, checks, now);
+}
+
+// A daily mean older than this is not "now": a buoy that went quiet does not keep alerting on old heat.
+const BLEACHING_MAX_DAYS_OLD = 1;
+
+/** Bleaching rules after a push: each pushed, connected buoy with an MMM, judged on its newest day. */
+export async function bleachingOnIngest(env, buoyIds, now = Date.now()) {
+  if (buoyIds.size === 0) return;
+  const rules = await liveRules(env.DB, ["bleaching"]);
+  if (rules.length === 0) return;
+  const { results: buoys } = await env.DB.prepare("SELECT * FROM buoys WHERE disconnected_at IS NULL AND mmm_c IS NOT NULL").all();
+  const judged = [];
+  for (const buoy of buoys.filter((b) => buoyIds.has(b.buoy_id))) {
+    const stress = await buoyHeatStress(env.DB, buoy, now);
+    const current = stress.current;
+    if (!current || current.days_old > BLEACHING_MAX_DAYS_OLD) continue;
+    judged.push({ buoy: { buoy_id: buoy.buoy_id, label: buoy.label }, current });
+  }
+  const checks = rules.flatMap((rule) => judged
+    .filter((j) => rule.buoy_id === null || rule.buoy_id === j.buoy.buoy_id)
+    .map((j) => ({ rule, buoy: j.buoy, observed: j.current.level, at: Date.parse(`${j.current.day}T00:00:00Z`), clockLost: false,
+      day: j.current.day, dhw: j.current.dhw })));
   await apply(env, checks, now);
 }
 
