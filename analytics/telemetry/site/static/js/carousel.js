@@ -25,7 +25,18 @@
       });
     }
 
+    // Where the track scrolls to centre slide i, clamped to its ends. With several slides on screen the first and
+    // last cannot reach the centre, so a dot asked for one of them is remembered while the track stays put.
+    var wanted = null;
+    function leftFor(i) {
+      var s = slides[i], max = track.scrollWidth - track.clientWidth;
+      return Math.max(0, Math.min(max, s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2));
+    }
+
     function currentIndex() {
+      if (wanted !== null && Math.abs(track.scrollLeft - leftFor(wanted)) < 3) return wanted;
+      if (track.scrollLeft <= 2) return 0;
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 2) return slides.length - 1;
       var center = track.scrollLeft + track.clientWidth / 2;
       var best = 0, bestDist = Infinity;
       slides.forEach(function (s, i) {
@@ -38,11 +49,16 @@
 
     function scrollToIndex(i) {
       i = Math.max(0, Math.min(slides.length - 1, i));
-      var s = slides[i];
-      track.scrollTo({
-        left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2,
-        behavior: 'smooth'
-      });
+      wanted = i;
+      track.scrollTo({ left: leftFor(i), behavior: 'smooth' });
+      update(); // a pick that needs no scroll fires no scroll event
+    }
+
+    // Arrows and autoplay skip slides whose position the track is already at, so every step visibly moves.
+    function step(dir) {
+      var i = currentIndex() + dir;
+      while (i > 0 && i < slides.length - 1 && Math.abs(leftFor(i) - track.scrollLeft) < 3) i += dir;
+      scrollToIndex(i);
     }
 
     function update() {
@@ -56,8 +72,8 @@
         track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
     }
 
-    if (prev) prev.addEventListener('click', function () { scrollToIndex(currentIndex() - 1); });
-    if (next) next.addEventListener('click', function () { scrollToIndex(currentIndex() + 1); });
+    if (prev) prev.addEventListener('click', function () { step(-1); });
+    if (next) next.addEventListener('click', function () { step(1); });
 
     var raf;
     track.addEventListener('scroll', function () {
@@ -73,22 +89,20 @@
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) {
       var INTERVAL = 5000;
-      var paused = false;
+      var hovered = false, focused = false;
       function atEnd() {
         return track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
       }
       setInterval(function () {
-        if (paused) return;
+        if (hovered || focused || document.hidden) return;
         if (atEnd()) scrollToIndex(0);
-        else scrollToIndex(currentIndex() + 1);
+        else step(1);
       }, INTERVAL);
-      var pause = function () { paused = true; };
-      var resume = function () { paused = false; };
-      root.addEventListener('mouseenter', pause);
-      root.addEventListener('mouseleave', resume);
-      root.addEventListener('focusin', pause);
-      root.addEventListener('focusout', resume);
-      document.addEventListener('visibilitychange', function () { paused = document.hidden; });
+      // Hover and focus pause separately: leaving with the pointer must not resume while a link inside has focus.
+      root.addEventListener('mouseenter', function () { hovered = true; });
+      root.addEventListener('mouseleave', function () { hovered = false; });
+      root.addEventListener('focusin', function () { focused = true; });
+      root.addEventListener('focusout', function (e) { focused = root.contains(e.relatedTarget); });
     }
   }
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import components as c, drawings, imagery
+from .. import components as c, imagery
 from ..context import SiteContext
 from ..layout import CONSOLE_URL
 
@@ -122,7 +122,7 @@ def _habitat(ctx: SiteContext) -> str:
         imagery.pill(key, ctx.base, uid=101 + i, img_dir=ctx.img_dir)
         for i, key in enumerate(_HABITAT_PHOTOS)
     )
-    # The carousel is full-bleed: heading and CAD gallery stay in the wrap, the carousel spans
+    # The carousel is full-bleed: the heading stays in the wrap, the carousel spans
     # the page (section is emitted with wrap="" so the carousel is a direct, full-width child).
     return c.section(
         '<div class="wrap">'
@@ -130,13 +130,7 @@ def _habitat(ctx: SiteContext) -> str:
                        "S.C.O.U.T. is built for shallow nearshore water. It is biodiverse and "
                        "productive, and it is also where remote sensing is least accurate.")
         + "</div>"
-        + c.carousel(pills, label="Nearshore zone photographs", cls="carousel-full")
-        + '<div class="wrap">'
-        + drawings.gallery(
-            ctx.base, eyebrow="Mechanical design", heading="The buoy, drawn",
-            sub="CAD drawings by John Ryan Myrdal. The two printed floats, the electronics housing and its "
-                "cap, and the turbidity-sensor housing, printed in PETG.")
-        + "</div>",
+        + c.carousel(pills, label="Nearshore zone photographs", cls="carousel-full"),
         cls="section-sm",
         sid="habitat",
         wrap="",

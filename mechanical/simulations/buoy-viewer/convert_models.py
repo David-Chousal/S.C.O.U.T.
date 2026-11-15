@@ -63,7 +63,7 @@ EXTRA = [
 ]
 
 # Picker order: newest first. Anything in the registry that is not listed here is added at the end.
-ORDER = ["float-regular", "float-mushroom-corrected", "mushroom", "assembly-v7", "assembly-v6", "assembly-v5",
+ORDER = ["ta10", "ta9", "float-regular", "float-mushroom-corrected", "mushroom", "assembly-v7", "assembly-v6", "assembly-v5",
          "wedge-bolted-v4", "wedge-bolted-v3", "wedge-snap-v3", "v10-bottom", "v10-concept", "v8-concept",
          "v6-pegs-seated", "v5-pegs-seated", "v4-concept", "v3", "v2", "v1"]
 

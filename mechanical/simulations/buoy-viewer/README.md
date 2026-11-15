@@ -30,6 +30,7 @@ All 15 designs in the stability simulator, plus two floats that are not in it. N
 
 | Id | Design | Source |
 |---|---|---|
+| `ta10`, `ta9` | Test Assembly 10 and 9 printed floats, float body only, exported from Fusion 2026-11-13 | `floatation/test-assembly-10-float-2026-11-13.step`, `floatation/test-assembly-9-float-2026-11-13.step` |
 | `float-regular` | Regular float (self-righted in RR-29) | `floatation/float-regular-2026-11-02.step` |
 | `float-mushroom-corrected` | Mushroom float, re-exported 2026-11-02 | `floatation/float-mushroom-corrected-2026-11-02.step` |
 | `mushroom` | Mushroom float as the simulator has it (2026-10-28 file) | `floatation/float-mushroom.step` |
@@ -68,10 +69,10 @@ library, so a teammate without `cadquery` can still rebuild from the committed `
 
 ## On the website
 
-The public Technology page embeds this viewer together with the stability explorer, driven by one slider
-(`analytics/telemetry/site/design_explorer.py`, which also writes the site copy under `static/viewer/`). After
-changing a model or this page, rebuild here, then run `python3 -m telemetry.site.design_explorer` from `analytics/`.
-Opened with `?embed=1` the page hides its own title and design picker and keeps the controls.
+The public Technology page does not embed this page. Its stability stage
+(`analytics/telemetry/site/static/explorer/`) reads the same `data/<id>.json` models, one per design, floats each
+at the waterline the stability simulator computes and tilts it. After changing a model, rebuild here, then run
+`python3 -m telemetry.site.design_explorer <stability-explorer.html>` from `analytics/` to refresh the site copy.
 
 ## Things to know
 
