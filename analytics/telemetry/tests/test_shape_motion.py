@@ -72,9 +72,11 @@ class Shape(unittest.TestCase):
     def setUp(self):
         self.rules = dict(_rules(theme.styles()))
 
-    def test_buttons_are_pills_whose_labels_never_wrap(self):
+    def test_buttons_are_console_keys_whose_labels_never_wrap(self):
+        # Since 2026-11-13 every button is drawn like the console's keys (ADR-0009 addendum).
         body = self.rules[".btn"]
-        self.assertIn("border-radius:var(--radius-pill)", body)
+        self.assertIn("border-radius:2px", body)
+        self.assertIn("box-shadow:inset 0 -3px 0 var(--bed)", body)
         self.assertIn("white-space:nowrap", body)
 
     def test_surfaces_are_square(self):

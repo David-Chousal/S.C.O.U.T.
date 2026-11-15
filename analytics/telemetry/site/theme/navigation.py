@@ -23,6 +23,9 @@ CSS = """/* ── Header / nav ────────────────
 .nav-links a[aria-current=page]{color:var(--color-text)}
 .nav-links .nav-mark{position:absolute;left:0;right:0;bottom:-4px;height:1.5px;border-radius:2px;
   background:var(--color-accent)}
+/* The Console link leaves the site, so it carries an ↗ arrow. */
+.nav-links a.nav-ext{display:inline-flex;align-items:center;gap:0.4rem}
+.nav-ext svg{width:9px;height:9px}
 .nav-social{display:flex;align-items:center;justify-self:end;gap:1.1rem}
 .nav-social a{color:var(--color-text-subtle);display:inline-flex;transition:color var(--dur-quick) var(--ease-standard)}
 .nav-social a:hover{color:var(--color-accent);opacity:1}
@@ -59,6 +62,7 @@ CSS = """/* ── Header / nav ────────────────
   .nav-links a{display:block;text-align:center;padding:0.9rem 1rem;font-size:0.8rem}
   .nav-links a[aria-current=page]{background:var(--color-canvas-sunken)}
   .nav-links .nav-mark{display:none}
+  .nav-links a.nav-ext{display:flex;justify-content:center}
   .nav-social{display:none}
 }
 

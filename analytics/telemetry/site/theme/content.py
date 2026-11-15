@@ -36,9 +36,11 @@ CSS = """/* ── Grid / bento ────────────────
 .card-ink h2,.card-ink h3{color:var(--color-canvas)}
 .card-ink p{color:color-mix(in srgb,var(--color-canvas) 78%,transparent)}
 .card-ink .kicker{color:color-mix(in srgb,var(--color-canvas) 66%,transparent)}
-.card-ink .btn{border-color:color-mix(in srgb,var(--color-canvas) 34%,transparent);color:var(--color-canvas)}
-.card-ink .btn:hover{background:var(--color-canvas);color:var(--color-text);border-color:var(--color-canvas)}
-.card-ink .btn-primary{background:var(--color-canvas);color:var(--color-text)}
+.card-ink .btn{--bed:color-mix(in srgb,var(--color-canvas) 22%,transparent);
+  border-color:color-mix(in srgb,var(--color-canvas) 34%,transparent);color:var(--color-canvas)}
+.card-ink .btn:hover{border-color:var(--color-canvas)}
+.card-ink .btn-primary,.card-ink .btn-primary:hover{--bed:rgb(0 0 0/.28);border-color:var(--color-accent);
+  color:var(--color-on-accent)}
 .card-ink .stat{background:color-mix(in srgb,var(--color-canvas) 8%,transparent);box-shadow:none;
   border:1px solid color-mix(in srgb,var(--color-canvas) 16%,transparent)}
 .card-ink .stat .stat-label{color:color-mix(in srgb,var(--color-canvas) 62%,transparent)}
@@ -70,11 +72,12 @@ CSS = """/* ── Grid / bento ────────────────
    Without JS the track is still a scrollable, snapping strip; carousel.js adds arrows + dots. */
 .carousel-viewport{position:relative}
 .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
-  scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:6px 2px}
+  scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:6px 2px 10px}
 .carousel-track::-webkit-scrollbar{display:none}
-.carousel-track>.pill{flex:0 0 82%;scroll-snap-align:center}
-@media(min-width:721px){.carousel-track>.pill{flex-basis:calc(50% - 6px)}}
-@media(min-width:1000px){.carousel-track>.pill{flex-basis:calc(33.333% - 8px)}}
+/* Every slide (photo pill or CAD sheet) shares the breakpoints: one, two, then three across. */
+.carousel-track>*{flex:0 0 82%;scroll-snap-align:center}
+@media(min-width:721px){.carousel-track>*{flex-basis:calc(50% - 6px)}}
+@media(min-width:1000px){.carousel-track>*{flex-basis:calc(33.333% - 8px)}}
 .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
   width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;color:var(--color-text);
   background:color-mix(in srgb,var(--color-surface) 86%,transparent);box-shadow:var(--shadow-1);
@@ -105,10 +108,11 @@ CSS = """/* ── Grid / bento ────────────────
 .drawings-head{margin-bottom:1.6rem}
 .drawings-head h3{margin-top:0.4rem}
 .drawings-sub{color:var(--color-text-muted);font-size:0.98rem;margin:0.5rem 0 0;max-width:58ch}
-.drawings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
-@media(max-width:560px){.drawings-grid{grid-template-columns:1fr}}
-/* Single-item variant (Rev A electrical schematic) — one large card, not the two-up grid. */
-.drawings-grid.single{grid-template-columns:1fr}
+/* Only the Rev A electrical schematic still uses the grid (one large card); the printed parts are a carousel. */
+.drawings-grid{display:grid;gap:clamp(1rem,0.6rem + 1vw,1.6rem)}
+/* Printed-parts carousel: the CAD sheets as slides. */
+/* The turbidity sheet is a shorter page; letterbox it so every caption lines up. */
+.carousel-track>.drawing img{aspect-ratio:1650/2550;object-fit:contain}
 /* .drawing is a <figure>; its UA margin is handled by the scoped `main figure{margin:0}` reset. */
 .drawing{background:#fff;border-radius:var(--radius-none);overflow:hidden;
   box-shadow:var(--shadow-1);transition:transform var(--dur-settle) var(--ease-settle),box-shadow var(--dur-settle) var(--ease-settle)}
@@ -117,8 +121,6 @@ CSS = """/* ── Grid / bento ────────────────
 .drawing figcaption{padding:0.85rem 1.1rem 1rem;border-top:1px solid var(--color-line);
   color:var(--color-text);font-weight:500;font-size:0.98rem}
 
-/* Stability explorer: the live simulator, framed like the drawings. */
-.sim-frame{width:100%;height:max(1180px,1830px - 130vw);border:0}
 
 /* The slot rule as a divider: the schedule only, every tick hollow. */
 .slot-divider{display:grid;gap:var(--space-2);padding-block:var(--space-6) 0}

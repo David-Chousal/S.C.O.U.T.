@@ -37,11 +37,12 @@ code,.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .bar{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;margin:0 0 1rem}
 .btn,select{font:inherit;font-size:.95rem;font-weight:500;letter-spacing:.01em;color:var(--text);background:transparent;border:1px solid var(--line-strong);cursor:pointer;
   transition:transform 420ms var(--ease),background 180ms,border-color 180ms,color 180ms}
-.btn{border-radius:999px;padding:.55rem 1.2rem;white-space:nowrap}
-.btn:hover{transform:translateY(-2px);border-color:var(--text)}
-.btn[aria-pressed=true]{background:var(--text);color:var(--canvas);border-color:var(--text)}
-.btn[aria-pressed=true]:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.btn.icon{padding:.55rem .95rem}
+.btn{border-radius:2px;padding:.55rem 1.2rem calc(.55rem + 2px);white-space:nowrap;box-shadow:inset 0 -3px 0 var(--bed,color-mix(in srgb,var(--text) 16%,transparent));
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background 180ms,border-color 180ms,color 180ms}
+.btn:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed,color-mix(in srgb,var(--text) 16%,transparent)),0 3px 6px rgb(0 0 0/.16)}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed,color-mix(in srgb,var(--text) 16%,transparent))}
+.btn[aria-pressed=true],.btn[aria-pressed=true]:hover{--bed:rgb(0 0 0/.28);background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.icon{padding:.55rem .95rem calc(.55rem + 2px)}
 select{border-radius:0;padding:.6rem .9rem;background:var(--surface);flex:1;min-width:min(100%,260px);max-width:440px;font-weight:400}
 select:hover{border-color:var(--text)}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:clamp(.8rem,.4rem + .8vw,1.2rem)}
@@ -68,10 +69,6 @@ input[type=range]{accent-color:var(--accent);width:100%}
 .ctl input{grid-column:1/-1;margin:0 0 .5rem}
 .hint-line{grid-column:1/-1;font-size:.8rem;color:var(--subtle);margin:0 0 .6rem;line-height:1.45}
 p.hint-line{margin:0 0 .5rem}
-.embed .intro,.embed .pick,.embed #model{display:none}
-.embed body{padding:0}
-.embed .bar{margin:0 0 .75rem}
-.embed .side{max-height:none}
 .src{margin:.9rem 0 0;font-family:var(--font-mono);font-size:.72rem;color:var(--subtle);word-break:break-all;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.btn,select{transition:none}}
 </style>
@@ -230,11 +227,6 @@ $('wire').onclick=e=>{e.currentTarget.setAttribute('aria-pressed',e.currentTarge
 $('reset').onclick=()=>{camera.position.copy(home.p);controls.target.copy(home.t);controls.update()};
 $('explode').oninput=applyAll;$('cut').oninput=applyAll;
 
-// Embedded in the site's design explorer: ?embed=1 hides the page title and picker (the shared slider owns them) and
-// reports this page's height to the frame holding it so the frame can fit it with no inner scrollbar.
-if(new URLSearchParams(location.search).get('embed')){document.documentElement.classList.add('embed');
-  const fit=()=>parent.postMessage({scoutFit:Math.ceil(document.body.getBoundingClientRect().height),from:'viewer'},location.origin);
-  new ResizeObserver(fit).observe(document.body);addEventListener('load',fit)}
 // Linked pages can pick a design with ?model=<id> or postMessage({model:'<id>'}).
 addEventListener('message',e=>{if(e.data&&e.data.model&&MODELS.some(m=>m.id===e.data.model)){sel.value=e.data.model;load(e.data.model)}});
 const q=new URLSearchParams(location.search).get('model');

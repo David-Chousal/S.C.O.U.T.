@@ -18,6 +18,8 @@ in ``static/img/mechanical/`` but are no longer linked.
 
 from __future__ import annotations
 
+from . import components as c
+
 # (file, caption). Order: the two printed floats, the electronics housing and its cap, then the sensor
 # housing. Sheets are size B (11 x 17 in) at 150 DPI, 1650 x 2550 px; the turbidity sheet is still the
 # older 1275 x 1650 render.
@@ -33,7 +35,9 @@ DEFAULT_SIZE = (1650, 2550)
 
 
 def gallery(base: str, *, eyebrow: str, heading: str, sub: str) -> str:
-    """A gallery of the engineering drawings, framed like prints; each links to the full image."""
+    """A carousel of the engineering drawings, framed like prints; each links to the full image.
+
+    Pages that show it must load ``assets/js/carousel.js`` for the arrows, dots and autoplay."""
     figs = "".join(
         '<figure class="drawing reveal">'
         f'<a href="{base}assets/img/mechanical/{file}" aria-label="{caption}, full drawing">'
@@ -48,7 +52,8 @@ def gallery(base: str, *, eyebrow: str, heading: str, sub: str) -> str:
         f'<div class="drawings-head reveal"><p class="eyebrow">{eyebrow}</p>'
         f"<h3>{heading}</h3>"
         f'<p class="drawings-sub">{sub}</p></div>'
-        f'<div class="drawings-grid">{figs}</div></div>'
+        + c.carousel(figs, label="Printed part drawings", cls="carousel-drawings")
+        + "</div>"
     )
 
 

@@ -39,11 +39,12 @@ class InlineCss(unittest.TestCase):
         self.assertIn("main :where(p,li,dd,td) a:not([class])", self.css)
 
     def test_transfers_within_the_budget(self):
-        # The budget that crosses the network: ≤ 9 KB gzip (GitHub Pages serves gzip). The raw
+        # The budget that crosses the network: ≤ 9.5 KB gzip (GitHub Pages serves gzip), raised
+        # from 9 KB, and the raw ceiling from 40 KB, on 2026-11-13 for the console keys. The raw
         # ceiling only catches regressions; raw size is parse cost, which is negligible here.
         css = self.css.encode()
-        self.assertLessEqual(len(zlib.compress(css, 9)), 9 * 1024)
-        self.assertLessEqual(len(css), 40 * 1024)
+        self.assertLessEqual(len(zlib.compress(css, 9)), 9.5 * 1024)
+        self.assertLessEqual(len(css), 42 * 1024)
 
     def test_authored_pages_size_and_colour_the_status_glyph(self):
         # Home's hero strip renders components.status_line() once real packets exist.

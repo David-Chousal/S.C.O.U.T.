@@ -1,15 +1,19 @@
 """Buttons, text links, the photographic hero, and section heading blocks."""
 
 CSS = """/* ── Buttons ──────────────────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem;
-  border-radius:var(--radius-pill);font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
-  white-space:nowrap;max-width:100%;
+/* Every button is a console key (console/web key.css): square corners, a keybed edge, a pixel
+   of travel, and a lagoon primary, so the site and the console press the same way. */
+.btn{--bed:color-mix(in srgb,var(--color-text) 16%,transparent);
+  display:inline-flex;align-items:center;gap:0.55rem;padding:0.8rem 1.5rem calc(0.8rem + 2px);
+  border-radius:2px;font-weight:500;font-size:0.95rem;letter-spacing:0.01em;
+  white-space:nowrap;max-width:100%;box-shadow:inset 0 -3px 0 var(--bed);
   border:1px solid var(--color-line-strong);color:var(--color-text);background:transparent;cursor:pointer;
-  transition:transform var(--dur-settle) var(--ease-settle),background var(--dur-quick) var(--ease-standard),
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background var(--dur-quick) var(--ease-standard),
     border-color var(--dur-quick) var(--ease-standard),color var(--dur-quick) var(--ease-standard)}
-.btn:hover{transform:translateY(-2px);border-color:var(--color-text);opacity:1}
-.btn-primary{background:var(--color-text);color:var(--color-canvas);border-color:var(--color-text)}
-.btn-primary:hover{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-on-accent)}
+.btn:hover{transform:translateY(-1px);box-shadow:inset 0 -3px 0 var(--bed),0 3px 6px rgb(0 0 0/.16);opacity:1}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 var(--bed);transition-duration:60ms}
+.btn-primary,.btn-primary:hover{--bed:rgb(0 0 0/.28);background:var(--color-accent);
+  border-color:var(--color-accent);color:var(--color-on-accent)}
 .btn svg{width:1.05em;height:1.05em}
 .btn-row{display:flex;flex-wrap:wrap;gap:0.9rem;align-items:center}
 .center .btn-row{justify-content:center}
@@ -56,6 +60,7 @@ html.at-top .page-home .site-header .nav-chat:hover{color:#fff}}
   --color-text-muted:rgba(251,248,244,0.80);
   --color-text-subtle:rgba(251,248,244,0.80);  /* eyebrow, hero-expand: measured on the scrim */
   --color-line-strong:rgba(251,248,244,0.42);  /* .btn border */
+  --color-focus:#b0dbd7;            /* the console's night focus ring, visible on the scrim */
   position:relative;isolation:isolate;padding-block:0;text-align:center;overflow:hidden;
   /* Pulled up under the sticky header so the photograph runs to the very top of the page and
      the first screen is a true full viewport, not a viewport minus the nav. `.hero-body`

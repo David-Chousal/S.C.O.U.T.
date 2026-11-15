@@ -69,10 +69,10 @@ library, so a teammate without `cadquery` can still rebuild from the committed `
 
 ## On the website
 
-The public Technology page embeds this viewer together with the stability explorer, driven by one slider
-(`analytics/telemetry/site/design_explorer.py`, which also writes the site copy under `static/viewer/`). After
-changing a model or this page, rebuild here, then run `python3 -m telemetry.site.design_explorer` from `analytics/`.
-Opened with `?embed=1` the page hides its own title and design picker and keeps the controls.
+The public Technology page does not embed this page. Its stability stage
+(`analytics/telemetry/site/static/explorer/`) reads the same `data/<id>.json` models, one per design, floats each
+at the waterline the stability simulator computes and tilts it. After changing a model, rebuild here, then run
+`python3 -m telemetry.site.design_explorer <stability-explorer.html>` from `analytics/` to refresh the site copy.
 
 ## Things to know
 

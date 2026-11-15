@@ -279,35 +279,37 @@ def _link() -> str:
 
 
 def _stability(ctx: SiteContext) -> str:
-    """The design explorer (static/design-explorer/): one slider drives the 3D model and the stability results."""
-    src = f"{ctx.base}assets/design-explorer/index.html"
+    """The stability stage (static/explorer/): pick a design, see it float in 3D, tilt it, read whether it comes back."""
+    base = f"{ctx.base}assets/explorer/"
     return (
         '<div class="drawings sim">'
-        '<div class="drawings-head reveal"><p class="eyebrow">Mechanical design</p>'
+        '<div class="drawings-head reveal"><p class="eyebrow">Stability</p>'
         "<h3>See it, then test it</h3>"
         '<p class="drawings-sub">Battery, electronics and antenna sit above the waterline, so a buoy is '
-        "top-heavy by nature. We float every design in software before printing it. Slide through them "
-        "and the 3D model and the stability results change together.</p></div>"
-        + c.steps([
-            ("Pick a design", "Slide through every design we have modelled, oldest to newest."),
-            ("Look closely", "Turn the 3D model, pull its parts apart, or cut it in half."),
-            ("Read the verdict", "Change the electronics weight. Green means it rights itself."),
-        ])
-        + f'<iframe class="sim-frame reveal" data-fit src="{src}" title="Buoy design explorer: 3D model, draft, '
-        'freeboard and righting-arm curve for each flotation design" loading="lazy"></iframe>'
-        f'<script defer src="{ctx.base}assets/js/embed-fit.js"></script>'
-        f'<p class="drawings-sub"><a class="textlink" href="{src}">Open the explorer full screen</a></p>'
+        "top-heavy by nature. We float every design in software before printing it. Pick one, tilt it, "
+        "and watch whether its weight and its buoyancy turn it back upright. "
+        f'<a class="textlink" href="{base}index.html">Open full screen&nbsp;\u2197</a></p></div>'
+        f'<link rel="stylesheet" href="{base}explorer.css">'
+        f'<div class="xp" data-explorer data-base="{base}"></div>'
+        f'<script defer src="{base}explorer.js"></script>'
+        f'<script defer src="{base}explorer-ui.js"></script>'
+        '<div class="xp-facts reveal"><p class="xp-facts-head">How we know</p><dl>'
+        "<div><dt>3 mm</dt><dd>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline "
+        "sits where the water it displaces weighs as much as the buoy.</dd></div>"
+        "<div><dt>5\u00b0</dt><dd>Then it is tilted in 5\u00b0 steps, from upright to upside down, to see "
+        "which way the lift pushes at each angle.</dd></div>"
+        "<div><dt>~1%</dt><dd>Checked against a plain cylinder, it matches draft and stiffness to about "
+        "1%.</dd></div></dl></div>"
         '<div class="prose reveal">'
-        "<p>Each design\u2019s real CAD is filled with water in 3 mm cubes. The waterline is where the "
-        "water it displaces weighs as much as the buoy; then it is tilted in 5\u00b0 steps to see which way "
-        "the lift pushes. Checked against a plain cylinder, it matches draft and stiffness to about 1%.</p>"
         '<details class="how-details"><summary>What it does not tell us yet</summary>'
         "<p>Part masses for the concept designs are estimated from CAD volume, not weighed. Only printed "
         "and weighed parts (the bolted-wedge parts and the mushroom float) use measured weights, so trust "
         "those results most. The two newest floats, Test Assembly 9 and 10, are not weighed either: "
         "their mass and centre of gravity are the values set up for the wave-tank simulation, and "
         "Test Assembly 10 reuses Test Assembly 9’s centre of gravity, an assumption. Their fins and "
-        "hanging loops are left out of the stability maths. The model is still water only: no waves, wind or mooring pull. Every "
+        "hanging loops are left out of the stability maths. The model is still water only: no waves, wind or mooring pull. "
+        "In 3D the hull turns about the centre of its waterline; how it rises, sinks or drifts sideways as it tilts is "
+        "not modelled, so the 3D tilt shows direction, and the curve gives the numbers. Every "
         "estimate is listed in the simulator\u2019s "
         f'<a class="textlink" href="{_REPO}/blob/main/mechanical/simulations/buoy-stability/README.md">README</a>.'
         "</p></details></div></div>"
@@ -335,6 +337,7 @@ def _mechanical(ctx: SiteContext) -> str:
             ctx.base, eyebrow="Mechanical design", heading="The printed parts",
             sub="John Ryan Myrdal's CAD for the two printed floats, the electronics housing "
                 "and its cap, and the turbidity-sensor housing, printed in PETG. Each drawing links to its full sheet.")
+        + f'<script defer src="{ctx.base}assets/js/carousel.js"></script>'
         + _stability(ctx),
         cls="section-sm",
         sid="mechanical",

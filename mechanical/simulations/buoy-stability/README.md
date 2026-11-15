@@ -23,6 +23,13 @@ and the current configuration (~1 min). Open `results/<date>/stability-explorer.
 browser for the interactive version: a housing-mass slider, cap height (3.0 / 1.5 / none), and
 ballast on/off.
 
+The website's stability stage (Technology page) reads its numbers from that generated page. After a
+re-run, refresh the site copy from `analytics/`:
+
+```bash
+python3 -m telemetry.site.design_explorer ../mechanical/simulations/buoy-stability/results/<date>/stability-explorer.html
+```
+
 ## Printed-float tip explorer (added 2026-10-14)
 
 For the battery-only printed-float redesign: [`printed-float-tip-explorer/`](printed-float-tip-explorer/README.md).
