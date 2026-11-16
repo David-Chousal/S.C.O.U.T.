@@ -186,6 +186,14 @@ void test_an_empty_commands_list_answers_no_buoy(void) {
     TEST_ASSERT_FALSE(scout_route_answers(&route, 1));
 }
 
+void test_a_commands_list_without_commas_is_refused(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_EQUAL_INT(-1, scout_console_parse_route("{\"commands\":[1 3]}", &route));
+    TEST_ASSERT_FALSE(route.known);  // untouched: still answers every buoy
+    TEST_ASSERT_EQUAL_INT(2, scout_console_parse_route("{\"commands\":[1, 3 ]}", &route));
+}
+
 void test_a_reply_without_commands_leaves_the_route_alone(void) {
     ScoutAnswerRoute route;
     scout_route_reset(&route);
@@ -216,6 +224,7 @@ void test_the_usb_route_line_sets_clears_and_resets_the_route(void) {
     TEST_ASSERT_FALSE(scout_console_parse_route_line("A1,x", &route));
     TEST_ASSERT_FALSE(scout_console_parse_route_line("A0", &route));
     TEST_ASSERT_FALSE(scout_console_parse_route_line("N1:2", &route));
+    TEST_ASSERT_FALSE(scout_console_parse_route_line("A1 3", &route));  // IDs need a comma between them
     TEST_ASSERT_TRUE(scout_route_answers(&route, 1));  // a bad line changes nothing
 }
 
@@ -224,6 +233,7 @@ static void run_all(void) {
     RUN_TEST(test_a_station_with_no_route_answers_every_buoy);
     RUN_TEST(test_the_commands_list_limits_which_buoys_are_answered);
     RUN_TEST(test_an_empty_commands_list_answers_no_buoy);
+    RUN_TEST(test_a_commands_list_without_commas_is_refused);
     RUN_TEST(test_a_reply_without_commands_leaves_the_route_alone);
     RUN_TEST(test_buoys_beyond_the_table_are_not_answered_once_routed);
     RUN_TEST(test_the_usb_route_line_sets_clears_and_resets_the_route);

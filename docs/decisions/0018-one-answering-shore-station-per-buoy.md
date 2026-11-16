@@ -70,9 +70,12 @@ choose with.
   best, and moves if that station goes quiet for a day. A pin overrides it.
 - The route can change while a firmware transfer is running. Transfers are buoy-driven and
   resume from the SD card, so the next station continues where the last one stopped.
-- A station is told about a change within a minute (its settings poll). For that minute after a
-  route changes, both stations could answer the same packet; slots are hours apart, so this is
-  rare and costs at most one slot's reply.
+- A station on WiFi hears about a route change within a minute (its settings poll). A station on
+  the USB bridge hears only when `sync_console.py --serial` next runs, and a station with no
+  console contact keeps its last list (or, after a reboot, answers every buoy) until contact
+  returns. Until then two stations can both answer the same packet. Slots are hours apart, so a
+  WiFi station overlaps for at most one slot; for the others, restore the connection or rerun the
+  sync (the `scout-shore-sync.timer` does it on a schedule) before relying on the new route.
 - Buoy IDs above 63 cannot be routed to the S3 (its table has 64 slots); the S3 already keeps
   wanted settings only for IDs 1–8.
 - ⚠️ Never run with two stations or on hardware: the console side is tested end to end in the

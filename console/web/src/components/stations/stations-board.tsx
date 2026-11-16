@@ -74,6 +74,8 @@ export function StationsBoard() {
   const buoys = settings.data.buoys;
   const routes = commandRoutes(buoys, active);
   const orphans = routes.orphans.filter((b) => !b.disconnected_at);
+  // The open Info card follows each poll, so its counts match the answers beside them.
+  const infoDevice = info ? devices.data.devices.find((device) => device.id === info.id) ?? info : null;
   const canAssign = allowed && active.length > 1 && buoys.length > 0;
 
   return (
@@ -131,7 +133,7 @@ export function StationsBoard() {
       <AssignDialog key={assigning?.id ?? "none"} station={assigning} buoys={buoys}
         onClose={() => setAssigning(null)} onSaved={settings.reload} />
       <NewTokenDialog open={adding} onClose={() => setAdding(false)} onCreated={devices.reload} />
-      <StationInfoDialog device={info} answers={info ? routes.byStation.get(info.id) ?? [] : []} buoys={buoys}
+      <StationInfoDialog device={infoDevice} answers={infoDevice ? routes.byStation.get(infoDevice.id) ?? [] : []} buoys={buoys}
         onClose={() => setInfo(null)} />
       <WifiSetupDialog device={rewifi} onClose={() => setRewifi(null)} onDone={changed} />
       <RevokeDialog device={revoking} onClose={() => setRevoking(null)} onDone={changed} />

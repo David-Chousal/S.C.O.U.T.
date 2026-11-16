@@ -96,9 +96,10 @@ export async function restoreDefaults(db, actor, buoyId) {
 }
 
 /** The snapshot string and digest the shore station sends, for every buoy with any request.
- * Only the station that answers a buoy (routing.js) hears about it. */
-export async function wantedForDevice(db, deviceId) {
-  const answered = new Set(await buoysAnsweredBy(db, deviceId));
+ * Only the station that answers a buoy (routing.js) hears about it. Pass `answeredIds` when the
+ * caller already decided the route, so one reply never mixes two routing decisions. */
+export async function wantedForDevice(db, deviceId, answeredIds) {
+  const answered = new Set(answeredIds ?? await buoysAnsweredBy(db, deviceId));
   const { results: all } = await db.prepare("SELECT * FROM buoys WHERE disconnected_at IS NULL ORDER BY buoy_id").all();
   const results = all.filter((b) => answered.has(b.buoy_id));
   const rows = await settingRows(db);

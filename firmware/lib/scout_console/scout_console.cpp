@@ -446,7 +446,12 @@ bool scout_route_answers(const ScoutAnswerRoute *route, uint16_t buoy_id) {
     return buoy_id < SCOUT_WANTED_MAX_SLOTS && route->answers[buoy_id] != 0;
 }
 
-/* Parse "1,3" up to `stop` (']' or the end of a line) into answers. Returns the count, or -1. */
+static bool ends_list(char c, char stop) {
+    return c == stop || (stop == '\0' && (c == '\r' || c == '\n'));
+}
+
+/* Parse "1,3" up to `stop` (']' or the end of a line) into answers. Returns the count, or -1 for
+ * anything malformed: a trailing comma, two IDs with no comma between them, a non-digit. */
 static int parse_id_list(const char *at, char stop, uint8_t answers[SCOUT_WANTED_MAX_SLOTS]) {
     int count = 0;
     bool want_number = false;
@@ -454,7 +459,7 @@ static int parse_id_list(const char *at, char stop, uint8_t answers[SCOUT_WANTED
         while (*at == ' ') {
             at++;
         }
-        if (*at == stop || (stop == '\0' && (*at == '\r' || *at == '\n'))) {
+        if (ends_list(*at, stop)) {
             return want_number ? -1 : count;  // a trailing comma is malformed
         }
         if (*at < '0' || *at > '9') {
@@ -477,9 +482,13 @@ static int parse_id_list(const char *at, char stop, uint8_t answers[SCOUT_WANTED
         while (*at == ' ') {
             at++;
         }
-        want_number = (*at == ',');
-        if (want_number) {
+        if (*at == ',') {
+            want_number = true;
             at++;
+        } else if (ends_list(*at, stop)) {
+            want_number = false;
+        } else {
+            return -1;  // the next ID with no comma before it
         }
     }
 }

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import estimates from "../../../../worker/battery-life.json";
 import firmware from "../../../../worker/buoy-config.json";
@@ -113,6 +113,17 @@ describe("StationsBoard", () => {
     expect(card.textContent).toContain("Reef north (hears it most)");
     expect(card.textContent).toContain("Reef north: 3 packets");
     expect(card.textContent).not.toContain("Reef south");
+  });
+
+  test("an open Info card shows the counts from the latest poll", async () => {
+    renderBoard("member");
+    await userEvent.click(await screen.findByRole("button", { name: "Actions for Kaneohe shore" }));
+    await userEvent.click(screen.getByRole("menuitem", { name: "Info" }));
+    expect(screen.getByRole("dialog", { name: "Kaneohe shore" }).textContent).toContain("Reef north: 3 packets");
+    const later = { devices: DEVICES.devices.map((d) => d.id === "a" ? { ...d, heard: [{ buoy_id: 1, packets: 5, last_heard_at: Date.now() }] } : d) };
+    vi.spyOn(api, "devices").mockResolvedValue(later);
+    await act(async () => { document.dispatchEvent(new Event("visibilitychange")); });
+    expect(await screen.findByText(/Reef north: 5 packets/)).toBeDefined();
   });
 
   test("with two stations, a buoy nobody has heard is flagged and Assign pins it to a station", async () => {

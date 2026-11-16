@@ -123,7 +123,8 @@ command station uses `GET /api/device/firmware`, `GET /api/device/firmware/:job`
 the first frame it hears in its 1 s listen window, so exactly one station may answer it: the one an
 admin **pinned** on the Stations page, else the **only** active station, else the station that
 **pushed the most of its readings in the last 24 h** (ties: the one that heard it last, then the
-oldest). A buoy no station has heard has none. Only that station is told the buoy's wanted settings
+oldest). With two or more active stations, a buoy that is neither pinned nor heard by any active
+station in the last 24 h has none (Stations warns). Only that station is told the buoy's wanted settings
 and firmware jobs, and `commands` lists every buoy it answers, so the S3 sends **nothing** (settings,
 count, time or firmware) to any other buoy. Revoking a station clears its pins. Migrations
 `0004-command-station.sql` (the pin) and `0018-receptions.sql`.

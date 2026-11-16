@@ -216,8 +216,10 @@ export async function handleDeviceApi(request, env, path, ctx) {
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
     // Only the station that answers a buoy hears about it (routing.js); `commands` lists every
-    // buoy it answers, so it sends nothing at all, not even its time, to the others.
-    return json({ buoys: await wantedForDevice(env.DB, device.id), commands: await buoysAnsweredBy(env.DB, device.id),
+    // buoy it answers, so it sends nothing at all, not even its time, to the others. One routing
+    // decision feeds both fields, so `buoys` never names a buoy `commands` leaves out.
+    const commands = await buoysAnsweredBy(env.DB, device.id);
+    return json({ buoys: await wantedForDevice(env.DB, device.id, commands), commands,
       wifi_setup_requested_at: liveWifiSetup(device) });
   }
   if (path.startsWith("/api/device/firmware")) return deviceFirmware(request, env, path, device);

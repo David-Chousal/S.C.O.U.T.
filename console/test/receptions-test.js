@@ -169,3 +169,20 @@ test("receptions are pruned after 30 days", async () => {
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM receptions").get().n, 1);
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM readings").get().n, 2);
 });
+
+test("every buoy in a settings reply is one the station answers", async () => {
+  const { env, admin } = await setup();
+  await admin.post("/api/fleet/buoys", { buoy_id: 2, label: "Reef south" });
+  await admin.post("/api/fleet/buoys/1/tx-count", { tx_count: 2 });
+  await admin.post("/api/fleet/buoys/2/tx-count", { tx_count: 1 });
+  const a = await station(env, admin, "Kaneohe shore");
+  const b = await station(env, admin, "Campus bench");
+  await push(env, a, [row(1)]);
+  await push(env, b, [row(1, "SCOUT-02")]);
+  for (const s of [a, b]) {
+    const reply = await settings(env, s);
+    assert.ok(reply.buoys.every((x) => reply.commands.includes(x.buoy_id)));
+  }
+  assert.deepEqual((await settings(env, a)).commands, [1]);
+  assert.deepEqual((await settings(env, b)).commands, [2]);
+});

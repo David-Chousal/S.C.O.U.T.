@@ -638,14 +638,17 @@ done, every reading the shore station hears shows up on the console with no one 
      ```bash
      cd shore
      python3 scripts/run_receiver.py --link serial --serial /dev/cu.usbmodem1101 --out data-live
-     # in another terminal, every few minutes (e.g. from cron):
+     # in another terminal, every few minutes (e.g. from cron), on the SAME port:
      SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… \
-       python3 scripts/sync_console.py --data data-live
+       python3 scripts/sync_console.py --data data-live --serial /dev/cu.usbmodem1101
      ```
 
-     `sync_console.py` pushes the newest CSVs (repeats are ignored) and prints an `A<buoys>` line
-     (the buoys this station answers, [SCO-316](https://linear.app/scout1/issue/SCO-316)), then the requested counts as `N<buoy>:<count>` lines;
-     with `--serial <port>` it writes them to the S3.
+     `sync_console.py` pushes the newest CSVs (repeats are ignored), then writes an `A<buoys>` line
+     (the buoys this station answers, [SCO-316](https://linear.app/scout1/issue/SCO-316)) and the requested `N<buoy>:<count>` / `S…` lines to
+     the S3. **Always pass `--serial`:** without it the lines are only printed, and an S3 that never
+     receives its `A` line answers every buoy, so a second station could answer the same one. The
+     two commands share the port at the same time: the receiver only reads it, and the sync only
+     writes and leaves the receiver's queued bytes alone.
 3. **Give each buoy a unique ID before flashing it.** The ID is `BUOY_ID` in
    `firmware/src/config.h` (1 → `SCOUT-01`). Two buoys with the same ID would be merged into one on
    the console, and readings whose sequence numbers collide would be silently dropped.

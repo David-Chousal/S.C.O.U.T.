@@ -1,6 +1,7 @@
 /* Which shore station answers each buoy. The console decides (console/worker/routing.js, SCO-316):
  * an admin's pick, else the only active station, else the station that heard the buoy most in the
- * last 24 h. A buoy no station has heard has none. The UI shows that decision; it does not redo it. */
+ * last 24 h. With two or more stations, a buoy neither pinned nor heard in 24 h has none. The UI shows
+ * that decision; it does not redo it. */
 
 import type { Buoy, Device, RouteReason } from "@/lib/api/types";
 
