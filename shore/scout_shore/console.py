@@ -93,7 +93,13 @@ class ConsoleClient:
         return self.wanted()[0]
 
     def wanted(self) -> tuple[dict[int, int], dict[int, tuple[int, ...]]]:
-        """One read of what every buoy should run: ``({buoy_id: tx_count}, {buoy_id: snapshot})``.
+        """One read of what every buoy should run: ``({buoy_id: tx_count}, {buoy_id: snapshot})``."""
+        reply = self.settings_reply()
+        return reply.counts, reply.snapshots
+
+    def settings_reply(self) -> "SettingsReply":
+        """One read of the settings reply: what each buoy should run, and which buoys this station
+        answers (SCO-316; ``None`` from an older console that does not say).
 
         Counts outside 1-3 and snapshots the buoy would refuse (``settings.check``) are left out,
         so nothing reaches a buoy that it would only reject."""
@@ -109,7 +115,20 @@ class ConsoleClient:
             snapshot = _parse_snapshot(item.get("settings"))
             if snapshot is not None:
                 snapshots[buoy_id] = snapshot
-        return counts, snapshots
+        return SettingsReply(counts, snapshots, _parse_answers(payload.get("commands")))
+
+
+@dataclass(frozen=True)
+class SettingsReply:
+    counts: dict[int, int]
+    snapshots: dict[int, tuple[int, ...]]
+    answers: tuple[int, ...] | None
+
+
+def _parse_answers(items: object) -> tuple[int, ...] | None:
+    if not isinstance(items, list):
+        return None
+    return tuple(sorted({b for b in items if isinstance(b, int) and not isinstance(b, bool) and 1 <= b <= 0xFFFF}))
 
 
 def _parse_snapshot(text: object) -> tuple[int, ...] | None:
@@ -124,6 +143,14 @@ def _parse_snapshot(text: object) -> tuple[int, ...] | None:
 def set_commands(requested: dict[int, int]) -> list[str]:
     """The ESP32 shore's USB lines that apply ``requested`` (firmware/src/shore_rx)."""
     return [f"N{buoy}:{count}" for buoy, count in sorted(requested.items())]
+
+
+def route_command(answers: tuple[int, ...] | None) -> str:
+    """The ESP32 shore's USB line naming the buoys it answers: ``A1,3``, ``A`` for none, or ``A*``
+    (answer every buoy) when the console did not say (SCO-316)."""
+    if answers is None:
+        return "A*"
+    return "A" + ",".join(str(b) for b in answers)
 
 
 def settings_commands(snapshots: dict[int, tuple[int, ...]]) -> list[str]:

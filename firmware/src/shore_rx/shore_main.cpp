@@ -31,7 +31,10 @@
  * With -DSCOUT_DOWNLINK (OFF by default) the station also SENDS: right after a buoy's packet,
  * if its reported count differs from the requested one, one signed SET_TX_COUNT frame
  * (lib/scout_downlink) in the buoy's 1 s listen window. With nothing else to send it sends a
- * signed time frame instead (SCO-315), so every slot it hears corrects that buoy's clock. ⚠️ Do not transmit off the bench until
+ * signed time frame instead (SCO-315), so every slot it hears corrects that buoy's clock. With two
+ * stations in range only one may answer a buoy (SCO-316): the console's settings reply lists the
+ * buoys this station answers (or "A1,3" over USB), and it sends nothing at all to the others
+ * ("QUIET buoy=N"). Until a list arrives it answers every buoy. ⚠️ Do not transmit off the bench until
  * the RFM95W FeatherWing's FCC authorization is checked (OTA design §8, SCO-104).
  *
  * Output, two lines per frame. The first is the bench_rx format, so
@@ -119,6 +122,13 @@ static void print_rx_line(const uint8_t *buf, uint8_t len) {
     line[at] = '\0';
     Serial.print(line);
 }
+
+#ifdef SCOUT_DOWNLINK
+static bool answers_buoy(uint16_t buoy_id) {
+    ShoreLock lock;
+    return scout_route_answers(&g_shared.route, buoy_id);
+}
+#endif
 
 static ScoutWanted wanted_for(uint16_t buoy_id) {
     ShoreLock lock;
@@ -302,6 +312,11 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
                   (settings_pending || count_pending) ? " pending" : "",
                   (r.flags & SCOUT_FLAG_CMD_REJECTED) ? " cmd_rejected" : "");
 #ifdef SCOUT_DOWNLINK
+    if (!answers_buoy(r.buoy_id)) {
+        // Another station answers this buoy (SCO-316): two replies in its 1 s window would collide.
+        Serial.printf("QUIET buoy=%u reason=another-station\n", r.buoy_id);
+        return;
+    }
 #ifdef SCOUT_OTA
     if (firmware_confirm_due(r)) {
         return;
@@ -352,6 +367,19 @@ static void poll_time_command() {
         uint16_t buoy = 0;
         uint8_t count = 0;
         ScoutSettings settings;
+        ScoutAnswerRoute route;
+        {
+            ShoreLock lock;
+            route = g_shared.route;
+        }
+        if (scout_console_parse_route_line(g_line, &route)) {
+            {
+                ShoreLock lock;
+                g_shared.route = route;
+            }
+            Serial.printf("route: %s\n", route.known ? "set from USB" : "answering every buoy");
+            continue;
+        }
         if (scout_dl_parse_set_command(g_line, &buoy, &count)) {
             if (buoy > SHORE_MAX_BUOY_ID) {
                 Serial.printf("tx: ignored, buoy %u above %u\n", buoy, SHORE_MAX_BUOY_ID);
@@ -380,7 +408,7 @@ static void poll_time_command() {
         }
         uint32_t epoch = 0;
         if (!scout_parse_time_command(g_line, MIN_VALID_EPOCH, &epoch)) {
-            Serial.print("time: ignored, expected T<unix-epoch>, N<buoy>:<count>, S<buoy>:<settings> or W\n");
+            Serial.print("time: ignored, expected T<unix-epoch>, N<buoy>:<count>, S<buoy>:<settings>, A<buoys> or W\n");
             continue;
         }
         struct timeval tv = {(time_t)epoch, 0};
