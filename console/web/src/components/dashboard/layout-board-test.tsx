@@ -61,6 +61,16 @@ describe("LayoutBoard", () => {
     expect(screen.queryByRole("tab", { name: "+ New view" })).toBeNull();
   });
 
+  test("Customize opens on the layout view, and Content previews the real bays", async () => {
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    expect(document.querySelectorAll(".sc-sketch")).toHaveLength(OVERVIEW.bays.length);
+    expect(screen.queryByRole("region", { name: /Every metric/ })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Content" }));
+    expect(document.querySelectorAll(".sc-sketch")).toHaveLength(0);
+    expect(screen.getByRole("region", { name: /Every metric/ })).toBeDefined();
+  });
+
   test("customizing the Overview and saving makes your own copy", async () => {
     const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
     const onChanged = renderBoard();

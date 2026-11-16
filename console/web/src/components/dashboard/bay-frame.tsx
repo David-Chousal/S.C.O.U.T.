@@ -8,18 +8,20 @@ interface BayFrameProps {
   bay: BayConfig;
   name: string;
   editing: boolean;
+  /** Layout view: the content is a sketch, and the whole card is a drag handle. */
+  sketch?: boolean;
   picked: boolean;
   dragging: boolean;
   children: ReactNode;
   onGripKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
-  onGripPointerDown: (event: PointerEvent<HTMLButtonElement>) => void;
+  onGripPointerDown: (event: PointerEvent<HTMLElement>) => void;
   onRemove: () => void;
   onResizeKeyDown: (event: KeyboardEvent<HTMLSpanElement>) => void;
   onResizePointerDown: (event: PointerEvent<HTMLSpanElement>) => void;
 }
 
 /** A bay's slot on the 12-column grid, with move, remove and resize controls in Customize mode. */
-export function BayFrame({ bay, name, editing, picked, dragging, children, ...handlers }: BayFrameProps) {
+export function BayFrame({ bay, name, editing, sketch = false, picked, dragging, children, ...handlers }: BayFrameProps) {
   const spans = BAY_KINDS[bay.kind].spans;
   const classes = ["sc-bay-slot", `span-${bay.span}`, editing && "sc-bay-slot--edit", picked && "is-picked", dragging && "is-dragging"].filter(Boolean).join(" ");
   return (
@@ -34,7 +36,9 @@ export function BayFrame({ bay, name, editing, picked, dragging, children, ...ha
           <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label={`Remove ${name}`} onClick={handlers.onRemove}><Icon name="close" /></button>
         </div>
       )}
-      <div className="sc-bay-slot__content" inert={editing || undefined}>{children}</div>
+      {sketch
+        ? <div className="sc-bay-slot__content sc-bay-slot__content--sketch" onPointerDown={handlers.onGripPointerDown}>{children}</div>
+        : <div className="sc-bay-slot__content" inert={editing || undefined}>{children}</div>}
       {editing && (
         <span
           role="slider"

@@ -8,7 +8,8 @@ import { addBay, DEFAULT_VIEW_ID, moveBay, removeBay, stepSpan, systemDefault, t
 import { BayContent, bayName, type BoardData } from "./bay-content";
 import { BayFrame } from "./bay-frame";
 import { BayLibrary } from "./bay-library";
-import { EditBar } from "./edit-bar";
+import { BaySketch } from "./bay-sketch";
+import { EditBar, type EditPreview } from "./edit-bar";
 import { LayoutDialogs, type LayoutDialog } from "./layout-dialogs";
 import { useBayPointer } from "./use-bay-pointer";
 import { ViewTabs } from "./view-tabs";
@@ -32,6 +33,9 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
   const fallback = systemDefault(data.buoys.map((b) => b.buoy_id));
   const saved = view.bays;
   const [editing, setEditing] = useState(false);
+  // Customize opens on the layout view: every bay as a compact sketch, so the whole board fits on screen.
+  const [preview, setPreview] = useState<EditPreview>("layout");
+  const sketching = editing && preview === "layout";
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState<BayConfig[]>(saved);
   const [picked, setPicked] = useState<{ id: string; origin: number } | null>(null);
@@ -158,10 +162,12 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
     <div className="sc-layout-board">
       <ViewTabs views={views} activeViewId={view.id} editing={editing} canEdit={canEdit}
         onSelect={setActiveViewId} onNew={() => setDialog("new")} onCustomize={() => enter()}
-        editActions={<EditBar dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID}
+        editActions={<EditBar dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID} preview={preview} onPreview={setPreview}
           onReset={() => setDialog("reset")} onDelete={() => setDialog("delete")} onCancel={cancel} onSave={save} />} />
       <div className={editing ? "sc-layout sc-layout--editing" : "sc-layout"}>
-        <div className="sc-grid12" ref={gridRef}>
+        <div className={sketching ? "sc-grid12 sc-grid12--sketch" : "sc-grid12"} ref={gridRef}>
+          {/* Twelve faint column guides behind the bays, so widths read at a glance. */}
+          {editing && <div className="sc-colguides" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <span key={i} />)}</div>}
           {bays.length === 0 && (
             <div className="span-12">
               <EmptyState status={`Empty view · ${view.name}`} title="No bays on this view.">
@@ -170,11 +176,11 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
             </div>
           )}
           {bays.map((bay) => (
-            <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} picked={picked?.id === bay.id} dragging={dragId === bay.id}
+            <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} sketch={sketching} picked={picked?.id === bay.id} dragging={dragId === bay.id}
               onGripKeyDown={(event) => onGripKey(bay, event)} onGripPointerDown={(event) => startMove(bay.id, event)}
               onRemove={() => setDraft((current) => removeBay(current, bay.id))}
               onResizeKeyDown={(event) => onResizeKey(bay, event)} onResizePointerDown={(event) => startResize(bay.id, event)}>
-              <BayContent bay={bay} data={data} />
+              {sketching ? <BaySketch bay={bay} /> : <BayContent bay={bay} data={data} />}
             </BayFrame>
           ))}
         </div>

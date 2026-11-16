@@ -81,3 +81,22 @@
 .sc-heat-ref--annotation line { stroke: var(--annotation); }
 .sc-heat-ref--muted line { stroke: var(--line-strong); }
 @container page (max-width: 520px) { .sc-heat-legend li { grid-template-columns: 1fr; gap: var(--space-1); } }
+/* Customize's layout view: compact, proportional sketches over twelve column guides, so the whole
+ * board fits on one screen; the whole card drags. Content view keeps the real bays. */
+.sc-layout--editing .sc-grid12 { position: relative; }
+.sc-layout--editing .sc-bay-slot { z-index: 1; }
+.sc-colguides { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); pointer-events: none; }
+.sc-colguides span { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.sc-grid12--sketch { --sketch-row: 26px; gap: var(--space-4) var(--space-6); }
+.sc-grid12--sketch .sc-bay-slot--edit { outline: none; }
+.sc-grid12--sketch .sc-bay-slot__bar { margin-bottom: var(--space-1); }
+.sc-sketch { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-4); min-height: 40px; padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); overflow: hidden; }
+.sc-sketch__glyph { flex: none; width: 64px; height: 32px; fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sc-sketch__desc { min-width: 0; font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
+.sc-bay-slot__content--sketch { cursor: grab; touch-action: none; user-select: none; }
+.sc-bay-slot__content--sketch:active { cursor: grabbing; }
+.sc-bay-slot__content--sketch:hover .sc-sketch { border-color: var(--accent); }
+.sc-bay-slot.is-dragging .sc-sketch, .sc-bay-slot.is-picked .sc-sketch { border-color: var(--accent); background: var(--accent-soft); }
+.sc-bay-slot--edit > .sc-bay-slot__content--sketch { pointer-events: auto; }
+@container page (max-width: 767px) { .sc-colguides { display: none; } }
