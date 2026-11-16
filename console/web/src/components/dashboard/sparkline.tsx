@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type PointerEvent } from "react";
+import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { MetricForm, Reference } from "@/lib/dashboard/metric-profiles";
 import type { Point } from "@/lib/dashboard/metrics";
 import type { QcFlag } from "@/lib/dashboard/qc";
@@ -34,7 +34,7 @@ const tipTime = (t: number) => `${new Date(t).toISOString().slice(5, 16).replace
 
 /** A 7-day sparkline for a stat tile: shared time axis, the tile's value scale, the IQR as a band,
  * suspect points ringed and failed points filled (QARTOD flags), counts as bars, and the
- * nearest reading on hover. */
+ * nearest reading on hover or from the arrow keys. */
 export function Sparkline({ points, from, to, color, unit, digits, label, domain, form, band, flags, references = [] }: SparklineProps) {
   const [hover, setHover] = useState<number | null>(null);
   if (points.length === 0) return null;
@@ -53,10 +53,21 @@ export function Sparkline({ points, from, to, color, unit, digits, label, domain
     setHover(points.reduce((best, p, i) => (Math.abs(p.t - t) < Math.abs(points[best].t - t) ? i : best), 0));
   }
 
+  // Keyboard equivalent of the hover: focus selects the newest reading, arrows step through them.
+  function onKey(event: KeyboardEvent<SVGSVGElement>) {
+    const current = hover ?? points.length - 1;
+    const next = { ArrowLeft: current - 1, ArrowRight: current + 1, Home: 0, End: points.length - 1 }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    setHover(Math.max(0, Math.min(points.length - 1, next)));
+  }
+
   return (
     <span className={`sc-spark sc-spark--${form}`}>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label={`${label}, last 7 days`}
-        onPointerMove={onMove} onPointerLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" tabIndex={0}
+        aria-label={`${label}, last 7 days. Use the left and right arrow keys to read each value.`}
+        onPointerMove={onMove} onPointerLeave={() => setHover(null)}
+        onFocus={() => setHover(points.length - 1)} onBlur={() => setHover(null)} onKeyDown={onKey}>
         {band && form !== "bars" && <rect className="sc-spark__band" x={PAD} width={W - 2 * PAD} y={y(band[1])} height={Math.max(1, y(band[0]) - y(band[1]))} />}
         {references.filter((r) => r.value >= lo && r.value <= hi).map((r) => (
           <line key={r.label} className="sc-spark__ref" x1={PAD} x2={W - PAD} y1={y(r.value)} y2={y(r.value)} vectorEffect="non-scaling-stroke" />

@@ -2,7 +2,7 @@
 
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
-import type { Buoy, HeatStressView, Reading } from "@/lib/api/types";
+import type { Buoy, BuoySettings, HeatStressView, Reading } from "@/lib/api/types";
 import { BAY_KINDS, type BayConfig } from "@/lib/dashboard/layout";
 import { lastHeard } from "@/lib/format";
 import { VARIABLES, variableLabel } from "@/lib/variables";
@@ -21,6 +21,8 @@ export interface BoardData {
   now: number;
   /** Heat stress per buoy (SCO-314): undefined while loading, null if it failed. */
   heat?: HeatStressView | null;
+  /** Firmware slots and remote settings, for schedule-aware link health; null until loaded or if it failed. */
+  schedule?: BuoySettings | null;
 }
 
 const buoyLabel = (data: BoardData, id?: number) => data.buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`;
@@ -85,7 +87,7 @@ export function BayContent({ bay, data }: { bay: BayConfig; data: BoardData }) {
   return (
     <section className="sc-bay" aria-label={bayName(bay, data)}>
       <div className="sc-bay__head"><h2 className="sc-bay__title">{bayName(bay, data)}</h2></div>
-      {bay.kind === "health" && <HealthBay buoys={data.buoys} readings={data.readings} heat={data.heat} now={data.now} />}
+      {bay.kind === "health" && <HealthBay buoys={data.buoys} readings={data.readings} heat={data.heat} schedule={data.schedule} now={data.now} />}
       {bay.kind === "metrics" && <MetricsBay buoys={data.buoys} readings={data.readings} now={data.now} />}
       {bay.kind === "readout" && <Readout bay={bay} data={data} />}
       {bay.kind === "trace" && <TraceBay buoys={data.buoys} readings={data.readings} variable={bay.variable ?? "temp_c"} now={data.now} />}

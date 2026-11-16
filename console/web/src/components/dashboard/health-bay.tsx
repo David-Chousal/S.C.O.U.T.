@@ -4,19 +4,21 @@ import type { ReactNode } from "react";
 import { freshness } from "@/components/stations/stations-board";
 import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
-import type { Buoy, BuoyHeatStress, HeatStressView, Reading } from "@/lib/api/types";
+import type { Buoy, BuoyHeatStress, BuoySettings, HeatStressView, Reading } from "@/lib/api/types";
+import { buoyHealth, runningSettings, slotsInUse } from "@/lib/buoy-status";
 import { delivery, durationLabel, issues, latestText, pointsFor, restarts, type Delivery, type Issue } from "@/lib/dashboard/metrics";
 import { COUNT_SIGNAL, lastHeard } from "@/lib/format";
 import { AlertChip } from "./heat-stress-bay";
 
 const HOUR = 3600 * 1000;
-// As the Fleet bay: a buoy heard within 9 hours has not missed its 3-a-day schedule.
-const LIVE_WITHIN_MS = 9 * HOUR;
+// Only while the transmit slots have not loaded: a buoy heard within 9 hours has not missed a 3-a-day schedule.
+const FALLBACK_LIVE_WITHIN_MS = 9 * HOUR;
 
 interface HealthBayProps {
   buoys: Buoy[];
   readings: Record<number, Reading[]>;
   heat: HeatStressView | null | undefined;
+  schedule?: BuoySettings | null;
   now: number;
 }
 
@@ -32,11 +34,19 @@ interface BuoyHealthRow {
   issues: Issue[];
 }
 
+/** Live, Late or Silent against the buoy's own transmit slots (as Fleet), so a 1- or 2-a-day buoy
+ * is not called late between its slots. */
+function linkHealth(buoy: Buoy, props: HealthBayProps): ReturnType<typeof freshness> {
+  if (!props.schedule) return freshness(lastHeard(buoy), props.now, FALLBACK_LIVE_WITHIN_MS);
+  const running = runningSettings(buoy, props.schedule.firmware.remote);
+  return buoyHealth(lastHeard(buoy), slotsInUse(props.schedule.firmware.slotsSod, running.tx_count, running.slot_phase_h), props.now);
+}
+
 function rowFor(buoy: Buoy, props: HealthBayProps): BuoyHealthRow {
   const rows = props.readings[buoy.buoy_id] ?? [];
   const battery = pointsFor(rows, "battery_v").at(-1)?.v ?? null;
   const uptime = pointsFor(rows, "uptime_s").at(-1)?.v ?? null;
-  const link = buoy.disconnected_at ? { state: "off" as const, lit: 0, word: "Disconnected" } : freshness(lastHeard(buoy), props.now, LIVE_WITHIN_MS);
+  const link = buoy.disconnected_at ? { state: "off" as const, lit: 0, word: "Disconnected" } : linkHealth(buoy, props);
   return {
     buoy, link, battery, uptime,
     delivered: delivery(rows, buoy),
@@ -62,7 +72,8 @@ function Kpis({ rows }: { rows: BuoyHealthRow[] }) {
   const received = rows.reduce((sum, r) => sum + r.delivered.received, 0);
   const expected = rows.reduce((sum, r) => sum + r.delivered.expected, 0);
   const powered = rows.filter((r) => r.battery !== null).sort((a, b) => (a.battery ?? 0) - (b.battery ?? 0));
-  const heated = rows.filter((r) => r.heat?.current).sort((a, b) => (b.heat?.current?.level ?? 0) - (a.heat?.current?.level ?? 0));
+  const heated = rows.filter((r) => r.heat?.current)
+    .sort((a, b) => (b.heat?.current?.level ?? 0) - (a.heat?.current?.level ?? 0) || (b.heat?.current?.dhw ?? 0) - (a.heat?.current?.dhw ?? 0));
   const current = rows.flatMap((r) => r.issues.filter((i) => i.current));
   const commands = rows.filter((r) => r.buoy.state === "rejected" || r.buoy.settings_state === "rejected").length;
   const resets = rows.reduce((sum, r) => sum + r.restarts, 0);

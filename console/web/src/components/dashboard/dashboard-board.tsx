@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { api } from "@/lib/api/client";
-import type { Fleet, HeatStressView, Reading } from "@/lib/api/types";
+import type { BuoySettings, Fleet, HeatStressView, Reading } from "@/lib/api/types";
 import { DEFAULT_VIEW_ID, systemDefault, type SavedView } from "@/lib/dashboard/layout";
 import { can, needs, useSession } from "@/lib/session";
 import { useViewOnlyNote } from "@/lib/view-only-note";
@@ -19,6 +19,7 @@ export function DashboardBoard() {
   const [views, setViews] = useState<SavedView[] | null>(null);
   const [data, setData] = useState<BoardData | null>(null);
   const [heat, setHeat] = useState<HeatStressView | null | undefined>(undefined);
+  const [schedule, setSchedule] = useState<BuoySettings | null>(null);
   const [error, setError] = useState("");
   const canEdit = can(user.role, "dashboards.write");
   useViewOnlyNote(canEdit ? null : `View only: arranging dashboards needs the ${needs("dashboards.write")} role.`);
@@ -38,6 +39,8 @@ export function DashboardBoard() {
     }).catch((failure: unknown) => setError(failure instanceof Error ? failure.message : "Could not load the readings."));
     // Heat stress loads apart: a failure there leaves the rest of the board working.
     api.heatStress().then(setHeat, () => setHeat(null));
+    // The transmit slots, so link health follows each buoy's schedule; without them it falls back to a fixed window.
+    api.settings().then(setSchedule, () => setSchedule(null));
   }, [loadViews]);
 
   if (error) return <Banner tone="failed">{error}</Banner>;
@@ -45,7 +48,7 @@ export function DashboardBoard() {
   const overview: SavedView = { id: DEFAULT_VIEW_ID, name: "Overview", shared: true, bays: systemDefault(data.buoys.map((b) => b.buoy_id)) };
   return (
     <>
-      <LayoutBoard views={[overview, ...views]} data={{ ...data, heat }} canEdit={canEdit} onChanged={loadViews} />
+      <LayoutBoard views={[overview, ...views]} data={{ ...data, heat, schedule }} canEdit={canEdit} onChanged={loadViews} />
     </>
   );
 }

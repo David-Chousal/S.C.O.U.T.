@@ -23,8 +23,8 @@ describe("dashboard metrics", () => {
   });
 
   test("delivery counts packets once against the reported transmit count, defaulting to 3 a day", () => {
-    const rows = [row(0, {}), row(0, {}), row(8, {})];
-    expect(delivery(rows, { tx_count_reported: 2 })).toEqual({ received: 2, expected: 14, ratio: 2 / 14 });
+    const rows = [row(0, {}), row(0, {}), row(8, {}), { ...row(16, {}), record_seq: "0" }];
+    expect(delivery(rows, { tx_count_reported: 2 })).toEqual({ received: 3, expected: 14, ratio: 3 / 14 });
     expect(delivery(rows, { tx_count_reported: null }).expected).toBe(21);
   });
 

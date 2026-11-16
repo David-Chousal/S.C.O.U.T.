@@ -68,7 +68,8 @@ export interface Delivery { received: number; expected: number; ratio: number }
 
 /** Packets stored in the window against what the buoy's transmit count promises. */
 export function delivery(rows: Reading[], buoy: Pick<Buoy, "tx_count_reported">): Delivery {
-  const received = new Set(rows.map((r) => r.record_seq)).size;
+  // Stored readings are keyed on (record_seq, timestamp_utc): a cold start restarts record_seq.
+  const received = new Set(rows.map((r) => `${r.record_seq}|${r.timestamp_utc}`)).size;
   const expected = (buoy.tx_count_reported ?? DEFAULT_TX_PER_DAY) * WINDOW_DAYS;
   return { received, expected, ratio: expected ? Math.min(1, received / expected) : 0 };
 }
