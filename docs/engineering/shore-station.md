@@ -100,6 +100,11 @@ leaving ~28 s of the +2 min side for clock drift. Three limits:
   - The time frame's counter is kept in retained RAM, not flash, to spare the flash a write per
     slot. After a power loss, a frame recorded in the last day could be replayed. That moves the
     clock at most 30 s per frame, and the next real frame moves it back.
+- **Two stations in range of one buoy would both answer it** ([SCO-316](https://linear.app/scout1/issue/SCO-316)). Every station that decodes
+  a packet sends its frame (settings, count, time or OTA) into the same 1 s window, so the frames
+  collide and often neither lands. There is one station today. **Until [SCO-316](https://linear.app/scout1/issue/SCO-316) is decided, give each
+  buoy's downlink key to one station only:** a station without the key already skips every
+  command for that buoy (`CMD skipped buoy=N reason=no-key`), so only one station answers.
 - **A fifth buoy** gets SCOUT-01's offset (IDs 1 and 5 both get +0 s), and a wider window or a
   smaller step alone doesn't change that. It needs more positions (with a step and window that
   still fit them) or another collision-free way of assigning slots.
