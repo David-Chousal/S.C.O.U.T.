@@ -1,0 +1,123 @@
+/* The Overview's Fleet status and Every metric bays (components/dashboard/health-bay.tsx, metrics-bay.tsx) */
+
+/* KPI row: the fleet's headline numbers, one rail-free tile each, wrapping on narrow screens */
+.sc-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
+/* Six tiles fold evenly: 6 × 1, then 3 × 2, then 2 × 3, never a lone tile on its own row */
+@container sc-health (max-width: 860px) { .sc-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container sc-health (max-width: 420px) { .sc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.sc-kpi { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.sc-kpi__value { font: 700 26px/32px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.sc-kpi .sc-help { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.sc-health { display: grid; gap: var(--space-6); container: sc-health / inline-size; }
+.sc-health-table td, .sc-health-table th { white-space: nowrap; vertical-align: middle; }
+.sc-health-table__name { display: block; font-weight: 500; }
+.sc-health-table__sub { display: block; margin-top: 2px; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+.sc-cell-row { display: inline-flex; align-items: center; gap: var(--space-2); }
+.sc-status { display: inline-flex; align-items: center; gap: 6px; }
+.sc-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-muted); }
+.sc-status--ok i { background: var(--positive); }
+.sc-status--stale i { background: var(--caution); }
+.sc-status--failed i { background: var(--negative); }
+.sc-health-table td:last-child { min-width: 180px; white-space: normal; }
+.sc-health-table .sc-issue { height: auto; padding: 1px 6px; font: 500 12px/16px var(--font-sans); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.sc-metric--seal .sc-metric__row { padding-block: calc(var(--grow, 0px) / var(--rows, 1) / 2); }
+.sc-seal { display: inline-flex; align-items: center; gap: var(--space-2); font: 500 16px/24px var(--font-sans); }
+.sc-seal .sc-help { font-weight: 400; }
+.sc-heat-cell { display: inline-flex; align-items: center; gap: 6px; }
+.sc-heat-cell__swatch { width: 10px; height: 10px; border-radius: 2px; }
+.sc-mono { font-family: var(--font-mono); font-size: 12px; }
+
+/* Flags and SOH bits: words, not colour alone; faded once the newest packet no longer carries them */
+.sc-issues { display: flex; flex-wrap: wrap; gap: 4px; white-space: normal; }
+.sc-issue--failed { border-color: var(--negative); color: var(--negative); background: var(--negative-soft); }
+.sc-issue--caution { border-color: var(--caution); color: var(--caution); background: var(--caution-soft); }
+.sc-issue--past { background: none; border-style: dashed; opacity: .75; }
+
+/* Every metric: small multiples of stat tiles, grouped */
+.sc-metrics { display: grid; gap: var(--space-6); }
+.sc-metrics__group { display: grid; gap: var(--space-3); }
+.sc-metrics__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: start; gap: var(--space-4); }
+/* Tiles sit on even columns, each snug to its own content (also after the time range changes). A
+ * tile can span more columns and grow up to 240 px: --grow is shared out across its rows, making
+ * each chart taller (or, for Housing seal, each row roomier), so the content fills the new height. */
+.sc-tile { position: relative; display: grid; min-width: 0; }
+.sc-tile__corner { position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; cursor: nwse-resize; touch-action: none; opacity: 0; transition: opacity 120ms ease-out;
+  background: linear-gradient(135deg, transparent 0 55%, var(--line-strong) 55% 62%, transparent 62% 72%, var(--line-strong) 72% 79%, transparent 79%); }
+.sc-tile:hover .sc-tile__corner, .sc-tile__corner:focus-visible, .sc-tile.is-sizing .sc-tile__corner, .sc-tile[data-sized] .sc-tile__corner { opacity: 1; }
+/* Devices without hover (touch) always show the tile controls. */
+@media (hover: none) { .sc-tile__corner, .sc-tile__grip { opacity: 1; } }
+.sc-tile__corner:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-tile.is-sizing > .sc-metric { border-color: var(--accent); }
+.sc-tile__size { position: absolute; right: 20px; bottom: 4px; padding: 2px 6px; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font: 500 12px/16px var(--font-sans); white-space: nowrap; pointer-events: none; }
+/* The move grip: a tab on the tile's top edge, shown on hover or focus. */
+.sc-tile__grip { position: absolute; top: -1px; left: 50%; display: grid; place-items: center; width: 44px; height: 18px; padding: 0; transform: translateX(-50%);
+  border: 1px solid var(--line-strong); border-top: 0; border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--surface); color: var(--ink-muted);
+  cursor: grab; touch-action: none; opacity: 0; transition: opacity 120ms ease-out; }
+.sc-tile__grip svg { width: 20px; height: 8px; fill: currentColor; }
+.sc-tile:hover .sc-tile__grip, .sc-tile__grip:focus-visible, .sc-tile.is-moving .sc-tile__grip { opacity: 1; }
+.sc-tile__grip:hover { color: var(--ink); }
+.sc-tile__grip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-tile.is-moving > .sc-metric { border: 1px dashed var(--accent); background: var(--accent-soft); opacity: .7; }
+.sc-metrics__grid.is-ordering, .sc-metrics__grid.is-ordering * { cursor: grabbing !important; user-select: none; }
+body:has(.sc-tile.is-sizing), body:has(.sc-tile.is-sizing) * { cursor: nwse-resize !important; user-select: none; }
+.sc-metric { display: grid; gap: var(--space-3); align-content: start; min-width: 0; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.sc-metric__head { white-space: nowrap; display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); font: 600 14px/20px var(--font-sans); }
+/* The unit rides right after the name (inline-block, so the name's underline stops before it). */
+.sc-metric__unit { display: inline-block; margin-left: 6px; font: 400 12px/20px var(--font-sans); color: var(--ink-muted); }
+.sc-metric__row { display: grid; gap: 4px; min-width: 0; }
+.sc-metric__row + .sc-metric__row { padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.sc-metric__buoy { font: 500 12px/16px var(--font-sans); color: var(--ink-muted); }
+.sc-metric__buoy i { display: inline-block; width: 12px; height: 2px; margin-right: 6px; vertical-align: middle; border-radius: 1px; }
+.sc-metric__figure { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; }
+.sc-metric__value { font: 700 24px/28px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.sc-metric__change, .sc-metric__range { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+/* Sparkline: stretches to the tile; the dot is HTML so it stays round */
+.sc-spark { position: relative; display: block; height: calc(36px + var(--grow, 0px) / var(--rows, 1)); }
+.sc-spark svg { display: block; width: 100%; height: 100%; overflow: visible; cursor: crosshair; }
+.sc-spark path { fill: none; stroke-width: 2px; stroke-linejoin: round; stroke-linecap: round; }
+.sc-spark__dot { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); pointer-events: none; }
+.sc-spark__tip { position: absolute; right: 0; bottom: calc(100% + 4px); padding: 2px 6px; border-radius: var(--radius-sm); background: var(--ink); color: var(--bg); font: 500 11px/16px var(--font-mono); white-space: nowrap; pointer-events: none; }
+
+/* Sparkline layers: IQR band, reference levels, count bars, QC flags (QARTOD: suspect ring, fail fill) */
+.sc-spark__band { fill: var(--surface-sunken); }
+.sc-spark__ref { stroke: var(--line-strong); stroke-width: 1px; stroke-dasharray: 3 3; }
+.sc-spark__bar { stroke-width: 2px; stroke-linecap: round; }
+.sc-spark__flag { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; pointer-events: none; }
+.sc-spark__flag--suspect { border: 2px solid var(--caution); background: var(--surface); }
+.sc-spark__flag--fail { border: 2px solid var(--surface); background: var(--negative); }
+.sc-key-mark { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; }
+.sc-key-mark--suspect { border: 2px solid var(--caution); }
+.sc-key-mark--fail { background: var(--negative); }
+
+/* Tile head: the metric name opens its analysis; a QC chip in words */
+.sc-metric__open { display: inline; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sc-metric__name { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.sc-metric__name--plain { text-decoration: none; white-space: nowrap; }
+.sc-metric__open:hover .sc-metric__name { color: var(--accent); text-decoration-color: currentColor; }
+.sc-metric__open:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-metric__trend { font: 500 12px/16px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.sc-qc { display: inline-flex; align-items: baseline; gap: 4px; flex: none; font: 500 12px/20px var(--font-sans); white-space: nowrap; }
+.sc-qc i { font-style: normal; font-weight: 700; }
+.sc-qc--ok { color: var(--positive); }
+.sc-qc--caution { color: var(--caution); }
+.sc-qc--failed { color: var(--negative); }
+.sc-metrics__key { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-6); }
+
+/* Metric detail: plots on one common scale, diel view, stats and QC tables */
+.sc-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sc-detail__section { display: grid; gap: var(--space-2); min-width: 0; }
+.sc-detail__chart { position: relative; }
+.sc-detail__ref line { stroke: var(--annotation); stroke-width: 1px; stroke-dasharray: 4 3; }
+.sc-detail__ref text { fill: var(--ink-muted); font: 400 11px/1 var(--font-sans); }
+.sc-detail__sen { stroke-width: 1.5px; stroke-dasharray: 6 4; opacity: .9; }
+.sc-detail__stem { stroke-width: 2px; stroke-linecap: round; }
+.sc-detail__flag--suspect { fill: none; stroke: var(--caution); stroke-width: 2px; }
+.sc-detail__flag--fail { fill: var(--negative); stroke: var(--surface); stroke-width: 2px; }
+.sc-detail__dot { fill: currentColor; opacity: .55; }
+.sc-detail__diel { fill: none; stroke: currentColor; stroke-width: 2px; stroke-linejoin: round; }
+.sc-detail__tip { padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-sunken); font: 400 12px/18px var(--font-sans); font-variant-numeric: tabular-nums; }
+.sc-spark svg:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Time range for every bay: 24 h to all history, with what is loaded */
+.sc-rangebar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-bottom: var(--space-4); }

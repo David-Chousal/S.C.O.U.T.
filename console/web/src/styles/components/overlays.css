@@ -1,6 +1,7 @@
 /* ───── Overlays ───── */
 .sc-scrim { display: grid; place-items: center; padding: var(--space-8) var(--space-6); background: var(--scrim); }
 .sc-dialog { box-sizing: border-box; display: grid; gap: var(--space-4); width: min(480px, 100%); padding: var(--space-4) var(--space-6) var(--space-6); border-top: 2px solid var(--rail); border-radius: 0 0 var(--radius-md) var(--radius-md); background: var(--surface); box-shadow: var(--shadow-pop); }
+.sc-dialog--wide { width: min(980px, 100%); max-height: calc(100vh - 2 * var(--space-6)); overflow-y: auto; }
 .sc-dialog__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .sc-dialog__title { margin: 0; font: 700 18px/24px var(--font-sans); letter-spacing: -.01em; }
 /* A dialog's facts: label on the left, value on the right (station Info). */

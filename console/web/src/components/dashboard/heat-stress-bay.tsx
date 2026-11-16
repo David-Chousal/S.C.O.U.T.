@@ -17,6 +17,9 @@ const SLUG: Record<AlertLevel, string> = {
 // CRW's DHW floors for Alert Levels 1–5, drawn on the DHW chart when the series reaches near them.
 const DHW_FLOORS = [[4, "Alert 1 · 4"], [8, "Alert 2 · 8"], [12, "Alert 3 · 12"], [16, "Alert 4 · 16"], [20, "Alert 5 · 20"]] as const;
 
+/** The CSS slug for an alert level's colour, as the chips use. */
+export const alertSlug = (alert: AlertLevel) => SLUG[alert];
+
 export function AlertChip({ alert }: { alert: AlertLevel }) {
   return <span className={`sc-alert-chip sc-alert-chip--${SLUG[alert]}`}>{alert}</span>;
 }

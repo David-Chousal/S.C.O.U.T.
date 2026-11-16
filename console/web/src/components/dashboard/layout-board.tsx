@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { useToast } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
-import { addBay, DEFAULT_VIEW_ID, moveBay, removeBay, stepSpan, systemDefault, type BayConfig, type BayKind, type SavedView } from "@/lib/dashboard/layout";
+import { addBay, BAY_KINDS, DEFAULT_VIEW_ID, moveBay, placeBay, removeBay, setHeight, setSpan, systemDefault, type BayConfig, type BayKind, type SavedView, type Span } from "@/lib/dashboard/layout";
 import { BayContent, bayName, type BoardData } from "./bay-content";
 import { BayFrame } from "./bay-frame";
 import { BayLibrary } from "./bay-library";
-import { EditBar } from "./edit-bar";
+import { BaySketch, SKETCH_ROWS } from "./bay-sketch";
+import { EditBar, type EditPreview } from "./edit-bar";
 import { LayoutDialogs, type LayoutDialog } from "./layout-dialogs";
-import { useBayPointer } from "./use-bay-pointer";
+import { useBayResize } from "./use-bay-resize";
+import { useBoardDrag, type DragSource } from "./use-board-drag";
 import { ViewTabs } from "./view-tabs";
 
 interface LayoutBoardProps {
@@ -32,13 +34,20 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
   const fallback = systemDefault(data.buoys.map((b) => b.buoy_id));
   const saved = view.bays;
   const [editing, setEditing] = useState(false);
+  // Customize opens on the layout view: every bay as a compact sketch, so the whole board fits on screen.
+  const [preview, setPreview] = useState<EditPreview>("layout");
+  const sketching = editing && preview === "layout";
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState<BayConfig[]>(saved);
   const [picked, setPicked] = useState<{ id: string; origin: number } | null>(null);
   const [dialog, setDialog] = useState<LayoutDialog>(null);
   const [announcement, setAnnouncement] = useState("");
   const gridRef = useRef<HTMLDivElement>(null);
-  const { dragId, startMove, startResize } = useBayPointer(setDraft, gridRef);
+  const { drag, start } = useBoardDrag(gridRef, onDrop);
+  const { resizing, startWidth, startHeight } = useBayResize(gridRef, {
+    onWidth: (id, span) => setDraft((current) => setSpan(current, id, span)),
+    onHeight: (id, height) => setDraft((current) => setHeight(current, id, height)),
+  });
   const bays = editing ? draft : saved;
   const dirty = editing && JSON.stringify(draft) !== JSON.stringify(saved);
   const actions = useRef({ enter: () => {}, cancel: () => {}, save: () => {} });
@@ -142,44 +151,73 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
     setAnnouncement(`${name} moved to position ${to + 1} of ${draft.length}.`);
   }
 
-  function onResizeKey(bay: BayConfig, event: KeyboardEvent<HTMLSpanElement>) {
-    const step = STEP[event.key];
-    if (!step) return;
-    event.preventDefault();
-    setDraft((current) => current.map((entry) => (entry.id === bay.id ? { ...entry, span: stepSpan(entry.kind, entry.span, step as 1 | -1) } : entry)));
-  }
-
   const add = (kind: BayKind, options: { buoy?: number; variable?: string }) => {
     setDraft((current) => addBay(current, kind, options));
     setAnnouncement("Added a bay at the top.");
   };
 
+  // A drop lands at an index among the bays still showing (the moving one is lifted out while dragged).
+  function onDrop(source: DragSource, at: number) {
+    if (source.type === "bay") {
+      setDraft((current) => placeBay(current, source.id, at));
+      setAnnouncement(`Moved to position ${at + 1}.`);
+    } else {
+      setDraft((current) => addBay(current, source.kind, source.options, at));
+      setAnnouncement(`Added ${BAY_KINDS[source.kind].name} at position ${at + 1}.`);
+    }
+  }
+
+  const startBay = (bay: BayConfig, event: PointerEvent<HTMLElement>) =>
+    start({ type: "bay", id: bay.id }, bay.kind, bayName(bay, data), bay.span, event);
+  const startNew = (kind: BayKind, options: { buoy?: number; variable?: string }, event: PointerEvent<HTMLElement>) =>
+    start({ type: "new", kind, options }, kind, BAY_KINDS[kind].name, BAY_KINDS[kind].defaultSpan, event);
+
+  // While dragging, the moving bay is lifted out and a placeholder opens where it would land.
+  const lifted = drag?.source.type === "bay" ? drag.source.id : null;
+  const shown = bays.filter((bay) => bay.id !== lifted);
+  const placeholder = drag && drag.at !== null && (
+    <div key="drop-placeholder" className={`sc-drop-slot span-${drag.span}`} data-drop-placeholder aria-hidden="true"
+      style={sketching ? { height: `calc(${SKETCH_ROWS[drag.kind]} * var(--sketch-row) + 44px)` } : undefined}>
+      Drop {drag.label} here
+    </div>
+  );
+  const slots = shown.map((bay) => (
+    <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} sketch={sketching} picked={picked?.id === bay.id} resizing={resizing?.id === bay.id ? resizing.axis : null}
+      onGripKeyDown={(event) => onGripKey(bay, event)} onDragStart={(event) => startBay(bay, event)}
+      onRemove={() => setDraft((current) => removeBay(current, bay.id))}
+      onWidth={(span: Span) => setDraft((current) => setSpan(current, bay.id, span))} onWidthStart={(event) => startWidth(bay, event)}
+      onHeight={(height) => setDraft((current) => setHeight(current, bay.id, height))} onHeightStart={(event) => startHeight(bay, event)}>
+      {sketching ? <BaySketch bay={bay} /> : <BayContent bay={bay} data={data} />}
+    </BayFrame>
+  ));
+  const at = drag?.at ?? slots.length;
+  const items = placeholder ? [...slots.slice(0, at), placeholder, ...slots.slice(at)] : slots;
+
   return (
     <div className="sc-layout-board">
       <ViewTabs views={views} activeViewId={view.id} editing={editing} canEdit={canEdit}
         onSelect={setActiveViewId} onNew={() => setDialog("new")} onCustomize={() => enter()}
-        editActions={<EditBar dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID}
+        editActions={<EditBar dirty={dirty} saving={busy} canDelete={view.id !== DEFAULT_VIEW_ID} preview={preview} onPreview={setPreview}
           onReset={() => setDialog("reset")} onDelete={() => setDialog("delete")} onCancel={cancel} onSave={save} />} />
       <div className={editing ? "sc-layout sc-layout--editing" : "sc-layout"}>
-        <div className="sc-grid12" ref={gridRef}>
-          {bays.length === 0 && (
+        <div className={[sketching ? "sc-grid12 sc-grid12--sketch" : "sc-grid12", drag && "is-dragging-over"].filter(Boolean).join(" ")} ref={gridRef}>
+          {bays.length === 0 && !placeholder && (
             <div className="span-12">
               <EmptyState status={`Empty view · ${view.name}`} title="No bays on this view.">
-                {editing ? "Add bays from the library on the right." : "Choose Customize to add bays."}
+                {editing ? "Drag a bay here from the library, or choose its +." : "Choose Customize to add bays."}
               </EmptyState>
             </div>
           )}
-          {bays.map((bay) => (
-            <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} picked={picked?.id === bay.id} dragging={dragId === bay.id}
-              onGripKeyDown={(event) => onGripKey(bay, event)} onGripPointerDown={(event) => startMove(bay.id, event)}
-              onRemove={() => setDraft((current) => removeBay(current, bay.id))}
-              onResizeKeyDown={(event) => onResizeKey(bay, event)} onResizePointerDown={(event) => startResize(bay.id, event)}>
-              <BayContent bay={bay} data={data} />
-            </BayFrame>
-          ))}
+          {items}
         </div>
-        {editing && <BayLibrary bays={draft} buoys={data.buoys} onAdd={add} />}
+        {editing && <BayLibrary bays={draft} buoys={data.buoys} onAdd={add} onDragStart={startNew} />}
       </div>
+      {drag && (
+        <div className="sc-drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
+          <strong>{drag.label}</strong>
+          <span>{drag.at === null ? "Release to cancel" : `Drop at position ${drag.at + 1}`}</span>
+        </div>
+      )}
       <p className="sc-visually-hidden" aria-live="assertive">{announcement}</p>
       <LayoutDialogs open={dialog} viewName={view.name} busy={busy} onClose={() => setDialog(null)}
         onReset={() => { setDraft(fallback); setDialog(null); }} onCreate={create} onDelete={remove} />

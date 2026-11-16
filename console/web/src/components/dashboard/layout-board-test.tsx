@@ -11,11 +11,12 @@ import { LayoutBoard } from "./layout-board";
 import { TraceBay } from "./trace-bay";
 
 const NOW = Date.UTC(2026, 9, 31, 12);
-const buoy = (buoy_id: number, label: string) => ({ buoy_id, label, tx_count_reported: 3, reported_at: NOW, last_seen_at: NOW, clock_lost: 0 }) as Buoy;
+const buoy = (buoy_id: number, label: string) => ({ buoy_id, label, tx_count_reported: 3, reported_at: NOW, last_seen_at: NOW, clock_lost: 0, state: "confirmed", settings_state: "confirmed" }) as Buoy;
 const reading = (hoursAgo: number, temp: string): Reading => ({
   record_seq: String(100 - hoursAgo), timestamp_utc: new Date(NOW - hoursAgo * 3600000).toISOString().slice(0, 19) + "Z", temp_c: temp, turbidity_fau: "1.2", battery_v: "3.3",
 });
-const DATA = { buoys: [buoy(1, "Reef north"), buoy(2, "Reef south")], readings: { 1: [reading(30, "26.0"), reading(2, "26.4")], 2: [reading(10, "25.1")] }, now: NOW };
+const DATA = { buoys: [buoy(1, "Reef north"), buoy(2, "Reef south")], readings: { 1: [reading(30, "26.0"), reading(2, "26.4")], 2: [reading(10, "25.1")] }, now: NOW,
+  from: NOW - 7 * 24 * 3600000, phrase: "last 7 days", allHistory: false };
 const OVERVIEW: SavedView = { id: "default", name: "Overview", shared: true, bays: systemDefault([1, 2]) };
 
 function renderBoard(canEdit = true, views: SavedView[] = [OVERVIEW], onChanged = vi.fn()) {
@@ -30,10 +31,28 @@ function renderBoard(canEdit = true, views: SavedView[] = [OVERVIEW], onChanged 
 afterEach(() => vi.restoreAllMocks());
 
 describe("LayoutBoard", () => {
-  test("the Overview shows the first buoy's readouts with their newest values", () => {
+  test("the Overview shows every buoy's newest value of every metric", () => {
     renderBoard();
-    const temp = screen.getByRole("region", { name: "Water temperature · Reef north" });
+    const metrics = screen.getByRole("region", { name: "Every metric · last 7 days" });
+    const temp = within(metrics).getByRole("article", { name: "Water temperature" });
     expect(within(temp).getByText("26.4")).toBeDefined();
+    expect(within(temp).getByText("25.1")).toBeDefined();
+  });
+
+  test("a metric's name opens its full analysis: one common scale, diel cycle, statistics and QC", async () => {
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: "Open the water temperature analysis" }));
+    const dialog = screen.getByRole("dialog", { name: "Water temperature (°C)" });
+    expect(within(dialog).getByRole("img", { name: /every buoy on one scale/ })).toBeDefined();
+    expect(within(dialog).getByRole("img", { name: /by hour of day/ })).toBeDefined();
+    expect(within(dialog).getByRole("region", { name: "Quality control" })).toBeDefined();
+  });
+
+  test("the Overview leads with fleet status: who is live and how many packets arrived", () => {
+    renderBoard();
+    const status = screen.getByRole("region", { name: "Fleet status" });
+    expect(within(status).getByText("2 of 2")).toBeDefined();
+    expect(within(status).getByText("3 of 42 expected")).toBeDefined();
   });
 
   test("a guest sees the board but cannot customize it", () => {
@@ -42,13 +61,55 @@ describe("LayoutBoard", () => {
     expect(screen.queryByRole("tab", { name: "+ New view" })).toBeNull();
   });
 
+  test("Customize opens on the layout view, and Content previews the real bays", async () => {
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    expect(document.querySelectorAll(".sc-sketch")).toHaveLength(OVERVIEW.bays.length);
+    expect(screen.queryByRole("region", { name: /Every metric/ })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Content" }));
+    expect(document.querySelectorAll(".sc-sketch")).toHaveLength(0);
+    expect(screen.getByRole("region", { name: /Every metric/ })).toBeDefined();
+  });
+
+  test("a bay's right-edge handle resizes it from the keyboard", async () => {
+    const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    const width = screen.getByRole("slider", { name: /Width of Every metric/ });
+    expect(width.getAttribute("aria-valuetext")).toBe("Full width");
+    width.focus();
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(width.getAttribute("aria-valuetext")).toBe("Half width");
+    expect(screen.getByTestId("slot-metrics").className).toContain("span-6");
+    await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
+    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.arrayContaining([expect.objectContaining({ id: "metrics", span: 6 })]));
+  });
+
+  test("a bay's bottom-edge handle sets a height from the keyboard and Delete fits the content again", async () => {
+    const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Content" }));
+    const height = screen.getByRole("slider", { name: /Height of Fleet status/ });
+    expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
+    height.focus();
+    // jsdom has no layout, so the content measures 0 px and the first step lands on the smallest minimum.
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+    expect(height.getAttribute("aria-valuetext")).toBe("At least 140 px tall");
+    await userEvent.keyboard("{Delete}");
+    expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+    await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
+    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.arrayContaining([expect.objectContaining({ id: "health", height: 140 })]));
+  });
+
   test("customizing the Overview and saving makes your own copy", async () => {
     const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
     const onChanged = renderBoard();
     await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
-    await userEvent.click(screen.getByRole("button", { name: "Remove Fleet" }));
+    await userEvent.click(screen.getByRole("button", { name: "Remove Fleet status" }));
     await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
-    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.not.arrayContaining([expect.objectContaining({ kind: "fleet" })]));
+    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.not.arrayContaining([expect.objectContaining({ kind: "health" })]));
     expect(onChanged).toHaveBeenCalled();
   });
 
@@ -58,7 +119,11 @@ describe("LayoutBoard", () => {
     renderBoard(true, [OVERVIEW, mine]);
     await userEvent.click(screen.getByRole("tab", { name: "Mine" }));
     await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    const library = screen.getByRole("complementary", { name: "Add a bay" });
+    expect(within(library).getAllByText("On the board")).toHaveLength(1);
     await userEvent.click(screen.getByRole("button", { name: "Add Readout" }));
+    expect(within(library).getAllByText("On the board")).toHaveLength(2);
+    expect(within(library).queryByRole("button", { name: "Add Readout" })).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
     expect(save).toHaveBeenCalledWith("v1", [expect.objectContaining({ kind: "readout", buoy: 1, variable: "temp_c" }), mine.bays[0]]);
   });
@@ -66,19 +131,19 @@ describe("LayoutBoard", () => {
 
 describe("TraceBay", () => {
   test("two buoys get a legend and end labels; the table view lists the points", () => {
-    render(<TraceBay buoys={DATA.buoys} readings={DATA.readings} variable="temp_c" now={NOW} />);
+    render(<TraceBay buoys={DATA.buoys} readings={DATA.readings} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(within(screen.getByRole("list", { name: "Buoys" })).getAllByRole("listitem")).toHaveLength(2);
-    expect(screen.getByRole("img", { name: /Water temperature over the last 7 days/ })).toBeDefined();
+    expect(screen.getByRole("img", { name: /Water temperature, last 7 days/ })).toBeDefined();
     expect(screen.getAllByRole("row")).toHaveLength(4);
   });
 
   test("a readings gap of over 26 hours lifts the pen", () => {
-    const { container } = render(<TraceBay buoys={[DATA.buoys[0]]} readings={DATA.readings} variable="temp_c" now={NOW} />);
+    const { container } = render(<TraceBay buoys={[DATA.buoys[0]]} readings={DATA.readings} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(container.querySelector(".sc-trace__line")?.getAttribute("d")?.match(/M/g)).toHaveLength(2);
   });
 
   test("says so when there is nothing to plot", () => {
-    render(<TraceBay buoys={DATA.buoys} readings={{}} variable="temp_c" now={NOW} />);
+    render(<TraceBay buoys={DATA.buoys} readings={{}} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(screen.getByText(/No water temperature readings/)).toBeDefined();
   });
 });
