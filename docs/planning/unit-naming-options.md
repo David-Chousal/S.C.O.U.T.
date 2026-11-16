@@ -27,7 +27,7 @@ Any theme works. These are the candidates raised so far:
 | Option | Example names | Notes |
 |---|---|---|
 | Ocean and exploration words | MANTA, NAUTILUS, ATLAS, CORAL, SENTINEL | Proposed by David 2026-11-16 |
-| Hawaiian reef species | HUMUHUMU, HONU, UHU, MANINI | Ties to the Hawaii deployment and the reef application |
+| Hawaiian reef species | HUMUHUMU, HONU, UHU, MANINI | Ties to the Hawaii deployment and the reef application. Humuhumu is the state fish, the rectangular triggerfish ([HRS §5-11.5](https://data.capitol.hawaii.gov/hrscurrent/Vol01_Ch0001-0042F/HRS0005/HRS_0005-0011_0005.htm)); uhu are parrotfishes and manini is the convict tang, *Acanthurus triostegus sandvicensis* ([DLNR DAR](https://dlnr.hawaii.gov/dar/?p=139)); honu is the green sea turtle, *Chelonia mydas*, a protected species ([NOAA Fisheries](https://www.fisheries.noaa.gov/species/green-turtle)). Keys in the [source registry](../hub/research/sources.md) |
 | Star Trek ships | ENTERPRISE, DEFIANT, VOYAGER | The suggestion at the 2026-09-24 weekly. These are franchise names, so check whether they suit a public capstone before choosing |
 | Animals | — | Raised by David 2026-11-16; no names listed yet |
 
