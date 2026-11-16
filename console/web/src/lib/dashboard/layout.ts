@@ -13,7 +13,8 @@ export interface BayConfig {
   buoy?: number;
   /** Readout and trace: which reading column. */
   variable?: string;
-  /** Height in pixels when someone set one; absent means the bay fits its content. */
+  /** Minimum height in pixels when someone set one: it adds room and never hides content, which
+   * always grows the bay past it. Absent means the bay fits its content. */
   height?: number;
 }
 
@@ -26,6 +27,12 @@ export const MAX_HEIGHT_PX = 2400;
 export function snapHeight(raw: number): number {
   const stepped = Math.round(raw / HEIGHT_STEP_PX) * HEIGHT_STEP_PX;
   return Math.max(MIN_HEIGHT_PX, Math.min(MAX_HEIGHT_PX, stepped));
+}
+
+/** A stored view brought up to today's rules: a width its kind no longer allows snaps to the nearest
+ * one it does (heat stress and fleet lost their narrowest widths because their tables did not fit). */
+export function normalizeBays(bays: BayConfig[]): BayConfig[] {
+  return bays.filter((bay) => BAY_KINDS[bay.kind]).map((bay) => (BAY_KINDS[bay.kind].spans.includes(bay.span) ? bay : { ...bay, span: snapSpan(bay.kind, bay.span) }));
 }
 
 /** Set a bay's height, or pass null to let it fit its content again. */
@@ -61,9 +68,9 @@ export const BAY_KINDS: Record<BayKind, BayKindInfo> = {
   metrics: { name: "Every metric", description: "Every measured number for every buoy, quality-checked, with trends.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
   readout: { name: "Readout", description: "One buoy's newest value of one metric.", spans: [3, 4, 6], defaultSpan: 3, buoy: true, variable: true },
   trace: { name: "Trend", description: "One metric for every buoy over the chosen time range.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: true },
-  fleet: { name: "Fleet", description: "When each buoy was last heard.", spans: [4, 6, 12], defaultSpan: 6, buoy: false, variable: false },
+  fleet: { name: "Fleet", description: "When each buoy was last heard.", spans: [6, 12], defaultSpan: 6, buoy: false, variable: false },
   latest: { name: "Latest readings", description: "One buoy's newest readings, as a table.", spans: [6, 12], defaultSpan: 6, buoy: true, variable: false },
-  heat: { name: "Heat stress", description: "NOAA bleaching alert and Degree Heating Weeks for every buoy.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
+  heat: { name: "Heat stress", description: "NOAA bleaching alert and Degree Heating Weeks for every buoy.", spans: [12], defaultSpan: 12, buoy: false, variable: false },
 };
 
 /** Variables a readout or trend can show: the measured numbers. */

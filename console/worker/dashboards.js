@@ -11,15 +11,15 @@ export const BAY_KINDS = {
   metrics: { spans: [6, 12], buoy: false, variable: false },
   readout: { spans: [3, 4, 6], buoy: true, variable: true },
   trace: { spans: [6, 12], buoy: false, variable: true },
-  fleet: { spans: [4, 6, 12], buoy: false, variable: false },
+  fleet: { spans: [6, 12], buoy: false, variable: false },
   latest: { spans: [6, 12], buoy: true, variable: false },
-  heat: { spans: [6, 12], buoy: false, variable: false },
+  heat: { spans: [12], buoy: false, variable: false },
 };
 export const MAX_BAYS = 24;
 const MAX_VIEWS = 20;
 const NUMERIC = REPORT_COLUMNS.filter((c) => !["flags", "soh", "audio_file", "fw_version", "schema_version"].includes(c));
 
-/** A bay's height in pixels when someone set one (a multiple of HEIGHT_STEP_PX); absent means it fits its content. */
+/** A bay's minimum height in pixels when someone set one (a multiple of HEIGHT_STEP_PX); absent means it fits its content. */
 export const HEIGHT_STEP_PX = 20;
 export const MIN_HEIGHT_PX = 120;
 export const MAX_HEIGHT_PX = 2400;

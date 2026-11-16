@@ -93,9 +93,9 @@ describe("LayoutBoard", () => {
     const height = screen.getByRole("slider", { name: /Height of Fleet status/ });
     expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
     height.focus();
-    // jsdom has no layout, so the first step starts from the smallest height (a browser starts from the bay's own).
+    // jsdom has no layout, so the content measures 0 px and the first step lands on the smallest minimum.
     await userEvent.keyboard("{ArrowDown}{ArrowDown}");
-    expect(height.getAttribute("aria-valuetext")).toBe("140 px tall");
+    expect(height.getAttribute("aria-valuetext")).toBe("At least 140 px tall");
     await userEvent.keyboard("{Delete}");
     expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
     await userEvent.keyboard("{ArrowDown}{ArrowDown}");

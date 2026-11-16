@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setHeight, setSpan, snapHeight, snapSpan, systemDefault } from "./layout";
+import { addBay, BAY_KINDS, isOnBoard, moveBay, normalizeBays, placeBay, setHeight, setSpan, snapHeight, snapSpan, systemDefault } from "./layout";
 
 describe("dashboard layout", () => {
   test("kinds and widths match the Worker's validator", () => {
@@ -47,6 +47,11 @@ describe("dashboard layout", () => {
     const tall = setHeight(systemDefault([1]), "health", 503);
     expect(tall.find((b) => b.id === "health")?.height).toBe(500);
     expect(setHeight(tall, "health", null).find((b) => b.id === "health")).not.toHaveProperty("height");
+  });
+
+  test("a stored width a kind no longer allows snaps to one it does", () => {
+    const old = [{ id: "heat", kind: "heat", span: 6 }, { id: "fleet", kind: "fleet", span: 4 }] as const;
+    expect(normalizeBays([...old]).map((b) => b.span)).toEqual([12, 6]);
   });
 
   test("a bay dropped from the library lands where it was dropped", () => {

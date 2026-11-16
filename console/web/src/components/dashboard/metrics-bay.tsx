@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, Reading } from "@/lib/api/types";
 import { analyse } from "@/lib/dashboard/analysis";
@@ -13,7 +13,7 @@ import { VARIABLES, variableLabel } from "@/lib/variables";
 import { MetricDetail, type BuoyAnalysis } from "./metric-detail";
 import { HousingTile } from "./housing-tile";
 import { Sparkline } from "./sparkline";
-import { TileFrame } from "./tile-frame";
+import { TileFrame, useTileColumns } from "./tile-frame";
 import { seriesColor } from "./trace-bay";
 
 type BayBuoy = Pick<Buoy, "buoy_id" | "label" | "tx_count_reported">;
@@ -136,6 +136,8 @@ export function MetricsBay(props: MetricsBayProps) {
   const [open, setOpen] = useState<string | null>(null);
   // The bay renders only after readings load in the browser, so storage is there on first render.
   const [sizes, setSizes] = useState<TileSizes>(loadTileSizes);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const columns = useTileColumns(rootRef);
   const resize = (key: string) => (size: TileSize | null) => setSizes((current) => {
     const next = withTileSize(current, key, size);
     saveTileSizes(next);
@@ -152,7 +154,7 @@ export function MetricsBay(props: MetricsBayProps) {
   if (props.buoys.length === 0) return <p className="sc-help">No buoys yet.</p>;
   if (shown.length === 0) return <p className="sc-help">No readings in this time range.</p>;
   return (
-    <div className="sc-metrics">
+    <div className="sc-metrics" ref={rootRef}>
       <div className="sc-metrics__key">
         {multi && (
           <ul className="sc-legend" aria-label="Buoys">
@@ -171,12 +173,12 @@ export function MetricsBay(props: MetricsBayProps) {
             <h3 className="sc-tag">{group.name}</h3>
             <div className="sc-metrics__grid">
               {withData.map((m) => (
-                <TileFrame key={m.column} name={variableLabel(m.column)} size={sizes[m.column]} onSize={resize(m.column)}>
+                <TileFrame key={m.column} name={variableLabel(m.column)} size={sizes[m.column]} columns={columns} onSize={resize(m.column)}>
                   <Tile column={m.column} rows={m.rows} multi={multi} window={props.window} onOpen={() => setOpen(m.column)} />
                 </TileFrame>
               ))}
               {housing && (
-                <TileFrame name="Housing seal" size={sizes[HOUSING_SEAL]} onSize={resize(HOUSING_SEAL)}>
+                <TileFrame name="Housing seal" size={sizes[HOUSING_SEAL]} columns={columns} onSize={resize(HOUSING_SEAL)}>
                   <HousingTile buoys={props.buoys} readings={props.readings} multi={multi} />
                 </TileFrame>
               )}

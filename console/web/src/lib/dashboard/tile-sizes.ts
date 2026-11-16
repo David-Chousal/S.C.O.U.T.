@@ -3,40 +3,40 @@
 
 const STORAGE_KEY = "scout-console-tile-sizes";
 export const TILE_STEP_PX = 20;
-export const TILE_MIN_WIDTH_PX = 260;
-export const TILE_MIN_HEIGHT_PX = 120;
-export const TILE_MAX_PX = 2400;
+export const TILE_MAX_SPAN = 6;
+export const TILE_MAX_HEIGHT_PX = 2400;
 
-/** A tile's width and height in pixels; a missing one means the tile sizes itself to fit. */
-export interface TileSize { w?: number; h?: number }
+/** How many tile columns a tile spans, and a minimum height in pixels. A missing one means the
+ * default (one column, the row's height). The height only adds room: content is never hidden. */
+export interface TileSize { span?: number; h?: number }
 export type TileSizes = Record<string, TileSize>;
 
-const clamp = (raw: number, min: number) => Math.max(min, Math.min(TILE_MAX_PX, Math.round(raw / TILE_STEP_PX) * TILE_STEP_PX));
-
-/** A dragged or stepped size snapped to 20 px and kept inside the bounds. */
+/** A dragged or stepped size: whole columns, 20 px steps, inside the bounds. A single column and
+ * no height are the default, so they are dropped. */
 export function snapTile(size: TileSize): TileSize {
-  return {
-    ...(size.w === undefined ? {} : { w: clamp(size.w, TILE_MIN_WIDTH_PX) }),
-    ...(size.h === undefined ? {} : { h: clamp(size.h, TILE_MIN_HEIGHT_PX) }),
-  };
+  const span = size.span === undefined ? 1 : Math.max(1, Math.min(TILE_MAX_SPAN, Math.round(size.span)));
+  const h = size.h === undefined ? undefined : Math.min(TILE_MAX_HEIGHT_PX, Math.round(size.h / TILE_STEP_PX) * TILE_STEP_PX);
+  return { ...(span > 1 ? { span } : {}), ...(h ? { h } : {}) };
 }
 
-/** Set one tile's size, or pass null to let it fit its content again. */
+/** Set one tile's size, or pass null (or the default size) to let it fit its content again. */
 export function withTileSize(sizes: TileSizes, key: string, size: TileSize | null): TileSizes {
   const rest = Object.fromEntries(Object.entries(sizes).filter(([k]) => k !== key));
-  return size === null ? rest : { ...rest, [key]: snapTile(size) };
+  const snapped = size === null ? {} : snapTile(size);
+  return Object.keys(snapped).length === 0 ? rest : { ...rest, [key]: snapped };
 }
 
 function isSize(value: unknown): value is TileSize {
   if (typeof value !== "object" || value === null) return false;
-  return Object.values(value).every((n) => typeof n === "number" && Number.isFinite(n));
+  const { span, h } = value as Record<string, unknown>;
+  return (span === undefined || Number.isInteger(span)) && (h === undefined || (typeof h === "number" && Number.isFinite(h))) && (span !== undefined || h !== undefined);
 }
 
 export function loadTileSizes(): TileSizes {
   try {
     const parsed: unknown = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}");
     if (typeof parsed !== "object" || parsed === null) return {};
-    return Object.fromEntries(Object.entries(parsed).filter(([, v]) => isSize(v)).map(([k, v]) => [k, snapTile(v as TileSize)]));
+    return Object.entries(parsed).reduce<TileSizes>((sizes, [key, value]) => (isSize(value) ? withTileSize(sizes, key, value) : sizes), {});
   } catch {
     return {};
   }

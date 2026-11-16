@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { api } from "@/lib/api/client";
 import type { BuoySettings, Fleet, HeatStressView } from "@/lib/api/types";
-import { DEFAULT_VIEW_ID, systemDefault, type SavedView } from "@/lib/dashboard/layout";
+import { DEFAULT_VIEW_ID, normalizeBays, systemDefault, type SavedView } from "@/lib/dashboard/layout";
 import { fetchHistory, loadRange, rangeOption, requestBounds, saveRange, windowStart, type RangeId } from "@/lib/dashboard/range";
 import { can, needs, useSession } from "@/lib/session";
 import { useViewOnlyNote } from "@/lib/view-only-note";
@@ -47,7 +47,7 @@ export function DashboardBoard() {
   useViewOnlyNote(canEdit ? null : `View only: arranging dashboards needs the ${needs("dashboards.write")} role.`);
 
   const loadViews = useCallback(() => {
-    api.dashboards().then((reply) => setViews(reply.dashboards), (failure: unknown) => setError(failureText(failure, "Could not load the views.")));
+    api.dashboards().then((reply) => setViews(reply.dashboards.map((view) => ({ ...view, bays: normalizeBays(view.bays) }))), (failure: unknown) => setError(failureText(failure, "Could not load the views.")));
   }, []);
 
   useEffect(() => {
