@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **Test ID / status** | RR-31 · Pass (reads, steady in clear water, cloudier water reads lower); no accuracy number, by design |
+| **Test ID / status** | RR-31 · Partial (reads at 3.3 V and steady in clear water: pass; reads lower in coffee, but coffee is mostly dye, so the response to suspended particles is not yet shown); no accuracy number, by design |
 | **Date, duration, who** | 2026-11-15, ≈ 16:40–17:10 PST (≈ 30 min), Isabella Rodriguez |
 | **Requirement tested** | R-03 detect turbidity ([Requirements Test Matrix](../../docs/engineering/requirements-test-matrix.md)): ordering and repeatability; bench plan Test 6 |
 | **Tracking issue** | [SCO-157](https://linear.app/scout1/issue/SCO-157), [SCO-153](https://linear.app/scout1/issue/SCO-153) |
@@ -20,7 +20,7 @@ assume)?
 |---|---|---|---|---|
 | Reading present (ADC count) | `scout_t6_turbidity`, 1 Hz, 12-bit | A reading every second; never stuck at 0 or 4095 | 1951–2548 in normal readings (switch on A) | Pass |
 | Clear-water spread (%) | Same, `s` = 50 readings | (max − min) / mean < 1 % | **0.41 %** (2435–2445, mean 2438.7) | Pass |
-| Ordering | Same | Clear water reads higher than cloudy water | Clear 2438.7 → coffee 2045.1 (−16 %) | Pass |
+| Ordering | Same | Clear water reads higher than cloudy water | Clear 2438.7 → coffee 2045.1 (−16 %) | Partial (dye sample only) |
 | Clear-water voltage at 3.3 V (V) | Same | Record only | **1.965 V** | Recorded |
 
 **How and steps.** Sensor on the Feather M0 + Adalogger bench stack, wired direct to 3V (no Q1
@@ -28,8 +28,8 @@ switch). Probe tip in air, then about 250 mL of tap water, then coffee added to 
 The `s` command takes 50 readings and prints mean, min, max and spread.
 
 **Result.** With the board switch on A, the sensor reads, holds within 0.41 % in clear water once
-the probe is fixed in place, and drops 16 % when the water is clouded. Higher count = clearer
-water, as the code assumes. The first readings were taken with the board's A/D switch on D
+the probe is fixed in place, and drops 16 % when coffee darkens the water. That fits higher count =
+clearer water, but coffee is mostly dye; a suspended-particle sample (milk, flour) is still needed. The first readings were taken with the board's A/D switch on D
 (flat ≈ 0.12 V in air and water); moving it to A fixed it.
 
 **Does not establish.**
@@ -168,7 +168,7 @@ Serial Monitor screenshots in [`evidence/rr-31-2026-11-15/screenshots/`](evidenc
 | Time | What differed from A7 | Why | Effect on validity |
 |---|---|---|---|
 | 16:42–16:52 | D-01: board switch on D (digital) | Not checked before power | Those readings discarded; all metrics use the switch-on-A readings |
-| 16:57 | D-02: probe hand-held; spread 5.40 % with dips | Movement and bubbles | Re-run with the probe fixed: 0.41 % |
+| 16:57 | D-02: probe hand-held; spread 5.40 % with dips | Not recorded (movement or bubbles suspected) | Re-run with the probe fixed: 0.41 % |
 | 17:08 | D-03: coffee instead of a milk drop series | No milk at hand | One cloudy step only; coffee darkens mostly by dye, so this proves the direction, not a turbidity scale |
 | Whole run | D-04: supply voltage (`b`) not read | Skipped | None on M1–M3 |
 
@@ -179,31 +179,32 @@ Serial Monitor screenshots in [`evidence/rr-31-2026-11-15/screenshots/`](evidenc
 | Metric (from A5) | Measured | Margin | Verdict |
 |---|---|---|---|
 | M1 reading present | Every second; 1951–2548 with the switch on A | Far from 0 and 4095 | Pass |
-| M2 ordering | Clear 2438.7 > coffee 2045.1 | −16 % | Pass |
+| M2 ordering | Clear 2438.7 > coffee 2045.1 | −16 % | Partial: dye-dominated sample; suspended-particle response not established |
 | M3 repeatability | 0.41 % in clear water | 0.59 points under 1 % | Pass |
 | M4 clear-water voltage | 1.965 V at 3.3 V supply | — | Recorded |
 
-**Overall:** Pass for what R-03 can check today (presence, ordering, repeatability).
+**Overall:** Partial. Presence and repeatability pass; ordering is shown for a dye sample only.
 
 ### C2. Curve and analysis
 
 Clear water read about 25 % higher than air (2439 vs 1957), and coffee about 16 % lower than
 clear water. With the switch on A, all settled samples held within 1 %. The hand-held try's dips
-(to 279) came back once the probe was fixed in place, so they were movement or bubbles, not the
-sensor. No chart was made; the record is the seven samples above.
+(to 279) did not recur in the single fixed-probe run. The cause of the dips is Not recorded:
+movement or bubbles are possible, and an intermittent sensor or wiring fault is not excluded.
+No chart was made; the record is the seven samples above.
 
 ### C3. Validity and limits
 
 - **Sources of error:** one cloudy agent that is mostly dye; single run; room light not measured; supply voltage not read.
-- **What this does establish:** the sensor reads at 3.3 V on A1, steady to 0.41 % in clear water, and lower in cloudier water.
-- **What this does not establish:** NTU accuracy; a graded response; the Q1 switch; salt water.
+- **What this does establish:** the sensor reads at 3.3 V on A1, steady to 0.41 % in clear water, and lower in coffee-darkened water.
+- **What this does not establish:** the response to suspended particles; NTU accuracy; a graded response; the Q1 switch; salt water.
 - **Not recorded or shortcut taken:** exact times (taken from screenshots); room temperature; no setup photo.
 
 ### C4. Decision
 
 | Question | Answer |
 |---|---|
-| Good enough to stop redesigning? | Yes for wiring and polarity (3.3 V, A1, no divider) |
+| Good enough to stop redesigning? | Yes for wiring (3.3 V, A1, no divider); polarity shown for dye-coloured water only |
 | Design change driven by this test | None. Add "switch on A" to the wiring checks |
 | Re-run needed? | A graded milk or flour series (0–20 drops) for R-03's dilution series |
 | Next test | Test 9, the Q1 switch, with a multimeter ([SCO-87](https://linear.app/scout1/issue/SCO-87)) |
