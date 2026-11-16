@@ -6,21 +6,21 @@ import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, Device } from "@/lib/api/types";
-import { commandingStation } from "./command-routes";
+import { ROUTE_REASON } from "./command-routes";
 
 interface AssignDialogProps {
   station: Device | null;
   buoys: Buoy[];
-  active: Device[];
   onClose: () => void;
   onSaved: () => void;
 }
 
-/** Pick which buoys one station sends commands to. Ticking a buoy moves it here from any other
- * station; unticking leaves it with none. */
-export function AssignDialog({ station, buoys, active, onClose, onSaved }: AssignDialogProps) {
+/** Pick which buoys one station answers. Ticking a buoy pins it here, away from any other station;
+ * unticking a pin hands the buoy back to the console, which gives it to the station that hears it
+ * most (worker/routing.js). */
+export function AssignDialog({ station, buoys, onClose, onSaved }: AssignDialogProps) {
   const { show } = useToast();
-  const initial = new Set(buoys.filter((b) => station && commandingStation(b, active)?.id === station.id).map((b) => b.buoy_id));
+  const initial = new Set(buoys.filter((b) => station && b.command_device_id === station.id).map((b) => b.buoy_id));
   const [picked, setPicked] = useState<Set<number>>(initial);
   const [saving, setSaving] = useState(false);
   if (!station) return null;
@@ -49,19 +49,20 @@ export function AssignDialog({ station, buoys, active, onClose, onSaved }: Assig
   }
 
   return (
-    <Dialog open title={`Buoys ${station.name} commands`} onClose={onClose}
+    <Dialog open title={`Buoys ${station.name} answers`} onClose={onClose}
       footer={<>
         <Key onClick={onClose}>Cancel</Key>
         <Key variant="primary" disabled={saving || changed.length === 0} onClick={() => void save()}>
           {saving ? "Saving…" : "Save"}
         </Key>
       </>}>
-      <p className="sc-help">Only one station may send a buoy&rsquo;s commands. Ticking a buoy moves it here from any other station.</p>
+      <p className="sc-help">Only one station may answer a buoy. Ticking a buoy pins it to this station; an unticked buoy goes to
+        whichever station hears it most.</p>
       <fieldset className="sc-assign">
         <legend className="sc-visually-hidden">Buoys</legend>
         {buoys.map((buoy) => {
-          const now = commandingStation(buoy, active);
-          const elsewhere = now && now.id !== station.id ? `now ${now.name}` : now ? "" : "no station";
+          const now = buoy.answering_station;
+          const elsewhere = now ? `now ${now.device_id === station.id ? "this station" : now.name} (${ROUTE_REASON[now.reason]})` : "no station yet";
           return (
             <label key={buoy.buoy_id} className="sc-assign__row">
               <input type="checkbox" checked={picked.has(buoy.buoy_id)} onChange={() => toggle(buoy.buoy_id)} />

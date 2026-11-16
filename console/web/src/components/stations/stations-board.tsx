@@ -33,7 +33,7 @@ export function freshness(lastSeen: number | null, now: number, okWithinMs: numb
 }
 
 /** Stations: every shore station, when it was last seen, its status, and a ⋯ menu (Info, which
- * lists the buoys it commands; Assign buoys; Change WiFi; Revoke). A revoked station shows a delete key instead.
+ * lists the buoys it answers and hears; Assign buoys; Change WiFi; Revoke). A revoked station shows a delete key instead.
  * Buoys' own state lives on Fleet. */
 export function StationsBoard() {
   const { user } = useSession();
@@ -61,7 +61,7 @@ export function StationsBoard() {
 
   function menuFor(device: Device): ActionMenuItem[] {
     const items: ActionMenuItem[] = [{ label: "Info", icon: "info", onSelect: () => setInfo(device) }];
-    // Which buoys it commands is in Info; with two or more stations, Assign buoys changes it.
+    // Which buoys it answers is in Info; with two or more stations, Assign buoys pins them.
     if (canAssign) items.push({ label: "Assign buoys", icon: "connections", onSelect: () => setAssigning(device) });
     if (allowed) items.push({ label: "Change WiFi", icon: "sync", onSelect: () => setRewifi(device) });
     if (allowed) items.push({ label: "Revoke", icon: "close", danger: true, onSelect: () => setRevoking(device) });
@@ -73,6 +73,9 @@ export function StationsBoard() {
   if (!settings.data || !devices.data) return <span className="sc-tag" aria-busy="true">Loading stations…</span>;
   const buoys = settings.data.buoys;
   const routes = commandRoutes(buoys, active);
+  const orphans = routes.orphans.filter((b) => !b.disconnected_at);
+  // The open Info card follows each poll, so its counts match the answers beside them.
+  const infoDevice = info ? devices.data.devices.find((device) => device.id === info.id) ?? info : null;
   const canAssign = allowed && active.length > 1 && buoys.length > 0;
 
   return (
@@ -118,18 +121,19 @@ export function StationsBoard() {
             </table>
           </div>
         )}
-        {active.length > 1 && routes.orphans.length > 0 && (
+        {active.length > 1 && orphans.length > 0 && (
           <Banner tone="caution">
-            <strong>{routes.orphans.map((b) => b.label).join(", ")}</strong> {routes.orphans.length === 1 ? "has" : "have"} no station
-            sending {routes.orphans.length === 1 ? "its" : "their"} commands, so settings changes cannot reach {routes.orphans.length === 1 ? "it" : "them"}.
-            Assign {routes.orphans.length === 1 ? "it" : "them"} to a station.
+            <strong>{orphans.map((b) => b.label).join(", ")}</strong> {orphans.length === 1 ? "has" : "have"} no station
+            answering: none is picked and no station has heard {orphans.length === 1 ? "it" : "them"} in the last 24 h, so settings
+            changes and clock corrections cannot reach {orphans.length === 1 ? "it" : "them"}. Assign {orphans.length === 1 ? "it" : "them"} to
+            a station, or wait for one to hear {orphans.length === 1 ? "it" : "them"}.
           </Banner>
         )}
       </section>
-      <AssignDialog key={assigning?.id ?? "none"} station={assigning} buoys={buoys} active={active}
+      <AssignDialog key={assigning?.id ?? "none"} station={assigning} buoys={buoys}
         onClose={() => setAssigning(null)} onSaved={settings.reload} />
       <NewTokenDialog open={adding} onClose={() => setAdding(false)} onCreated={devices.reload} />
-      <StationInfoDialog device={info} commands={info ? routes.byStation.get(info.id) ?? [] : []} onlyStation={active.length === 1}
+      <StationInfoDialog device={infoDevice} answers={infoDevice ? routes.byStation.get(infoDevice.id) ?? [] : []} buoys={buoys}
         onClose={() => setInfo(null)} />
       <WifiSetupDialog device={rewifi} onClose={() => setRewifi(null)} onDone={changed} />
       <RevokeDialog device={revoking} onClose={() => setRevoking(null)} onDone={changed} />

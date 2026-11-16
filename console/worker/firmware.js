@@ -18,6 +18,7 @@
  * image length u32, build time u32, SHA-256 of the image (32); little-endian. */
 
 import { record } from "./audit.js";
+import { buoysAnsweredBy } from "./routing.js";
 
 const MANIFEST_BYTES = 52;
 const SIG_BYTES = 64;
@@ -124,20 +125,17 @@ export async function cancelFirmware(db, actor, jobId) {
   return {};
 }
 
-// The same routing as settings (fleet.js wantedForDevice): a buoy's command station, or the only
-// station there is when the buoy has none.
-const ROUTED = "b.disconnected_at IS NULL AND (b.command_device_id = ? OR (b.command_device_id IS NULL AND " +
-  "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1))";
-
+// The same routing as settings (routing.js): only the station that answers the buoy gets its jobs.
 async function routedJob(db, deviceId, jobId) {
-  return db.prepare(`SELECT j.* FROM firmware_jobs j JOIN buoys b ON b.buoy_id = j.buoy_id WHERE j.id = ? AND ${ROUTED}`)
-    .bind(jobId, deviceId).first();
+  const job = await db.prepare("SELECT * FROM firmware_jobs WHERE id = ?").bind(jobId).first();
+  return job && (await buoysAnsweredBy(db, deviceId)).includes(job.buoy_id) ? job : null;
 }
 
 export async function jobsForDevice(db, deviceId) {
-  const { results } = await db.prepare("SELECT j.id, j.buoy_id, j.version, j.size, j.sha256 FROM firmware_jobs j " +
-    `JOIN buoys b ON b.buoy_id = j.buoy_id WHERE j.state NOT IN (${FINAL.map(() => "?").join(", ")}) AND ${ROUTED} ` +
-    "ORDER BY j.uploaded_at").bind(...FINAL, deviceId).all();
+  const answered = new Set(await buoysAnsweredBy(db, deviceId));
+  const { results: live } = await db.prepare("SELECT j.id, j.buoy_id, j.version, j.size, j.sha256 FROM firmware_jobs j " +
+    `WHERE j.state NOT IN (${FINAL.map(() => "?").join(", ")}) ORDER BY j.uploaded_at`).bind(...FINAL).all();
+  const results = live.filter((j) => answered.has(j.buoy_id));
   return results.map((j) => ({ job_id: j.id, buoy_id: j.buoy_id, version: versionText(j.version), size: j.size, sha256: j.sha256 }));
 }
 

@@ -2,13 +2,16 @@
  *
  *   POST /api/device/readings  { rows: [schema row, ...] }   ≤ 200 rows, ≤ 256 KB
  *   GET  /api/device/settings  → { buoys: [{ buoy_id, tx_count_requested, settings, settings_digest }],
+ *                                   commands: [buoy_id, ...],   the buoys this station answers (routing.js)
  *                                   wifi_setup_requested_at }   unix seconds of a live request, or null
  *        settings: every remote setting in ID order, "3,0,30,60,3200,3100,3,70" (fleet.js)
  *   GET  /api/device/firmware, /api/device/firmware/{job}, POST …/{job}/status   firmware.js (SCO-312)
  *
  * Rows are validated field by field before anything is stored, and repeats of a
  * (buoy_id, record_seq, timestamp_utc) are ignored, so a shore station may push the same day
- * again safely. The timestamp is in the key because a cold start resets record_seq to 0. */
+ * again safely. The timestamp is in the key because a cold start resets record_seq to 0. Every
+ * station that pushes a reading is recorded in `receptions` (SCO-290), which decides which station
+ * answers the buoy when two hear it (routing.js, SCO-316). */
 
 import { alertsOnIngest } from "./alerts/evaluate.js";
 import { record } from "./audit.js";
@@ -16,6 +19,7 @@ import { randomToken, sha256Hex } from "./crypto.js";
 import { bundleForDevice, jobsForDevice, reportFirmware } from "./firmware.js";
 import { wantedForDevice } from "./fleet.js";
 import { apiError, bodyWithin, json } from "./http.js";
+import { buoysAnsweredBy, heardByStation, receptionStatements } from "./routing.js";
 
 const MAX_ROWS = 200;
 const MAX_BODY_BYTES = 256 * 1024;
@@ -85,7 +89,8 @@ export async function listDevices(db) {
   const { results } = await db
     .prepare("SELECT id, name, created_at, revoked_at, last_seen_at, wifi_setup_requested_at FROM devices ORDER BY created_at DESC")
     .all();
-  return results;
+  const heard = await heardByStation(db);
+  return results.map((d) => ({ ...d, heard: heard[d.id] ?? [] }));
 }
 
 async function authenticate(db, request) {
@@ -147,14 +152,14 @@ export function parseRow(row, now = Date.now()) {
   };
 }
 
-async function storeRows(db, parsed, rows) {
+async function storeRows(db, deviceId, parsed, rows) {
   if (parsed.length === 0) return 0;
   const now = Date.now();
   const inserts = parsed.map((p, i) =>
     db.prepare("INSERT OR IGNORE INTO readings (buoy_id, record_seq, timestamp_utc, row_json, received_at) VALUES (?, ?, ?, ?, ?)")
       .bind(p.buoyId, p.seq, p.timestamp, JSON.stringify(rows[i]), now));
-  const results = await db.batch(inserts);
-  return results.reduce((n, r) => n + (r.meta?.changes ?? 0), 0);
+  const results = await db.batch([...inserts, ...receptionStatements(db, deviceId, parsed, now)]);
+  return results.slice(0, inserts.length).reduce((n, r) => n + (r.meta?.changes ?? 0), 0);
 }
 
 /** Newest row per buoy updates what that buoy reports (count, rejection, last seen).
@@ -210,8 +215,12 @@ export async function handleDeviceApi(request, env, path, ctx) {
   const device = await authenticate(env.DB, request);
   if (!device) return apiError("unauthorized", 401);
   if (path === "/api/device/settings" && request.method === "GET") {
-    // Only this buoy's command station hears about a request; a lone station is everyone's.
-    return json({ buoys: await wantedForDevice(env.DB, device.id), wifi_setup_requested_at: liveWifiSetup(device) });
+    // Only the station that answers a buoy hears about it (routing.js); `commands` lists every
+    // buoy it answers, so it sends nothing at all, not even its time, to the others. One routing
+    // decision feeds both fields, so `buoys` never names a buoy `commands` leaves out.
+    const commands = await buoysAnsweredBy(env.DB, device.id);
+    return json({ buoys: await wantedForDevice(env.DB, device.id, commands), commands,
+      wifi_setup_requested_at: liveWifiSetup(device) });
   }
   if (path.startsWith("/api/device/firmware")) return deviceFirmware(request, env, path, device);
   if (path === "/api/device/readings" && request.method === "POST") {
@@ -232,7 +241,7 @@ export async function handleDeviceApi(request, env, path, ctx) {
     const { results: off } = await env.DB.prepare("SELECT buoy_id FROM buoys WHERE disconnected_at IS NOT NULL").all();
     const ignored = new Set(off.map((b) => b.buoy_id));
     const keep = parsed.map((p, i) => [p, rows[i]]).filter(([p]) => !ignored.has(p.buoyId));
-    const stored = await storeRows(env.DB, keep.map(([p]) => p), keep.map(([, r]) => r));
+    const stored = await storeRows(env.DB, device.id, keep.map(([p]) => p), keep.map(([, r]) => r));
     await updateReported(env.DB, keep.map(([p]) => p));
     await afterStore(env, keep, ctx);
     return json({ stored, ignored: parsed.length - keep.length });

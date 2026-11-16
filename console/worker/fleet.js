@@ -9,6 +9,7 @@ import { record } from "./audit.js";
 import estimates from "./battery-life.json" with { type: "json" };
 import buoyConfig from "./buoy-config.json" with { type: "json" };
 import { digestHex, KEYS, REGISTRY, requestedOf, settingsState, snapshotError, wantedOf } from "./buoy-settings.js";
+import { answeringStations, buoysAnsweredBy } from "./routing.js";
 
 export const TX_COUNTS = [1, 2, 3];
 export const DEFAULT_TX_COUNT = 3;
@@ -45,10 +46,11 @@ async function settingRows(db, buoyId = null) {
 export async function listBuoys(db) {
   const { results } = await db.prepare("SELECT * FROM buoys ORDER BY buoy_id").all();
   const rows = await settingRows(db);
+  const routes = await answeringStations(db);
   return results.map((b) => {
     const requested = requestedOf(b, rows.filter((r) => r.buoy_id === b.buoy_id));
     const wanted = wantedOf(requested);
-    return { ...b, state: countState(b), settings_requested: requested, settings_wanted: wanted,
+    return { ...b, answering_station: routes.get(b.buoy_id) ?? null, state: countState(b), settings_requested: requested, settings_wanted: wanted,
       settings_digest_wanted: digestHex(wanted), settings_state: settingsState(b, requested) };
   });
 }
@@ -94,13 +96,12 @@ export async function restoreDefaults(db, actor, buoyId) {
 }
 
 /** The snapshot string and digest the shore station sends, for every buoy with any request.
- * Only a buoy's command station hears about it; a lone station is everyone's. */
-export async function wantedForDevice(db, deviceId) {
-  const { results } = await db
-    .prepare("SELECT * FROM buoys WHERE disconnected_at IS NULL AND (command_device_id = ? OR (command_device_id IS NULL AND " +
-      "(SELECT COUNT(*) FROM devices WHERE revoked_at IS NULL) = 1)) ORDER BY buoy_id")
-    .bind(deviceId)
-    .all();
+ * Only the station that answers a buoy (routing.js) hears about it. Pass `answeredIds` when the
+ * caller already decided the route, so one reply never mixes two routing decisions. */
+export async function wantedForDevice(db, deviceId, answeredIds) {
+  const answered = new Set(answeredIds ?? await buoysAnsweredBy(db, deviceId));
+  const { results: all } = await db.prepare("SELECT * FROM buoys WHERE disconnected_at IS NULL ORDER BY buoy_id").all();
+  const results = all.filter((b) => answered.has(b.buoy_id));
   const rows = await settingRows(db);
   return results.flatMap((b) => {
     const requested = requestedOf(b, rows.filter((r) => r.buoy_id === b.buoy_id));

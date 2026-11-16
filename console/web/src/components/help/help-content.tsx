@@ -49,7 +49,8 @@ export const SHORE_STEPS: readonly HelpStep[] = [
     title: "Watch it connect",
     body: <>Leave Stations open after making the token. A live check under it turns green the moment the station joins WiFi and
       checks in, usually within seconds of power-on. From now on it sends readings by itself.
-      If two stations hear the same buoy, choose there which one sends that buoy&rsquo;s commands.</>,
+      If two stations hear the same buoy, only one answers it: the one that hears it most, unless you pin it to a station with
+      <b>Assign buoys</b> in that station&rsquo;s ⋯ menu.</>,
   },
 ];
 
@@ -64,8 +65,8 @@ export const BUOY_STEPS: readonly HelpStep[] = [
         the shipped <code>feather_m0</code> env builds with <code>SCOUT_OTA</code> and will not compile without it. Set <code>BUOY_ID</code> in
         <code>firmware/src/config.h</code> and flash <code>feather_m0</code> (never <code>*_downlink</code>). The buoy reports as <code>SCOUT-01</code>,
         <code>SCOUT-02</code>, … (two digits). For radio settings, generate <b>one</b> key per buoy and put those <b>same</b> bytes in gitignored
-        <code>downlink_key.h</code> on the buoy (that buoy&rsquo;s row only) and on the S3 (<b>every</b> buoy the station commands — never leave a
-        public example key for an active id). Copy from <code>downlink_key_example.h</code>, add a row if <code>BUOY_ID</code> is not 1 or 2,
+        <code>downlink_key.h</code> on the buoy (that buoy&rsquo;s row only) and on <b>every</b> S3 that can hear that buoy (the console may hand a buoy to whichever station hears it most, and a station
+        without the key cannot answer it — never leave a public example key for an active id). Copy from <code>downlink_key_example.h</code>, add a row if <code>BUOY_ID</code> is not 1 or 2,
         <b>delete</b> <code>SCOUT_DOWNLINK_KEY_IS_EXAMPLE</code>, and flash both. Only the optional Python USB host also needs that key as
         <code>SCOUT_CMD_KEY_&lt;id&gt;</code>. The console never holds it. Full order: <code>docs/engineering/first-boot-checklist.md</code>.</>
     ),

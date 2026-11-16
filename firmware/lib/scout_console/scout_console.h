@@ -71,6 +71,29 @@ int scout_console_parse_wanted(const char *body, ScoutWanted *wanted, size_t slo
  * page (unix seconds), or 0 when there is no live request (SCO-310). */
 uint32_t scout_console_wifi_setup_at(const char *body);
 
+/* Which buoys this station answers (SCO-316). A buoy keeps the first frame it hears in its 1 s
+ * listen window, so with two stations in range only one may answer it: the console names it, and
+ * this station sends nothing at all (settings, count, time or firmware) to any other buoy. Until
+ * a route is known (no console reply yet, or an older console) the station answers every buoy,
+ * as a lone station always has. Buoys at or above SCOUT_WANTED_MAX_SLOTS are not answered once a
+ * route is known. */
+typedef struct {
+    uint8_t known;
+    uint8_t answers[SCOUT_WANTED_MAX_SLOTS];  /* index = buoy_id */
+} ScoutAnswerRoute;
+
+void scout_route_reset(ScoutAnswerRoute *route);
+bool scout_route_answers(const ScoutAnswerRoute *route, uint16_t buoy_id);
+
+/* "commands":[1,3] from the settings reply. Returns how many buoys are answered, or -1 (route
+ * untouched) when the reply has no well-formed "commands" list. */
+int scout_console_parse_route(const char *body, ScoutAnswerRoute *route);
+
+/* The USB line shore/scripts/sync_console.py writes for a station without WiFi: "A1,3" answers
+ * buoys 1 and 3, "A" answers none, "A*" goes back to answering every buoy. False (route
+ * untouched) on anything malformed. */
+bool scout_console_parse_route_line(const char *line, ScoutAnswerRoute *route);
+
 #ifdef __cplusplus
 }
 #endif

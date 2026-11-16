@@ -5,8 +5,9 @@ what each buoy should run (transmit count and remote-settings snapshot), and han
     SCOUT_CONSOLE_URL=https://... SCOUT_CONSOLE_TOKEN=... \\
         python scripts/sync_console.py --data data-live --serial /dev/cu.usbmodem1101
 
-Without ``--serial`` it prints the ``N<buoy>:<count>`` and ``S<buoy>:<settings>`` lines to type
-into the ESP32's USB console. The ESP32 then sends the settings (v5 buoys) or the count (v4 buoys)
+Without ``--serial`` it prints the ``A<buoys>``, ``N<buoy>:<count>`` and ``S<buoy>:<settings>``
+lines to type into the ESP32's USB console. ``A1,3`` names the buoys this station answers (SCO-316),
+so it stays silent to any buoy another station answers; ``A*`` (from an older console) answers all. The ESP32 then sends the settings (v5 buoys) or the count (v4 buoys)
 right after each buoy's packet, whenever what the buoy reports differs.
 
 Readings already pushed are skipped: the console stores on (buoy_id, record_seq) and ignores
@@ -31,6 +32,7 @@ from scout_shore.console import (  # noqa: E402
     ConsoleClient,
     ConsoleConfig,
     ConsoleError,
+    route_command,
     set_commands,
     settings_commands,
 )
@@ -93,15 +95,18 @@ def main() -> int:
     client = ConsoleClient(config)
     try:
         stored = client.push_rows(_rows(args.data, args.files))
-        requested, snapshots = client.wanted()
+        reply = client.settings_reply()
     except ConsoleError as exc:
         log.error("%s", exc)
         return 1
-    log.info("pushed: %d new rows; requested counts: %s; settings for buoys: %s",
-             stored, requested or "none", sorted(snapshots) or "none")
+    requested, snapshots = reply.counts, reply.snapshots
+    log.info("pushed: %d new rows; requested counts: %s; settings for buoys: %s; answers buoys: %s",
+             stored, requested or "none", sorted(snapshots) or "none",
+             "all (console did not say)" if reply.answers is None else list(reply.answers) or "none")
 
-    # S after N: a snapshot carries the count too, so it is the last word for a v5 buoy.
-    lines = set_commands(requested) + settings_commands(snapshots)
+    # A first, so the station knows which buoys it may answer (SCO-316). S after N: a snapshot
+    # carries the count too, so it is the last word for a v5 buoy.
+    lines = [route_command(reply.answers)] + set_commands(requested) + settings_commands(snapshots)
     if args.serial is None:
         for line in lines:
             print(line)  # noqa: T201 — this script's output is the commands to type

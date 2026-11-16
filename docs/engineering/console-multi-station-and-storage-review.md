@@ -3,7 +3,8 @@
 > **Summary** — Answers every question Dr. Shaghaghi raised during the team console demo at the
 > 2026-10-30 weekly meeting, checked against the code on `main` (2026-10-30), not against what
 > was said in the meeting. Two things said in the demo were wrong and are corrected here. Three
-> real gaps were found; they are filed in Linear.
+> real gaps were found; they are filed in Linear. **Updated 2026-11-15:** the two-station gaps are
+> closed (SCO-290, SCO-316); see items 1–3 below.
 >
 > Source: [meeting notes, 2026-10-30](../planning/meeting-notes.md) ·
 > [ADR-0012](../decisions/0012-authenticated-console.md) · [`console/`](../../console/README.md)
@@ -15,8 +16,8 @@
 | Navid asked | Answer |
 |---|---|
 | Does a buoy have to be linked in the lab before it goes out? | **No.** The console adds any buoy the first time one of its readings arrives. In the lab, the buoy only needs its own `BUOY_ID` (and, for the downlink, its own key) flashed |
-| How does a shore station know which buoys are "its" buoys? | **It doesn't, and doesn't need to.** A station forwards every valid S.C.O.U.T. packet it hears, from any buoy. The console has no station-to-buoy link at all |
-| Two buoys and two stations: will a reading be counted twice? | **No, by design.** A reading is stored once per `(buoy_id, record_seq, timestamp_utc)`; the second station's copy is ignored. Not yet tested with two stations ([SCO-290](https://linear.app/scout1/issue/SCO-290)) |
+| How does a shore station know which buoys are "its" buoys? | **For uploads it doesn't need to:** a station forwards every valid S.C.O.U.T. packet it hears, from any buoy. **For replies it does, since 2026-11-15** ([SCO-316](https://linear.app/scout1/issue/SCO-316)): the console tells each station which buoys it answers (the pinned station, else the only one, else the one that hears the buoy most), and the others stay silent |
+| Two buoys and two stations: will a reading be counted twice? | **No.** A reading is stored once per `(buoy_id, record_seq, timestamp_utc)`; the second station's copy is ignored. **Tested 2026-11-15** ([SCO-290](https://linear.app/scout1/issue/SCO-290)): two station tokens push the same row, both succeed, one row is stored, and both stations are recorded as having heard it |
 | Is there an API for the station to send to, and how is it secured? | **Yes:** `POST /api/device/readings` and `GET /api/device/settings`, with a per-station bearer token stored only as a hash and revocable from the Stations page |
 | What database is it? | **Cloudflare D1** (SQLite), not KV. The back end is a Cloudflare Worker, not Node |
 | Can it store a lot of data on the free plan? | **Yes, by a wide margin.** About 1.3 MB a year for two buoys over LoRa; the 500 MB database cap is decades away. The raw audio, the only large data, never goes to the console |
@@ -64,12 +65,15 @@ Timestamp is in the key because a cold start resets `record_seq` to 0 (decision 
 
 What this does **not** cover yet:
 
-1. **No two-station test.** One Worker test pushing the same rows from two device tokens would
-   prove it ([SCO-290](https://linear.app/scout1/issue/SCO-290)).
-2. **No record of which station heard a reading,** or how strongly. With one station that does
-   not matter; with two it is the only way to see coverage and pick the better site. Storing a
-   small `(reading, station, rssi, snr)` table next to `readings` would do it without
-   double-counting (SCO-290).
+1. ~~No two-station test.~~ **Done 2026-11-15** ([SCO-290](https://linear.app/scout1/issue/SCO-290)): `console/test/receptions-test.js` pushes
+   the same row from two station tokens; both succeed and one row is stored.
+2. ~~No record of which station heard a reading.~~ **Done 2026-11-15** ([SCO-290](https://linear.app/scout1/issue/SCO-290)): a `receptions`
+   table records `(reading, station)` once per station (migration `0018-receptions.sql`), kept 30
+   days. Stations → Info shows the buoys each station heard in the last 24 h, and the console uses
+   it to choose which station answers a buoy (item 3). **Decision: record every station, but not
+   signal strength.** A pushed row carries no RSSI or SNR, and adding them would change the schema
+   row shared by the firmware, the Python shore and the console. Packet counts already show which
+   station hears a buoy reliably; RSSI can be added later if site selection needs it.
 3. **Two stations would both send the same downlink command.** Every station reads every
    buoy's requested transmit count, and a `SCOUT_DOWNLINK` build sends `SET_TX_COUNT` right after
    the buoy's packet. With two stations both would transmit in the same 1 s window: the frames
@@ -79,10 +83,15 @@ What this does **not** cover yet:
    default and has never run on hardware. Before two stations run a downlink build, one station
    per buoy must be chosen to send commands (SCO-290). **Built 2026-10-30:** an admin picks each
    buoy's command station on the Stations page, and only that station is told the requested count
-   (a lone station needs no pick; with two and none picked, nobody sends). ⚠️ The S3's WiFi path
+   (a lone station needs no pick; with two and none picked, nobody sends). **Finished 2026-11-15**
+   ([SCO-316](https://linear.app/scout1/issue/SCO-316)): since the shore also sends its time after every packet (SCO-315), a station that was
+   not told about a buoy still answered it. Now the settings reply lists every buoy a station
+   answers and the S3 sends nothing at all to the rest, and an unpicked buoy goes to the station
+   that heard it most in the last 24 h instead of to nobody. ⚠️ The S3's WiFi path
    replaces its whole list each pull, so a dropped buoy stops at once; the USB bridge
    (`sync_console.py`) only sends `N<buoy>:<count>` for listed buoys, so a count it set earlier
-   stays on the S3 until the S3 restarts or is sent a new one.
+   stays on the S3 until the S3 restarts or is sent a new one. It now writes an `A<buoys>` line
+   first, so a USB-bridged S3 also answers only its own buoys.
 4. **Two buoys flashed with the same ID would merge** into one buoy in the console, silently.
    Nothing detects it. The per-unit naming scheme
    ([SCO-121](https://linear.app/scout1/issue/SCO-121)) should assign IDs so this cannot happen.

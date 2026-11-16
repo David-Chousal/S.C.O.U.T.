@@ -49,7 +49,8 @@ pio device monitor      # watch the serial log (115200 baud)
 
 **The shipped builds need two gitignored key files** and refuse to compile without them:
 `src/downlink_key.h` (the radio command key of each buoy; copy `src/downlink_key_example.h` and
-put in the real keys) and `src/ota_pubkey.h` (from `ota_release.py keygen`, below). Without them,
+put in the real keys — the buoy keeps only its own row, and **every shore station that can hear a
+buoy keeps that buoy's row**, since the console may pick any of them to answer it, SCO-316) and `src/ota_pubkey.h` (from `ota_release.py keygen`, below). Without them,
 `pio run -e feather_m0_downlink` compiles the same firmware with the public example keys, for
 checking only; never deploy it.
 
