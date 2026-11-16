@@ -59,6 +59,7 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-28 | Water-Temperature Probe — Ice-Point Re-Run in Water, 2026-11-04 | Partial | [`rr-28-ds18b20-ice-point-rerun-2026-11-04.md`](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md) |
 | RR-29 | Self-Righting Tilt Test, Regular Buoy Body, 2026-11-06 | Pass (regular buoy only) | [`rr-29-self-righting-tilt-regular-buoy-2026-11-06.md`](rr-29-self-righting-tilt-regular-buoy-2026-11-06.md) |
 | RR-30 | Turbidity Pod PLA Fit Test, Second Print, 2026-11-06 | Pass (fit only) | [`rr-30-turbidity-pod-pla-fit-2026-11-06.md`](rr-30-turbidity-pod-pla-fit-2026-11-06.md) |
+| RR-31 | Turbidity Sensor — First Bench Reading at 3.3 V, 2026-11-15 | Pass | [`rr-31-turbidity-sensor-bench-2026-11-15.md`](../../hardware/test/rr-31-turbidity-sensor-bench-2026-11-15.md) |
 
 ## Tests run
 
@@ -81,6 +82,7 @@ Every test below has a record in the [Test Record Template](../../docs/engineeri
 | RR-28 | 2026-11-04 | DS18B20 probe in water, re-run with marks: air, ice cup, warm water (live demo) | Probe inaccurate at 0 °C; RR-26 results do not repeat | works-like (bench) | 1 Hz, 0 dropouts; ice point 0.0 ± 0.5 °C | **Partial** — 0 dropouts, steady to 1 step, τ ≈ 13.7–14.4 s (repeats RR-26); ice cup bottomed at ≈ 1.35 °C then drifted up, so the bath was not at 0 °C: ice point still inconclusive | [record](../../hardware/test/rr-28-ds18b20-ice-point-rerun-2026-11-04.md), [SCO-259](https://linear.app/scout1/issue/SCO-259) |
 | RR-29 | 2026-11-06 | Self-righting tilt test, regular buoy body (retroactive; mushroom not tested) | Buoy stays capsized | works-like | Rights itself unaided | **Passed 2026-11-06** (John: it self-righted; angles and count not recorded) | [record](rr-29-self-righting-tilt-regular-buoy-2026-11-06.md) |
 | RR-30 | 2026-11-06 | Turbidity pod PLA fit test with the real sensor (retroactive; second print) | Final pod printed to dimensions the sensor does not fit | works-like | Sensor seats in the cavity; tight fit to the penetrator | **Passed 2026-11-06** (John: second print fit; first did not; no clearances measured; fit only, no seal) | [record](rr-30-turbidity-pod-pla-fit-2026-11-06.md), [SCO-176](https://linear.app/scout1/issue/SCO-176) |
+| RR-31 | 2026-11-15 | Grove turbidity sensor at 3.3 V on A1: air, clear tap water, coffee | Sensor does not read at 3.3 V, or reads the wrong way round | works-like (bench) | Never 0 or 4095; clear > cloudy; spread < 1 % in clear water | **Pass** — clear water 2438.7 counts (1.965 V), spread 0.41 %; coffee 2045.1 (−16 %); first readings had the board switch on D | [record](../../hardware/test/rr-31-turbidity-sensor-bench-2026-11-15.md), [SCO-157](https://linear.app/scout1/issue/SCO-157) |
 
 ⚠️ **Not yet recorded:** John has run several informal "is the paper towel wet inside the
 capsule" checks and more drop tests than RR-10. Add them as rows if dates and outcomes can be
