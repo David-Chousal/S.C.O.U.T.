@@ -85,3 +85,8 @@ extracted to `assets/diagrams/` (von Mises stress, resized to 1600 px wide):
 |---|---|---|
 | [`fea-floatation-side-load-von-mises-2026-08-17.png`](../../assets/diagrams/fea-floatation-side-load-von-mises-2026-08-17.png) | [RR-01](rr-01-flotation-side-load-fea-2026-08-17.md), 300 N side load | Min SF 25.4, peak 0.786 MPa |
 | [`fea-hang-hole-single-644n-von-mises-2026-10-30.png`](../../assets/diagrams/fea-hang-hole-single-644n-von-mises-2026-10-30.png) | [RR-20](rr-20-hang-hole-fea-2026-10-30.md), 644 N on one hang hole | SF about 12.4, peak 1.615 MPa |
+
+**Caveats for both plots.** Both studies used Fusion's stock ABS (yield 20 MPa) as a stand-in
+for the printed PETG, and neither had a mesh convergence run. Read the safety factors as
+"comfortably above the SF ≥ 4 bar", not as validated margins, and carry that wording onto any
+slide that shows them.
