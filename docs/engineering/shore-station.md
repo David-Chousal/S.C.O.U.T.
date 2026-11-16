@@ -32,6 +32,7 @@ open is listed under [Open items](#open-items).
 | 2026-10-16 | Shore station confirmed as the S3 + LoRa FeatherWing, **pushing to the dashboard over WiFi**, on FreeRTOS | Meeting notes (lab session) |
 | 2026-10-16 | It **knows the buoys' transmit-slot table** (00:10 / 08:10 / 16:10 UTC) and listens in a **±2 min** window around each slot; always-on listening is fine while it is mains-powered | [SCO-165](https://linear.app/scout1/issue/SCO-165) |
 | 2026-10-16 | **Over-the-air updates: go.** The shore station sends firmware and settings (starting with the daily transmit count) to the buoys | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [SCO-197](https://linear.app/scout1/issue/SCO-197), [SCO-198](https://linear.app/scout1/issue/SCO-198) |
+| 2026-11-15 | **One station answers each buoy**: the pinned one, else the only one, else the one that heard it most in 24 h; every station that can hear a buoy holds its key | [SCO-316](https://linear.app/scout1/issue/SCO-316), [ADR-0018](../decisions/0018-one-answering-shore-station-per-buoy.md) |
 | 2026-11-15 | **Each buoy offsets its transmit slots by ((`buoy_id` − 1) mod 4) × 30 s** so the two buoys planned per station never transmit at the same second; the ±2 min window covers all four offsets unchanged | [SCO-224](https://linear.app/scout1/issue/SCO-224) |
 | 2026-10-25 | **The daily transmit count is a setting (1–3, pending ECE sign-off)** requested in the team console; the shore station follows the count each buoy reports for its slot tag, and relays the requested count to the buoy. **The console is the back end the shore pushes to** (Cloudflare Workers + D1); the public dashboard stays static | [SCO-198](https://linear.app/scout1/issue/SCO-198), [ADR-0012](../decisions/0012-authenticated-console.md) |
 | 2026-10-16 | FCC: a receive-only shore antenna is uncapped, but **whatever the shore transmits through must stay within the module limits (≤ 2.15 dBi)** | [FCC Review Brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16) |
@@ -71,7 +72,7 @@ flags bits 8–9), else the count requested for that buoy, else the default 3. 1
 2 → 00:10 + 16:10, 3 → all. Each `OK` line ends `tx=<reported>/<requested>`, plus `pending` until
 they match and `cmd_rejected` if the buoy refused a command. The requested count comes from the
 console over WiFi (below); without WiFi, `N<buoy>:<count>` over USB (e.g. `N1:2`) sets it, and
-`shore/scripts/sync_console.py` prints or writes those lines from the console. It listens all the time, since it is mains-powered, so the
+`shore/scripts/sync_console.py` prints or writes those lines from the console, after an `A<buoys>` line naming the buoys this station answers ([SCO-316](https://linear.app/scout1/issue/SCO-316); `A*` = all). It listens all the time, since it is mains-powered, so the
 count changes the tag, not when the radio is on. **Buoys offset their slots** ([SCO-224](https://linear.app/scout1/issue/SCO-224), 2026-11-15):
 each buoy transmits ((`buoy_id` − 1) mod 4) × 30 s after the slot, so up to four buoys share a
 station without colliding in normal operation. The window still tags against the base slots and
@@ -100,11 +101,12 @@ leaving ~28 s of the +2 min side for clock drift. Three limits:
   - The time frame's counter is kept in retained RAM, not flash, to spare the flash a write per
     slot. After a power loss, a frame recorded in the last day could be replayed. That moves the
     clock at most 30 s per frame, and the next real frame moves it back.
-- **Two stations in range of one buoy would both answer it** ([SCO-316](https://linear.app/scout1/issue/SCO-316)). Every station that decodes
-  a packet sends its frame (settings, count, time or OTA) into the same 1 s window, so the frames
-  collide and often neither lands. There is one station today. **Until [SCO-316](https://linear.app/scout1/issue/SCO-316) is decided, give each
-  buoy's downlink key to one station only:** a station without the key already skips every
-  command for that buoy (`CMD skipped buoy=N reason=no-key`), so only one station answers.
+- **Only one station answers each buoy** ([SCO-316](https://linear.app/scout1/issue/SCO-316), [ADR-0018](../decisions/0018-one-answering-shore-station-per-buoy.md)). Two stations
+  answering one packet would collide in its 1 s window. The console picks the station an admin
+  pinned, else the only station, else the one that heard the buoy most in the last 24 h, and tells
+  each station the buoys it answers; the S3 prints `QUIET buoy=N reason=another-station` for the
+  rest and sends nothing. **So every station that can hear a buoy needs that buoy's key**, or it
+  cannot answer when picked (`CMD skipped buoy=N reason=no-key`).
 - **A fifth buoy** gets SCOUT-01's offset (IDs 1 and 5 both get +0 s), and a wider window or a
   smaller step alone doesn't change that. It needs more positions (with a step and window that
   still fit them) or another collision-free way of assigning slots.
