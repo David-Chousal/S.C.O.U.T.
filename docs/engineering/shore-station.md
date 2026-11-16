@@ -32,6 +32,7 @@ open is listed under [Open items](#open-items).
 | 2026-10-16 | Shore station confirmed as the S3 + LoRa FeatherWing, **pushing to the dashboard over WiFi**, on FreeRTOS | Meeting notes (lab session) |
 | 2026-10-16 | It **knows the buoys' transmit-slot table** (00:10 / 08:10 / 16:10 UTC) and listens in a **±2 min** window around each slot; always-on listening is fine while it is mains-powered | [SCO-165](https://linear.app/scout1/issue/SCO-165) |
 | 2026-10-16 | **Over-the-air updates: go.** The shore station sends firmware and settings (starting with the daily transmit count) to the buoys | [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md), [SCO-197](https://linear.app/scout1/issue/SCO-197), [SCO-198](https://linear.app/scout1/issue/SCO-198) |
+| 2026-11-15 | **Each buoy offsets its transmit slots by ((`buoy_id` − 1) mod 4) × 30 s** so the two buoys planned per station never transmit at the same second; the ±2 min window covers all four offsets unchanged | [SCO-224](https://linear.app/scout1/issue/SCO-224) |
 | 2026-10-25 | **The daily transmit count is a setting (1–3, pending ECE sign-off)** requested in the team console; the shore station follows the count each buoy reports for its slot tag, and relays the requested count to the buoy. **The console is the back end the shore pushes to** (Cloudflare Workers + D1); the public dashboard stays static | [SCO-198](https://linear.app/scout1/issue/SCO-198), [ADR-0012](../decisions/0012-authenticated-console.md) |
 | 2026-10-16 | FCC: a receive-only shore antenna is uncapped, but **whatever the shore transmits through must stay within the module limits (≤ 2.15 dBi)** | [FCC Review Brief](../research/fcc-review-brief.md#outcome--reviewed-2026-10-16) |
 
@@ -71,7 +72,11 @@ flags bits 8–9), else the count requested for that buoy, else the default 3. 1
 they match and `cmd_rejected` if the buoy refused a command. The requested count comes from the
 console over WiFi (below); without WiFi, `N<buoy>:<count>` over USB (e.g. `N1:2`) sets it, and
 `shore/scripts/sync_console.py` prints or writes those lines from the console. It listens all the time, since it is mains-powered, so the
-count changes the tag, not when the radio is on. Its serial
+count changes the tag, not when the radio is on. **Buoys offset their slots** ([SCO-224](https://linear.app/scout1/issue/SCO-224), 2026-11-15):
+each buoy transmits ((`buoy_id` − 1) mod 4) × 30 s after the slot, so up to four buoys share a
+station without colliding. The window still tags against the base slots and covers every
+offset: the latest packet (SCOUT-04, +90 s, 1.74 s ceiling airtime) ends by +92 s, leaving
+~28 s of the +2 min side for clock drift. A fifth buoy needs a wider window or a smaller step. Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
 ⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
 IRQ 9**, to be confirmed by ECE. **Settings downlink, on in the shipped build since 2026-11-04:**
