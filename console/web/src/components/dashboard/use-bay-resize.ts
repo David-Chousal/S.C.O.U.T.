@@ -19,10 +19,15 @@ export function naturalHeight(element: HTMLElement): number {
   return height;
 }
 
+/** The most room a bay can gain below its content. Snug (no height set) is the least. */
+export const BAY_MAX_GROW_PX = 480;
+
 /** A requested height as a minimum: at or below what the content needs it adds nothing, so it is
- * dropped (null) and the bay fits its content; above, it snaps to 20 px. Content is never hidden. */
+ * dropped (null) and the bay fits its content; above, it snaps to 20 px, at most 480 px past the
+ * content. Content is never hidden. */
 export function heightFor(requested: number, natural: number): number | null {
-  return requested <= natural + HEIGHT_STEP_PX / 2 ? null : snapHeight(Math.max(requested, natural));
+  if (requested <= natural + HEIGHT_STEP_PX / 2) return null;
+  return snapHeight(Math.min(requested, natural + BAY_MAX_GROW_PX));
 }
 
 /** Follows the pointer until release; Escape calls `undo` first. Cleans up either way. */

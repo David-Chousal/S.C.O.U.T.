@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import type { SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import type { Reading } from "@/lib/api/types";
@@ -25,7 +26,7 @@ const SEAL: Record<SealState, { state: SignalState; word: string }> = {
  * how often humidity ran high in range. */
 export function HousingTile({ buoys, readings, multi }: HousingTileProps) {
   return (
-    <article className="sc-metric" aria-label="Housing seal">
+    <article className="sc-metric sc-metric--seal" aria-label="Housing seal" style={{ "--rows": buoys.length } as CSSProperties}>
       <header className="sc-metric__head">
         <span className="sc-metric__name sc-metric__name--plain">Housing seal</span>
       </header>

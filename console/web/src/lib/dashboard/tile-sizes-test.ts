@@ -10,21 +10,22 @@ function memoryStorage(): Pick<Storage, "getItem" | "setItem"> {
 describe("tile sizes", () => {
   beforeEach(() => vi.stubGlobal("localStorage", memoryStorage()));
 
-  test("widths are whole tile columns and heights round up to 4 px; the default size is dropped", () => {
-    expect(snapTile({ span: 2.4, h: 331 })).toEqual({ span: 2, h: 332 });
-    expect(snapTile({ span: 9 })).toEqual({ span: 6 });
+  test("widths are whole columns; growth over snug is 0–240 px; the default size is dropped", () => {
+    expect(snapTile({ span: 2.4, grow: 33 })).toEqual({ span: 2, grow: 32 });
+    expect(snapTile({ grow: 900 })).toEqual({ grow: 240 });
+    expect(snapTile({ span: 9, grow: -40 })).toEqual({ span: 6 });
     expect(snapTile({ span: 1 })).toEqual({});
   });
 
-  test("null lets a tile fit its content again, leaving the others alone", () => {
-    const sizes = withTileSize(withTileSize({}, "temp_c", { span: 2 }), "battery_v", { h: 300 });
-    expect(withTileSize(sizes, "temp_c", null)).toEqual({ battery_v: { h: 300 } });
+  test("null lets a tile go back to one column and snug, leaving the others alone", () => {
+    const sizes = withTileSize(withTileSize({}, "temp_c", { span: 2 }), "battery_v", { grow: 60 });
+    expect(withTileSize(sizes, "temp_c", null)).toEqual({ battery_v: { grow: 60 } });
   });
 
-  test("sizes survive a reload, and junk or older pixel widths in storage are ignored", () => {
-    saveTileSizes({ temp_c: { span: 2, h: 300 } });
-    expect(loadTileSizes()).toEqual({ temp_c: { span: 2, h: 300 } });
-    window.localStorage.setItem("scout-console-tile-sizes", "{\"x\": \"wide\", \"y\": {\"w\": 520}}");
+  test("sizes survive a reload, and junk or older fixed heights in storage are ignored", () => {
+    saveTileSizes({ temp_c: { span: 2, grow: 40 } });
+    expect(loadTileSizes()).toEqual({ temp_c: { span: 2, grow: 40 } });
+    window.localStorage.setItem("scout-console-tile-sizes", "{\"x\": \"wide\", \"y\": {\"h\": 520}}");
     expect(loadTileSizes()).toEqual({});
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, Reading } from "@/lib/api/types";
 import { analyse } from "@/lib/dashboard/analysis";
@@ -67,7 +67,7 @@ function Tile({ column, rows, multi, window, onOpen }: { column: string; rows: B
   const domain = tileDomain(rows);
   const total = rows.reduce((sum, r) => ({ suspect: sum.suspect + r.analysis.qc.suspect, fail: sum.fail + r.analysis.qc.fail }), { suspect: 0, fail: 0 });
   return (
-    <article className="sc-metric" aria-label={variableLabel(column)}>
+    <article className="sc-metric" aria-label={variableLabel(column)} style={{ "--rows": rows.length } as CSSProperties}>
       <header className="sc-metric__head">
         <button type="button" className="sc-metric__open" onClick={onOpen} aria-label={`Open the ${variableLabel(column).toLowerCase()} analysis`}>
           <span className="sc-metric__name">{rows[0].analysis.profile.title ?? variableLabel(column)}</span>

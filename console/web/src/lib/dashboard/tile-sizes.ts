@@ -3,23 +3,23 @@
 
 const STORAGE_KEY = "scout-console-tile-sizes";
 export const TILE_STEP_PX = 20;
-/** Stored heights keep this grain, fine enough to sit snug against a tile's last line. */
-const HEIGHT_GRAIN_PX = 4;
+const GROW_GRAIN_PX = 4;
 export const TILE_MAX_SPAN = 6;
-export const TILE_MAX_HEIGHT_PX = 2400;
+/** The most height a tile can gain over its snug height. Snug (0) is the least. */
+export const TILE_MAX_GROW_PX = 240;
 
-/** How many tile columns a tile spans, and a minimum height in pixels. A missing one means the
- * default (one column, the row's height). A height never goes below the content's own. */
-export interface TileSize { span?: number; h?: number }
+/** How many tile columns a tile spans, and how many pixels taller than snug it is. The extra goes
+ * into its charts (or the spacing of its rows), so the tile re-snugs whenever its content changes,
+ * such as a new time range. Missing means the default: one column, snug. */
+export interface TileSize { span?: number; grow?: number }
 export type TileSizes = Record<string, TileSize>;
 
-/** A dragged or stepped size: whole columns, heights to 4 px, inside the bounds. A single column and
- * no height are the default, so they are dropped. */
+/** A dragged or stepped size: whole columns, growth to 4 px between snug and the cap. One column
+ * and no growth are the default, so they are dropped. */
 export function snapTile(size: TileSize): TileSize {
   const span = size.span === undefined ? 1 : Math.max(1, Math.min(TILE_MAX_SPAN, Math.round(size.span)));
-  // Rounded up, so a snug height never lands a few pixels short of the content.
-  const h = size.h === undefined ? undefined : Math.min(TILE_MAX_HEIGHT_PX, Math.ceil(size.h / HEIGHT_GRAIN_PX) * HEIGHT_GRAIN_PX);
-  return { ...(span > 1 ? { span } : {}), ...(h ? { h } : {}) };
+  const grow = Math.max(0, Math.min(TILE_MAX_GROW_PX, Math.round((size.grow ?? 0) / GROW_GRAIN_PX) * GROW_GRAIN_PX));
+  return { ...(span > 1 ? { span } : {}), ...(grow > 0 ? { grow } : {}) };
 }
 
 /** Set one tile's size, or pass null (or the default size) to let it fit its content again. */
@@ -31,8 +31,8 @@ export function withTileSize(sizes: TileSizes, key: string, size: TileSize | nul
 
 function isSize(value: unknown): value is TileSize {
   if (typeof value !== "object" || value === null) return false;
-  const { span, h } = value as Record<string, unknown>;
-  return (span === undefined || Number.isInteger(span)) && (h === undefined || (typeof h === "number" && Number.isFinite(h))) && (span !== undefined || h !== undefined);
+  const { span, grow } = value as Record<string, unknown>;
+  return (span === undefined || Number.isInteger(span)) && (grow === undefined || (typeof grow === "number" && Number.isFinite(grow))) && (span !== undefined || grow !== undefined);
 }
 
 export function loadTileSizes(): TileSizes {

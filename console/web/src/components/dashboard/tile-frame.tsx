@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import { TILE_STEP_PX, type TileSize } from "@/lib/dashboard/tile-sizes";
+import { useEffect, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { TILE_MAX_GROW_PX, TILE_STEP_PX, type TileSize } from "@/lib/dashboard/tile-sizes";
 
 interface TileFrameProps {
   /** Which tile this is, for drag-to-reorder. */
@@ -36,30 +36,19 @@ export function useTileColumns(): [number, (root: HTMLElement | null) => void] {
   return [columns, setRoot];
 }
 
-/** The height a tile's content needs: from its top to the bottom of its last line, plus padding. */
-function contentHeight(tile: HTMLElement): number {
-  const card = tile.firstElementChild;
-  const last = card?.lastElementChild;
-  if (!card || !last) return tile.offsetHeight;
-  const style = getComputedStyle(card);
-  return last.getBoundingClientRect().bottom - card.getBoundingClientRect().top + parseFloat(style.paddingBottom) + parseFloat(style.borderBottomWidth);
-}
-
-/** A height never below what the content needs: dragging past it stops snug against the last line. */
-const fitted = (requested: number, natural: number) => Math.max(Math.ceil(natural), requested);
-
 const KEYS: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
 
-/** A tile on the Every metric grid. By default it takes one column and its row's height; its
- * bottom-right corner resizes it in whole columns and 20 px steps (drag, or the arrow keys when
- * focused). Height goes down to snug against the last line and no further, so content is never
- * hidden. Double-click or Delete resets it. */
+/** A tile on the Every metric grid. By default it takes one column and is snug to its content, also
+ * after the content changes. Its bottom-right corner resizes it in whole columns and adds up to
+ * 240 px of height (drag, or the arrow keys when focused); the added height goes into the content,
+ * so it never hides anything and snug is the floor. Double-click or Delete resets it. */
 export function TileFrame({ tileKey, name, size, columns, onSize, moving, onMoveStart, onMoveKey, children }: TileFrameProps) {
   const [dragging, setDragging] = useState(false);
   const span = Math.min(size?.span ?? 1, columns);
-  // Unsized, a tile stretches to its row. Given a height it keeps it (snug or taller), and
-  // min-height: min-content means content that later grows still pushes it taller, never hidden.
-  const style = { gridColumn: `span ${span}`, ...(size?.h ? { height: size.h, minHeight: "min-content", alignSelf: "start" } : {}) };
+  const grow = size?.grow ?? 0;
+  // The tile is always its content's height; --grow makes that content taller (charts, row spacing).
+  const style = { gridColumn: `span ${span}`, "--grow": `${grow}px` } as CSSProperties;
+  const clampGrow = (value: number) => Math.max(0, Math.min(TILE_MAX_GROW_PX, value));
 
   function start(event: PointerEvent<HTMLSpanElement>) {
     const tile = event.currentTarget.parentElement;
@@ -69,12 +58,12 @@ export function TileFrame({ tileKey, name, size, columns, onSize, moving, onMove
     const box = tile.getBoundingClientRect();
     const gap = parseFloat(getComputedStyle(grid).columnGap) || 0;
     const column = (grid.getBoundingClientRect().width + gap) / columns;
-    const natural = contentHeight(tile);
+    const snug = box.height - grow;
     const before = size ?? null;
     setDragging(true);
     const move = (pointer: globalThis.PointerEvent) => onSize({
       span: Math.max(1, Math.min(columns, Math.round((pointer.clientX - box.left + gap) / column))),
-      h: fitted(pointer.clientY - box.top, natural),
+      grow: clampGrow(pointer.clientY - box.top - snug),
     });
     const finish = () => {
       window.removeEventListener("pointermove", move);
@@ -102,15 +91,12 @@ export function TileFrame({ tileKey, name, size, columns, onSize, moving, onMove
       return;
     }
     const step = KEYS[event.key];
-    const tile = event.currentTarget.parentElement;
-    if (!step || !tile) return;
+    if (!step) return;
     event.preventDefault();
-    const natural = contentHeight(tile);
-    const height = size?.h ?? tile.offsetHeight;
-    onSize({ span: Math.max(1, Math.min(columns, span + step[0])), h: step[1] ? fitted(height + step[1] * TILE_STEP_PX, natural) : size?.h });
+    onSize({ span: Math.max(1, Math.min(columns, span + step[0])), grow: clampGrow(grow + step[1] * TILE_STEP_PX) });
   }
 
-  const readout = `${span} column${span === 1 ? "" : "s"}${size?.h ? ` · ${size.h} px tall` : ""}`;
+  const readout = `${span} column${span === 1 ? "" : "s"} · ${grow ? `+${grow} px` : "snug"}${grow === TILE_MAX_GROW_PX ? " (tallest)" : ""}`;
   return (
     <div className={["sc-tile", dragging && "is-sizing", moving && "is-moving"].filter(Boolean).join(" ")} style={style} data-sized={size ? "" : undefined} data-tile={tileKey}>
       {children}
