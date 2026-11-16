@@ -7,13 +7,15 @@ import { analyse } from "@/lib/dashboard/analysis";
 import { METRIC_GROUPS, signed } from "@/lib/dashboard/metrics";
 import { qcLabel, type QcResult } from "@/lib/dashboard/qc";
 import type { TimeWindow } from "@/lib/dashboard/range";
+import { loadTileOrder, saveTileOrder, type TileOrder } from "@/lib/dashboard/tile-order";
 import { loadTileSizes, saveTileSizes, withTileSize, type TileSize, type TileSizes } from "@/lib/dashboard/tile-sizes";
 import type { Trend } from "@/lib/dashboard/stats";
 import { VARIABLES, variableLabel } from "@/lib/variables";
 import { MetricDetail, type BuoyAnalysis } from "./metric-detail";
 import { HousingTile } from "./housing-tile";
 import { Sparkline } from "./sparkline";
-import { TileFrame, useTileColumns } from "./tile-frame";
+import { MetricGroup, type GroupTile } from "./metric-group";
+import { useTileColumns } from "./tile-frame";
 import { seriesColor } from "./trace-bay";
 
 type BayBuoy = Pick<Buoy, "buoy_id" | "label" | "tx_count_reported">;
@@ -131,7 +133,7 @@ function StatsTable({ shown }: { shown: { column: string; rows: BuoyAnalysis[] }
 /** Every measured number, grouped (water, soundscape, power and housing). Each tile shows every
  * buoy's newest value, 24 h change, a sparkline over the chosen range on a shared time and value scale with the
  * IQR as a band and QC-flagged points marked, the median and IQR, and a robust trend. A tile
- * opens the metric's full analysis. Metrics with nothing in the window are named, not hidden. */
+ * opens the metric's full analysis; its grip moves it within its section. Metrics with nothing in the window are named, not hidden. */
 export function MetricsBay(props: MetricsBayProps) {
   const [open, setOpen] = useState<string | null>(null);
   // The bay renders only after readings load in the browser, so storage is there on first render.
@@ -140,6 +142,12 @@ export function MetricsBay(props: MetricsBayProps) {
   const resize = (key: string) => (size: TileSize | null) => setSizes((current) => {
     const next = withTileSize(current, key, size);
     saveTileSizes(next);
+    return next;
+  });
+  const [order, setOrder] = useState<TileOrder>(loadTileOrder);
+  const reorder = (group: string, keys: string[]) => setOrder((current) => {
+    const next = { ...current, [group]: keys };
+    saveTileOrder(next);
     return next;
   });
   const multi = props.buoys.length > 1;
@@ -163,26 +171,16 @@ export function MetricsBay(props: MetricsBayProps) {
         <span className="sc-help">Shaded band: the range&apos;s middle 50 % (IQR). <i className="sc-key-mark sc-key-mark--suspect" /> suspect, <i className="sc-key-mark sc-key-mark--fail" /> failed QC. Choose a metric&apos;s name for its full analysis.</span>
       </div>
       {groups.map((group) => {
-        const withData = group.metrics.filter((m) => m.rows.length > 0);
+        const tiles: GroupTile[] = group.metrics.filter((m) => m.rows.length > 0).map((m) => ({
+          key: m.column, name: variableLabel(m.column),
+          node: <Tile column={m.column} rows={m.rows} multi={multi} window={props.window} onOpen={() => setOpen(m.column)} />,
+        }));
         // The housing seal comes from packet flags, so it shows even when the %RH value never arrives.
-        const housing = group.name === HOUSING_GROUP;
-        if (withData.length === 0 && !housing) return null;
+        if (group.name === HOUSING_GROUP) tiles.push({ key: HOUSING_SEAL, name: "Housing seal", node: <HousingTile buoys={props.buoys} readings={props.readings} multi={multi} /> });
+        if (tiles.length === 0) return null;
         return (
-          <section key={group.name} className="sc-metrics__group" aria-label={group.name}>
-            <h3 className="sc-tag">{group.name}</h3>
-            <div className="sc-metrics__grid">
-              {withData.map((m) => (
-                <TileFrame key={m.column} name={variableLabel(m.column)} size={sizes[m.column]} columns={columns} onSize={resize(m.column)}>
-                  <Tile column={m.column} rows={m.rows} multi={multi} window={props.window} onOpen={() => setOpen(m.column)} />
-                </TileFrame>
-              ))}
-              {housing && (
-                <TileFrame name="Housing seal" size={sizes[HOUSING_SEAL]} columns={columns} onSize={resize(HOUSING_SEAL)}>
-                  <HousingTile buoys={props.buoys} readings={props.readings} multi={multi} />
-                </TileFrame>
-              )}
-            </div>
-          </section>
+          <MetricGroup key={group.name} name={group.name} tiles={tiles} saved={order[group.name]} sizes={sizes} columns={columns}
+            onOrder={(keys) => reorder(group.name, keys)} onSize={resize} />
         );
       })}
       {missing.length > 0 && (

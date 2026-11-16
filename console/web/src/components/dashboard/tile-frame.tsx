@@ -4,11 +4,17 @@ import { useEffect, useState, type KeyboardEvent, type PointerEvent, type ReactN
 import { TILE_STEP_PX, type TileSize } from "@/lib/dashboard/tile-sizes";
 
 interface TileFrameProps {
+  /** Which tile this is, for drag-to-reorder. */
+  tileKey: string;
   name: string;
   size: TileSize | undefined;
   /** Tile columns the grid has right now; a tile never spans more. */
   columns: number;
   onSize: (size: TileSize | null) => void;
+  /** Being dragged to a new place in its section. */
+  moving: boolean;
+  onMoveStart: (event: PointerEvent<HTMLElement>) => void;
+  onMoveKey: (event: KeyboardEvent<HTMLButtonElement>) => void;
   children: ReactNode;
 }
 
@@ -48,7 +54,7 @@ const KEYS: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight:
  * bottom-right corner resizes it in whole columns and 20 px steps (drag, or the arrow keys when
  * focused). Height goes down to snug against the last line and no further, so content is never
  * hidden. Double-click or Delete resets it. */
-export function TileFrame({ name, size, columns, onSize, children }: TileFrameProps) {
+export function TileFrame({ tileKey, name, size, columns, onSize, moving, onMoveStart, onMoveKey, children }: TileFrameProps) {
   const [dragging, setDragging] = useState(false);
   const span = Math.min(size?.span ?? 1, columns);
   // Unsized, a tile stretches to its row. Given a height it keeps it (snug or taller), and
@@ -106,8 +112,12 @@ export function TileFrame({ name, size, columns, onSize, children }: TileFramePr
 
   const readout = `${span} column${span === 1 ? "" : "s"}${size?.h ? ` · ${size.h} px tall` : ""}`;
   return (
-    <div className={dragging ? "sc-tile is-sizing" : "sc-tile"} style={style} data-sized={size ? "" : undefined}>
+    <div className={["sc-tile", dragging && "is-sizing", moving && "is-moving"].filter(Boolean).join(" ")} style={style} data-sized={size ? "" : undefined} data-tile={tileKey}>
       {children}
+      <button type="button" className="sc-tile__grip" aria-label={`Move the ${name} tile`} title="Drag to move within this section; arrow keys move it"
+        onPointerDown={onMoveStart} onKeyDown={onMoveKey}>
+        <svg viewBox="0 0 20 8" aria-hidden="true"><circle cx="4" cy="2" r="1.4" /><circle cx="10" cy="2" r="1.4" /><circle cx="16" cy="2" r="1.4" /><circle cx="4" cy="6" r="1.4" /><circle cx="10" cy="6" r="1.4" /><circle cx="16" cy="6" r="1.4" /></svg>
+      </button>
       <span role="button" tabIndex={0} className="sc-tile__corner" aria-label={`Resize the ${name} tile (${readout})`}
         title="Drag to resize; double-click to reset" onPointerDown={start} onKeyDown={onKeyDown} onDoubleClick={() => onSize(null)} />
       {dragging && <span className="sc-tile__size" aria-hidden="true">{readout}</span>}

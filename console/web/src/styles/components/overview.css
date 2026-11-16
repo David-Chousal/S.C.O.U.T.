@@ -45,6 +45,16 @@
 .sc-tile__corner:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-tile.is-sizing > .sc-metric { border-color: var(--accent); }
 .sc-tile__size { position: absolute; right: 20px; bottom: 4px; padding: 2px 6px; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font: 500 12px/16px var(--font-sans); white-space: nowrap; pointer-events: none; }
+/* The move grip: a tab on the tile's top edge, shown on hover or focus. */
+.sc-tile__grip { position: absolute; top: -1px; left: 50%; display: grid; place-items: center; width: 44px; height: 18px; padding: 0; transform: translateX(-50%);
+  border: 1px solid var(--line-strong); border-top: 0; border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--surface); color: var(--ink-muted);
+  cursor: grab; touch-action: none; opacity: 0; transition: opacity 120ms ease-out; }
+.sc-tile__grip svg { width: 20px; height: 8px; fill: currentColor; }
+.sc-tile:hover .sc-tile__grip, .sc-tile__grip:focus-visible, .sc-tile.is-moving .sc-tile__grip { opacity: 1; }
+.sc-tile__grip:hover { color: var(--ink); }
+.sc-tile__grip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-tile.is-moving > .sc-metric { border: 1px dashed var(--accent); background: var(--accent-soft); opacity: .7; }
+.sc-metrics__grid.is-ordering, .sc-metrics__grid.is-ordering * { cursor: grabbing !important; user-select: none; }
 body:has(.sc-tile.is-sizing), body:has(.sc-tile.is-sizing) * { cursor: nwse-resize !important; user-select: none; }
 .sc-metric { display: grid; gap: var(--space-3); align-content: start; min-width: 0; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
 .sc-metric__head { white-space: nowrap; display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); font: 600 14px/20px var(--font-sans); }
