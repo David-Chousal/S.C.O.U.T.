@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { addBay, BAY_KINDS, isOnBoard, moveBay, resizeBay, stepSpan, systemDefault } from "./layout";
+import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setSpan, systemDefault } from "./layout";
 
 describe("dashboard layout", () => {
   test("kinds and widths match the Worker's validator", () => {
@@ -24,12 +24,16 @@ describe("dashboard layout", () => {
     expect(isOnBoard(start, { kind: "readout", buoy: 2, variable: "temp_c" })).toBe(false);
   });
 
-  test("move, snap-resize and step stay inside the allowed widths", () => {
+  test("move and place keep every bay; widths stay inside what the kind allows", () => {
     const bays = systemDefault([1]);
     expect(moveBay(bays, 0, 99).at(-1)?.id).toBe(bays[0].id);
-    expect(resizeBay(bays, "metrics", 10).find((b) => b.id === "metrics")?.span).toBe(12);
-    expect(resizeBay(bays, "health", 3).find((b) => b.id === "health")?.span).toBe(12);
-    expect(stepSpan("trace", 12, 1)).toBe(12);
-    expect(stepSpan("trace", 12, -1)).toBe(6);
+    expect(placeBay(bays, "health", 2).map((b) => b.id)).toEqual(["metrics", "trace-temp_c", "health", "heat", "latest-1"]);
+    expect(placeBay(bays, "latest-1", 0)[0].id).toBe("latest-1");
+    expect(setSpan(bays, "metrics", 6).find((b) => b.id === "metrics")?.span).toBe(6);
+    expect(setSpan(bays, "health", 6).find((b) => b.id === "health")?.span).toBe(12);
+  });
+
+  test("a bay dropped from the library lands where it was dropped", () => {
+    expect(addBay(systemDefault([1]), "fleet", {}, 2)[2]).toMatchObject({ id: "fleet", kind: "fleet" });
   });
 });

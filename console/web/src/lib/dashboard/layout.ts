@@ -75,29 +75,30 @@ export function moveBay(bays: BayConfig[], from: number, to: number): BayConfig[
   return next;
 }
 
-/** The allowed width closest to `raw` (ties go wider). */
-export function snapSpan(kind: BayKind, raw: number): Span {
-  return BAY_KINDS[kind].spans.reduce((best, span) => (Math.abs(span - raw) <= Math.abs(best - raw) ? span : best));
+/** Give one bay a width; ignored unless the kind allows it. */
+export function setSpan(bays: BayConfig[], id: string, span: Span): BayConfig[] {
+  return bays.map((bay) => (bay.id === id && BAY_KINDS[bay.kind].spans.includes(span) ? { ...bay, span } : bay));
 }
 
-export function resizeBay(bays: BayConfig[], id: string, raw: number): BayConfig[] {
-  return bays.map((bay) => (bay.id === id ? { ...bay, span: snapSpan(bay.kind, raw) } : bay));
+/** Move a bay to `at`, an index among the other bays (the list without it), as a drop places it. */
+export function placeBay(bays: BayConfig[], id: string, at: number): BayConfig[] {
+  const moving = bays.find((bay) => bay.id === id);
+  if (!moving) return bays;
+  const others = bays.filter((bay) => bay.id !== id);
+  const target = Math.max(0, Math.min(others.length, at));
+  return [...others.slice(0, target), moving, ...others.slice(target)];
 }
 
-export function stepSpan(kind: BayKind, span: Span, direction: 1 | -1): Span {
-  const spans = BAY_KINDS[kind].spans;
-  const index = spans.indexOf(span);
-  return spans[Math.max(0, Math.min(spans.length - 1, index + direction))];
-}
-
-export function addBay(bays: BayConfig[], kind: BayKind, options: { buoy?: number; variable?: string } = {}): BayConfig[] {
+/** Add a bay of `kind` at `at` (the top by default), with an id no other bay has. */
+export function addBay(bays: BayConfig[], kind: BayKind, options: { buoy?: number; variable?: string } = {}, at = 0): BayConfig[] {
   const info = BAY_KINDS[kind];
   const base = [kind, info.buoy ? options.buoy : null, info.variable ? options.variable : null].filter((p) => p !== null).join("-");
   const taken = new Set(bays.map((bay) => bay.id));
   let id = base;
   for (let n = 2; taken.has(id); n += 1) id = `${base}-${n}`;
   const bay: BayConfig = { id, kind, span: info.defaultSpan, ...(info.buoy ? { buoy: options.buoy } : {}), ...(info.variable ? { variable: options.variable } : {}) };
-  return [bay, ...bays];
+  const target = Math.max(0, Math.min(bays.length, at));
+  return [...bays.slice(0, target), bay, ...bays.slice(target)];
 }
 
 export function removeBay(bays: BayConfig[], id: string): BayConfig[] {

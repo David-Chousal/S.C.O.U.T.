@@ -18,21 +18,10 @@
 .sc-layout--editing { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
 /* The library stays in view while the board scrolls, capped to the window with its own scroller,
  * so every bay can be reached without scrolling the page to the bottom. */
-.sc-lib-rail { position: sticky; top: calc(var(--bar-h, 0px) + var(--space-4)); display: grid; grid-template-rows: auto minmax(0, 1fr); gap: var(--space-3);
+.sc-lib-rail { position: sticky; top: calc(var(--bar-h, 0px) + var(--space-4)); display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: var(--space-2);
   max-height: calc(100dvh - var(--bar-h, 0px) - 2 * var(--space-4)); }
 .sc-lib-rail > .sc-lib { align-content: start; overflow-y: auto; overscroll-behavior: contain; padding-right: var(--space-1); scrollbar-gutter: stable; }
 .sc-bay-slot { position: relative; min-width: 0; }
-.sc-bay-slot--edit { outline: 1px dashed var(--line-strong); outline-offset: 6px; }
-.sc-bay-slot--edit > .sc-bay-slot__content { pointer-events: none; user-select: none; }
-.sc-bay-slot__bar { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); min-width: 0; }
-.sc-bay-slot__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink) !important; }
-.sc-bay-slot__grip { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-muted); cursor: grab; touch-action: none; }
-.sc-bay-slot__grip:active { cursor: grabbing; }
-.sc-bay-slot__grip:focus-visible, .sc-bay-slot__resize:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.sc-bay-slot.is-picked { outline: 2px solid var(--accent); }
-.sc-bay-slot.is-picked .sc-bay-slot__grip { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.sc-bay-slot.is-dragging { z-index: var(--z-drag); background: var(--surface); box-shadow: var(--shadow-pop); }
-.sc-bay-slot__resize { position: absolute; right: -8px; bottom: -8px; width: 14px; height: 14px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); cursor: ew-resize; touch-action: none; }
 @container page (max-width: 775px) { .sc-layout--editing { grid-template-columns: 1fr; } .sc-lib-rail { position: static; max-height: none; } .sc-lib-rail > .sc-lib { overflow: visible; } }
 /* Dashboard bays: the trend chart and its hover readout. */
 .sc-trace { position: relative; }
@@ -81,22 +70,39 @@
 .sc-heat-ref--annotation line { stroke: var(--annotation); }
 .sc-heat-ref--muted line { stroke: var(--line-strong); }
 @container page (max-width: 520px) { .sc-heat-legend li { grid-template-columns: 1fr; gap: var(--space-1); } }
-/* Customize's layout view: compact, proportional sketches over twelve column guides, so the whole
- * board fits on one screen; the whole card drags. Content view keeps the real bays. */
-.sc-layout--editing .sc-grid12 { position: relative; }
-.sc-layout--editing .sc-bay-slot { z-index: 1; }
-.sc-colguides { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-6); pointer-events: none; }
-.sc-colguides span { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
-.sc-grid12--sketch { --sketch-row: 26px; gap: var(--space-4) var(--space-6); }
-.sc-grid12--sketch .sc-bay-slot--edit { outline: none; }
-.sc-grid12--sketch .sc-bay-slot__bar { margin-bottom: var(--space-1); }
-.sc-sketch { box-sizing: border-box; display: flex; align-items: center; gap: var(--space-4); min-height: 40px; padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); overflow: hidden; }
-.sc-sketch__glyph { flex: none; width: 64px; height: 32px; fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Customize: each bay is one card (grip, name, width as fractions, remove) over its sketch or its
+ * real content. Dragging lifts the bay out, a ghost follows the pointer, and a placeholder opens
+ * where it will land. Library entries drag onto the board the same way. */
+.sc-bay-slot { position: relative; min-width: 0; }
+.sc-edit-card { display: grid; min-width: 0; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); }
+.sc-edit-card__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-2); border-bottom: 1px solid var(--line); cursor: grab; touch-action: none; user-select: none; }
+.sc-edit-card__grip { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); cursor: grab; touch-action: none; }
+.sc-edit-card__grip:hover { background: var(--surface-sunken); color: var(--ink); }
+.sc-edit-card__grip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-edit-card__name { flex: 1 1 120px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px/20px var(--font-sans); }
+.sc-edit-card__fixed { font: 400 12px/20px var(--font-sans); color: var(--ink-muted); }
+.sc-edit-card__head .sc-seg button { min-width: 32px; }
+.sc-edit-card__body { min-width: 0; padding: var(--space-4); }
+.sc-edit-card:not(.sc-edit-card--sketch) .sc-edit-card__body { pointer-events: none; user-select: none; }
+.sc-edit-card--sketch { cursor: grab; touch-action: none; user-select: none; }
+.sc-edit-card--sketch .sc-edit-card__body { padding: var(--space-2) var(--space-4); }
+.sc-edit-card--sketch:hover { border-color: var(--accent); }
+.sc-bay-slot.is-picked .sc-edit-card { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.sc-bay-slot.is-picked .sc-edit-card__grip { background: var(--accent); color: var(--on-accent); }
+.is-dragging-over, .is-dragging-over * { cursor: grabbing !important; }
+
+/* Layout view: compact sketches sized in proportion to the real bays, so the board fits on screen */
+.sc-grid12--sketch { --sketch-row: 26px; gap: var(--space-4) var(--space-4); }
+.sc-sketch { display: flex; align-items: center; gap: var(--space-4); min-width: 0; overflow: hidden; }
+.sc-sketch__glyph { flex: none; width: 56px; height: 28px; fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .sc-sketch__desc { min-width: 0; font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
-.sc-bay-slot__content--sketch { cursor: grab; touch-action: none; user-select: none; }
-.sc-bay-slot__content--sketch:active { cursor: grabbing; }
-.sc-bay-slot__content--sketch:hover .sc-sketch { border-color: var(--accent); }
-.sc-bay-slot.is-dragging .sc-sketch, .sc-bay-slot.is-picked .sc-sketch { border-color: var(--accent); background: var(--accent-soft); }
-.sc-bay-slot--edit > .sc-bay-slot__content--sketch { pointer-events: auto; }
-@container page (max-width: 767px) { .sc-colguides { display: none; } }
+
+/* Where a dragged bay will land, and the card following the pointer */
+.sc-drop-slot { display: grid; place-items: center; min-height: 72px; border: 2px dashed var(--accent); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent); font: 500 13px/18px var(--font-sans); }
+.sc-drag-ghost { position: fixed; z-index: var(--z-drag); display: grid; gap: 2px; min-width: 180px; max-width: 280px; padding: var(--space-2) var(--space-3); transform: translate(12px, 12px) rotate(-1.5deg);
+  border: 1px solid var(--accent); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-pop); pointer-events: none; }
+.sc-drag-ghost strong { font: 600 13px/18px var(--font-sans); }
+.sc-drag-ghost span { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+.sc-lib__item--drag .sc-lib__text { cursor: grab; touch-action: none; user-select: none; }
+.sc-lib__item--drag:hover { background: var(--surface-sunken); }
