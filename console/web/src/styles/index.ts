@@ -24,4 +24,5 @@ import "./components/settings.css";
 import "./components/console.css";
 import "./components/guide.css";
 import "./components/layout-editing.css";
+import "./components/overview.css";
 import "./components/assistant.css";

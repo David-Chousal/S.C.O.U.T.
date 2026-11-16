@@ -7,7 +7,9 @@ import { BAY_KINDS, type BayConfig } from "@/lib/dashboard/layout";
 import { lastHeard } from "@/lib/format";
 import { VARIABLES, variableLabel } from "@/lib/variables";
 import { freshness } from "@/components/stations/stations-board";
+import { HealthBay } from "./health-bay";
 import { HeatStressBay } from "./heat-stress-bay";
+import { MetricsBay } from "./metrics-bay";
 import { TraceBay } from "./trace-bay";
 
 const HOUR = 3600 * 1000;
@@ -29,6 +31,7 @@ export function bayName(bay: BayConfig, data: BoardData): string {
   if (bay.kind === "trace") return `${variableLabel(bay.variable ?? "")} · last 7 days`;
   if (bay.kind === "latest") return `Latest readings · ${buoyLabel(data, bay.buoy)}`;
   if (bay.kind === "heat") return "Heat stress · NOAA Coral Reef Watch";
+  if (bay.kind === "metrics") return "Every metric · last 7 days";
   return BAY_KINDS[bay.kind].name;
 }
 
@@ -82,6 +85,8 @@ export function BayContent({ bay, data }: { bay: BayConfig; data: BoardData }) {
   return (
     <section className="sc-bay" aria-label={bayName(bay, data)}>
       <div className="sc-bay__head"><h2 className="sc-bay__title">{bayName(bay, data)}</h2></div>
+      {bay.kind === "health" && <HealthBay buoys={data.buoys} readings={data.readings} heat={data.heat} now={data.now} />}
+      {bay.kind === "metrics" && <MetricsBay buoys={data.buoys} readings={data.readings} now={data.now} />}
       {bay.kind === "readout" && <Readout bay={bay} data={data} />}
       {bay.kind === "trace" && <TraceBay buoys={data.buoys} readings={data.readings} variable={bay.variable ?? "temp_c"} now={data.now} />}
       {bay.kind === "fleet" && <Fleet data={data} />}

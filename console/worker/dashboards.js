@@ -7,6 +7,8 @@ import { record } from "./audit.js";
 import { REPORT_COLUMNS } from "./reports.js";
 
 export const BAY_KINDS = {
+  health: { spans: [12], buoy: false, variable: false },
+  metrics: { spans: [6, 12], buoy: false, variable: false },
   readout: { spans: [3, 4, 6], buoy: true, variable: true },
   trace: { spans: [6, 12], buoy: false, variable: true },
   fleet: { spans: [4, 6, 12], buoy: false, variable: false },

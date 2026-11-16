@@ -11,13 +11,13 @@ describe("dashboard layout", () => {
     }
   });
 
-  test("the default board follows the first buoy, and is just fleet and trend with none", () => {
-    expect(systemDefault([2, 1]).filter((b) => b.kind === "readout").every((b) => b.buoy === 2)).toBe(true);
-    expect(systemDefault([]).map((b) => b.kind)).toEqual(["trace", "heat", "fleet"]);
+  test("the default board leads with fleet status and every metric, and follows the first buoy", () => {
+    expect(systemDefault([2, 1]).find((b) => b.kind === "latest")?.buoy).toBe(2);
+    expect(systemDefault([]).map((b) => b.kind)).toEqual(["health", "metrics", "trace", "heat"]);
   });
 
   test("adding gives a unique id at the top, and a bay already on the board is known", () => {
-    const start = systemDefault([1]);
+    const start = addBay(systemDefault([1]), "readout", { buoy: 1, variable: "temp_c" });
     const next = addBay(start, "readout", { buoy: 1, variable: "temp_c" });
     expect(next[0].id).toBe("readout-1-temp_c-2");
     expect(isOnBoard(start, { kind: "readout", buoy: 1, variable: "temp_c" })).toBe(true);
@@ -27,7 +27,8 @@ describe("dashboard layout", () => {
   test("move, snap-resize and step stay inside the allowed widths", () => {
     const bays = systemDefault([1]);
     expect(moveBay(bays, 0, 99).at(-1)?.id).toBe(bays[0].id);
-    expect(resizeBay(bays, "fleet", 10).find((b) => b.id === "fleet")?.span).toBe(12);
+    expect(resizeBay(bays, "metrics", 10).find((b) => b.id === "metrics")?.span).toBe(12);
+    expect(resizeBay(bays, "health", 3).find((b) => b.id === "health")?.span).toBe(12);
     expect(stepSpan("trace", 12, 1)).toBe(12);
     expect(stepSpan("trace", 12, -1)).toBe(6);
   });

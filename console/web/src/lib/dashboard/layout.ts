@@ -2,7 +2,7 @@
 // list of bays on the 12-column grid. Kinds and widths mirror console/worker/dashboards.js, which
 // validates every saved layout; a test fails if the two disagree.
 
-export type BayKind = "readout" | "trace" | "fleet" | "latest" | "heat";
+export type BayKind = "health" | "metrics" | "readout" | "trace" | "fleet" | "latest" | "heat";
 export type Span = 3 | 4 | 6 | 8 | 12;
 
 export interface BayConfig {
@@ -35,6 +35,8 @@ export const DEFAULT_VIEW_ID = "default";
 export const MAX_BAYS = 24;
 
 export const BAY_KINDS: Record<BayKind, BayKindInfo> = {
+  health: { name: "Fleet status", description: "Headline numbers, then each buoy's link, power, heat, commands and flags", spans: [12], defaultSpan: 12, buoy: false, variable: false },
+  metrics: { name: "Every metric", description: "Every measured number, every buoy, with 7-day sparklines", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
   readout: { name: "Readout", description: "One buoy's newest value", spans: [3, 4, 6], defaultSpan: 3, buoy: true, variable: true },
   trace: { name: "Trend", description: "Every buoy over 7 days", spans: [6, 12], defaultSpan: 12, buoy: false, variable: true },
   fleet: { name: "Fleet", description: "When each buoy was last heard", spans: [4, 6, 12], defaultSpan: 6, buoy: false, variable: false },
@@ -50,19 +52,17 @@ export function bayKey(bay: Pick<BayConfig, "kind" | "buoy" | "variable">): stri
   return [bay.kind, bay.buoy ?? "", bay.variable ?? ""].join(":");
 }
 
-/** The board everyone starts with: the first buoy's three main readouts, the water-temperature
- * trend, heat stress (SCO-314), fleet freshness and the first buoy's latest readings. */
+/** The board everyone starts with, overview first and detail after: fleet status (what needs
+ * attention), every metric as small multiples, the water-temperature trend, heat stress (SCO-314)
+ * and the first buoy's latest readings. */
 export function systemDefault(buoyIds: number[]): BayConfig[] {
   const first = buoyIds[0];
-  const readouts: BayConfig[] = first === undefined ? [] : ["temp_c", "turbidity_fau", "battery_v"].map((variable) => ({
-    id: `readout-${first}-${variable}`, kind: "readout", span: 4, buoy: first, variable,
-  }));
   return [
-    ...readouts,
+    { id: "health", kind: "health", span: 12 },
+    { id: "metrics", kind: "metrics", span: 12 },
     { id: "trace-temp_c", kind: "trace", span: 12, variable: "temp_c" },
     { id: "heat", kind: "heat", span: 12 },
-    { id: "fleet", kind: "fleet", span: 6 },
-    ...(first === undefined ? [] : [{ id: `latest-${first}`, kind: "latest" as const, span: 6 as Span, buoy: first }]),
+    ...(first === undefined ? [] : [{ id: `latest-${first}`, kind: "latest" as const, span: 12 as Span, buoy: first }]),
   ];
 }
 

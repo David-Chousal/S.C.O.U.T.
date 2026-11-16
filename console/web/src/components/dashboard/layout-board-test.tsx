@@ -11,7 +11,7 @@ import { LayoutBoard } from "./layout-board";
 import { TraceBay } from "./trace-bay";
 
 const NOW = Date.UTC(2026, 9, 31, 12);
-const buoy = (buoy_id: number, label: string) => ({ buoy_id, label, tx_count_reported: 3, reported_at: NOW, last_seen_at: NOW, clock_lost: 0 }) as Buoy;
+const buoy = (buoy_id: number, label: string) => ({ buoy_id, label, tx_count_reported: 3, reported_at: NOW, last_seen_at: NOW, clock_lost: 0, state: "confirmed", settings_state: "confirmed" }) as Buoy;
 const reading = (hoursAgo: number, temp: string): Reading => ({
   record_seq: String(100 - hoursAgo), timestamp_utc: new Date(NOW - hoursAgo * 3600000).toISOString().slice(0, 19) + "Z", temp_c: temp, turbidity_fau: "1.2", battery_v: "3.3",
 });
@@ -30,10 +30,19 @@ function renderBoard(canEdit = true, views: SavedView[] = [OVERVIEW], onChanged 
 afterEach(() => vi.restoreAllMocks());
 
 describe("LayoutBoard", () => {
-  test("the Overview shows the first buoy's readouts with their newest values", () => {
+  test("the Overview shows every buoy's newest value of every metric", () => {
     renderBoard();
-    const temp = screen.getByRole("region", { name: "Water temperature · Reef north" });
+    const metrics = screen.getByRole("region", { name: "Every metric · last 7 days" });
+    const temp = within(metrics).getByRole("article", { name: "Water temperature" });
     expect(within(temp).getByText("26.4")).toBeDefined();
+    expect(within(temp).getByText("25.1")).toBeDefined();
+  });
+
+  test("the Overview leads with fleet status: who is live and how many packets arrived", () => {
+    renderBoard();
+    const status = screen.getByRole("region", { name: "Fleet status" });
+    expect(within(status).getByText("2 of 2")).toBeDefined();
+    expect(within(status).getByText("3 of 42 expected")).toBeDefined();
   });
 
   test("a guest sees the board but cannot customize it", () => {
@@ -46,9 +55,9 @@ describe("LayoutBoard", () => {
     const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
     const onChanged = renderBoard();
     await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
-    await userEvent.click(screen.getByRole("button", { name: "Remove Fleet" }));
+    await userEvent.click(screen.getByRole("button", { name: "Remove Fleet status" }));
     await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
-    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.not.arrayContaining([expect.objectContaining({ kind: "fleet" })]));
+    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.not.arrayContaining([expect.objectContaining({ kind: "health" })]));
     expect(onChanged).toHaveBeenCalled();
   });
 
