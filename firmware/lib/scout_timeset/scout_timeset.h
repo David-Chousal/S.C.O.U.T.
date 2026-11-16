@@ -29,6 +29,13 @@ bool scout_parse_time_command(const char *line, uint32_t min_epoch, uint32_t *ou
  * reads a date on or after min_epoch (a PCF8523 that lost power restarts at 2000-01-01). */
 bool scout_clock_trusted(bool rtc_ok, bool lost_power, uint32_t now, uint32_t min_epoch);
 
+/* Clock correction from the shore (SCO-315): seconds to add to the buoy's clock `buoy_now` to
+ * bring it to `shore_now`. 0 when they differ by `deadband_s` or less (whole-second timestamps
+ * on both ends make a 1 s difference noise), else the difference clamped to ±`max_step_s`, so a
+ * single frame never moves the clock far and a large error converges over several frames. */
+int32_t scout_clock_correction_s(uint32_t buoy_now, uint32_t shore_now, uint32_t deadband_s,
+                                 uint32_t max_step_s);
+
 #ifdef __cplusplus
 }
 #endif

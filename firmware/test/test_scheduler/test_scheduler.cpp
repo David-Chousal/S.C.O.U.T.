@@ -169,8 +169,90 @@ void test_listen_window_follows_the_selected_slots(void) {
     TEST_ASSERT_FALSE(scout_in_listen_window(DAY0 + 29400u, out, used, 120));  // 08:10 out
 }
 
+// Per-buoy slot offset (SCO-224): 30 s steps, 4 positions, so the last one (+90 s) still ends
+// its ceiling-size packet (1.739 s) well inside the shore's ±2 min window.
+static const uint32_t STEP_S = 30u;
+static const uint32_t POSITIONS = 4u;
+static const uint32_t CEILING_AIRTIME_MS = 1739u;
+
+void test_slot_offset_steps_by_buoy_id(void) {
+    TEST_ASSERT_EQUAL_UINT32(0u, scout_tx_slot_offset_s(1, STEP_S, POSITIONS));  // SCOUT-01 unchanged
+    TEST_ASSERT_EQUAL_UINT32(30u, scout_tx_slot_offset_s(2, STEP_S, POSITIONS));
+    TEST_ASSERT_EQUAL_UINT32(60u, scout_tx_slot_offset_s(3, STEP_S, POSITIONS));
+    TEST_ASSERT_EQUAL_UINT32(90u, scout_tx_slot_offset_s(4, STEP_S, POSITIONS));
+}
+
+void test_slot_offset_wraps_to_stay_inside_the_listen_window(void) {
+    TEST_ASSERT_EQUAL_UINT32(0u, scout_tx_slot_offset_s(5, STEP_S, POSITIONS));
+    TEST_ASSERT_EQUAL_UINT32(30u, scout_tx_slot_offset_s(6, STEP_S, POSITIONS));
+    TEST_ASSERT_EQUAL_UINT32(90u, scout_tx_slot_offset_s(0, STEP_S, POSITIONS));  // no underflow
+    TEST_ASSERT_EQUAL_UINT32(0u, scout_tx_slot_offset_s(3, STEP_S, 0));           // guard
+}
+
+void test_offset_slots_shift_and_wrap_past_midnight(void) {
+    static const uint32_t LATE[] = {600u, 86390u};
+    uint32_t out[2];
+    scout_offset_tx_slots(LATE, 2, 30u, out);
+    TEST_ASSERT_EQUAL_UINT32(630u, out[0]);
+    TEST_ASSERT_EQUAL_UINT32(20u, out[1]);  // 23:59:50 + 30 s → 00:00:20
+}
+
+void test_two_buoys_in_a_group_never_share_an_airtime_window(void) {
+    // A buoy is on air for its uplink, its 1 s downlink listen, and a downlink frame received to
+    // its end. Any two buoys within one group of POSITIONS must start further apart than that.
+    const uint32_t busy_ms = CEILING_AIRTIME_MS + 1000u + CEILING_AIRTIME_MS;
+    for (uint16_t a = 1; a <= POSITIONS; a++) {
+        for (uint16_t b = (uint16_t)(a + 1); b <= POSITIONS; b++) {
+            uint32_t sa[3], sb[3];
+            scout_offset_tx_slots(SLOTS, 3, scout_tx_slot_offset_s(a, STEP_S, POSITIONS), sa);
+            scout_offset_tx_slots(SLOTS, 3, scout_tx_slot_offset_s(b, STEP_S, POSITIONS), sb);
+            for (size_t i = 0; i < 3; i++) {
+                uint32_t gap_s = sa[i] > sb[i] ? sa[i] - sb[i] : sb[i] - sa[i];
+                TEST_ASSERT_TRUE(gap_s * 1000u > busy_ms);
+            }
+        }
+    }
+}
+
+void test_every_offset_packet_ends_inside_the_shore_window(void) {
+    for (uint16_t id = 1; id <= POSITIONS; id++) {
+        uint32_t shifted[3];
+        scout_offset_tx_slots(SLOTS, 3, scout_tx_slot_offset_s(id, STEP_S, POSITIONS), shifted);
+        for (size_t i = 0; i < 3; i++) {
+            uint32_t end_s = shifted[i] + (CEILING_AIRTIME_MS + 999u) / 1000u;
+            TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + shifted[i], SLOTS, 3, 120));
+            TEST_ASSERT_TRUE(scout_in_listen_window(DAY0 + end_s, SLOTS, 3, 120));
+        }
+    }
+}
+
+void test_offset_slots_drive_the_wake_and_slot_match(void) {
+    uint32_t shifted[3];
+    scout_offset_tx_slots(SLOTS, 3, 30u, shifted);  // SCOUT-02
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 630u, scout_next_event_epoch(DAY0 + 600u, 1800, shifted, 3));
+    TEST_ASSERT_EQUAL_INT(0, scout_tx_slot_index(DAY0 + 630u, shifted, 3));
+    TEST_ASSERT_EQUAL_INT(-1, scout_tx_slot_index(DAY0 + 600u, shifted, 3));  // SCOUT-01's second
+}
+
+// A clock corrected backwards just after a slot must not send that slot again (SCO-315).
+void test_next_event_after_a_backward_step_skips_the_slot_just_handled(void) {
+    // Handled the 00:10 slot; the shore then set the clock back 3 s, to 00:09:57.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u,
+                             scout_next_event_after(DAY0 + 597u, DAY0 + 600u, 1800, SLOTS, 3));
+    // A forward step plans from the new time, as before.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u,
+                             scout_next_event_after(DAY0 + 605u, DAY0 + 600u, 1800, SLOTS, 3));
+}
+
 static void run_all() {
     UNITY_BEGIN();
+    RUN_TEST(test_next_event_after_a_backward_step_skips_the_slot_just_handled);
+    RUN_TEST(test_slot_offset_steps_by_buoy_id);
+    RUN_TEST(test_slot_offset_wraps_to_stay_inside_the_listen_window);
+    RUN_TEST(test_offset_slots_shift_and_wrap_past_midnight);
+    RUN_TEST(test_two_buoys_in_a_group_never_share_an_airtime_window);
+    RUN_TEST(test_every_offset_packet_ends_inside_the_shore_window);
+    RUN_TEST(test_offset_slots_drive_the_wake_and_slot_match);
     RUN_TEST(test_next_wake_aligns_to_grid);
     RUN_TEST(test_next_event_is_the_earlier_of_sample_and_slot);
     RUN_TEST(test_next_event_wraps_to_tomorrows_first_slot);

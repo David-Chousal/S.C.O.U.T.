@@ -108,8 +108,8 @@ static scout_power_mode_t g_last_mode = SCOUT_POWER_NORMAL;
 static bool g_first_cycle = true;  // sample immediately after boot, before the first sleep
 static uint32_t g_next_event = 0;
 
-// What the settings work out to: the slots in use (count and phase applied to TX_SLOTS_SOD),
-// the audio hours (AUDIO_HOURS_UTC moved by the phase) and the reading interval.
+// What the settings work out to: the slots in use (count and phase applied to TX_SLOTS_SOD,
+// then this buoy's offset, SCO-224), the audio hours (AUDIO_HOURS_UTC moved by the phase) and the reading interval.
 static uint32_t g_slots[TX_SLOT_COUNT];
 static size_t g_slot_count = 0;
 static uint8_t g_audio_hours[sizeof(AUDIO_HOURS_UTC)];
@@ -120,6 +120,9 @@ static void apply_settings() {
         scout_settings_defaults(&g_state.settings);  // repairs garbage that slipped past the magic
     }
     g_slot_count = scout_settings_tx_slots(&g_state.settings, TX_SLOTS_SOD, g_slots);
+    scout_offset_tx_slots(g_slots, g_slot_count,
+                          scout_tx_slot_offset_s(BUOY_ID, TX_SLOT_OFFSET_STEP_S, TX_SLOT_OFFSET_POSITIONS),
+                          g_slots);
     scout_settings_audio_hours(&g_state.settings, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC),
                                g_audio_hours);
     g_sample_interval_s =
@@ -703,6 +706,24 @@ static void listen_for_command(bool in_slot) {
     }
 }
 
+// Clock correction from the shore (SCO-315). Every accepted downlink's counter is the shore's
+// Unix time when it signed the frame; adding DOWNLINK_TIME_LATENCY_S estimates the shore's time
+// now. The step is bounded, so a large error converges over several slots.
+static void correct_clock(uint32_t shore_counter) {
+    if (!g_rtc_ok) {
+        return;  // no chip to correct; the fallback clock is only a stopgap
+    }
+    uint32_t now = clock_now();
+    int32_t step = scout_clock_correction_s(now, shore_counter + DOWNLINK_TIME_LATENCY_S,
+                                            CLOCK_CORRECT_DEADBAND_S, CLOCK_CORRECT_MAX_STEP_S);
+    if (step == 0) {
+        return;
+    }
+    g_rtc.setTime((uint32_t)((int64_t)now + step));
+    Serial.print("time: corrected from the shore by ");
+    Serial.println(step);
+}
+
 static void apply_command(const uint8_t *key, const uint8_t *frame, uint8_t len) {
     ScoutSettings next;
     uint32_t counter = 0;
@@ -718,6 +739,12 @@ static void apply_command(const uint8_t *key, const uint8_t *frame, uint8_t len)
         return;
     }
     g_state.last_cmd_counter = counter;
+    correct_clock(counter);
+    if (scout_dl_is_time_frame(frame, len)) {
+        // Nothing to apply or save: writing flash after every slot would wear it out. The counter
+        // stays in retained RAM, which survives every reset except a power loss.
+        return;
+    }
     g_state.settings = next;
     apply_settings();
     g_store.save(g_state.settings, g_state.last_cmd_counter);
@@ -778,5 +805,6 @@ void loop() {
 #endif
 
     g_first_cycle = false;
-    g_next_event = scout_next_event_epoch(clock_now(), g_sample_interval_s, g_slots, g_slot_count);
+    // From the event just handled at the earliest: a clock the shore set back must not repeat it.
+    g_next_event = scout_next_event_after(clock_now(), event, g_sample_interval_s, g_slots, g_slot_count);
 }

@@ -81,6 +81,8 @@ _DOWNLINK_CANONICAL = downlink.set_tx_count(1, 2, now_epoch=1803859200)
 _DOWNLINK_TEST_KEY = bytes(range(32))
 # Keep identical to GOLDEN_SETTINGS's comment in test_downlink.cpp.
 _SETTINGS_CANONICAL = downlink.SettingsCommand(1, 1803859200, (2, 1, 15, 30, 3300, 3200, 2, 80))
+# Keep identical to GOLDEN_TIME's comment in test_downlink.cpp.
+_TIME_CANONICAL = downlink.TimeCommand(1, 1803859200)
 _OTA_TEST_CPP = _ROOT / "firmware" / "test" / "test_ota" / "test_ota.cpp"
 # Keep identical to the comments in test_ota.cpp: a 300-byte image, byte i = (7i + 3) & 0xFF.
 _OTA_IMAGE = bytes((7 * i + 3) & 0xFF for i in range(300))
@@ -210,8 +212,16 @@ def check_downlink() -> str:
         )
     if downlink.SETTINGS_SIZE > LORA_PAYLOAD_BUDGET_BYTES:
         sys.exit(f"the {downlink.SETTINGS_SIZE}-byte settings frame exceeds the ceiling")
+    time_hex = downlink.encode_time(_TIME_CANONICAL, _DOWNLINK_TEST_KEY).hex()
+    fw_time_hex = firmware_golden_hex(_DOWNLINK_TEST_CPP, "GOLDEN_TIME")
+    if time_hex != fw_time_hex:
+        sys.exit(
+            "TIME FRAME DRIFT — firmware and shore disagree on the v3 time frame:\n"
+            f"  shore (downlink.py) : {time_hex}\n"
+            f"  firmware GOLDEN_TIME : {fw_time_hex}"
+        )
     return (f"downlink contract OK — v1 {downlink.CMD_SIZE} bytes: {python_hex}; "
-            f"v2 {downlink.SETTINGS_SIZE} bytes: {settings_hex}")
+            f"v2 {downlink.SETTINGS_SIZE} bytes: {settings_hex}; v3 {downlink.TIME_SIZE} bytes: {time_hex}")
 
 
 def check_ota() -> str:
