@@ -10,6 +10,8 @@ interface DialogProps {
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** A wide, scrolling dialog for charts and tables. */
+  wide?: boolean;
 }
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -20,7 +22,7 @@ function focusables(root: HTMLElement | null): HTMLElement[] {
 
 /** Modal task. Focus moves in, is trapped, and returns to the trigger on close. Rendered into
  * document.body, so the page column's container query (shell.css) cannot contain its backdrop. */
-export function Dialog({ open, title, onClose, children, footer }: DialogProps) {
+export function Dialog({ open, title, onClose, children, footer, wide = false }: DialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   const titleId = useId();
@@ -67,7 +69,7 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
   if (!open) return null;
   return createPortal(
     <div className="sc-scrim sc-scrim--fixed" onPointerDown={(event) => event.target === event.currentTarget && onClose()}>
-      <div ref={dialogRef} className="sc-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
+      <div ref={dialogRef} className={wide ? "sc-dialog sc-dialog--wide" : "sc-dialog"} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <div className="sc-dialog__head">
           <h2 className="sc-dialog__title" id={titleId}>{title}</h2>
           <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label="Close" onClick={onClose}>

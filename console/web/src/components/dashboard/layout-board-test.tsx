@@ -38,6 +38,15 @@ describe("LayoutBoard", () => {
     expect(within(temp).getByText("25.1")).toBeDefined();
   });
 
+  test("a metric's name opens its full analysis: one common scale, diel cycle, statistics and QC", async () => {
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: "Open the water temperature analysis" }));
+    const dialog = screen.getByRole("dialog", { name: "Water temperature (°C)" });
+    expect(within(dialog).getByRole("img", { name: /every buoy on one scale/ })).toBeDefined();
+    expect(within(dialog).getByRole("img", { name: /by hour of day/ })).toBeDefined();
+    expect(within(dialog).getByRole("region", { name: "Quality control" })).toBeDefined();
+  });
+
   test("the Overview leads with fleet status: who is live and how many packets arrived", () => {
     renderBoard();
     const status = screen.getByRole("region", { name: "Fleet status" });

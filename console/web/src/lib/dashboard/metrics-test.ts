@@ -15,7 +15,7 @@ describe("dashboard metrics", () => {
 
   test("stats give the week's range and the change from the reading closest to a day earlier", () => {
     const stats = metricStats(pointsFor([row(0, { temp_c: "25.0" }), row(8, { temp_c: "25.5" }), row(24, { temp_c: "26.0" })], "temp_c"));
-    expect(stats).toMatchObject({ min: 25, max: 26, mean: 25.5, count: 3, change: 1 });
+    expect(stats).toMatchObject({ min: 25, max: 26, count: 3, change: 1 });
   });
 
   test("no change is claimed when nothing was read within 6 hours of a day earlier", () => {

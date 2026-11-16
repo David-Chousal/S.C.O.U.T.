@@ -43,7 +43,6 @@ export interface MetricStats {
   change: number | null;
   min: number;
   max: number;
-  mean: number;
   count: number;
 }
 
@@ -61,7 +60,6 @@ export function metricStats(points: Point[]): MetricStats | null {
     change: dayAgo ? latest.v - dayAgo.v : null,
     min: Math.min(...values),
     max: Math.max(...values),
-    mean: values.reduce((sum, v) => sum + v, 0) / values.length,
     count: values.length,
   };
 }

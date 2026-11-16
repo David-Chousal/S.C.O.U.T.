@@ -34,8 +34,44 @@
 .sc-metric__change, .sc-metric__range { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 
 /* Sparkline: stretches to the tile; the dot is HTML so it stays round */
-.sc-spark { position: relative; display: block; height: 32px; }
+.sc-spark { position: relative; display: block; height: 36px; }
 .sc-spark svg { display: block; width: 100%; height: 100%; overflow: visible; cursor: crosshair; }
 .sc-spark path { fill: none; stroke-width: 2px; stroke-linejoin: round; stroke-linecap: round; }
 .sc-spark__dot { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); pointer-events: none; }
 .sc-spark__tip { position: absolute; right: 0; bottom: calc(100% + 4px); padding: 2px 6px; border-radius: var(--radius-sm); background: var(--ink); color: var(--bg); font: 500 11px/16px var(--font-mono); white-space: nowrap; pointer-events: none; }
+
+/* Sparkline layers: IQR band, reference levels, count bars, QC flags (QARTOD: suspect ring, fail fill) */
+.sc-spark__band { fill: var(--surface-sunken); }
+.sc-spark__ref { stroke: var(--line-strong); stroke-width: 1px; stroke-dasharray: 3 3; }
+.sc-spark__bar { stroke-width: 2px; stroke-linecap: round; }
+.sc-spark__flag { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; pointer-events: none; }
+.sc-spark__flag--suspect { border: 2px solid var(--caution); background: var(--surface); }
+.sc-spark__flag--fail { border: 2px solid var(--surface); background: var(--negative); }
+.sc-key-mark { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; }
+.sc-key-mark--suspect { border: 2px solid var(--caution); }
+.sc-key-mark--fail { background: var(--negative); }
+
+/* Tile head: the metric name opens its analysis; a QC chip in words */
+.sc-metric__head { align-items: center; }
+.sc-metric__open { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.sc-metric__open:hover { color: var(--accent); text-decoration-color: currentColor; }
+.sc-metric__open:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sc-metric__trend { font: 500 12px/16px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.sc-qc--ok { border-color: var(--positive); color: var(--positive); }
+.sc-qc--caution { border-color: var(--caution); color: var(--caution); background: var(--caution-soft); }
+.sc-qc--failed { border-color: var(--negative); color: var(--negative); background: var(--negative-soft); }
+.sc-metrics__key { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-6); }
+
+/* Metric detail: plots on one common scale, diel view, stats and QC tables */
+.sc-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sc-detail__section { display: grid; gap: var(--space-2); min-width: 0; }
+.sc-detail__chart { position: relative; }
+.sc-detail__ref line { stroke: var(--annotation); stroke-width: 1px; stroke-dasharray: 4 3; }
+.sc-detail__ref text { fill: var(--ink-muted); font: 400 11px/1 var(--font-sans); }
+.sc-detail__sen { stroke-width: 1.5px; stroke-dasharray: 6 4; opacity: .9; }
+.sc-detail__stem { stroke-width: 2px; stroke-linecap: round; }
+.sc-detail__flag--suspect { fill: none; stroke: var(--caution); stroke-width: 2px; }
+.sc-detail__flag--fail { fill: var(--negative); stroke: var(--surface); stroke-width: 2px; }
+.sc-detail__dot { fill: currentColor; opacity: .55; }
+.sc-detail__diel { fill: none; stroke: currentColor; stroke-width: 2px; stroke-linejoin: round; }
+.sc-detail__tip { padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-sunken); font: 400 12px/18px var(--font-sans); font-variant-numeric: tabular-nums; }
