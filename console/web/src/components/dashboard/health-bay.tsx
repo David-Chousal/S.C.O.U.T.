@@ -2,14 +2,14 @@
 
 import type { ReactNode } from "react";
 import { freshness } from "@/components/stations/stations-board";
-import { SignalMeter } from "@/components/status/signal-meter";
+import type { SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, BuoyHeatStress, BuoySettings, HeatStressView, Reading } from "@/lib/api/types";
 import { buoyHealth, runningSettings, slotsInUse } from "@/lib/buoy-status";
 import { startFor, type TimeWindow } from "@/lib/dashboard/range";
 import { delivery, durationLabel, issues, latestText, pointsFor, restarts, type Delivery, type Issue } from "@/lib/dashboard/metrics";
 import { COUNT_SIGNAL, lastHeard } from "@/lib/format";
-import { AlertChip } from "./heat-stress-bay";
+import { AlertChip, alertSlug } from "./heat-stress-bay";
 
 const HOUR = 3600 * 1000;
 // Only while the transmit slots have not loaded: a buoy heard within 9 hours has not missed a 3-a-day schedule.
@@ -95,7 +95,7 @@ function Kpis({ rows, phrase }: { rows: BuoyHealthRow[]; phrase: string }) {
 }
 
 function IssueList({ list }: { list: Issue[] }) {
-  if (list.length === 0) return <span className="sc-help">None</span>;
+  if (list.length === 0) return <span className="sc-help">—</span>;
   return (
     <span className="sc-issues">
       {list.map((i) => (
@@ -108,32 +108,63 @@ function IssueList({ list }: { list: Issue[] }) {
   );
 }
 
+/** A status word with a small coloured dot: the word carries the meaning, the dot lets the eye scan. */
+function Status({ state, word }: { state: SignalState; word: string }) {
+  return <span className={`sc-status sc-status--${state}`}><i aria-hidden="true" />{word}</span>;
+}
+
+/** The buoy's command and settings state, but only when something needs attention (pending or rejected). */
+function scheduleNote(buoy: Buoy): { state: SignalState; word: string } | null {
+  const command = COUNT_SIGNAL[buoy.state];
+  const settings = COUNT_SIGNAL[buoy.settings_state];
+  if (command.state === "failed") return { state: "failed", word: "Command rejected" };
+  if (settings.state === "failed") return { state: "failed", word: "Settings rejected" };
+  if (command.state !== "ok" || settings.state !== "ok") return { state: "stale", word: "Pending" };
+  return null;
+}
+
+function BuoyCell({ row }: { row: BuoyHealthRow }) {
+  const details = [
+    row.firmware && `v${row.firmware}`,
+    row.uptime !== null && `up ${durationLabel(row.uptime)}`,
+    row.restarts > 0 && `${row.restarts} restart${row.restarts === 1 ? "" : "s"}`,
+  ].filter(Boolean).join(" · ");
+  return (
+    <th scope="row">
+      <span className="sc-health-table__name">{row.buoy.label}</span>
+      {details && <span className="sc-health-table__sub">{details}</span>}
+    </th>
+  );
+}
+
 function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
   return (
     <div className="sc-table-wrap">
       <table className="sc-table sc-health-table">
         <thead>
           <tr>
-            <th scope="col">Buoy</th><th scope="col">Link</th><th scope="col" className="n">Packets</th><th scope="col" className="n">Battery (V)</th>
-            <th scope="col">Heat stress</th><th scope="col">Transmits a day</th><th scope="col">Settings</th><th scope="col">Firmware</th>
-            <th scope="col">Uptime</th><th scope="col">Flags in range</th>
+            <th scope="col">Buoy</th><th scope="col">Last heard</th><th scope="col" className="n">Packets</th><th scope="col" className="n">Battery</th>
+            <th scope="col">Heat stress</th><th scope="col">Schedule</th><th scope="col">Flags in range</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
-            <tr key={r.buoy.buoy_id}>
-              <th scope="row">{r.buoy.label}</th>
-              <td><SignalMeter {...r.link} /> <span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></td>
-              <td className="n">{r.delivered.received} / {r.delivered.expected}</td>
-              <td className="n">{r.battery === null ? "—" : r.battery.toFixed(2)}</td>
-              <td>{r.heat?.current ? <><AlertChip alert={r.heat.current.alert} /> <span className="sc-help">{r.heat.current.dhw.toFixed(1)} DHW</span></> : <span className="sc-help">—</span>}</td>
-              <td>{r.buoy.tx_count_reported ?? "—"} <SignalMeter {...COUNT_SIGNAL[r.buoy.state]} /></td>
-              <td><SignalMeter {...COUNT_SIGNAL[r.buoy.settings_state]} /></td>
-              <td className="sc-mono">{r.firmware ?? "—"}</td>
-              <td>{r.uptime === null ? "—" : durationLabel(r.uptime)}{r.restarts > 0 && <span className="sc-help"> · {r.restarts} restart{r.restarts === 1 ? "" : "s"}</span>}</td>
-              <td><IssueList list={r.issues} /></td>
-            </tr>
-          ))}
+          {rows.map((r) => {
+            const note = scheduleNote(r.buoy);
+            const heat = r.heat?.current;
+            return (
+              <tr key={r.buoy.buoy_id}>
+                <BuoyCell row={r} />
+                <td><Status state={r.link.state} word={r.link.word} /> <span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></td>
+                <td className="n">{r.delivered.received}<span className="sc-help"> / {r.delivered.expected}</span></td>
+                <td className="n">{r.battery === null ? <span className="sc-help">—</span> : `${r.battery.toFixed(2)} V`}</td>
+                <td>{heat
+                  ? <span className="sc-heat-cell"><i className={`sc-heat-cell__swatch sc-alert-chip--${alertSlug(heat.alert)}`} aria-hidden="true" />{heat.alert} <span className="sc-help">{heat.dhw.toFixed(1)} DHW</span></span>
+                  : <span className="sc-help">—</span>}</td>
+                <td>{r.buoy.tx_count_reported ?? "—"} a day{note && <> · <Status {...note} /></>}</td>
+                <td><IssueList list={r.issues} /></td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -141,9 +172,10 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
 }
 
 /** Fleet status, the top of the Overview: the fleet's headline numbers (live, packets delivered,
- * lowest battery, worst heat stress, active issues, restarts), then one row per buoy with its link,
- * delivery, power, heat stress, command and settings state, firmware, uptime and every flag the
- * week raised. Faded flags are past; solid ones are in the newest packet. */
+ * lowest battery, worst heat stress, active issues, restarts), then one row per buoy: when it was last
+ * heard, delivery, power, heat stress, its schedule (with a note only when a command or settings
+ * change is pending or rejected) and every flag in range, with firmware and uptime under the name.
+ * Faded flags are past; solid ones are in the newest packet. */
 export function HealthBay(props: HealthBayProps) {
   if (props.buoys.length === 0) return <p className="sc-help">No buoys yet. Add one on Fleet.</p>;
   const rows = props.buoys.map((buoy) => rowFor(buoy, props));

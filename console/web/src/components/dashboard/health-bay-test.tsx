@@ -32,4 +32,11 @@ describe("HealthBay", () => {
     renderBay(false);
     expect(within(screen.getByRole("table")).queryByText("Live")).toBeNull();
   });
+
+  test("a buoy whose command and settings are confirmed shows its schedule without a status note", () => {
+    renderBay(true);
+    const table = screen.getByRole("table");
+    expect(within(table).getByText(/2 a day/)).toBeDefined();
+    expect(within(table).queryByText(/Pending|rejected/)).toBeNull();
+  });
 });
