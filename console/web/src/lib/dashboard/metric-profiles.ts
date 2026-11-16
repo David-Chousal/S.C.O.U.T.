@@ -9,6 +9,8 @@ export type MetricForm = "line" | "bars" | "diverging";
 export interface Reference { value: number; label: string }
 
 export interface MetricProfile {
+  /** A shorter name for the tile, where its group heading already says the rest. */
+  title?: string;
   /** line: a continuous quantity. bars: a count per recording. diverging: signed about a midpoint. */
   form: MetricForm;
   /** QARTOD gross range, sensor limits: outside is Fail. */
@@ -42,7 +44,7 @@ export const METRIC_PROFILES: Record<string, MetricProfile> = {
     read: "Turbidity is skewed: short spikes after storms or resuspension are normal, so read the median and IQR rather than the mean.",
   },
   turbidity_v: {
-    form: "line", sensor: [0, 3.3], expected: [0.05, 3.25], spike: 0.3, flat: { eps: 0.0005, count: 6 },
+    title: "Turbidity", form: "line", sensor: [0, 3.3], expected: [0.05, 3.25], spike: 0.3, flat: { eps: 0.0005, count: 6 },
     read: "Raw sensor volts until turbidity is calibrated to FAU. A value pinned at either rail is suspect; a slow drift can be biofouling.",
   },
   turbidity_adc: {
@@ -55,7 +57,7 @@ export const METRIC_PROFILES: Record<string, MetricProfile> = {
     read: "Read the slope, not the wiggle: primary cells hold flat and then fall fast, and cold water lowers the voltage for a while.",
   },
   internal_temp_c: {
-    form: "line", sensor: [-40, 125], expected: [0, 45], spike: 3,
+    title: "Housing temp.", form: "line", sensor: [-40, 125], expected: [0, 45], spike: 3,
     read: "Housing air temperature; it should follow the water with a lag. A housing much warmer than the water means heat inside.",
   },
   internal_humidity_pct: {
@@ -63,17 +65,17 @@ export const METRIC_PROFILES: Record<string, MetricProfile> = {
     references: [{ value: 70, label: "Humidity alert 70 % (default)" }],
     read: "A steady rise is the first sign of a leak, well before water reaches the boards.",
   },
-  lvl_broad_cdb: { ...ACOUSTIC_LEVEL },
-  lvl_bio_cdb: { ...ACOUSTIC_LEVEL, read: "Biophony band (fish, invertebrates). Reefs are louder at dawn and dusk; read it in the diel view." },
-  lvl_anthro_cdb: { ...ACOUSTIC_LEVEL, read: "Anthrophony band (boats, engines). Peaks track human activity, often by day." },
-  lvl_mixed_cdb: { ...ACOUSTIC_LEVEL },
+  lvl_broad_cdb: { ...ACOUSTIC_LEVEL, title: "Broadband level" },
+  lvl_bio_cdb: { ...ACOUSTIC_LEVEL, title: "Biological band", read: "Biophony band (fish, invertebrates). Reefs are louder at dawn and dusk; read it in the diel view." },
+  lvl_anthro_cdb: { ...ACOUSTIC_LEVEL, title: "Human band", read: "Anthrophony band (boats, engines). Peaks track human activity, often by day." },
+  lvl_mixed_cdb: { ...ACOUSTIC_LEVEL, title: "Mixed band" },
   ndsi_e4: {
-    form: "diverging", sensor: [-10000, 10000], spike: 5000, clipAware: true,
+    title: "NDSI", form: "diverging", sensor: [-10000, 10000], spike: 5000, clipAware: true,
     references: [{ value: 0, label: "Balanced" }],
     read: "NDSI runs from −1 (all human noise) to +1 (all biological sound), stored ×10⁻⁴. Read it with the band levels, not alone.",
   },
   snap_count: {
-    form: "bars", sensor: [0, 65534], clipAware: true,
+    title: "Shrimp snaps", form: "bars", sensor: [0, 65534], clipAware: true,
     read: "Snapping-shrimp snaps per recording: a count, so each recording is a bar. Snapping is a sign of an active reef.",
   },
   clip_count: {

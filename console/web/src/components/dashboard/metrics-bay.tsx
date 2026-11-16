@@ -42,9 +42,16 @@ function TrendLine({ trend, digits, unit }: { trend: Trend; digits: number; unit
   return <span className="sc-metric__trend" title={`Theil–Sen slope; Mann–Kendall p < 0.05 on ${trend.basis === "daily medians" ? "daily medians" : "each transmit hour"}`}>{ARROW[trend.direction]}{rate}</span>;
 }
 
-function QcChip({ qc }: { qc: Pick<QcResult, "suspect" | "fail"> }) {
+const QC_MARK = { ok: "✓", caution: "!", failed: "✕" } as const;
+
+/** QC in a word and a mark, light enough to sit beside the title. */
+function QcStatus({ qc }: { qc: Pick<QcResult, "suspect" | "fail"> }) {
   const tone = qc.fail ? "failed" : qc.suspect ? "caution" : "ok";
-  return <span className={`sc-badge sc-qc sc-qc--${tone}`} title="Automated quality control after IOOS QARTOD">{qcLabel(qc)}</span>;
+  return (
+    <span className={`sc-qc sc-qc--${tone}`} title="Automated quality control after IOOS QARTOD">
+      <i aria-hidden="true">{QC_MARK[tone]}</i>{qcLabel(qc)}
+    </span>
+  );
 }
 
 function Tile({ column, rows, multi, window, onOpen }: { column: string; rows: BuoyAnalysis[]; multi: boolean; window: TimeWindow; onOpen: () => void }) {
@@ -55,9 +62,10 @@ function Tile({ column, rows, multi, window, onOpen }: { column: string; rows: B
     <article className="sc-metric" aria-label={variableLabel(column)}>
       <header className="sc-metric__head">
         <button type="button" className="sc-metric__open" onClick={onOpen} aria-label={`Open the ${variableLabel(column).toLowerCase()} analysis`}>
-          {variableLabel(column)}{unit && <span className="sc-metric__unit">{unit}</span>}
+          <span className="sc-metric__name">{rows[0].analysis.profile.title ?? variableLabel(column)}</span>
+          {unit && <span className="sc-metric__unit">{unit}</span>}
         </button>
-        <QcChip qc={total} />
+        <QcStatus qc={total} />
       </header>
       {rows.map(({ buoy, index, analysis: a }) => (
         <div key={buoy.buoy_id} className="sc-metric__row">

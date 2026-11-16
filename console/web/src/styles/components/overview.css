@@ -23,8 +23,9 @@
 .sc-metrics__group { display: grid; gap: var(--space-3); }
 .sc-metrics__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); }
 .sc-metric { display: grid; gap: var(--space-3); align-content: start; min-width: 0; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
-.sc-metric__head { display: flex; justify-content: space-between; gap: var(--space-2); font: 600 13px/18px var(--font-sans); }
-.sc-metric__unit { font: 500 11px/18px var(--font-mono); color: var(--ink-muted); }
+.sc-metric__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); font: 600 14px/20px var(--font-sans); }
+/* The unit rides right after the name (inline-block, so the name's underline stops before it). */
+.sc-metric__unit { display: inline-block; margin-left: 6px; font: 400 12px/20px var(--font-sans); color: var(--ink-muted); }
 .sc-metric__row { display: grid; gap: 4px; min-width: 0; }
 .sc-metric__row + .sc-metric__row { padding-top: var(--space-3); border-top: 1px solid var(--line); }
 .sc-metric__buoy { font: 500 12px/16px var(--font-sans); color: var(--ink-muted); }
@@ -52,14 +53,16 @@
 .sc-key-mark--fail { background: var(--negative); }
 
 /* Tile head: the metric name opens its analysis; a QC chip in words */
-.sc-metric__head { align-items: center; }
-.sc-metric__open { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
-.sc-metric__open:hover { color: var(--accent); text-decoration-color: currentColor; }
+.sc-metric__open { display: inline; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sc-metric__name { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.sc-metric__open:hover .sc-metric__name { color: var(--accent); text-decoration-color: currentColor; }
 .sc-metric__open:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-metric__trend { font: 500 12px/16px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
-.sc-qc--ok { border-color: var(--positive); color: var(--positive); }
-.sc-qc--caution { border-color: var(--caution); color: var(--caution); background: var(--caution-soft); }
-.sc-qc--failed { border-color: var(--negative); color: var(--negative); background: var(--negative-soft); }
+.sc-qc { display: inline-flex; align-items: baseline; gap: 4px; flex: none; font: 500 12px/20px var(--font-sans); white-space: nowrap; }
+.sc-qc i { font-style: normal; font-weight: 700; }
+.sc-qc--ok { color: var(--positive); }
+.sc-qc--caution { color: var(--caution); }
+.sc-qc--failed { color: var(--negative); }
 .sc-metrics__key { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-6); }
 
 /* Metric detail: plots on one common scale, diel view, stats and QC tables */
