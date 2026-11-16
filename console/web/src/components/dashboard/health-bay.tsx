@@ -143,7 +143,7 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
       <table className="sc-table sc-health-table">
         <thead>
           <tr>
-            <th scope="col">Buoy</th><th scope="col">Last heard</th><th scope="col" className="n">Packets</th><th scope="col" className="n">Battery</th>
+            <th scope="col">Buoy</th><th scope="col">Last heard</th><th scope="col" className="n">Packets</th>
             <th scope="col">Heat stress</th><th scope="col">Schedule</th><th scope="col">Flags in range</th>
           </tr>
         </thead>
@@ -154,13 +154,12 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
             return (
               <tr key={r.buoy.buoy_id}>
                 <BuoyCell row={r} />
-                <td><Status state={r.link.state} word={r.link.word} /> <span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></td>
+                <td><span className="sc-cell-row"><Status state={r.link.state} word={r.link.word} /><span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></span></td>
                 <td className="n">{r.delivered.received}<span className="sc-help"> / {r.delivered.expected}</span></td>
-                <td className="n">{r.battery === null ? <span className="sc-help">—</span> : `${r.battery.toFixed(2)} V`}</td>
                 <td>{heat
                   ? <span className="sc-heat-cell"><i className={`sc-heat-cell__swatch sc-alert-chip--${alertSlug(heat.alert)}`} aria-hidden="true" />{heat.alert} <span className="sc-help">{heat.dhw.toFixed(1)} DHW</span></span>
                   : <span className="sc-help">—</span>}</td>
-                <td>{r.buoy.tx_count_reported ?? "—"} a day{note && <> · <Status {...note} /></>}</td>
+                <td><span className="sc-cell-row">{r.buoy.tx_count_reported ?? "—"} a day{note && <Status {...note} />}</span></td>
                 <td><IssueList list={r.issues} /></td>
               </tr>
             );
@@ -173,7 +172,7 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
 
 /** Fleet status, the top of the Overview: the fleet's headline numbers (live, packets delivered,
  * lowest battery, worst heat stress, active issues, restarts), then one row per buoy: when it was last
- * heard, delivery, power, heat stress, its schedule (with a note only when a command or settings
+ * heard, delivery, heat stress, its schedule (with a note only when a command or settings
  * change is pending or rejected) and every flag in range, with firmware and uptime under the name.
  * Faded flags are past; solid ones are in the newest packet. */
 export function HealthBay(props: HealthBayProps) {
