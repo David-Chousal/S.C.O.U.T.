@@ -178,9 +178,10 @@ a new database):
 - a sign-in fails with error 1102 or `exceededCpu`;
 - rows read pass about 1 million a day (20% of the limit) on the Storage tab or `wrangler d1 info`;
 - the nightly backup outgrows the Worker: the dump is built in memory (128 MB) and stored as one
-  R2 object, capped at 25 MB by the console's guardrails. That is roughly 10 MB of data
-  uncompressed, years away at 2 buoys over LoRa but within a year if every 30-minute sample from
-  10 buoys is imported.
+  R2 object, capped at 25 MB gzipped by the console's guardrails, so memory runs out first,
+  somewhere in the tens of MB of data (not measured). At ~1.3 MB a year for 2 buoys over LoRa that
+  is years away; importing every 30-minute sample from 10 buoys (~107 MB a year) would reach it
+  within the season. Watch the backup size on the Storage tab.
 
 ## Other gaps found while checking
 
