@@ -33,6 +33,7 @@ import {
 } from "./http.js";
 import { configured, finish, startUrl } from "./oauth.js";
 import { handleRest } from "./rest.js";
+import { pruneReceptions } from "./routing.js";
 import { createSession, SESSION_TTL_MS } from "./sessions.js";
 import { userForIdentity } from "./users.js";
 
@@ -129,7 +130,7 @@ export default {
     // The hourly trigger only checks alerts; the daily jobs keep their own 10:30 UTC trigger.
     const jobs = event.cron === HOURLY_CRON
       ? [alertsHourly(env, event.scheduledTime)]
-      : [runBackup(env, event.scheduledTime), runBrief(env, event.scheduledTime)];
+      : [runBackup(env, event.scheduledTime), runBrief(env, event.scheduledTime), pruneReceptions(env.DB, event.scheduledTime)];
     // Each job runs even if the other fails; a failure still fails the cron run so it shows.
     const results = await Promise.allSettled(jobs);
     const failed = results.filter((r) => r.status === "rejected");

@@ -161,8 +161,82 @@ void test_no_wifi_setup_request_reads_as_zero(void) {
 void setUp(void) {}
 void tearDown(void) {}
 
+// Which buoys this station answers (SCO-316).
+void test_a_station_with_no_route_answers_every_buoy(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 1));
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 7));
+}
+
+void test_the_commands_list_limits_which_buoys_are_answered(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_EQUAL_INT(2, scout_console_parse_route("{\"buoys\":[{\"buoy_id\":3,\"tx_count_requested\":2}],"
+                                                       "\"commands\":[1,3],\"wifi_setup_requested_at\":null}", &route));
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 1));
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 2));
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 3));
+}
+
+void test_an_empty_commands_list_answers_no_buoy(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_EQUAL_INT(0, scout_console_parse_route("{\"buoys\":[],\"commands\":[]}", &route));
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 1));
+}
+
+void test_a_commands_list_without_commas_is_refused(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_EQUAL_INT(-1, scout_console_parse_route("{\"commands\":[1 3]}", &route));
+    TEST_ASSERT_FALSE(route.known);  // untouched: still answers every buoy
+    TEST_ASSERT_EQUAL_INT(2, scout_console_parse_route("{\"commands\":[1, 3 ]}", &route));
+}
+
+void test_a_reply_without_commands_leaves_the_route_alone(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    scout_console_parse_route("{\"commands\":[2]}", &route);
+    TEST_ASSERT_EQUAL_INT(-1, scout_console_parse_route("{\"buoys\":[]}", &route));  // an older console
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 1));
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 2));
+}
+
+void test_buoys_beyond_the_table_are_not_answered_once_routed(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    scout_console_parse_route("{\"commands\":[1,500]}", &route);
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 1));
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 500));
+}
+
+void test_the_usb_route_line_sets_clears_and_resets_the_route(void) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    TEST_ASSERT_TRUE(scout_console_parse_route_line("A2,4", &route));
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 1));
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 4));
+    TEST_ASSERT_TRUE(scout_console_parse_route_line("A\r", &route));  // answers none
+    TEST_ASSERT_FALSE(scout_route_answers(&route, 4));
+    TEST_ASSERT_TRUE(scout_console_parse_route_line("A*", &route));    // back to answering all
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 1));
+    TEST_ASSERT_FALSE(scout_console_parse_route_line("A1,x", &route));
+    TEST_ASSERT_FALSE(scout_console_parse_route_line("A0", &route));
+    TEST_ASSERT_FALSE(scout_console_parse_route_line("N1:2", &route));
+    TEST_ASSERT_FALSE(scout_console_parse_route_line("A1 3", &route));  // IDs need a comma between them
+    TEST_ASSERT_TRUE(scout_route_answers(&route, 1));  // a bad line changes nothing
+}
+
 static void run_all(void) {
     UNITY_BEGIN();
+    RUN_TEST(test_a_station_with_no_route_answers_every_buoy);
+    RUN_TEST(test_the_commands_list_limits_which_buoys_are_answered);
+    RUN_TEST(test_an_empty_commands_list_answers_no_buoy);
+    RUN_TEST(test_a_commands_list_without_commas_is_refused);
+    RUN_TEST(test_a_reply_without_commands_leaves_the_route_alone);
+    RUN_TEST(test_buoys_beyond_the_table_are_not_answered_once_routed);
+    RUN_TEST(test_the_usb_route_line_sets_clears_and_resets_the_route);
     RUN_TEST(test_every_vector_row_matches_the_python);
     RUN_TEST(test_every_battery_millivolt_formats_like_python);
     RUN_TEST(test_every_turbidity_count_formats_like_python);

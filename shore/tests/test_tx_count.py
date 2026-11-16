@@ -13,7 +13,8 @@ from pathlib import Path
 
 from scout_shore import CsvStore, MockLoRaLink, Receiver, decode, encode, reading_to_row
 from scout_shore import downlink, tx_schedule
-from scout_shore.console import ConsoleClient, ConsoleConfig, ConsoleError, set_commands, settings_commands
+from scout_shore.console import (ConsoleClient, ConsoleConfig, ConsoleError, route_command, set_commands,
+                                 settings_commands)
 from scout_shore.packet import Reading
 from scout_shore.schema import SchemaError, validate_row
 
@@ -209,6 +210,19 @@ class Console(unittest.TestCase):
         counts, snapshots = client.wanted()
         self.assertEqual(counts, {1: 2})
         self.assertEqual(snapshots, {1: (2, 1, 15, 30, 3300, 3200, 2, 80), 3: (3, 0, 30, 60, 3200, 3100, 3, 70)})
+
+    def test_settings_reply_reads_the_buoys_this_station_answers(self):
+        client = self._client([{"ok": True, "buoys": [], "commands": [3, 1, 0, "x", 70000]}], [])
+        self.assertEqual(client.settings_reply().answers, (1, 3))
+
+    def test_an_older_console_without_commands_gives_no_route(self):
+        client = self._client([{"ok": True, "buoys": []}], [])
+        self.assertIsNone(client.settings_reply().answers)
+
+    def test_route_command_format(self):
+        self.assertEqual(route_command((1, 3)), "A1,3")
+        self.assertEqual(route_command(()), "A")
+        self.assertEqual(route_command(None), "A*")
 
     def test_settings_commands_format(self):
         self.assertEqual(settings_commands({1: (2, 1, 15, 30, 3300, 3200, 2, 80)}),

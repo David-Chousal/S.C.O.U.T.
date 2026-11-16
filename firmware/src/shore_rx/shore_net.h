@@ -5,8 +5,8 @@
  * The two sides share ShoreShared under one mutex: the radio loop adds decoded readings to the
  * queue and reads the clock and requested counts; the network task drains the queue and updates
  * the clock and counts. Every path that worked before still works without WiFi: frames are
- * printed over USB for the computer bridge (SCO-257), and T<epoch> / N<buoy>:<count> are read
- * over USB. */
+ * printed over USB for the computer bridge (SCO-257), and T<epoch> / N<buoy>:<count> / A<buoys> are
+ * read over USB. */
 #ifndef SHORE_NET_H
 #define SHORE_NET_H
 
@@ -22,6 +22,7 @@ struct ShoreShared {
     ScoutUploadQueue queue;
     ScoutShoreClock clock;
     ScoutWanted wanted[SHORE_MAX_BUOY_ID + 1]; /* index = buoy_id; all zero = nothing requested */
+    ScoutAnswerRoute route; /* the buoys this station answers (SCO-316); unknown = all */
 };
 
 extern ShoreShared g_shared;

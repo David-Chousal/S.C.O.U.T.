@@ -40,11 +40,11 @@ test("list_buoys gives health and next transmit from the schedule", async () => 
   assert.equal(buoys[0].battery_v, "3.9");
 });
 
-test("get_buoy names its command station and refuses an unknown buoy", async () => {
+test("get_buoy names the station that answers it and refuses an unknown buoy", async () => {
   const env = makeEnv();
   seed(env);
   const one = await tool("get_buoy").run(ctxFor(env, {}), { buoy_id: 1 });
-  assert.equal(one.command_station, "Kaneohe pier");
+  assert.equal(one.answering_station, "Kaneohe pier (picked by an admin)");
   assert.equal(one.settings.length, 8);
   assert.match((await tool("get_buoy").run(ctxFor(env, {}), { buoy_id: 9 })).error, /No buoy 9/);
 });
@@ -64,7 +64,7 @@ test("list_stations shows routes and buoys with no station when two are active",
   const env = makeEnv();
   seed(env);
   const got = await tool("list_stations").run(ctxFor(env, {}), {});
-  assert.deepEqual(got.stations.find((s) => s.name === "Kaneohe pier").commands, ["Reef north"]);
+  assert.deepEqual(got.stations.find((s) => s.name === "Kaneohe pier").answers, ["Reef north"]);
   assert.deepEqual(got.buoys_without_station, ["Reef south"]);
   assert.ok(!JSON.stringify(got).includes("h1"), "no token hashes");
 });

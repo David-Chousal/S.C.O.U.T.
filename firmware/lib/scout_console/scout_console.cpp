@@ -434,3 +434,110 @@ uint32_t scout_console_wifi_setup_at(const char *body) {
     }
     return (*at >= '0' && *at <= '9') ? (uint32_t)strtoul(at, nullptr, 10) : 0;
 }
+
+void scout_route_reset(ScoutAnswerRoute *route) {
+    memset(route, 0, sizeof(*route));
+}
+
+bool scout_route_answers(const ScoutAnswerRoute *route, uint16_t buoy_id) {
+    if (!route->known) {
+        return true;
+    }
+    return buoy_id < SCOUT_WANTED_MAX_SLOTS && route->answers[buoy_id] != 0;
+}
+
+static bool ends_list(char c, char stop) {
+    return c == stop || (stop == '\0' && (c == '\r' || c == '\n'));
+}
+
+/* Parse "1,3" up to `stop` (']' or the end of a line) into answers. Returns the count, or -1 for
+ * anything malformed: a trailing comma, two IDs with no comma between them, a non-digit. */
+static int parse_id_list(const char *at, char stop, uint8_t answers[SCOUT_WANTED_MAX_SLOTS]) {
+    int count = 0;
+    bool want_number = false;
+    for (;;) {
+        while (*at == ' ') {
+            at++;
+        }
+        if (ends_list(*at, stop)) {
+            return want_number ? -1 : count;  // a trailing comma is malformed
+        }
+        if (*at < '0' || *at > '9') {
+            return -1;
+        }
+        unsigned long id = 0;
+        while (*at >= '0' && *at <= '9') {
+            id = id * 10u + (unsigned long)(*at++ - '0');
+            if (id > 0xFFFFu) {
+                return -1;
+            }
+        }
+        if (id == 0) {
+            return -1;
+        }
+        if (id < SCOUT_WANTED_MAX_SLOTS) {
+            answers[id] = 1;
+        }
+        count++;
+        while (*at == ' ') {
+            at++;
+        }
+        if (*at == ',') {
+            want_number = true;
+            at++;
+        } else if (ends_list(*at, stop)) {
+            want_number = false;
+        } else {
+            return -1;  // the next ID with no comma before it
+        }
+    }
+}
+
+static void apply_route(ScoutAnswerRoute *route, const uint8_t answers[SCOUT_WANTED_MAX_SLOTS]) {
+    route->known = 1;
+    memcpy(route->answers, answers, sizeof(route->answers));
+}
+
+int scout_console_parse_route(const char *body, ScoutAnswerRoute *route) {
+    const char *key = "\"commands\":";
+    const char *at = strstr(body, key);
+    if (at == nullptr) {
+        return -1;
+    }
+    at += strlen(key);
+    while (*at == ' ') {
+        at++;
+    }
+    if (*at != '[') {
+        return -1;
+    }
+    uint8_t answers[SCOUT_WANTED_MAX_SLOTS] = {0};
+    int count = parse_id_list(at + 1, ']', answers);
+    if (count >= 0) {
+        apply_route(route, answers);
+    }
+    return count;
+}
+
+bool scout_console_parse_route_line(const char *line, ScoutAnswerRoute *route) {
+    if (line[0] != 'A') {
+        return false;
+    }
+    if (line[1] == '*') {
+        const char *rest = line + 2;
+        while (*rest == '\r' || *rest == ' ') {
+            rest++;
+        }
+        if (*rest != '\0') {
+            return false;
+        }
+        scout_route_reset(route);
+        return true;
+    }
+    uint8_t answers[SCOUT_WANTED_MAX_SLOTS] = {0};
+    if (parse_id_list(line + 1, '\0', answers) < 0) {
+        return false;
+    }
+    apply_route(route, answers);
+    return true;
+}

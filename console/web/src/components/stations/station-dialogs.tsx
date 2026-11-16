@@ -8,6 +8,7 @@ import { Ago } from "@/components/ui/ago";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy, Device } from "@/lib/api/types";
+import { ROUTE_REASON } from "./command-routes";
 import { useWhen } from "@/lib/preferences-context";
 
 interface StationDialogProps {
@@ -95,25 +96,31 @@ export function DeleteStationDialog({ device, onClose, onDone }: StationDialogPr
 
 interface StationInfoProps {
   device: Device | null;
-  /** The buoys whose settings it sends now. */
-  commands: Buoy[];
-  /** It is the only active station, so it sends every buoy's settings. */
-  onlyStation: boolean;
+  /** The buoys it answers now (settings, clock, firmware). */
+  answers: Buoy[];
+  /** Every buoy, to name the ones it heard. */
+  buoys: Buoy[];
   onClose: () => void;
 }
 
+const labelOf = (buoys: Buoy[], id: number) => buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`;
+
 /** What the console knows about one station. */
-export function StationInfoDialog({ device, commands, onlyStation, onClose }: StationInfoProps) {
+export function StationInfoDialog({ device, answers, buoys, onClose }: StationInfoProps) {
   const when = useWhen();
   if (!device) return null;
+  const heard = device.heard ?? [];
   const rows: [string, React.ReactNode][] = [
     ["Token", device.revoked_at ? <>Revoked {when(device.revoked_at)}</> : "Active"],
     ["Made", when(device.created_at)],
     ["Last checked in", device.last_seen_at ? <Ago ms={device.last_seen_at} /> : "Never"],
-    ["Sends settings to", device.revoked_at ? "No buoys (revoked)"
-      : commands.length ? commands.map((b) => b.label).join(", ") + (onlyStation ? " (the only active station, so every buoy)" : "")
+    ["Answers", device.revoked_at ? "No buoys (revoked)"
+      : answers.length ? answers.map((b) => `${b.label} (${b.answering_station ? ROUTE_REASON[b.answering_station.reason] : ""})`).join(", ")
         : "No buoys"],
-    ["How it connects", "Pushes each reading over WiFi with its token, and asks for settings changes every minute. Its WiFi is set from a phone on its SCOUT-Setup network."],
+    ["Heard in the last 24 h", heard.length
+      ? heard.map((h) => `${labelOf(buoys, h.buoy_id)}: ${h.packets} ${h.packets === 1 ? "packet" : "packets"}`).join(", ")
+      : "No buoys"],
+    ["How it connects", "Pushes each reading over WiFi with its token, and asks for settings changes every minute. It answers only the buoys listed above, so two stations never reply to the same packet. Its WiFi is set from a phone on its SCOUT-Setup network."],
   ];
   return (
     <Dialog open title={device.name} onClose={onClose} footer={<Key variant="primary" onClick={onClose} data-autofocus>Done</Key>}>

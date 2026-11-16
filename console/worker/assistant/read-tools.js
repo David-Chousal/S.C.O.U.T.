@@ -28,6 +28,16 @@ async function nameMap(db) {
   const { results } = await db.prepare("SELECT email, name FROM users").all();
   return new Map(results.map((u) => [u.email.toLowerCase(), u.name || "a team member"]));
 }
+const ROUTE_REASONS = { picked: "picked by an admin", only_station: "the only station", heard_most: "hears it most (24 h)" };
+
+function answeringText(route) {
+  return route ? `${route.name} (${ROUTE_REASONS[route.reason]})` : "none: no station has heard it";
+}
+
+function labelOf(buoys, buoyId) {
+  return buoys.find((b) => b.buoy_id === buoyId)?.label ?? `SCOUT-${String(buoyId).padStart(2, "0")}`;
+}
+
 export function scrubEmails(text, names = new Map()) {
   return String(text ?? "").replace(EMAIL, (email) => names.get(email.toLowerCase()) ?? "a team member");
 }
@@ -89,13 +99,11 @@ export const READ_TOOLS = [
   },
   {
     name: "get_buoy",
-    description: "One buoy in full: requested vs wanted settings, wanted vs reported digest, settings state, command station, latest reading.",
+    description: "One buoy in full: requested vs wanted settings, wanted vs reported digest, settings state, the station that answers it, latest reading.",
     parameters: { type: "object", properties: { buoy_id: buoyIdParam }, required: ["buoy_id"] },
     run: async ({ env, now }, { buoy_id: id }) => {
       const buoy = (await listBuoys(env.DB)).find((b) => b.buoy_id === Number(id));
       if (!buoy) return { error: `No buoy ${id}.` };
-      const station = buoy.command_device_id
-        ? await env.DB.prepare("SELECT name, revoked_at FROM devices WHERE id = ?").bind(buoy.command_device_id).first() : null;
       const names = await nameMap(env.DB);
       return {
         ...(await buoySummary(env.DB, buoy, now)),
@@ -103,7 +111,7 @@ export const READ_TOOLS = [
           requested: buoy.settings_requested[spec.key], wanted: buoy.settings_wanted[i] })),
         digest_wanted: buoy.settings_digest_wanted, digest_reported: buoy.settings_digest_reported,
         command_rejected: Boolean(buoy.cmd_rejected), send_times: SLOT_LABELS[buoy.tx_count_reported] ?? null,
-        command_station: station ? `${station.name}${station.revoked_at ? " (revoked)" : ""}` : "none picked",
+        answering_station: answeringText(buoy.answering_station),
         last_requested_by: buoy.requested_by ? scrubEmails(buoy.requested_by, names) : null,
         latest_reading: await latestReading(env.DB, buoy.buoy_id),
       };
@@ -155,17 +163,17 @@ export const READ_TOOLS = [
   },
   {
     name: "list_stations",
-    description: "Shore stations (name, active or revoked, last seen), the buoys each one commands, and buoys with no command station.",
+    description: "Shore stations (name, active or revoked, last seen), the buoys each one answers and hears, and buoys no station answers.",
     parameters: { type: "object", properties: {} },
     run: async ({ env }) => {
       const devices = await listDevices(env.DB);
       const buoys = await listBuoys(env.DB);
-      const active = devices.filter((d) => !d.revoked_at);
       return {
         stations: devices.map((d) => ({ name: d.name, active: !d.revoked_at, last_seen: iso(d.last_seen_at), created: iso(d.created_at),
-          commands: buoys.filter((b) => b.command_device_id === d.id).map((b) => b.label) })),
-        // With one active station it sends everyone's commands; with more, a buoy needs one picked.
-        buoys_without_station: active.length === 1 ? [] : buoys.filter((b) => !active.some((d) => d.id === b.command_device_id)).map((b) => b.label),
+          answers: buoys.filter((b) => b.answering_station?.device_id === d.id).map((b) => b.label),
+          heard_last_24h: d.heard.map((h) => ({ buoy: labelOf(buoys, h.buoy_id), packets: h.packets })) })),
+        // A buoy is answered by its picked station, the only station, or the one that hears it most.
+        buoys_without_station: buoys.filter((b) => !b.disconnected_at && !b.answering_station).map((b) => b.label),
       };
     },
   },

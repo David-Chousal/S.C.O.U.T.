@@ -34,8 +34,10 @@ export interface Buoy {
   reported_at: number | null;
   last_seen_at: number | null;
   clock_lost: number;
-  /** The one shore station that sends this buoy's downlink commands; null until an admin picks. */
+  /** The shore station an admin picked to answer this buoy; null = let the console choose. */
   command_device_id: string | null;
+  /** The station that answers this buoy now, and why (worker/routing.js); null = none has heard it. */
+  answering_station?: AnsweringStation | null;
   /** Set when an admin disconnected it on Fleet: its packets are not stored until it is added again. */
   disconnected_at?: number | null;
   state: CountState;
@@ -160,6 +162,22 @@ export interface Device {
   last_seen_at: number | null;
   /** When an admin last asked it to open its WiFi setup network (ms), or null. */
   wifi_setup_requested_at: number | null;
+  /** The buoys it pushed readings from in the last 24 h (SCO-290). */
+  heard: HeardBuoy[];
+}
+
+export type RouteReason = "picked" | "only_station" | "heard_most";
+
+export interface AnsweringStation {
+  device_id: string;
+  name: string;
+  reason: RouteReason;
+}
+
+export interface HeardBuoy {
+  buoy_id: number;
+  packets: number;
+  last_heard_at: number;
 }
 
 export interface AuditEntry {

@@ -29,9 +29,12 @@
    - Copy `firmware/src/downlink_key_example.h` → `downlink_key.h`. Generate one 32-byte key for
      this `BUOY_ID` (`python3 -c "import secrets; print(', '.join(f'0x{b:02x}' for b in secrets.token_bytes(32)))"`;
      template rows exist for IDs 1–2 — **add a row** if `BUOY_ID` is anything else). Put that
-     **same** key in: (1) the buoy build — keep **only** that buoy’s row; (2) the S3 build — keep
-     **every** buoy you command (replace example bytes; never leave a public example key for an
-     active id). **Delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1` in both. The build gate only
+     **same** key in: (1) the buoy build — keep **only** that buoy’s row; (2) **every** S3 build
+     that can hear that buoy — keep a row for every buoy in its range (replace example bytes; never
+     leave a public example key for an active id). With two stations the console hands each buoy
+     to the station that hears it most unless an admin pins it ([SCO-316](https://linear.app/scout1/issue/SCO-316)), so a station without the
+     key would be picked and then log `CMD skipped buoy=N reason=no-key`, and the buoy would get no
+     settings or clock corrections. **Delete** `#define SCOUT_DOWNLINK_KEY_IS_EXAMPLE 1` in both. The build gate only
      sees that macro: check by eye that no active row still holds the template bytes (`0x00…0x1f`
      for ID 1, `0x20…0x3f` for ID 2). Optional Python USB host: same key as 64 hex digits in
      `SCOUT_CMD_KEY_<id>`.
@@ -105,7 +108,8 @@ ls /dev/serial/by-id/
   python scripts/sync_console.py --data data-live --serial /dev/serial/by-id/…)
 ```
 
-`sync_console.py` runs **once** and exits: packets received and settings changed after the run
+`sync_console.py` writes an `A<buoys>` line first (the buoys this station answers; `A*` = all, from
+an older console), then the `N`/`S` lines. It runs **once** and exits: packets received and settings changed after the run
 reach the console only on the next run. For an unattended USB-only station, install
 `scout-shore-sync.timer` (recurring sync); otherwise rerun the command after new packets arrive or
 settings change. A station on WiFi pushes on its own and does not need the timer.

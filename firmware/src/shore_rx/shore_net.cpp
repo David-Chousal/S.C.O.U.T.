@@ -35,6 +35,7 @@ void shore_shared_begin(uint32_t now, uint32_t min_valid_epoch) {
     scout_upload_queue_init(&g_shared.queue);
     scout_clock_boot(&g_shared.clock, now, min_valid_epoch);
     memset(g_shared.wanted, 0, sizeof(g_shared.wanted));
+    scout_route_reset(&g_shared.route);  // answer every buoy until the console says otherwise
 }
 
 static void on_ntp(struct timeval *tv) {
@@ -130,6 +131,34 @@ static void act_on_wifi_setup(const char *reply) {
     }
 }
 
+/* The buoys this station answers (SCO-316); logged when it changes. An older console without the
+ * list leaves the route as it was. */
+static void pull_route(const char *reply) {
+    ScoutAnswerRoute route;
+    scout_route_reset(&route);
+    if (scout_console_parse_route(reply, &route) < 0) {
+        return;
+    }
+    bool changed;
+    {
+        ShoreLock lock;
+        changed = memcmp(&route, &g_shared.route, sizeof(route)) != 0;
+        g_shared.route = route;
+    }
+    if (changed) {
+        char line[96];
+        int at = snprintf(line, sizeof(line), "console: answers");
+        bool any = false;
+        for (uint16_t id = 1; id < SCOUT_WANTED_MAX_SLOTS && at < (int)sizeof(line); id++) {
+            if (route.answers[id]) {
+                at += snprintf(line + at, sizeof(line) - at, " buoy%u", id);
+                any = true;
+            }
+        }
+        Serial.printf("%s%s\n", line, any ? "" : " none (another station answers)");
+    }
+}
+
 /* The console is the source of truth for what each buoy should run once it answers. */
 static void pull_settings() {
     String reply;
@@ -140,6 +169,7 @@ static void pull_settings() {
         return;
     }
     act_on_wifi_setup(reply.c_str());
+    pull_route(reply.c_str());
     bool changed;
     {
         ShoreLock lock;

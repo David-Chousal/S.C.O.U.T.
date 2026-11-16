@@ -638,13 +638,17 @@ done, every reading the shore station hears shows up on the console with no one 
      ```bash
      cd shore
      python3 scripts/run_receiver.py --link serial --serial /dev/cu.usbmodem1101 --out data-live
-     # in another terminal, every few minutes (e.g. from cron):
+     # in another terminal, every few minutes (e.g. from cron), on the SAME port:
      SCOUT_CONSOLE_URL=https://console.scoutscu.com SCOUT_CONSOLE_TOKEN=scd_… \
-       python3 scripts/sync_console.py --data data-live
+       python3 scripts/sync_console.py --data data-live --serial /dev/cu.usbmodem1101
      ```
 
-     `sync_console.py` pushes the newest CSVs (repeats are ignored) and prints the requested
-     counts as `N<buoy>:<count>` lines; with `--serial <port>` it writes them to the S3.
+     `sync_console.py` pushes the newest CSVs (repeats are ignored), then writes an `A<buoys>` line
+     (the buoys this station answers, [SCO-316](https://linear.app/scout1/issue/SCO-316)) and the requested `N<buoy>:<count>` / `S…` lines to
+     the S3. **Always pass `--serial`:** without it the lines are only printed, and an S3 that never
+     receives its `A` line answers every buoy, so a second station could answer the same one. The
+     two commands share the port at the same time: the receiver only reads it, and the sync only
+     writes and leaves the receiver's queued bytes alone.
 3. **Give each buoy a unique ID before flashing it.** The ID is `BUOY_ID` in
    `firmware/src/config.h` (1 → `SCOUT-01`). Two buoys with the same ID would be merged into one on
    the console, and readings whose sequence numbers collide would be silently dropped.
@@ -655,14 +659,20 @@ done, every reading the shore station hears shows up on the console with no one 
 5. **Watch it update.** Each reading reaches the console seconds after the shore station hears
    it (the S3 pushes at once and retries if offline; the computer path when `sync_console.py`
    next runs). **Fleet** shows each buoy's newest packet time and the transmit count it reports;
-   **Stations** shows when each shore station's token was last used.
-6. **Changing settings from the console** (member). Change the transmit count or any of the
+   **Stations** shows when each shore station's token was last used; its **Info** shows which buoys it
+   answers and which it heard in the last 24 h.
+6. **With two shore stations** in range of one buoy, only one answers it ([SCO-316](https://linear.app/scout1/issue/SCO-316)): the one an admin
+   pins with **Assign buoys** on **Stations**, else the one that heard it most in the last 24 h. The
+   other prints `QUIET buoy=N reason=another-station` and sends nothing. **Every station that can
+   hear a buoy needs that buoy's key** in its `downlink_key.h` (§3), or it cannot answer when picked.
+   A buoy no station has heard yet is named in a warning on **Stations**.
+7. **Changing settings from the console** (member). Change the transmit count or any of the
    other remote settings on **Settings → Buoys**. The S3 reads them within a minute (or
    `sync_console.py` prints the `N`/`S` lines), sends the whole snapshot right after the buoy's
    next packet, and the console shows **Pending** until a packet reports the matching settings
    digest, then **Confirmed** (**Rejected** if the buoy refused it). The radio parameters and the
    listen window still need new firmware: over the air once G11 clears, by USB until then.
-7. **New firmware** (release machine and shore computer): build, sign and push a bundle per the
+8. **New firmware** (release machine and shore computer): build, sign and push a bundle per the
    [flashing guide](../../firmware/docs/flashing-guide.md#over-the-air-releases-scout_ota-sco-197).
    The buoy takes it over about a day and a half of slots and reports `FW_TRIAL` until confirmed.
    ⚠️ Never run on hardware (G11).
