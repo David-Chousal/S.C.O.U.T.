@@ -56,6 +56,12 @@ uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
     return best;
 }
 
+uint32_t scout_next_event_after(uint32_t now_epoch, uint32_t handled_epoch, uint32_t interval_s,
+                                const uint32_t *slots_sod, size_t n) {
+    uint32_t from = now_epoch > handled_epoch ? now_epoch : handled_epoch;
+    return scout_next_event_epoch(from, interval_s, slots_sod, n);
+}
+
 bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every) {
     if (slot_index < 0) {
         return false;

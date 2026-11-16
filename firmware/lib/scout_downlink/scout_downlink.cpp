@@ -82,6 +82,22 @@ size_t scout_dl_encode_settings(const ScoutSettingsCommand *cmd, const uint8_t k
     return SCOUT_DL_SETTINGS_SIZE;
 }
 
+size_t scout_dl_encode_time(uint16_t buoy_id, uint32_t counter, const uint8_t key[SCOUT_DL_KEY_BYTES],
+                            uint8_t *out) {
+    out[0] = SCOUT_DL_TYPE_CMD;
+    out[1] = SCOUT_DL_VERSION_TIME;
+    put_u16(out + 2, buoy_id);
+    put_u32(out + 4, counter);
+    tag_n(out, SCOUT_DL_TIME_SIGNED_BYTES, key, out + SCOUT_DL_TIME_SIGNED_BYTES);
+    size_t body = SCOUT_DL_TIME_SIGNED_BYTES + SCOUT_DL_TAG_BYTES;
+    put_u16(out + body, scout_crc16_ccitt(out, body));
+    return SCOUT_DL_TIME_SIZE;
+}
+
+bool scout_dl_is_time_frame(const uint8_t *buf, size_t len) {
+    return len == SCOUT_DL_TIME_SIZE && buf[0] == SCOUT_DL_TYPE_CMD && buf[1] == SCOUT_DL_VERSION_TIME;
+}
+
 scout_dl_result_t scout_dl_decode(const uint8_t *buf, size_t len,
                                   const uint8_t key[SCOUT_DL_KEY_BYTES], uint16_t my_buoy_id,
                                   uint32_t last_counter, uint32_t now_epoch, uint32_t max_skew_s,
@@ -142,6 +158,9 @@ static scout_dl_result_t check_envelope(const uint8_t *buf, size_t len,
     } else if (len == SCOUT_DL_SETTINGS_SIZE) {
         signed_n = SCOUT_DL_SETTINGS_SIGNED_BYTES;
         version = SCOUT_DL_VERSION_SETTINGS;
+    } else if (len == SCOUT_DL_TIME_SIZE) {
+        signed_n = SCOUT_DL_TIME_SIGNED_BYTES;
+        version = SCOUT_DL_VERSION_TIME;
     } else {
         return SCOUT_DL_BAD_LENGTH;
     }
@@ -185,7 +204,9 @@ scout_dl_result_t scout_dl_decode_any(const uint8_t *buf, size_t len,
         return envelope;
     }
     ScoutSettings wanted = *current;
-    if (len == SCOUT_DL_CMD_SIZE) {
+    if (len == SCOUT_DL_TIME_SIZE) {
+        // Only the clock: the counter is the whole message.
+    } else if (len == SCOUT_DL_CMD_SIZE) {
         if (buf[8] != SCOUT_DL_SETTING_TX_COUNT) {
             return SCOUT_DL_UNKNOWN_SETTING;
         }

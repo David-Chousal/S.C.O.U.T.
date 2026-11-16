@@ -30,7 +30,8 @@
  *
  * With -DSCOUT_DOWNLINK (OFF by default) the station also SENDS: right after a buoy's packet,
  * if its reported count differs from the requested one, one signed SET_TX_COUNT frame
- * (lib/scout_downlink) in the buoy's 1 s listen window. ⚠️ Do not transmit off the bench until
+ * (lib/scout_downlink) in the buoy's 1 s listen window. With nothing else to send it sends a
+ * signed time frame instead (SCO-315), so every slot it hears corrects that buoy's clock. ⚠️ Do not transmit off the bench until
  * the RFM95W FeatherWing's FCC authorization is checked (OTA design §8, SCO-104).
  *
  * Output, two lines per frame. The first is the bench_rx format, so
@@ -194,6 +195,20 @@ static void send_settings(uint16_t buoy_id, const ScoutSettings &settings) {
     Serial.printf("CMD buoy=%u settings digest=%04x counter=%lu sent=%s\n", buoy_id,
                   scout_settings_digest(&settings), (unsigned long)cmd.counter, sent ? "yes" : "no");
 }
+
+// The station's clock, for a buoy with nothing else to hear (SCO-315). Every command corrects the
+// buoy's clock; this one does only that, so each slot the station hears keeps the buoy on time.
+static void send_time(uint16_t buoy_id) {
+    uint32_t counter = 0;
+    const uint8_t *key = command_key(buoy_id, &counter);
+    if (key == nullptr) {
+        return;
+    }
+    uint8_t frame[SCOUT_DL_TIME_SIZE];
+    scout_dl_encode_time(buoy_id, counter, key, frame);
+    bool sent = transmit(frame, sizeof(frame));
+    Serial.printf("TIME buoy=%u counter=%lu sent=%s\n", buoy_id, (unsigned long)counter, sent ? "yes" : "no");
+}
 #endif
 
 #ifdef SCOUT_OTA
@@ -222,13 +237,17 @@ static bool firmware_confirm_due(const ScoutReading &r) {
     return true;
 }
 
-static void firmware_step(const ScoutReading &r) {
+// True when it used the buoy's listen window (an offer and its session).
+static bool firmware_step(const ScoutReading &r) {
     scout_ota_step_t step = shore_ota_step(r);
     if (step == SCOUT_OTA_STEP_OFFER) {
         shore_ota_run_session(g_rf95, r.buoy_id);
-    } else if (step == SCOUT_OTA_STEP_DONE || step == SCOUT_OTA_STEP_ABANDON) {
+        return true;
+    }
+    if (step == SCOUT_OTA_STEP_DONE || step == SCOUT_OTA_STEP_ABANDON) {
         shore_ota_finish(step);
     }
+    return false;
 }
 #endif
 
@@ -288,14 +307,19 @@ static void handle_frame(const uint8_t *buf, uint8_t len) {
         return;
     }
 #endif
+    // One frame per listen window; every command also corrects the buoy's clock (SCO-315).
     if (settings_pending) {
         send_settings(r.buoy_id, wanted.settings);
     } else if (count_pending) {
         send_tx_count(r.buoy_id, wanted.tx_count);
     }
 #ifdef SCOUT_OTA
+    else if (!firmware_step(r)) {
+        send_time(r.buoy_id);
+    }
+#else
     else {
-        firmware_step(r);
+        send_time(r.buoy_id);
     }
 #endif
 #endif

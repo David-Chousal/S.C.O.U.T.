@@ -54,6 +54,11 @@ int scout_tx_slot_index(uint32_t epoch, const uint32_t *slots_sod, size_t n);
 uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
                                 const uint32_t *slots_sod, size_t n);
 
+/* scout_next_event_epoch planned from no earlier than `handled_epoch`, the event this cycle just
+ * handled. A clock corrected backwards after a slot (SCO-315) must not reach that slot again. */
+uint32_t scout_next_event_after(uint32_t now_epoch, uint32_t handled_epoch, uint32_t interval_s,
+                                const uint32_t *slots_sod, size_t n);
+
 /* Whether a slot actually transmits in this power mode: every slot in NORMAL, every
  * `conserve_every`-th slot (starting at slot 0) in CONSERVE, none in CRITICAL. A missed or
  * skipped slot is simply skipped — there are no retries outside a slot. */

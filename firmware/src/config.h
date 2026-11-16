@@ -43,11 +43,11 @@ static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0
  * on-air turn (1.74 s uplink + 1 s downlink listen + 1.74 s downlink); 4 positions keep the last
  * packet ending by +92 s, inside the shore's ±2 min window with ~28 s left for clock drift.
  * Collision-free only while the buoys' clocks agree to within 25.5 s (30 s − the 4.48 s turn).
- * The PCF8523 is set only at boot (accept_time_command(); apply_command() never sets the clock).
- * ESTIMATE, unmeasured: assuming ±2 s/day drift (Adafruit, no conditions given; worse away from
- * ~25 °C, NXP AN11247) and ≤ 1 s set error per buoy (set_rtc.py sends whole seconds), two buoys
- * close the remaining 23.5 s in ~5.9 days. Re-set both clocks at least every 5 days until the
- * shore corrects them (SCO-315). IDs 1 and 5 share +0 s;
+ * The shore corrects each buoy's clock at every slot it hears (SCO-315, CLOCK_CORRECT_* below),
+ * which should hold each clock within a few seconds of the shore's (design estimate, unmeasured).
+ * Between corrections a clock drifts freely: ESTIMATE ±2 s/day (Adafruit, no conditions given;
+ * worse away from ~25 °C, NXP AN11247), so two buoys need ~5.9 days of missed slots to close the
+ * gap. IDs 1 and 5 share +0 s;
  * a 5th buoy needs more positions (step and window to fit) or another slot assignment. */
 static const uint32_t TX_SLOT_OFFSET_STEP_S = 30;
 static const uint32_t TX_SLOT_OFFSET_POSITIONS = 4;
@@ -159,6 +159,16 @@ static const uint16_t DOWNLINK_FRAME_MAX_MS = 1739;
 // A command's counter (the shore's clock) must be within a day of the buoy's, so a recorded
 // frame cannot be replayed after a cold start resets the stored counter.
 static const uint32_t DOWNLINK_MAX_SKEW_S = 86400;
+/* Clock correction from the shore (SCO-315). Every downlink the buoy accepts carries the shore's
+ * Unix time as its counter, and the shore sends a v3 time frame after any packet it has nothing
+ * else to answer, so the clock is corrected at every slot. The counter is truncated to the
+ * second it was signed in, and the frame then takes ~0.5 s on air (26 B at SF12/BW500), so the
+ * shore's time at reception is counter + 0.5–1.5 s: add 1 s. A 1 s difference is noise (both
+ * clocks read whole seconds) and is left alone; one frame moves the clock 30 s at most, so a
+ * buoy far off converges over several slots instead of jumping. ⚠️ Design figures, unmeasured. */
+static const uint32_t DOWNLINK_TIME_LATENCY_S = 1;
+static const uint32_t CLOCK_CORRECT_DEADBAND_S = 1;
+static const uint32_t CLOCK_CORRECT_MAX_STEP_S = 30;
 
 /* ── Over-the-air firmware (SCO-197, OTA design §4) ────────────────────────────────────────
  * SCOUT_OTA builds (on in the shipped feather_m0 since 2026-11-12); needs SCOUT_DOWNLINK for the CONFIRM key. A transfer

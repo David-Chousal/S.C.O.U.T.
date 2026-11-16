@@ -14,7 +14,14 @@
  *   type u8 (0xC1) | version u8 (2) | buoy_id u16 | counter u32 | count u8 (SCOUT_SETTINGS_COUNT) |
  *   values u16 × count, in setting-ID order | tag[16] over bytes 0-24 | crc16 u16 over bytes 0-40
  *
- * A buoy accepts both versions: a v1 frame changes only the transmit count.
+ * Version 3 (TIME, SCO-315) carries only the shore's clock, 26 bytes, sent after a packet when the
+ * shore has nothing else to send:
+ *
+ *   type u8 (0xC1) | version u8 (3) | buoy_id u16 | counter u32 | tag[16] over bytes 0-7 |
+ *   crc16 u16 over bytes 0-23
+ *
+ * A buoy accepts all three: a v1 frame changes only the transmit count, a v3 frame no setting.
+ * The counter of every accepted frame is the shore's time, so each one also corrects the clock.
  *
  * The type byte 0xC1 can never start an uplink (those start with schema_version 1-4), so a
  * buoy that hears another buoy's packet in its listen window rejects it on length or type.
@@ -55,6 +62,9 @@ extern "C" {
 #define SCOUT_DL_VERSION_SETTINGS 2u
 #define SCOUT_DL_SETTINGS_SIGNED_BYTES (9u + 2u * SCOUT_SETTINGS_COUNT)
 #define SCOUT_DL_SETTINGS_SIZE (SCOUT_DL_SETTINGS_SIGNED_BYTES + SCOUT_DL_TAG_BYTES + 2u)
+#define SCOUT_DL_VERSION_TIME 3u
+#define SCOUT_DL_TIME_SIGNED_BYTES 8u
+#define SCOUT_DL_TIME_SIZE (SCOUT_DL_TIME_SIGNED_BYTES + SCOUT_DL_TAG_BYTES + 2u)
 /* The longest downlink frame; size the listen buffer from this. */
 #define SCOUT_DL_FRAME_MAX SCOUT_DL_SETTINGS_SIZE
 
@@ -104,8 +114,17 @@ scout_dl_result_t scout_dl_decode(const uint8_t *buf, size_t len,
 size_t scout_dl_encode_settings(const ScoutSettingsCommand *cmd, const uint8_t key[SCOUT_DL_KEY_BYTES],
                                 uint8_t *out);
 
-/* The buoy's decoder for either version. On SCOUT_DL_OK, `next` holds the full settings to apply
- * (a v1 frame: `current` with the transmit count replaced) and `counter` the frame's counter;
+/* Encode and sign a v3 time frame carrying `counter` (the shore's Unix time). Returns
+ * SCOUT_DL_TIME_SIZE. */
+size_t scout_dl_encode_time(uint16_t buoy_id, uint32_t counter, const uint8_t key[SCOUT_DL_KEY_BYTES],
+                            uint8_t *out);
+
+/* True when `buf` has a v3 time frame's length and header (nothing is verified). */
+bool scout_dl_is_time_frame(const uint8_t *buf, size_t len);
+
+/* The buoy's decoder for every version. On SCOUT_DL_OK, `next` holds the full settings to apply
+ * (a v1 frame: `current` with the transmit count replaced; a v3 frame: `current` unchanged) and
+ * `counter` the frame's counter;
  * neither is written otherwise. The same checks, in the same order, as scout_dl_decode, and then
  * the resulting set must pass scout_settings_valid. */
 scout_dl_result_t scout_dl_decode_any(const uint8_t *buf, size_t len,

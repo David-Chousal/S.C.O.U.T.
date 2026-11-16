@@ -234,8 +234,19 @@ void test_offset_slots_drive_the_wake_and_slot_match(void) {
     TEST_ASSERT_EQUAL_INT(-1, scout_tx_slot_index(DAY0 + 600u, shifted, 3));  // SCOUT-01's second
 }
 
+// A clock corrected backwards just after a slot must not send that slot again (SCO-315).
+void test_next_event_after_a_backward_step_skips_the_slot_just_handled(void) {
+    // Handled the 00:10 slot; the shore then set the clock back 3 s, to 00:09:57.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u,
+                             scout_next_event_after(DAY0 + 597u, DAY0 + 600u, 1800, SLOTS, 3));
+    // A forward step plans from the new time, as before.
+    TEST_ASSERT_EQUAL_UINT32(DAY0 + 1800u,
+                             scout_next_event_after(DAY0 + 605u, DAY0 + 600u, 1800, SLOTS, 3));
+}
+
 static void run_all() {
     UNITY_BEGIN();
+    RUN_TEST(test_next_event_after_a_backward_step_skips_the_slot_just_handled);
     RUN_TEST(test_slot_offset_steps_by_buoy_id);
     RUN_TEST(test_slot_offset_wraps_to_stay_inside_the_listen_window);
     RUN_TEST(test_offset_slots_shift_and_wrap_past_midnight);

@@ -23,6 +23,10 @@ static const uint8_t GOLDEN_SETTINGS[SCOUT_DL_SETTINGS_SIZE] = {
     0xc1, 0x02, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0x08, 0x02, 0x00, 0x01, 0x00, 0x0f, 0x00,
     0x1e, 0x00, 0xe4, 0x0c, 0x80, 0x0c, 0x02, 0x00, 0x50, 0x00, 0xa5, 0x7e, 0xe5, 0x86, 0x7e,
     0xc8, 0xb0, 0xee, 0x93, 0x7d, 0x01, 0x5c, 0x16, 0x1f, 0xd7, 0xe9, 0x2b, 0xfa};
+// downlink.encode_time(TimeCommand(1, 1803859200), bytes(range(32)))
+static const uint8_t GOLDEN_TIME[SCOUT_DL_TIME_SIZE] = {
+    0xc1, 0x03, 0x01, 0x00, 0x00, 0xb5, 0x84, 0x6b, 0xc7, 0xcc, 0x09, 0x67, 0x07,
+    0xec, 0x7b, 0xb5, 0x07, 0xbb, 0x6b, 0x50, 0x05, 0x61, 0xd7, 0x6d, 0x5d, 0xc9};
 static const uint16_t GOLDEN_VALUES[SCOUT_SETTINGS_COUNT] = {2, 1, 15, 30, 3300, 3200, 2, 80};
 
 static void test_key(uint8_t key[SCOUT_DL_KEY_BYTES]) {
@@ -364,8 +368,62 @@ void test_shore_settings_command_rejects_malformed_or_invalid(void) {
     TEST_ASSERT_FALSE(scout_dl_parse_settings_command("N1:2", &buoy, &s));
 }
 
+// v3 time frame (SCO-315).
+void test_time_frame_matches_shore_golden(void) {
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    uint8_t frame[SCOUT_DL_TIME_SIZE];
+    TEST_ASSERT_EQUAL(SCOUT_DL_TIME_SIZE, scout_dl_encode_time(1, NOW, key, frame));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(GOLDEN_TIME, frame, SCOUT_DL_TIME_SIZE);
+}
+
+void test_time_frame_is_accepted_and_leaves_settings_alone(void) {
+    ScoutSettings current, next;
+    scout_settings_defaults(&current);
+    uint32_t counter = 0;
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    TEST_ASSERT_EQUAL(SCOUT_DL_OK, scout_dl_decode_any(GOLDEN_TIME, sizeof(GOLDEN_TIME), key, 1, 0, NOW,
+                                                       DAY, &current, &next, &counter));
+    TEST_ASSERT_EQUAL_UINT32(NOW, counter);
+    TEST_ASSERT_EQUAL_UINT16_ARRAY(current.v, next.v, SCOUT_SETTINGS_COUNT);
+    TEST_ASSERT_TRUE(scout_dl_is_time_frame(GOLDEN_TIME, sizeof(GOLDEN_TIME)));
+    TEST_ASSERT_FALSE(scout_dl_is_time_frame(GOLDEN, sizeof(GOLDEN)));
+    TEST_ASSERT_FALSE(scout_dl_is_time_frame(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS)));
+}
+
+void test_time_frame_passes_the_same_envelope_checks(void) {
+    ScoutSettings current, next;
+    scout_settings_defaults(&current);
+    uint32_t counter = 0;
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    const uint8_t *f = GOLDEN_TIME;
+    const size_t n = sizeof(GOLDEN_TIME);
+    TEST_ASSERT_EQUAL(SCOUT_DL_WRONG_BUOY, scout_dl_decode_any(f, n, key, 2, 0, NOW, DAY, &current, &next, &counter));
+    TEST_ASSERT_EQUAL(SCOUT_DL_REPLAY, scout_dl_decode_any(f, n, key, 1, NOW, NOW, DAY, &current, &next, &counter));
+    TEST_ASSERT_EQUAL(SCOUT_DL_STALE,
+                      scout_dl_decode_any(f, n, key, 1, 0, NOW + DAY + 1u, DAY, &current, &next, &counter));
+    uint8_t other_key[SCOUT_DL_KEY_BYTES] = {0};
+    TEST_ASSERT_EQUAL(SCOUT_DL_BAD_TAG, scout_dl_decode_any(f, n, other_key, 1, 0, NOW, DAY, &current, &next, &counter));
+    uint8_t bad[SCOUT_DL_TIME_SIZE];
+    memcpy(bad, f, n);
+    bad[4] ^= 0x01;
+    TEST_ASSERT_EQUAL(SCOUT_DL_BAD_CRC, scout_dl_decode_any(bad, n, key, 1, 0, NOW, DAY, &current, &next, &counter));
+}
+
+void test_time_frame_size_is_distinct_and_fits(void) {
+    TEST_ASSERT_EQUAL(26, SCOUT_DL_TIME_SIZE);
+    TEST_ASSERT_TRUE(SCOUT_DL_TIME_SIZE != SCOUT_DL_CMD_SIZE && SCOUT_DL_TIME_SIZE != SCOUT_DL_SETTINGS_SIZE);
+    TEST_ASSERT_TRUE(SCOUT_DL_TIME_SIZE <= SCOUT_DL_FRAME_MAX);
+}
+
 static void run_all() {
     UNITY_BEGIN();
+    RUN_TEST(test_time_frame_matches_shore_golden);
+    RUN_TEST(test_time_frame_is_accepted_and_leaves_settings_alone);
+    RUN_TEST(test_time_frame_passes_the_same_envelope_checks);
+    RUN_TEST(test_time_frame_size_is_distinct_and_fits);
     RUN_TEST(test_sha256_fips_vectors);
     RUN_TEST(test_hmac_rfc4231_case_2);
     RUN_TEST(test_hmac_rfc4231_case_6_long_key);
