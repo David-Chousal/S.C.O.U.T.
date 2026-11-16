@@ -252,7 +252,11 @@ everything behind `SCOUT_DOWNLINK` (on in the shipped builds since 2026-11-04):
   (bit 10) if a command failed its checks. **v2 (2026-11-04)**, 43 bytes, carries every remote
   setting (`firmware/lib/scout_settings`) under one tag; the buoy applies all of it or none, keeps
   it in flash, and every v5 packet reports a CRC-16 digest of what it runs, which is the ACK for
-  the whole snapshot ([plan](firmware-remote-settings-plan.md)). Golden vector held by `check_packet_contract.py`.
+  the whole snapshot ([plan](firmware-remote-settings-plan.md)). **v3 (2026-11-15, [SCO-315](https://linear.app/scout1/issue/SCO-315))**, 26 bytes,
+  carries only the counter, i.e. the shore's time: the shore sends it after a packet when nothing
+  else is due, and the buoy corrects its clock from the counter of every frame it accepts (at
+  most 30 s per frame). Unlike v1/v2 its counter is not saved to flash. Golden vectors for all
+  three held by `check_packet_contract.py`.
 - **Keys:** per buoy, 32 bytes, in the gitignored `firmware/src/downlink_key.h` (template
   `downlink_key_example.h`) and the shore's `SCOUT_CMD_KEY_<id>`. Never in the console or the
   repo.

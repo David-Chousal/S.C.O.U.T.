@@ -33,3 +33,17 @@ bool scout_parse_time_command(const char *line, uint32_t min_epoch, uint32_t *ou
 bool scout_clock_trusted(bool rtc_ok, bool lost_power, uint32_t now, uint32_t min_epoch) {
     return rtc_ok && !lost_power && now >= min_epoch;
 }
+
+int32_t scout_clock_correction_s(uint32_t buoy_now, uint32_t shore_now, uint32_t deadband_s,
+                                 uint32_t max_step_s) {
+    bool ahead = shore_now > buoy_now;  // the buoy is behind and must move forward
+    uint32_t distance = ahead ? shore_now - buoy_now : buoy_now - shore_now;
+    if (distance <= deadband_s) {
+        return 0;
+    }
+    uint32_t step = distance < max_step_s ? distance : max_step_s;
+    if (step > (uint32_t)INT32_MAX) {
+        step = (uint32_t)INT32_MAX;
+    }
+    return ahead ? (int32_t)step : -(int32_t)step;
+}

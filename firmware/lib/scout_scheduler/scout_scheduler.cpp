@@ -56,6 +56,12 @@ uint32_t scout_next_event_epoch(uint32_t now_epoch, uint32_t interval_s,
     return best;
 }
 
+uint32_t scout_next_event_after(uint32_t now_epoch, uint32_t handled_epoch, uint32_t interval_s,
+                                const uint32_t *slots_sod, size_t n) {
+    uint32_t from = now_epoch > handled_epoch ? now_epoch : handled_epoch;
+    return scout_next_event_epoch(from, interval_s, slots_sod, n);
+}
+
 bool scout_slot_transmits(scout_power_mode_t mode, int slot_index, uint32_t conserve_every) {
     if (slot_index < 0) {
         return false;
@@ -101,6 +107,20 @@ size_t scout_select_tx_slots(const uint32_t *slots_sod, size_t n, uint8_t tx_cou
         }
     }
     return used;
+}
+
+uint32_t scout_tx_slot_offset_s(uint16_t buoy_id, uint32_t step_s, uint32_t positions) {
+    if (positions == 0) {
+        return 0;
+    }
+    uint32_t position = ((uint32_t)buoy_id + positions - 1u) % positions;  // ID 0 can't underflow
+    return position * step_s;
+}
+
+void scout_offset_tx_slots(const uint32_t *slots_sod, size_t n, uint32_t offset_s, uint32_t *out) {
+    for (size_t i = 0; i < n; i++) {
+        out[i] = (slots_sod[i] + offset_s) % SCOUT_SECONDS_PER_DAY;
+    }
 }
 
 bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,

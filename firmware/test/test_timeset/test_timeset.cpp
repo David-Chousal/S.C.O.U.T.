@@ -59,8 +59,34 @@ void test_no_rtc_means_no_trusted_clock(void) {
     TEST_ASSERT_FALSE(scout_clock_trusted(false, false, 1803859200u, MIN_EPOCH));
 }
 
+// Clock correction from the shore (SCO-315): deadband 1 s, at most 30 s per frame.
+void test_correction_moves_the_clock_to_the_shore_time(void) {
+    TEST_ASSERT_EQUAL_INT32(5, scout_clock_correction_s(1000u, 1005u, 1, 30));
+    TEST_ASSERT_EQUAL_INT32(-4, scout_clock_correction_s(1000u, 996u, 1, 30));
+}
+
+void test_correction_ignores_a_difference_inside_the_deadband(void) {
+    TEST_ASSERT_EQUAL_INT32(0, scout_clock_correction_s(1000u, 1001u, 1, 30));
+    TEST_ASSERT_EQUAL_INT32(0, scout_clock_correction_s(1000u, 999u, 1, 30));
+    TEST_ASSERT_EQUAL_INT32(0, scout_clock_correction_s(1000u, 1000u, 1, 30));
+}
+
+void test_correction_is_bounded_per_frame(void) {
+    TEST_ASSERT_EQUAL_INT32(30, scout_clock_correction_s(1000u, 5000u, 1, 30));
+    TEST_ASSERT_EQUAL_INT32(-30, scout_clock_correction_s(5000u, 1000u, 1, 30));
+}
+
+void test_correction_handles_the_full_32_bit_range(void) {
+    TEST_ASSERT_EQUAL_INT32(30, scout_clock_correction_s(0u, 0xFFFFFFFFu, 1, 30));
+    TEST_ASSERT_EQUAL_INT32(-30, scout_clock_correction_s(0xFFFFFFFFu, 0u, 1, 30));
+}
+
 static void run_all() {
     UNITY_BEGIN();
+    RUN_TEST(test_correction_moves_the_clock_to_the_shore_time);
+    RUN_TEST(test_correction_ignores_a_difference_inside_the_deadband);
+    RUN_TEST(test_correction_is_bounded_per_frame);
+    RUN_TEST(test_correction_handles_the_full_32_bit_range);
     RUN_TEST(test_accepts_a_unix_epoch_after_T);
     RUN_TEST(test_ignores_trailing_line_endings);
     RUN_TEST(test_rejects_anything_that_is_not_the_command);

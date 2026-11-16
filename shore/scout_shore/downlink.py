@@ -19,6 +19,11 @@ Layout (little-endian), 28 bytes:
 ``2``, buoy_id, counter, count (u8, the number of settings), the values as u16 in setting-ID
 order, a 16-byte tag over those 25 bytes, and the CRC. The buoy applies all of it or none of it.
 
+**Version 3** (SCO-315) carries only the shore's clock, 26 bytes: type, ``3``, buoy_id, counter
+(the shore's Unix time at signing), a 16-byte tag over those 8 bytes, and the CRC. The shore
+sends it after a packet when it has nothing else to send; the buoy corrects its clock from the
+counter of any command it accepts.
+
 The 32-byte key is per buoy and never leaves the shore station and the buoy: not the console,
 not the repo. :func:`key_from_env` reads it from ``SCOUT_CMD_KEY_<buoy_id>`` (64 hex digits).
 
@@ -49,6 +54,12 @@ _SIGNED = struct.Struct("<BBHIBB")  # 10 bytes
 VERSION_SETTINGS = 2
 _SIGNED_SETTINGS = struct.Struct(f"<BBHIB{len(registry.SPECS)}H")  # 25 bytes
 SETTINGS_SIZE = _SIGNED_SETTINGS.size + TAG_BYTES + 2  # 43
+
+# v3 (SCO-315): the shore's clock, so a buoy can correct its own. The counter is the shore's Unix
+# time when it signed the frame, as in every command.
+VERSION_TIME = 3
+_SIGNED_TIME = struct.Struct("<BBHI")  # 8 bytes
+TIME_SIZE = _SIGNED_TIME.size + TAG_BYTES + 2  # 26
 
 
 class DownlinkError(ValueError):
@@ -148,6 +159,41 @@ def decode_settings(frame: bytes, key: bytes) -> SettingsCommand:
     if not hmac.compare_digest(_tag(body[:_SIGNED_SETTINGS.size], key), body[_SIGNED_SETTINGS.size:]):
         raise DownlinkError("tag mismatch")
     return SettingsCommand(buoy_id, counter, tuple(values))
+
+
+@dataclass(frozen=True)
+class TimeCommand:
+    """A v3 frame: the shore's Unix time at signing, for one buoy."""
+
+    buoy_id: int
+    counter: int
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.buoy_id <= 0xFFFF or not 0 < self.counter <= 0xFFFFFFFF:
+            raise DownlinkError("buoy_id or counter out of range")
+
+
+def encode_time(command: TimeCommand, key: bytes) -> bytes:
+    _check_key(key)
+    signed = _SIGNED_TIME.pack(TYPE_CMD, VERSION_TIME, command.buoy_id, command.counter)
+    body = signed + _tag(signed, key)
+    return body + struct.pack("<H", crc16_ccitt(body))
+
+
+def decode_time(frame: bytes, key: bytes) -> TimeCommand:
+    """Verify a v3 frame's length, CRC, type, version and tag, and return it."""
+    _check_key(key)
+    if len(frame) != TIME_SIZE:
+        raise DownlinkError(f"expected {TIME_SIZE} bytes, got {len(frame)}")
+    body, (crc,) = frame[:-2], struct.unpack("<H", frame[-2:])
+    if crc != crc16_ccitt(body):
+        raise DownlinkError("CRC mismatch")
+    kind, version, buoy_id, counter = _SIGNED_TIME.unpack(body[:_SIGNED_TIME.size])
+    if kind != TYPE_CMD or version != VERSION_TIME:
+        raise DownlinkError(f"not a v{VERSION_TIME} time frame")
+    if not hmac.compare_digest(_tag(body[:_SIGNED_TIME.size], key), body[_SIGNED_TIME.size:]):
+        raise DownlinkError("tag mismatch")
+    return TimeCommand(buoy_id, counter)
 
 
 def key_from_env(buoy_id: int, environ: dict[str, str] | None = None) -> bytes | None:
