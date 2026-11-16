@@ -19,17 +19,19 @@ function LibraryItem({ kind, bays, buoys, onAdd }: BayLibraryProps & { kind: Bay
   const [variable, setVariable] = useState<string>(DASHBOARD_VARIABLES[0]);
   const options = { buoy: info.buoy ? buoy : undefined, variable: info.variable ? variable : undefined };
   const onBoard = isOnBoard(bays, { kind, ...options });
-  const blocked = onBoard || (info.buoy && buoy === undefined);
   return (
     <div className="sc-lib__item sc-lib__item--pick">
-      <span className="sc-list__main">
+      <span className="sc-lib__text">
         <strong>{info.name}</strong>
-        <span>{info.description} · {info.spans.join(", ")} cols</span>
+        <span className="sc-lib__desc">{info.description}</span>
       </span>
-      <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label={`Add ${info.name}`} disabled={blocked}
-        title={onBoard ? "Already on the board" : undefined} onClick={() => onAdd(kind, options)}>
-        <Icon name="plus" />
-      </button>
+      {/* Said in words, not only by a disabled key: a bay with this choice is already showing. */}
+      {onBoard ? <span className="sc-badge sc-badge--muted sc-lib__state">On the board</span> : (
+        <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label={`Add ${info.name}`} disabled={info.buoy && buoy === undefined}
+          onClick={() => onAdd(kind, options)}>
+          <Icon name="plus" />
+        </button>
+      )}
       {(info.buoy || info.variable) && (
         <span className="sc-lib__choices">
           {info.buoy && (

@@ -77,7 +77,11 @@ describe("LayoutBoard", () => {
     renderBoard(true, [OVERVIEW, mine]);
     await userEvent.click(screen.getByRole("tab", { name: "Mine" }));
     await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    const library = screen.getByRole("complementary", { name: "Add a bay" });
+    expect(within(library).getAllByText("On the board")).toHaveLength(1);
     await userEvent.click(screen.getByRole("button", { name: "Add Readout" }));
+    expect(within(library).getAllByText("On the board")).toHaveLength(2);
+    expect(within(library).queryByRole("button", { name: "Add Readout" })).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
     expect(save).toHaveBeenCalledWith("v1", [expect.objectContaining({ kind: "readout", buoy: 1, variable: "temp_c" }), mine.bays[0]]);
   });

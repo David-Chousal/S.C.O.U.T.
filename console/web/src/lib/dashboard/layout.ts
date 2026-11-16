@@ -35,13 +35,13 @@ export const DEFAULT_VIEW_ID = "default";
 export const MAX_BAYS = 24;
 
 export const BAY_KINDS: Record<BayKind, BayKindInfo> = {
-  health: { name: "Fleet status", description: "Headline numbers, then each buoy's link, power, heat, commands and flags", spans: [12], defaultSpan: 12, buoy: false, variable: false },
-  metrics: { name: "Every metric", description: "Every measured number, every buoy, quality-checked, with sparklines", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
-  readout: { name: "Readout", description: "One buoy's newest value", spans: [3, 4, 6], defaultSpan: 3, buoy: true, variable: true },
-  trace: { name: "Trend", description: "Every buoy over the chosen range", spans: [6, 12], defaultSpan: 12, buoy: false, variable: true },
-  fleet: { name: "Fleet", description: "When each buoy was last heard", spans: [4, 6, 12], defaultSpan: 6, buoy: false, variable: false },
-  latest: { name: "Latest readings", description: "One buoy's newest readings", spans: [6, 12], defaultSpan: 6, buoy: true, variable: false },
-  heat: { name: "Heat stress", description: "NOAA CRW bleaching alert and DHW, every buoy, 12 weeks", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
+  health: { name: "Fleet status", description: "Headline numbers, then each buoy's link, battery, heat stress, commands and flags.", spans: [12], defaultSpan: 12, buoy: false, variable: false },
+  metrics: { name: "Every metric", description: "Every measured number for every buoy, quality-checked, with trends.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
+  readout: { name: "Readout", description: "One buoy's newest value of one metric.", spans: [3, 4, 6], defaultSpan: 3, buoy: true, variable: true },
+  trace: { name: "Trend", description: "One metric for every buoy over the chosen time range.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: true },
+  fleet: { name: "Fleet", description: "When each buoy was last heard.", spans: [4, 6, 12], defaultSpan: 6, buoy: false, variable: false },
+  latest: { name: "Latest readings", description: "One buoy's newest readings, as a table.", spans: [6, 12], defaultSpan: 6, buoy: true, variable: false },
+  heat: { name: "Heat stress", description: "NOAA bleaching alert and Degree Heating Weeks for every buoy.", spans: [6, 12], defaultSpan: 12, buoy: false, variable: false },
 };
 
 /** Variables a readout or trend can show: the measured numbers. */
