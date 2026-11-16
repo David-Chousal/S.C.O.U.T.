@@ -10,6 +10,7 @@ import { startFor, type TimeWindow } from "@/lib/dashboard/range";
 import { delivery, durationLabel, issues, latestText, pointsFor, restarts, type Delivery, type Issue } from "@/lib/dashboard/metrics";
 import { COUNT_SIGNAL, lastHeard } from "@/lib/format";
 import { AlertChip, alertSlug } from "./heat-stress-bay";
+import { StatusDot } from "./status-dot";
 
 const HOUR = 3600 * 1000;
 // Only while the transmit slots have not loaded: a buoy heard within 9 hours has not missed a 3-a-day schedule.
@@ -108,11 +109,6 @@ function IssueList({ list }: { list: Issue[] }) {
   );
 }
 
-/** A status word with a small coloured dot: the word carries the meaning, the dot lets the eye scan. */
-function Status({ state, word }: { state: SignalState; word: string }) {
-  return <span className={`sc-status sc-status--${state}`}><i aria-hidden="true" />{word}</span>;
-}
-
 /** The buoy's command and settings state, but only when something needs attention (pending or rejected). */
 function scheduleNote(buoy: Buoy): { state: SignalState; word: string } | null {
   const command = COUNT_SIGNAL[buoy.state];
@@ -154,12 +150,12 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
             return (
               <tr key={r.buoy.buoy_id}>
                 <BuoyCell row={r} />
-                <td><span className="sc-cell-row"><Status state={r.link.state} word={r.link.word} /><span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></span></td>
+                <td><span className="sc-cell-row"><StatusDot state={r.link.state} word={r.link.word} /><span className="sc-help"><Ago ms={lastHeard(r.buoy)} /></span></span></td>
                 <td className="n">{r.delivered.received}<span className="sc-help"> / {r.delivered.expected}</span></td>
                 <td>{heat
                   ? <span className="sc-heat-cell"><i className={`sc-heat-cell__swatch sc-alert-chip--${alertSlug(heat.alert)}`} aria-hidden="true" />{heat.alert} <span className="sc-help">{heat.dhw.toFixed(1)} DHW</span></span>
                   : <span className="sc-help">—</span>}</td>
-                <td><span className="sc-cell-row">{r.buoy.tx_count_reported ?? "—"} a day{note && <Status {...note} />}</span></td>
+                <td><span className="sc-cell-row">{r.buoy.tx_count_reported ?? "—"} a day{note && <StatusDot {...note} />}</span></td>
                 <td><IssueList list={r.issues} /></td>
               </tr>
             );

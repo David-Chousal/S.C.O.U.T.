@@ -10,10 +10,13 @@ import type { TimeWindow } from "@/lib/dashboard/range";
 import type { Trend } from "@/lib/dashboard/stats";
 import { VARIABLES, variableLabel } from "@/lib/variables";
 import { MetricDetail, type BuoyAnalysis } from "./metric-detail";
+import { HousingTile } from "./housing-tile";
 import { Sparkline } from "./sparkline";
 import { seriesColor } from "./trace-bay";
 
 type BayBuoy = Pick<Buoy, "buoy_id" | "label" | "tx_count_reported">;
+
+const HOUSING_GROUP = "Power and housing";
 
 interface MetricsBayProps {
   buoys: BayBuoy[];
@@ -150,19 +153,23 @@ export function MetricsBay(props: MetricsBayProps) {
       </div>
       {groups.map((group) => {
         const withData = group.metrics.filter((m) => m.rows.length > 0);
-        if (withData.length === 0) return null;
+        // The housing seal comes from packet flags, so it shows even when the %RH value never arrives.
+        const housing = group.name === HOUSING_GROUP;
+        if (withData.length === 0 && !housing) return null;
         return (
           <section key={group.name} className="sc-metrics__group" aria-label={group.name}>
             <h3 className="sc-tag">{group.name}</h3>
             <div className="sc-metrics__grid">
               {withData.map((m) => <Tile key={m.column} column={m.column} rows={m.rows} multi={multi} window={props.window} onOpen={() => setOpen(m.column)} />)}
+              {housing && <HousingTile buoys={props.buoys} readings={props.readings} multi={multi} />}
             </div>
           </section>
         );
       })}
       {missing.length > 0 && (
         <p className="sc-help">No data in this time range: {missing.join(", ")}. Blank columns are not measured on the radio link
-          (housing sensors are SD-card only, turbidity is not yet calibrated to FAU) or had no recording.</p>
+          (the housing temperature and humidity values stay on the SD card, and Housing seal shows their alarm instead;
+          turbidity is not yet calibrated to FAU) or had no recording.</p>
       )}
       <StatsTable shown={shown} />
       {opened && <MetricDetail column={opened.column} rows={opened.rows} window={props.window} readings={props.readings} onClose={() => setOpen(null)} />}

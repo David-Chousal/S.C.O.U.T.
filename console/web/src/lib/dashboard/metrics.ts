@@ -115,7 +115,7 @@ export const ISSUES: Record<string, { label: string; tone: IssueTone }> = {
 
 export interface Issue { code: string; label: string; tone: IssueTone; count: number; current: boolean }
 
-const codesIn = (row: Reading) => [row.flags, row.soh].flatMap((field) => (field ?? "").split("|")).filter(Boolean);
+export const codesIn = (row: Reading) => [row.flags, row.soh].flatMap((field) => (field ?? "").split("|")).filter(Boolean);
 
 /** Every flag and SOH bit raised in the window: how many readings carried it, and whether the
  * newest one still does. Most severe and current first. */
