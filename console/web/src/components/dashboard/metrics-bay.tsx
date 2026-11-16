@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, Reading } from "@/lib/api/types";
 import { analyse } from "@/lib/dashboard/analysis";
@@ -136,8 +136,7 @@ export function MetricsBay(props: MetricsBayProps) {
   const [open, setOpen] = useState<string | null>(null);
   // The bay renders only after readings load in the browser, so storage is there on first render.
   const [sizes, setSizes] = useState<TileSizes>(loadTileSizes);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const columns = useTileColumns(rootRef);
+  const [columns, rootRef] = useTileColumns();
   const resize = (key: string) => (size: TileSize | null) => setSizes((current) => {
     const next = withTileSize(current, key, size);
     saveTileSizes(next);

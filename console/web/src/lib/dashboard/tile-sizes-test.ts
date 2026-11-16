@@ -10,8 +10,8 @@ function memoryStorage(): Pick<Storage, "getItem" | "setItem"> {
 describe("tile sizes", () => {
   beforeEach(() => vi.stubGlobal("localStorage", memoryStorage()));
 
-  test("widths are whole tile columns and heights 20 px steps; the default size is dropped", () => {
-    expect(snapTile({ span: 2.4, h: 331 })).toEqual({ span: 2, h: 340 });
+  test("widths are whole tile columns and heights round up to 4 px; the default size is dropped", () => {
+    expect(snapTile({ span: 2.4, h: 331 })).toEqual({ span: 2, h: 332 });
     expect(snapTile({ span: 9 })).toEqual({ span: 6 });
     expect(snapTile({ span: 1 })).toEqual({});
   });

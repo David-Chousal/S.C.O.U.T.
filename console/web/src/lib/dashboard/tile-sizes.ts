@@ -3,19 +3,22 @@
 
 const STORAGE_KEY = "scout-console-tile-sizes";
 export const TILE_STEP_PX = 20;
+/** Stored heights keep this grain, fine enough to sit snug against a tile's last line. */
+const HEIGHT_GRAIN_PX = 4;
 export const TILE_MAX_SPAN = 6;
 export const TILE_MAX_HEIGHT_PX = 2400;
 
 /** How many tile columns a tile spans, and a minimum height in pixels. A missing one means the
- * default (one column, the row's height). The height only adds room: content is never hidden. */
+ * default (one column, the row's height). A height never goes below the content's own. */
 export interface TileSize { span?: number; h?: number }
 export type TileSizes = Record<string, TileSize>;
 
-/** A dragged or stepped size: whole columns, 20 px steps, inside the bounds. A single column and
+/** A dragged or stepped size: whole columns, heights to 4 px, inside the bounds. A single column and
  * no height are the default, so they are dropped. */
 export function snapTile(size: TileSize): TileSize {
   const span = size.span === undefined ? 1 : Math.max(1, Math.min(TILE_MAX_SPAN, Math.round(size.span)));
-  const h = size.h === undefined ? undefined : Math.min(TILE_MAX_HEIGHT_PX, Math.round(size.h / TILE_STEP_PX) * TILE_STEP_PX);
+  // Rounded up, so a snug height never lands a few pixels short of the content.
+  const h = size.h === undefined ? undefined : Math.min(TILE_MAX_HEIGHT_PX, Math.ceil(size.h / HEIGHT_GRAIN_PX) * HEIGHT_GRAIN_PX);
   return { ...(span > 1 ? { span } : {}), ...(h ? { h } : {}) };
 }
 
