@@ -106,8 +106,9 @@ pio test -e native      # run the pure-logic unit tests on your computer (no boa
     Samples at :00 and :30; transmits the latest reading in three fixed slots (`TX_SLOTS_SOD`:
     00:10, 08:10, 16:10 UTC), so the radio never overlaps a sensor read. Each buoy sends
     ((`BUOY_ID` − 1) mod 4) × 30 s after the slot (SCO-224), so two buoys on one shore station
-    never transmit together while their clocks agree to within 25.5 s (about 6 days of
-    worst-case PCF8523 drift until SCO-315 corrects the clock from the shore); SCOUT-01 keeps
+    never transmit together while their clocks agree to within 25.5 s. That lasts about 5.9 days
+    (estimate: ±2 s/day PCF8523 drift plus ≤ 1 s set error per buoy), so re-set the clocks at
+    least every 5 days until SCO-315 corrects them from the shore; SCOUT-01 keeps
     the base times. A missed slot is
     skipped, not retried. Needs a current measurement to confirm the low-power draw.
   - **Watchdog** — the SAMD21 WDT (`Adafruit_SleepyDog`, ~16 s) guards each active cycle and

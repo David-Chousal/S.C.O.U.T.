@@ -43,9 +43,11 @@ static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0
  * on-air turn (1.74 s uplink + 1 s downlink listen + 1.74 s downlink); 4 positions keep the last
  * packet ending by +92 s, inside the shore's ±2 min window with ~28 s left for clock drift.
  * Collision-free only while the buoys' clocks agree to within 25.5 s (30 s − the 4.48 s turn).
- * The PCF8523 is set only at boot (accept_time_command(); apply_command() never sets the clock)
- * and may drift up to ±2 s/day (Adafruit), so two buoys can close the gap in ~6 days: re-set both
- * clocks at least every 6 days until the shore corrects them (SCO-315). IDs 1 and 5 share +0 s;
+ * The PCF8523 is set only at boot (accept_time_command(); apply_command() never sets the clock).
+ * ESTIMATE, unmeasured: assuming ±2 s/day drift (Adafruit, no conditions given; worse away from
+ * ~25 °C, NXP AN11247) and ≤ 1 s set error per buoy (set_rtc.py sends whole seconds), two buoys
+ * close the remaining 23.5 s in ~5.9 days. Re-set both clocks at least every 5 days until the
+ * shore corrects them (SCO-315). IDs 1 and 5 share +0 s;
  * a 5th buoy needs more positions (step and window to fit) or another slot assignment. */
 static const uint32_t TX_SLOT_OFFSET_STEP_S = 30;
 static const uint32_t TX_SLOT_OFFSET_POSITIONS = 4;
