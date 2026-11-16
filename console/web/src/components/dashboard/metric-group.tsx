@@ -86,8 +86,8 @@ export function MetricGroup({ name, tiles, saved, sizes, columns, onOrder, onSiz
     event.preventDefault();
     const target = event.currentTarget;
     onOrder(moveTile(order, key, order.indexOf(key) + step));
-    // Keep focus on the grip that moved, so the arrows keep working.
-    requestAnimationFrame(() => target.focus());
+    // Moving the tile in the DOM can drop focus; if it did, put it back on this grip so the arrows keep working.
+    requestAnimationFrame(() => { if (document.activeElement === document.body || document.activeElement === null) target.focus(); });
   }
 
   return (
