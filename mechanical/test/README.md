@@ -75,3 +75,13 @@ Future studies target **impact survivability at controlled cost** (grounding, dr
 boat strike) rather than continuing to push the static-load safety factor. FEA impact/drop-load
 simulation and bench impact tests on printed samples are planned:
 [SCO-71](https://linear.app/scout1/issue/SCO-71).
+
+### Stress plots for slides
+
+The HTML reports embed their result plots, which slides cannot use directly. Two of them are
+extracted to `assets/diagrams/` (von Mises stress, resized to 1600 px wide):
+
+| Plot | Run | Result |
+|---|---|---|
+| [`fea-floatation-side-load-von-mises-2026-08-17.png`](../../assets/diagrams/fea-floatation-side-load-von-mises-2026-08-17.png) | [RR-01](rr-01-flotation-side-load-fea-2026-08-17.md), 300 N side load | Min SF 25.4, peak 0.786 MPa |
+| [`fea-hang-hole-single-644n-von-mises-2026-10-30.png`](../../assets/diagrams/fea-hang-hole-single-644n-von-mises-2026-10-30.png) | [RR-20](rr-20-hang-hole-fea-2026-10-30.md), 644 N on one hang hole | SF about 12.4, peak 1.615 MPa |
