@@ -19,18 +19,26 @@ export const MAX_BAYS = 24;
 const MAX_VIEWS = 20;
 const NUMERIC = REPORT_COLUMNS.filter((c) => !["flags", "soh", "audio_file", "fw_version", "schema_version"].includes(c));
 
+/** A bay's height in pixels when someone set one (a multiple of HEIGHT_STEP_PX); absent means it fits its content. */
+export const HEIGHT_STEP_PX = 20;
+export const MIN_HEIGHT_PX = 120;
+export const MAX_HEIGHT_PX = 2400;
+
 const bayKey = (bay) => [bay.kind, bay.buoy ?? "", bay.variable ?? ""].join(":");
 
 function validateBay(value) {
   if (typeof value !== "object" || value === null) throw new Error("Each bay must be an object.");
-  const { id, kind, span, buoy, variable } = value;
+  const { id, kind, span, buoy, variable, height } = value;
   if (typeof id !== "string" || id.length === 0 || id.length > 64) throw new Error("Each bay needs an id.");
   const info = BAY_KINDS[kind];
   if (!info) throw new Error(`Unknown bay kind: ${String(kind)}.`);
   if (!info.spans.includes(span)) throw new Error(`A ${kind} bay can't take a width of ${String(span)}.`);
   if (info.buoy && !(Number.isInteger(buoy) && buoy >= 1 && buoy <= 65535)) throw new Error(`A ${kind} bay needs a buoy.`);
   if (info.variable && !NUMERIC.includes(variable)) throw new Error(`A ${kind} bay needs a numeric variable.`);
-  return { id, kind, span, ...(info.buoy ? { buoy } : {}), ...(info.variable ? { variable } : {}) };
+  if (height !== undefined && !(Number.isInteger(height) && height >= MIN_HEIGHT_PX && height <= MAX_HEIGHT_PX && height % HEIGHT_STEP_PX === 0)) {
+    throw new Error(`A bay's height must be ${MIN_HEIGHT_PX}–${MAX_HEIGHT_PX} px in steps of ${HEIGHT_STEP_PX}, or left to fit its content.`);
+  }
+  return { id, kind, span, ...(info.buoy ? { buoy } : {}), ...(info.variable ? { variable } : {}), ...(height !== undefined ? { height } : {}) };
 }
 
 /** Checks a layout from a request body and returns it clean. Throws with a readable reason. */

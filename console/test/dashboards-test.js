@@ -61,6 +61,9 @@ test("layouts are checked: kinds, widths, required fields, duplicates and size",
   assert.throws(() => validateLayout([{ id: "a", kind: "pie", span: 6 }]), /Unknown/);
   assert.throws(() => validateLayout([{ id: "a", kind: "trace", span: 3, variable: "temp_c" }]), /width/);
   assert.throws(() => validateLayout([{ id: "a", kind: "readout", span: 3, variable: "temp_c" }]), /buoy/);
+  assert.deepEqual(validateLayout([{ id: "h", kind: "health", span: 12, height: 480 }]), [{ id: "h", kind: "health", span: 12, height: 480 }]);
+  assert.throws(() => validateLayout([{ id: "h", kind: "health", span: 12, height: 485 }]), /height/);
+  assert.throws(() => validateLayout([{ id: "h", kind: "health", span: 12, height: 40 }]), /height/);
   assert.throws(() => validateLayout([{ id: "a", kind: "trace", span: 12, variable: "password_hash" }]), /variable/);
   assert.throws(() => validateLayout([BAYS[2], { ...BAYS[2], id: "fleet-2" }]), /twice/);
   assert.throws(() => validateLayout(Array.from({ length: 25 }, (_, i) => ({ id: `f${i}`, kind: "latest", span: 6, buoy: i + 1 }))), /at most/);

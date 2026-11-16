@@ -85,6 +85,24 @@ describe("LayoutBoard", () => {
     expect(create).toHaveBeenCalledWith("My dashboard", false, expect.arrayContaining([expect.objectContaining({ id: "metrics", span: 6 })]));
   });
 
+  test("a bay's bottom-edge handle sets a height from the keyboard and Delete fits the content again", async () => {
+    const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
+    renderBoard();
+    await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Content" }));
+    const height = screen.getByRole("slider", { name: /Height of Fleet status/ });
+    expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
+    height.focus();
+    // jsdom has no layout, so the first step starts from the smallest height (a browser starts from the bay's own).
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+    expect(height.getAttribute("aria-valuetext")).toBe("140 px tall");
+    await userEvent.keyboard("{Delete}");
+    expect(height.getAttribute("aria-valuetext")).toBe("Fits its content");
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+    await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
+    expect(create).toHaveBeenCalledWith("My dashboard", false, expect.arrayContaining([expect.objectContaining({ id: "health", height: 140 })]));
+  });
+
   test("customizing the Overview and saving makes your own copy", async () => {
     const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
     const onChanged = renderBoard();

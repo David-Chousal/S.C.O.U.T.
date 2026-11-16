@@ -13,6 +13,28 @@ export interface BayConfig {
   buoy?: number;
   /** Readout and trace: which reading column. */
   variable?: string;
+  /** Height in pixels when someone set one; absent means the bay fits its content. */
+  height?: number;
+}
+
+/** Bay heights snap to this step and stay inside these bounds (the worker checks the same). */
+export const HEIGHT_STEP_PX = 20;
+export const MIN_HEIGHT_PX = 120;
+export const MAX_HEIGHT_PX = 2400;
+
+/** A dragged or typed height snapped to the step and clamped to the bounds. */
+export function snapHeight(raw: number): number {
+  const stepped = Math.round(raw / HEIGHT_STEP_PX) * HEIGHT_STEP_PX;
+  return Math.max(MIN_HEIGHT_PX, Math.min(MAX_HEIGHT_PX, stepped));
+}
+
+/** Set a bay's height, or pass null to let it fit its content again. */
+export function setHeight(bays: BayConfig[], id: string, height: number | null): BayConfig[] {
+  return bays.map((bay) => {
+    if (bay.id !== id) return bay;
+    if (height !== null) return { ...bay, height: snapHeight(height) };
+    return Object.fromEntries(Object.entries(bay).filter(([key]) => key !== "height")) as BayConfig;
+  });
 }
 
 export interface SavedView {

@@ -96,9 +96,16 @@
 .sc-edit-card__resize::after { content: ""; width: 4px; height: min(40px, 50%); border-radius: 2px; background: var(--line-strong); transition: background-color 120ms ease-out, height 120ms ease-out; }
 .sc-edit-card__resize:hover::after, .sc-edit-card__resize:focus-visible::after, .is-resizing .sc-edit-card__resize::after { height: min(64px, 70%); background: var(--accent); }
 .sc-edit-card__resize:focus-visible::after { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--focus); }
+.sc-edit-card__resize-y { position: absolute; left: 0; right: 0; bottom: -9px; z-index: 1; display: grid; place-items: center; height: 16px; cursor: ns-resize; touch-action: none; outline: none; }
+.sc-edit-card__resize-y::after { content: ""; width: min(40px, 50%); height: 4px; border-radius: 2px; background: var(--line-strong); transition: background-color 120ms ease-out, width 120ms ease-out; }
+.sc-edit-card__resize-y:hover::after, .sc-edit-card__resize-y:focus-visible::after, .is-resizing .sc-edit-card__resize-y::after { width: min(64px, 70%); background: var(--accent); }
+.sc-edit-card__resize-y:focus-visible::after { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--focus); }
+.sc-edit-card__resize-y .sc-edit-card__width { top: auto; right: auto; bottom: 14px; transform: none; }
 .sc-bay-slot.is-resizing .sc-edit-card { border-color: var(--accent); }
 .sc-edit-card__width { position: absolute; top: 50%; right: 14px; transform: translateY(-50%); padding: 4px 8px; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font: 500 12px/16px var(--font-sans); white-space: nowrap; pointer-events: none; }
-body:has(.is-resizing), body:has(.is-resizing) * { cursor: ew-resize !important; user-select: none; }
+body:has(.is-resizing), body:has(.is-resizing) * { user-select: none; }
+body:has(.is-resizing-width) * { cursor: ew-resize !important; }
+body:has(.is-resizing-height) * { cursor: ns-resize !important; }
 
 /* Layout view: compact sketches sized in proportion to the real bays, so the board fits on screen */
 .sc-grid12--sketch { --sketch-row: 26px; gap: var(--space-4) var(--space-4); }

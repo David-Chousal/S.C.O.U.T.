@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setSpan, snapSpan, systemDefault } from "./layout";
+import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setHeight, setSpan, snapHeight, snapSpan, systemDefault } from "./layout";
 
 describe("dashboard layout", () => {
   test("kinds and widths match the Worker's validator", () => {
@@ -38,6 +38,15 @@ describe("dashboard layout", () => {
     expect(snapSpan("metrics", 8.9)).toBe(6);
     expect(snapSpan("metrics", 9)).toBe(12);
     expect(snapSpan("health", 2)).toBe(12);
+  });
+
+  test("a bay's height snaps to 20 px inside its bounds, and null lets it fit its content again", () => {
+    expect(snapHeight(431)).toBe(440);
+    expect(snapHeight(10)).toBe(120);
+    expect(snapHeight(9000)).toBe(2400);
+    const tall = setHeight(systemDefault([1]), "health", 503);
+    expect(tall.find((b) => b.id === "health")?.height).toBe(500);
+    expect(setHeight(tall, "health", null).find((b) => b.id === "health")).not.toHaveProperty("height");
   });
 
   test("a bay dropped from the library lands where it was dropped", () => {

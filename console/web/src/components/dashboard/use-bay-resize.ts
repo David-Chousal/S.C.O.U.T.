@@ -1,16 +1,43 @@
 "use client";
 
 import { useState, type PointerEvent, type RefObject } from "react";
-import { snapSpan, type BayConfig, type Span } from "@/lib/dashboard/layout";
+import { snapHeight, snapSpan, type BayConfig, type Span } from "@/lib/dashboard/layout";
 
 const GRID_COLUMNS = 12;
 
-/** Drag a bay's right edge to resize it: the width snaps live to the nearest one its kind allows,
- * measured in grid columns from the bay's left edge. Escape puts the width back. */
-export function useBayResize(gridRef: RefObject<HTMLDivElement | null>, onWidth: (id: string, span: Span) => void) {
-  const [resizingId, setResizingId] = useState<string | null>(null);
+export interface ResizeHandlers {
+  onWidth: (id: string, span: Span) => void;
+  onHeight: (id: string, height: number | null) => void;
+}
 
-  function startResize(bay: BayConfig, event: PointerEvent<HTMLElement>) {
+/** Follows the pointer until release; Escape calls `undo` first. Cleans up either way. */
+function follow(move: (pointer: globalThis.PointerEvent) => void, undo: () => void, done: () => void) {
+  const finish = () => {
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", finish);
+    window.removeEventListener("pointercancel", finish);
+    window.removeEventListener("keydown", onKey, true);
+    done();
+  };
+  const onKey = (key: KeyboardEvent) => {
+    if (key.key !== "Escape") return;
+    key.stopPropagation();
+    undo();
+    finish();
+  };
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", finish);
+  window.addEventListener("pointercancel", finish);
+  window.addEventListener("keydown", onKey, true);
+}
+
+/** Drag a bay's right edge to resize its width (snapping live to the widths its kind allows, in
+ * grid columns from its left edge) or its bottom edge to set its height (snapping to 20 px).
+ * Escape puts it back. */
+export function useBayResize(gridRef: RefObject<HTMLDivElement | null>, handlers: ResizeHandlers) {
+  const [resizing, setResizing] = useState<{ id: string; axis: "width" | "height" } | null>(null);
+
+  function startWidth(bay: BayConfig, event: PointerEvent<HTMLElement>) {
     const grid = gridRef.current;
     const slot = event.currentTarget.closest("[data-bay-id]");
     if (event.button !== 0 || !grid || !slot) return;
@@ -19,27 +46,21 @@ export function useBayResize(gridRef: RefObject<HTMLDivElement | null>, onWidth:
     const gap = parseFloat(getComputedStyle(grid).columnGap) || 0;
     const column = (grid.getBoundingClientRect().width + gap) / GRID_COLUMNS;
     const left = slot.getBoundingClientRect().left;
-    setResizingId(bay.id);
-
-    const move = (pointer: globalThis.PointerEvent) => onWidth(bay.id, snapSpan(bay.kind, (pointer.clientX - left + gap) / column));
-    const finish = () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", finish);
-      window.removeEventListener("pointercancel", finish);
-      window.removeEventListener("keydown", onKey, true);
-      setResizingId(null);
-    };
-    const onKey = (key: KeyboardEvent) => {
-      if (key.key !== "Escape") return;
-      key.stopPropagation();
-      onWidth(bay.id, bay.span);
-      finish();
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", finish);
-    window.addEventListener("pointercancel", finish);
-    window.addEventListener("keydown", onKey, true);
+    setResizing({ id: bay.id, axis: "width" });
+    follow((pointer) => handlers.onWidth(bay.id, snapSpan(bay.kind, (pointer.clientX - left + gap) / column)),
+      () => handlers.onWidth(bay.id, bay.span), () => setResizing(null));
   }
 
-  return { resizingId, startResize };
+  function startHeight(bay: BayConfig, event: PointerEvent<HTMLElement>) {
+    const body = event.currentTarget.closest(".sc-edit-card")?.querySelector(".sc-edit-card__body");
+    if (event.button !== 0 || !body) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const top = body.getBoundingClientRect().top;
+    setResizing({ id: bay.id, axis: "height" });
+    follow((pointer) => handlers.onHeight(bay.id, snapHeight(pointer.clientY - top)),
+      () => handlers.onHeight(bay.id, bay.height ?? null), () => setResizing(null));
+  }
+
+  return { resizing, startWidth, startHeight };
 }
