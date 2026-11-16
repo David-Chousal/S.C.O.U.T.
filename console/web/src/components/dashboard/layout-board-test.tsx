@@ -15,7 +15,8 @@ const buoy = (buoy_id: number, label: string) => ({ buoy_id, label, tx_count_rep
 const reading = (hoursAgo: number, temp: string): Reading => ({
   record_seq: String(100 - hoursAgo), timestamp_utc: new Date(NOW - hoursAgo * 3600000).toISOString().slice(0, 19) + "Z", temp_c: temp, turbidity_fau: "1.2", battery_v: "3.3",
 });
-const DATA = { buoys: [buoy(1, "Reef north"), buoy(2, "Reef south")], readings: { 1: [reading(30, "26.0"), reading(2, "26.4")], 2: [reading(10, "25.1")] }, now: NOW };
+const DATA = { buoys: [buoy(1, "Reef north"), buoy(2, "Reef south")], readings: { 1: [reading(30, "26.0"), reading(2, "26.4")], 2: [reading(10, "25.1")] }, now: NOW,
+  from: NOW - 7 * 24 * 3600000, phrase: "last 7 days", allHistory: false };
 const OVERVIEW: SavedView = { id: "default", name: "Overview", shared: true, bays: systemDefault([1, 2]) };
 
 function renderBoard(canEdit = true, views: SavedView[] = [OVERVIEW], onChanged = vi.fn()) {
@@ -84,19 +85,19 @@ describe("LayoutBoard", () => {
 
 describe("TraceBay", () => {
   test("two buoys get a legend and end labels; the table view lists the points", () => {
-    render(<TraceBay buoys={DATA.buoys} readings={DATA.readings} variable="temp_c" now={NOW} />);
+    render(<TraceBay buoys={DATA.buoys} readings={DATA.readings} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(within(screen.getByRole("list", { name: "Buoys" })).getAllByRole("listitem")).toHaveLength(2);
-    expect(screen.getByRole("img", { name: /Water temperature over the last 7 days/ })).toBeDefined();
+    expect(screen.getByRole("img", { name: /Water temperature, last 7 days/ })).toBeDefined();
     expect(screen.getAllByRole("row")).toHaveLength(4);
   });
 
   test("a readings gap of over 26 hours lifts the pen", () => {
-    const { container } = render(<TraceBay buoys={[DATA.buoys[0]]} readings={DATA.readings} variable="temp_c" now={NOW} />);
+    const { container } = render(<TraceBay buoys={[DATA.buoys[0]]} readings={DATA.readings} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(container.querySelector(".sc-trace__line")?.getAttribute("d")?.match(/M/g)).toHaveLength(2);
   });
 
   test("says so when there is nothing to plot", () => {
-    render(<TraceBay buoys={DATA.buoys} readings={{}} variable="temp_c" now={NOW} />);
+    render(<TraceBay buoys={DATA.buoys} readings={{}} variable="temp_c" from={DATA.from} now={NOW} phrase="last 7 days" />);
     expect(screen.getByText(/No water temperature readings/)).toBeDefined();
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { completeness, daysTo, dielMeans, normalCdf, quantile, spread, trend } from "./stats";
+import { completeness, dailyMedians, daysTo, dielMeans, normalCdf, quantile, spread, trend } from "./stats";
 
 const DAY = 24 * 3600 * 1000;
 const T0 = Date.UTC(2026, 10, 1);
@@ -29,6 +29,14 @@ describe("robust statistics", () => {
 
   test("a large daily cycle with no rise is not mistaken for a trend", () => {
     expect(trend(series(7, 0, 2)).direction).toBe("steady");
+  });
+
+  test("over long spans the trend runs on daily medians and still finds the rate", () => {
+    const result = trend(series(60, 0.05, 2));
+    expect(result.basis).toBe("daily medians");
+    expect(result.direction).toBe("rising");
+    expect(result.slopePerDay).toBeCloseTo(0.05, 2);
+    expect(dailyMedians(series(2, 0, 2)).length).toBe(2);
   });
 
   test("too few readings give no trend", () => {

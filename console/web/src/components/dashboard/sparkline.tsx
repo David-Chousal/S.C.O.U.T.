@@ -28,14 +28,16 @@ interface SparklineProps {
   /** One QC flag per point: suspect and failed points are marked. */
   flags?: QcFlag[];
   references?: Reference[];
+  /** The time range in words, for the accessible name. */
+  phrase: string;
 }
 
 const tipTime = (t: number) => `${new Date(t).toISOString().slice(5, 16).replace("T", " ")} UTC`;
 
-/** A 7-day sparkline for a stat tile: shared time axis, the tile's value scale, the IQR as a band,
+/** A sparkline for a stat tile over the chosen range: shared time axis, the tile's value scale, the IQR as a band,
  * suspect points ringed and failed points filled (QARTOD flags), counts as bars, and the
  * nearest reading on hover or from the arrow keys. */
-export function Sparkline({ points, from, to, color, unit, digits, label, domain, form, band, flags, references = [] }: SparklineProps) {
+export function Sparkline({ points, from, to, color, unit, digits, label, domain, form, band, flags, references = [], phrase }: SparklineProps) {
   const [hover, setHover] = useState<number | null>(null);
   if (points.length === 0) return null;
   const [lo, hi] = form === "bars" ? [Math.min(0, domain[0]), domain[1]] : domain;
@@ -65,7 +67,7 @@ export function Sparkline({ points, from, to, color, unit, digits, label, domain
   return (
     <span className={`sc-spark sc-spark--${form}`}>
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" tabIndex={0}
-        aria-label={`${label}, last 7 days. Use the left and right arrow keys to read each value.`}
+        aria-label={`${label}, ${phrase}. Use the left and right arrow keys to read each value.`}
         onPointerMove={onMove} onPointerLeave={() => setHover(null)}
         onFocus={() => setHover(points.length - 1)} onBlur={() => setHover(null)} onKeyDown={onKey}>
         {band && form !== "bars" && <rect className="sc-spark__band" x={PAD} width={W - 2 * PAD} y={y(band[1])} height={Math.max(1, y(band[0]) - y(band[1]))} />}

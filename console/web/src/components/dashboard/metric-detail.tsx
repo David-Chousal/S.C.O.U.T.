@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Dialog } from "@/components/overlays/dialog";
-import type { Buoy } from "@/lib/api/types";
+import type { Buoy, Reading } from "@/lib/api/types";
 import { senLine, type MetricAnalysis } from "@/lib/dashboard/analysis";
 import type { Point } from "@/lib/dashboard/metrics";
-import { signed, WINDOW_DAYS } from "@/lib/dashboard/metrics";
+import { expectedReadings, signed } from "@/lib/dashboard/metrics";
+import { startFor, type TimeWindow } from "@/lib/dashboard/range";
 import type { QcTest } from "@/lib/dashboard/qc";
 import { completeness, daysTo, dielMeans } from "@/lib/dashboard/stats";
 import { VARIABLES, variableLabel } from "@/lib/variables";
-import { padded, Plot, type Scale } from "./plot";
+import { padded, Plot, timeTicks, type Scale } from "./plot";
 import { seriesColor } from "./trace-bay";
 
 const DAY_MS = 24 * 3600 * 1000;
@@ -20,7 +21,9 @@ export interface BuoyAnalysis { buoy: Pick<Buoy, "buoy_id" | "label" | "tx_count
 interface MetricDetailProps {
   column: string;
   rows: BuoyAnalysis[];
-  now: number;
+  window: TimeWindow;
+  /** Every buoy's rows, for when each one's own window starts. */
+  readings: Record<number, Reading[]>;
   onClose: () => void;
 }
 
@@ -73,18 +76,18 @@ function Marks({ rows, scale, form, domain }: { rows: BuoyAnalysis[]; scale: Sca
   );
 }
 
-function TimeChart({ rows, now, column }: { rows: BuoyAnalysis[]; now: number; column: string }) {
+function TimeChart({ rows, window, column }: { rows: BuoyAnalysis[]; window: TimeWindow; column: string }) {
   const [hover, setHover] = useState<number | null>(null);
   const profile = rows[0].analysis.profile;
   const domain = valueDomain(rows, profile.form);
   const unit = VARIABLES[column]?.unit ?? "";
   const digits = Math.max(...rows.map((r) => r.analysis.digits));
-  const t0 = now - WINDOW_DAYS * DAY_MS;
-  const ticks = [7, 5, 3, 1, 0].map((d) => ({ value: now - d * DAY_MS, label: d ? `${d}d ago` : "now" }));
+  const [t0, now] = [window.from, window.now];
+  const ticks = timeTicks(t0, now);
   return (
     <div className="sc-detail__chart">
       <Plot height={240} xDomain={[t0, now]} yDomain={domain} xTicks={ticks} yDigits={digits} onHover={setHover}
-        ariaLabel={`${variableLabel(column)} over the last 7 days, every buoy on one scale`}>
+        ariaLabel={`${variableLabel(column)}, ${window.phrase}, every buoy on one scale`}>
         {(scale) => (
           <>
             {(profile.references ?? []).filter((r) => r.value >= domain[0] && r.value <= domain[1]).map((r) => (
@@ -112,7 +115,7 @@ function TimeChart({ rows, now, column }: { rows: BuoyAnalysis[]; now: number; c
   );
 }
 
-function DielChart({ rows, column }: { rows: BuoyAnalysis[]; column: string }) {
+function DielChart({ rows, column, phrase }: { rows: BuoyAnalysis[]; column: string; phrase: string }) {
   const domain = valueDomain(rows, rows[0].analysis.profile.form);
   const digits = Math.max(...rows.map((r) => r.analysis.digits));
   const hourOf = (t: number) => (t % DAY_MS) / HOUR_MS;
@@ -120,7 +123,7 @@ function DielChart({ rows, column }: { rows: BuoyAnalysis[]; column: string }) {
   const clamp = (v: number) => Math.min(domain[1], Math.max(domain[0], v));
   return (
     <Plot height={200} xDomain={[0, 24]} yDomain={domain} xTicks={ticks} yDigits={digits}
-      ariaLabel={`${variableLabel(column)} by hour of day (UTC), every reading of the last 7 days`}>
+      ariaLabel={`${variableLabel(column)} by hour of day (UTC), every reading of the ${phrase}`}>
       {({ x, y }) => rows.map(({ buoy, index, analysis }) => {
         const usable = analysis.points.filter((_, i) => analysis.qc.flags[i].code !== 4);
         const means = dielMeans(usable);
@@ -137,12 +140,14 @@ function DielChart({ rows, column }: { rows: BuoyAnalysis[]; column: string }) {
 
 function trendText({ analysis }: BuoyAnalysis, unit: string): string {
   const { trend: t, digits } = analysis;
-  if (t.direction === "too few") return `Too few readings (${t.n}; needs 8)`;
+  if (t.direction === "too few") return `Too few ${t.basis === "daily medians" ? "days" : "readings"} for a trend (needs 8)`;
   const rate = `${signed(t.slopePerDay, digits + 1)} ${unit}/day`;
-  return t.direction === "steady" ? `No clear trend (${rate}, p = ${t.p.toFixed(2)})` : `${t.direction === "rising" ? "Rising" : "Falling"} ${rate} (${t.p < 0.001 ? "p < 0.001" : `p = ${t.p.toFixed(3)}`})`;
+  const p = t.p < 0.001 ? "p < 0.001" : `p = ${t.p.toFixed(t.direction === "steady" ? 2 : 3)}`;
+  const verdict = t.direction === "steady" ? `No clear trend (${rate}, ${p})` : `${t.direction === "rising" ? "Rising" : "Falling"} ${rate} (${p})`;
+  return `${verdict} · on ${t.basis === "daily medians" ? "daily medians" : "each transmit hour"}`;
 }
 
-function StatsTable({ rows, column }: { rows: BuoyAnalysis[]; column: string }) {
+function StatsTable({ rows, column, window, readings }: { rows: BuoyAnalysis[]; column: string; window: TimeWindow; readings: Record<number, Reading[]> }) {
   const unit = VARIABLES[column]?.unit ?? "";
   const floor = column === "battery_v" ? 3.1 : null;
   return (
@@ -155,7 +160,7 @@ function StatsTable({ rows, column }: { rows: BuoyAnalysis[]; column: string }) 
         <tbody>
           {rows.map((row) => {
             const { buoy, analysis: a } = row;
-            const expected = (buoy.tx_count_reported ?? 3) * WINDOW_DAYS;
+            const expected = expectedReadings(buoy.tx_count_reported, startFor(window, readings[buoy.buoy_id] ?? []), window.now);
             const left = floor === null ? null : daysTo(floor, a.stats.latest.v, a.trend);
             return (
               <tr key={buoy.buoy_id}>
@@ -198,7 +203,7 @@ function QcTable({ rows }: { rows: BuoyAnalysis[] }) {
 /** Details on demand for one metric: every buoy on one common scale with QC flags, Sen trend
  * lines and reference levels; the daily cycle by hour of day; robust statistics; and which
  * quality tests flagged what. */
-export function MetricDetail({ column, rows, now, onClose }: MetricDetailProps) {
+export function MetricDetail({ column, rows, window, readings, onClose }: MetricDetailProps) {
   const unit = VARIABLES[column]?.unit ?? "";
   const profile = rows[0].analysis.profile;
   return (
@@ -209,19 +214,19 @@ export function MetricDetail({ column, rows, now, onClose }: MetricDetailProps) 
           {rows.map(({ buoy, index }) => <li key={buoy.buoy_id}><i style={{ background: seriesColor(index) }} />{buoy.label}</li>)}
         </ul>
       )}
-      <section className="sc-detail__section" aria-label="Last 7 days">
-        <h3 className="sc-tag">Last 7 days · every buoy on one scale</h3>
-        <TimeChart rows={rows} now={now} column={column} />
+      <section className="sc-detail__section" aria-label="Over time">
+        <h3 className="sc-tag">{window.phrase} · every buoy on one scale</h3>
+        <TimeChart rows={rows} window={window} column={column} />
         <p className="sc-help">Hollow amber rings mark suspect points and solid red rings failed ones (hover for the test). Dashed lines are each buoy&apos;s Theil–Sen trend, drawn only where Mann–Kendall finds it significant (p &lt; 0.05).</p>
       </section>
       <section className="sc-detail__section" aria-label="Daily cycle">
         <h3 className="sc-tag">Daily cycle · every reading by hour of day (UTC)</h3>
-        <DielChart rows={rows} column={column} />
+        <DielChart rows={rows} column={column} phrase={window.phrase} />
         <p className="sc-help">The line joins each hour&apos;s mean. With 1–3 transmits a day the radio data shows only those hours; SD-card imports fill in the rest.</p>
       </section>
       <section className="sc-detail__section" aria-label="Statistics">
         <h3 className="sc-tag">Statistics · values that passed or were suspect</h3>
-        <StatsTable rows={rows} column={column} />
+        <StatsTable rows={rows} column={column} window={window} readings={readings} />
       </section>
       <section className="sc-detail__section" aria-label="Quality control">
         <h3 className="sc-tag">Quality control · after IOOS QARTOD</h3>

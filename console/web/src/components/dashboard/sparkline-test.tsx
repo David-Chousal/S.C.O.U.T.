@@ -9,7 +9,7 @@ const POINTS = [{ t: T0, v: 26.1 }, { t: T0 + 8 * HOUR, v: 26.4 }, { t: T0 + 16 
 describe("Sparkline", () => {
   test("its readings can be read from the keyboard", () => {
     render(<Sparkline points={POINTS} from={T0} to={T0 + 24 * HOUR} color="red" unit="°C" digits={1} label="Water temperature"
-      domain={[26, 27]} form="line" />);
+      domain={[26, 27]} form="line" phrase="last 7 days" />);
     const chart = screen.getByRole("img", { name: /Water temperature, last 7 days/ });
     fireEvent.focus(chart);
     expect(screen.getByRole("status").textContent).toContain("26.9 °C");

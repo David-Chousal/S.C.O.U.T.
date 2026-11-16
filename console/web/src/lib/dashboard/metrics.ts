@@ -10,7 +10,6 @@ const DAY_MS = 24 * HOUR_MS;
 const DAY_AGO_TOLERANCE_MS = 6 * HOUR_MS;
 /** What a buoy runs when it has not reported a count (firmware default, SCO-198). */
 export const DEFAULT_TX_PER_DAY = 3;
-export const WINDOW_DAYS = 7;
 
 export interface MetricGroup {
   name: string;
@@ -66,11 +65,16 @@ export function metricStats(points: Point[]): MetricStats | null {
 
 export interface Delivery { received: number; expected: number; ratio: number }
 
-/** Packets stored in the window against what the buoy's transmit count promises. */
-export function delivery(rows: Reading[], buoy: Pick<Buoy, "tx_count_reported">): Delivery {
+/** Readings a buoy's transmit count promises between `from` and `to` (Unix ms); at least one. */
+export function expectedReadings(txPerDay: number | null, from: number, to: number): number {
+  return Math.max(1, Math.round((txPerDay ?? DEFAULT_TX_PER_DAY) * (Math.max(0, to - from) / DAY_MS)));
+}
+
+/** Packets stored between `from` and `to` (Unix ms) against what the buoy's transmit count promises. */
+export function delivery(rows: Reading[], buoy: Pick<Buoy, "tx_count_reported">, from: number, to: number): Delivery {
   // Stored readings are keyed on (record_seq, timestamp_utc): a cold start restarts record_seq.
   const received = new Set(rows.map((r) => `${r.record_seq}|${r.timestamp_utc}`)).size;
-  const expected = (buoy.tx_count_reported ?? DEFAULT_TX_PER_DAY) * WINDOW_DAYS;
+  const expected = expectedReadings(buoy.tx_count_reported, from, to);
   return { received, expected, ratio: expected ? Math.min(1, received / expected) : 0 };
 }
 

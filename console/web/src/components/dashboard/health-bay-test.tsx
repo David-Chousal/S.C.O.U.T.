@@ -17,7 +17,8 @@ const schedule = { firmware: { slotsSod: [600, 29400, 58200], remote: [
 
 const renderBay = (withSchedule: boolean) => render(
   <PreferencesContext value={{ preferences: DEFAULT_PREFERENCES, update: vi.fn(), stored: true }}>
-    <HealthBay buoys={[buoy]} readings={{ 1: [] }} heat={null} schedule={withSchedule ? schedule : null} now={NOW} />
+    <HealthBay buoys={[buoy]} readings={{ 1: [] }} heat={null} schedule={withSchedule ? schedule : null}
+      window={{ from: NOW - 7 * 24 * HOUR, now: NOW, phrase: "last 7 days", allHistory: false }} />
   </PreferencesContext>,
 );
 

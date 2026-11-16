@@ -1,15 +1,18 @@
 // Robust statistics for the Overview: median and IQR rather than mean and SD (environmental data
-// is skewed and spiky), and trends as a Theil–Sen slope with a Mann–Kendall test. Both run within
-// each UTC hour of the day and are combined (the Seasonal Kendall approach, with the transmit slot
-// as the "season"), so a buoy that always samples at the same hours cannot fake a trend out of
-// its daily cycle. References: Sen 1968; Hirsch, Slack & Smith 1982; Helsel et al. 2020 (USGS).
+// is skewed and spiky), and trends as a Theil–Sen slope with a Mann–Kendall test. Over two weeks
+// or less both run within each UTC hour of the day and are combined (the Seasonal Kendall
+// approach, with the transmit slot as the "season"), so a buoy that always samples at the same
+// hours cannot fake a trend out of its daily cycle. Over longer spans they run on daily medians,
+// which remove the daily cycle and keep the pairwise maths small. References: Sen 1968; Hirsch, Slack & Smith 1982; Helsel et al. 2020 (USGS).
 
 import type { Point } from "./metrics";
 
 const DAY_MS = 24 * 3600 * 1000;
 const HOUR_MS = 3600 * 1000;
-/** Fewer readings than this and a trend test means little. */
+/** Fewer readings (or days) than this and a trend test means little. */
 export const MIN_TREND_POINTS = 8;
+/** Spans longer than this are tested on daily medians. */
+export const DAILY_AFTER_DAYS = 14;
 const SIGNIFICANCE = 0.05;
 
 /** Linear-interpolated quantile (type 7, R's default) of unsorted values. */
@@ -54,6 +57,8 @@ function tieTerm(values: number[]): number {
 
 export type TrendDirection = "rising" | "falling" | "steady" | "too few";
 
+export type TrendBasis = "per hour" | "daily medians";
+
 export interface Trend {
   /** Theil–Sen slope, units per day. */
   slopePerDay: number;
@@ -61,16 +66,37 @@ export interface Trend {
   p: number;
   n: number;
   direction: TrendDirection;
+  /** Within each UTC hour (Seasonal Kendall), or on daily medians for long spans. */
+  basis: TrendBasis;
 }
 
-/** Seasonal Theil–Sen slope and Seasonal Mann–Kendall test, with each UTC hour as a season. */
+/** One point per UTC day: the day's median, placed at midday. */
+export function dailyMedians(points: Point[]): Point[] {
+  const days = new Map<number, number[]>();
+  for (const p of points) {
+    const day = Math.floor(p.t / DAY_MS);
+    days.set(day, [...(days.get(day) ?? []), p.v]);
+  }
+  return [...days].sort(([a], [b]) => a - b).map(([day, values]) => ({ t: day * DAY_MS + DAY_MS / 2, v: quantile(values, 0.5) }));
+}
+
+/** Theil–Sen slope and Mann–Kendall test: seasonal by UTC hour over short spans, on daily medians
+ * over long ones. `n` is the number of readings. */
 export function trend(points: Point[]): Trend {
   const n = points.length;
-  if (n < MIN_TREND_POINTS) return { slopePerDay: 0, p: 1, n, direction: "too few" };
+  const span = n ? (points[n - 1].t - points[0].t) / DAY_MS : 0;
+  if (span > DAILY_AFTER_DAYS) return { ...kendall([dailyMedians(points)], "daily medians"), n };
+  return { ...kendall(bySlot(points), "per hour"), n };
+}
+
+/** Theil–Sen and Mann–Kendall summed over groups (seasons); one group is the plain test. */
+function kendall(groups: Point[][], basis: TrendBasis): Omit<Trend, "n"> {
+  const count = groups.reduce((sum, g) => sum + g.length, 0);
+  if (count < MIN_TREND_POINTS) return { slopePerDay: 0, p: 1, direction: "too few", basis };
   const slopes: number[] = [];
   let s = 0;
   let variance = 0;
-  for (const group of bySlot(points)) {
+  for (const group of groups) {
     const m = group.length;
     for (let i = 0; i < m; i += 1) {
       for (let j = i + 1; j < m; j += 1) {
@@ -81,14 +107,14 @@ export function trend(points: Point[]): Trend {
     }
     variance += (m * (m - 1) * (2 * m + 5) - tieTerm(group.map((p) => p.v))) / 18;
   }
-  if (slopes.length === 0) return { slopePerDay: 0, p: 1, n, direction: "too few" };
+  if (slopes.length === 0) return { slopePerDay: 0, p: 1, direction: "too few", basis };
   // Every season all ties: nothing changes, so there is no trend to test.
-  if (variance <= 0) return { slopePerDay: 0, p: 1, n, direction: "steady" };
+  if (variance <= 0) return { slopePerDay: 0, p: 1, direction: "steady", basis };
   const z = s > 0 ? (s - 1) / Math.sqrt(variance) : s < 0 ? (s + 1) / Math.sqrt(variance) : 0;
   const p = 2 * (1 - normalCdf(Math.abs(z)));
   const slopePerDay = quantile(slopes, 0.5);
   const direction: TrendDirection = p >= SIGNIFICANCE || slopePerDay === 0 ? "steady" : slopePerDay > 0 ? "rising" : "falling";
-  return { slopePerDay, p, n, direction };
+  return { slopePerDay, p, direction, basis };
 }
 
 /** Days until a value of `latest` reaches `floor` at the trend's rate; null unless it is significantly falling. */

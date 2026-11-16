@@ -22,10 +22,10 @@ describe("dashboard metrics", () => {
     expect(metricStats(pointsFor([row(0, { temp_c: "25" }), row(12, { temp_c: "26" })], "temp_c"))?.change).toBeNull();
   });
 
-  test("delivery counts packets once against the reported transmit count, defaulting to 3 a day", () => {
+  test("delivery counts packets once against the reported transmit count over the range, defaulting to 3 a day", () => {
     const rows = [row(0, {}), row(0, {}), row(8, {}), { ...row(16, {}), record_seq: "0" }];
-    expect(delivery(rows, { tx_count_reported: 2 })).toEqual({ received: 3, expected: 14, ratio: 3 / 14 });
-    expect(delivery(rows, { tx_count_reported: null }).expected).toBe(21);
+    expect(delivery(rows, { tx_count_reported: 2 }, 0, 7 * 24 * HOUR)).toEqual({ received: 3, expected: 14, ratio: 3 / 14 });
+    expect(delivery(rows, { tx_count_reported: null }, 0, 30 * 24 * HOUR).expected).toBe(90);
   });
 
   test("a restart is uptime that went down between readings", () => {

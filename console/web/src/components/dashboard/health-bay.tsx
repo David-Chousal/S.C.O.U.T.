@@ -6,6 +6,7 @@ import { SignalMeter } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, BuoyHeatStress, BuoySettings, HeatStressView, Reading } from "@/lib/api/types";
 import { buoyHealth, runningSettings, slotsInUse } from "@/lib/buoy-status";
+import { startFor, type TimeWindow } from "@/lib/dashboard/range";
 import { delivery, durationLabel, issues, latestText, pointsFor, restarts, type Delivery, type Issue } from "@/lib/dashboard/metrics";
 import { COUNT_SIGNAL, lastHeard } from "@/lib/format";
 import { AlertChip } from "./heat-stress-bay";
@@ -19,7 +20,7 @@ interface HealthBayProps {
   readings: Record<number, Reading[]>;
   heat: HeatStressView | null | undefined;
   schedule?: BuoySettings | null;
-  now: number;
+  window: TimeWindow;
 }
 
 interface BuoyHealthRow {
@@ -37,9 +38,9 @@ interface BuoyHealthRow {
 /** Live, Late or Silent against the buoy's own transmit slots (as Fleet), so a 1- or 2-a-day buoy
  * is not called late between its slots. */
 function linkHealth(buoy: Buoy, props: HealthBayProps): ReturnType<typeof freshness> {
-  if (!props.schedule) return freshness(lastHeard(buoy), props.now, FALLBACK_LIVE_WITHIN_MS);
+  if (!props.schedule) return freshness(lastHeard(buoy), props.window.now, FALLBACK_LIVE_WITHIN_MS);
   const running = runningSettings(buoy, props.schedule.firmware.remote);
-  return buoyHealth(lastHeard(buoy), slotsInUse(props.schedule.firmware.slotsSod, running.tx_count, running.slot_phase_h), props.now);
+  return buoyHealth(lastHeard(buoy), slotsInUse(props.schedule.firmware.slotsSod, running.tx_count, running.slot_phase_h), props.window.now);
 }
 
 function rowFor(buoy: Buoy, props: HealthBayProps): BuoyHealthRow {
@@ -49,7 +50,7 @@ function rowFor(buoy: Buoy, props: HealthBayProps): BuoyHealthRow {
   const link = buoy.disconnected_at ? { state: "off" as const, lit: 0, word: "Disconnected" } : linkHealth(buoy, props);
   return {
     buoy, link, battery, uptime,
-    delivered: delivery(rows, buoy),
+    delivered: delivery(rows, buoy, startFor(props.window, rows), props.window.now),
     restarts: restarts(rows),
     firmware: latestText(rows, "fw_version"),
     heat: props.heat?.buoys.find((b) => b.buoy_id === buoy.buoy_id),
@@ -67,7 +68,7 @@ function Kpi({ label, value, detail }: { label: string; value: string; detail?: 
   );
 }
 
-function Kpis({ rows }: { rows: BuoyHealthRow[] }) {
+function Kpis({ rows, phrase }: { rows: BuoyHealthRow[]; phrase: string }) {
   const live = rows.filter((r) => r.link.state === "ok").length;
   const received = rows.reduce((sum, r) => sum + r.delivered.received, 0);
   const expected = rows.reduce((sum, r) => sum + r.delivered.expected, 0);
@@ -81,14 +82,14 @@ function Kpis({ rows }: { rows: BuoyHealthRow[] }) {
   return (
     <div className="sc-kpis">
       <Kpi label="Buoys live" value={`${live} of ${rows.length}`} detail={live === rows.length ? "All on schedule" : `${rows.length - live} late, silent or never heard`} />
-      <Kpi label="Packets, 7 days" value={expected ? `${Math.round((Math.min(received, expected) / expected) * 100)} %` : "—"}
+      <Kpi label={`Packets · ${phrase}`} value={expected ? `${Math.round((Math.min(received, expected) / expected) * 100)} %` : "—"}
         detail={`${received} of ${expected} expected`} />
       <Kpi label="Lowest battery" value={powered.length ? `${powered[0].battery?.toFixed(2)} V` : "—"} detail={powered[0]?.buoy.label ?? "No battery readings"} />
       <Kpi label="Heat stress" value={worst ? `${worst.dhw.toFixed(1)} DHW` : "—"}
         detail={worst ? <><AlertChip alert={worst.alert} /> {heated[0].buoy.label}</> : "No MMM set or no data"} />
       <Kpi label="Active issues" value={String(current.length + commands)}
         detail={current.length + commands === 0 ? "None in the newest packets" : `${commands} command${commands === 1 ? "" : "s"} rejected · ${current.length} flag${current.length === 1 ? "" : "s"}`} />
-      <Kpi label="Restarts, 7 days" value={String(resets)} detail="Uptime that went back to zero" />
+      <Kpi label={`Restarts · ${phrase}`} value={String(resets)} detail="Uptime that went back to zero" />
     </div>
   );
 }
@@ -99,7 +100,7 @@ function IssueList({ list }: { list: Issue[] }) {
     <span className="sc-issues">
       {list.map((i) => (
         <span key={i.code} className={`sc-badge sc-issue sc-issue--${i.tone}${i.current ? "" : " sc-issue--past"}`}
-          title={`${i.code}: ${i.count} of the last 7 days' readings${i.current ? ", including the newest" : ""}`}>
+          title={`${i.code}: in ${i.count} of the readings in range${i.current ? ", including the newest" : ""}`}>
           {i.label}{i.count > 1 ? ` ×${i.count}` : ""}
         </span>
       ))}
@@ -113,9 +114,9 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
       <table className="sc-table sc-health-table">
         <thead>
           <tr>
-            <th scope="col">Buoy</th><th scope="col">Link</th><th scope="col" className="n">Packets 7 d</th><th scope="col" className="n">Battery (V)</th>
+            <th scope="col">Buoy</th><th scope="col">Link</th><th scope="col" className="n">Packets</th><th scope="col" className="n">Battery (V)</th>
             <th scope="col">Heat stress</th><th scope="col">Transmits a day</th><th scope="col">Settings</th><th scope="col">Firmware</th>
-            <th scope="col">Uptime</th><th scope="col">Flags, 7 days</th>
+            <th scope="col">Uptime</th><th scope="col">Flags in range</th>
           </tr>
         </thead>
         <tbody>
@@ -148,7 +149,7 @@ export function HealthBay(props: HealthBayProps) {
   const rows = props.buoys.map((buoy) => rowFor(buoy, props));
   return (
     <div className="sc-health">
-      <Kpis rows={rows} />
+      <Kpis rows={rows} phrase={props.window.phrase} />
       <StatusTable rows={rows} />
     </div>
   );

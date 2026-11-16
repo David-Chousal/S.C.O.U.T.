@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { Buoy, Reading } from "@/lib/api/types";
 import { VARIABLES, variableLabel } from "@/lib/variables";
+import { timeTicks } from "./plot";
 
 /** Series colours in a fixed order, keyed to each buoy's place in the fleet list (so a buoy keeps
  * its colour when others are filtered out). The order was chosen with the dataviz validator:
@@ -15,7 +16,6 @@ const HEIGHT = 220;
 const PAD = { top: 12, right: 72, bottom: 24, left: 44 };
 // A buoy transmits 1-3 times a day (SCO-198), so only silence past a day and a bit is a real gap.
 const GAP_MS = 26 * 3600 * 1000;
-const DAY_MS = 24 * 3600 * 1000;
 
 interface Series { buoy: Pick<Buoy, "buoy_id" | "label">; index: number; points: { t: number; v: number }[] }
 
@@ -37,7 +37,17 @@ function ticks(min: number, max: number): number[] {
   return [0, 1, 2, 3].map((i) => min + step * i);
 }
 
-export function TraceBay({ buoys, readings, variable, now }: { buoys: Pick<Buoy, "buoy_id" | "label">[]; readings: Record<number, Reading[]>; variable: string; now: number }) {
+interface TraceBayProps {
+  buoys: Pick<Buoy, "buoy_id" | "label">[];
+  readings: Record<number, Reading[]>;
+  variable: string;
+  /** The time range, Unix ms, and the range in words. */
+  from: number;
+  now: number;
+  phrase: string;
+}
+
+export function TraceBay({ buoys, readings, variable, from, now, phrase }: TraceBayProps) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
   const [hover, setHover] = useState<number | null>(null);
@@ -51,11 +61,11 @@ export function TraceBay({ buoys, readings, variable, now }: { buoys: Pick<Buoy,
 
   const series = seriesFor(buoys, readings, variable);
   const unit = VARIABLES[variable]?.unit ?? "";
-  if (series.length === 0) return <p className="sc-help">No {variableLabel(variable).toLowerCase()} readings in the last 7 days.</p>;
+  if (series.length === 0) return <p className="sc-help">No {variableLabel(variable).toLowerCase()} readings in this time range.</p>;
   const values = series.flatMap((s) => s.points.map((p) => p.v));
   const [lo, hi] = [Math.min(...values), Math.max(...values)];
   const padY = (hi - lo) * 0.08 || 1;
-  const [y0, y1, t0, t1] = [lo - padY, hi + padY, now - 7 * DAY_MS, now];
+  const [y0, y1, t0, t1] = [lo - padY, hi + padY, from, now];
   const x = (t: number) => PAD.left + ((t - t0) / (t1 - t0)) * (width - PAD.left - PAD.right);
   const y = (v: number) => PAD.top + (1 - (v - y0) / (y1 - y0)) * (HEIGHT - PAD.top - PAD.bottom);
   const nearest = (s: Series, t: number) => s.points.reduce((a, b) => (Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a));
@@ -73,12 +83,12 @@ export function TraceBay({ buoys, readings, variable, now }: { buoys: Pick<Buoy,
           {series.map((s) => <li key={s.buoy.buoy_id}><i style={{ background: seriesColor(s.index) }} />{s.buoy.label}</li>)}
         </ul>
       )}
-      <svg viewBox={`0 0 ${width} ${HEIGHT}`} role="img" aria-label={`${variableLabel(variable)} over the last 7 days`}
+      <svg viewBox={`0 0 ${width} ${HEIGHT}`} role="img" aria-label={`${variableLabel(variable)}, ${phrase}`}
         onPointerMove={onMove} onPointerLeave={() => setHover(null)}>
         <g className="sc-trace__grid">{ticks(y0, y1).map((v) => <line key={v} x1={PAD.left} x2={width - PAD.right} y1={y(v)} y2={y(v)} />)}</g>
         <g className="sc-trace__axis">
           {ticks(y0, y1).map((v) => <text key={v} x={PAD.left - 6} y={y(v) + 4} textAnchor="end">{v.toFixed(Math.abs(y1 - y0) < 5 ? 2 : 0)}</text>)}
-          {[7, 5, 3, 1].map((d) => <text key={d} x={x(now - d * DAY_MS)} y={HEIGHT - 6} textAnchor="middle">{d}d ago</text>)}
+          {timeTicks(t0, t1).slice(0, 4).map((tick) => <text key={tick.value} x={x(tick.value)} y={HEIGHT - 6} textAnchor="middle">{tick.label}</text>)}
         </g>
         {series.map((s) => <path key={s.buoy.buoy_id} className="sc-trace__line" d={path(s.points, x, y)} style={{ stroke: seriesColor(s.index) }} />)}
         {series.length <= 4 && series.map((s) => {

@@ -25,6 +25,19 @@ export function niceTicks([lo, hi]: [number, number], digits: number): Tick[] {
   return [0, 1, 2, 3].map((i) => lo + step * i).map((value) => ({ value, label: value.toFixed(digits) }));
 }
 
+const DAY_MS = 24 * 3600 * 1000;
+
+/** Five ticks across a time window, labelled by hour, day or month to suit its length (UTC). */
+export function timeTicks(from: number, to: number): Tick[] {
+  const span = to - from;
+  const label = (t: number) => {
+    const iso = new Date(t).toISOString();
+    if (span <= 2 * DAY_MS) return `${iso.slice(11, 13)}:00`;
+    return span <= 400 * DAY_MS ? iso.slice(5, 10) : iso.slice(0, 7);
+  };
+  return [0, 1, 2, 3, 4].map((i) => from + (span * i) / 4).map((value) => ({ value, label: label(value) }));
+}
+
 /** Pads a value range by 8% each side (or ±1 when flat), for breathing room inside the axes. */
 export function padded([lo, hi]: [number, number]): [number, number] {
   const pad = (hi - lo) * 0.08 || Math.abs(lo) * 0.01 || 1;

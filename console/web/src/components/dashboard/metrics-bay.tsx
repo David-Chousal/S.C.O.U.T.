@@ -4,22 +4,21 @@ import { useState } from "react";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, Reading } from "@/lib/api/types";
 import { analyse } from "@/lib/dashboard/analysis";
-import { METRIC_GROUPS, signed, WINDOW_DAYS } from "@/lib/dashboard/metrics";
+import { METRIC_GROUPS, signed } from "@/lib/dashboard/metrics";
 import { qcLabel, type QcResult } from "@/lib/dashboard/qc";
+import type { TimeWindow } from "@/lib/dashboard/range";
 import type { Trend } from "@/lib/dashboard/stats";
 import { VARIABLES, variableLabel } from "@/lib/variables";
 import { MetricDetail, type BuoyAnalysis } from "./metric-detail";
 import { Sparkline } from "./sparkline";
 import { seriesColor } from "./trace-bay";
 
-const DAY_MS = 24 * 3600 * 1000;
-
 type BayBuoy = Pick<Buoy, "buoy_id" | "label" | "tx_count_reported">;
 
 interface MetricsBayProps {
   buoys: BayBuoy[];
   readings: Record<number, Reading[]>;
-  now: number;
+  window: TimeWindow;
 }
 
 /** Each buoy's analysis of one column, keeping the buoy's fleet position for its colour. */
@@ -40,7 +39,7 @@ const ARROW: Record<Trend["direction"], string> = { rising: "▲ Rising", fallin
 
 function TrendLine({ trend, digits, unit }: { trend: Trend; digits: number; unit: string }) {
   const rate = trend.direction === "rising" || trend.direction === "falling" ? ` ${signed(trend.slopePerDay, digits + 1)} ${unit}/day` : "";
-  return <span className="sc-metric__trend" title="Theil–Sen slope; Mann–Kendall p < 0.05 within each transmit hour">{ARROW[trend.direction]}{rate}</span>;
+  return <span className="sc-metric__trend" title={`Theil–Sen slope; Mann–Kendall p < 0.05 on ${trend.basis === "daily medians" ? "daily medians" : "each transmit hour"}`}>{ARROW[trend.direction]}{rate}</span>;
 }
 
 function QcChip({ qc }: { qc: Pick<QcResult, "suspect" | "fail"> }) {
@@ -48,7 +47,7 @@ function QcChip({ qc }: { qc: Pick<QcResult, "suspect" | "fail"> }) {
   return <span className={`sc-badge sc-qc sc-qc--${tone}`} title="Automated quality control after IOOS QARTOD">{qcLabel(qc)}</span>;
 }
 
-function Tile({ column, rows, multi, now, onOpen }: { column: string; rows: BuoyAnalysis[]; multi: boolean; now: number; onOpen: () => void }) {
+function Tile({ column, rows, multi, window, onOpen }: { column: string; rows: BuoyAnalysis[]; multi: boolean; window: TimeWindow; onOpen: () => void }) {
   const unit = VARIABLES[column]?.unit ?? "";
   const domain = tileDomain(rows);
   const total = rows.reduce((sum, r) => ({ suspect: sum.suspect + r.analysis.qc.suspect, fail: sum.fail + r.analysis.qc.fail }), { suspect: 0, fail: 0 });
@@ -69,9 +68,9 @@ function Tile({ column, rows, multi, now, onOpen }: { column: string; rows: Buoy
               {a.stats.change === null ? "no reading 24 h ago" : `${signed(a.stats.change, a.digits)} in 24 h`}
             </span>
           </span>
-          <Sparkline points={a.points} from={now - WINDOW_DAYS * DAY_MS} to={now} color={seriesColor(index)} unit={unit} digits={a.digits}
+          <Sparkline points={a.points} from={window.from} to={window.now} color={seriesColor(index)} unit={unit} digits={a.digits}
             domain={domain} form={a.profile.form} band={[a.spread.q1, a.spread.q3]} flags={a.qc.flags} references={a.profile.references}
-            label={`${variableLabel(column)}${multi ? ` · ${buoy.label}` : ""}`} />
+            label={`${variableLabel(column)}${multi ? ` · ${buoy.label}` : ""}`} phrase={window.phrase} />
           <span className="sc-metric__range">
             median {a.spread.median.toFixed(a.digits)} · IQR {a.spread.q1.toFixed(a.digits)} to {a.spread.q3.toFixed(a.digits)} · <Ago ms={a.stats.latest.t} />
           </span>
@@ -116,7 +115,7 @@ function StatsTable({ shown }: { shown: { column: string; rows: BuoyAnalysis[] }
 }
 
 /** Every measured number, grouped (water, soundscape, power and housing). Each tile shows every
- * buoy's newest value, 24 h change, a 7-day sparkline on a shared time and value scale with the
+ * buoy's newest value, 24 h change, a sparkline over the chosen range on a shared time and value scale with the
  * IQR as a band and QC-flagged points marked, the median and IQR, and a robust trend. A tile
  * opens the metric's full analysis. Metrics with nothing in the window are named, not hidden. */
 export function MetricsBay(props: MetricsBayProps) {
@@ -130,7 +129,7 @@ export function MetricsBay(props: MetricsBayProps) {
   const missing = groups.flatMap((g) => g.metrics.filter((m) => m.rows.length === 0).map((m) => variableLabel(m.column)));
   const opened = shown.find((m) => m.column === open);
   if (props.buoys.length === 0) return <p className="sc-help">No buoys yet.</p>;
-  if (shown.length === 0) return <p className="sc-help">No readings in the last 7 days.</p>;
+  if (shown.length === 0) return <p className="sc-help">No readings in this time range.</p>;
   return (
     <div className="sc-metrics">
       <div className="sc-metrics__key">
@@ -139,7 +138,7 @@ export function MetricsBay(props: MetricsBayProps) {
             {props.buoys.map((b, i) => <li key={b.buoy_id}><i style={{ background: seriesColor(i) }} />{b.label}</li>)}
           </ul>
         )}
-        <span className="sc-help">Shaded band: the week&apos;s middle 50 % (IQR). <i className="sc-key-mark sc-key-mark--suspect" /> suspect, <i className="sc-key-mark sc-key-mark--fail" /> failed QC. Choose a metric&apos;s name for its full analysis.</span>
+        <span className="sc-help">Shaded band: the range&apos;s middle 50 % (IQR). <i className="sc-key-mark sc-key-mark--suspect" /> suspect, <i className="sc-key-mark sc-key-mark--fail" /> failed QC. Choose a metric&apos;s name for its full analysis.</span>
       </div>
       {groups.map((group) => {
         const withData = group.metrics.filter((m) => m.rows.length > 0);
@@ -148,17 +147,17 @@ export function MetricsBay(props: MetricsBayProps) {
           <section key={group.name} className="sc-metrics__group" aria-label={group.name}>
             <h3 className="sc-tag">{group.name}</h3>
             <div className="sc-metrics__grid">
-              {withData.map((m) => <Tile key={m.column} column={m.column} rows={m.rows} multi={multi} now={props.now} onOpen={() => setOpen(m.column)} />)}
+              {withData.map((m) => <Tile key={m.column} column={m.column} rows={m.rows} multi={multi} window={props.window} onOpen={() => setOpen(m.column)} />)}
             </div>
           </section>
         );
       })}
       {missing.length > 0 && (
-        <p className="sc-help">No data in the last 7 days: {missing.join(", ")}. Blank columns are not measured on the radio link
+        <p className="sc-help">No data in this time range: {missing.join(", ")}. Blank columns are not measured on the radio link
           (housing sensors are SD-card only, turbidity is not yet calibrated to FAU) or had no recording.</p>
       )}
       <StatsTable shown={shown} />
-      {opened && <MetricDetail column={opened.column} rows={opened.rows} now={props.now} onClose={() => setOpen(null)} />}
+      {opened && <MetricDetail column={opened.column} rows={opened.rows} window={props.window} readings={props.readings} onClose={() => setOpen(null)} />}
     </div>
   );
 }
