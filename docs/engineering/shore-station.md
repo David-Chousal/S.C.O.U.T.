@@ -81,21 +81,25 @@ leaving ~28 s of the +2 min side for clock drift. Three limits:
 - **During a firmware OTA session** the station waits for that buoy's ACKs and discards every
   other frame (`wait_ack` in `shore_ota.cpp`), for up to ~6 min. Another buoy's uplink in that
   time is lost; the next slot carries a fresher reading.
-- **Clock drift (⚠️ estimate, not measured).** The buoy sets its PCF8523 only at boot, and
-  nothing corrects it afterwards. Neighbouring buoys have 25.52 s of separation (30 s − a 4.48 s
-  on-air turn). Two assumptions:
-  - **Drift:** at most ±2 s/day per buoy, the figure [Adafruit](https://learn.adafruit.com/adafruit-pcf8523-real-time-clock) gives for the PCF8523. The guide gives
-    no conditions for it. Crystal frequency falls off on a parabola either side of about 25 °C
-    ([NXP AN11247](https://www.nxp.com/docs/en/application-note/AN11247.pdf)), so a colder or hotter buoy may drift faster.
-  - **Set error:** at most 1 s per buoy. `set_rtc.py` sends whole-second timestamps and doesn't
-    check the clock it leaves, so two buoys can start up to 2 s apart.
-
-  On those assumptions two buoys drifting apart close the remaining 23.5 s in about
-  **5.9 days**, so **re-set both clocks at least every 5 days**. One buoy alone uses up its
-  ~27 s of window (28 s less its set error) in about 13 days. Resetting over USB is only
-  practical on the bench, so before deployment the clock must be corrected from the shore
-  ([SCO-315](https://linear.app/scout1/issue/SCO-315)). The figures need checking against bench drift measurements at deployment
-  temperature.
+- **Clock drift, corrected from the station since 2026-11-15** ([SCO-315](https://linear.app/scout1/issue/SCO-315)). Neighbouring buoys have
+  25.52 s of separation (30 s − a 4.48 s on-air turn). The PCF8523 may gain or lose up to
+  2 s/day ([Adafruit](https://learn.adafruit.com/adafruit-pcf8523-real-time-clock), no conditions given; crystals drift more away from about 25 °C, [NXP AN11247](https://www.nxp.com/docs/en/application-note/AN11247.pdf)), and
+  `set_rtc.py` leaves up to 1 s of error per buoy. Left alone, two buoys would close the gap in
+  about **5.9 days**. So after every packet it hears, the station answers with its own time:
+  the settings or count frame if one is due, else a signed 26-byte **time frame** (downlink v3).
+  The buoy steps its clock toward the station's by at most 30 s per frame, ignoring a 1 s
+  difference. A native test models two buoys drifting the worst way for 90 days and finds them
+  never closer than a whole on-air turn, each within 3 s of the station. ⚠️ Model and design
+  figures, not measured. Limits:
+  - It only works while the station hears the buoy. **About 5.9 days of missed slots** (station
+    down, buoy in CRITICAL) would bring two buoys together again.
+  - Every buoy follows the station's clock (NTP, else the S3's own), so the station's error is
+    shared, not a collision risk. The slot-window tag uses the same clock.
+  - A buoy whose clock is more than a day off rejects every frame as stale and can't be
+    corrected over the air. Nor can one with no working RTC.
+  - The time frame's counter is kept in retained RAM, not flash, to spare the flash a write per
+    slot. After a power loss, a frame recorded in the last day could be replayed. That moves the
+    clock at most 30 s per frame, and the next real frame moves it back.
 - **A fifth buoy** gets SCOUT-01's offset (IDs 1 and 5 both get +0 s), and a wider window or a
   smaller step alone doesn't change that. It needs more positions (with a step and window that
   still fit them) or another collision-free way of assigning slots.
