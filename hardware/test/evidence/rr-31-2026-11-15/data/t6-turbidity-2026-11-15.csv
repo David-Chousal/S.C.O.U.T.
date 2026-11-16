@@ -1,0 +1,7 @@
+sample,board_switch,mean_adc,mean_v,min_adc,max_adc,spread_pct,note
+air,D,145.2,0.117,100,151,35.12,switch wrongly on D (digital); readings invalid
+clear_water,D,148.0,0.118,141,187,31.09,switch wrongly on D; same as air -> found the fault
+air,A,1957.0,1.577,1951,1966,0.77,switch moved to A
+clear_water_try1,A,2481.0,1.999,2414,2548,5.40,probe hand-held / bubbles; dips to 279
+clear_water,A,2438.7,1.965,2435,2445,0.41,probe taped to cup rim; T6-3 PASS; T6-4 clear-water V at 3.3 V = 1.965
+coffee,A,2045.1,1.648,2036,2055,0.93,coffee added to same cup; lower than clear -> T6-2 polarity PASS (coffee is mostly dye; milk/flour step series still to do)
