@@ -24,13 +24,17 @@ const THRESHOLD_PX = 5;
 
 /** The drop index under the pointer: before or after the bay it is over (by row for full-width
  * bays, by side otherwise), the end when below the last bay, unchanged over the placeholder. */
-function dropIndex(grid: HTMLElement, x: number, y: number, previous: number | null): number | null {
+function dropIndex(grid: HTMLElement, x: number, y: number, previous: number | null, moving: string | null): number | null {
   const box = grid.getBoundingClientRect();
   const under = document.elementFromPoint(x, y);
   if (under?.closest("[data-drop-placeholder]")) return previous;
   if (x < box.left || x > box.right || y < box.top - 24 || y > box.bottom + 48) return null;
-  const slots = [...grid.querySelectorAll<HTMLElement>("[data-bay-id]")];
+  // Indices count the bays that stay put: the moving one is lifted out once the drag starts.
+  const all = [...grid.querySelectorAll<HTMLElement>("[data-bay-id]")];
+  const slots = all.filter((s) => s.dataset.bayId !== moving);
   const slot = under?.closest<HTMLElement>("[data-bay-id]");
+  // Still over the bay being lifted (the first move): it stays where it was.
+  if (slot && moving !== null && slot.dataset.bayId === moving) return all.indexOf(slot);
   if (!slot || !grid.contains(slot)) {
     const last = slots.at(-1)?.getBoundingClientRect();
     return !last || y > last.bottom ? slots.length : previous;
@@ -56,7 +60,7 @@ export function useBoardDrag(gridRef: RefObject<HTMLDivElement | null>, onDrop: 
       if (!current && Math.hypot(pointer.clientX - startX, pointer.clientY - startY) < THRESHOLD_PX) return;
       pointer.preventDefault();
       const grid = gridRef.current;
-      const at = grid ? dropIndex(grid, pointer.clientX, pointer.clientY, current?.at ?? null) : null;
+      const at = grid ? dropIndex(grid, pointer.clientX, pointer.clientY, current?.at ?? null, source.type === "bay" ? source.id : null) : null;
       current = { source, kind, label, span, x: pointer.clientX, y: pointer.clientY, at };
       setDrag(current);
     };

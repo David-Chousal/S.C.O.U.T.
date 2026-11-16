@@ -94,7 +94,8 @@ export function BayFrame({ bay, name, editing, sketch = false, picked, resizing,
       </div>
     );
   }
-  const drag = (event: PointerEvent<HTMLElement>) => { if (!onControl(event)) onDragStart(event); };
+  // Card-wide drags are for mouse and pen: on touch a swipe over the card scrolls, and the grip drags.
+  const drag = (event: PointerEvent<HTMLElement>) => { if (event.pointerType !== "touch" && !onControl(event)) onDragStart(event); };
   return (
     <div className={classes} data-bay-id={bay.id} data-testid={`slot-${bay.id}`}>
       <div className={sketch ? "sc-edit-card sc-edit-card--sketch" : "sc-edit-card"} onPointerDown={sketch ? drag : undefined}>

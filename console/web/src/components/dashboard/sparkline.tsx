@@ -46,8 +46,10 @@ export function Sparkline({ points, from, to, color, unit, digits, label, domain
   const pct = (px: number, total: number) => `${(px / total) * 100}%`;
   const clamp = (v: number) => Math.min(hi, Math.max(lo, v));
   const line = points.map((p, i) => `${i === 0 || p.t - points[i - 1].t > GAP_MS ? "M" : "L"}${x(p.t).toFixed(1)},${y(p.v).toFixed(1)}`).join("");
-  const marked = hover === null ? points.length - 1 : hover;
-  const flag = hover === null ? undefined : flags?.[hover];
+  // A selection left over from a longer series (the range just changed) is dropped, never read past the end.
+  const selected = hover !== null && hover < points.length ? hover : null;
+  const marked = selected ?? points.length - 1;
+  const flag = selected === null ? undefined : flags?.[selected];
 
   function onMove(event: PointerEvent<SVGSVGElement>) {
     const box = event.currentTarget.getBoundingClientRect();
@@ -57,7 +59,7 @@ export function Sparkline({ points, from, to, color, unit, digits, label, domain
 
   // Keyboard equivalent of the hover: focus selects the newest reading, arrows step through them.
   function onKey(event: KeyboardEvent<SVGSVGElement>) {
-    const current = hover ?? points.length - 1;
+    const current = selected ?? points.length - 1;
     const next = { ArrowLeft: current - 1, ArrowRight: current + 1, Home: 0, End: points.length - 1 }[event.key];
     if (next === undefined) return;
     event.preventDefault();
@@ -79,15 +81,15 @@ export function Sparkline({ points, from, to, color, unit, digits, label, domain
           : <path className="sc-spark__line" d={line} style={{ stroke: color }} vectorEffect="non-scaling-stroke" />}
       </svg>
       {/* Markers are HTML, so they stay round while the stretched SVG does not. */}
-      {flags?.map((f, i) => (f.code === 1 ? null : (
+      {flags?.map((f, i) => (f.code === 1 || i >= points.length ? null : (
         <i key={points[i].t} className={`sc-spark__flag sc-spark__flag--${f.code === 4 ? "fail" : "suspect"}`} aria-hidden="true"
           style={{ left: pct(x(points[i].t), W), top: pct(y(clamp(points[i].v)), H) }} />
       )))}
       <i className="sc-spark__dot" aria-hidden="true"
         style={{ left: pct(x(points[marked].t), W), top: pct(y(clamp(points[marked].v)), H), background: color }} />
-      {hover !== null && (
+      {selected !== null && (
         <span className="sc-spark__tip" role="status">
-          {points[hover].v.toFixed(digits)} {unit} · {tipTime(points[hover].t)}
+          {points[selected].v.toFixed(digits)} {unit} · {tipTime(points[selected].t)}
           {flag && flag.code !== 1 && ` · ${flag.code === 4 ? "Fail" : "Suspect"}: ${flag.tests.join(", ")}`}
         </span>
       )}

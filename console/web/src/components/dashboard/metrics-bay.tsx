@@ -3,11 +3,11 @@
 import { useState, type CSSProperties } from "react";
 import { Ago } from "@/components/ui/ago";
 import type { Buoy, Reading } from "@/lib/api/types";
-import { analyse } from "@/lib/dashboard/analysis";
+import { analyse, fixed, usablePoints } from "@/lib/dashboard/analysis";
 import { METRIC_GROUPS, signed } from "@/lib/dashboard/metrics";
 import { qcLabel, type QcResult } from "@/lib/dashboard/qc";
 import type { TimeWindow } from "@/lib/dashboard/range";
-import { loadTileOrder, saveTileOrder, type TileOrder } from "@/lib/dashboard/tile-order";
+import { loadTileOrder, mergeOrder, saveTileOrder, type TileOrder } from "@/lib/dashboard/tile-order";
 import { loadTileSizes, saveTileSizes, withTileSize, type TileSize, type TileSizes } from "@/lib/dashboard/tile-sizes";
 import type { Trend } from "@/lib/dashboard/stats";
 import { VARIABLES, variableLabel } from "@/lib/variables";
@@ -39,7 +39,9 @@ function analyses(props: MetricsBayProps, column: string): BuoyAnalysis[] {
 
 /** The tile's shared value scale: every buoy's values that did not fail QC. */
 function tileDomain(rows: BuoyAnalysis[]): [number, number] {
-  const values = rows.flatMap(({ analysis }) => analysis.points.filter((_, i) => analysis.qc.flags[i].code !== 4).map((p) => p.v));
+  const usable = rows.flatMap(({ analysis }) => usablePoints(analysis).map((p) => p.v));
+  // When every reading failed QC, scale to the failed readings so they stay visible.
+  const values = usable.length ? usable : rows.flatMap(({ analysis }) => analysis.points.map((p) => p.v));
   return values.length ? [Math.min(...values), Math.max(...values)] : [0, 1];
 }
 
@@ -85,10 +87,10 @@ function Tile({ column, rows, multi, window, onOpen }: { column: string; rows: B
             </span>
           </span>
           <Sparkline points={a.points} from={window.from} to={window.now} color={seriesColor(index)} unit={unit} digits={a.digits}
-            domain={domain} form={a.profile.form} band={[a.spread.q1, a.spread.q3]} flags={a.qc.flags} references={a.profile.references}
+            domain={domain} form={a.profile.form} band={a.spread ? [a.spread.q1, a.spread.q3] : undefined} flags={a.qc.flags} references={a.profile.references}
             label={`${variableLabel(column)}${multi ? ` · ${buoy.label}` : ""}`} phrase={window.phrase} />
           <span className="sc-metric__range">
-            median {a.spread.median.toFixed(a.digits)} · IQR {a.spread.q1.toFixed(a.digits)} to {a.spread.q3.toFixed(a.digits)} · <Ago ms={a.stats.latest.t} />
+            {a.spread ? `median ${a.spread.median.toFixed(a.digits)} · IQR ${a.spread.q1.toFixed(a.digits)} to ${a.spread.q3.toFixed(a.digits)}` : "no usable readings"} · <Ago ms={a.stats.latest.t} />
           </span>
           <TrendLine trend={a.trend} digits={a.digits} unit={unit} />
         </div>
@@ -115,9 +117,9 @@ function StatsTable({ shown }: { shown: { column: string; rows: BuoyAnalysis[] }
                 <td>{buoy.label}</td>
                 <td className="n">{a.stats.latest.v.toFixed(a.digits)}</td>
                 <td className="n">{a.stats.change === null ? "—" : signed(a.stats.change, a.digits)}</td>
-                <td className="n">{a.spread.median.toFixed(a.digits)}</td>
-                <td className="n">{a.spread.q1.toFixed(a.digits)} to {a.spread.q3.toFixed(a.digits)}</td>
-                <td className="n">{a.stats.min.toFixed(a.digits)} to {a.stats.max.toFixed(a.digits)}</td>
+                <td className="n">{a.spread ? a.spread.median.toFixed(a.digits) : "—"}</td>
+                <td className="n">{a.spread ? `${a.spread.q1.toFixed(a.digits)} to ${a.spread.q3.toFixed(a.digits)}` : "—"}</td>
+                <td className="n">{a.stats.min === null ? "—" : `${fixed(a.stats.min, a.digits)} – ${fixed(a.stats.max, a.digits)}`}</td>
                 <td className="n">{a.trend.direction === "rising" || a.trend.direction === "falling" ? signed(a.trend.slopePerDay, a.digits + 1) : a.trend.direction === "steady" ? "no trend" : "—"}</td>
                 <td className="n">{a.stats.count}</td>
                 <td>{qcLabel(a.qc)}</td>
@@ -146,7 +148,7 @@ export function MetricsBay(props: MetricsBayProps) {
   });
   const [order, setOrder] = useState<TileOrder>(loadTileOrder);
   const reorder = (group: string, keys: string[]) => setOrder((current) => {
-    const next = { ...current, [group]: keys };
+    const next = { ...current, [group]: mergeOrder(current[group], keys) };
     saveTileOrder(next);
     return next;
   });

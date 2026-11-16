@@ -83,7 +83,8 @@
 .sc-edit-card__name { flex: 1 1 120px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px/20px var(--font-sans); }
 .sc-edit-card__body { min-width: 0; padding: var(--space-4); }
 .sc-edit-card:not(.sc-edit-card--sketch) .sc-edit-card__body { pointer-events: none; user-select: none; }
-.sc-edit-card--sketch { cursor: grab; touch-action: none; user-select: none; }
+/* Touch keeps native scrolling over sketches and library entries; touch drags use the grip. */
+.sc-edit-card--sketch { cursor: grab; touch-action: pan-y; user-select: none; }
 .sc-edit-card--sketch .sc-edit-card__body { padding: var(--space-2) var(--space-4); }
 .sc-edit-card--sketch:hover { border-color: var(--accent); }
 .sc-bay-slot.is-picked .sc-edit-card { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
@@ -119,5 +120,5 @@ body:has(.is-resizing-height) * { cursor: ns-resize !important; }
   border: 1px solid var(--accent); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-pop); pointer-events: none; }
 .sc-drag-ghost strong { font: 600 13px/18px var(--font-sans); }
 .sc-drag-ghost span { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
-.sc-lib__item--drag .sc-lib__text { cursor: grab; touch-action: none; user-select: none; }
+.sc-lib__item--drag .sc-lib__text { cursor: grab; touch-action: pan-y; user-select: none; }
 .sc-lib__item--drag:hover { background: var(--surface-sunken); }

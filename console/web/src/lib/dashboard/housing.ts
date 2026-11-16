@@ -26,7 +26,8 @@ function stateOf(row: Reading): SealState {
 /** A buoy's housing seal over its readings in range (oldest first). */
 export function housingSeal(rows: Reading[]): HousingSeal {
   const states = rows.map((row) => ({ state: stateOf(row), t: Date.parse(row.timestamp_utc) }));
-  const highs = states.filter((s) => s.state === "high");
+  // High history comes from the flag itself: a reading with both flags is "failed" but was still high.
+  const highs = rows.filter((row) => codesIn(row).includes("HUMIDITY_HIGH")).map((row) => ({ t: Date.parse(row.timestamp_utc) }));
   const newest = states.at(-1);
   let start = states.length - 1;
   while (start > 0 && states[start - 1].state === newest?.state) start -= 1;

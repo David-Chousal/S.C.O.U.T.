@@ -24,7 +24,7 @@ function LibraryItem({ kind, bays, buoys, onAdd, onDragStart }: BayLibraryProps 
   const canAdd = !onBoard && !(info.buoy && buoy === undefined);
   return (
     <div className={canAdd ? "sc-lib__item sc-lib__item--pick sc-lib__item--drag" : "sc-lib__item sc-lib__item--pick"}>
-      <span className="sc-lib__text" onPointerDown={canAdd ? (event) => onDragStart(kind, options, event) : undefined}
+      <span className="sc-lib__text" onPointerDown={canAdd ? (event) => { if (event.pointerType !== "touch") onDragStart(kind, options, event); } : undefined}
         title={canAdd ? "Drag onto the board, or choose +" : undefined}>
         <strong>{info.name}</strong>
         <span className="sc-lib__desc">{info.description}</span>

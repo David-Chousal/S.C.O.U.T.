@@ -20,4 +20,13 @@ describe("Sparkline", () => {
     fireEvent.blur(chart);
     expect(screen.queryByRole("status")).toBeNull();
   });
+
+  test("a selection past the end of a shorter new series is dropped instead of crashing", () => {
+    const long = Array.from({ length: 20 }, (_, i) => ({ t: T0 + i * HOUR, v: 26 + i / 10 }));
+    const props = { from: T0, to: T0 + 24 * HOUR, color: "red", unit: "°C", digits: 1, label: "Water temperature", domain: [26, 28] as [number, number], form: "line" as const, phrase: "last 7 days" };
+    const { rerender } = render(<Sparkline points={long} {...props} />);
+    fireEvent.focus(screen.getByRole("img"));
+    rerender(<Sparkline points={POINTS} {...props} />);
+    expect(screen.queryByRole("status")).toBeNull();
+  });
 });

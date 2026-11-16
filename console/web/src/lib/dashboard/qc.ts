@@ -40,7 +40,8 @@ function spikes(points: Point[], size: number): Set<number> {
   const hit = new Set<number>();
   for (let i = 1; i < points.length - 1; i += 1) {
     const [before, here, after] = [points[i - 1], points[i], points[i + 1]];
-    if (after.t - before.t > 2 * NEIGHBOUR_MS) continue;
+    // Both neighbours must be near: a long silence on either side means there is no spike to judge.
+    if (here.t - before.t > NEIGHBOUR_MS || after.t - here.t > NEIGHBOUR_MS) continue;
     // QARTOD's spike reference: the distance from the neighbours' mean, less half their own difference.
     if (Math.abs(here.v - (before.v + after.v) / 2) - Math.abs((after.v - before.v) / 2) > size) hit.add(i);
   }
@@ -63,13 +64,21 @@ function fastChanges(points: Point[]): Set<number> {
 
 function flatRuns(points: Point[], eps: number, count: number): Set<number> {
   const hit = new Set<number>();
+  if (points.length === 0) return hit;
+  // The current run's bounds are kept as it grows, so a long stuck run stays linear.
   let start = 0;
+  let [lo, hi] = [points[0].v, points[0].v];
   for (let i = 1; i <= points.length; i += 1) {
-    const window = points.slice(start, i + 1).map((p) => p.v);
-    const stillFlat = i < points.length && Math.max(...window) - Math.min(...window) <= eps;
-    if (stillFlat) continue;
+    if (i < points.length) {
+      const [nextLo, nextHi] = [Math.min(lo, points[i].v), Math.max(hi, points[i].v)];
+      if (nextHi - nextLo <= eps) {
+        [lo, hi] = [nextLo, nextHi];
+        continue;
+      }
+    }
     if (i - start >= count) for (let k = start; k < i; k += 1) hit.add(k);
     start = i;
+    if (i < points.length) [lo, hi] = [points[i].v, points[i].v];
   }
   return hit;
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog } from "@/components/overlays/dialog";
 import type { Buoy, Reading } from "@/lib/api/types";
-import { senLine, type MetricAnalysis } from "@/lib/dashboard/analysis";
+import { fixed, senLine, usablePoints, type MetricAnalysis } from "@/lib/dashboard/analysis";
 import type { Point } from "@/lib/dashboard/metrics";
 import { expectedReadings, signed } from "@/lib/dashboard/metrics";
 import { startFor, type TimeWindow } from "@/lib/dashboard/range";
@@ -38,8 +38,10 @@ const QC_TESTS: { test: QcTest; what: string }[] = [
 
 /** The value range of every buoy's points that did not fail QC, padded, plus nearby references. */
 function valueDomain(rows: BuoyAnalysis[], form: string): [number, number] {
-  const values = rows.flatMap(({ analysis }) => analysis.points.filter((_, i) => analysis.qc.flags[i].code !== 4).map((p) => p.v));
-  const [lo, hi] = padded([Math.min(...values), Math.max(...values)]);
+  const usable = rows.flatMap(({ analysis }) => usablePoints(analysis).map((p) => p.v));
+  // When every reading failed QC, scale to the failed readings so they stay visible.
+  const values = usable.length ? usable : rows.flatMap(({ analysis }) => analysis.points.map((p) => p.v));
+  const [lo, hi] = values.length ? padded([Math.min(...values), Math.max(...values)]) : [0, 1];
   const span = hi - lo;
   const refs = (rows[0]?.analysis.profile.references ?? []).map((r) => r.value).filter((v) => v >= lo - span * 0.3 && v <= hi + span * 0.3);
   return [Math.min(lo, ...refs, form === "bars" ? 0 : lo), Math.max(hi, ...refs)];
@@ -56,7 +58,7 @@ function Marks({ rows, scale, form, domain }: { rows: BuoyAnalysis[]; scale: Sca
       {rows.map(({ buoy, index, analysis }) => {
         const color = seriesColor(index);
         const offset = (index - (rows.length - 1) / 2) * 3;
-        const sen = analysis.trend.direction === "rising" || analysis.trend.direction === "falling" ? senLine(analysis.points, analysis.trend.slopePerDay) : null;
+        const sen = analysis.trend.direction === "rising" || analysis.trend.direction === "falling" ? senLine(usablePoints(analysis), analysis.trend.slopePerDay) : null;
         return (
           <g key={buoy.buoy_id}>
             {form === "bars"
@@ -166,9 +168,9 @@ function StatsTable({ rows, column, window, readings }: { rows: BuoyAnalysis[]; 
               <tr key={buoy.buoy_id}>
                 <th scope="row">{buoy.label}</th>
                 <td className="n">{a.stats.count} of {expected} ({Math.round(completeness(a.stats.count, expected) * 100)} %)</td>
-                <td className="n">{a.spread.median.toFixed(a.digits)}</td>
-                <td className="n">{a.spread.q1.toFixed(a.digits)} to {a.spread.q3.toFixed(a.digits)}</td>
-                <td className="n">{a.stats.min.toFixed(a.digits)} to {a.stats.max.toFixed(a.digits)}</td>
+                <td className="n">{a.spread ? a.spread.median.toFixed(a.digits) : "—"}</td>
+                <td className="n">{a.spread ? `${a.spread.q1.toFixed(a.digits)} to ${a.spread.q3.toFixed(a.digits)}` : "no usable readings"}</td>
+                <td className="n">{a.stats.min === null ? "—" : `${fixed(a.stats.min, a.digits)} to ${fixed(a.stats.max, a.digits)}`}</td>
                 <td>{trendText(row, unit)}{left !== null && <span className="sc-help"> · about {Math.round(left)} days to the 3.1 V critical level at this rate (estimate)</span>}</td>
                 <td className="n">{a.qc.pass} / {a.qc.suspect} / {a.qc.fail}</td>
               </tr>

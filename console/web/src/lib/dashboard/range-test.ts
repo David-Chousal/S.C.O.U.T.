@@ -29,10 +29,10 @@ describe("dashboard time range", () => {
     expect(history.truncated).toBe(false);
   });
 
-  test("a page that brings nothing new stops the paging instead of looping", async () => {
+  test("a full page that brings nothing new stops the paging and is reported as cut", async () => {
     const page = vi.fn(async (_from: string, to: string) => Array.from({ length: 10 }, (_, i) => ({ record_seq: `${to}-${i}`, timestamp_utc: to })));
     const history = await fetchHistory(page, HISTORY_START, at(NOW), 10, 3);
-    expect(history.truncated).toBe(false);
+    expect(history.truncated).toBe(true);
     expect(page).toHaveBeenCalledTimes(2);
   });
 

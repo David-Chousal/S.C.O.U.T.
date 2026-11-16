@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Banner } from "@/components/feedback/banner";
+import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { BuoySettings, Fleet, HeatStressView } from "@/lib/api/types";
 import { DEFAULT_VIEW_ID, normalizeBays, systemDefault, type SavedView } from "@/lib/dashboard/layout";
@@ -43,6 +44,9 @@ export function DashboardBoard() {
   const [heat, setHeat] = useState<HeatStressView | null | undefined>(undefined);
   const [schedule, setSchedule] = useState<BuoySettings | null>(null);
   const [error, setError] = useState("");
+  // A readings failure keeps the board and the range control, with a retry, unlike a failure to load the views.
+  const [readingsError, setReadingsError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const canEdit = can(user.role, "dashboards.write");
   useViewOnlyNote(canEdit ? null : `View only: arranging dashboards needs the ${needs("dashboards.write")} role.`);
 
@@ -61,11 +65,16 @@ export function DashboardBoard() {
   useEffect(() => {
     let current = true;
     loadReadings(range)
-      .then((loaded) => { if (current) setData(loaded); })
-      .catch((failure: unknown) => { if (current) setError(failureText(failure, "Could not load the readings.")); })
+      .then((loaded) => { if (current) { setData(loaded); setReadingsError(""); } })
+      .catch((failure: unknown) => { if (current) setReadingsError(failureText(failure, "Could not load the readings.")); })
       .finally(() => { if (current) setLoading(false); });
     return () => { current = false; };
-  }, [range]);
+  }, [range, attempt]);
+
+  function retry() {
+    setLoading(true);
+    setAttempt((n) => n + 1);
+  }
 
   function choose(next: RangeId) {
     if (next === range) return;
@@ -74,12 +83,17 @@ export function DashboardBoard() {
     setRange(next);
   }
 
+  const readingsBanner = readingsError && (
+    <Banner tone="failed" action={<Key size="sm" onClick={retry} disabled={loading}>Try again</Key>}>{readingsError}</Banner>
+  );
   if (error) return <Banner tone="failed">{error}</Banner>;
+  if (!data && readingsBanner) return readingsBanner;
   if (!views || !data) return <span className="sc-tag" aria-busy="true">Loading the dashboard…</span>;
   const overview: SavedView = { id: DEFAULT_VIEW_ID, name: "Overview", shared: true, bays: systemDefault(data.buoys.map((b) => b.buoy_id)) };
   return (
     <>
       <RangeBar range={range} onChange={choose} loading={loading} data={data} />
+      {readingsBanner}
       <LayoutBoard views={[overview, ...views]} data={{ ...data, heat, schedule }} canEdit={canEdit} onChanged={loadViews} />
     </>
   );

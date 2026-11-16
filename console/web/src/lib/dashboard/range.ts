@@ -85,7 +85,10 @@ export async function fetchHistory(
     const rows = await fetchPage(from, upTo);
     const before = seen.size;
     for (const row of rows) seen.set(`${row.record_seq}|${row.timestamp_utc}`, row);
-    if (rows.length < pageSize || seen.size === before) return { readings: [...seen.values()].reverse(), truncated: false };
+    if (rows.length < pageSize) return { readings: [...seen.values()].reverse(), truncated: false };
+    // A full page with nothing new means the cursor cannot get past readings sharing one timestamp,
+    // so some (and anything older) were not read: say so rather than call the history complete.
+    if (seen.size === before) return { readings: [...seen.values()].reverse(), truncated: true };
     // The page boundary is inclusive, so the oldest timestamp is asked for again and deduplicated.
     upTo = rows[rows.length - 1].timestamp_utc;
   }

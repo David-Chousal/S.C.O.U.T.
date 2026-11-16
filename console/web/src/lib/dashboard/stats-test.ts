@@ -39,6 +39,15 @@ describe("robust statistics", () => {
     expect(dailyMedians(series(2, 0, 2)).length).toBe(2);
   });
 
+  test("a change in which transmit hours arrive is not mistaken for a trend", () => {
+    // A fixed daily cycle (26 at 02:00, 28 at 10:00), but only 02:00 arrives for 15 days, then only 10:00.
+    const early = Array.from({ length: 15 }, (_, d) => ({ t: T0 + d * DAY + 2 * 3600 * 1000, v: 26 }));
+    const late = Array.from({ length: 15 }, (_, d) => ({ t: T0 + (15 + d) * DAY + 10 * 3600 * 1000, v: 28 }));
+    const result = trend([...early, ...late]);
+    expect(result.basis).toBe("daily medians");
+    expect(result.direction).toBe("steady");
+  });
+
   test("too few readings give no trend", () => {
     expect(trend(series(2, 0.1)).direction).toBe("too few");
   });

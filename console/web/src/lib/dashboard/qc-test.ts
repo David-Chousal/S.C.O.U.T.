@@ -19,6 +19,16 @@ describe("QARTOD-style quality control", () => {
     expect(qc.flags[1].tests).not.toContain("Spike");
   });
 
+  test("a point with a long silence on either side is not judged a spike", () => {
+    const points = [{ t: 0, v: 26 }, { t: HOUR, v: 29 }, { t: 51 * HOUR, v: 26 }];
+    expect(qualityControl(points, METRIC_PROFILES.temp_c).flags[1].tests).not.toContain("Spike");
+  });
+
+  test("a long stuck run is still found (and found in linear time)", () => {
+    const qc = qualityControl(pts(Array.from({ length: 20000 }, () => 26.3)), METRIC_PROFILES.temp_c);
+    expect(qc.byTest["Flat line"]).toBe(20000);
+  });
+
   test("a step across a silent gap is not a fast change", () => {
     const values = [3.9, 3.89, 3.88, 3.87, 3.86, 3.85, 3.84, 3.83, 3.7, 3.69];
     const points = values.map((v, i) => ({ t: (i < 8 ? i * 8 : i * 8 + 40) * HOUR, v }));

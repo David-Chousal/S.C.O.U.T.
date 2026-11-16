@@ -13,7 +13,21 @@ describe("metric analysis", () => {
     const rows = [26.0, 26.2, 126, 26.4, 26.6].map((v, i) => row(i, { temp_c: String(v) }));
     const result = analyse(rows, "temp_c");
     expect(result?.qc.fail).toBe(1);
-    expect(result?.spread.median).toBeCloseTo(26.3);
+    expect(result?.spread?.median).toBeCloseTo(26.3);
+  });
+
+  test("min, max and count cover only values that passed, while the failed newest value stays the latest", () => {
+    const rows = [26.0, 26.2, 26.4, 1000].map((v, i) => row(i, { temp_c: String(v) }));
+    const result = analyse(rows, "temp_c");
+    expect(result?.stats).toMatchObject({ min: 26, max: 26.4, count: 3, latest: { v: 1000 } });
+  });
+
+  test("when every value fails QC there is no spread or range, not NaN", () => {
+    const rows = [1000, 1001, 1002].map((v, i) => row(i, { temp_c: String(v) }));
+    const result = analyse(rows, "temp_c");
+    expect(result?.spread).toBeNull();
+    expect(result?.stats).toMatchObject({ min: null, max: null, count: 0 });
+    expect(result?.points).toHaveLength(3);
   });
 
   test("acoustic values from a clipped recording are suspect", () => {

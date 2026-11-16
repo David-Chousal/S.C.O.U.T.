@@ -10,8 +10,11 @@ import { spread, trend, type Spread, type Trend } from "./stats";
 export interface MetricAnalysis {
   profile: MetricProfile;
   points: Point[];
+  /** Latest and change cover every point (a failed newest value stays visible); min, max and count
+   * cover only the points that did not fail QC, like the spread and trend. */
   stats: MetricStats;
-  spread: Spread;
+  /** Median and quartiles of the usable points; null when every point failed QC. */
+  spread: Spread | null;
   trend: Trend;
   qc: QcResult;
   digits: number;
@@ -35,12 +38,24 @@ export function analyse(rows: Reading[], column: string): MetricAnalysis | null 
   const profile = profileFor(column);
   const qc = qualityControl(points, profile, profile.clipAware ? clippedTimes(rows) : undefined);
   const usable = points.filter((_, i) => qc.flags[i].code !== 4);
+  const values = usable.map((p) => p.v);
   return {
-    profile, points, stats, qc,
-    spread: spread(usable.map((p) => p.v)),
+    profile, points, qc,
+    stats: { ...stats, count: values.length, min: values.length ? Math.min(...values) : null, max: values.length ? Math.max(...values) : null },
+    spread: values.length ? spread(values) : null,
     trend: trend(usable),
     digits: digitsFor(rows, column),
   };
+}
+
+/** The points that did not fail QC: what statistics and trend lines are drawn from. */
+export function usablePoints(analysis: Pick<MetricAnalysis, "points" | "qc">): Point[] {
+  return analysis.points.filter((_, i) => analysis.qc.flags[i].code !== 4);
+}
+
+/** A value at the analysis's precision, or a dash when there is none. */
+export function fixed(value: number | null, digits: number): string {
+  return value === null ? "—" : value.toFixed(digits);
 }
 
 /** Sen line through a buoy's points: the trend's slope through the median point (for drawing). */

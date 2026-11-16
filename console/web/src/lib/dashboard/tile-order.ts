@@ -14,6 +14,14 @@ export function arrange(keys: readonly string[], saved: readonly string[] | unde
   return [...known, ...keys.filter((key) => !known.includes(key))];
 }
 
+/** A new order of the tiles on show, merged into the saved order: each shown tile takes the next of
+ * the slots shown tiles held, and tiles hidden for now (no data in this range) keep their places. */
+export function mergeOrder(saved: readonly string[] | undefined, shown: readonly string[]): string[] {
+  const full = arrange([...(saved ?? []), ...shown.filter((key) => !(saved ?? []).includes(key))], saved);
+  const next = [...shown];
+  return full.map((key) => (shown.includes(key) ? (next.shift() ?? key) : key));
+}
+
 /** Move one tile to `to` (an index in the section, clamped), keeping the rest in order. */
 export function moveTile(keys: readonly string[], key: string, to: number): string[] {
   const rest = keys.filter((k) => k !== key);

@@ -40,8 +40,9 @@ export interface MetricStats {
   latest: Point;
   /** Latest minus the reading closest to 24 h before it; null when none is within 6 h of that. */
   change: number | null;
-  min: number;
-  max: number;
+  /** Smallest and largest value; null when there is none to take (every value failed QC). */
+  min: number | null;
+  max: number | null;
   count: number;
 }
 

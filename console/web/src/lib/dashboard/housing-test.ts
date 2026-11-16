@@ -30,4 +30,8 @@ describe("housing seal", () => {
   test("a failed sensor cannot vouch for the seal, whatever else the packet says", () => {
     expect(housingSeal([row(0), row(8, "HUMIDITY_FAIL")])).toMatchObject({ state: "failed", since: T0 + 8 * HOUR });
   });
+
+  test("a reading with both flags is failed, but still counts as high in the history", () => {
+    expect(housingSeal([row(0), row(8, "HUMIDITY_HIGH|HUMIDITY_FAIL")])).toMatchObject({ state: "failed", highCount: 1, lastHigh: T0 + 8 * HOUR });
+  });
 });

@@ -18,19 +18,27 @@ interface TileFrameProps {
   children: ReactNode;
 }
 
+/** The tile grid's narrowest column (overview.css: repeat(auto-fill, minmax(280px, 1fr))). */
+const TILE_MIN_COLUMN_PX = 280;
+
 /** Tile columns in the bay's grids now, kept current as they resize. Returns a callback ref for the
  * bay's root, so it measures whenever the root appears (the bay first renders a loading line). */
 export function useTileColumns(): [number, (root: HTMLElement | null) => void] {
   const [columns, setColumns] = useState(1);
   const [root, setRoot] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    const grid = root?.querySelector<HTMLElement>(".sc-metrics__grid");
-    if (!grid) return undefined;
-    const measure = () => setColumns(Math.max(1, getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length));
+    if (!root) return undefined;
+    // Capacity from the bay's own width and the grid's track rule (auto-fill, 280 px minimum), not
+    // from the grid's current tracks, which count extra tracks a wide tile creates and vanish with a section.
+    const measure = () => {
+      const grid = root.querySelector<HTMLElement>(".sc-metrics__grid");
+      const gap = grid ? parseFloat(getComputedStyle(grid).columnGap) || 0 : 0;
+      setColumns(Math.max(1, Math.floor((root.clientWidth + gap) / (TILE_MIN_COLUMN_PX + gap))));
+    };
     measure();
     if (typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver(measure);
-    observer.observe(grid);
+    observer.observe(root);
     return () => observer.disconnect();
   }, [root]);
   return [columns, setRoot];

@@ -40,10 +40,12 @@ export function normalCdf(z: number): number {
 }
 
 /** The readings grouped by the UTC hour they were taken in. */
+const hourOf = (t: number) => Math.floor((t % DAY_MS) / HOUR_MS);
+
 function bySlot(points: Point[]): Point[][] {
   const groups = new Map<number, Point[]>();
   for (const p of points) {
-    const hour = Math.floor((p.t % DAY_MS) / HOUR_MS);
+    const hour = hourOf(p.t);
     groups.set(hour, [...(groups.get(hour) ?? []), p]);
   }
   return [...groups.values()].map((g) => [...g].sort((a, b) => a.t - b.t));
@@ -80,12 +82,22 @@ export function dailyMedians(points: Point[]): Point[] {
   return [...days].sort(([a], [b]) => a - b).map(([day, values]) => ({ t: day * DAY_MS + DAY_MS / 2, v: quantile(values, 0.5) }));
 }
 
-/** Theil–Sen slope and Mann–Kendall test: seasonal by UTC hour over short spans, on daily medians
- * over long ones. `n` is the number of readings. */
+/** Each reading with its transmit hour's typical offset taken out: the hour's median over the span
+ * is subtracted and the overall median added back. Daily medians of these do not move when which
+ * hours arrive changes (say only 02:00 readings one fortnight, only 10:00 the next). */
+export function withoutHourEffect(points: Point[]): Point[] {
+  const overall = quantile(points.map((p) => p.v), 0.5);
+  const hourMedian = new Map<number, number>();
+  for (const group of bySlot(points)) hourMedian.set(hourOf(group[0].t), quantile(group.map((p) => p.v), 0.5));
+  return points.map((p) => ({ t: p.t, v: p.v - (hourMedian.get(hourOf(p.t)) ?? overall) + overall }));
+}
+
+/** Theil–Sen slope and Mann–Kendall test: seasonal by UTC hour over short spans; over long ones, on
+ * daily medians after the hour effect is removed. `n` is the number of readings. */
 export function trend(points: Point[]): Trend {
   const n = points.length;
   const span = n ? (points[n - 1].t - points[0].t) / DAY_MS : 0;
-  if (span > DAILY_AFTER_DAYS) return { ...kendall([dailyMedians(points)], "daily medians"), n };
+  if (span > DAILY_AFTER_DAYS) return { ...kendall([dailyMedians(withoutHourEffect(points))], "daily medians"), n };
   return { ...kendall(bySlot(points), "per hour"), n };
 }
 

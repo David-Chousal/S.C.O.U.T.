@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { freshness } from "@/components/stations/stations-board";
 import type { SignalState } from "@/components/status/signal-meter";
 import { Ago } from "@/components/ui/ago";
@@ -15,6 +15,7 @@ import { StatusDot } from "./status-dot";
 const HOUR = 3600 * 1000;
 // Only while the transmit slots have not loaded: a buoy heard within 9 hours has not missed a 3-a-day schedule.
 const FALLBACK_LIVE_WITHIN_MS = 9 * HOUR;
+const CLOCK_TICK_MS = 60 * 1000;
 
 interface HealthBayProps {
   buoys: Buoy[];
@@ -38,17 +39,28 @@ interface BuoyHealthRow {
 
 /** Live, Late or Silent against the buoy's own transmit slots (as Fleet), so a 1- or 2-a-day buoy
  * is not called late between its slots. */
-function linkHealth(buoy: Buoy, props: HealthBayProps): ReturnType<typeof freshness> {
-  if (!props.schedule) return freshness(lastHeard(buoy), props.window.now, FALLBACK_LIVE_WITHIN_MS);
+function linkHealth(buoy: Buoy, props: HealthBayProps, now: number): ReturnType<typeof freshness> {
+  if (!props.schedule) return freshness(lastHeard(buoy), now, FALLBACK_LIVE_WITHIN_MS);
   const running = runningSettings(buoy, props.schedule.firmware.remote);
-  return buoyHealth(lastHeard(buoy), slotsInUse(props.schedule.firmware.slotsSod, running.tx_count, running.slot_phase_h), props.window.now);
+  return buoyHealth(lastHeard(buoy), slotsInUse(props.schedule.firmware.slotsSod, running.tx_count, running.slot_phase_h), now);
 }
 
-function rowFor(buoy: Buoy, props: HealthBayProps): BuoyHealthRow {
+/** A clock that starts at the loaded window's end and then follows real time, once a minute, so a
+ * buoy that goes quiet while the page stays open turns Late on time. Range statistics keep the window. */
+function useLinkClock(start: number): number {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => setTick(Date.now()), CLOCK_TICK_MS);
+    return () => window.clearInterval(timer);
+  }, []);
+  return Math.max(start, tick);
+}
+
+function rowFor(buoy: Buoy, props: HealthBayProps, now: number): BuoyHealthRow {
   const rows = props.readings[buoy.buoy_id] ?? [];
   const battery = pointsFor(rows, "battery_v").at(-1)?.v ?? null;
   const uptime = pointsFor(rows, "uptime_s").at(-1)?.v ?? null;
-  const link = buoy.disconnected_at ? { state: "off" as const, lit: 0, word: "Disconnected" } : linkHealth(buoy, props);
+  const link = buoy.disconnected_at ? { state: "off" as const, lit: 0, word: "Disconnected" } : linkHealth(buoy, props, now);
   return {
     buoy, link, battery, uptime,
     delivered: delivery(rows, buoy, startFor(props.window, rows), props.window.now),
@@ -172,8 +184,9 @@ function StatusTable({ rows }: { rows: BuoyHealthRow[] }) {
  * change is pending or rejected) and every flag in range, with firmware and uptime under the name.
  * Faded flags are past; solid ones are in the newest packet. */
 export function HealthBay(props: HealthBayProps) {
+  const now = useLinkClock(props.window.now);
   if (props.buoys.length === 0) return <p className="sc-help">No buoys yet. Add one on Fleet.</p>;
-  const rows = props.buoys.map((buoy) => rowFor(buoy, props));
+  const rows = props.buoys.map((buoy) => rowFor(buoy, props, now));
   return (
     <div className="sc-health">
       <Kpis rows={rows} phrase={props.window.phrase} />
