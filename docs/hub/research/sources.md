@@ -267,6 +267,7 @@ pull and check; the update flags every number that depends on them as an estimat
 |---|---|---|---|---|
 | `ds18b20-datasheet` | Maxim Integrated. *DS18B20 Programmable Resolution 1-Wire Digital Thermometer*, rev 042208. [pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf) | 🔓 | — | Supply range, active/standby current, 750 ms conversion (p. 19–20) |
 | `adafruit-adalogger-2922` | Adafruit. "Adalogger FeatherWing — RTC + SD Add-on" (PID 2922), schematic | 🔓 | — | SD card VDD tied straight to 3.3 V; PCF8523 RTC + CR1220 |
+| `adafruit-pcf8523-guide` | Adafruit. "Adafruit PCF8523 Real Time Clock" learning guide. [link](https://learn.adafruit.com/adafruit-pcf8523-real-time-clock) | 🔓 | — | "May lose or gain up to 2 seconds a day": the drift bound behind the per-buoy slot offset's ~6-day limit (SCO-224, SCO-315) |
 | `adafruit-tpl5111-3435` | Adafruit. "TPL5111 Low Power Timer Breakout" (PID 3435), product page + guide | ❓ | — | Proposed power-gating of the Feather EN pin; floor current to verify |
 | `ti-tps61023` | Texas Instruments. *TPS61023* boost converter datasheet | ❓ | — | Boost efficiency (85% assumed) and EN/disconnect behaviour |
 | `ti-slva079` | Texas Instruments. SLVA079, linear regulator application note | ❓ | — | η = Vout/Vin for a linear regulator |

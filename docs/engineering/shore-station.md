@@ -74,9 +74,24 @@ console over WiFi (below); without WiFi, `N<buoy>:<count>` over USB (e.g. `N1:2`
 `shore/scripts/sync_console.py` prints or writes those lines from the console. It listens all the time, since it is mains-powered, so the
 count changes the tag, not when the radio is on. **Buoys offset their slots** ([SCO-224](https://linear.app/scout1/issue/SCO-224), 2026-11-15):
 each buoy transmits ((`buoy_id` − 1) mod 4) × 30 s after the slot, so up to four buoys share a
-station without colliding. The window still tags against the base slots and covers every
-offset: the latest packet (SCOUT-04, +90 s, 1.74 s ceiling airtime) ends by +92 s, leaving
-~28 s of the +2 min side for clock drift. A fifth buoy needs a wider window or a smaller step. Its serial
+station without colliding in normal operation. The window still tags against the base slots and
+covers every offset: the latest packet (SCOUT-04, +90 s, 1.74 s ceiling airtime) ends by +92 s,
+leaving ~28 s of the +2 min side for clock drift. Three limits:
+
+- **During a firmware OTA session** the station waits for that buoy's ACKs and discards every
+  other frame (`wait_ack` in `shore_ota.cpp`), for up to ~6 min. Another buoy's uplink in that
+  time is lost; the next slot carries a fresher reading.
+- **Clock drift.** The buoy sets its PCF8523 only at boot, and the chip may gain or lose up to
+  2 s/day ([Adafruit](https://learn.adafruit.com/adafruit-pcf8523-real-time-clock)). Two buoys
+  drifting apart close the 25.5 s between neighbours (30 s − a 4.48 s on-air turn) in about
+  **6 days**; one buoy uses up its ~28 s of window in about 14. Until the buoy's clock is
+  corrected from the shore ([SCO-315](https://linear.app/scout1/issue/SCO-315)), re-set both clocks at least every 6 days, which is only
+  practical on the bench.
+- **A fifth buoy** gets SCOUT-01's offset (IDs 1 and 5 both get +0 s), and a wider window or a
+  smaller step alone doesn't change that. It needs more positions (with a step and window that
+  still fit them) or another collision-free way of assigning slots.
+
+Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
 ⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
 IRQ 9**, to be confirmed by ECE. **Settings downlink, on in the shipped build since 2026-11-04:**
