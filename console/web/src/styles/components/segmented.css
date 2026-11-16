@@ -1,9 +1,6 @@
-/* ───── Segmented: joined keys, one latched ─────
- * Each segment is a key (same height, type and bottom edge as .sc-key); the chosen one is held down. */
-.sc-seg { justify-self: start; display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); overflow: hidden; }
-.sc-seg button { height: 32px; padding: 0 var(--space-3) 2px; border: 0; background: var(--surface); color: var(--ink-muted); font: 500 14px/1 var(--font-sans); cursor: pointer;
-  box-shadow: inset 0 -3px 0 var(--line); transition: background-color 120ms ease-out, box-shadow 60ms ease-out; }
-.sc-seg button + button { border-left: 1px solid var(--line); }
-.sc-seg button:hover { color: var(--ink); background: var(--surface-sunken); }
-.sc-seg button[aria-pressed="true"] { padding-bottom: 0; color: var(--ink); background: var(--accent-soft); box-shadow: inset 0 -1px 0 var(--line), inset 0 2px 3px rgba(0,0,0,.08); }
-.sc-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+/* ───── Segmented: a row of ordinary keys, the chosen one held down ───── */
+.sc-seg { justify-self: start; display: inline-flex; flex-wrap: wrap; gap: var(--space-1); }
+.sc-seg .sc-key { justify-content: center; padding: 0 var(--space-3) 2px; color: var(--ink-muted); }
+.sc-seg .sc-key:hover { color: var(--ink); }
+.sc-seg .sc-key[aria-pressed="true"] { color: var(--ink); background: var(--accent-soft); border-color: var(--accent); transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); }
+.sc-seg .sc-key[aria-pressed="true"]:hover { transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); }
