@@ -410,3 +410,11 @@ depends on them.
 | Key | Work | Access | Local | Relevance / used in |
 |---|---|---|---|---|
 | `threejs-r147` | three.js r147 (MIT), `build/three.min.js` and `examples/js/controls/OrbitControls.js`. [link](https://github.com/mrdoob/three.js/tree/r147) | 🔓 | [`vendor/`](../../../mechanical/simulations/buoy-viewer/vendor/) | Renders the buoy CAD in the [3D viewer](../../../mechanical/simulations/buoy-viewer/README.md). Vendored so the site loads no outside script |
+
+## Hawaiian species names (unit naming options)
+
+| Key | Work | Access | Local | Relevance / used in |
+|---|---|---|---|---|
+| `hrs-5-11-5` | Hawaii Revised Statutes §5-11.5, "State fish" (L 2006, c 67). [link](https://data.capitol.hawaii.gov/hrscurrent/Vol01_Ch0001-0042F/HRS0005/HRS_0005-0011_0005.htm) | 🔓 | — | Humuhumunukunukuāpuaʻa (rectangular triggerfish) is the state fish; [Unit Naming Options](../../planning/unit-naming-options.md) |
+| `dlnr-dar-regulated-species` | DLNR Division of Aquatic Resources. "Scientific Names of Regulated Species." [link](https://dlnr.hawaii.gov/dar/?p=139) | 🔓 | — | Uhu = parrotfishes (Scaridae); manini = *Acanthurus triostegus sandvicensis*; [Unit Naming Options](../../planning/unit-naming-options.md) |
+| `noaa-green-turtle` | NOAA Fisheries. "Green Turtle" species page. [link](https://www.fisheries.noaa.gov/species/green-turtle) | 🔓 | — | Honu = green sea turtle (*Chelonia mydas*), ESA-listed in Hawaii; [Unit Naming Options](../../planning/unit-naming-options.md) |
