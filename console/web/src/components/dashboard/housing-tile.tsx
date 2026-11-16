@@ -28,7 +28,6 @@ export function HousingTile({ buoys, readings, multi }: HousingTileProps) {
     <article className="sc-metric" aria-label="Housing seal">
       <header className="sc-metric__head">
         <span className="sc-metric__name sc-metric__name--plain">Housing seal</span>
-        <span className="sc-help">humidity alarm</span>
       </header>
       {buoys.map((buoy, index) => {
         const seal = housingSeal(readings[buoy.buoy_id] ?? []);
