@@ -84,6 +84,16 @@ uint8_t scout_tx_slot_mask(uint8_t tx_count);
  * shore listens, only for these. */
 size_t scout_select_tx_slots(const uint32_t *slots_sod, size_t n, uint8_t tx_count, uint32_t *out);
 
+/* Per-buoy slot offset (SCO-224), so two buoys on one shore station never transmit at the
+ * same second. ((buoy_id - 1) mod positions) × step_s: SCOUT-01 keeps the base slots, SCOUT-02
+ * is step_s later, and so on; the position wraps so the offset never leaves the shore's
+ * listening window. Buoys `positions` IDs apart share an offset. 0 when positions is 0. */
+uint32_t scout_tx_slot_offset_s(uint16_t buoy_id, uint32_t step_s, uint32_t positions);
+
+/* Copy `slots_sod` (n entries) into `out`, each moved `offset_s` later, wrapping past
+ * midnight. `out` may be `slots_sod`. */
+void scout_offset_tx_slots(const uint32_t *slots_sod, size_t n, uint32_t offset_s, uint32_t *out);
+
 /* Shore side (SCO-24): true when `epoch` is within `half_width_s` of any slot, either side,
  * counting across midnight. The shore station listens ±2 min around each slot. */
 bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,

@@ -37,6 +37,14 @@ static const uint32_t BENCH_SAMPLE_INTERVAL_S = 60;     // used only when TX_EVE
  * slot still follows a sample by 10 min. */
 static const uint32_t TX_SLOTS_SOD[] = {600, 29400, 58200};
 static const size_t TX_SLOT_COUNT = sizeof(TX_SLOTS_SOD) / sizeof(TX_SLOTS_SOD[0]);
+/* Per-buoy slot offset (SCO-224): two buoys share a shore station, so each moves every slot
+ * ((BUOY_ID - 1) mod TX_SLOT_OFFSET_POSITIONS) × TX_SLOT_OFFSET_STEP_S later (scout_tx_slot_offset_s).
+ * SCOUT-01 +0 s, SCOUT-02 +30 s, SCOUT-03 +60 s, SCOUT-04 +90 s. 30 s clears a buoy's whole
+ * on-air turn (1.74 s uplink + 1 s downlink listen + 1.74 s downlink); 4 positions keep the last
+ * packet ending by +92 s, inside the shore's ±2 min window with ~28 s left for clock drift.
+ * A 5th buoy on one station would share SCOUT-01's offset: widen the window or shrink the step. */
+static const uint32_t TX_SLOT_OFFSET_STEP_S = 30;
+static const uint32_t TX_SLOT_OFFSET_POSITIONS = 4;
 // Audio at phase 0: one clip at 00:00, 08:00 and 16:00 UTC (ADR-0011), so each transmit slot 10 min
 // later carries the clip just before it. The slot phase moves these hours with the slots; the clip
 // length is the audio_clip_s setting, at most ACOUSTIC_CLIP_SECONDS below.

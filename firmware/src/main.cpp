@@ -108,8 +108,8 @@ static scout_power_mode_t g_last_mode = SCOUT_POWER_NORMAL;
 static bool g_first_cycle = true;  // sample immediately after boot, before the first sleep
 static uint32_t g_next_event = 0;
 
-// What the settings work out to: the slots in use (count and phase applied to TX_SLOTS_SOD),
-// the audio hours (AUDIO_HOURS_UTC moved by the phase) and the reading interval.
+// What the settings work out to: the slots in use (count and phase applied to TX_SLOTS_SOD,
+// then this buoy's offset, SCO-224), the audio hours (AUDIO_HOURS_UTC moved by the phase) and the reading interval.
 static uint32_t g_slots[TX_SLOT_COUNT];
 static size_t g_slot_count = 0;
 static uint8_t g_audio_hours[sizeof(AUDIO_HOURS_UTC)];
@@ -120,6 +120,9 @@ static void apply_settings() {
         scout_settings_defaults(&g_state.settings);  // repairs garbage that slipped past the magic
     }
     g_slot_count = scout_settings_tx_slots(&g_state.settings, TX_SLOTS_SOD, g_slots);
+    scout_offset_tx_slots(g_slots, g_slot_count,
+                          scout_tx_slot_offset_s(BUOY_ID, TX_SLOT_OFFSET_STEP_S, TX_SLOT_OFFSET_POSITIONS),
+                          g_slots);
     scout_settings_audio_hours(&g_state.settings, AUDIO_HOURS_UTC, sizeof(AUDIO_HOURS_UTC),
                                g_audio_hours);
     g_sample_interval_s =

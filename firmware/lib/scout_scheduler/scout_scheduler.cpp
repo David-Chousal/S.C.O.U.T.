@@ -103,6 +103,20 @@ size_t scout_select_tx_slots(const uint32_t *slots_sod, size_t n, uint8_t tx_cou
     return used;
 }
 
+uint32_t scout_tx_slot_offset_s(uint16_t buoy_id, uint32_t step_s, uint32_t positions) {
+    if (positions == 0) {
+        return 0;
+    }
+    uint32_t position = ((uint32_t)buoy_id + positions - 1u) % positions;  // ID 0 can't underflow
+    return position * step_s;
+}
+
+void scout_offset_tx_slots(const uint32_t *slots_sod, size_t n, uint32_t offset_s, uint32_t *out) {
+    for (size_t i = 0; i < n; i++) {
+        out[i] = (slots_sod[i] + offset_s) % SCOUT_SECONDS_PER_DAY;
+    }
+}
+
 bool scout_in_listen_window(uint32_t epoch, const uint32_t *slots_sod, size_t n,
                             uint32_t half_width_s) {
     uint32_t second_of_day = epoch % SCOUT_SECONDS_PER_DAY;
