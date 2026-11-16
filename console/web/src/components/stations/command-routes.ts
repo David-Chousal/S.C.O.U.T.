@@ -1,19 +1,23 @@
-/* Which shore station sends each buoy's commands. A buoy's pick wins while that station is active;
- * with no pick, the only active station sends them, and with two or more active stations an
- * unpicked buoy gets no commands (two stations answering in its 1 s window would collide). This
- * mirrors wantedForDevice in console/worker/fleet.js. */
+/* Which shore station answers each buoy. The console decides (console/worker/routing.js, SCO-316):
+ * an admin's pick, else the only active station, else the station that heard the buoy most in the
+ * last 24 h. A buoy no station has heard has none. The UI shows that decision; it does not redo it. */
 
-import type { Buoy, Device } from "@/lib/api/types";
+import type { Buoy, Device, RouteReason } from "@/lib/api/types";
 
-/** The station that sends `buoy`'s commands, or null when none does. */
-export function commandingStation(buoy: Pick<Buoy, "command_device_id">, active: Device[]): Device | null {
-  const picked = active.find((station) => station.id === buoy.command_device_id);
-  if (picked) return picked;
-  return active.length === 1 ? active[0] : null;
+export const ROUTE_REASON: Record<RouteReason, string> = {
+  picked: "picked",
+  only_station: "the only station",
+  heard_most: "hears it most",
+};
+
+/** The station that answers `buoy`, or null when none does. */
+export function commandingStation(buoy: Pick<Buoy, "answering_station">, active: Device[]): Device | null {
+  const id = buoy.answering_station?.device_id;
+  return active.find((station) => station.id === id) ?? null;
 }
 
-/** The buoys each active station commands, and the buoys no station does. */
-export function commandRoutes<B extends Pick<Buoy, "buoy_id" | "command_device_id">>(buoys: B[], active: Device[]) {
+/** The buoys each active station answers, and the buoys no station does. */
+export function commandRoutes<B extends Pick<Buoy, "buoy_id" | "answering_station">>(buoys: B[], active: Device[]) {
   const byStation = new Map<string, B[]>(active.map((station) => [station.id, []]));
   const orphans: B[] = [];
   for (const buoy of buoys) {
