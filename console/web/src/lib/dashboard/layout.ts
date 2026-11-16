@@ -76,6 +76,11 @@ export function moveBay(bays: BayConfig[], from: number, to: number): BayConfig[
 }
 
 /** Give one bay a width; ignored unless the kind allows it. */
+/** The allowed width closest to `raw` columns (ties go wider), as a resize drag snaps to. */
+export function snapSpan(kind: BayKind, raw: number): Span {
+  return BAY_KINDS[kind].spans.reduce((best, span) => (Math.abs(span - raw) <= Math.abs(best - raw) ? span : best));
+}
+
 export function setSpan(bays: BayConfig[], id: string, span: Span): BayConfig[] {
   return bays.map((bay) => (bay.id === id && BAY_KINDS[bay.kind].spans.includes(span) ? { ...bay, span } : bay));
 }

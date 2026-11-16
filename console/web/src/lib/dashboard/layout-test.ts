@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setSpan, systemDefault } from "./layout";
+import { addBay, BAY_KINDS, isOnBoard, moveBay, placeBay, setSpan, snapSpan, systemDefault } from "./layout";
 
 describe("dashboard layout", () => {
   test("kinds and widths match the Worker's validator", () => {
@@ -31,6 +31,13 @@ describe("dashboard layout", () => {
     expect(placeBay(bays, "latest-1", 0)[0].id).toBe("latest-1");
     expect(setSpan(bays, "metrics", 6).find((b) => b.id === "metrics")?.span).toBe(6);
     expect(setSpan(bays, "health", 6).find((b) => b.id === "health")?.span).toBe(12);
+  });
+
+  test("a resize drag snaps to the nearest width the kind allows", () => {
+    expect(snapSpan("fleet", 7.2)).toBe(6);
+    expect(snapSpan("metrics", 8.9)).toBe(6);
+    expect(snapSpan("metrics", 9)).toBe(12);
+    expect(snapSpan("health", 2)).toBe(12);
   });
 
   test("a bay dropped from the library lands where it was dropped", () => {

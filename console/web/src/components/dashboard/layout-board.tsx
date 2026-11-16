@@ -11,6 +11,7 @@ import { BayLibrary } from "./bay-library";
 import { BaySketch, SKETCH_ROWS } from "./bay-sketch";
 import { EditBar, type EditPreview } from "./edit-bar";
 import { LayoutDialogs, type LayoutDialog } from "./layout-dialogs";
+import { useBayResize } from "./use-bay-resize";
 import { useBoardDrag, type DragSource } from "./use-board-drag";
 import { ViewTabs } from "./view-tabs";
 
@@ -43,6 +44,7 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
   const [announcement, setAnnouncement] = useState("");
   const gridRef = useRef<HTMLDivElement>(null);
   const { drag, start } = useBoardDrag(gridRef, onDrop);
+  const { resizingId, startResize } = useBayResize(gridRef, (id, span) => setDraft((current) => setSpan(current, id, span)));
   const bays = editing ? draft : saved;
   const dirty = editing && JSON.stringify(draft) !== JSON.stringify(saved);
   const actions = useRef({ enter: () => {}, cancel: () => {}, save: () => {} });
@@ -177,10 +179,10 @@ export function LayoutBoard({ views, data, canEdit, onChanged }: LayoutBoardProp
     </div>
   );
   const slots = shown.map((bay) => (
-    <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} sketch={sketching} picked={picked?.id === bay.id}
+    <BayFrame key={bay.id} bay={bay} name={bayName(bay, data)} editing={editing} sketch={sketching} picked={picked?.id === bay.id} resizing={resizingId === bay.id}
       onGripKeyDown={(event) => onGripKey(bay, event)} onDragStart={(event) => startBay(bay, event)}
       onRemove={() => setDraft((current) => removeBay(current, bay.id))}
-      onWidth={(span: Span) => setDraft((current) => setSpan(current, bay.id, span))}>
+      onWidth={(span: Span) => setDraft((current) => setSpan(current, bay.id, span))} onResizeStart={(event) => startResize(bay, event)}>
       {sketching ? <BaySketch bay={bay} /> : <BayContent bay={bay} data={data} />}
     </BayFrame>
   ));

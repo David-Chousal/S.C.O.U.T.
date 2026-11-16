@@ -71,12 +71,15 @@ describe("LayoutBoard", () => {
     expect(screen.getByRole("region", { name: /Every metric/ })).toBeDefined();
   });
 
-  test("a bay's width is chosen as a fraction of the board", async () => {
+  test("a bay's right-edge handle resizes it from the keyboard", async () => {
     const create = vi.spyOn(api, "createDashboard").mockResolvedValue({ id: "d1" });
     renderBoard();
     await userEvent.click(screen.getByRole("button", { name: /Customize/ }));
-    const width = screen.getByRole("group", { name: /Width of Every metric/ });
-    await userEvent.click(within(width).getByRole("button", { name: "½" }));
+    const width = screen.getByRole("slider", { name: /Width of Every metric/ });
+    expect(width.getAttribute("aria-valuetext")).toBe("Full width");
+    width.focus();
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(width.getAttribute("aria-valuetext")).toBe("Half width");
     expect(screen.getByTestId("slot-metrics").className).toContain("span-6");
     await userEvent.click(screen.getByRole("button", { name: /Save view/ }));
     expect(create).toHaveBeenCalledWith("My dashboard", false, expect.arrayContaining([expect.objectContaining({ id: "metrics", span: 6 })]));

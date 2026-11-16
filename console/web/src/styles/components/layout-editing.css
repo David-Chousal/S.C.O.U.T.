@@ -75,14 +75,12 @@
  * real content. Dragging lifts the bay out, a ghost follows the pointer, and a placeholder opens
  * where it will land. Library entries drag onto the board the same way. */
 .sc-bay-slot { position: relative; min-width: 0; }
-.sc-edit-card { display: grid; min-width: 0; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); }
+.sc-edit-card { position: relative; display: grid; min-width: 0; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); }
 .sc-edit-card__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-2); border-bottom: 1px solid var(--line); cursor: grab; touch-action: none; user-select: none; }
 .sc-edit-card__grip { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-muted); cursor: grab; touch-action: none; }
 .sc-edit-card__grip:hover { background: var(--surface-sunken); color: var(--ink); }
 .sc-edit-card__grip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .sc-edit-card__name { flex: 1 1 120px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px/20px var(--font-sans); }
-.sc-edit-card__fixed { font: 400 12px/20px var(--font-sans); color: var(--ink-muted); }
-.sc-edit-card__head .sc-seg button { min-width: 32px; }
 .sc-edit-card__body { min-width: 0; padding: var(--space-4); }
 .sc-edit-card:not(.sc-edit-card--sketch) .sc-edit-card__body { pointer-events: none; user-select: none; }
 .sc-edit-card--sketch { cursor: grab; touch-action: none; user-select: none; }
@@ -91,6 +89,16 @@
 .sc-bay-slot.is-picked .sc-edit-card { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .sc-bay-slot.is-picked .sc-edit-card__grip { background: var(--accent); color: var(--on-accent); }
 .is-dragging-over, .is-dragging-over * { cursor: grabbing !important; }
+
+/* Resize: the card's right edge is a handle. Drag it (the width snaps to what the bay allows) or
+ * focus it and use the arrow keys. A readout names the width while dragging. */
+.sc-edit-card__resize { position: absolute; top: 0; right: -9px; bottom: 0; z-index: 1; display: grid; place-items: center; width: 16px; cursor: ew-resize; touch-action: none; outline: none; }
+.sc-edit-card__resize::after { content: ""; width: 4px; height: min(40px, 50%); border-radius: 2px; background: var(--line-strong); transition: background-color 120ms ease-out, height 120ms ease-out; }
+.sc-edit-card__resize:hover::after, .sc-edit-card__resize:focus-visible::after, .is-resizing .sc-edit-card__resize::after { height: min(64px, 70%); background: var(--accent); }
+.sc-edit-card__resize:focus-visible::after { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--focus); }
+.sc-bay-slot.is-resizing .sc-edit-card { border-color: var(--accent); }
+.sc-edit-card__width { position: absolute; top: 50%; right: 14px; transform: translateY(-50%); padding: 4px 8px; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font: 500 12px/16px var(--font-sans); white-space: nowrap; pointer-events: none; }
+body:has(.is-resizing), body:has(.is-resizing) * { cursor: ew-resize !important; user-select: none; }
 
 /* Layout view: compact sketches sized in proportion to the real bays, so the board fits on screen */
 .sc-grid12--sketch { --sketch-row: 26px; gap: var(--space-4) var(--space-4); }
