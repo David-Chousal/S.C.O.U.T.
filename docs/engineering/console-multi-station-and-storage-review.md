@@ -4,7 +4,8 @@
 > 2026-10-30 weekly meeting, checked against the code on `main` (2026-10-30), not against what
 > was said in the meeting. Two things said in the demo were wrong and are corrected here. Three
 > real gaps were found; they are filed in Linear. **Updated 2026-11-15:** the two-station gaps are
-> closed (SCO-290, SCO-316); see items 1–3 below.
+> closed (SCO-290, SCO-316); see items 1–3 below. **Updated 2026-11-16:** the storage question is
+> decided: stay on D1 and the free plan ([below](#decision-stay-on-d1-and-the-free-plan-sco-291-2026-11-16)).
 >
 > Source: [meeting notes, 2026-10-30](../planning/meeting-notes.md) ·
 > [ADR-0012](../decisions/0012-authenticated-console.md) · [`console/`](../../console/README.md)
@@ -145,6 +146,44 @@ that would justify paying or moving are different ones, worth deciding in
 - **Charts over history.** The rows-read limit only matters once the console draws history. A
   chart that scans 175,000 rows on each page load would hit 5 million reads a day after about 28
   loads, so history views need an index on `(buoy_id, timestamp_utc)` and bounded date ranges.
+
+### Decision: stay on D1 and the free plan (SCO-291, 2026-11-16)
+
+**Stay on Cloudflare D1, on Workers Free. No move to MySQL or Supabase and no paid plan; no ADR,
+since nothing changes.** Checked against the live console on 2026-11-16 and Cloudflare's limit
+pages read the same day:
+
+| Measure (live, `wrangler d1 info`) | Use | Free limit | Share |
+|---|---|---|---|
+| Database size | 307 kB | 500 MB | 0.06% |
+| Rows read, last 24 h | 3,119 | 5,000,000 a day | 0.06% |
+| Rows written, last 24 h | 82 | 100,000 a day | 0.08% |
+| Nightly backups in R2 | 2026-11-13 to 2026-11-16, ~2.5 kB each | — | — |
+
+The three follow-ups the sizing above left open are settled:
+
+- **Backups: done.** The nightly cron writes a full dump to R2 and keeps 35 days
+  ([SCO-241](https://linear.app/scout1/issue/SCO-241)), and every deploy exports first. That
+  covers the free plan's 7-day point-in-time recovery, so the paid plan's 30 days is not needed.
+- **Sign-in CPU: decided 2026-10-26.** Keep PBKDF2 on the free plan and watch for error 1102
+  ([ADR-0012](../decisions/0012-authenticated-console.md)).
+- **History reads: not needed yet.** History queries filter on `buoy_id` and a time range; the
+  primary key `(buoy_id, record_seq, timestamp_utc)` narrows them to one buoy, so each scans only
+  that buoy's rows (about 1,100 a year at 3 transmits a day). Add an index on
+  `(buoy_id, timestamp_utc)` only if SD imports bring every 30-minute sample in.
+
+**Revisit when any of these happens.** The sign-in and rows-read triggers are cheaper fixed by
+Workers Paid at $5 a month than by a new database. The backup trigger needs a change to the backup
+itself (streaming the dump or splitting it per table), since Workers Paid keeps the 128 MB memory
+limit and the 25 MB cap is the console's own constant:
+
+- a sign-in fails with error 1102 or `exceededCpu`;
+- rows read pass about 1 million a day (20% of the limit) on the Storage tab or `wrangler d1 info`;
+- the nightly backup outgrows the Worker: the dump is built in memory (128 MB) and stored as one
+  R2 object, capped at 25 MB gzipped by the console's guardrails, so memory runs out first,
+  somewhere in the tens of MB of data (not measured). At ~1.3 MB a year for 2 buoys over LoRa that
+  is years away; importing every 30-minute sample from 10 buoys (~107 MB a year) would reach it
+  within the season. Watch the backup size on the Storage tab.
 
 ## Other gaps found while checking
 
