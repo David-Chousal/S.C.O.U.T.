@@ -172,8 +172,10 @@ The three follow-ups the sizing above left open are settled:
   that buoy's rows (about 1,100 a year at 3 transmits a day). Add an index on
   `(buoy_id, timestamp_utc)` only if SD imports bring every 30-minute sample in.
 
-**Revisit when any of these happens** (each is cheaper fixed by Workers Paid at $5 a month than by
-a new database):
+**Revisit when any of these happens.** The sign-in and rows-read triggers are cheaper fixed by
+Workers Paid at $5 a month than by a new database. The backup trigger needs a change to the backup
+itself (streaming the dump or splitting it per table), since Workers Paid keeps the 128 MB memory
+limit and the 25 MB cap is the console's own constant:
 
 - a sign-in fails with error 1102 or `exceededCpu`;
 - rows read pass about 1 million a day (20% of the limit) on the Storage tab or `wrangler d1 info`;
