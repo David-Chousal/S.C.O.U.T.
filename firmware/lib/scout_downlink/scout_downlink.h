@@ -31,7 +31,9 @@
  * errors without spending an HMAC; the tag is checked before anything the sender chose is
  * trusted. The counter is the shore's Unix time when it signed the frame: it must exceed the
  * last one the buoy accepted, and lie within `max_skew_s` of the buoy's clock, so a frame
- * recorded earlier cannot be replayed even after a cold start resets the stored counter.
+ * recorded earlier cannot be replayed even after a cold start resets the stored counter. A buoy
+ * that cannot trust its clock (no RTC chip) passes SCOUT_DL_CLOCK_UNTRUSTED and refuses every
+ * frame, since the stored counter alone does not survive a power loss or a reflash (SCO-275).
  *
  * Hardware-free (stdint only) and unit-tested off-target.
  */
@@ -58,6 +60,8 @@ extern "C" {
 #define SCOUT_DL_TAG_BYTES 16u
 #define SCOUT_DL_KEY_BYTES 32u
 #define SCOUT_DL_BUOY_ALL 0u
+/* `max_skew_s` for a buoy that cannot trust its clock: every frame is refused as STALE. */
+#define SCOUT_DL_CLOCK_UNTRUSTED 0u
 
 #define SCOUT_DL_VERSION_SETTINGS 2u
 #define SCOUT_DL_SETTINGS_SIGNED_BYTES (9u + 2u * SCOUT_SETTINGS_COUNT)
@@ -103,8 +107,8 @@ typedef struct {
 size_t scout_dl_encode(const ScoutCommand *cmd, const uint8_t key[SCOUT_DL_KEY_BYTES], uint8_t *out);
 
 /* Verify a received frame for buoy `my_buoy_id`. `last_counter` is the last counter accepted;
- * `now_epoch` the buoy's clock and `max_skew_s` the allowed distance from it (0 = skip the age
- * check, for a buoy whose clock is not set). `out` is written only on SCOUT_DL_OK. */
+ * `now_epoch` the buoy's clock and `max_skew_s` the allowed distance from it
+ * (SCOUT_DL_CLOCK_UNTRUSTED refuses every frame). `out` is written only on SCOUT_DL_OK. */
 scout_dl_result_t scout_dl_decode(const uint8_t *buf, size_t len,
                                   const uint8_t key[SCOUT_DL_KEY_BYTES], uint16_t my_buoy_id,
                                   uint32_t last_counter, uint32_t now_epoch, uint32_t max_skew_s,

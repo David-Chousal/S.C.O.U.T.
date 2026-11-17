@@ -59,8 +59,8 @@ static bool value_in_range(uint8_t setting, uint8_t value) {
 }
 
 static bool counter_is_fresh(uint32_t counter, uint32_t now_epoch, uint32_t max_skew_s) {
-    if (max_skew_s == 0) {
-        return true;
+    if (max_skew_s == SCOUT_DL_CLOCK_UNTRUSTED) {
+        return false;
     }
     uint32_t distance = counter > now_epoch ? counter - now_epoch : now_epoch - counter;
     return distance <= max_skew_s;

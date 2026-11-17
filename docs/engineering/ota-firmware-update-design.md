@@ -247,7 +247,12 @@ everything behind `SCOUT_DOWNLINK` (on in the shipped builds since 2026-11-04):
   type 0xC1, version 1, buoy ID, counter, setting, value, a 16-byte tag over the first 10 bytes,
   and a CRC-16. Two choices go beyond §5: **the counter is the shore's Unix time**, and the buoy
   also requires it within `DOWNLINK_MAX_SKEW_S` (1 day) of its own clock, so a frame recorded
-  earlier cannot be replayed after a cold start resets the stored counter. **No separate ACK**:
+  earlier cannot be replayed after a cold start resets the stored counter. **A buoy whose RTC
+  chip has failed refuses every downlink frame** (v1, v2, v3 and OTA `CONFIRM`), because with no
+  clock to judge the counter's age, a power loss or reflash would leave only the stored counter,
+  which a reflash erases and v3 frames never save ([SCO-275](https://linear.app/scout1/issue/SCO-275),
+  2026-11-16). Such a buoy keeps its last settings and reports `RTC_UNSET`; the fix is a new chip,
+  not a command. An OTA trial image on it rolls back, since `CONFIRM` is refused. **No separate ACK**:
   the next uplink reports the count in use (packet v4, `flags` bits 8–9) and `CMD_REJECTED`
   (bit 10) if a command failed its checks. **v2 (2026-11-04)**, 43 bytes, carries every remote
   setting (`firmware/lib/scout_settings`) under one tag; the buoy applies all of it or none, keeps

@@ -174,8 +174,11 @@ uint8_t scout_ota_missing(uint16_t base, uint16_t bitmap, uint16_t chunk_count, 
  * the first 11 bytes). The counter is the shore's Unix time, as for commands. */
 size_t scout_ota_confirm_encode(uint16_t buoy_id, uint32_t counter, uint32_t version,
                                 const uint8_t key[32], uint8_t out[SCOUT_OTA_CONFIRM_SIZE]);
+/* `max_skew_s` for a buoy that cannot trust its clock: CONFIRM is refused as STALE, as the
+ * settings downlink refuses every frame (SCO-275). */
+#define SCOUT_OTA_CLOCK_UNTRUSTED 0u
 /* Buoy: order is length, CRC, type, buoy (exact, no broadcast), tag, replay, age, version.
- * `counter` is written only on OK. max_skew_s = 0 skips the age check. */
+ * `counter` is written only on OK. */
 scout_ota_result_t scout_ota_confirm_check(const uint8_t *buf, size_t len, const uint8_t key[32],
                                            uint16_t my_buoy_id, uint32_t last_counter,
                                            uint32_t now_epoch, uint32_t max_skew_s,

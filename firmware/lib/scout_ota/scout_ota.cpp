@@ -272,11 +272,9 @@ scout_ota_result_t scout_ota_confirm_check(const uint8_t *buf, size_t len, const
     if (c <= last_counter) {
         return SCOUT_OTA_REPLAY;
     }
-    if (max_skew_s != 0) {
-        uint32_t skew = c > now_epoch ? c - now_epoch : now_epoch - c;
-        if (skew > max_skew_s) {
-            return SCOUT_OTA_STALE;
-        }
+    uint32_t skew = c > now_epoch ? c - now_epoch : now_epoch - c;
+    if (max_skew_s == SCOUT_OTA_CLOCK_UNTRUSTED || skew > max_skew_s) {
+        return SCOUT_OTA_STALE;
     }
     if (get_u32(buf + 7) != running_version) {
         return SCOUT_OTA_WRONG_VERSION;

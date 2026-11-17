@@ -198,11 +198,38 @@ void test_rejects_a_counter_far_from_the_buoy_clock(void) {
     TEST_ASSERT_EQUAL_INT(SCOUT_DL_STALE, decode_for_buoy_1(frame, sizeof(frame), 0, &got));
     signed_frame(cmd(1, NOW + DAY + 1, SCOUT_DL_SETTING_TX_COUNT, 1), frame);
     TEST_ASSERT_EQUAL_INT(SCOUT_DL_STALE, decode_for_buoy_1(frame, sizeof(frame), 0, &got));
-    // max_skew 0 (clock not set) skips the age check.
+}
+
+// SCO-275: a buoy whose RTC chip has failed cannot judge a counter's age, and after a power
+// loss or a reflash its stored counter may be 0, so any recorded frame would pass. It refuses
+// every frame instead, even one whose counter matches its fallback clock.
+void test_an_untrusted_clock_refuses_every_frame(void) {
     uint8_t key[SCOUT_DL_KEY_BYTES];
     test_key(key);
-    TEST_ASSERT_EQUAL_INT(SCOUT_DL_OK,
-                          scout_dl_decode(frame, sizeof(frame), key, 1, 0, 0, 0, &got));
+    uint8_t frame[SCOUT_DL_CMD_SIZE];
+    ScoutCommand got;
+    signed_frame(cmd(1, NOW, SCOUT_DL_SETTING_TX_COUNT, 1), frame);
+    TEST_ASSERT_EQUAL_INT(SCOUT_DL_STALE, scout_dl_decode(frame, sizeof(frame), key, 1, 0, NOW,
+                                                          SCOUT_DL_CLOCK_UNTRUSTED, &got));
+    TEST_ASSERT_EQUAL_INT(SCOUT_DL_STALE, scout_dl_decode(frame, sizeof(frame), key, 1, 0, 0,
+                                                          SCOUT_DL_CLOCK_UNTRUSTED, &got));
+}
+
+void test_an_untrusted_clock_refuses_settings_and_time_frames(void) {
+    uint8_t key[SCOUT_DL_KEY_BYTES];
+    test_key(key);
+    ScoutSettings current;
+    scout_settings_defaults(&current);
+    ScoutSettings next;
+    uint32_t counter = 0;
+    TEST_ASSERT_EQUAL(SCOUT_DL_STALE,
+                      scout_dl_decode_any(GOLDEN_SETTINGS, sizeof(GOLDEN_SETTINGS), key, 1, 0, NOW,
+                                          SCOUT_DL_CLOCK_UNTRUSTED, &current, &next, &counter));
+    TEST_ASSERT_EQUAL(SCOUT_DL_STALE,
+                      scout_dl_decode_any(GOLDEN_TIME, sizeof(GOLDEN_TIME), key, 1, 0, NOW,
+                                          SCOUT_DL_CLOCK_UNTRUSTED, &current, &next, &counter));
+    TEST_ASSERT_EQUAL_UINT32(0, counter);
+    TEST_ASSERT_TRUE(scout_dl_is_rejection(SCOUT_DL_STALE));
 }
 
 void test_rejects_an_unknown_setting(void) {
@@ -437,6 +464,8 @@ static void run_all() {
     RUN_TEST(test_rejects_a_tag_made_with_another_key);
     RUN_TEST(test_rejects_replay_and_old_counters);
     RUN_TEST(test_rejects_a_counter_far_from_the_buoy_clock);
+    RUN_TEST(test_an_untrusted_clock_refuses_every_frame);
+    RUN_TEST(test_an_untrusted_clock_refuses_settings_and_time_frames);
     RUN_TEST(test_rejects_an_unknown_setting);
     RUN_TEST(test_range_check_on_the_transmit_count);
     RUN_TEST(test_only_refusals_of_our_own_commands_count_as_rejections);
