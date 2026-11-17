@@ -21,7 +21,7 @@
 | SCO-247 | Apply and cure the waterproof coating on both buoys | In Progress, on track. John tested the coating on an older buoy type and it is soaking now | Nov 13 | Read the soak, then coat the Test Assembly 10 float. Due Nov 19 |
 | SCO-176 | Saltwater soak of the final turbidity pod | **Method changed (John, Nov 17):** reprint the pod with no holes, epoxy and Flex Seal it shut, soak it a while, then open and check. The Linear text still says a one-week soak with the Grove sensor powered; a sealed holeless pod does not show the sensor still reads | Nov 24 | Print today; rewrite the issue for the new method and a new end date |
 | SCO-218 | One-page milestone and timeline handout | 20 days overdue. Nobody specific asked: it came from the advisors asking for documentation that already exists (Oct 21 team lunch, owner not decided) | Oct 28 | Print for Wed Nov 18 or cancel; John's call |
-| SCO-249 | Hung-from-dock/boat V1 test rig and procedure | Rig diagram drawn Nov 17 (`assets/diagrams/ta10-dock-hung-test-rig-v1-2026-11-17.png`). Steps, safety, tether length and hung vs floating are open. Linear still says due Nov 20 | Nov 20 | Decide hung vs floating; write deployment and retrieval steps, or give a new date |
+| SCO-249 | Hung-from-dock/boat V1 test rig and procedure | Rig diagram drawn Nov 17 (`assets/diagrams/ta10-dock-hung-test-rig-v1-2026-11-17.png`). Float hangs from a line off a dock 2 to 3 ft above the water and still floats (John, Nov 17). Steps, safety, tether length and the tide allowance are open. Linear still says due Nov 20 | Nov 20 | Write deployment and retrieval steps and size the tether for the tide, or give a new date |
 | SCO-108 | Submersion re-test of the face-seal joint | **Canceled Nov 17** by John (covered by SCO-296 and the pod re-print) | none | None |
 | SCO-180 | 4-week saltwater float soak, no foam (unit 1) | Linear due Dec 11, but the Float soak milestone is Dec 2 and a 4-week soak cannot finish before the MVP | Dec 11 | Re-date to winter break; John approves |
 | SCO-185 | Kaneohe Bay permit determinations | In Progress, moved to Jan 4, 2027 | Jan 4 | None |
@@ -41,7 +41,7 @@
 | Thu Nov 19 | SCO-308 | Start the Test Assembly 10 float print on the P1S (runs in the background) | 0.5 h | Todo (no date) |
 | Thu Nov 19 | SCO-183 | Plan the ocean flotation test: site, permission, boat or pier, safety, January window | 2 h | Todo (due Nov 20) |
 | Thu Nov 19 | SCO-306 | Follow up the Monterey boat contacts for a winter-break test | 0.5 h | Todo (no date) |
-| Fri Nov 20 | SCO-249 | Decide hung vs floating; deployment and retrieval steps | 1.5 h | Todo (diagram done) |
+| Fri Nov 20 | SCO-249 | Deployment and retrieval steps; tether and tide allowance | 1.5 h | Todo (diagram done) |
 | Fri Nov 20 | SCO-253 | Finish the drawings, with revision and date on each | 2 h | Todo (due Nov 20) |
 | Fri Nov 20 | SCO-245 | Rescope or cancel the submersion re-test with the top attachment (the top attachment was canceled) | 0.25 h | Todo (due Nov 20) |
 | Fri Nov 20 | n/a | Buffer; refresh Linear, draft next week's "Last week" block | | |
