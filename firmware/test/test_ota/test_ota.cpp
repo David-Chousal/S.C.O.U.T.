@@ -217,6 +217,9 @@ static void test_confirm_matches_golden_and_checks_in_order(void) {
                       scout_ota_confirm_check(frame, sizeof(frame), key, 1, 0, NOW + 2 * DAY, DAY, V020, &counter));
     TEST_ASSERT_EQUAL(SCOUT_OTA_WRONG_VERSION,
                       scout_ota_confirm_check(frame, sizeof(frame), key, 1, 0, NOW, DAY, V010, &counter));
+    // SCO-275: a buoy whose RTC chip has failed refuses CONFIRM, as it does every downlink.
+    TEST_ASSERT_EQUAL(SCOUT_OTA_STALE, scout_ota_confirm_check(frame, sizeof(frame), key, 1, 0, NOW,
+                                                               SCOUT_OTA_CLOCK_UNTRUSTED, V020, &counter));
     key[0] ^= 1;
     TEST_ASSERT_EQUAL(SCOUT_OTA_BAD_TAG,
                       scout_ota_confirm_check(frame, sizeof(frame), key, 1, 0, NOW, DAY, V020, &counter));

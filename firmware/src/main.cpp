@@ -67,7 +67,9 @@ static const char *CSV_HEADER =
 // defaults when the block is erased or fails its checks; either way the next packet reports the
 // digest of what is in use, so the shore sees a mismatch and sends the snapshot again. The shore
 // never believes settings the buoy is not using. last_cmd_counter makes a command usable once;
-// it is stored with the settings, and DOWNLINK_MAX_SKEW_S covers a block lost to a reflash.
+// it is stored with the settings, and DOWNLINK_MAX_SKEW_S covers a block lost to a reflash. A
+// buoy whose RTC chip has failed has no clock to apply that check against, so it refuses every
+// command until the chip is replaced (SCO-275); the RTC_UNSET health bit tells the shore why.
 struct RetainedState {
     uint32_t magic;
     uint32_t record_seq;
@@ -685,7 +687,8 @@ static void listen_for_command(bool in_slot) {
     bool confirmed = false;
     if (ota_is_frame(frame, len)) {
         OtaLink link = {&g_lora, BUOY_ID, key, power_mode_now};
-        confirmed = ota_handle(link, frame, len, in_slot, clock_now(), g_rtc_ok ? DOWNLINK_MAX_SKEW_S : 0,
+        confirmed = ota_handle(link, frame, len, in_slot, clock_now(),
+                               g_rtc_ok ? DOWNLINK_MAX_SKEW_S : SCOUT_OTA_CLOCK_UNTRUSTED,
                                &g_state.last_cmd_counter) == OTA_HEARD_CONFIRM;
         // CONFIRM advances last_cmd_counter in RAM; persist it so a reset cannot replay an
         // earlier signed command whose counter sat between the previous save and T_confirm.
@@ -729,7 +732,7 @@ static void apply_command(const uint8_t *key, const uint8_t *frame, uint8_t len)
     uint32_t counter = 0;
     scout_dl_result_t result = scout_dl_decode_any(
         frame, len, key, BUOY_ID, g_state.last_cmd_counter, clock_now(),
-        g_rtc_ok ? DOWNLINK_MAX_SKEW_S : 0, &g_state.settings, &next, &counter);
+        g_rtc_ok ? DOWNLINK_MAX_SKEW_S : SCOUT_DL_CLOCK_UNTRUSTED, &g_state.settings, &next, &counter);
     Serial.print("downlink: result=");
     Serial.println((int)result);
     if (result != SCOUT_DL_OK) {
