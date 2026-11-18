@@ -62,7 +62,8 @@ export function ReportActions({ content, printPages, columns, canDownload, loadi
   return (
     <>
       <Key size="sm" icon="export" disabled={!canDownload || noBuoys || csv.length === 0 || busy !== null} onClick={downloadCsv}>{busy === "csv" ? "Making…" : "CSV"}</Key>
-      <Key size="sm" icon="reports" disabled={noBuoys || busy !== null} onClick={() => setBusy("print")}>Print</Key>
+      <Key size="sm" icon="reports" disabled={noBuoys || loading || busy !== null}
+        title={loading ? "Waiting for readings to load" : undefined} onClick={() => setBusy("print")}>Print</Key>
       <Key size="sm" variant="primary" icon="export" disabled={noBuoys || loading || busy !== null}
         title={loading ? "Waiting for readings to load" : undefined} onClick={downloadPdfFile}>{busy === "pdf" ? "Making PDF…" : "Download PDF"}</Key>
       {busy === "print" && <PrintRoot content={content} pages={printPages} onDone={donePrinting} />}

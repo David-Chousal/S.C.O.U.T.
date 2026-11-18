@@ -32,6 +32,16 @@ describe("readingsInRange", () => {
   });
 });
 
+test("more than a page of readings at one timestamp is reported as incomplete, not silently cut", async () => {
+  const same = Array.from({ length: 1200 }, (_, i): Reading => ({ timestamp_utc: at(10), record_seq: String(i), temp_c: "25" }));
+  const read = vi.fn(async (_buoy: number, from: string, to: string) => ({
+    readings: same.filter((r) => r.timestamp_utc >= from && r.timestamp_utc <= to).reverse().slice(0, 1000),
+  }));
+  const { rows, truncated } = await readingsInRange(1, RANGE, read);
+  expect(rows).toHaveLength(1000);
+  expect(truncated).toBe(true);
+});
+
 describe("useReadingsStore", () => {
   test("a failed range is fetched again after retryFailed, not on every get", async () => {
     const { renderHook, act, waitFor } = await import("@testing-library/react");
