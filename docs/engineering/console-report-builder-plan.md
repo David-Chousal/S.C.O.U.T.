@@ -5,7 +5,7 @@
 > list of report-wide variables (buoys, dates, time zone), prebuilt templates and blocks, and
 > direct editing and rearranging on the page itself, before anyone presses **Download PDF**
 > or **Print**. Both are offered (decided by David, 2026-11-18). Nothing here is built yet;
-> the open questions at the end need a decision first.
+> the open questions at the end were answered on 2026-11-18.
 >
 > Source: the Reports page on `main` (2026-11-18) ·
 > [`console/README.md`](../../console/README.md) ·
@@ -88,6 +88,7 @@ Every block draws from data the console already has. The first set:
 | **Heat stress** | MMM, hot spot and degree heating weeks for each buoy | Buoys |
 | **Buoy health** | Battery, housing humidity, last heard, settings state | Buoys |
 | **Alerts in range** | Alerts that fired in the period | Buoys, severity |
+| **Image** | A logo or photo uploaded to R2 | Width, caption |
 | **Page break** and **Divider** | Layout only | None |
 
 Blocks can be duplicated, hidden from the PDF (kept in the layout but not printed), and
@@ -202,12 +203,18 @@ Each step ships on its own PR and leaves the page working.
    Buoy health, Alerts, Page break, each with its PDF renderer.
 7. **Drag, Outline and keyboard reordering**, reusing the dashboard drag.
 8. **Templates**: the five built-ins, then saving your own and team templates (D1 migration).
+9. **Image block**: a logo or photo uploaded to R2, shown on screen and in the PDF.
 
 ## Open questions
 
-- Should saved reports be shared with the whole team by default, or private until shared?
-- Do guests (advisors) need to change the variables, or only open reports someone else set up?
-- Is a logo or photo block wanted in the first version? It would need image upload to R2.
+All three were answered by David on 2026-11-18 (rows in the
+[decision log](../hub/decision-log.md)):
+
+- **Saved reports are shared with the whole team by default.** The author can make one private.
+- **Guests can change the report variables** (buoys, dates, time zone, page) to preview, print
+  and download, but cannot save reports or templates.
+- **An Image block is in the first version**: a logo or photo uploaded to R2, built as a ninth
+  step after templates.
 
 ## Sources
 
