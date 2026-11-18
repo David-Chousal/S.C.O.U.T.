@@ -24,15 +24,20 @@ export async function readingsInRange(buoy: number, range: ResolvedRange,
   read: typeof api.readingsBetween = api.readingsBetween): Promise<{ rows: Reading[]; truncated: boolean }> {
   const seen = new Map<string, Reading>();
   let to = range.to;
+  // The API pages by time only, so more than a page of readings at one timestamp cannot all be
+  // reached: when that happens the result says it is incomplete rather than dropping rows quietly.
+  let partial = false;
   for (;;) {
     const { readings } = await read(buoy, range.from, to);
     readings.forEach((row) => seen.set(rowKey(row), row));
     if (readings.length < PAGE) break;
     if (seen.size >= MAX_REPORT_READINGS) return { rows: ordered(seen).slice(-MAX_REPORT_READINGS), truncated: true };
     const oldest = readings[readings.length - 1].timestamp_utc;
-    to = oldest === to ? stepBack(oldest) : oldest;
+    const oneTimestamp = readings[0].timestamp_utc === oldest;
+    if (oneTimestamp) partial = true;
+    to = oneTimestamp ? stepBack(oldest) : oldest;
   }
-  return { rows: ordered(seen), truncated: false };
+  return { rows: ordered(seen), truncated: partial };
 }
 
 function ordered(rows: Map<string, Reading>): Reading[] {

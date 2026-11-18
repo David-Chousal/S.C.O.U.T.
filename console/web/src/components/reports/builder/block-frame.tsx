@@ -44,6 +44,10 @@ export function BlockFrame({ block, selected, canEdit, overrideLabel, onSelect, 
   const onKey = (event: KeyboardEvent) => {
     if (event.target !== event.currentTarget) return;
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(block.id); }
+    if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+      event.preventDefault();
+      dispatch({ type: "moveBy", id: block.id, delta: event.key === "ArrowUp" ? -1 : 1 });
+    }
   };
   const classes = ["sc-rb-block", selected && "is-selected", block.hidden && "is-hidden"].filter(Boolean).join(" ");
   return (
