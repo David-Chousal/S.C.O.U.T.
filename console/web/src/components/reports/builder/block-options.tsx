@@ -3,6 +3,7 @@
 import { Segmented } from "@/components/ui/segmented";
 import { MAX_ROW_CAP, type Block, type Sampling } from "@/lib/report/document";
 import type { ReportAction } from "@/lib/report/reducer";
+import { NumberDraft } from "./number-draft";
 import { VariablesPanel } from "./variables-panel";
 
 interface BlockOptionsFormProps { block: Block; columns: string[]; dispatch: (action: ReportAction) => void }
@@ -22,8 +23,7 @@ export function BlockOptionsForm({ block, columns, dispatch }: BlockOptionsFormP
           <div className="sc-inspector__field"><span className="sc-label">Sampling</span>
             <Segmented size="sm" label="Sampling" options={SAMPLING} value={block.options.sampling} onChange={(sampling) => update({ sampling })} /></div>
           <label className="sc-inspector__field"><span className="sc-label">Rows per buoy, at most</span>
-            <input className="sc-input" type="number" min={10} max={MAX_ROW_CAP} step={10} value={block.options.rowCap}
-              onChange={(e) => update({ rowCap: Math.max(10, Math.min(MAX_ROW_CAP, Math.round(Number(e.target.value) || 10))) })} /></label>
+            <NumberDraft value={block.options.rowCap} min={10} max={MAX_ROW_CAP} onCommit={(rowCap) => update({ rowCap })} /></label>
         </>
       );
     default:
