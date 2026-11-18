@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Toaster, useToast } from "./toaster";
+import { ToastBanners, Toaster, useToast } from "./toaster";
 import type { ToastInput } from "./toaster";
 
 function Trigger({ toast }: { toast: ToastInput }) {
@@ -45,5 +45,16 @@ describe("Toaster", () => {
     expect(screen.getByRole("alert").textContent).toContain("Sync failed");
     fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  test("shows notifications where the shell places the banners when it renders them itself", () => {
+    render(
+      <Toaster renderBanners={false}>
+        <header data-testid="slot"><ToastBanners /></header>
+        <Trigger toast={{ tone: "ok", title: "Renamed buoy 1" }} />
+      </Toaster>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    expect(screen.getByTestId("slot").textContent).toContain("Renamed buoy 1");
   });
 });

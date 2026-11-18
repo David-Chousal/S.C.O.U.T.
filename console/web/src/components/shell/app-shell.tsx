@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { FredPanel } from "@/components/assistant/fred-panel";
 import { Banner } from "@/components/feedback/banner";
-import { Toaster } from "@/components/feedback/toaster";
+import { ToastBanners, Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
 import { ApiError, type Session } from "@/lib/api/types";
 import { applyTheme, DEFAULT_PREFERENCES, loadPreferences, savePreferences, type Preferences } from "@/lib/preferences";
@@ -113,13 +113,14 @@ export function AppShell({ title, actions, children }: AppShellProps) {
   return (
     <SessionContext value={load.session}>
     <PreferencesContext value={preferencesValue}>
-      <Toaster>
+      <Toaster renderBanners={false}>
         <div ref={shellRef}
           className={`sc-shell${fredOpen ? " sc-shell--fred" : ""}${dragging ? " sc-shell--resizing" : ""}`}>
           <TopBar user={load.session.user} fredOpen={fredOpen} onToggleFred={toggleFred} railMenu={layout.sideCollapsed} note={viewOnlyNote} />
           <Sidebar shortcuts={preferences.shortcuts} collapsed={layout.sideCollapsed} width={layout.sideWidth}
             onResize={resizeSide} onDragging={setDragging} onToggle={toggleSide} />
           <div className="sc-shell__page">
+            <ToastBanners />
             <main className="sc-main">
               <PageHead title={title} actions={actions} />
               <ViewOnlyNoteContext value={setViewOnlyNote}>{children}</ViewOnlyNoteContext>
