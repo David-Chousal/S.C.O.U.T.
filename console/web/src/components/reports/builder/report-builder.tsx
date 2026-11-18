@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
@@ -107,6 +108,9 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
       <div className="sc-report-stage">
+        {readings.failed > 0 && (
+          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
+        )}
         <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
         <MeasureColumn content={content} columnRef={column} />
       </div>

@@ -95,7 +95,8 @@ export function historyReducer(history: History, action: HistoryAction): History
     return next ? { past: [...history.past, history.present], present: next, future: rest, lastKey: null } : history;
   }
   const present = reportReducer(history.present, action);
-  if (present === history.present) return history;
+  // Unchanged values (the same title again, an id that is gone) add no step and keep redo.
+  if (present === history.present || JSON.stringify(present) === JSON.stringify(history.present)) return history;
   const key = coalesceKey(action);
   if (key !== null && key === history.lastKey) return { ...history, present, future: [] };
   return { past: [...history.past, history.present].slice(-MAX_HISTORY), present, future: [], lastKey: key };

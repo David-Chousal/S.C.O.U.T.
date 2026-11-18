@@ -41,14 +41,16 @@ interface RangePickProps { range: ReportRange; onChange: (range: ReportRange) =>
 
 /** 24 h, 7 d, 30 d or a custom span of whole days. */
 export function RangePick({ range, onChange, label = "Date range" }: RangePickProps) {
+  // A cleared or half-typed date input reports "": keep the last whole day instead.
+  const setDay = (key: "from" | "to", value: string) => { if (value) onChange({ ...range, [key]: value }); };
   return (
     <div className="sc-report-range">
       <Segmented size="sm" label={label} options={RANGE_OPTIONS} value={range.preset} onChange={(preset) => onChange({ ...range, preset })} />
       {range.preset === "custom" && (
         <span className="sc-report-range__days">
-          <input className="sc-input" type="date" aria-label="From" value={range.from} max={range.to} onChange={(e) => onChange({ ...range, from: e.target.value })} />
+          <input className="sc-input" type="date" aria-label="From" value={range.from} max={range.to} onChange={(e) => setDay("from", e.target.value)} />
           <span aria-hidden="true">–</span>
-          <input className="sc-input" type="date" aria-label="To" value={range.to} min={range.from} onChange={(e) => onChange({ ...range, to: e.target.value })} />
+          <input className="sc-input" type="date" aria-label="To" value={range.to} min={range.from} onChange={(e) => setDay("to", e.target.value)} />
         </span>
       )}
     </div>

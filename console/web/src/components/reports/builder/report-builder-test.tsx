@@ -64,3 +64,12 @@ describe("ReportBuilder", () => {
     expect(paper().getByText("Water temperature (°C)")).toBeDefined();
   });
 });
+
+test("clearing a custom day keeps the last whole day and the page keeps working", async () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  await userEvent.click(screen.getByRole("button", { name: "Custom" }));
+  await userEvent.clear(screen.getByLabelText("From"));
+  expect((screen.getByLabelText("From") as HTMLInputElement).value).toBe("2026-10-24");
+  expect(screen.getByRole("button", { name: /CSV/ })).toBeDefined();
+});

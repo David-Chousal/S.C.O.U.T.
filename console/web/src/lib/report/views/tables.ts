@@ -1,3 +1,4 @@
+import { MAX_REPORT_READINGS } from "../readings-store";
 import { summarize } from "../stats";
 import { variableLabel, VARIABLES } from "@/lib/variables";
 import type { Block, BlockOfKind, Sampling } from "../document";
@@ -21,7 +22,9 @@ export function perBuoy<T>(block: Block, ctx: ViewContext, body: (rows: Rows) =>
     if (entry.status === "loading") return { heading, note: "", status: "loading", message: "Loading…", body: null };
     if (entry.status === "failed") return { heading, note: "", status: "failed", message: entry.error, body: null };
     if (entry.rows.length === 0) return { heading, note: "", status: "empty", message: "No readings in this range.", body: null };
-    return { heading, status: "ready", message: "", ...body(entry.rows) };
+    const made = body(entry.rows);
+    const partial = entry.truncated ? `${made.note ? "; " : ""}only the newest ${count(MAX_REPORT_READINGS)}, the range holds more` : "";
+    return { heading, status: "ready", message: "", ...made, note: made.note + partial };
   });
 }
 
