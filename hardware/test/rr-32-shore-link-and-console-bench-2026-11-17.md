@@ -44,7 +44,7 @@ frames (`0x0340`), cleared on the next, and showed on the console.
 - Duplicate handling (`DUP`), the real slot schedule, or two buoys or two stations.
 
 **Decision.** R-11 moves from Not run to Partial (bench chain shown). Next: a 100+ frame run for
-loss, then TX current with a meter, then outdoor range ([SCO-24](https://linear.app/scout1/issue/SCO-24)).
+loss, then TX current with a meter, then outdoor range ([SCO-14](https://linear.app/scout1/issue/SCO-14)).
 
 ---
 
@@ -238,7 +238,7 @@ window against a buoy minutes old, not loss.
 | Good enough to stop redesigning? | Yes for the shore wiring and the WiFi/console path on the bench |
 | Design change driven by this test | Mark CS 10, RST 11, IRQ 9 as confirmed in `shore_main.cpp` (G8) once David agrees |
 | Re-run needed? | Yes, with the real-key `feather_esp32s3_shore` build once the keys exist |
-| Next test | 100+ frame loss run, then TX current, then outdoor range ([SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-155](https://linear.app/scout1/issue/SCO-155)) |
+| Next test | 100+ frame loss run, then TX current, then outdoor range ([SCO-14](https://linear.app/scout1/issue/SCO-14), [SCO-155](https://linear.app/scout1/issue/SCO-155)) |
 | Issues filed | None new |
 
 ### C5. Evidence and traceability

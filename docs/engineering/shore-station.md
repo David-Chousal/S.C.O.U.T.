@@ -113,8 +113,9 @@ leaving ~28 s of the +2 min side for clock drift. Three limits:
 
 Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
-⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
-IRQ 9**, to be confirmed by ECE. **Settings downlink, on in the shipped build since 2026-11-04:**
+The FeatherWing's CS/RST/IRQ jumper pads have no default; the build uses **CS 10, RST 11,
+IRQ 9**, confirmed on hardware in
+[RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md) (2026-11-17). **Settings downlink, on in the shipped build since 2026-11-04:**
 `feather_esp32s3_shore` carries `-DSCOUT_DOWNLINK` (`feather_esp32s3_shore_downlink` is the same
 build with public example keys, for CI). Straight after a buoy's packet the station sends one
 HMAC-signed frame at the buoy's +11 dBm (`lib/scout_downlink`): the 43-byte v2 snapshot of every

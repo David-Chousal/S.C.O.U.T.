@@ -63,8 +63,8 @@
 #include "shore_ota.h"
 #endif
 
-/* FeatherWing jumper pads → S3 Feather pins. ⚠️ PROVISIONAL: the FeatherWing has no default
- * wiring; these three pads must be soldered to match, and confirmed with ECE (Isabella). */
+/* FeatherWing CS/RST/IRQ → S3 Feather pins. The wing has no default wiring; these are confirmed
+ * on hardware by RR-32 (2026-11-17, `radio=ok`), runbook G8. */
 #define PIN_SHORE_RFM95_CS 10
 #define PIN_SHORE_RFM95_RST 11
 #define PIN_SHORE_RFM95_INT 9
