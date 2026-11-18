@@ -20,6 +20,11 @@ describe("paginate", () => {
     expect(pages.map((p) => p.map((f) => f.blockId))).toEqual([["a"], ["b"]]);
   });
 
+  test("a page break's editing marker ends its page", () => {
+    const pages = paginate([block("a", 100), { id: "br", pageBreak: true, units: [{ height: 20 }] }, block("b", 100)], 1000, GAPS);
+    expect(pages.map((p) => p.map((f) => f.blockId))).toEqual([["a", "br"], ["b"]]);
+  });
+
   test("a table splits by rows and repeats its header on the next page", () => {
     const pages = paginate([block("a", 500), table("t", 50, Array(30).fill(20))], 1000, GAPS);
     expect(pages).toEqual([

@@ -3,21 +3,21 @@
 import { useState, type ReactNode } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { Key } from "@/components/ui/key";
-import type { Buoy } from "@/lib/api/types";
 import { createBlock, createDocument, type ReportDocument } from "@/lib/report/document";
 import type { ReportVariables } from "@/lib/report/variables";
 import { Inspector } from "./inspector";
+import { BlocksTab, LibraryPanel } from "./library-panel";
 import { ReportActions } from "./report-actions";
 import { MeasureColumn } from "./report-pages";
 import { ReportPreview } from "./report-preview";
 import { ReportToolbar } from "./report-toolbar";
-import { useReportContent } from "./use-report-content";
+import { useReportContent, type ReportBuoy } from "./use-report-content";
 import { useReportEditor } from "./use-report-editor";
 
 const DAY_MS = 24 * 3600 * 1000;
 
 interface ReportBuilderProps {
-  buoys: Pick<Buoy, "buoy_id" | "label">[];
+  buoys: ReportBuoy[];
   /** Variables the Worker allows (REPORT_COLUMNS). */
   columns: string[];
   canDownload: boolean;
@@ -33,7 +33,7 @@ interface ReportBuilderProps {
 function startingDocument(buoys: ReportBuilderProps["buoys"], now: number): ReportDocument {
   const day = (ms: number) => new Date(ms).toISOString().slice(0, 10);
   const variables: ReportVariables = { buoys: buoys.map((b) => b.buoy_id), range: { preset: "7d", from: day(now - 7 * DAY_MS), to: day(now) }, zone: "utc" };
-  return createDocument(variables, [createBlock("summaryTable", "summary"), createBlock("readingsTable", "readings")]);
+  return createDocument(variables, [createBlock("title", "title"), createBlock("summaryTable", "summary"), createBlock("readingsTable", "readings")]);
 }
 
 /** The Reports page as a builder: report-wide variables in the toolbar, the live paper preview in
@@ -59,7 +59,12 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
     <div className="sc-report-builder">
       <ReportToolbar title={title} buoys={buoys} variables={doc.variables} onVariables={(variables) => dispatch({ type: "setVariables", variables })}
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
-      <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
+      <aside className="sc-report-side sc-report-side--left" aria-label="Report library">
+        <LibraryPanel footer={recent} tabs={[{ id: "blocks", label: "Blocks", content: <BlocksTab canEdit={canEdit} onAdd={(block) => {
+          dispatch({ type: "add", block, after: selected?.id ?? null });
+          setSelectedId(block.id);
+        }} /> }]} />
+      </aside>
       <div className="sc-report-stage">
         {readings.failed > 0 && (
           <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>

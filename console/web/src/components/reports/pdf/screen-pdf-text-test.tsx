@@ -8,6 +8,7 @@ import { buildView, type BlockView, type ViewContext } from "@/lib/report/views"
 import { BlockUnit, unitCount } from "../blocks/block-units";
 import { PdfBlockUnit } from "./pdf-units";
 import { SAMPLE_DOCUMENTS } from "./sample-documents";
+import { ALERTS, FLEET, HEAT } from "@/lib/report/views/fixtures";
 
 // react-pdf's primitives stood in by plain elements: the test compares the text each renderer
 // writes, which is what a reader of the PDF sees.
@@ -29,7 +30,7 @@ const ENTRIES: Record<number, ReadingsEntry> = {
 };
 const ctx = (doc: ReportDocument): ViewContext => ({
   report: doc.variables, now: Date.parse("2026-11-18T12:00:00Z"),
-  buoyLabel: (id) => `Buoy ${id}`, readings: (id) => ENTRIES[id] ?? { status: "loading" },
+  buoyLabel: (id) => `Buoy ${id}`, title: "Weekly", contentWidth: 720, fleet: FLEET, heat: HEAT, alerts: ALERTS, readings: (id) => ENTRIES[id] ?? { status: "loading" },
 });
 
 const textOf = (node: ReactNode) => {
@@ -45,13 +46,14 @@ function pieces(view: BlockView): { unit: number; rows?: [number, number] }[] {
 }
 
 describe.each(SAMPLE_DOCUMENTS.map((d) => [d.title, d] as const))("%s: screen and PDF write the same text", (_, doc) => {
-  test.each(doc.blocks.map((b) => [b.kind, b] as const))("%s block", (_kind, block) => {
+  // A page break prints nothing: its dashed marker is editing chrome, so it has no PDF text to match.
+  test.each(doc.blocks.filter((b) => b.kind !== "pageBreak").map((b) => [b.kind, b] as const))("%s block", (_kind, block) => {
     const view = buildView(block, ctx(doc));
     expect(view).not.toBeNull();
     if (!view) return;
     for (const piece of pieces(view)) {
       const screen = textOf(<BlockUnit view={view} {...piece} />);
-      expect(screen.length).toBeGreaterThan(0);
+      if (block.kind !== "divider") expect(screen.length).toBeGreaterThan(0);
       expect(textOf(<PdfBlockUnit view={view} {...piece} />)).toBe(screen);
     }
   });

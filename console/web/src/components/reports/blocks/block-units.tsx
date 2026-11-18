@@ -1,13 +1,12 @@
 import type { BlockView } from "@/lib/report/views";
-import { TableUnit, tableUnits } from "./table-block";
+import { ChartsUnit, HeatUnit, KeyFiguresUnit } from "./figure-blocks";
+import { TableUnit } from "./table-block";
+import { MarkerUnit, TextUnit, TitleUnit } from "./text-blocks";
 
 /** How many pieces a block flows as: page breaks may fall between them. */
 export function unitCount(view: BlockView): number {
-  switch (view.kind) {
-    case "summaryTable":
-    case "readingsTable":
-      return tableUnits(view);
-  }
+  if ("sections" in view) return view.sections.length + ("footnote" in view && view.footnote ? 1 : 0);
+  return 1;
 }
 
 interface BlockUnitProps { view: BlockView; unit: number; rows?: [number, number] }
@@ -17,6 +16,15 @@ export function BlockUnit({ view, unit, rows }: BlockUnitProps) {
   switch (view.kind) {
     case "summaryTable":
     case "readingsTable":
+    case "buoyHealth":
+    case "alerts":
       return <TableUnit view={view} unit={unit} rows={rows} />;
+    case "title": return <TitleUnit view={view} />;
+    case "text": return <TextUnit view={view} />;
+    case "keyFigures": return <KeyFiguresUnit view={view} unit={unit} />;
+    case "timeSeries": return <ChartsUnit view={view} unit={unit} />;
+    case "heatStress": return <HeatUnit view={view} unit={unit} />;
+    case "pageBreak":
+    case "divider": return <MarkerUnit view={view} />;
   }
 }

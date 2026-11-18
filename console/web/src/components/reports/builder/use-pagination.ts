@@ -59,8 +59,11 @@ export function usePagination(items: FlowItem[], contentHeight: number, pageKey:
   }, []);
 
   const known = new Map(measured.map((m) => [m.id, m]));
-  const flow = (keep: (item: FlowItem) => boolean): Page[] =>
-    paginate(items.filter(keep).map((item) => known.get(item.id) ?? { id: item.id, pageBreak: item.pageBreak, units: [] }), contentHeight, PAGE_GAPS);
+  const flow = (printing: boolean): Page[] => paginate(items.filter((item) => !printing || !item.hidden).map((item) => {
+    const block = known.get(item.id) ?? { id: item.id, pageBreak: item.pageBreak, units: [] };
+    // A page break's dashed marker is for editing; on paper it is only the break.
+    return printing && item.pageBreak ? { ...block, units: [] } : block;
+  }), contentHeight, PAGE_GAPS);
 
-  return { column, editPages: flow(() => true), printPages: flow((item) => !item.hidden) };
+  return { column, editPages: flow(false), printPages: flow(true) };
 }

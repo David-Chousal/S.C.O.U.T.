@@ -36,7 +36,12 @@ export function paginate(blocks: MeasuredBlock[], pageHeight: number, gaps: Gaps
   };
 
   for (const block of blocks) {
-    if (block.pageBreak) { newPage(); continue; }
+    if (block.pageBreak) {
+      // Its marker (editing pages only) ends the current page; the next block starts a new one.
+      block.units.forEach((unit, index) => place({ blockId: block.id, unit: index }, unit.height, gaps.block));
+      newPage();
+      continue;
+    }
     block.units.forEach((unit, index) => {
       const gap = index === 0 ? gaps.block : gaps.unit;
       const room = () => pageHeight - used - (used > 0 ? gap : 0);

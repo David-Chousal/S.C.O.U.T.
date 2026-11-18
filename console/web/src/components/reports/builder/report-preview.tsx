@@ -8,6 +8,7 @@ import type { Page } from "@/lib/report/paginate";
 import type { ReportAction } from "@/lib/report/reducer";
 import { effectiveVariables, rangeLabel, resolveRange } from "@/lib/report/variables";
 import { BlockFrame } from "./block-frame";
+import { InlineText, InlineTitle } from "./inline-edit";
 import { ReportPages, type PageContent } from "./report-pages";
 
 interface ReportPreviewProps {
@@ -59,10 +60,13 @@ export function ReportPreview({ content, pages, selectedId, onSelect, canEdit, d
         <div className="sc-report-pages" aria-label="Report preview" style={{ zoom: zoom === "fit" ? fit : 1 }}
           onClick={(event) => event.target === event.currentTarget && onSelect(null)}>
           {doc.blocks.length === 0 && <p className="sc-rb-muted">This report has no blocks yet.</p>}
-          <ReportPages content={content} pages={pages} frame={(block, children) => (
-            <BlockFrame block={block} selected={block.id === selectedId} canEdit={canEdit} overrideLabel={ownLabel(block)}
-              onSelect={onSelect} dispatch={dispatch}>{children}</BlockFrame>
-          )} />
+          <ReportPages content={content} pages={pages} frame={(block, children) => {
+            const editing = canEdit && block.id === selectedId;
+            const inline = editing && block.kind === "text" ? <InlineText block={block} dispatch={dispatch} />
+              : editing && block.kind === "title" ? <InlineTitle block={block} title={doc.title} dispatch={dispatch} /> : children;
+            return <BlockFrame block={block} selected={block.id === selectedId} canEdit={canEdit} overrideLabel={ownLabel(block)}
+              onSelect={onSelect} dispatch={dispatch}>{inline}</BlockFrame>;
+          }} />
         </div>
       </div>
     </div>
