@@ -5,8 +5,8 @@
 > FeatherWing (RFM95W)**, running FreeRTOS so it can listen to LoRa and use WiFi at the same time.
 > Under [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md) it also sends firmware and
 > settings to the buoys. **Firmware is written** (`feather_esp32s3_shore` in
-> [`firmware/`](../../firmware/README.md)); ⚠️ **not yet verified end-to-end on the board**
-> ([SCO-24](https://linear.app/scout1/issue/SCO-24)). First-bench steps:
+> [`firmware/`](../../firmware/README.md)); **run end to end on the bench 2026-11-17**
+> ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md), Partial: loss, range and the real-key build not yet tested). First-bench steps:
 > [`first-boot-checklist.md`](first-boot-checklist.md).
 >
 > Rewritten 2026-10-19 from the team's decisions. This page used to describe a Raspberry Pi
@@ -61,7 +61,8 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 
 ## Software
 
-**On the S3 — receive path written and compiled, ⚠️ not yet run as a whole on the board**
+**On the S3 — receive path run on the board 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md), Partial: 16 of 16 bench frames
+valid; dedupe, the slot listen window and loss over 100+ frames not yet exercised)
 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)).
 It copies the bench
 receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
@@ -113,8 +114,9 @@ leaving ~28 s of the +2 min side for clock drift. Three limits:
 
 Its serial
 output keeps the bench receiver's `RX …` line, so `scripts/decode_frames.py` reads it unchanged.
-⚠️ The FeatherWing's CS/RST/IRQ jumper pads have no default; the build assumes **CS 10, RST 11,
-IRQ 9**, to be confirmed by ECE. **Settings downlink, on in the shipped build since 2026-11-04:**
+The FeatherWing's CS/RST/IRQ jumper pads have no default; the build uses **CS 10, RST 11,
+IRQ 9**, confirmed on hardware in
+[RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md) (2026-11-17). **Settings downlink, on in the shipped build since 2026-11-04:**
 `feather_esp32s3_shore` carries `-DSCOUT_DOWNLINK` (`feather_esp32s3_shore_downlink` is the same
 build with public example keys, for CI). Straight after a buoy's packet the station sends one
 HMAC-signed frame at the buoy's +11 dBm (`lib/scout_downlink`): the 43-byte v2 snapshot of every
@@ -122,7 +124,8 @@ remote setting when a v5 buoy's settings digest differs from the console's, or t
 `SET_TX_COUNT` when a v4 buoy's count does. ⚠️ The FeatherWing's FCC authorization (open item 3)
 is treated as checked on the team's instruction, but no record of the check exists yet. Keys go in the gitignored `firmware/src/downlink_key.h`. **Firmware OTA is built and ON** in the shipped `feather_esp32s3_shore` / `feather_m0` builds since 2026-11-12 (`SCOUT_OTA`; needs `ota_pubkey.h`); ⚠️ never run on hardware yet.
 
-**WiFi push — written 2026-10-28, not yet run on the board**
+**WiFi push — written 2026-10-28, run on the board 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md): every frame pushed,
+0 queued, over a phone hotspot; the queue-and-retry path not yet exercised)
 ([SCO-237](https://linear.app/scout1/issue/SCO-237)). The S3 sends every reading to the console
 by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
 
@@ -181,8 +184,9 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
   - A gitignored `src/shore_rx/shore_secrets.h` (copy `shore_secrets_example.h`) still works for
     developers, but only fills an empty store on first boot; it also sets the console URL. Env
     `feather_esp32s3_shore_link_check` builds that path with dummy values.
-  - ⚠️ Compiled and previewed (`python3 firmware/tools/setup_page_preview.py` serves the page
-    with a fake station), not yet run on the board.
+  - Ran on the board 2026-11-17 ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)): the setup network came up, the page saved a hotspot and
+    token, and the station joined. ⚠️ Opened from a laptop, not a phone; the BOOT reopen, the
+    automatic reopen and the USB-only fallback are not yet run (SCO-310).
 - **Footprint** with WiFi on: RAM 26.7 %, flash 64.3 % of the app partition.
 
 **Fallbacks stay** (David, 2026-10-28). The S3 still prints every frame over USB, so a computer
@@ -245,9 +249,9 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
 
 1. **Bench-test the S3's WiFi push** ([SCO-237](https://linear.app/scout1/issue/SCO-237)):
    written 2026-10-28 against the console's device API
-   ([ADR-0012](../decisions/0012-authenticated-console.md)). Still open: a frame from the bench
-   buoy showing up on the console end to end, NTP and the clock surviving a reset seen on the
-   board, and a site WiFi to run it on (item 4). Where the S3 cannot reach WiFi, a computer reads
+   ([ADR-0012](../decisions/0012-authenticated-console.md)). A bench-buoy frame reaching the
+   console end to end and NTP on the board are shown in [RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md). Still open: the clock surviving a
+   reset seen on the board, the queue-and-retry path, and a site WiFi to run it on (item 4). Where the S3 cannot reach WiFi, a computer reads
    it over USB (`run_receiver.py --link serial`, [SCO-257](https://linear.app/scout1/issue/SCO-257))
    and `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.

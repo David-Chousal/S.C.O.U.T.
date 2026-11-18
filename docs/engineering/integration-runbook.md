@@ -115,7 +115,7 @@ Found in the 2026-10-19 rewrite and updated 2026-11-12. Each names the first sta
 | **G5** ✅ fixed in code | **No receiver for the bench link test.** Now `feather_m0_rx` (a second Feather M0) and `shore/scripts/decode_frames.py`. | Stage 4a | [PR #186](https://github.com/David-Chousal/S.C.O.U.T./pull/186), [SCO-155](https://linear.app/scout1/issue/SCO-155) |
 | **G6** ✅ fixed in code | **Forcing a watchdog reset for the Stage 5 test.** Now: env `feather_m0_wdt_test` (the bench build plus `-DSCOUT_WDT_TEST`) logs one reading, then hangs on its second cycle without petting the watchdog. The watchdog fires (~16 s) and the next boot reports `watchdog_reset=yes`. A boot the watchdog caused never hangs, so there is one forced reset per power-on or reset-button press. | Stage 5 | Added 2026-10-30 ([SCO-160](https://linear.app/scout1/issue/SCO-160)) — confirm on hardware |
 | **G7** ⚠️ | **Audio capture is written but has never run.** `drivers/audio_capture.h` records a 60 s clip at 22.05 kHz three times a day ([ADR-0011](../decisions/0011-audio-capture-parameters.md)); the hydrophone has not been bought. (The 2026-10-19 version said no capture code existed; that was superseded.) | Stage 7 | Run it once the H2dM arrives (CSEN + ECE) |
-| **G8** ⚠️ | **The shore FeatherWing's CS/RST/IRQ jumpers have no default.** `shore_main.cpp` assumes **CS 10, RST 11, IRQ 9**; the pads must be soldered to match and confirmed with ECE. Isabella reported the S3 receiving on 2026-11-11, which suggests they are; record the pads in the Stage 4a test record. **2026-11-17:** confirmed working on 10 / 11 / 9, wired by jumpers straight from the CS/RST/IRQ pads to the S3 ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)). | Stage 4a (S3 as receiver), 4b | Isabella |
+| **G8** ✅ | **The shore FeatherWing's CS/RST/IRQ jumpers have no default.** `shore_main.cpp` assumes **CS 10, RST 11, IRQ 9**; the pads must be soldered to match and confirmed with ECE. Isabella reported the S3 receiving on 2026-11-11, which suggests they are; record the pads in the Stage 4a test record. **2026-11-17:** confirmed working on 10 / 11 / 9, wired by jumpers straight from the CS/RST/IRQ pads to the S3 ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)). | Stage 4a (S3 as receiver), 4b | Isabella |
 | **G9** ⚠️ | **The shore station has no battery-backed clock.** After a power-on with no WiFi it has no time until NTP or `T<epoch>` over USB sets it: slot tags read `win=unknown` and the downlink holds off. Readings are unaffected (they carry the buoy's timestamp). | Nothing (a degraded mode) | ECE to decide on an RTC FeatherWing ([Shore Station](shore-station.md#open-items) item 6) |
 | **G10** 🔴 | **The shore must not transmit off the bench** until the RFM95W FeatherWing's own FCC authorization is checked, and the buoy's 1 s listen window needs Isabella's power sign-off. **Both are assumed, not recorded:** the settings downlink (2026-11-04) and OTA (2026-11-12) are on in the shipped builds by David's decision, so the shipped shore station *will* transmit. Keep it on the bench until both are recorded. Replay protection on a buoy whose RTC chip has failed is settled: it refuses every command ([SCO-275](https://linear.app/scout1/issue/SCO-275), 2026-11-16). | Any shore transmission off the bench | CS lead + Isabella ([Shore Station](shore-station.md#open-items) item 3, [SCO-104](https://linear.app/scout1/issue/SCO-104)) |
 | **G11** ⚠️ | **OTA has never run on hardware.** Before relying on it: push a signed v+1 bundle on the bench and check the transfer, the stub flash, `FW_TRIAL`, `CONFIRM`, a forced rollback and a power cut mid-flash; measure Ed25519 and SD fill time against the 16.4 s watchdog; generate the real signing key on the release machine (`ota_release.py keygen`). While the S3 relays a bundle it hears no other buoy for up to ≈ 6.5 min. | Stage 8 (sealing): until OTA is proven, a firmware fix means opening the housing | CS lead ([OTA design §10](ota-firmware-update-design.md#10-as-built-2026-11-12) items 1–5) |
@@ -397,7 +397,7 @@ at switch-on (rail dip < ~100 mV).
 
 ---
 
-### Stage 4 — Data transmission, buoy → shore ⚠️ UNVERIFIED (4a reported working 2026-11-11, no record) · [SCO-155](https://linear.app/scout1/issue/SCO-155), [SCO-98](https://linear.app/scout1/issue/SCO-98), [SCO-24](https://linear.app/scout1/issue/SCO-24)
+### Stage 4 — Data transmission, buoy → shore 🟡 PARTIAL (bench chain shown in [RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md), 2026-11-17; loss, TX current and range not yet measured) · [SCO-155](https://linear.app/scout1/issue/SCO-155), [SCO-98](https://linear.app/scout1/issue/SCO-98), [SCO-24](https://linear.app/scout1/issue/SCO-24)
 
 > ⚠️ **Never power an RFM95 without its antenna.** Transmitting unterminated can destroy the PA.
 
@@ -438,7 +438,10 @@ all pushed to the console. Loss over 100+ frames, airtime and TX current are sti
 
 **4b — The shore station: ESP32-S3 + LoRa FeatherWing, pushing to the console** ⚠️ UNVERIFIED ·
 [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237).
-Firmware written (receive 2026-10-23, WiFi push 2026-10-28), never run on the board.
+Firmware written (receive 2026-10-23, WiFi push 2026-10-28). **Bench run 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)):
+receive, setup page, WiFi join, NTP and console push all ran on the board, 16 of 16 frames pushed.
+Stays UNVERIFIED until the remaining PASS checks run (real-key build, settings pull, downlink,
+queue-and-retry).
 
 **Preconditions:** 4a frames decode · FeatherWing jumpers soldered (G8) · antenna on · a phone ·
 a WiFi network the S3 can join: **2.4 GHz** WPA2/WPA3 or open, **no captive sign-in page** (the
