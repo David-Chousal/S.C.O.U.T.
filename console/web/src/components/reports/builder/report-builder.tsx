@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
@@ -8,13 +8,19 @@ import type { Buoy } from "@/lib/api/types";
 import { createBlock, createDocument, type ReportDocument } from "@/lib/report/document";
 import { useReadingsStore } from "@/lib/report/readings-store";
 import { resolveRange, type ReportVariables } from "@/lib/report/variables";
-import type { ViewContext } from "@/lib/report/views";
+import { pageBox } from "@/lib/report/page";
+import { buildView, type BlockView, type ViewContext } from "@/lib/report/views";
 import { Inspector } from "./inspector";
+import { PrintRoot } from "./print-root";
+import { HEADER_ID, MeasureColumn } from "./report-pages";
+import { usePagination, type FlowItem } from "./use-pagination";
 import { ReportPreview } from "./report-preview";
 import { ReportToolbar } from "./report-toolbar";
 import { useReportEditor } from "./use-report-editor";
 
 const DAY_MS = 24 * 3600 * 1000;
+// Fit-width zoom rounds row heights up by a fraction of a pixel each; a little room keeps the last row on the page.
+const ZOOM_SLACK_PX = 8;
 
 interface ReportBuilderProps {
   buoys: Pick<Buoy, "buoy_id" | "label">[];
@@ -55,8 +61,19 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
   const ctx = useMemo<ViewContext>(() => ({
     report: doc.variables, now, readings: readings.get,
     buoyLabel: (id) => buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`,
-  }), [doc.variables, now, readings.get, buoys]);
-  const printHref = `/reports/print/?buoys=${doc.variables.buoys.join(",")}&from=${range.from.slice(0, 10)}&to=${range.to.slice(0, 10)}&columns=${csv.join(",")}`;
+    // readings.version is not read here: it changes when a fetch lands, so every view rebuilds.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [doc.variables, now, readings.get, readings.version, buoys]);
+  const views = useMemo(() => new Map(doc.blocks.flatMap((b): [string, BlockView][] => {
+    const view = buildView(b, ctx);
+    return view ? [[b.id, view]] : [];
+  })), [doc.blocks, ctx]);
+  const items: FlowItem[] = [{ id: HEADER_ID, pageBreak: false, hidden: false },
+    ...doc.blocks.map((b) => ({ id: b.id, pageBreak: b.kind === "pageBreak", hidden: b.hidden }))];
+  const { column, editPages, printPages } = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}`, views);
+  const content = { doc, ctx, views };
+  const [printing, setPrinting] = useState(false);
+  const donePrinting = useCallback(() => setPrinting(false), []);
 
   async function downloadCsv() {
     setBusy(true);
@@ -76,7 +93,7 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
       <Key size="sm" iconOnly icon="undo" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={undo} />
       <Key size="sm" iconOnly icon="redo" aria-label="Redo" title="Redo (⇧⌘Z)" disabled={!canRedo} onClick={redo} />
       <Key size="sm" icon="export" disabled={!canDownload || !ready || busy} onClick={downloadCsv}>{busy ? "Making…" : "CSV"}</Key>
-      <a className={`sc-key sc-key--sm sc-key--primary${ready ? "" : " is-disabled"}`} href={ready ? printHref : undefined} target="_blank" rel="noopener">Printable report</a>
+      <Key size="sm" variant="primary" icon="reports" disabled={doc.variables.buoys.length === 0 || printing} onClick={() => setPrinting(true)}>Print</Key>
     </>
   );
   const title = (
@@ -90,13 +107,15 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
       <div className="sc-report-stage">
-        <ReportPreview doc={doc} ctx={ctx} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
+        <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
+        <MeasureColumn content={content} columnRef={column} />
       </div>
       <aside className="sc-report-side sc-report-side--right" aria-label="Block options">
         {!canEdit ? <p className="sc-help">View only: change the buoys, dates and page above to preview, print and download. Editing blocks needs the member role.</p>
           : selected ? <Inspector block={selected} report={doc.variables} buoys={buoys} columns={columns} dispatch={dispatch} />
             : <p className="sc-help">Click a block in the preview to change what it shows.</p>}
       </aside>
+      {printing && <PrintRoot content={content} pages={printPages} onDone={donePrinting} />}
     </div>
   );
 }

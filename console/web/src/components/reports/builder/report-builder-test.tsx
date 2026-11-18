@@ -31,8 +31,9 @@ describe("ReportBuilder", () => {
 
   test("the preview names the buoys and the range at once, with no Generate step", async () => {
     renderBuilder();
-    expect(screen.getByText("2026-10-24 to 2026-10-31 (UTC)")).toBeDefined();
-    expect(await screen.findAllByText("No readings in this range.")).toHaveLength(4);
+    const paper = within(screen.getByLabelText("Report preview"));
+    expect(paper.getByText("2026-10-24 to 2026-10-31 (UTC)")).toBeDefined();
+    expect(await paper.findAllByText("No readings in this range.")).toHaveLength(4);
   });
 
   test("CSV asks for the report's range and hands back the link", async () => {
@@ -48,13 +49,13 @@ describe("ReportBuilder", () => {
   test("a guest can preview and print but not make a CSV", () => {
     renderBuilder(false);
     expect((screen.getByRole("button", { name: /CSV/ }) as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByRole("link", { name: /Printable report/ })).toBeDefined();
+    expect((screen.getByRole("button", { name: "Print" }) as HTMLButtonElement).disabled).toBe(false);
   });
 
   test("unticking a variable on a block changes that block, and undo brings it back", async () => {
     vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [{ timestamp_utc: "2026-10-30T00:00:00Z", record_seq: "1", temp_c: "27", turbidity_fau: "1", battery_v: "3.7" }] });
     render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
-    await screen.findAllByText("Water temperature (°C)");
+    await within(screen.getByLabelText("Report preview")).findAllByText("Water temperature (°C)");
     await userEvent.click(screen.getByRole("group", { name: "Summary table block" }));
     await userEvent.click(screen.getByLabelText(/Water temperature/));
     const paper = () => within(screen.getByLabelText("Report preview"));

@@ -46,7 +46,7 @@ export const readingsKey = (buoy: number, range: ResolvedRange) => `${buoy}|${ra
  * never refetches, and a new range fetches once for every block that uses it. */
 export function useReadingsStore() {
   const cache = useRef(new Map<string, ReadingsEntry>());
-  const [, setVersion] = useState(0);
+  const [version, setVersion] = useState(0);
 
   const get = useCallback((buoy: number, range: ResolvedRange): ReadingsEntry => {
     const key = readingsKey(buoy, range);
@@ -60,5 +60,6 @@ export function useReadingsStore() {
     return { status: "loading" };
   }, []);
 
-  return { get };
+  /** `version` changes whenever a fetch lands, so views built from `get` know to rebuild. */
+  return { get, version };
 }
