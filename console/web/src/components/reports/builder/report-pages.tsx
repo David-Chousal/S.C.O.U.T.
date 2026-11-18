@@ -44,13 +44,16 @@ interface PagesProps {
   content: PageContent;
   pages: Page[];
   /** Wraps a block's fragments on a page: the selection frame while editing, nothing in Print. */
-  frame?: (block: Block, children: ReactNode) => ReactNode;
+  frame?: (block: Block, children: ReactNode, first: boolean) => ReactNode;
 }
 
 /** The pages themselves: real page frames at the chosen size, with page numbers. */
 export function ReportPages({ content, pages, frame = (_, children) => children }: PagesProps) {
   const { doc, views } = content;
   const box = pageBox(doc.page);
+  // A block split across pages keeps its tools and tags on its first part only.
+  const firsts = new Set(pages.map((page, n) => groups(page).map((g, i) => ({ id: g.blockId, key: `${n}-${i}` }))).flat()
+    .filter((g, i, all) => all.findIndex((x) => x.id === g.id) === i).map((g) => g.key));
   return pages.map((page, n) => (
     <div key={n} className="sc-report-page" style={{ width: box.width, height: box.height }}>
       <div className="sc-report-page__body">
@@ -59,7 +62,7 @@ export function ReportPages({ content, pages, frame = (_, children) => children 
           const view = views.get(blockId);
           if (!block || !view) return null;
           const units = fragments.map((f) => <div key={`${f.unit}-${f.rows?.[0] ?? 0}`} className="sc-report-unit"><BlockUnit view={view} unit={f.unit} rows={f.rows} /></div>);
-          return <div key={`${blockId}-${i}`} className="sc-report-block">{frame(block, units)}</div>;
+          return <div key={`${blockId}-${i}`} className="sc-report-block">{frame(block, units, firsts.has(`${n}-${i}`))}</div>;
         })}
       </div>
       <footer className="sc-report-page__foot">Page {n + 1} of {pages.length}</footer>

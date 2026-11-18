@@ -8,7 +8,7 @@ export type ReportAction =
   | { type: "setTitle"; title: string }
   | { type: "setVariables"; variables: ReportVariables }
   | { type: "setPage"; page: PageSetup }
-  | { type: "add"; block: Block; after?: string | null }
+  | { type: "add"; block: Block; after?: string | null; at?: number }
   | { type: "update"; id: string; options: Partial<BlockOptions[keyof BlockOptions]> }
   | { type: "setOverride"; id: string; override: BlockOverride }
   | { type: "toggleHidden"; id: string }
@@ -56,7 +56,9 @@ export function reportReducer(doc: ReportDocument, action: ReportAction): Report
     case "setTitle": return { ...doc, title: action.title };
     case "setVariables": return { ...doc, variables: action.variables };
     case "setPage": return { ...doc, page: action.page };
-    case "add": return { ...doc, blocks: inserted(doc.blocks, action.block, action.after) };
+    case "add": return action.at === undefined
+      ? { ...doc, blocks: inserted(doc.blocks, action.block, action.after) }
+      : { ...doc, blocks: [...doc.blocks.slice(0, action.at), action.block, ...doc.blocks.slice(action.at)] };
     case "update": return withBlock(doc, action.id, (b) => ({ ...b, options: { ...b.options, ...action.options } }) as Block);
     case "setOverride": return withBlock(doc, action.id, (b) => ({ ...b, override: clean(action.override) }));
     case "toggleHidden": return withBlock(doc, action.id, (b) => ({ ...b, hidden: !b.hidden }));

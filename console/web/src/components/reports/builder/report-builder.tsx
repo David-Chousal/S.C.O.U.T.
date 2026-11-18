@@ -7,6 +7,8 @@ import { createBlock, createDocument, type ReportDocument } from "@/lib/report/d
 import type { ReportVariables } from "@/lib/report/variables";
 import { Inspector } from "./inspector";
 import { BlocksTab, LibraryPanel } from "./library-panel";
+import { OutlineTab } from "./outline-tab";
+import { useBlockDrag } from "./use-block-drag";
 import { ReportActions } from "./report-actions";
 import { MeasureColumn } from "./report-pages";
 import { ReportPreview } from "./report-preview";
@@ -43,6 +45,7 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
   const { content, readings, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = doc.blocks.find((b) => b.id === selectedId) ?? null;
+  const { area: dropArea, pointer: drag } = useBlockDrag(dispatch, setSelectedId);
   const actions = (
     <>
       <Key size="sm" iconOnly icon="undo" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={undo} />
@@ -60,16 +63,19 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
       <ReportToolbar title={title} buoys={buoys} variables={doc.variables} onVariables={(variables) => dispatch({ type: "setVariables", variables })}
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">
-        <LibraryPanel footer={recent} tabs={[{ id: "blocks", label: "Blocks", content: <BlocksTab canEdit={canEdit} onAdd={(block) => {
-          dispatch({ type: "add", block, after: selected?.id ?? null });
-          setSelectedId(block.id);
-        }} /> }]} />
+        <LibraryPanel footer={recent} tabs={[
+          { id: "blocks", label: "Blocks", content: <BlocksTab canEdit={canEdit} drag={drag} onAdd={(block) => {
+            dispatch({ type: "add", block, after: selected?.id ?? null });
+            setSelectedId(block.id);
+          }} /> },
+          { id: "outline", label: "Outline", content: <OutlineTab blocks={doc.blocks} selectedId={selected?.id ?? null} canEdit={canEdit} onSelect={setSelectedId} dispatch={dispatch} /> },
+        ]} />
       </aside>
       <div className="sc-report-stage">
         {readings.failed > 0 && (
           <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
         )}
-        <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
+        <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} drag={drag} dropArea={dropArea} />
         <MeasureColumn content={content} columnRef={column} />
       </div>
       <aside className="sc-report-side sc-report-side--right" aria-label="Block options">
