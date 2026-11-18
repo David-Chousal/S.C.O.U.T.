@@ -100,7 +100,7 @@ Locked on: 2026-10-30 (R-11 row of the requirements test matrix, commit `7dbcf68
 
 | Item | Value |
 |---|---|
-| Design revision / file | Firmware `main` at `88e16c8` (2026-11-15). Buoy: `feather_m0_bench`. Shore: `feather_esp32s3_shore_downlink` (D-02) |
+| Design revision / file | Firmware `main` at `88e16c8` (2026-11-15). Buoy: `feather_m0_bench`. Shore: `feather_esp32s3_shore_downlink` (D-02, a deviation). A repeat run must use the real-key `feather_esp32s3_shore`; if the keys are still missing, defer it |
 | Material and print settings | n/a |
 | Configuration | **Buoy:** Feather M0 RFM95 + Adalogger (CR1220, microSD), DS18B20 and SHT40 as RR-25; 915 MHz coil spring in ANT. **Shore:** ESP32-S3 Feather (Adafruit 5477) + RFM95W FeatherWing (3231), 915 MHz coil spring in the wing's ANT hole; joined by 8 jumpers (D-01): 3V–3V, GND–GND, SCK, MO, MI, S3 10 → CS, S3 11 → RST, S3 9 → IRQ (wing's middle pads, header pins soldered; A–F pads unused) |
 | Conditions | Indoors, both boards on one desk, USB power from one laptop |
@@ -131,7 +131,7 @@ with Stations access; a phone hotspot on 2.4 GHz; `set_rtc_windows.ps1`, a Windo
 
 | Step | Action | Record | Expected | Done |
 |---|---|---|---|---|
-| 1 | Flash the shore build; open its monitor | Boot line | `radio=ok … errata=applied` | ☑ (D-02, D-04) |
+| 1 | Flash `feather_esp32s3_shore` (real keys); open its monitor | Boot line | `radio=ok … errata=applied` | ☑ (D-02, D-04) |
 | 2 | Console → Stations → New token | Token (not written down) | Shown once, starts `scd_` | ☑ |
 | 3 | Join `SCOUT-Setup-2DD4`; pick the hotspot, password, token; Save | Serial | `wifi: connected`, `time: set by ntp`; Stations shows Live | ☑ (D-03) |
 | 4 | Flash `feather_m0_bench` on COM5; set the clock with `-Port COM5` | Script output | `OK: clock set to …` | ☑ |
@@ -165,7 +165,7 @@ can be flashed.
 
 | Item | Value |
 |---|---|
-| Start / end (date, time) | 2026-11-17: shore WiFi up 06:26:57 UTC (22:27 PST); frames 06:45:26–06:59:00 UTC (22:45–22:59 PST) |
+| Start / end (date, time) | 2026-11-17 PST (2026-11-18 UTC): shore WiFi up 22:27 PST (06:26:57 UTC on 11-18); frames 22:45–22:59 PST (06:45:26–06:59:00 UTC on 11-18) |
 | Operator | Isabella Rodriguez |
 | Ambient conditions | Indoors; 21.7 °C at the DS18B20 |
 | Instrument serials / IDs | Shore setup network `SCOUT-Setup-2DD4` (from the S3's MAC); console station `shore-1-bench`; buoy SCOUT-01 (ID 1) |
@@ -175,7 +175,7 @@ can be flashed.
 All frames: [`lk-shore-frames-2026-11-17.csv`](evidence/rr-32-2026-11-17/data/lk-shore-frames-2026-11-17.csv);
 screenshots in [`evidence/rr-32-2026-11-17/screenshots/`](evidence/rr-32-2026-11-17/screenshots/).
 
-| Time (UTC) | Run / sample | Reading or observation | Reference value | Note |
+| Time (UTC, 2026-11-18) | Run / sample | Reading or observation | Reference value | Note |
 |---|---|---|---|---|
 | — | Shore boot | `radio=ok freq=915.0 modem=98,C4,4 errata=applied`; setup network open | — | M1, `lk-01` |
 | 06:26:57 | Shore WiFi | `wifi: connected … rssi=-52`, `time: set by ntp`, later `setup network closed` | — | Stations: Live (`lk-02`) |
