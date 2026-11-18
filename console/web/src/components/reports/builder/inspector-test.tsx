@@ -72,3 +72,24 @@ describe("Inspector", () => {
     expect(read).toHaveBeenCalledWith(1, "2026-10-30T12:00:00Z", "2026-10-31T12:00:00Z");
   });
 });
+
+test("the row cap is typed freely and clamped when the field is left", async () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={["temp_c"]} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  await userEvent.click(within(screen.getByLabelText("Report preview")).getByRole("group", { name: "Readings table block" }));
+  const cap = screen.getByRole("spinbutton");
+  await userEvent.clear(cap);
+  await userEvent.type(cap, "500");
+  expect((cap as HTMLInputElement).value).toBe("500");
+  await userEvent.type(cap, "0{Enter}");
+  expect((cap as HTMLInputElement).value).toBe("2000");
+});
+
+test("Alt+↑ and Alt+↓ move the focused block", async () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={["temp_c"]} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  const paperNow = within(screen.getByLabelText("Report preview"));
+  paperNow.getByRole("group", { name: "Readings table block" }).focus();
+  await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
+  expect(paperNow.getAllByRole("group").map((g) => g.getAttribute("aria-label"))).toEqual(["Title block", "Readings table block", "Summary table block"]);
+});

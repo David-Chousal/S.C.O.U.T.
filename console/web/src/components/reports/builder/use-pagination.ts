@@ -37,6 +37,9 @@ export function usePagination(items: FlowItem[], contentHeight: number, pageKey:
   const column = useRef<HTMLDivElement>(null);
   const itemsKey = items.map((i) => `${i.id}:${i.pageBreak}`).join("|");
   const [measured, setMeasured] = useState<MeasuredBlock[]>([]);
+  // The fonts callback below fires once, possibly after blocks were added: it reads the latest list.
+  const latest = useRef(items);
+  useLayoutEffect(() => { latest.current = items; });
 
   useLayoutEffect(() => {
     const el = column.current;
@@ -51,11 +54,10 @@ export function usePagination(items: FlowItem[], contentHeight: number, pageKey:
     let live = true;
     document.fonts?.ready.then(() => {
       const el = column.current;
-      if (live && el) setMeasured(measure(el, items));
+      if (live && el) setMeasured(measure(el, latest.current));
     });
     return () => { live = false; };
     // Once, when the fonts land; later renders are covered by the effect above.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const known = new Map(measured.map((m) => [m.id, m]));

@@ -48,7 +48,7 @@ export function useReportContent(doc: ReportDocument, now: number, buoys: Report
     return view ? [[b.id, view]] : [];
   })), [doc.blocks, ctx]);
   const items: FlowItem[] = doc.blocks.map((b) => ({ id: b.id, pageBreak: b.kind === "pageBreak", hidden: b.hidden }));
-  const pagination = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}`, views);
+  const pagination = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}|${doc.title}`, views);
   const content: PageContent = { doc, ctx, views };
   const loading = [...views.values()].some((v) => "sections" in v && v.sections.some((s) => s.status === "loading"));
   return { content, readings, loading, ...pagination };

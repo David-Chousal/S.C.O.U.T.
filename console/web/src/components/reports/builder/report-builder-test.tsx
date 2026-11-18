@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
@@ -46,10 +46,10 @@ describe("ReportBuilder", () => {
     expect(onCreated).toHaveBeenCalledWith("/api/reports/r1/file?t=abc");
   });
 
-  test("a guest can preview and print but not make a CSV", () => {
+  test("a guest can preview and print but not make a CSV", async () => {
     renderBuilder(false);
     expect((screen.getByRole("button", { name: /CSV/ }) as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByRole("button", { name: "Print" }) as HTMLButtonElement).disabled).toBe(false);
+    await waitFor(() => expect((screen.getByRole("button", { name: "Print" }) as HTMLButtonElement).disabled).toBe(false));
   });
 
   test("unticking a variable on a block changes that block, and undo brings it back", async () => {

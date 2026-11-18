@@ -5,6 +5,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { MAX_ROW_CAP, type Block, type Sampling, type Stat, type TextStyle } from "@/lib/report/document";
 import type { ReportAction } from "@/lib/report/reducer";
 import { FieldChips } from "./inline-edit";
+import { NumberDraft } from "./number-draft";
 import { VariablesPanel } from "./variables-panel";
 
 interface BlockOptionsFormProps { block: Block; columns: string[]; dispatch: (action: ReportAction) => void }
@@ -65,8 +66,7 @@ export function BlockOptionsForm({ block, columns, dispatch }: BlockOptionsFormP
           <VariablesPanel columns={columns} chosen={block.options.variables} onChange={(variables) => update({ variables })} />
           <Field label="Sampling"><Segmented size="sm" label="Sampling" options={SAMPLING} value={block.options.sampling} onChange={(sampling) => update({ sampling })} /></Field>
           <label className="sc-inspector__field"><span className="sc-label">Rows per buoy, at most</span>
-            <input className="sc-input" type="number" min={10} max={MAX_ROW_CAP} step={10} value={block.options.rowCap}
-              onChange={(e) => update({ rowCap: Math.max(10, Math.min(MAX_ROW_CAP, Math.round(Number(e.target.value) || 10))) })} /></label>
+            <NumberDraft value={block.options.rowCap} min={10} max={MAX_ROW_CAP} onCommit={(rowCap) => update({ rowCap })} /></label>
         </>
       );
     case "heatStress":
