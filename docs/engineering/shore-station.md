@@ -61,7 +61,8 @@ Raw audio never crosses the link; it stays on the buoy's SD card and is processe
 
 ## Software
 
-**On the S3 — receive path written and compiled, ⚠️ not yet run as a whole on the board**
+**On the S3 — receive path run on the board 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md), Partial: 16 of 16 bench frames
+valid; dedupe, the slot listen window and loss over 100+ frames not yet exercised)
 (`firmware/src/shore_rx/`, env `feather_esp32s3_shore`, [SCO-24](https://linear.app/scout1/issue/SCO-24)).
 It copies the bench
 receiver's radio setup and modem settings, validates each frame (length, CRC, schema version),
@@ -123,7 +124,8 @@ remote setting when a v5 buoy's settings digest differs from the console's, or t
 `SET_TX_COUNT` when a v4 buoy's count does. ⚠️ The FeatherWing's FCC authorization (open item 3)
 is treated as checked on the team's instruction, but no record of the check exists yet. Keys go in the gitignored `firmware/src/downlink_key.h`. **Firmware OTA is built and ON** in the shipped `feather_esp32s3_shore` / `feather_m0` builds since 2026-11-12 (`SCOUT_OTA`; needs `ota_pubkey.h`); ⚠️ never run on hardware yet.
 
-**WiFi push — written 2026-10-28, not yet run on the board**
+**WiFi push — written 2026-10-28, run on the board 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md): every frame pushed,
+0 queued, over a phone hotspot; the queue-and-retry path not yet exercised)
 ([SCO-237](https://linear.app/scout1/issue/SCO-237)). The S3 sends every reading to the console
 by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
 

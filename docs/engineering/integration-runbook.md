@@ -438,7 +438,10 @@ all pushed to the console. Loss over 100+ frames, airtime and TX current are sti
 
 **4b — The shore station: ESP32-S3 + LoRa FeatherWing, pushing to the console** ⚠️ UNVERIFIED ·
 [SCO-24](https://linear.app/scout1/issue/SCO-24), [SCO-237](https://linear.app/scout1/issue/SCO-237).
-Firmware written (receive 2026-10-23, WiFi push 2026-10-28), never run on the board.
+Firmware written (receive 2026-10-23, WiFi push 2026-10-28). **Bench run 2026-11-17** ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)):
+receive, setup page, WiFi join, NTP and console push all ran on the board, 16 of 16 frames pushed.
+Stays UNVERIFIED until the remaining PASS checks run (real-key build, settings pull, downlink,
+queue-and-retry).
 
 **Preconditions:** 4a frames decode · FeatherWing jumpers soldered (G8) · antenna on · a phone ·
 a WiFi network the S3 can join: **2.4 GHz** WPA2/WPA3 or open, **no captive sign-in page** (the
