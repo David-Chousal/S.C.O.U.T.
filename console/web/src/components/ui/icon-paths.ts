@@ -9,6 +9,8 @@ export const ICON_PATHS = {
   "bell": "M4 11V7a4 4 0 0 1 8 0v4l1 1.5H3z M6.5 14.5h3",
   "search": "M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10z M10.5 10.5l3.5 3.5",
   "plus": "M8 3v10 M3 8h10",
+  "undo": "M5.5 3L2.5 6l3 3 M2.5 6h7a4 4 0 0 1 0 8H6",
+  "redo": "M10.5 3l3 3-3 3 M13.5 6h-7a4 4 0 0 0 0 8H10",
   "close": "M3.5 3.5l9 9 M12.5 3.5l-9 9",
   "chevron-down": "M4 6l4 4 4-4",
   "chevron-right": "M6 4l4 4-4 4",

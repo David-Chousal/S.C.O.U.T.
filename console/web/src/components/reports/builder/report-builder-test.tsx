@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
@@ -20,10 +20,11 @@ function renderBuilder(canDownload = true, onCreated = vi.fn()) {
 afterEach(() => vi.restoreAllMocks());
 
 describe("ReportBuilder", () => {
-  test("starts with every buoy, the last 7 days and the three main variables", () => {
+  test("starts with every buoy, the last 7 days and the three main variables", async () => {
     renderBuilder();
     expect(screen.getByRole("button", { name: "Reef north" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "7 d" }).getAttribute("aria-pressed")).toBe("true");
+    await userEvent.click(screen.getByRole("group", { name: "Summary table block" }));
     expect((screen.getByLabelText(/Water temperature/) as HTMLInputElement).checked).toBe(true);
     expect((screen.getByLabelText(/^Flags/) as HTMLInputElement).checked).toBe(false);
   });
@@ -31,7 +32,7 @@ describe("ReportBuilder", () => {
   test("the preview names the buoys and the range at once, with no Generate step", async () => {
     renderBuilder();
     expect(screen.getByText("2026-10-24 to 2026-10-31 (UTC)")).toBeDefined();
-    expect(await screen.findAllByText("No readings in this range.")).toHaveLength(2);
+    expect(await screen.findAllByText("No readings in this range.")).toHaveLength(4);
   });
 
   test("CSV asks for the report's range and hands back the link", async () => {
@@ -48,5 +49,17 @@ describe("ReportBuilder", () => {
     renderBuilder(false);
     expect((screen.getByRole("button", { name: /CSV/ }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByRole("link", { name: /Printable report/ })).toBeDefined();
+  });
+
+  test("unticking a variable on a block changes that block, and undo brings it back", async () => {
+    vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [{ timestamp_utc: "2026-10-30T00:00:00Z", record_seq: "1", temp_c: "27", turbidity_fau: "1", battery_v: "3.7" }] });
+    render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+    await screen.findAllByText("Water temperature (°C)");
+    await userEvent.click(screen.getByRole("group", { name: "Summary table block" }));
+    await userEvent.click(screen.getByLabelText(/Water temperature/));
+    const paper = () => within(screen.getByLabelText("Report preview"));
+    expect(paper().queryByText("Water temperature (°C)")).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(paper().getByText("Water temperature (°C)")).toBeDefined();
   });
 });

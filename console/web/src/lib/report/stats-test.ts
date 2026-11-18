@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { summarize } from "./report-stats";
+import { summarize } from "@/lib/report/stats";
 
 const rows = [
   { temp_c: "26.0", battery_v: "3.31", flags: "" },

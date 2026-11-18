@@ -25,3 +25,23 @@
   .sc-report-stage { padding: var(--space-2); }
   .sc-report-paper { padding: 16px; }
 }
+/* Report blocks on paper. One type scale, mirrored in points by the PDF renderer (1 px = 0.75 pt). */
+.sc-report-bar__name { width: 100%; max-width: 360px; padding: 2px 4px; border: 1px solid transparent; border-radius: var(--radius-sm); background: none; color: var(--ink); font: 700 18px/24px var(--font-sans); }
+.sc-report-bar__name:hover { border-color: var(--line); }
+.sc-report-bar__name:focus-visible { border-color: var(--line-strong); outline: 2px solid var(--focus); outline-offset: 1px; }
+.sc-rb-block { position: relative; border-radius: 2px; outline: 1px solid transparent; outline-offset: 6px; cursor: pointer; }
+.sc-rb-block:hover { outline-color: var(--line); }
+.sc-rb-block.is-selected { outline: 2px solid var(--accent); }
+.sc-rb-block:focus-visible { outline: 2px solid var(--focus); }
+.sc-rb-block.is-hidden { opacity: .45; }
+.sc-rb-stack { display: grid; gap: 16px; }
+.sc-rb-section { display: grid; gap: 8px; break-inside: avoid; }
+.sc-rb-section h3 { margin: 0; font: 700 14px/20px var(--font-sans); }
+.sc-rb-section h3 small { margin-left: 8px; font: 400 11px/1 var(--font-sans); color: var(--ink-muted); }
+.sc-rb-muted { margin: 0; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+.sc-rb-skeleton { width: 40%; color: transparent; background: var(--surface-sunken); border-radius: 2px; }
+.sc-rb-foot { margin: 0; font: 400 10px/14px var(--font-sans); color: var(--ink-muted); }
+.sc-rb-table { width: 100%; border-collapse: collapse; font: 400 11px/14px var(--font-sans); font-variant-numeric: tabular-nums; }
+.sc-rb-table th { padding: 0 6px 4px; border-bottom: 1px solid var(--line-strong); color: var(--ink-muted); font: 500 9px/12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; text-align: left; white-space: nowrap; }
+.sc-rb-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.sc-rb-table .n { text-align: right; }
