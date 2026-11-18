@@ -5,8 +5,8 @@
 > FeatherWing (RFM95W)**, running FreeRTOS so it can listen to LoRa and use WiFi at the same time.
 > Under [ADR-0008](../decisions/0008-over-the-air-firmware-updates.md) it also sends firmware and
 > settings to the buoys. **Firmware is written** (`feather_esp32s3_shore` in
-> [`firmware/`](../../firmware/README.md)); ⚠️ **not yet verified end-to-end on the board**
-> ([SCO-24](https://linear.app/scout1/issue/SCO-24)). First-bench steps:
+> [`firmware/`](../../firmware/README.md)); **run end to end on the bench 2026-11-17**
+> ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md), Partial: loss, range and the real-key build not yet tested). First-bench steps:
 > [`first-boot-checklist.md`](first-boot-checklist.md).
 >
 > Rewritten 2026-10-19 from the team's decisions. This page used to describe a Raspberry Pi
@@ -184,8 +184,9 @@ by itself, with no computer attached (`src/shore_rx/shore_net.cpp`):
   - A gitignored `src/shore_rx/shore_secrets.h` (copy `shore_secrets_example.h`) still works for
     developers, but only fills an empty store on first boot; it also sets the console URL. Env
     `feather_esp32s3_shore_link_check` builds that path with dummy values.
-  - ⚠️ Compiled and previewed (`python3 firmware/tools/setup_page_preview.py` serves the page
-    with a fake station), not yet run on the board.
+  - Ran on the board 2026-11-17 ([RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md)): the setup network came up, the page saved a hotspot and
+    token, and the station joined. ⚠️ Opened from a laptop, not a phone; the BOOT reopen, the
+    automatic reopen and the USB-only fallback are not yet run (SCO-310).
 - **Footprint** with WiFi on: RAM 26.7 %, flash 64.3 % of the app partition.
 
 **Fallbacks stay** (David, 2026-10-28). The S3 still prints every frame over USB, so a computer
@@ -248,9 +249,9 @@ Buoys (Feather M0, ×2)                    Shore station (ESP32-S3 + LoRa Feathe
 
 1. **Bench-test the S3's WiFi push** ([SCO-237](https://linear.app/scout1/issue/SCO-237)):
    written 2026-10-28 against the console's device API
-   ([ADR-0012](../decisions/0012-authenticated-console.md)). Still open: a frame from the bench
-   buoy showing up on the console end to end, NTP and the clock surviving a reset seen on the
-   board, and a site WiFi to run it on (item 4). Where the S3 cannot reach WiFi, a computer reads
+   ([ADR-0012](../decisions/0012-authenticated-console.md)). A bench-buoy frame reaching the
+   console end to end and NTP on the board are shown in [RR-32](../../hardware/test/rr-32-shore-link-and-console-bench-2026-11-17.md). Still open: the clock surviving a
+   reset seen on the board, the queue-and-retry path, and a site WiFi to run it on (item 4). Where the S3 cannot reach WiFi, a computer reads
    it over USB (`run_receiver.py --link serial`, [SCO-257](https://linear.app/scout1/issue/SCO-257))
    and `shore/scripts/sync_console.py` pushes the CSVs. Owner: CS lead.
 2. **S3 toolchain:** Arduino core vs ESP-IDF (both give FreeRTOS). Owner: CS lead.
