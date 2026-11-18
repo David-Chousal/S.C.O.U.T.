@@ -37,6 +37,11 @@ describe("summaryTableView", () => {
   });
 });
 
+test("a buoy whose fetch hit the cap says its figures cover only part of the range", () => {
+  const view = summaryTableView(createBlock("summaryTable"), context({ 1: { status: "ready", rows: ROWS, truncated: true } }));
+  expect(view.sections[0].note).toBe("3 readings; only the newest 20,000, the range holds more");
+});
+
 describe("readingsTableView", () => {
   test("lists readings in the report's zone and caps the rows", () => {
     const block = { ...createBlock("readingsTable"), options: { variables: ["temp_c"], sampling: "all" as const, rowCap: 2 } };

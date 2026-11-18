@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
@@ -56,7 +57,7 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
     report: doc.variables, now, readings: readings.get,
     buoyLabel: (id) => buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`,
   }), [doc.variables, now, readings.get, buoys]);
-  const printHref = `/reports/print/?buoys=${doc.variables.buoys.join(",")}&from=${range.from.slice(0, 10)}&to=${range.to.slice(0, 10)}&columns=${csv.join(",")}`;
+  const printHref = `/reports/print/?buoys=${doc.variables.buoys.join(",")}&from=${range.from}&to=${range.to}&columns=${csv.join(",")}`;
 
   async function downloadCsv() {
     setBusy(true);
@@ -90,6 +91,9 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
       <div className="sc-report-stage">
+        {readings.failed > 0 && (
+          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
+        )}
         <ReportPreview doc={doc} ctx={ctx} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
       </div>
       <aside className="sc-report-side sc-report-side--right" aria-label="Block options">

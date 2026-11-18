@@ -46,7 +46,8 @@ export const readingsKey = (buoy: number, range: ResolvedRange) => `${buoy}|${ra
  * never refetches, and a new range fetches once for every block that uses it. */
 export function useReadingsStore() {
   const cache = useRef(new Map<string, ReadingsEntry>());
-  const [, setVersion] = useState(0);
+  const [version, setVersion] = useState(0);
+  const [failed, setFailed] = useState(0);
 
   const get = useCallback((buoy: number, range: ResolvedRange): ReadingsEntry => {
     const key = readingsKey(buoy, range);
@@ -55,10 +56,21 @@ export function useReadingsStore() {
     cache.current.set(key, { status: "loading" });
     readingsInRange(buoy, range).then(
       (result) => cache.current.set(key, { status: "ready", ...result }),
-      (failure: unknown) => cache.current.set(key, { status: "failed", error: failure instanceof Error ? failure.message : "Could not load readings." }),
+      (failure: unknown) => {
+        cache.current.set(key, { status: "failed", error: failure instanceof Error ? failure.message : "Could not load readings." });
+        setFailed((n) => n + 1);
+      },
     ).finally(() => setVersion((v) => v + 1));
     return { status: "loading" };
   }, []);
 
-  return { get };
+  /** Drops failed entries so the next `get` fetches them again; loading and ready ones stay cached. */
+  const retryFailed = useCallback(() => {
+    for (const [key, entry] of cache.current) if (entry.status === "failed") cache.current.delete(key);
+    setFailed(0);
+    setVersion((v) => v + 1);
+  }, []);
+
+  /** How many ranges failed to load and have not been retried. */
+  return { get, retryFailed, failed, version };
 }

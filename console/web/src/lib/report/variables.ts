@@ -28,8 +28,15 @@ function dayEdge(day: string, end: boolean, zone: ZoneChoice): number {
   return zone === "utc" ? Date.parse(`${day}T${clock}Z`) : new Date(`${day}T${clock}`).getTime();
 }
 
-/** The range as API timestamps. Presets count back from `now`; a custom range covers whole days. */
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+/** A custom range whose two days are real calendar days. */
+export const isValidCustom = (range: ReportRange) =>
+  DAY.test(range.from) && DAY.test(range.to) && Number.isFinite(Date.parse(`${range.from}T00:00:00Z`)) && Number.isFinite(Date.parse(`${range.to}T00:00:00Z`));
+
+/** The range as API timestamps. Presets count back from `now`; a custom range covers whole days.
+ * A custom range with a missing or invalid day falls back to the last 7 days rather than throwing. */
 export function resolveRange(range: ReportRange, now: number, zone: ZoneChoice): ResolvedRange {
+  if (range.preset === "custom" && !isValidCustom(range)) return resolveRange({ ...range, preset: "7d" }, now, zone);
   if (range.preset !== "custom") return { from: apiTime(now - PRESET_MS[range.preset]), to: apiTime(now) };
   return { from: apiTime(dayEdge(range.from, false, zone)), to: apiTime(dayEdge(range.to, true, zone)) };
 }
