@@ -35,3 +35,7 @@ describe("effectiveVariables", () => {
 test("formatWhen writes UTC as YYYY-MM-DD HH:MM", () => {
   expect(formatWhen("2026-11-18T07:05:00Z", "utc")).toBe("2026-11-18 07:05");
 });
+
+test("a custom range with a cleared day falls back to the last 7 days instead of throwing", () => {
+  expect(resolveRange({ preset: "custom", from: "", to: "2026-11-05" }, NOW, "utc")).toEqual(resolveRange({ preset: "7d", from: "", to: "" }, NOW, "utc"));
+});

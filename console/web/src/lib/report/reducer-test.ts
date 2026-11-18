@@ -87,4 +87,13 @@ describe("historyReducer", () => {
     const h = start();
     expect(historyReducer(h, { type: "moveBy", id: "a", delta: -1 })).toBe(h);
   });
+
+  test("setting a value to what it already is keeps the undo and redo history", () => {
+    let h = historyReducer(start(), { type: "setTitle", title: "Weekly" });
+    h = historyReducer(h, { type: "undo" });
+    const same = historyReducer(h, { type: "setTitle", title: "Buoy report" });
+    expect(same).toBe(h);
+    expect(historyReducer(same, { type: "redo" }).present.title).toBe("Weekly");
+    expect(historyReducer(h, { type: "remove", id: "gone" })).toBe(h);
+  });
 });

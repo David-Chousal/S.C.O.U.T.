@@ -24,7 +24,8 @@ export function ReportPrint() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const range = [`${choice.from}T00:00:00Z`, `${choice.to}T23:59:59Z`] as const;
+    // Exact bounds from the builder (YYYY-MM-DDTHH:MM:SSZ); a bare day still means the whole UTC day.
+    const range = [choice.from.includes("T") ? choice.from : `${choice.from}T00:00:00Z`, choice.to.includes("T") ? choice.to : `${choice.to}T23:59:59Z`] as const;
     Promise.all([api.fleet(), ...choice.buoys.map((b) => api.readingsBetween(b, ...range))]).then(
       ([fleet, ...replies]) => setData({ buoys: fleet.buoys, readings: Object.fromEntries(choice.buoys.map((b, i) => [b, [...replies[i].readings].reverse()])) }),
       (failure: unknown) => setError(failure instanceof ApiError && failure.status === 401 ? "Sign in to the console first, then open this report again."
@@ -38,7 +39,7 @@ export function ReportPrint() {
     <main className="sc-print">
       <header className="sc-print__head">
         <div><span className="sc-wordmark">S.C.O.U.T.</span><h1>Buoy report</h1></div>
-        <p>{choice.from} to {choice.to} (UTC) · made {new Date().toISOString().slice(0, 16).replace("T", " ")} UTC</p>
+        <p>{choice.from.replace("T", " ").slice(0, 16)} to {choice.to.replace("T", " ").slice(0, 16)} (UTC) · made {new Date().toISOString().slice(0, 16).replace("T", " ")} UTC</p>
         <button type="button" className="sc-key sc-print__button" onClick={() => window.print()}>Print or save as PDF</button>
       </header>
       {choice.buoys.map((id) => {
