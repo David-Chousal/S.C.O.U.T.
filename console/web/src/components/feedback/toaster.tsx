@@ -13,15 +13,10 @@ interface Toast extends ToastInput {
   id: number;
 }
 
-interface ToastStack {
-  toasts: Toast[];
-  dismiss: (id: number) => void;
-}
-
-const AUTO_DISMISS_MS = 5000;
+const AUTO_DISMISS_MS = 3000;
+const LEAVE_MS = 180;
 const MAX_TOASTS = 3;
 const ToastContext = createContext<{ show: (toast: ToastInput) => void } | null>(null);
-const ToastStackContext = createContext<ToastStack | null>(null);
 
 export function useToast() {
   const context = useContext(ToastContext);
@@ -29,20 +24,27 @@ export function useToast() {
   return context;
 }
 
-function ToastBanner({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
+function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
   const [paused, setPaused] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const failed = toast.tone === "failed";
 
   useEffect(() => {
-    if (failed || paused) return;
-    const timer = setTimeout(() => onDismiss(toast.id), AUTO_DISMISS_MS);
+    if (failed || paused || leaving) return;
+    const timer = setTimeout(() => setLeaving(true), AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
-  }, [failed, paused, onDismiss, toast.id]);
+  }, [failed, paused, leaving]);
 
-  const tone = failed ? "failed" : toast.tone === "ok" ? "ok" : "info";
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = setTimeout(() => onDismiss(toast.id), LEAVE_MS);
+    return () => clearTimeout(timer);
+  }, [leaving, onDismiss, toast.id]);
+
+  const toneClass = `${toast.tone && toast.tone !== "neutral" ? ` sc-toast--${toast.tone}` : ""}${leaving ? " sc-toast--leaving" : ""}`;
   return (
     <div
-      className={`sc-banner sc-banner--notice sc-banner--${tone}`}
+      className={`sc-toast${toneClass}`}
       role={failed ? "alert" : "status"}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -50,38 +52,19 @@ function ToastBanner({ toast, onDismiss }: { toast: Toast; onDismiss: (id: numbe
       onBlur={() => setPaused(false)}
     >
       <Icon name={failed ? "warning" : toast.tone === "ok" ? "check" : "info"} />
-      <span className="sc-banner__text">
+      <div className="sc-toast__body">
         <strong>{toast.title}</strong>
         {toast.detail && <span>{toast.detail}</span>}
-      </span>
-      <span className="sc-banner__end">
-        <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label="Dismiss" onClick={() => onDismiss(toast.id)}>
-          <Icon name="close" />
-        </button>
-      </span>
+      </div>
+      <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label="Dismiss" onClick={() => setLeaving(true)}>
+        <Icon name="close" />
+      </button>
     </div>
   );
 }
 
-/** Renders the notification banners. The shell places it at the top of the page column, under the top bar. */
-export function ToastBanners() {
-  const stack = useContext(ToastStackContext);
-  if (!stack || stack.toasts.length === 0) return null;
-  return (
-    <div className="sc-notices">
-      {stack.toasts.map((toast) => <ToastBanner key={toast.id} toast={toast} onDismiss={stack.dismiss} />)}
-    </div>
-  );
-}
-
-interface ToasterProps {
-  children: ReactNode;
-  /** False when the caller places <ToastBanners /> itself, as the app shell does under the top bar. */
-  renderBanners?: boolean;
-}
-
-/** Provides useToast() and shows each notification as a dismissible banner. */
-export function Toaster({ children, renderBanners = true }: ToasterProps) {
+/** Provides useToast() and renders the toast stack as a banner dropping in from the top of the screen. */
+export function Toaster({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(1);
 
@@ -91,14 +74,13 @@ export function Toaster({ children, renderBanners = true }: ToasterProps) {
     setToasts((current) => [{ ...input, id }, ...current].slice(0, MAX_TOASTS));
   }, []);
   const value = useMemo(() => ({ show }), [show]);
-  const stack = useMemo(() => ({ toasts, dismiss }), [toasts, dismiss]);
 
   return (
     <ToastContext value={value}>
-      <ToastStackContext value={stack}>
-        {renderBanners && <ToastBanners />}
-        {children}
-      </ToastStackContext>
+      {children}
+      <div className="sc-toasts">
+        {toasts.map((toast) => <ToastView key={toast.id} toast={toast} onDismiss={dismiss} />)}
+      </div>
     </ToastContext>
   );
 }
