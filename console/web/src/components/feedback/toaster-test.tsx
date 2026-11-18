@@ -40,11 +40,11 @@ describe("Toaster", () => {
     expect(screen.queryByText("Connected")).toBeNull();
   });
 
-  test("keeps failures until dismissed", () => {
+  test("keeps failures until clicked away", () => {
     setup({ tone: "failed", title: "Sync failed" });
     act(() => vi.advanceTimersByTime(10_000));
     expect(screen.getByRole("alert").textContent).toContain("Sync failed");
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+    fireEvent.click(screen.getByRole("alert"));
     act(() => vi.advanceTimersByTime(200));
     expect(screen.queryByRole("alert")).toBeNull();
   });

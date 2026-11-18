@@ -50,15 +50,14 @@ function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      onClick={() => setLeaving(true)}
+      title="Click to dismiss"
     >
       <Icon name={failed ? "warning" : toast.tone === "ok" ? "check" : "info"} />
       <div className="sc-toast__body">
         <strong>{toast.title}</strong>
         {toast.detail && <span>{toast.detail}</span>}
       </div>
-      <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label="Dismiss" onClick={() => setLeaving(true)}>
-        <Icon name="close" />
-      </button>
     </div>
   );
 }
