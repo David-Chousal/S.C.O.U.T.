@@ -12,7 +12,9 @@ export const FLASH_COOKIE = "__Host-scout_flash";
 export function pageCsp(nonce) {
   return [
     "default-src 'none'",
-    `script-src 'nonce-${nonce}' 'strict-dynamic'`,
+    // 'wasm-unsafe-eval' lets Download PDF compile react-pdf's WebAssembly layout engine (SCO-317).
+    // It allows WebAssembly only: eval() and new Function() stay blocked.
+    `script-src 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval'`,
     // React style props render as style="" attributes; nonces cannot cover attributes.
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",

@@ -10,7 +10,10 @@ type ReadingsBlock = BlockOfKind<"readingsTable">;
 
 const count = (n: number) => n.toLocaleString("en-US");
 const fmt = (value: number | null) => (value === null ? "—" : value.toLocaleString("en-US", { maximumFractionDigits: 3 }));
-export const withUnit = (c: string) => `${variableLabel(c)}${VARIABLES[c]?.unit ? ` (${VARIABLES[c].unit})` : ""}`;
+const SUPERSCRIPT: Record<string, string> = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁻": "-" };
+/** "×10⁻⁴" as "×10^-4": the report fonts have no superscript digits, and screen and PDF must match. */
+export const plainSuperscripts = (text: string) => text.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (run) => `^${[...run].map((c) => SUPERSCRIPT[c]).join("")}`);
+export const withUnit = (c: string) => plainSuperscripts(`${variableLabel(c)}${VARIABLES[c]?.unit ? ` (${VARIABLES[c].unit})` : ""}`);
 
 /** One section per buoy in the block's variables, each from that buoy's readings. */
 export function perBuoy<T>(block: Block, ctx: ViewContext, body: (rows: Rows) => { note: string; body: T | null }): BuoySection<T>[] {
@@ -35,6 +38,7 @@ export function summaryTableView(block: SummaryBlock, ctx: ViewContext): TableBl
     body: {
       headers: ["Variable", "Readings", "Min", "Mean", "Max"],
       numeric: [false, true, true, true, true],
+      widths: [3, 1, 1, 1, 1],
       rows: summarize(rows, columns).map((s) => [withUnit(s.column), String(s.count), fmt(s.min), fmt(s.mean), fmt(s.max)]),
     },
   }));
@@ -63,6 +67,7 @@ export function readingsTableView(block: ReadingsBlock, ctx: ViewContext): Table
       body: {
         headers: [`Taken (${zoneLabel(zone)})`, ...columns.map(variableLabel)],
         numeric: [false, ...columns.map(() => true)],
+        widths: [1.6, ...columns.map(() => 1)],
         rows: shown.map((row) => [formatWhen(row.timestamp_utc, zone), ...columns.map((c) => row[c] || "—")]),
       },
     };

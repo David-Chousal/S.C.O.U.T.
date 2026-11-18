@@ -59,9 +59,9 @@
 .sc-rb-muted { margin: 0; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
 .sc-rb-skeleton { width: 40%; color: transparent; background: var(--surface-sunken); border-radius: 2px; }
 .sc-rb-foot { margin: 0; font: 400 10px/14px var(--font-sans); color: var(--ink-muted); }
-.sc-rb-table { width: 100%; border-collapse: collapse; font: 400 11px/14px var(--font-sans); font-variant-numeric: tabular-nums; }
-.sc-rb-table th { padding: 0 6px 4px; border-bottom: 1px solid var(--line-strong); color: var(--ink-muted); font: 500 9px/12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; text-align: left; white-space: nowrap; }
-.sc-rb-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.sc-rb-table { width: 100%; table-layout: fixed; border-collapse: collapse; font: 400 11px/14px var(--font-sans); font-variant-numeric: tabular-nums; }
+.sc-rb-table th { padding: 0 6px 4px; border-bottom: 1px solid var(--line-strong); color: var(--ink-muted); font: 500 9px/12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; text-align: left; overflow-wrap: anywhere; }
+.sc-rb-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .sc-rb-table .n { text-align: right; }
 /* The inspector, and the selected block's tools and tags (screen only, never printed). */
 .sc-inspector { display: grid; gap: var(--space-5); }
