@@ -71,7 +71,9 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
   })), [doc.blocks, ctx]);
   const items: FlowItem[] = [{ id: HEADER_ID, pageBreak: false, hidden: false },
     ...doc.blocks.map((b) => ({ id: b.id, pageBreak: b.kind === "pageBreak", hidden: b.hidden }))];
-  const { column, editPages, printPages } = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}`, views);
+  const { column, editPages, printPages } = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}|${doc.title}`, views);
+  // Print waits for every block's readings, so the paper never shows "Loading…".
+  const loading = [...views.values()].some((v) => v.sections.some((s) => s.status === "loading"));
   const content = { doc, ctx, views };
   const [printing, setPrinting] = useState(false);
   const donePrinting = useCallback(() => setPrinting(false), []);
@@ -94,7 +96,8 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
       <Key size="sm" iconOnly icon="undo" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={undo} />
       <Key size="sm" iconOnly icon="redo" aria-label="Redo" title="Redo (⇧⌘Z)" disabled={!canRedo} onClick={redo} />
       <Key size="sm" icon="export" disabled={!canDownload || !ready || busy} onClick={downloadCsv}>{busy ? "Making…" : "CSV"}</Key>
-      <Key size="sm" variant="primary" icon="reports" disabled={doc.variables.buoys.length === 0 || printing} onClick={() => setPrinting(true)}>Print</Key>
+      <Key size="sm" variant="primary" icon="reports" disabled={doc.variables.buoys.length === 0 || printing || loading}
+        title={loading ? "Waiting for readings to load" : undefined} onClick={() => setPrinting(true)}>Print</Key>
     </>
   );
   const title = (
