@@ -9,7 +9,7 @@ import { createBlock, createDocument, type ReportDocument } from "@/lib/report/d
 import { useReadingsStore } from "@/lib/report/readings-store";
 import { resolveRange, type ReportVariables } from "@/lib/report/variables";
 import type { ViewContext } from "@/lib/report/views";
-import { VariablesPanel } from "./variables-panel";
+import { Inspector } from "./inspector";
 import { ReportPreview } from "./report-preview";
 import { ReportToolbar } from "./report-toolbar";
 import { useReportEditor } from "./use-report-editor";
@@ -21,6 +21,8 @@ interface ReportBuilderProps {
   /** Variables the Worker allows (REPORT_COLUMNS). */
   columns: string[];
   canDownload: boolean;
+  /** Members and admins edit blocks; guests change only the report-wide variables. */
+  canEdit: boolean;
   /** When the page opened, ms; presets count back from it. Passed in so tests are fixed. */
   now: number;
   onCreated: (link: string) => void;
@@ -40,7 +42,7 @@ const csvColumns = (doc: ReportDocument, columns: string[]) =>
 
 /** The Reports page as a builder: report-wide variables in the toolbar, the live paper preview in
  * the centre, and panels either side (docs/engineering/console-report-builder-plan.md). */
-export function ReportBuilder({ buoys, columns, canDownload, now, onCreated, recent }: ReportBuilderProps) {
+export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCreated, recent }: ReportBuilderProps) {
   const { show } = useToast();
   const readings = useReadingsStore();
   const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => startingDocument(buoys, now));
@@ -88,13 +90,12 @@ export function ReportBuilder({ buoys, columns, canDownload, now, onCreated, rec
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
       <div className="sc-report-stage">
-        <ReportPreview doc={doc} ctx={ctx} selectedId={selectedId} onSelect={setSelectedId} />
+        <ReportPreview doc={doc} ctx={ctx} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
       </div>
       <aside className="sc-report-side sc-report-side--right" aria-label="Block options">
-        {selected && "variables" in selected.options
-          ? <VariablesPanel columns={columns} chosen={selected.options.variables}
-              onChange={(variables) => dispatch({ type: "update", id: selected.id, options: { variables } })} />
-          : <p className="sc-help">Click a block in the preview to change what it shows.</p>}
+        {!canEdit ? <p className="sc-help">View only: change the buoys, dates and page above to preview, print and download. Editing blocks needs the member role.</p>
+          : selected ? <Inspector block={selected} report={doc.variables} buoys={buoys} columns={columns} dispatch={dispatch} />
+            : <p className="sc-help">Click a block in the preview to change what it shows.</p>}
       </aside>
     </div>
   );

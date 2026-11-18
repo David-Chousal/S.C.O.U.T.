@@ -1,26 +1,32 @@
 "use client";
 
-import type { KeyboardEvent } from "react";
-import { BLOCK_INFO, type ReportDocument } from "@/lib/report/document";
+import type { ReportDocument } from "@/lib/report/document";
+import type { ReportAction } from "@/lib/report/reducer";
 import { pageBox } from "@/lib/report/page";
 import { buildView, type ViewContext } from "@/lib/report/views";
-import { rangeLabel, resolveRange, zoneLabel } from "@/lib/report/variables";
+import { effectiveVariables, rangeLabel, resolveRange, zoneLabel } from "@/lib/report/variables";
 import { BlockScreen } from "../blocks/block-screen";
+import { BlockFrame } from "./block-frame";
 
 interface ReportPreviewProps {
   doc: ReportDocument;
   ctx: ViewContext;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  canEdit: boolean;
+  dispatch: (action: ReportAction) => void;
 }
 
 /** The live paper preview: the report as it will print, redrawn whenever the document changes.
  * Click a block to select it; its options open in the right panel. */
-export function ReportPreview({ doc, ctx, selectedId, onSelect }: ReportPreviewProps) {
+export function ReportPreview({ doc, ctx, selectedId, onSelect, canEdit, dispatch }: ReportPreviewProps) {
   const box = pageBox(doc.page);
   const range = resolveRange(doc.variables.range, ctx.now, doc.variables.zone);
-  const onKey = (event: KeyboardEvent, id: string) => {
-    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(id); }
+  const ownLabel = (block: ReportDocument["blocks"][number]) => {
+    const own = effectiveVariables(doc.variables, block.override);
+    const parts = [block.override.buoys && own.buoys.map(ctx.buoyLabel).join(", "),
+      block.override.range && rangeLabel(resolveRange(own.range, ctx.now, own.zone), own.zone)];
+    return `Own ${parts.filter(Boolean).join(" · ")}`;
   };
   return (
     <div className="sc-report-paper" style={{ width: `min(100%, ${box.width}px)` }} aria-label="Report preview"
@@ -33,11 +39,10 @@ export function ReportPreview({ doc, ctx, selectedId, onSelect }: ReportPreviewP
       {doc.blocks.map((block) => {
         const view = buildView(block, ctx);
         return (
-          <div key={block.id} className={`sc-rb-block${block.id === selectedId ? " is-selected" : ""}${block.hidden ? " is-hidden" : ""}`}
-            data-block-id={block.id} role="group" tabIndex={0} aria-current={block.id === selectedId || undefined}
-            aria-label={`${BLOCK_INFO[block.kind].label} block`} onClick={() => onSelect(block.id)} onKeyDown={(e) => onKey(e, block.id)}>
+          <BlockFrame key={block.id} block={block} selected={block.id === selectedId} canEdit={canEdit} overrideLabel={ownLabel(block)}
+            onSelect={onSelect} dispatch={dispatch}>
             {view && <BlockScreen view={view} />}
-          </div>
+          </BlockFrame>
         );
       })}
     </div>

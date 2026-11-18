@@ -13,7 +13,7 @@ const NOW = Date.parse("2026-10-31T12:00:00Z");
 function renderBuilder(canDownload = true, onCreated = vi.fn()) {
   vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
   render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north"), buoy(2, "Reef south")]} columns={COLUMNS}
-    canDownload={canDownload} now={NOW} onCreated={onCreated} recent={null} /></Toaster>);
+    canDownload={canDownload} canEdit={canDownload} now={NOW} onCreated={onCreated} recent={null} /></Toaster>);
   return onCreated;
 }
 
@@ -53,7 +53,7 @@ describe("ReportBuilder", () => {
 
   test("unticking a variable on a block changes that block, and undo brings it back", async () => {
     vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [{ timestamp_utc: "2026-10-30T00:00:00Z", record_seq: "1", temp_c: "27", turbidity_fau: "1", battery_v: "3.7" }] });
-    render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+    render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
     await screen.findAllByText("Water temperature (°C)");
     await userEvent.click(screen.getByRole("group", { name: "Summary table block" }));
     await userEvent.click(screen.getByLabelText(/Water temperature/));

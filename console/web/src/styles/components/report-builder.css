@@ -45,3 +45,19 @@
 .sc-rb-table th { padding: 0 6px 4px; border-bottom: 1px solid var(--line-strong); color: var(--ink-muted); font: 500 9px/12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; text-align: left; white-space: nowrap; }
 .sc-rb-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
 .sc-rb-table .n { text-align: right; }
+/* The inspector, and the selected block's tools and tags (screen only, never printed). */
+.sc-inspector { display: grid; gap: var(--space-5); }
+.sc-inspector header { display: grid; gap: var(--space-1); }
+.sc-inspector__group { display: grid; gap: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.sc-inspector__group > h3 { margin: 0; }
+.sc-inspector__var { display: grid; gap: var(--space-2); }
+.sc-inspector__var-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); font: 500 14px/20px var(--font-sans); }
+.sc-inspector__var-head .sc-link { font-size: 13px; }
+.sc-inspector__inherited { margin: 0; color: var(--ink-muted); font: 400 13px/18px var(--font-sans); }
+.sc-inspector__field { display: grid; gap: var(--space-1); }
+.sc-inspector__field .sc-input { height: 30px; max-width: 120px; }
+.sc-inspector .sc-seg { flex-wrap: wrap; height: auto; min-height: 28px; }
+.sc-rb-tools { position: absolute; top: -40px; right: -6px; z-index: 2; display: flex; gap: 2px; padding: 2px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-pop); }
+.sc-rb-tags { position: absolute; top: -18px; left: 0; display: flex; gap: 4px; }
+.sc-rb-tag { padding: 1px 6px; border-radius: 2px; background: var(--surface-sunken); color: var(--ink-muted); font: 500 10px/14px var(--font-mono); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.sc-rb-tag--own { background: var(--caution-soft); color: var(--caution); }
