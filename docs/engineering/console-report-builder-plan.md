@@ -3,8 +3,9 @@
 > **Summary** — Research and a proposed design for rebuilding the console's Reports page into
 > a report builder: a live, paginated preview that updates as you change anything, a short
 > list of report-wide variables (buoys, dates, time zone), prebuilt templates and blocks, and
-> direct editing and rearranging on the page itself, before anyone presses **Download PDF**.
-> Nothing here is built yet; the open questions at the end need a decision first.
+> direct editing and rearranging on the page itself, before anyone presses **Download PDF**
+> or **Print**. Both are offered (decided by David, 2026-11-18). Nothing here is built yet;
+> the open questions at the end need a decision first.
 >
 > Source: the Reports page on `main` (2026-11-18) ·
 > [`console/README.md`](../../console/README.md) ·
@@ -56,7 +57,7 @@ Three panes under one toolbar, the same frame as the dashboard's layout editor.
 
 | Area | Holds |
 |---|---|
-| **Toolbar** | Report title (editable) · the **report variables**: buoys, date range (with 24 h, 7 d, 30 d, custom), time zone (UTC or local) · page size (Letter or A4) and orientation · undo and redo · save state · **CSV** · **Download PDF** (primary) |
+| **Toolbar** | Report title (editable) · the **report variables**: buoys, date range (with 24 h, 7 d, 30 d, custom), time zone (UTC or local) · page size (Letter or A4) and orientation · undo and redo · save state · **CSV** · **Print** · **Download PDF** (primary) |
 | **Left panel**, three tabs | **Templates** (start from one, or replace the current layout after a confirm) · **Blocks** (the library, drag or click to insert) · **Outline** (every block in order, drag to reorder, click to jump) |
 | **Centre** | The paper preview: real page frames at the chosen size, page numbers, zoom (fit width, 100 %), updated as you edit |
 | **Right panel** | The selected block's options, grouped as **Data** (variables, buoys, range override) and **Display** (title, chart type, columns, show or hide parts). Empty state explains how to select a block |
@@ -136,21 +137,46 @@ data, so they stay small and always show current readings.
 - **Large ranges** stay usable: the readings table caps at a row count in the preview and
   says how many more rows the PDF and the CSV hold.
 
-## Download PDF
+## Print and Download PDF
 
-Keep PDF generation in the browser through print, as the current page does. It gives vector
-text you can search and copy, needs no new dependency, and costs nothing, which matters
-since the console stays on Cloudflare's free plan
-([decision 2026-11-16](console-multi-station-and-storage-review.md)).
+Both are offered (David, 2026-11-18): **Print** for paper or the browser's own "Save as
+PDF", and **Download PDF** for a file saved in one click with no dialog.
 
-The catch is that **Download PDF** opens the print dialog with "Save as PDF" rather than
-saving a file in one click. Two alternatives were weighed:
+| Button | How it works | Why |
+|---|---|---|
+| **Print** | The browser prints the preview's page frames, with `@page` and `break-inside` rules; edit outlines and handles are hidden | No dependency, vector text, exactly what is on screen |
+| **Download PDF** | Builds the PDF in the browser with [`@react-pdf/renderer`](https://react-pdf.org) and saves it as `scout-report-<title>-<from>-<to>.pdf` | One click, the same file in every browser, nothing sent to a server |
+
+Ways of making the one-click file that were weighed:
 
 | Option | For | Against |
 |---|---|---|
-| **Browser print** (proposed) | No dependency, vector output, same CSS as the preview | One extra click in the print dialog; output varies a little by browser |
-| Client-side PDF library (pdf-lib, react-pdf) | True one-click file | Every block drawn twice (screen and PDF), adds hundreds of KB, charts must be redrawn for it |
-| Server PDF (Cloudflare Browser Rendering) | One-click, identical output | Needs the paid Workers plan; against the free-plan decision |
+| **`@react-pdf/renderer`** (proposed) | React components, vector text and shapes, does its own page breaks, MIT | Each block needs a second, PDF version; around 500 kB gzipped |
+| jsPDF with `html()` or html2canvas | Reuses the on-screen page | Text often comes out as an image or misplaced; tables and breaks are unreliable |
+| pdf-lib or jsPDF drawn by hand | Small | Every line, table row and break placed by hand |
+| Server rendering (Cloudflare Browser Rendering) | Identical to the screen | Needs the paid Workers plan, against the free-plan decision of 2026-11-16 |
+
+How to keep it light and keep the two outputs in step:
+
+- **Loaded only on click.** The library is a dynamic `import()` the first time someone presses
+  **Download PDF**, so the Reports page loads no faster or slower than today. The button shows
+  "Making PDF…" while it builds, and a notification says when the file is saved or why not.
+- **One view model per block, two renderers.** Each block turns the report document and its
+  data into a plain view model (rows, statistics, chart geometry, page-break hints). A screen
+  renderer and a PDF renderer both draw from that model, so numbers, labels and order cannot
+  drift. Chart scales and paths are computed once and drawn as DOM SVG on screen and as
+  react-pdf `Svg` in the file.
+- **Same fonts.** DM Sans and JetBrains Mono (both under the SIL Open Font License) are
+  registered with react-pdf so the file matches the screen.
+- **A check in CI.** A test renders every built-in template both ways and compares the text
+  each block outputs, which catches a block whose PDF version was forgotten.
+- **Optional exact preview.** A toggle in the toolbar can show the generated PDF itself in
+  the centre pane, for anyone who wants to see the downloaded file before saving it.
+
+Page breaks are computed by the preview for the screen and for **Print**, and by react-pdf
+for **Download PDF**. Both follow the same rules (keep a block whole, split the readings table
+by rows and repeat its header, honour Page break blocks), but a long block may break a few
+lines apart between the two. The test above flags pages whose block count differs.
 
 ## Saving and sharing
 
@@ -169,16 +195,16 @@ Each step ships on its own PR and leaves the page working.
 2. **Report document and block model**, with the Summary table and Readings table as the
    first two blocks; undo and redo.
 3. **Inspector and per-block overrides.**
-4. **Pagination and page frames**, Letter and A4, PDF through print.
-5. **Block library**: Title, Text with merge fields, Key figures, Time series, Heat stress,
-   Buoy health, Alerts, Page break.
-6. **Drag, Outline and keyboard reordering**, reusing the dashboard drag.
-7. **Templates**: the five built-ins, then saving your own and team templates (D1 migration).
+4. **Pagination and page frames**, Letter and A4, with **Print**.
+5. **Download PDF**: the lazy-loaded react-pdf build, fonts, and the PDF renderer for every
+   block so far; the screen-versus-PDF test.
+6. **Block library**: Title, Text with merge fields, Key figures, Time series, Heat stress,
+   Buoy health, Alerts, Page break, each with its PDF renderer.
+7. **Drag, Outline and keyboard reordering**, reusing the dashboard drag.
+8. **Templates**: the five built-ins, then saving your own and team templates (D1 migration).
 
 ## Open questions
 
-- Is the print dialog acceptable for **Download PDF**, or is a one-click file worth a
-  client-side PDF library?
 - Should saved reports be shared with the whole team by default, or private until shared?
 - Do guests (advisors) need to change the variables, or only open reports someone else set up?
 - Is a logo or photo block wanted in the first version? It would need image upload to R2.
@@ -200,8 +226,14 @@ Each step ships on its own PR and leaves the page working.
 - `@veztraa/report-designer` (React PDF report designer, v0.3, MIT) —
   <https://www.pkgstats.com/pkg:@veztraa/report-designer>
 - `react-reportbro-designer` (AGPL-3.0) — <https://npmjs.com/package/react-reportbro-designer>
+- react-pdf, *`@react-pdf/renderer` documentation* — <https://react-pdf.org>
+- npm-compare, *@react-pdf/renderer vs jspdf vs pdf-lib vs pdfkit vs pdfmake* —
+  <https://npm-compare.com/@react-pdf/renderer,jspdf,pdf-lib,pdfkit,pdfmake,react-pdf>
+- PkgPulse, *react-pdf vs @react-pdf/renderer vs jsPDF in 2026* —
+  <https://www.pkgpulse.com/guides/react-pdf-vs-react-pdf-renderer-vs-jspdf-pdf-in-react-2026>
 
-Libraries were reviewed and not adopted: the young ones have little use behind them,
-ReportBro's AGPL licence and server-side Python renderer do not fit, and the console's front
-end has no runtime dependencies beyond Next.js and React. The dashboard already has the drag,
+Report-designer libraries were reviewed and not adopted: the young ones have little use
+behind them, and ReportBro's AGPL licence and server-side Python renderer do not fit.
+`@react-pdf/renderer` would be the front end's first runtime dependency beyond Next.js and
+React, loaded only when a PDF is downloaded. The dashboard already has the drag,
 bay library and saved views this builder needs.
