@@ -2,7 +2,7 @@
 
 import type { Buoy } from "@/lib/api/types";
 import { pageBox, type PageSetup } from "@/lib/report/page";
-import type { useReadingsStore } from "@/lib/report/readings-store";
+import { MAX_REPORT_READINGS, type useReadingsStore } from "@/lib/report/readings-store";
 import { formatWhen, rangeLabel, zoneLabel, type ResolvedRange, type ZoneChoice } from "@/lib/report/variables";
 import { variableLabel, VARIABLES } from "@/lib/variables";
 import { summarize } from "../report-stats";
@@ -35,11 +35,15 @@ export function ReportPreview({ buoys, picked, range, zone, columns, page, readi
         const label = buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`;
         const entry = readings.get(id, range);
         if (entry.status === "loading") return <section key={id} className="sc-print__buoy" aria-busy="true"><h2>{label}</h2><p className="sc-tag">Loading…</p></section>;
-        if (entry.status === "failed") return <section key={id} className="sc-print__buoy"><h2>{label}</h2><p>{entry.error}</p></section>;
+        if (entry.status === "failed") return (
+          <section key={id} className="sc-print__buoy"><h2>{label}</h2><p>{entry.error}</p>
+            <button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button></section>
+        );
         const rows = entry.rows;
         return (
           <section key={id} className="sc-print__buoy">
             <h2>{label} <small>{rows.length.toLocaleString("en-US")} readings</small></h2>
+            {entry.truncated && <p className="sc-help">Only the newest {MAX_REPORT_READINGS.toLocaleString("en-US")} readings are shown, so these figures do not cover the whole range. The CSV holds every reading.</p>}
             {rows.length === 0 ? <p>No readings in this range.</p> : (
               <>
                 <table className="sc-table">

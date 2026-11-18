@@ -50,3 +50,19 @@ describe("ReportBuilder", () => {
     expect(screen.getByRole("link", { name: /Printable report/ })).toBeDefined();
   });
 });
+
+test("clearing a custom day keeps the last whole day and the page keeps working", async () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  await userEvent.click(screen.getByRole("button", { name: "Custom" }));
+  await userEvent.clear(screen.getByLabelText("From"));
+  expect((screen.getByLabelText("From") as HTMLInputElement).value).toBe("2026-10-24");
+  expect(screen.getByRole("button", { name: /CSV/ })).toBeDefined();
+});
+
+test("Printable report carries the exact range, to the second", () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  expect(screen.getByRole("link", { name: /Printable report/ }).getAttribute("href"))
+    .toBe("/reports/print/?buoys=1&from=2026-10-24T12:00:00Z&to=2026-10-31T12:00:00Z&columns=temp_c,turbidity_fau,battery_v");
+});

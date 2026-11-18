@@ -60,5 +60,11 @@ export function useReadingsStore() {
     return { status: "loading" };
   }, []);
 
-  return { get };
+  /** Drops failed entries so the next `get` fetches them again; loading and ready ones stay cached. */
+  const retryFailed = useCallback(() => {
+    for (const [key, entry] of cache.current) if (entry.status === "failed") cache.current.delete(key);
+    setVersion((v) => v + 1);
+  }, []);
+
+  return { get, retryFailed };
 }

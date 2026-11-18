@@ -45,7 +45,7 @@ export function ReportBuilder({ buoys, columns, canDownload, now, onCreated, rec
   const ordered = columns.filter((c) => chosen.includes(c));
   const range = resolveRange(variables.range, now, variables.zone);
   const ready = variables.buoys.length > 0 && ordered.length > 0 && range.from <= range.to;
-  const printHref = `/reports/print/?buoys=${variables.buoys.join(",")}&from=${range.from.slice(0, 10)}&to=${range.to.slice(0, 10)}&columns=${ordered.join(",")}`;
+  const printHref = `/reports/print/?buoys=${variables.buoys.join(",")}&from=${range.from}&to=${range.to}&columns=${ordered.join(",")}`;
 
   async function downloadCsv() {
     setBusy(true);

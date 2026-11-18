@@ -31,3 +31,20 @@ describe("readingsInRange", () => {
     expect(rows[0].record_seq).toBe("0");
   });
 });
+
+describe("useReadingsStore", () => {
+  test("a failed range is fetched again after retryFailed, not on every get", async () => {
+    const { renderHook, act, waitFor } = await import("@testing-library/react");
+    const { api } = await import("@/lib/api/client");
+    const { useReadingsStore } = await import("./readings-store");
+    const read = vi.spyOn(api, "readingsBetween").mockRejectedValueOnce(new Error("Down")).mockResolvedValue({ readings: [row(1)] });
+    const { result } = renderHook(() => useReadingsStore());
+    act(() => { result.current.get(1, RANGE); });
+    await waitFor(() => expect(result.current.get(1, RANGE).status).toBe("failed"));
+    expect(read).toHaveBeenCalledTimes(1);
+    act(() => result.current.retryFailed());
+    act(() => { result.current.get(1, RANGE); });
+    await waitFor(() => expect(result.current.get(1, RANGE).status).toBe("ready"));
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+});
