@@ -48,6 +48,10 @@ function BlockTools({ block, dispatch, onSelect }: Pick<BlockFrameProps, "block"
 }
 
 /** A block on the paper in edit mode: click or Enter to select; the outline, tools and tags never print. */
+/** After a keyboard move the block is re-placed in the page; keep it focused so the next Alt+arrow works. */
+const refocus = (id: string) =>
+  window.requestAnimationFrame(() => document.querySelector<HTMLElement>(`.sc-report-pages [data-block-id="${id}"]`)?.focus());
+
 export function BlockFrame({ block, selected, canEdit, overrideLabel, onSelect, dispatch, drag, drop, first = true, children }: BlockFrameProps) {
   const onKey = (event: KeyboardEvent) => {
     if (event.target !== event.currentTarget) return;
@@ -55,6 +59,7 @@ export function BlockFrame({ block, selected, canEdit, overrideLabel, onSelect, 
     if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
       event.preventDefault();
       dispatch({ type: "moveBy", id: block.id, delta: event.key === "ArrowUp" ? -1 : 1 });
+      refocus(block.id);
     }
   };
   const lifted = drag?.drag?.source.type === "bay" && drag.drag.source.id === block.id;

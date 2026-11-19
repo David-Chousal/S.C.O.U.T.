@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Segmented } from "@/components/ui/segmented";
 import { Select } from "@/components/ui/select";
 import type { Buoy } from "@/lib/api/types";
@@ -41,11 +41,17 @@ interface RangePickProps { range: ReportRange; onChange: (range: ReportRange) =>
 
 /** 24 h, 7 d, 30 d or a custom span of whole days. */
 export function RangePick({ range, onChange, label = "Date range" }: RangePickProps) {
+  const [problem, setProblem] = useState("");
   // A cleared or half-typed date input reports "", and a day past the other end would reverse
-  // the range: keep the last good range instead.
+  // the range: keep the last good range, and say why the edit did not take.
   const setDay = (key: "from" | "to", value: string) => {
     const next = { ...range, [key]: value };
-    if (value && isValidCustom(next)) onChange(next);
+    if (value && isValidCustom(next)) {
+      setProblem("");
+      onChange(next);
+    } else {
+      setProblem(value ? "The first day must not be after the last; the range is unchanged." : "Pick a whole day; the range is unchanged.");
+    }
   };
   return (
     <div className="sc-report-range">
@@ -57,6 +63,7 @@ export function RangePick({ range, onChange, label = "Date range" }: RangePickPr
           <input className="sc-input" type="date" aria-label="To" value={range.to} min={range.from} onChange={(e) => setDay("to", e.target.value)} />
         </span>
       )}
+      {range.preset === "custom" && problem && <span className="sc-help sc-report-range__problem" role="alert">{problem}</span>}
     </div>
   );
 }

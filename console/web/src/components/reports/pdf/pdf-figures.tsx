@@ -36,7 +36,7 @@ function PdfSection<B>({ section, children }: { section: BuoySection<B>; childre
     <View style={S.section} wrap={false}>
       <View style={S.h3}>
         <Text>{section.heading}</Text>
-        {section.note ? <Text style={S.h3Note}>{section.note}</Text> : null}
+        {section.note ? <Text style={[S.h3Note, { maxLines: 1, textOverflow: "ellipsis", flexShrink: 1 }]}>{section.note}</Text> : null}
       </View>
       {section.body ? children(section.body) : <Text style={S.muted}>{section.message}</Text>}
     </View>

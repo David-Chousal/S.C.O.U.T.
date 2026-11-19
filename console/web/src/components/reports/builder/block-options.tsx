@@ -5,6 +5,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { MAX_ROW_CAP, type Block, type Sampling, type Stat, type TextStyle } from "@/lib/report/document";
 import type { ReportAction } from "@/lib/report/reducer";
 import { FieldChips } from "./inline-edit";
+import { ImageOptions } from "./image-options";
 import { NumberDraft } from "./number-draft";
 import { VariablesPanel } from "./variables-panel";
 
@@ -70,6 +71,8 @@ export function BlockOptionsForm({ block, columns, dispatch }: BlockOptionsFormP
             <NumberDraft value={block.options.rowCap} min={10} max={MAX_ROW_CAP} onCommit={(rowCap) => update({ rowCap })} /></label>
         </>
       );
+    case "image":
+      return <ImageOptions block={block} update={update} />;
     case "heatStress":
       return <Check label="Degree heating weeks chart" checked={block.options.charts} onChange={(charts) => update({ charts })} />;
     case "alerts":

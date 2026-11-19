@@ -23,7 +23,7 @@ describe("figure views", () => {
 
   test("a chart from capped readings says so", () => {
     const rows = [row("2026-11-15T00:00:00Z", "27"), row("2026-11-15T12:00:00Z", "28")];
-    expect(timeSeriesView(createBlock("timeSeries"), ctx({ 1: { status: "ready", rows, truncated: true } })).sections[0].note).toContain("20,000");
+    expect(timeSeriesView(createBlock("timeSeries"), ctx({ 1: { status: "ready", rows, truncated: true } })).sections[0].note).toContain("not every reading");
   });
 
   test("the heat-stress peak is the peak of the days shown", () => {
@@ -36,4 +36,16 @@ describe("figure views", () => {
     expect(buoyHealthView(createBlock("buoyHealth"), ctx({})).sections[0].status).toBe("loading");
     expect(buoyHealthView(createBlock("buoyHealth"), ctx({ 1: { status: "ready", rows: [], truncated: false } })).sections[0].status).toBe("ready");
   });
+});
+
+test("an empty chart from incomplete readings still says the readings are incomplete", () => {
+  const view = timeSeriesView(createBlock("timeSeries"), ctx({ 1: { status: "ready", rows: [row("2026-11-15T00:00:00Z", "")], truncated: true } }));
+  expect(view.sections[0].status).toBe("empty");
+  expect(view.sections[0].note).toContain("not every reading");
+});
+
+test("a buoy whose readings failed is not shown as merely unmeasured", () => {
+  const view = buoyHealthView(createBlock("buoyHealth"), ctx({ 1: { status: "failed", error: "Down" } }));
+  expect(view.sections[0].status).toBe("failed");
+  expect(view.sections[0].body?.rows[0][1]).toBe("Not loaded");
 });

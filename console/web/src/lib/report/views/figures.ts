@@ -4,7 +4,7 @@ import type { BlockOfKind, Stat } from "../document";
 import { ANNOTATION_HEX, seriesHex } from "../palette";
 import { summarize } from "../stats";
 import { effectiveVariables, resolveRange } from "../variables";
-import { perBuoy, plainSuperscripts } from "./tables";
+import { INCOMPLETE, perBuoy, plainSuperscripts } from "./tables";
 import type { BuoySection, ChartsView, KeyFiguresView, Rows, Tile, ViewContext } from "./types";
 
 const STAT_LABEL: Record<Stat, string> = { latest: "Latest", min: "Lowest", mean: "Mean", max: "Highest" };
@@ -63,9 +63,9 @@ export function timeSeriesView(block: BlockOfKind<"timeSeries">, ctx: ViewContex
       const refs = column === "temp_c" && block.options.thresholds
         ? [...new Set(group.map((g) => mmm(g.id)).filter((v): v is number => v !== null))].map((value) => ({ value, label: `MMM ${value} °C`, color: ANNOTATION_HEX }))
         : [];
-      const partial = group.some((g) => g.entry.status === "ready" && g.entry.truncated) ? "only the newest 20,000 readings a buoy" : "";
+      const partial = group.some((g) => g.entry.status === "ready" && g.entry.truncated) ? INCOMPLETE : "";
       const chart = chartGeometry({ width: ctx.contentWidth, height: 180, from, to, series, references: refs, digits: column === "battery_v" ? 2 : 1 });
-      sections.push(chart ? { heading, note: partial, status: "ready", message: "", body: chart } : { heading, note: "", status: "empty", message: "No readings in this range.", body: null });
+      sections.push(chart ? { heading, note: partial, status: "ready", message: "", body: chart } : { heading, note: partial, status: "empty", message: "No readings in this range.", body: null });
     }
   }
   return { kind: "timeSeries", sections, footnote: block.options.variables.length === 0 ? "Pick at least one variable." : "" };

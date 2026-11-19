@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Toaster } from "@/components/feedback/toaster";
 import { api } from "@/lib/api/client";
@@ -72,4 +72,14 @@ test("clearing a custom day keeps the last whole day and the page keeps working"
   await userEvent.clear(screen.getByLabelText("From"));
   expect((screen.getByLabelText("From") as HTMLInputElement).value).toBe("2026-10-24");
   expect(screen.getByRole("button", { name: /CSV/ })).toBeDefined();
+});
+
+test("a reversed custom day is refused with a message, and the range stays as it was", async () => {
+  vi.spyOn(api, "readingsBetween").mockResolvedValue({ readings: [] });
+  render(<Toaster><ReportBuilder buoys={[buoy(1, "Reef north")]} columns={COLUMNS} canDownload canEdit now={NOW} onCreated={vi.fn()} recent={null} /></Toaster>);
+  await userEvent.click(screen.getByRole("button", { name: "Custom" }));
+  const from = screen.getByLabelText("From") as HTMLInputElement;
+  fireEvent.change(from, { target: { value: "2026-12-30" } });
+  expect(screen.getByRole("alert").textContent).toContain("must not be after");
+  expect(from.value).toBe("2026-10-24");
 });

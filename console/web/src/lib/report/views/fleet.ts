@@ -49,13 +49,15 @@ export function buoyHealthView(block: BlockOfKind<"buoyHealth">, ctx: ViewContex
   const vars = effectiveVariables(ctx.report, block.override);
   const range = resolveRange(vars.range, ctx.now, vars.zone);
   const zone = zoneLabel(vars.zone);
-  let loading = false;
+  let [loading, failed] = [false, false];
   const rows = vars.buoys.map((id) => {
     const buoy = ctx.fleet.find((b) => b.buoy_id === id);
     const entry = ctx.readings(id, range);
     const last = entry.status === "ready" ? entry.rows.at(-1) : undefined;
-    const reading = (c: string, unit: string) => (entry.status === "loading" ? "Loading…" : last?.[c] ? `${last[c]} ${unit}` : "—");
+    const reading = (c: string, unit: string) =>
+      (entry.status === "loading" ? "Loading…" : entry.status === "failed" ? "Not loaded" : last?.[c] ? `${last[c]} ${unit}` : "—");
     if (entry.status === "loading") loading = true;
+    if (entry.status === "failed") failed = true;
     return [ctx.buoyLabel(id), reading("battery_v", "V"), reading("internal_humidity_pct", "%"),
       buoy?.last_seen_at ? formatWhen(apiTime(buoy.last_seen_at), vars.zone) : "Never", buoy?.settings_state ?? "—"];
   });
@@ -63,7 +65,8 @@ export function buoyHealthView(block: BlockOfKind<"buoyHealth">, ctx: ViewContex
     numeric: [false, true, true, false, false], widths: [1.4, 1, 1.2, 1.6, 1], rows };
   const section: BuoySection<TableView> = rows.length === 0
     ? { heading: "Buoy health", note: "", status: "empty", message: "Pick at least one buoy.", body: null }
-    : { heading: "Buoy health", note: "Battery and humidity from each buoy's newest reading in the range", status: loading ? "loading" : "ready", message: "", body: table };
+    : { heading: "Buoy health", note: failed ? "Some buoys' readings did not load; try again above" : "Battery and humidity from each buoy's newest reading in the range",
+      status: loading ? "loading" : failed ? "failed" : "ready", message: "", body: table };
   return { kind: "buoyHealth", sections: [section], footnote: "" };
 }
 

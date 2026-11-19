@@ -83,7 +83,8 @@ export function useSavedReport({ doc, reset, replace, start, layouts, onLayoutsC
     if (id) reset(next);
     else replace(next);
     setReportId(id);
-    setBaseline(id ? JSON.stringify(next) : "");
+    // Clean until edited: a template applied twice in a row does not ask, or keep a draft, for nothing.
+    setBaseline(JSON.stringify(next));
   }
 
   return { reportId, saved, dirty, saving, save, saveAs, open };

@@ -19,6 +19,7 @@ import {
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
+import { MAX_IMAGE_BYTES, serveReportImage, uploadReportImage } from "./report-images.js";
 import { createReportLayout, deleteReportLayout, listReportLayouts, saveReportLayout, setDefaultTemplate } from "./report-layouts.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { heatStressView } from "./heat-stress-view.js";
@@ -274,11 +275,27 @@ async function alertOff(request, env, token) {
   return done.error ? apiError(done.error, done.status) : json(done);
 }
 
+async function reportImage(request, env, id) {
+  const session = await loadSession(env.DB, request);
+  if (!session) return apiError("Sign in first.", 401);
+  if (request.method === "GET" && id) return serveReportImage(env, id);
+  if (request.method !== "POST" || id) return apiError("method not allowed", 405);
+  if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);
+  if (!constantTimeEqual(request.headers.get("X-CSRF-Token") || "", session.csrf)) return apiError("This page is out of date. Reload it and try again.", 403);
+  if (!can(session.user, "reports.write")) return apiError("Your role can view this but not change it.", 403);
+  if (Number(request.headers.get("Content-Length") || 0) > MAX_IMAGE_BYTES) return apiError("Images are at most 1 MB. Make it smaller and try again.", 413);
+  const result = await uploadReportImage(env, session.user, await request.arrayBuffer());
+  return result.error ? apiError(result.error, 400) : json({ id: result.id });
+}
+
 export async function handleApi(request, env, path) {
   const off = /^\/api\/alerts\/off\/([\w-]{20,64})$/.exec(path);
   if (off) return alertOff(request, env, off[1]);
   // Fred reads its own, larger body (the open conversation) and streams its reply.
   if (path === "/api/assistant" || path.startsWith("/api/assistant/")) return handleAssistant(request, env, path);
+  // Report images: a raw PNG or JPEG body up, the file itself down (not JSON).
+  const image = /^\/api\/report-images(?:\/([\w-]{1,64}))?$/.exec(path);
+  if (image) return reportImage(request, env, image[1]);
   let body = {};
   if (request.method === "POST") {
     if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);

@@ -16,6 +16,8 @@ export interface ViewContext {
   title: string;
   /** The page's content width in CSS pixels: charts are drawn to fit it. */
   contentWidth: number;
+  /** The page's content height in CSS pixels, when known: an image is fitted inside it. */
+  contentHeight?: number;
   fleet: Pick<Buoy, "buoy_id" | "label" | "last_seen_at" | "settings_state" | "mmm_c">[];
   heat: Remote<HeatStressView>;
   /** Alerts sent to the person viewing (the console keeps 90 days). */
@@ -56,7 +58,9 @@ export interface ChartsView { kind: "timeSeries"; sections: BuoySection<ChartGeo
 export interface HeatSection { facts: TableView; chart: ChartGeometry | null }
 export interface HeatStressBlockView { kind: "heatStress"; sections: BuoySection<HeatSection>[]; footnote: string }
 export interface MarkerView { kind: "pageBreak" | "divider" }
+/** `src` null: no image chosen yet; `message` says so on screen and in the PDF. */
+export interface ImageView { kind: "image"; src: string | null; alt: string; caption: string; width: number; height: number; message: string }
 
-export type BlockView = TableBlockView | TitleView | TextView | KeyFiguresView | ChartsView | HeatStressBlockView | MarkerView;
+export type BlockView = TableBlockView | TitleView | TextView | KeyFiguresView | ChartsView | HeatStressBlockView | MarkerView | ImageView;
 
 export type Rows = Reading[];

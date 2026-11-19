@@ -42,13 +42,13 @@ export function useReportContent(doc: ReportDocument, now: number, buoys: Report
   const heatRead = useRemote<HeatStressView>(doc.blocks.some((b) => b.kind === "heatStress"), api.heatStress);
   const alertsRead = useRemote<AlertHistoryItem[]>(doc.blocks.some((b) => b.kind === "alerts"), async () => (await api.alerts()).history);
   const [heat, alerts] = [heatRead.state, alertsRead.state];
-  const contentWidth = pageBox(doc.page).contentWidth;
+  const { contentWidth, contentHeight } = pageBox(doc.page);
   const ctx = useMemo<ViewContext>(() => ({
-    report: doc.variables, now, readings: readings.get, title: doc.title, contentWidth, fleet: buoys, heat, alerts,
+    report: doc.variables, now, readings: readings.get, title: doc.title, contentWidth, contentHeight, fleet: buoys, heat, alerts,
     buoyLabel: (id) => buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`,
     // readings.version is not read here: it changes when a fetch lands, so every view rebuilds.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [doc.variables, doc.title, contentWidth, now, readings.get, readings.version, buoys, heat, alerts]);
+  }), [doc.variables, doc.title, contentWidth, contentHeight, now, readings.get, readings.version, buoys, heat, alerts]);
   const views = useMemo(() => new Map(doc.blocks.flatMap((b): [string, BlockView][] => {
     const view = buildView(b, ctx);
     return view ? [[b.id, view]] : [];

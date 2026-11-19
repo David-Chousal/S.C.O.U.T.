@@ -24,6 +24,8 @@ export const SAMPLE_DOCUMENTS: ReportDocument[] = [
     createBlock("buoyHealth", "b"),
     { ...createBlock("alerts", "a"), options: { includeTests: true } },
     createBlock("divider", "d"),
+    createBlock("image", "i0"),
+    { ...createBlock("image", "i1"), options: { assetId: "abc", alt: "Reef", caption: "The north reef at low tide", width: "full", ratio: 0.5 } },
     createBlock("pageBreak", "p"),
   ], "Every block"),
 ];

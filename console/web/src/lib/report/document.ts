@@ -20,7 +20,8 @@ export interface BlockOptions {
   heatStress: { charts: boolean };
   buoyHealth: NoOptions;
   alerts: { includeTests: boolean };
-  image: { assetId: string | null; alt: string; caption: string; width: ImageWidth };
+  /** `ratio` is height ÷ width, read at upload, so the page can lay the image out before it loads. */
+  image: { assetId: string | null; alt: string; caption: string; width: ImageWidth; ratio: number };
   pageBreak: NoOptions;
   divider: NoOptions;
 }
@@ -76,7 +77,7 @@ const DEFAULT_OPTIONS: { [K in BlockKind]: () => BlockOptions[K] } = {
   heatStress: () => ({ charts: true }),
   buoyHealth: () => ({}),
   alerts: () => ({ includeTests: false }),
-  image: () => ({ assetId: null, alt: "", caption: "", width: "medium" }),
+  image: () => ({ assetId: null, alt: "", caption: "", width: "medium", ratio: 0.5 }),
   pageBreak: () => ({}),
   divider: () => ({}),
 };

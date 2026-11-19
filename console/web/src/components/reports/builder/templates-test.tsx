@@ -55,6 +55,15 @@ describe("Templates", () => {
     expect(pageOrder()).toEqual(["Title block", "Summary table block", "Readings table block"]);
   });
 
+  test("two templates in a row, with no edits between, never ask", async () => {
+    renderBuilder();
+    await tab();
+    await userEvent.click(within(row("One-page status")).getByRole("button", { name: "Use" }));
+    await userEvent.click(within(row("Data appendix")).getByRole("button", { name: "Use" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(pageOrder()).toEqual(["Title block", "Summary table block", "Readings table block"]);
+  });
+
   test("an admin makes a team template the default", async () => {
     const set = vi.spyOn(api, "setDefaultTemplate").mockResolvedValue({ ok: true });
     renderBuilder({ isAdmin: true });
