@@ -39,7 +39,9 @@ const IMAGE_SHARE = { small: 0.33, medium: 0.6, full: 1 } as const;
 /** The image at a share of the page's width, its height from the shape recorded at upload. */
 export function imageView(block: BlockOfKind<"image">, ctx: ViewContext): ImageView {
   const { assetId, alt, caption, width, ratio } = block.options;
-  const w = Math.round(ctx.contentWidth * IMAGE_SHARE[width]);
+  // Fit the page both ways, leaving room for a caption, so a tall picture on a landscape page is never clipped.
+  const room = (ctx.contentHeight ?? Infinity) - (caption ? 24 : 0) - 8;
+  const w = Math.round(Math.min(ctx.contentWidth * IMAGE_SHARE[width], room / ratio));
   return { kind: "image", src: assetId ? reportImageUrl(assetId) : null, alt, caption, width: w, height: Math.round(w * ratio),
     message: assetId ? "" : "No image yet. Upload a PNG or JPEG in the block's options." };
 }

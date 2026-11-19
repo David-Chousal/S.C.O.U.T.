@@ -61,6 +61,16 @@ test("only real PNG or JPEG bytes up to 1 MB are kept, whatever the browser clai
   assert.equal(env.FILES.objects.size, 0);
 });
 
+test("images past the bucket's 365 days no longer count toward the 50-image limit", async () => {
+  const env = makeEnv({ FILES: fakeBucket() });
+  const { client, user } = await signedIn(env, "member");
+  const old = Date.now() - 366 * 24 * 3600 * 1000;
+  const insert = env.DB.raw.prepare("INSERT INTO report_images (id, owner_id, content_type, bytes, created_at) VALUES (?, ?, 'image/png', 12, ?)");
+  for (let i = 0; i < 50; i++) insert.run(`old${i}`, user.id, old);
+  assert.equal((await upload(client, PNG)).status, 200);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM report_images").get().n, 1);
+});
+
 test("an upload from another site, or without the page's CSRF token, is refused", async () => {
   const env = makeEnv({ FILES: fakeBucket() });
   const { client } = await signedIn(env, "member");

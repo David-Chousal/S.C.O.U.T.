@@ -16,6 +16,8 @@ export interface ViewContext {
   title: string;
   /** The page's content width in CSS pixels: charts are drawn to fit it. */
   contentWidth: number;
+  /** The page's content height in CSS pixels, when known: an image is fitted inside it. */
+  contentHeight?: number;
   fleet: Pick<Buoy, "buoy_id" | "label" | "last_seen_at" | "settings_state" | "mmm_c">[];
   heat: Remote<HeatStressView>;
   /** Alerts sent to the person viewing (the console keeps 90 days). */

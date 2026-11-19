@@ -8,6 +8,8 @@ import { guardedGet, guardedPut } from "./storage.js";
 
 export const MAX_IMAGE_BYTES = 1_000_000;
 const MAX_PER_PERSON = 50;
+/** The bucket rule deletes report-images/ after this many days; rows past it describe no file. */
+const KEEP_MS = 365 * 24 * 3600 * 1000;
 
 /** The type from the file's own first bytes, not from what the browser claims. */
 export function sniffImage(bytes) {
@@ -23,13 +25,16 @@ export async function uploadReportImage(env, actor, body) {
   if (bytes.length > MAX_IMAGE_BYTES) return { error: "Images are at most 1 MB. Make it smaller and try again." };
   const type = sniffImage(bytes);
   if (!type) return { error: "Only PNG and JPEG images can go in a report." };
+  // Rows whose file the lifecycle rule has deleted are dropped, so they never count toward the cap.
+  const now = Date.now();
+  await env.DB.prepare("DELETE FROM report_images WHERE created_at <= ?").bind(now - KEEP_MS).run();
   const { n } = await env.DB.prepare("SELECT COUNT(*) AS n FROM report_images WHERE owner_id = ?").bind(actor.id).first();
   if (n >= MAX_PER_PERSON) return { error: `You can keep ${MAX_PER_PERSON} report images.` };
   const id = crypto.randomUUID();
   const stored = await guardedPut(env, `report-images/${id}`, bytes);
   if (stored.error) return stored;
   await env.DB.prepare("INSERT INTO report_images (id, owner_id, content_type, bytes, created_at) VALUES (?, ?, ?, ?, ?)")
-    .bind(id, actor.id, type, bytes.length, Date.now()).run();
+    .bind(id, actor.id, type, bytes.length, now).run();
   await record(env.DB, { actor, action: "report_image.upload", target: id });
   return { id };
 }
