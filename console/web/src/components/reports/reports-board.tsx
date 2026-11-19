@@ -66,12 +66,12 @@ export function ReportsBoard() {
     return error ? <Banner tone="failed">{error}</Banner> : <span className="sc-tag" aria-busy="true">Loading…</span>;
   }
   // Decided once, when everything has loaded: later reloads of the lists must not reopen the page.
-  const opened = start ?? chooseStart({ search: window.location.search, draft: readDraft(), layouts: layouts.data.layouts,
+  const opened = start ?? chooseStart({ search: window.location.search, draft: readDraft(user.id), layouts: layouts.data.layouts,
     buoys: fleet.data.buoys.map((b) => b.buoy_id), now });
   if (!start) setStart(opened);
   return (
     <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} canEdit={canDownload} now={now}
-      start={opened} layouts={layouts.data.layouts} onLayoutsChanged={layouts.reload} isAdmin={can(user.role, "reports.default")}
+      start={opened} userId={user.id} layouts={layouts.data.layouts} onLayoutsChanged={layouts.reload} isAdmin={can(user.role, "reports.default")}
       onCreated={(link) => { list.reload(); window.location.assign(link); }}
       recent={<RecentReports reports={list.data.reports} canDownload={canDownload} now={now} />} />
   );

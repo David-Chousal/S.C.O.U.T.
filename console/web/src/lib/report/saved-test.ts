@@ -58,14 +58,15 @@ function memoryStorage(): Pick<Storage, "getItem" | "setItem" | "removeItem"> {
 
 test("with storage blocked there is simply no draft", () => {
   vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
-  expect(() => writeDraft({ reportId: null, doc: createDocument(VARS, [], "x") })).not.toThrow();
-  expect(readDraft()).toBeNull();
+  expect(() => writeDraft("u1", { reportId: null, doc: createDocument(VARS, [], "x") })).not.toThrow();
+  expect(readDraft("u1")).toBeNull();
 });
 
-test("the draft survives a round trip through this browser's storage, and can be cleared", () => {
+test("a draft is kept per account: another account on this browser never sees it", () => {
   vi.stubGlobal("localStorage", memoryStorage());
-  writeDraft({ reportId: "r", doc: createDocument(VARS, [], "Kept") });
-  expect(readDraft()?.doc.title).toBe("Kept");
-  writeDraft(null);
-  expect(readDraft()).toBeNull();
+  writeDraft("u1", { reportId: "r", doc: createDocument(VARS, [], "Kept") });
+  expect(readDraft("u1")?.doc.title).toBe("Kept");
+  expect(readDraft("u2")).toBeNull();
+  writeDraft("u1", null);
+  expect(readDraft("u1")).toBeNull();
 });

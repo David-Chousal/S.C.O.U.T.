@@ -65,12 +65,13 @@ export function chooseStart(input: { search: string; draft: Draft | null; layout
   return { doc: { ...plain, variables: start }, reportId: null, source: "new" };
 }
 
-const DRAFT_KEY = "scout-report-draft";
+/** One draft per account, so a shared browser never shows one person's unsaved report to another. */
+const draftKey = (userId: string) => `scout-report-draft:${userId}`;
 
 /** The draft kept in this browser while editing. Storage can be missing or blocked; then there is none. */
-export function readDraft(): Draft | null {
+export function readDraft(userId: string): Draft | null {
   try {
-    const raw = window.localStorage.getItem(DRAFT_KEY);
+    const raw = window.localStorage.getItem(draftKey(userId));
     const draft = raw ? (JSON.parse(raw) as Draft) : null;
     return draft?.doc?.version === 1 ? draft : null;
   } catch {
@@ -78,10 +79,10 @@ export function readDraft(): Draft | null {
   }
 }
 
-export function writeDraft(draft: Draft | null): void {
+export function writeDraft(userId: string, draft: Draft | null): void {
   try {
-    if (draft) window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    else window.localStorage.removeItem(DRAFT_KEY);
+    if (draft) window.localStorage.setItem(draftKey(userId), JSON.stringify(draft));
+    else window.localStorage.removeItem(draftKey(userId));
   } catch {
     // Private windows and blocked storage simply keep no draft; saving to the console still works.
   }

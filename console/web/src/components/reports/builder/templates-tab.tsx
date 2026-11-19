@@ -80,7 +80,9 @@ export function TemplatesTab({ layouts, variables, canEdit, isAdmin, dirty, onOp
       <Dialog open={pending !== null} title="Replace this report?" onClose={() => setPending(null)}
         footer={<><Key onClick={() => setPending(null)}>Keep editing</Key>
           <Key variant="primary" onClick={() => { if (pending) onOpen(pending.doc, pending.reportId); setPending(null); }}>Replace</Key></>}>
-        <p>The report on the page has changes that are not saved. Opening “{pending?.label}” replaces its layout; undo brings it back.</p>
+        <p>The report on the page has changes that are not saved. {pending?.reportId
+          ? `Opening “${pending.label}” replaces it, and the changes are lost.`
+          : `Starting from “${pending?.label}” replaces its layout; undo brings it back.`}</p>
       </Dialog>
     </div>
   );

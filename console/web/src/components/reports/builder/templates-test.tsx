@@ -35,8 +35,17 @@ describe("Templates", () => {
     for (const name of ["Weekly field summary", "Reef heat stress brief", "Data appendix", "One-page status", "Blank", "Field days"]) expect(screen.getByText(name)).toBeDefined();
   });
 
+  test("using a template on an untouched report replaces it without asking", async () => {
+    renderBuilder();
+    await tab();
+    await userEvent.click(within(row("One-page status")).getByRole("button", { name: "Use" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(pageOrder()).toEqual(["Title block", "Key figures block", "Buoy health block"]);
+  });
+
   test("using a template over unsaved changes asks first, then replaces the layout and keeps the buoys", async () => {
     renderBuilder();
+    await userEvent.type(screen.getAllByLabelText("Report title")[0], " edited");
     await tab();
     await userEvent.click(within(row("One-page status")).getByRole("button", { name: "Use" }));
     expect(screen.getByRole("dialog", { name: "Replace this report?" })).toBeDefined();
@@ -75,12 +84,35 @@ describe("Saving", () => {
     expect(changed).toHaveBeenCalled();
   });
 
-  test("opening a saved report shows it and marks it saved", async () => {
+  test("opening a saved report shows it, marks it saved, and cannot be undone into another report", async () => {
     renderBuilder();
     await tab();
     await userEvent.click(within(row("October")).getByRole("button", { name: "Open" }));
-    await userEvent.click(screen.getByRole("button", { name: "Replace" }));
     expect(pageOrder()).toEqual(["Buoy health block"]);
+    expect(screen.getByText("Saved")).toBeDefined();
+    expect((screen.getByRole("button", { name: "Undo" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  test("Save waits for the one before it, so two saves cannot land out of order", async () => {
+    let finish: () => void = () => undefined;
+    const save = vi.spyOn(api, "saveReportLayout").mockImplementation(() => new Promise((resolve) => { finish = () => resolve({ ok: true }); }));
+    renderBuilder();
+    await tab();
+    await userEvent.click(within(row("October")).getByRole("button", { name: "Open" }));
+    await userEvent.type(screen.getAllByLabelText("Report title")[0], "!");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect((screen.getByRole("button", { name: "Saving…" }) as HTMLButtonElement).disabled).toBe(true);
+    finish();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeDefined());
+    expect(save).toHaveBeenCalledTimes(1);
+  });
+
+  test("an untouched new report keeps no draft", async () => {
+    const stored = vi.fn();
+    vi.stubGlobal("localStorage", { getItem: () => null, setItem: stored, removeItem: () => undefined });
+    renderBuilder();
+    await waitFor(() => expect(pageOrder().length).toBeGreaterThan(0));
+    expect(stored).not.toHaveBeenCalled();
   });
 
   test("guests can open saved reports but see no Save or Use-to-edit controls", async () => {

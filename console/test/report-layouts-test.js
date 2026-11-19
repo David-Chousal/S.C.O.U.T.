@@ -77,6 +77,17 @@ test("a long report (over 16 KB, under 64 KB) can be saved; a larger one is refu
   assert.equal((await client.post("/api/report-layouts", { kind: "report", name: "Huge", doc: huge })).status, 415);
 });
 
+test("the size limit counts bytes, not characters, and holds when the length header is missing", async () => {
+  const env = makeEnv();
+  const { client } = await signedIn(env, "member");
+  // 30,000 three-byte characters: under 64 K characters but over 64 KB.
+  const doc = { ...DOC, blocks: [{ ...DOC.blocks[0], options: { subtitle: "…".repeat(3000) } }] };
+  const many = { ...doc, blocks: Array.from({ length: 10 }, (_, i) => ({ ...doc.blocks[0], id: `t${i}` })) };
+  const body = JSON.stringify({ kind: "report", name: "Wide", doc: many });
+  assert.ok(body.length < 66 * 1024 && new TextEncoder().encode(body).length > 66 * 1024);
+  assert.equal((await client.raw("/api/report-layouts", { method: "POST", body, headers: { "X-CSRF-Token": client.csrf, "Content-Length": "10" } })).status, 415);
+});
+
 test("documents are checked before they are stored", () => {
   assert.deepEqual(validateReportDocument(DOC), DOC);
   const bad = (change, message) => assert.throws(() => validateReportDocument({ ...DOC, ...change }), message);

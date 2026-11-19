@@ -13,6 +13,7 @@ export function useReportEditor(initial: () => ReportDocument) {
   const dispatch = useCallback((action: ReportAction) => send(action), []);
   const undo = useCallback(() => send({ type: "undo" }), []);
   const redo = useCallback(() => send({ type: "redo" }), []);
+  const reset = useCallback((document: ReportDocument) => send({ type: "reset", document }), []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -25,5 +26,5 @@ export function useReportEditor(initial: () => ReportDocument) {
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo]);
 
-  return { doc: history.present, dispatch, undo, redo, canUndo: history.past.length > 0, canRedo: history.future.length > 0 };
+  return { doc: history.present, dispatch, undo, redo, reset, canUndo: history.past.length > 0, canRedo: history.future.length > 0 };
 }
