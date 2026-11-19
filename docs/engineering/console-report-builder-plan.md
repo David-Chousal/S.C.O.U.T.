@@ -4,8 +4,9 @@
 > a report builder: a live, paginated preview that updates as you change anything, a short
 > list of report-wide variables (buoys, dates, time zone), prebuilt templates and blocks, and
 > direct editing and rearranging on the page itself, before anyone presses **Download PDF**
-> or **Print**. Both are offered (decided by David, 2026-11-18). Nothing here is built yet;
-> the open questions at the end were answered on 2026-11-18.
+> or **Print**. Both are offered (decided by David, 2026-11-18). Built on 2026-11-18 in nine
+> stacked PRs, #356 to #364 ([SCO-317](https://linear.app/scout1/issue/SCO-317)); the open questions at the
+> end were answered the same day. Where the build departs from this plan, the decision log says why.
 >
 > Source: the Reports page on `main` (2026-11-18) ·
 > [`console/README.md`](../../console/README.md) ·
