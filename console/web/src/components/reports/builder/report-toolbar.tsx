@@ -5,7 +5,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { Select } from "@/components/ui/select";
 import type { Buoy } from "@/lib/api/types";
 import type { PageSetup } from "@/lib/report/page";
-import { RANGE_OPTIONS, type ReportRange, type ReportVariables } from "@/lib/report/variables";
+import { isValidCustom, RANGE_OPTIONS, type ReportRange, type ReportVariables } from "@/lib/report/variables";
 
 const ZONES = [{ value: "utc", label: "UTC" }, { value: "local", label: "Local" }] as const;
 const PAGES = [
@@ -41,8 +41,12 @@ interface RangePickProps { range: ReportRange; onChange: (range: ReportRange) =>
 
 /** 24 h, 7 d, 30 d or a custom span of whole days. */
 export function RangePick({ range, onChange, label = "Date range" }: RangePickProps) {
-  // A cleared or half-typed date input reports "": keep the last whole day instead.
-  const setDay = (key: "from" | "to", value: string) => { if (value) onChange({ ...range, [key]: value }); };
+  // A cleared or half-typed date input reports "", and a day past the other end would reverse
+  // the range: keep the last good range instead.
+  const setDay = (key: "from" | "to", value: string) => {
+    const next = { ...range, [key]: value };
+    if (value && isValidCustom(next)) onChange(next);
+  };
   return (
     <div className="sc-report-range">
       <Segmented size="sm" label={label} options={RANGE_OPTIONS} value={range.preset} onChange={(preset) => onChange({ ...range, preset })} />

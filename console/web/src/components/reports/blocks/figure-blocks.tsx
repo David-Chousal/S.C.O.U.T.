@@ -16,6 +16,7 @@ export function ChartSvg({ chart }: { chart: ChartGeometry }) {
             <text x={chart.right + 4} y={r.y + 3} className="sc-rb-chart__ref" fill={r.color}>{r.label}</text>
           </g>
         ))}
+        {chart.dots.map((p, i) => <circle key={`d${i}`} cx={p.x} cy={p.y} r={2} fill={p.color} />)}
         {chart.series.map((s, i) => <path key={`s${i}`} d={s.d} fill="none" stroke={s.color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />)}
       </svg>
       <figcaption className="sc-rb-legend">{chart.legend.map((l, i) => <span key={i}><i style={{ background: l.color }} />{l.label}</span>)}</figcaption>

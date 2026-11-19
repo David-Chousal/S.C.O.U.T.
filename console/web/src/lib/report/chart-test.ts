@@ -23,6 +23,12 @@ describe("chartGeometry", () => {
     expect(g?.series[0].d.match(/M/g)).toHaveLength(2);
   });
 
+  test("a reading with no neighbour within 26 hours is drawn as a dot", () => {
+    const g = chartGeometry({ ...base, series: [{ label: "A", color: "#111", points: [{ t: T0, v: 26 }, { t: T0 + 3 * DAY, v: 27 }, { t: T0 + 3 * DAY + 3600_000, v: 27.5 }] }] });
+    expect(g?.dots).toHaveLength(1);
+    expect(g?.dots[0].x).toBe(44);
+  });
+
   test("a reference line widens the y range to stay in view", () => {
     const g = chartGeometry({ ...base, series: [{ label: "A", color: "#111", points: [{ t: T0, v: 26 }, { t: T0 + DAY, v: 27 }] }],
       references: [{ value: 30, label: "MMM", color: "#c54a05" }] });

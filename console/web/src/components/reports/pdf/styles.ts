@@ -46,7 +46,7 @@ export const T = {
   callout: { borderLeftWidth: 2.25, borderLeftColor: "#1f6763", backgroundColor: SUNKEN, paddingVertical: pt(8), paddingHorizontal: pt(12) },
   divider: { borderBottomWidth: 0.75, borderBottomColor: LINE_STRONG },
   tiles: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: pt(8) },
-  tile: { width: pt(150), flexDirection: "column" as const, gap: pt(2), borderTopWidth: 1.5, borderTopColor: INK, paddingTop: pt(6) },
+  tile: { width: pt(200), flexDirection: "column" as const, gap: pt(2), borderTopWidth: 1.5, borderTopColor: INK, paddingTop: pt(6) },
   tileLabel: { fontSize: pt(10), color: MUTED },
   tileValue: { fontWeight: 700, fontSize: pt(20) },
   tileUnit: { fontWeight: 500, fontSize: pt(11), color: MUTED },

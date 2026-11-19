@@ -31,10 +31,11 @@ export function BlockOptionsForm({ block, columns, dispatch }: BlockOptionsFormP
   switch (block.kind) {
     case "title":
       return (
-        <Field label="Subtitle">
-          <input className="sc-input" value={block.options.subtitle} maxLength={160} placeholder="e.g. Weekly summary for {buoys}" onChange={(e) => update({ subtitle: e.target.value })} />
+        <div className="sc-inspector__field">
+          <label className="sc-inspector__field"><span className="sc-label">Subtitle</span>
+            <input className="sc-input" value={block.options.subtitle} maxLength={160} placeholder="e.g. Weekly summary for {buoys}" onChange={(e) => update({ subtitle: e.target.value })} /></label>
           <FieldChips onPick={(field) => update({ subtitle: `${block.options.subtitle}${field}` })} />
-        </Field>
+        </div>
       );
     case "text":
       return (

@@ -36,7 +36,10 @@ export function heatStressView(block: BlockOfKind<"heatStress">, ctx: ViewContex
       series: [{ label: `${heading} DHW`, color: seriesHex(index), points: days.map((d) => ({ t: NOON(d.day), v: d.dhw })) }],
       references: [{ value: 4, label: "Alert 1 at 4", color: ANNOTATION_HEX }],
     }) : null;
-    const peak = buoy.summary ? `peak ${buoy.summary.peak_dhw.toFixed(1)} °C-wk, worst ${buoy.summary.peak_alert}` : "";
+    // The peak over the days shown, not the console's whole 84-day window.
+    const top = days.reduce<(typeof days)[number] | null>((best, d) => (!best || d.dhw > best.dhw ? d : best), null);
+    const worst = days.reduce((level, d) => Math.max(level, d.level), -1);
+    const peak = top ? `peak ${top.dhw.toFixed(1)} °C-wk, worst ${heat.alert_levels[worst] ?? top.alert}` : "";
     return { heading, note: peak, status: "ready", message: "", body: { facts, chart } };
   });
   return { kind: "heatStress", sections, footnote: `NOAA Coral Reef Watch method; levels run ${ALERT_LEVELS[0]} to ${ALERT_LEVELS.at(-1)}. Generated ${heat.generated_at.slice(0, 16).replace("T", " ")} UTC.` };
@@ -46,11 +49,13 @@ export function buoyHealthView(block: BlockOfKind<"buoyHealth">, ctx: ViewContex
   const vars = effectiveVariables(ctx.report, block.override);
   const range = resolveRange(vars.range, ctx.now, vars.zone);
   const zone = zoneLabel(vars.zone);
+  let loading = false;
   const rows = vars.buoys.map((id) => {
     const buoy = ctx.fleet.find((b) => b.buoy_id === id);
     const entry = ctx.readings(id, range);
     const last = entry.status === "ready" ? entry.rows.at(-1) : undefined;
     const reading = (c: string, unit: string) => (entry.status === "loading" ? "Loading…" : last?.[c] ? `${last[c]} ${unit}` : "—");
+    if (entry.status === "loading") loading = true;
     return [ctx.buoyLabel(id), reading("battery_v", "V"), reading("internal_humidity_pct", "%"),
       buoy?.last_seen_at ? formatWhen(apiTime(buoy.last_seen_at), vars.zone) : "Never", buoy?.settings_state ?? "—"];
   });
@@ -58,7 +63,7 @@ export function buoyHealthView(block: BlockOfKind<"buoyHealth">, ctx: ViewContex
     numeric: [false, true, true, false, false], widths: [1.4, 1, 1.2, 1.6, 1], rows };
   const section: BuoySection<TableView> = rows.length === 0
     ? { heading: "Buoy health", note: "", status: "empty", message: "Pick at least one buoy.", body: null }
-    : { heading: "Buoy health", note: "Battery and humidity from each buoy's newest reading in the range", status: "ready", message: "", body: table };
+    : { heading: "Buoy health", note: "Battery and humidity from each buoy's newest reading in the range", status: loading ? "loading" : "ready", message: "", body: table };
   return { kind: "buoyHealth", sections: [section], footnote: "" };
 }
 

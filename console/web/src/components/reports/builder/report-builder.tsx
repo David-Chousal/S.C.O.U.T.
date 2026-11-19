@@ -40,7 +40,7 @@ function startingDocument(buoys: ReportBuilderProps["buoys"], now: number): Repo
  * the centre, and panels either side (docs/engineering/console-report-builder-plan.md). */
 export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCreated, recent }: ReportBuilderProps) {
   const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => startingDocument(buoys, now));
-  const { content, readings, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
+  const { content, failed, retry, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = doc.blocks.find((b) => b.id === selectedId) ?? null;
   const actions = (
@@ -66,8 +66,8 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         }} /> }]} />
       </aside>
       <div className="sc-report-stage">
-        {readings.failed > 0 && (
-          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
+        {failed && (
+          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={retry}>Try again</button>}>Some of this report&apos;s data did not load.</Banner>
         )}
         <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} />
         <MeasureColumn content={content} columnRef={column} />
