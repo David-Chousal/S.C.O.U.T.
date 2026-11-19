@@ -18,14 +18,27 @@ function PdfHead({ content }: { content: PageContent }) {
   );
 }
 
-/** One PDF page: the same fragments, in the same order, as the preview's page. */
+/** Consecutive fragments of one block, kept together so they sit 16 px apart as on screen. */
+function byBlock(page: ReportPage): ReportPage[] {
+  return page.reduce<ReportPage[]>((out, fragment) => {
+    const last = out.at(-1);
+    return last && last[0].blockId === fragment.blockId ? [...out.slice(0, -1), [...last, fragment]] : [...out, [fragment]];
+  }, []);
+}
+
+/** One PDF page: the same fragments, in the same order and groups, as the preview's page. */
 export function PdfPageBody({ content, page }: { content: PageContent; page: ReportPage }) {
   return (
     <View style={S.body}>
-      {page.map((fragment, i) => {
-        if (fragment.blockId === HEADER_ID) return <PdfHead key={i} content={content} />;
-        const view = content.views.get(fragment.blockId);
-        return view ? <PdfBlockUnit key={i} view={view} unit={fragment.unit} rows={fragment.rows} /> : null;
+      {byBlock(page).map((group, i) => {
+        if (group[0].blockId === HEADER_ID) return <PdfHead key={i} content={content} />;
+        const view = content.views.get(group[0].blockId);
+        if (!view) return null;
+        return (
+          <View key={i} style={S.block}>
+            {group.map((f, j) => <PdfBlockUnit key={j} view={view} unit={f.unit} rows={f.rows} />)}
+          </View>
+        );
       })}
     </View>
   );
@@ -40,7 +53,7 @@ export function PdfReport({ content, pages }: { content: PageContent; pages: Rep
       {pages.map((page, n) => (
         <Page key={n} size={size} style={S.page}>
           <PdfPageBody content={content} page={page} />
-          <Text style={S.foot} fixed>Page {n + 1} of {pages.length}</Text>
+          <Text style={S.foot} fixed render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </Page>
       ))}
     </Document>

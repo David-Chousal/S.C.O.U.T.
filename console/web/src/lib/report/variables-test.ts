@@ -39,3 +39,9 @@ test("formatWhen writes UTC as YYYY-MM-DD HH:MM", () => {
 test("a custom range with a cleared day falls back to the last 7 days instead of throwing", () => {
   expect(resolveRange({ preset: "custom", from: "", to: "2026-11-05" }, NOW, "utc")).toEqual(resolveRange({ preset: "7d", from: "", to: "" }, NOW, "utc"));
 });
+
+test("a reversed or impossible custom range falls back to the last 7 days", () => {
+  const week = resolveRange({ preset: "7d", from: "", to: "" }, NOW, "utc");
+  expect(resolveRange({ preset: "custom", from: "2026-11-05", to: "2026-11-01" }, NOW, "utc")).toEqual(week);
+  expect(resolveRange({ preset: "custom", from: "2026-02-31", to: "2026-03-05" }, NOW, "utc")).toEqual(week);
+});
