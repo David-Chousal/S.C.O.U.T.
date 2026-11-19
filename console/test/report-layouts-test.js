@@ -67,6 +67,16 @@ test("only an admin sets the team's default template, and only one is default", 
   assert.deepEqual(defaults, ["B"]);
 });
 
+test("a long report (over 16 KB, under 64 KB) can be saved; a larger one is refused", async () => {
+  const env = makeEnv();
+  const { client } = await signedIn(env, "member");
+  const text = (n) => ({ id: `x${n}`, kind: "text", hidden: false, override: {}, options: { text: "a".repeat(3900), style: "body" } });
+  const long = { ...DOC, blocks: Array.from({ length: 10 }, (_, i) => text(i)) };
+  assert.equal((await client.post("/api/report-layouts", { kind: "report", name: "Long", doc: long })).status, 200);
+  const huge = { ...DOC, blocks: Array.from({ length: 20 }, (_, i) => text(i)) };
+  assert.equal((await client.post("/api/report-layouts", { kind: "report", name: "Huge", doc: huge })).status, 415);
+});
+
 test("documents are checked before they are stored", () => {
   assert.deepEqual(validateReportDocument(DOC), DOC);
   const bad = (change, message) => assert.throws(() => validateReportDocument({ ...DOC, ...change }), message);

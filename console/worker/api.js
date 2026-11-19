@@ -40,10 +40,14 @@ import {
 
 const MAX_JSON_BYTES = 16_384;
 
-async function readJson(request) {
+/** Saved report documents (worker/report-layouts.js) may be up to 64 KB; everything else 16 KB. */
+const REPORT_JSON_BYTES = 64 * 1024 + 1024;
+const jsonLimit = (path) => (path.startsWith("/api/report-layouts") ? REPORT_JSON_BYTES : MAX_JSON_BYTES);
+
+async function readJson(request, limit = MAX_JSON_BYTES) {
   if (!(request.headers.get("Content-Type") || "").startsWith("application/json")) return null;
   const text = await request.text();
-  if (text.length > MAX_JSON_BYTES) return null;
+  if (text.length > limit) return null;
   try {
     const body = JSON.parse(text || "{}");
     return body && typeof body === "object" && !Array.isArray(body) ? body : null;
@@ -251,8 +255,8 @@ export async function handleApi(request, env, path) {
   let body = {};
   if (request.method === "POST") {
     if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);
-    body = await readJson(request);
-    if (body === null) return apiError("Send a JSON object of at most 16 KB.", 415);
+    body = await readJson(request, jsonLimit(path));
+    if (body === null) return apiError(`Send a JSON object of at most ${Math.round(jsonLimit(path) / 1024)} KB.`, 415);
   } else if (request.method !== "GET") {
     return apiError("method not allowed", 405);
   }
