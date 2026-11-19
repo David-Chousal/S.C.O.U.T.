@@ -6,7 +6,7 @@ import { BLOCK_INFO, createBlock, type BlockKind } from "@/lib/report/document";
 import type { BlockDrag } from "./use-block-drag";
 
 /** The kinds offered in the library, in the order a report usually reads. */
-export const LIBRARY: BlockKind[] = ["title", "text", "keyFigures", "timeSeries", "summaryTable", "readingsTable", "heatStress", "buoyHealth", "alerts", "pageBreak", "divider"];
+export const LIBRARY: BlockKind[] = ["title", "text", "keyFigures", "timeSeries", "summaryTable", "readingsTable", "heatStress", "buoyHealth", "alerts", "image", "pageBreak", "divider"];
 
 interface BlocksTabProps { canEdit: boolean; onAdd: (block: ReturnType<typeof createBlock>) => void; drag: BlockDrag }
 

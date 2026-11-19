@@ -2,11 +2,10 @@ import type { Block } from "../document";
 import { keyFiguresView, timeSeriesView } from "./figures";
 import { alertsView, buoyHealthView, heatStressView } from "./fleet";
 import { readingsTableView, summaryTableView } from "./tables";
-import { textView, titleView } from "./text";
+import { imageView, textView, titleView } from "./text";
 import type { BlockView, ViewContext } from "./types";
 
-/** A block's view model: what it shows, as plain data both renderers draw from. Null only for a
- * block kind with no view yet (Image, until it has its upload). */
+/** A block's view model: what it shows, as plain data both renderers draw from. */
 export function buildView(block: Block, ctx: ViewContext): BlockView | null {
   switch (block.kind) {
     case "title": return titleView(block, ctx);
@@ -20,7 +19,7 @@ export function buildView(block: Block, ctx: ViewContext): BlockView | null {
     case "alerts": return alertsView(block, ctx);
     case "pageBreak":
     case "divider": return { kind: block.kind };
-    case "image": return null;
+    case "image": return imageView(block, ctx);
   }
 }
 

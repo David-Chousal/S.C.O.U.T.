@@ -148,3 +148,8 @@
 .sc-rb-save-state { white-space: nowrap; }
 .sc-rb-save-state.is-dirty { color: var(--caution); }
 .sc-rb-saveas { display: grid; gap: var(--space-4); }
+/* The Image block (step 9). */
+.sc-rb-image { margin: 0; display: grid; gap: 4px; justify-items: start; }
+.sc-rb-image img { display: block; object-fit: contain; }
+.sc-rb-image__empty { display: grid; place-items: center; padding: 8px; box-sizing: border-box; border: 1px dashed var(--line-strong); color: var(--ink-muted); font: 400 11px/15px var(--font-sans); text-align: center; }
+.sc-rb-image figcaption { color: var(--ink-muted); font: 400 11px/15px var(--font-sans); }

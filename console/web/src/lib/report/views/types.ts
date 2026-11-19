@@ -56,7 +56,9 @@ export interface ChartsView { kind: "timeSeries"; sections: BuoySection<ChartGeo
 export interface HeatSection { facts: TableView; chart: ChartGeometry | null }
 export interface HeatStressBlockView { kind: "heatStress"; sections: BuoySection<HeatSection>[]; footnote: string }
 export interface MarkerView { kind: "pageBreak" | "divider" }
+/** `src` null: no image chosen yet; `message` says so on screen and in the PDF. */
+export interface ImageView { kind: "image"; src: string | null; alt: string; caption: string; width: number; height: number; message: string }
 
-export type BlockView = TableBlockView | TitleView | TextView | KeyFiguresView | ChartsView | HeatStressBlockView | MarkerView;
+export type BlockView = TableBlockView | TitleView | TextView | KeyFiguresView | ChartsView | HeatStressBlockView | MarkerView | ImageView;
 
 export type Rows = Reading[];

@@ -1,7 +1,8 @@
 import type { BlockOfKind } from "../document";
 import { fillFields, type MergeValues } from "../merge-fields";
 import { effectiveVariables, formatDay, formatWhen, rangeLabel, resolveRange, zoneLabel, apiTime } from "../variables";
-import type { TextView, TitleView, ViewContext } from "./types";
+import { reportImageUrl } from "@/lib/api/client";
+import type { ImageView, TextView, TitleView, ViewContext } from "./types";
 
 /** The merge-field values for a block, from its own (or the report's) buoys and range. */
 export function mergeValues(block: { override: BlockOfKind<"text">["override"] }, ctx: ViewContext): MergeValues {
@@ -31,4 +32,14 @@ export function titleView(block: BlockOfKind<"title">, ctx: ViewContext): TitleV
 export function textView(block: BlockOfKind<"text">, ctx: ViewContext): TextView {
   const filled = fillFields(block.options.text, mergeValues(block, ctx));
   return { kind: "text", style: block.options.style, paragraphs: filled.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean) };
+}
+
+const IMAGE_SHARE = { small: 0.33, medium: 0.6, full: 1 } as const;
+
+/** The image at a share of the page's width, its height from the shape recorded at upload. */
+export function imageView(block: BlockOfKind<"image">, ctx: ViewContext): ImageView {
+  const { assetId, alt, caption, width, ratio } = block.options;
+  const w = Math.round(ctx.contentWidth * IMAGE_SHARE[width]);
+  return { kind: "image", src: assetId ? reportImageUrl(assetId) : null, alt, caption, width: w, height: Math.round(w * ratio),
+    message: assetId ? "" : "No image yet. Upload a PNG or JPEG in the block's options." };
 }
