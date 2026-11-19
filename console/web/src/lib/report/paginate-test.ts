@@ -48,6 +48,10 @@ describe("paginate", () => {
     expect(pages).toEqual([[{ blockId: "two", unit: 0 }], [{ blockId: "two", unit: 1 }]]);
   });
 
+  test("a page break at the end leaves no empty page", () => {
+    expect(paginate([block("a", 100), { id: "br", pageBreak: true, units: [] }], 1000, GAPS)).toHaveLength(1);
+  });
+
   test("an empty report is one empty page", () => {
     expect(paginate([], 1000, GAPS)).toEqual([[]]);
   });

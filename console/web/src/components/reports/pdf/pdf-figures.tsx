@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { ChartGeometry } from "@/lib/report/chart";
 import { PT_PER_PX } from "@/lib/report/page";
 import type { BuoySection, ChartsView, HeatStressBlockView, KeyFiguresView } from "@/lib/report/views/types";
-import { G, Line, Path, Svg, Text, View } from "./primitives";
+import { Circle, G, Line, Path, Svg, Text, View } from "./primitives";
 import { PdfTable } from "./pdf-tables";
 import { MONO, S, T } from "./styles";
 
@@ -21,6 +21,7 @@ export function PdfChart({ chart }: { chart: ChartGeometry }) {
             <Text x={chart.right + 4} y={r.y + 3} style={{ ...axis, fill: r.color }}>{r.label}</Text>
           </G>
         ))}
+        {chart.dots.map((p, i) => <Circle key={`d${i}`} cx={p.x} cy={p.y} r={2} fill={p.color} />)}
         {chart.series.map((s, i) => <Path key={`s${i}`} d={s.d} fill="none" stroke={s.color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />)}
       </Svg>
       <View style={T.legend}>
