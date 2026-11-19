@@ -31,3 +31,28 @@ export const S = {
   h1: { fontWeight: 700, fontSize: pt(22), marginTop: pt(4) },
   headNote: { fontSize: pt(11), color: MUTED },
 };
+
+export const T = {
+  title: { flexDirection: "column" as const, gap: pt(4), borderBottomWidth: 1.5, borderBottomColor: INK, paddingBottom: pt(12) },
+  mark: { fontWeight: 700, fontSize: pt(12), letterSpacing: pt(1) },
+  h1: { fontWeight: 700, fontSize: pt(24) },
+  sub: { fontSize: pt(14), color: INK },
+  lines: { flexDirection: "column" as const, gap: pt(2), marginTop: pt(4) },
+  line: { fontSize: pt(11), color: MUTED },
+  text: { flexDirection: "column" as const, gap: pt(8) },
+  p: { fontSize: pt(12), lineHeight: 1.45 },
+  h2: { fontWeight: 700, fontSize: pt(18) },
+  h3x: { fontWeight: 700, fontSize: pt(14) },
+  callout: { borderLeftWidth: 2.25, borderLeftColor: "#1f6763", backgroundColor: SUNKEN, paddingVertical: pt(8), paddingHorizontal: pt(12) },
+  divider: { borderBottomWidth: 0.75, borderBottomColor: LINE_STRONG },
+  tiles: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: pt(8) },
+  tile: { width: pt(200), flexDirection: "column" as const, gap: pt(2), borderTopWidth: 1.5, borderTopColor: INK, paddingTop: pt(6) },
+  tileLabel: { fontSize: pt(10), color: MUTED },
+  tileValue: { fontWeight: 700, fontSize: pt(20) },
+  tileUnit: { fontWeight: 500, fontSize: pt(11), color: MUTED },
+  tileCaption: { fontFamily: MONO, fontSize: pt(9), color: MUTED, textTransform: "uppercase" as const },
+  legend: { flexDirection: "row" as const, flexWrap: "wrap" as const, gap: pt(12), marginTop: pt(4) },
+  legendItem: { flexDirection: "row" as const, alignItems: "center" as const, gap: pt(4) },
+  swatch: { width: pt(12), height: pt(2) },
+  legendText: { fontSize: pt(10), color: MUTED },
+};

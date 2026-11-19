@@ -47,13 +47,13 @@ describe("Inspector", () => {
     renderBuilder();
     await userEvent.click(paper().getByRole("group", { name: "Summary table block" }));
     await userEvent.click(screen.getByRole("button", { name: "Duplicate" }));
-    expect(blockNames()).toEqual(["Summary table block", "Summary table block", "Readings table block"]);
+    expect(blockNames()).toEqual(["Title block", "Summary table block", "Summary table block", "Readings table block"]);
     await userEvent.click(screen.getByRole("button", { name: "Move down" }));
-    expect(blockNames()).toEqual(["Summary table block", "Readings table block", "Summary table block"]);
+    expect(blockNames()).toEqual(["Title block", "Summary table block", "Readings table block", "Summary table block"]);
     await userEvent.click(screen.getByRole("button", { name: "Delete" }));
-    expect(blockNames()).toEqual(["Summary table block", "Readings table block"]);
+    expect(blockNames()).toEqual(["Title block", "Summary table block", "Readings table block"]);
     await userEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expect(blockNames()).toHaveLength(3);
+    expect(blockNames()).toHaveLength(4);
   });
 
   test("hide in PDF keeps the block on the page, tagged", async () => {
@@ -91,5 +91,5 @@ test("Alt+↑ and Alt+↓ move the focused block", async () => {
   const paperNow = within(screen.getByLabelText("Report preview"));
   paperNow.getByRole("group", { name: "Readings table block" }).focus();
   await userEvent.keyboard("{Alt>}{ArrowUp}{/Alt}");
-  expect(paperNow.getAllByRole("group").map((g) => g.getAttribute("aria-label"))).toEqual(["Readings table block", "Summary table block"]);
+  expect(paperNow.getAllByRole("group").map((g) => g.getAttribute("aria-label"))).toEqual(["Title block", "Readings table block", "Summary table block"]);
 });

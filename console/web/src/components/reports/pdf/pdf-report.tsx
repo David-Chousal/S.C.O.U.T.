@@ -1,22 +1,9 @@
 import type { Page as ReportPage } from "@/lib/report/paginate";
 import { pageBox, PT_PER_PX } from "@/lib/report/page";
-import { rangeLabel, resolveRange, zoneLabel } from "@/lib/report/variables";
 import type { PageContent } from "../builder/report-pages";
-import { HEADER_ID } from "../builder/report-pages";
 import { Document, Page, Text, View } from "./primitives";
 import { PdfBlockUnit } from "./pdf-units";
 import { S } from "./styles";
-
-function PdfHead({ content }: { content: PageContent }) {
-  const { doc, ctx } = content;
-  const range = resolveRange(doc.variables.range, ctx.now, doc.variables.zone);
-  return (
-    <View style={S.head}>
-      <View><Text style={S.wordmark}>S.C.O.U.T.</Text><Text style={S.h1}>{doc.title}</Text></View>
-      <Text style={S.headNote}>{rangeLabel(range, doc.variables.zone)} ({zoneLabel(doc.variables.zone)})</Text>
-    </View>
-  );
-}
 
 /** Consecutive fragments of one block, kept together so they sit 16 px apart as on screen. */
 function byBlock(page: ReportPage): ReportPage[] {
@@ -31,7 +18,6 @@ export function PdfPageBody({ content, page }: { content: PageContent; page: Rep
   return (
     <View style={S.body}>
       {byBlock(page).map((group, i) => {
-        if (group[0].blockId === HEADER_ID) return <PdfHead key={i} content={content} />;
         const view = content.views.get(group[0].blockId);
         if (!view) return null;
         return (

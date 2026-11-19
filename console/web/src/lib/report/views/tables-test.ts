@@ -4,6 +4,7 @@ import { createBlock } from "../document";
 import type { ReadingsEntry } from "../readings-store";
 import { readingsTableView, sample, summaryTableView } from "./tables";
 import type { ViewContext } from "./types";
+import { ALERTS, FLEET, HEAT } from "./fixtures";
 
 const row = (iso: string, temp: string): Reading => ({ timestamp_utc: iso, record_seq: iso, temp_c: temp, battery_v: "3.7" });
 const ROWS = [row("2026-11-17T00:10:00Z", "27"), row("2026-11-17T00:40:00Z", "28"), row("2026-11-17T05:00:00Z", "29")];
@@ -12,7 +13,7 @@ function context(entries: Record<number, ReadingsEntry>, buoys = [1]): ViewConte
   return {
     report: { buoys, range: { preset: "7d", from: "", to: "" }, zone: "utc" },
     now: Date.parse("2026-11-18T00:00:00Z"),
-    buoyLabel: (id) => `Buoy ${id}`,
+    buoyLabel: (id) => `Buoy ${id}`, title: "Weekly", contentWidth: 720, fleet: FLEET, heat: HEAT, alerts: ALERTS,
     readings: (id) => entries[id] ?? { status: "loading" },
   };
 }
