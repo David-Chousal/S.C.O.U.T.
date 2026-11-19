@@ -13,7 +13,8 @@ interface Toast extends ToastInput {
   id: number;
 }
 
-const AUTO_DISMISS_MS = 5000;
+const AUTO_DISMISS_MS = 3000;
+const LEAVE_MS = 180;
 const MAX_TOASTS = 3;
 const ToastContext = createContext<{ show: (toast: ToastInput) => void } | null>(null);
 
@@ -25,15 +26,22 @@ export function useToast() {
 
 function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
   const [paused, setPaused] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const failed = toast.tone === "failed";
 
   useEffect(() => {
-    if (failed || paused) return;
-    const timer = setTimeout(() => onDismiss(toast.id), AUTO_DISMISS_MS);
+    if (failed || paused || leaving) return;
+    const timer = setTimeout(() => setLeaving(true), AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
-  }, [failed, paused, onDismiss, toast.id]);
+  }, [failed, paused, leaving]);
 
-  const toneClass = toast.tone && toast.tone !== "neutral" ? ` sc-toast--${toast.tone}` : "";
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = setTimeout(() => onDismiss(toast.id), LEAVE_MS);
+    return () => clearTimeout(timer);
+  }, [leaving, onDismiss, toast.id]);
+
+  const toneClass = `${toast.tone && toast.tone !== "neutral" ? ` sc-toast--${toast.tone}` : ""}${leaving ? " sc-toast--leaving" : ""}`;
   return (
     <div
       className={`sc-toast${toneClass}`}
@@ -42,20 +50,19 @@ function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      onClick={() => setLeaving(true)}
+      title="Click to dismiss"
     >
       <Icon name={failed ? "warning" : toast.tone === "ok" ? "check" : "info"} />
       <div className="sc-toast__body">
         <strong>{toast.title}</strong>
         {toast.detail && <span>{toast.detail}</span>}
       </div>
-      <button type="button" className="sc-key sc-key--sm sc-key--icon" aria-label="Dismiss" onClick={() => onDismiss(toast.id)}>
-        <Icon name="close" />
-      </button>
     </div>
   );
 }
 
-/** Provides useToast() and renders the toast stack bottom-left. */
+/** Provides useToast() and renders the toast stack as a banner dropping in from the top of the screen. */
 export function Toaster({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(1);

@@ -148,7 +148,13 @@ test("the nonce rewrite touches script tags only", () => {
   assert.equal(addNonce("<script>a</script><scripts><noscript>", "N"), '<script nonce="N">a</script><scripts><noscript>');
   assert.equal(addNonce('<link rel="preload" as="script" href="/a.js"/><link rel="stylesheet" href="/a.css"/>', "N"),
     '<link nonce="N" rel="preload" as="script" href="/a.js"/><link rel="stylesheet" href="/a.css"/>');
-  assert.match(pageCsp("N"), /script-src 'nonce-N' 'strict-dynamic'/);
+  assert.match(pageCsp("N"), /script-src 'nonce-N' 'strict-dynamic' 'wasm-unsafe-eval'/);
+});
+
+test("the page CSP allows WebAssembly for Download PDF but never JavaScript eval", () => {
+  const scripts = /script-src ([^;]*)/.exec(pageCsp("N"))[1];
+  assert.match(scripts, /'wasm-unsafe-eval'/);
+  assert.doesNotMatch(scripts, /'unsafe-eval'|'unsafe-inline'/);
 });
 
 test("the Worker entry module exports only its handler, as workerd requires", async () => {

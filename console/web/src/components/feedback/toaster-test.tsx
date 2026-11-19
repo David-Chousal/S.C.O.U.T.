@@ -22,16 +22,17 @@ describe("Toaster", () => {
     expect(screen.getByRole("status").textContent).toContain("Synced 4,120 rows from Google Ads");
   });
 
-  test("dismisses success toasts after five seconds", () => {
+  test("dismisses success toasts after three seconds", () => {
     setup({ tone: "ok", title: "Synced" });
-    act(() => vi.advanceTimersByTime(5100));
+    act(() => vi.advanceTimersByTime(3000));
+    act(() => vi.advanceTimersByTime(200));
     expect(screen.queryByText("Synced")).toBeNull();
   });
 
   test("still dismisses when the page re-renders while the toast is up", () => {
     const { rerender } = render(<Toaster><Trigger toast={{ tone: "ok", title: "Connected" }} /></Toaster>);
     fireEvent.click(screen.getByRole("button", { name: "Go" }));
-    for (let second = 0; second < 5; second += 1) {
+    for (let second = 0; second < 3; second += 1) {
       act(() => vi.advanceTimersByTime(1000));
       rerender(<Toaster><Trigger toast={{ tone: "ok", title: "Connected" }} /></Toaster>);
     }
@@ -39,11 +40,12 @@ describe("Toaster", () => {
     expect(screen.queryByText("Connected")).toBeNull();
   });
 
-  test("keeps failures until dismissed", () => {
+  test("keeps failures until clicked away", () => {
     setup({ tone: "failed", title: "Sync failed" });
     act(() => vi.advanceTimersByTime(10_000));
     expect(screen.getByRole("alert").textContent).toContain("Sync failed");
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+    fireEvent.click(screen.getByRole("alert"));
+    act(() => vi.advanceTimersByTime(200));
     expect(screen.queryByRole("alert")).toBeNull();
   });
 });

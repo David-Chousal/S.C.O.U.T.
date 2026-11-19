@@ -10,7 +10,8 @@ import { useWhen } from "@/lib/preferences-context";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
 import { useViewOnlyNote } from "@/lib/view-only-note";
-import { ReportComposer } from "./report-composer";
+import { chooseStart, readDraft, type SavedLayout } from "@/lib/report/saved";
+import { ReportBuilder } from "./builder/report-builder";
 
 function RecentReports({ reports, canDownload, now }: { reports: ReportItem[]; canDownload: boolean; now: number }) {
   const when = useWhen();
@@ -24,7 +25,7 @@ function RecentReports({ reports, canDownload, now }: { reports: ReportItem[]; c
   }
   return (
     <section className="sc-bay" aria-labelledby="recent-title">
-      <div className="sc-bay__head"><h2 className="sc-bay__title" id="recent-title">Your recent reports</h2><span className="sc-tag">Files kept 2 days</span></div>
+      <div className="sc-bay__head"><h2 className="sc-bay__title" id="recent-title">Recent CSVs</h2><span className="sc-tag">Files kept 2 days</span></div>
       <div className="sc-list">
         {reports.length === 0 && <p className="sc-help">None yet.</p>}
         {reports.map((report) => {
@@ -48,23 +49,30 @@ function RecentReports({ reports, canDownload, now }: { reports: ReportItem[]; c
   );
 }
 
-/** The Reports page: make a CSV (stored briefly in R2) or open a printable report. */
+/** The Reports page: the report builder, with recent CSVs (stored briefly in R2) beside it. */
 export function ReportsBoard() {
   const { user } = useSession();
   const fleet = useApi<Fleet>(api.fleet);
   const list = useApi<ReportList>(api.reports);
+  const layouts = useApi<{ layouts: SavedLayout[] }>(api.reportLayouts);
   const [now] = useState(() => Date.now());
   const canDownload = can(user.role, "reports.write");
-  useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. The printable report works for everyone.`);
+  useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. Previewing, printing and Download PDF work for everyone.`);
 
-  if (fleet.error || list.error) return <Banner tone="failed">{fleet.error || list.error}</Banner>;
-  if (!fleet.data || !list.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
+  const [start, setStart] = useState<ReturnType<typeof chooseStart> | null>(null);
+  // Only a first load that failed replaces the page; a later refresh that fails keeps the editor.
+  if (!fleet.data || !list.data || !layouts.data) {
+    const error = fleet.error || list.error || layouts.error;
+    return error ? <Banner tone="failed">{error}</Banner> : <span className="sc-tag" aria-busy="true">Loading…</span>;
+  }
+  // Decided once, when everything has loaded: later reloads of the lists must not reopen the page.
+  const opened = start ?? chooseStart({ search: window.location.search, draft: readDraft(user.id), layouts: layouts.data.layouts,
+    buoys: fleet.data.buoys.map((b) => b.buoy_id), now });
+  if (!start) setStart(opened);
   return (
-    <>
-      <ReportComposer buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload}
-        today={new Date(now).toISOString().slice(0, 10)}
-        onCreated={(link) => { list.reload(); window.location.assign(link); }} />
-      <RecentReports reports={list.data.reports} canDownload={canDownload} now={now} />
-    </>
+    <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} canEdit={canDownload} now={now}
+      start={opened} userId={user.id} layouts={layouts.data.layouts} onLayoutsChanged={layouts.reload} isAdmin={can(user.role, "reports.default")}
+      onCreated={(link) => { list.reload(); window.location.assign(link); }}
+      recent={<RecentReports reports={list.data.reports} canDownload={canDownload} now={now} />} />
   );
 }
