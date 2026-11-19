@@ -1,4 +1,3 @@
-import { MAX_REPORT_READINGS } from "../readings-store";
 import { summarize } from "../stats";
 import { variableLabel, VARIABLES } from "@/lib/variables";
 import type { Block, BlockOfKind, Sampling } from "../document";
@@ -13,6 +12,8 @@ const fmt = (value: number | null) => (value === null ? "—" : value.toLocaleSt
 const SUPERSCRIPT: Record<string, string> = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁻": "-" };
 /** "×10⁻⁴" as "×10^-4": the report fonts have no superscript digits, and screen and PDF must match. */
 export const plainSuperscripts = (text: string) => text.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (run) => `^${[...run].map((c) => SUPERSCRIPT[c]).join("")}`);
+/** Said wherever a buoy's readings were cut short: by the 20,000 cap, or a timestamp holding more than one page. */
+export const INCOMPLETE = "incomplete: not every reading in the range could be loaded";
 export const withUnit = (c: string) => plainSuperscripts(`${variableLabel(c)}${VARIABLES[c]?.unit ? ` (${VARIABLES[c].unit})` : ""}`);
 
 /** One section per buoy in the block's variables, each from that buoy's readings. */
@@ -26,7 +27,7 @@ export function perBuoy<T>(block: Block, ctx: ViewContext, body: (rows: Rows) =>
     if (entry.status === "failed") return { heading, note: "", status: "failed", message: entry.error, body: null };
     if (entry.rows.length === 0) return { heading, note: "", status: "empty", message: "No readings in this range.", body: null };
     const made = body(entry.rows);
-    const partial = entry.truncated ? `${made.note ? "; " : ""}only the newest ${count(MAX_REPORT_READINGS)}, the range holds more` : "";
+    const partial = entry.truncated ? `${made.note ? "; " : ""}${INCOMPLETE}` : "";
     return { heading, status: "ready", message: "", ...made, note: made.note + partial };
   });
 }

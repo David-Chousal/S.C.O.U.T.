@@ -70,3 +70,8 @@ test("a draft is kept per account: another account on this browser never sees it
   writeDraft("u1", null);
   expect(readDraft("u1")).toBeNull();
 });
+
+test("a link with a reversed or impossible custom range keeps the report's own range", () => {
+  expect(readLink("?range=custom:2026-11-05:2026-11-01", [1]).variables.range).toBeUndefined();
+  expect(readLink("?range=custom:2026-02-31:2026-03-02", [1]).variables.range).toBeUndefined();
+});

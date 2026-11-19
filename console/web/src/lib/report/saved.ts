@@ -4,7 +4,7 @@
 
 import { createBlock, createDocument, type ReportDocument } from "./document";
 import { fromTemplate } from "./templates";
-import type { RangePreset, ReportVariables, ZoneChoice } from "./variables";
+import { isValidCustom, type RangePreset, type ReportVariables, type ZoneChoice } from "./variables";
 
 export interface SavedLayout {
   id: string;
@@ -37,7 +37,9 @@ export function readLink(search: string, known: number[]): { reportId: string | 
   const buoys = params.get("buoys")?.split(",").map(Number).filter((b) => known.includes(b));
   if (buoys?.length) variables.buoys = buoys;
   const [preset, from = "", to = ""] = (params.get("range") ?? "").split(":");
-  if (PRESETS.includes(preset as RangePreset)) variables.range = { preset: preset as RangePreset, from, to };
+  const range = { preset: preset as RangePreset, from, to };
+  // A custom range from a link must be real days in order; otherwise the link's range is ignored.
+  if (PRESETS.includes(range.preset) && (range.preset !== "custom" || isValidCustom(range))) variables.range = range;
   const zone = params.get("zone");
   if (zone === "utc" || zone === "local") variables.zone = zone as ZoneChoice;
   return { reportId: params.get("report"), variables };

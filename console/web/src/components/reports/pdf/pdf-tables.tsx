@@ -27,7 +27,7 @@ function PdfSection({ section, continued, rows }: { section: BuoySection<TableVi
     <View style={S.section}>
       <View style={S.h3}>
         <Text style={{ maxLines: 1, textOverflow: "ellipsis" }}>{section.heading}{continued ? " (continued)" : ""}</Text>
-        {section.note ? <Text style={S.h3Note}>{section.note}</Text> : null}
+        {section.note ? <Text style={[S.h3Note, { maxLines: 1, textOverflow: "ellipsis", flexShrink: 1 }]}>{section.note}</Text> : null}
       </View>
       {section.body ? <PdfTable table={section.body} rows={rows} /> : <Text style={S.muted}>{section.message}</Text>}
     </View>

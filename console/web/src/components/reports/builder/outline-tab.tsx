@@ -37,7 +37,10 @@ export function OutlineTab({ blocks, selectedId, canEdit, onSelect, dispatch }: 
   };
   const moving = drag.drag?.source.type === "bay" ? drag.drag.source.id : null;
   const staying = blocks.filter((b) => b.id !== moving);
-  const target = drag.drag && drag.drag.at !== null ? staying[drag.drag.at]?.id ?? null : null;
+  const at = drag.drag?.at ?? null;
+  const target = at !== null ? staying[at]?.id ?? null : null;
+  // Past the last row that stays: the line goes below it instead.
+  const after = at !== null && at >= staying.length ? staying.at(-1)?.id ?? null : null;
   if (blocks.length === 0) return <p className="sc-help">No blocks yet. Add one from Blocks.</p>;
   return (
     <div ref={area}>
@@ -46,7 +49,7 @@ export function OutlineTab({ blocks, selectedId, canEdit, onSelect, dispatch }: 
           const label = BLOCK_INFO[block.kind].label;
           const lifted = drag.drag?.source.type === "bay" && drag.drag.source.id === block.id;
           return (
-            <li key={block.id} data-outline-id={block.id} className={[lifted && "is-lifted", block.id === target && "is-drop-before"].filter(Boolean).join(" ")}>
+            <li key={block.id} data-outline-id={block.id} className={[lifted && "is-lifted", block.id === target && "is-drop-before", block.id === after && "is-drop-after"].filter(Boolean).join(" ")}>
               {canEdit && <span className="sc-rb-outline__grip" aria-hidden="true" onPointerDown={(e) => drag.start({ type: "bay", id: block.id }, block.kind, label, 12, e)}><Icon name="drag" /></span>}
               <button type="button" className="sc-rb-outline__row" aria-current={block.id === selectedId || undefined} onClick={() => pick(block.id)} onKeyDown={(e) => onKey(e, block.id)}>
                 <strong>{label}</strong>
