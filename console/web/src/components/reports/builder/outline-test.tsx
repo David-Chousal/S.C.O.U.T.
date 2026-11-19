@@ -46,3 +46,18 @@ describe("Outline", () => {
     expect(screen.getByRole("button", { name: "Drag Summary table to move it" })).toBeDefined();
   });
 });
+
+test("arrow keys move between the library's tabs", async () => {
+  renderBuilder();
+  await userEvent.click(screen.getByRole("tab", { name: "Blocks" }));
+  await userEvent.keyboard("{ArrowRight}");
+  expect(document.activeElement?.textContent).toBe("Outline");
+  expect(screen.getByRole("list", { name: "Outline" })).toBeDefined();
+});
+
+test("Alt+↓ on a block's grip moves the block", async () => {
+  renderBuilder();
+  screen.getByRole("button", { name: "Drag Summary table to move it" }).focus();
+  await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+  expect(pageOrder()).toEqual(["Title block", "Readings table block", "Summary table block"]);
+});

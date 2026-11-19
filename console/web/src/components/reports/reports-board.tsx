@@ -60,9 +60,11 @@ export function ReportsBoard() {
   useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. Previewing, printing and Download PDF work for everyone.`);
 
   const [start, setStart] = useState<ReturnType<typeof chooseStart> | null>(null);
-  const error = fleet.error || list.error || layouts.error;
-  if (error) return <Banner tone="failed">{error}</Banner>;
-  if (!fleet.data || !list.data || !layouts.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
+  // Only a first load that failed replaces the page; a later refresh that fails keeps the editor.
+  if (!fleet.data || !list.data || !layouts.data) {
+    const error = fleet.error || list.error || layouts.error;
+    return error ? <Banner tone="failed">{error}</Banner> : <span className="sc-tag" aria-busy="true">Loading…</span>;
+  }
   // Decided once, when everything has loaded: later reloads of the lists must not reopen the page.
   const opened = start ?? chooseStart({ search: window.location.search, draft: readDraft(), layouts: layouts.data.layouts,
     buoys: fleet.data.buoys.map((b) => b.buoy_id), now });

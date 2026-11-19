@@ -35,9 +35,11 @@ export function keyFiguresView(block: BlockOfKind<"keyFigures">, ctx: ViewContex
   };
 }
 
-const points = (rows: Rows, column: string) =>
-  rows.map((r) => ({ t: Date.parse(r.timestamp_utc), v: Number(r[column]) })).filter((p) => r0(p.v));
-const r0 = (v: number) => Number.isFinite(v);
+/** Blank cells are "not measured": they are dropped before Number(), which would read them as 0. */
+const points = (rows: Rows, column: string) => rows
+  .filter((r) => r[column] !== "" && r[column] !== undefined)
+  .map((r) => ({ t: Date.parse(r.timestamp_utc), v: Number(r[column]) }))
+  .filter((p) => Number.isFinite(p.v));
 
 /** One chart per variable across the block's buoys, or one per buoy per variable. MMM is drawn on
  * water temperature charts when thresholds are on and the buoy has one. */
@@ -61,8 +63,9 @@ export function timeSeriesView(block: BlockOfKind<"timeSeries">, ctx: ViewContex
       const refs = column === "temp_c" && block.options.thresholds
         ? [...new Set(group.map((g) => mmm(g.id)).filter((v): v is number => v !== null))].map((value) => ({ value, label: `MMM ${value} °C`, color: ANNOTATION_HEX }))
         : [];
+      const partial = group.some((g) => g.entry.status === "ready" && g.entry.truncated) ? "only the newest 20,000 readings a buoy" : "";
       const chart = chartGeometry({ width: ctx.contentWidth, height: 180, from, to, series, references: refs, digits: column === "battery_v" ? 2 : 1 });
-      sections.push(chart ? { heading, note: "", status: "ready", message: "", body: chart } : { heading, note: "", status: "empty", message: "No readings in this range.", body: null });
+      sections.push(chart ? { heading, note: partial, status: "ready", message: "", body: chart } : { heading, note: "", status: "empty", message: "No readings in this range.", body: null });
     }
   }
   return { kind: "timeSeries", sections, footnote: block.options.variables.length === 0 ? "Pick at least one variable." : "" };

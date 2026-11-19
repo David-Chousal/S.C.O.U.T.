@@ -18,7 +18,7 @@
 .sc-report-preview { display: grid; gap: var(--space-2); min-width: 0; }
 .sc-report-preview__bar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
 .sc-report-preview__scroll { min-width: 0; overflow-x: auto; padding: var(--space-6) 0; background: var(--surface-sunken); border-radius: var(--radius-sm); }
-.sc-report-pages { display: grid; justify-content: center; gap: var(--space-6); }
+.sc-report-pages { display: grid; justify-content: safe center; gap: var(--space-6); }
 /* Paper: light ink on white in either theme, at the page's exact size in CSS pixels. */
 .sc-report-page, .sc-report-measure { --bg: #ffffff; --surface: #ffffff; --surface-sunken: #f1f1f0; --ink: #2b2520; --ink-muted: #6f6760; --line: #ddd6d0; --line-strong: #867f78; --rail: #2b2520;
   color-scheme: light; box-sizing: border-box; background: #ffffff; color: var(--ink); }
@@ -54,7 +54,8 @@
 .sc-rb-block.is-hidden { opacity: .45; }
 .sc-rb-stack { display: grid; gap: 16px; }
 .sc-rb-section { display: grid; gap: 8px; break-inside: avoid; }
-.sc-rb-section h3 { margin: 0; font: 700 14px/20px var(--font-sans); }
+/* One line always, so a "(continued)" heading is the height that was measured. */
+.sc-rb-section h3 { margin: 0; font: 700 14px/20px var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-rb-section h3 small { margin-left: 8px; font: 400 11px/1 var(--font-sans); color: var(--ink-muted); }
 .sc-rb-muted { margin: 0; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
 .sc-rb-skeleton { width: 40%; color: transparent; background: var(--surface-sunken); border-radius: 2px; }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icon";
 import { BLOCK_INFO, createBlock, type BlockKind } from "@/lib/report/document";
 import type { BlockDrag } from "./use-block-drag";
@@ -36,11 +36,22 @@ export interface LibraryTab { id: string; label: string; content: ReactNode }
 export function LibraryPanel({ tabs, footer }: { tabs: LibraryTab[]; footer?: ReactNode }) {
   const [active, setActive] = useState(tabs[0]?.id);
   const current = tabs.find((t) => t.id === active) ?? tabs[0];
+  /** The WAI-ARIA tabs pattern: arrows move between tabs, Home and End go to the ends. */
+  const onKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    const at = tabs.findIndex((t) => t.id === current?.id);
+    const next = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tabs.length - 1 }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    const tab = tabs[(next + tabs.length) % tabs.length];
+    setActive(tab.id);
+    event.currentTarget.querySelector<HTMLButtonElement>(`[data-tab="${tab.id}"]`)?.focus();
+  };
   return (
     <>
-      <div className="sc-tabs" role="tablist" aria-label="Report library">
+      <div className="sc-tabs" role="tablist" aria-label="Report library" onKeyDown={onKey}>
         {tabs.map((tab) => (
-          <button key={tab.id} type="button" role="tab" className="sc-tab" aria-selected={tab.id === current?.id} onClick={() => setActive(tab.id)}>{tab.label}</button>
+          <button key={tab.id} type="button" role="tab" className="sc-tab" data-tab={tab.id} aria-selected={tab.id === current?.id}
+            tabIndex={tab.id === current?.id ? 0 : -1} onClick={() => setActive(tab.id)}>{tab.label}</button>
         ))}
       </div>
       <div role="tabpanel" aria-label={current?.label}>{current?.content}</div>

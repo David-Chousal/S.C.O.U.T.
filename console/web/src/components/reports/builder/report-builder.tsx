@@ -47,7 +47,7 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
   onLayoutsChanged = () => undefined, isAdmin = false }: ReportBuilderProps) {
   const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => start?.doc ?? plainStart(buoys.map((b) => b.buoy_id), now));
   const saving = useSavedReport({ doc, dispatch, startId: start?.reportId ?? null, layouts, onLayoutsChanged });
-  const { content, readings, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
+  const { content, failed, retry, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = doc.blocks.find((b) => b.id === selectedId) ?? null;
   const { area: dropArea, pointer: drag } = useBlockDrag(dispatch, setSelectedId);
@@ -80,8 +80,8 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         ]} />
       </aside>
       <div className="sc-report-stage">
-        {readings.failed > 0 && (
-          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
+        {failed && (
+          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={retry}>Try again</button>}>Some of this report&apos;s data did not load.</Banner>
         )}
         <ReportPreview content={content} pages={editPages} selectedId={selected?.id ?? null} onSelect={setSelectedId} canEdit={canEdit} dispatch={dispatch} drag={drag} dropArea={dropArea} />
         <MeasureColumn content={content} columnRef={column} />

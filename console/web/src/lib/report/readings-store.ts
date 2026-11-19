@@ -37,6 +37,7 @@ export async function readingsInRange(buoy: number, range: ResolvedRange,
     if (oneTimestamp) partial = true;
     to = oneTimestamp ? stepBack(oldest) : oldest;
   }
+  if (seen.size > MAX_REPORT_READINGS) return { rows: ordered(seen).slice(-MAX_REPORT_READINGS), truncated: true };
   return { rows: ordered(seen), truncated: partial };
 }
 

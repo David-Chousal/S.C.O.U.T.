@@ -34,6 +34,8 @@ export function ReportActions({ content, printPages, columns, canDownload, loadi
   const range = resolveRange(doc.variables.range, ctx.now, doc.variables.zone);
   const csv = csvColumns(doc, columns);
   const noBuoys = doc.variables.buoys.length === 0;
+  // Print and PDF draw whatever visible blocks there are, including ones with their own buoys.
+  const nothing = doc.blocks.every((b) => b.hidden);
   const donePrinting = useCallback(() => setBusy(null), []);
 
   async function run(kind: "csv" | "pdf", work: () => Promise<void>, failTitle: string, fallback: string) {
@@ -62,9 +64,9 @@ export function ReportActions({ content, printPages, columns, canDownload, loadi
   return (
     <>
       <Key size="sm" icon="export" disabled={!canDownload || noBuoys || csv.length === 0 || busy !== null} onClick={downloadCsv}>{busy === "csv" ? "Making…" : "CSV"}</Key>
-      <Key size="sm" icon="reports" disabled={noBuoys || loading || busy !== null}
+      <Key size="sm" icon="reports" disabled={nothing || loading || busy !== null}
         title={loading ? "Waiting for readings to load" : undefined} onClick={() => setBusy("print")}>Print</Key>
-      <Key size="sm" variant="primary" icon="export" disabled={noBuoys || loading || busy !== null}
+      <Key size="sm" variant="primary" icon="export" disabled={nothing || loading || busy !== null}
         title={loading ? "Waiting for readings to load" : undefined} onClick={downloadPdfFile}>{busy === "pdf" ? "Making PDF…" : "Download PDF"}</Key>
       {busy === "print" && <PrintRoot content={content} pages={printPages} onDone={donePrinting} />}
     </>

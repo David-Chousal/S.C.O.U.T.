@@ -26,6 +26,8 @@ export function InlineText({ block, dispatch }: InlineTextProps) {
     const el = area.current;
     const at = el ? el.selectionStart : block.options.text.length;
     set(`${block.options.text.slice(0, at)}${field}${block.options.text.slice(el ? el.selectionEnd : at)}`);
+    // Back to typing, just after the field, once React has written the new text.
+    window.requestAnimationFrame(() => { el?.focus(); el?.setSelectionRange(at + field.length, at + field.length); });
   };
   return (
     <div className="sc-rb-inline" onClick={(e) => e.stopPropagation()}>
