@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api/client";
 import { ApiError, type Buoy, type Reading } from "@/lib/api/types";
 import { variableLabel, VARIABLES } from "@/lib/variables";
-import { summarize } from "./report-stats";
+import { summarize } from "@/lib/report/stats";
 
 interface Choice { buoys: number[]; from: string; to: string; columns: string[] }
 

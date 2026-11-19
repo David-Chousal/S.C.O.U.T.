@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import { Banner } from "@/components/feedback/banner";
 import { useToast } from "@/components/feedback/toaster";
 import { Key } from "@/components/ui/key";
 import { api } from "@/lib/api/client";
 import type { Buoy } from "@/lib/api/types";
-import { DEFAULT_PAGE, type PageSetup } from "@/lib/report/page";
+import { createBlock, createDocument, type ReportDocument } from "@/lib/report/document";
 import { useReadingsStore } from "@/lib/report/readings-store";
 import { resolveRange, type ReportVariables } from "@/lib/report/variables";
-import { VARIABLES, variableLabel } from "@/lib/variables";
+import type { ViewContext } from "@/lib/report/views";
+import { VariablesPanel } from "./variables-panel";
 import { ReportPreview } from "./report-preview";
 import { ReportToolbar } from "./report-toolbar";
+import { useReportEditor } from "./use-report-editor";
 
-const DEFAULT_COLUMNS = ["temp_c", "turbidity_fau", "battery_v"];
 const DAY_MS = 24 * 3600 * 1000;
-const toggled = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
 interface ReportBuilderProps {
   buoys: Pick<Buoy, "buoy_id" | "label">[];
@@ -28,29 +29,38 @@ interface ReportBuilderProps {
   recent: ReactNode;
 }
 
-function defaultVariables(buoys: ReportBuilderProps["buoys"], now: number): ReportVariables {
+function startingDocument(buoys: ReportBuilderProps["buoys"], now: number): ReportDocument {
   const day = (ms: number) => new Date(ms).toISOString().slice(0, 10);
-  return { buoys: buoys.map((b) => b.buoy_id), range: { preset: "7d", from: day(now - 7 * DAY_MS), to: day(now) }, zone: "utc" };
+  const variables: ReportVariables = { buoys: buoys.map((b) => b.buoy_id), range: { preset: "7d", from: day(now - 7 * DAY_MS), to: day(now) }, zone: "utc" };
+  return createDocument(variables, [createBlock("summaryTable", "summary"), createBlock("readingsTable", "readings")]);
 }
+
+/** Every variable any visible block shows, in the Worker's order: what the CSV holds. */
+const csvColumns = (doc: ReportDocument, columns: string[]) =>
+  columns.filter((c) => doc.blocks.some((b) => !b.hidden && "variables" in b.options && b.options.variables.includes(c)));
 
 /** The Reports page as a builder: report-wide variables in the toolbar, the live paper preview in
  * the centre, and panels either side (docs/engineering/console-report-builder-plan.md). */
 export function ReportBuilder({ buoys, columns, canDownload, now, onCreated, recent }: ReportBuilderProps) {
   const { show } = useToast();
   const readings = useReadingsStore();
-  const [variables, setVariables] = useState(() => defaultVariables(buoys, now));
-  const [page, setPage] = useState<PageSetup>(DEFAULT_PAGE);
-  const [chosen, setChosen] = useState(() => DEFAULT_COLUMNS.filter((c) => columns.includes(c)));
+  const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => startingDocument(buoys, now));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const ordered = columns.filter((c) => chosen.includes(c));
-  const range = resolveRange(variables.range, now, variables.zone);
-  const ready = variables.buoys.length > 0 && ordered.length > 0 && range.from <= range.to;
-  const printHref = `/reports/print/?buoys=${variables.buoys.join(",")}&from=${range.from}&to=${range.to}&columns=${ordered.join(",")}`;
+  const range = resolveRange(doc.variables.range, now, doc.variables.zone);
+  const csv = csvColumns(doc, columns);
+  const ready = doc.variables.buoys.length > 0 && csv.length > 0 && range.from <= range.to;
+  const selected = doc.blocks.find((b) => b.id === selectedId) ?? null;
+  const ctx = useMemo<ViewContext>(() => ({
+    report: doc.variables, now, readings: readings.get,
+    buoyLabel: (id) => buoys.find((b) => b.buoy_id === id)?.label ?? `Buoy ${id}`,
+  }), [doc.variables, now, readings.get, buoys]);
+  const printHref = `/reports/print/?buoys=${doc.variables.buoys.join(",")}&from=${range.from}&to=${range.to}&columns=${csv.join(",")}`;
 
   async function downloadCsv() {
     setBusy(true);
     try {
-      const made = await api.createReport({ buoys: variables.buoys, from: range.from, to: range.to, columns: ordered });
+      const made = await api.createReport({ buoys: doc.variables.buoys, from: range.from, to: range.to, columns: csv });
       show({ tone: "ok", title: `Report ready: ${made.rows.toLocaleString("en-US")} readings`, detail: "The download link works for an hour." });
       onCreated(made.link);
     } catch (failure) {
@@ -62,29 +72,33 @@ export function ReportBuilder({ buoys, columns, canDownload, now, onCreated, rec
 
   const actions = (
     <>
+      <Key size="sm" iconOnly icon="undo" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={undo} />
+      <Key size="sm" iconOnly icon="redo" aria-label="Redo" title="Redo (⇧⌘Z)" disabled={!canRedo} onClick={redo} />
       <Key size="sm" icon="export" disabled={!canDownload || !ready || busy} onClick={downloadCsv}>{busy ? "Making…" : "CSV"}</Key>
       <a className={`sc-key sc-key--sm sc-key--primary${ready ? "" : " is-disabled"}`} href={ready ? printHref : undefined} target="_blank" rel="noopener">Printable report</a>
     </>
   );
+  const title = (
+    <input className="sc-report-bar__name" aria-label="Report title" value={doc.title} maxLength={80}
+      onChange={(e) => dispatch({ type: "setTitle", title: e.target.value })} />
+  );
 
   return (
     <div className="sc-report-builder">
-      <ReportToolbar title={<h2 className="sc-bay__title">Buoy report</h2>} buoys={buoys} variables={variables} onVariables={setVariables}
-        page={page} onPage={setPage} actions={actions} />
+      <ReportToolbar title={title} buoys={buoys} variables={doc.variables} onVariables={(variables) => dispatch({ type: "setVariables", variables })}
+        page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">{recent}</aside>
       <div className="sc-report-stage">
-        <ReportPreview buoys={buoys} picked={variables.buoys} range={range} zone={variables.zone} columns={ordered} page={page} readings={readings} />
+        {readings.failed > 0 && (
+          <Banner tone="failed" action={<button type="button" className="sc-link" onClick={readings.retryFailed}>Try again</button>}>Some readings did not load.</Banner>
+        )}
+        <ReportPreview doc={doc} ctx={ctx} selectedId={selectedId} onSelect={setSelectedId} />
       </div>
-      <aside className="sc-report-side sc-report-side--right" aria-label="Report options">
-        <fieldset className="sc-settings-choices">
-          <legend className="sc-label">Variables</legend>
-          {columns.map((c) => (
-            <label key={c} className="sc-row">
-              <input type="checkbox" checked={chosen.includes(c)} onChange={() => setChosen((now) => toggled(now, c))} />
-              {variableLabel(c)}{VARIABLES[c]?.unit ? ` (${VARIABLES[c].unit})` : ""}
-            </label>
-          ))}
-        </fieldset>
+      <aside className="sc-report-side sc-report-side--right" aria-label="Block options">
+        {selected && "variables" in selected.options
+          ? <VariablesPanel columns={columns} chosen={selected.options.variables}
+              onChange={(variables) => dispatch({ type: "update", id: selected.id, options: { variables } })} />
+          : <p className="sc-help">Click a block in the preview to change what it shows.</p>}
       </aside>
     </div>
   );
