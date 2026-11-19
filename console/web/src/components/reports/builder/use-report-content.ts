@@ -3,13 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "@/lib/api/client";
 import type { AlertHistoryItem, HeatStressView } from "@/lib/api/types";
-import type { ReportDocument } from "@/lib/report/document";
+import type { BlockKind, ReportDocument } from "@/lib/report/document";
 import { pageBox } from "@/lib/report/page";
 import { useReadingsStore } from "@/lib/report/readings-store";
 import { buildView, type BlockView, type ViewContext } from "@/lib/report/views";
 import type { Remote } from "@/lib/report/views/types";
 import type { PageContent } from "./report-pages";
 import { usePagination, type FlowItem } from "./use-pagination";
+
+/** Blocks drawn by TableUnit, which draws a slice of rows under a repeated header. */
+const ROW_SPLIT: BlockKind[] = ["summaryTable", "readingsTable", "buoyHealth", "alerts"];
 
 // Fit-width zoom rounds row heights up by a fraction of a pixel each; a little room keeps the last row on the page.
 const ZOOM_SLACK_PX = 8;
@@ -50,7 +53,7 @@ export function useReportContent(doc: ReportDocument, now: number, buoys: Report
     const view = buildView(b, ctx);
     return view ? [[b.id, view]] : [];
   })), [doc.blocks, ctx]);
-  const items: FlowItem[] = doc.blocks.map((b) => ({ id: b.id, pageBreak: b.kind === "pageBreak", hidden: b.hidden }));
+  const items: FlowItem[] = doc.blocks.map((b) => ({ id: b.id, pageBreak: b.kind === "pageBreak", hidden: b.hidden, rows: ROW_SPLIT.includes(b.kind) }));
   const pagination = usePagination(items, pageBox(doc.page).contentHeight - ZOOM_SLACK_PX, `${doc.page.size}${doc.page.orientation}|${doc.title}`, views);
   const content: PageContent = { doc, ctx, views };
   const loading = [...views.values()].some((v) => "sections" in v && v.sections.some((s) => s.status === "loading"));

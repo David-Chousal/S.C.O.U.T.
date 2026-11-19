@@ -72,7 +72,12 @@ export function BlockFrame({ block, selected, canEdit, overrideLabel, onSelect, 
       {first && selected && canEdit && <BlockTools block={block} dispatch={dispatch} onSelect={onSelect} />}
       {drag && (
         <button type="button" className="sc-rb-grip" aria-label={`Drag ${label} to move it`} title="Drag to move (or Alt+↑ / Alt+↓)"
-          onClick={(e) => e.stopPropagation()} onPointerDown={(e) => drag.start({ type: "bay", id: block.id }, block.kind, label, 12, e)}>
+          onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {
+            if (!e.altKey || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+            e.preventDefault();
+            e.stopPropagation();
+            dispatch({ type: "moveBy", id: block.id, delta: e.key === "ArrowUp" ? -1 : 1 });
+          }} onPointerDown={(e) => drag.start({ type: "bay", id: block.id }, block.kind, label, 12, e)}>
           <Icon name="drag" />
         </button>
       )}

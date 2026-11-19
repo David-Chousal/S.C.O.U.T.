@@ -57,8 +57,11 @@ export function ReportsBoard() {
   const canDownload = can(user.role, "reports.write");
   useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. The printable report works for everyone.`);
 
-  if (fleet.error || list.error) return <Banner tone="failed">{fleet.error || list.error}</Banner>;
-  if (!fleet.data || !list.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
+  // Only a first load that failed replaces the page; a later refresh that fails keeps the editor.
+  if (!fleet.data || !list.data) {
+    const error = fleet.error || list.error;
+    return error ? <Banner tone="failed">{error}</Banner> : <span className="sc-tag" aria-busy="true">Loading…</span>;
+  }
   return (
     <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} canEdit={canDownload} now={now}
       onCreated={(link) => { list.reload(); window.location.assign(link); }}

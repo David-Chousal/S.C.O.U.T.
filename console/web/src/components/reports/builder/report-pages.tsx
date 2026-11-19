@@ -61,8 +61,9 @@ export function ReportPages({ content, pages, frame = (_, children) => children 
           const block = doc.blocks.find((b) => b.id === blockId);
           const view = views.get(blockId);
           if (!block || !view) return null;
-          const units = fragments.map((f) => <div key={`${f.unit}-${f.rows?.[0] ?? 0}`} className="sc-report-unit"><BlockUnit view={view} unit={f.unit} rows={f.rows} /></div>);
-          return <div key={`${blockId}-${i}`} className="sc-report-block">{frame(block, units, firsts.has(`${n}-${i}`))}</div>;
+          // Measurements can lag a view by one render: a unit the view no longer has is skipped.
+          const units = fragments.filter((f) => f.unit < unitCount(view)).map((f) => <div key={`${f.unit}-${f.rows?.[0] ?? 0}`} className="sc-report-unit"><BlockUnit view={view} unit={f.unit} rows={f.rows} /></div>);
+          return <div key={`${blockId}-${fragments[0].unit}-${fragments[0].rows?.[0] ?? 0}`} className="sc-report-block">{frame(block, units, firsts.has(`${n}-${i}`))}</div>;
         })}
       </div>
       <footer className="sc-report-page__foot">Page {n + 1} of {pages.length}</footer>

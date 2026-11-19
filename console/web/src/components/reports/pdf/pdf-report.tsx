@@ -2,6 +2,7 @@ import type { Page as ReportPage } from "@/lib/report/paginate";
 import { pageBox, PT_PER_PX } from "@/lib/report/page";
 import type { PageContent } from "../builder/report-pages";
 import { Document, Page, Text, View } from "./primitives";
+import { unitCount } from "../blocks/block-units";
 import { PdfBlockUnit } from "./pdf-units";
 import { S } from "./styles";
 
@@ -22,7 +23,7 @@ export function PdfPageBody({ content, page }: { content: PageContent; page: Rep
         if (!view) return null;
         return (
           <View key={i} style={S.block}>
-            {group.map((f, j) => <PdfBlockUnit key={j} view={view} unit={f.unit} rows={f.rows} />)}
+            {group.filter((f) => f.unit < unitCount(view)).map((f, j) => <PdfBlockUnit key={j} view={view} unit={f.unit} rows={f.rows} />)}
           </View>
         );
       })}
