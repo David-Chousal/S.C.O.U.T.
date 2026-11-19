@@ -59,10 +59,10 @@ budget does not record what is on hand. Lab stock (cable glands) is free from Na
 | 8 | Conformal coating (line 34) | 1 | $20.00 | Amazon | PCB protection |
 | 9 | Desiccant packs, 20 pack (line 35) | 1 | $10.00 | Amazon | Inside the electronics bay |
 | 10 | Marine sealant (line 37) | 2 | $44.00 | West Marine | Joints and penetrations |
-| 11 | O-rings AS568-043 silicone, 10 pack (line 40) | 2 | $24.00 | McMaster-Carr | Housing face seal |
-| 12 | O-rings AS568-137 silicone, 10 pack (line 41) | 2 | $28.00 | McMaster-Carr | Sensor pod face seal |
+| 11 | O-rings AS568-043 silicone, 10 pack (line 40) | 2 | $24.00 | McMaster-Carr | **Hold.** The housing seal is now AS568-247 and its size is unreconciled ([facts.md](../hub/facts.md)); confirm ring and groove fit before requesting any housing seal |
+| 12 | O-rings AS568-137 silicone, 10 pack (line 41) | 2 | $28.00 | McMaster-Carr | **Hold.** The pod seal in use is an Everbilt ring (OD 2-5/8 in, ID 2-1/4 in, 3/16 in cross-section), not AS568-137 ([facts.md](../hub/facts.md)); confirm its material and quantity, then request that ring instead |
 | 13 | SUNLU PETG filament refill, grey, 1.75 mm, 4 kg (line 38) | 5 | $250.00 | [Amazon B0FG7SKQNQ](https://www.amazon.com/dp/B0FG7SKQNQ) | Budget's price estimate; verify. About 3 builds plus failed prints. The budget notes Jes already ordered about $40 of filament via the department on 2026-10-09 |
-| | **Tier 1 total** | | **$657.00** | | |
+| | **Tier 1 total** | | **$657.00** | | Includes $52 for the two held O-ring lines (11 and 12); the figure changes once the correct rings are confirmed |
 
 ### Tier 1b: confirm before requesting
 
@@ -104,9 +104,9 @@ allowances that Quartzy does not order as lines. The real items:
 
 | Item | Est. | Phase |
 |---|---|---|
-| Flotation foam, 2 lb closed-cell PU (line 39) | $280.00 | Foam soak, Phase 3 |
+| Flotation foam, 2 lb closed-cell PU (line 39) | $280.00 | **Pending:** foam sourcing is on hold; the printed float replaced foam ([SCO-166](https://linear.app/scout1/issue/SCO-166)). Counted until a foam decision is made |
 | Sea Hawk antifouling and supplies (lines 48 and 49) | $115.00 | Phase 3 |
-| Ballast arm and mooring hardware: pipe, rail mount, backing plate, bolts, lead, pad-eye, anchor, rope, shackles, swivel (lines 50 to 59) | $805.57 | Phases 4 to 6; depends on the current buoy design |
+| Ballast arm and mooring hardware: pipe, rail mount, backing plate, bolts, lead, pad-eye, anchor, rope, shackles, swivel (lines 50 to 59) | $805.57 | Phases 4 to 6. **Mixed:** lead and the ballast arm are obsolete (the printed float has no ballast, [SCO-136](https://linear.app/scout1/issue/SCO-136) canceled); pad-eye, anchor, rope, shackles and swivel are current. Not yet split by line, so the full amount is counted |
 | Zinc anodes, field deployment kit (lines 36 and 64) | $87.00 | Phase 6 |
 | Spares: extra Feather, sensors, turbidity kit parts, USB and bench supplies | about $240 | As needed |
 

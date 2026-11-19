@@ -9,13 +9,13 @@ import { timeTicks } from "./plot";
  * its colour when others are filtered out). The order was chosen with the dataviz validator:
  * Tideline's series-3 and series-4 next to each other fail deuteranopia (ΔE 4.8); this order
  * passes adjacent-pair CVD separation (ΔE ≥ 9) in both themes. */
-const SERIES_ORDER = [1, 3, 5, 2, 4];
+export const SERIES_ORDER = [1, 3, 5, 2, 4];
 export const seriesColor = (index: number) => `var(--series-${SERIES_ORDER[index % SERIES_ORDER.length]})`;
 
 const HEIGHT = 220;
 const PAD = { top: 12, right: 72, bottom: 24, left: 44 };
 // A buoy transmits 1-3 times a day (SCO-198), so only silence past a day and a bit is a real gap.
-const GAP_MS = 26 * 3600 * 1000;
+export const GAP_MS = 26 * 3600 * 1000;
 
 interface Series { buoy: Pick<Buoy, "buoy_id" | "label">; index: number; points: { t: number; v: number }[] }
 
@@ -28,7 +28,7 @@ function seriesFor(buoys: Pick<Buoy, "buoy_id" | "label">[], readings: Record<nu
 }
 
 /** A path that lifts the pen across gaps of more than 26 hours, so a silent buoy shows as a gap. */
-function path(points: { t: number; v: number }[], x: (t: number) => number, y: (v: number) => number): string {
+export function path(points: { t: number; v: number }[], x: (t: number) => number, y: (v: number) => number): string {
   return points.map((p, i) => `${i === 0 || p.t - points[i - 1].t > GAP_MS ? "M" : "L"}${x(p.t).toFixed(1)},${y(p.v).toFixed(1)}`).join("");
 }
 

@@ -21,7 +21,9 @@ export const BUDGET = Object.freeze({
 
 /** Prefix → days until the bucket's lifecycle rule deletes it (must match the rules set with
  * `wrangler r2 bucket lifecycle`; see console/README.md). */
-export const PREFIX_DAYS = Object.freeze({ "backups/": 35, "reports/": 2 });
+// report-images/ (SCO-317) needs its own bucket rule for 365 days; without it the catch-all rule
+// deletes images after 60 (console/README.md, "Report images").
+export const PREFIX_DAYS = Object.freeze({ "backups/": 35, "reports/": 2, "report-images/": 365 });
 
 const month = (now) => new Date(now).toISOString().slice(0, 7);
 

@@ -22,6 +22,7 @@ import "./components/login.css";
 import "./components/connections.css";
 import "./components/settings.css";
 import "./components/console.css";
+import "./components/report-builder.css";
 import "./components/guide.css";
 import "./components/layout-editing.css";
 import "./components/overview.css";

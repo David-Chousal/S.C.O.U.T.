@@ -12,6 +12,7 @@
     "tokens": "node scripts/build-tokens.mjs"
   },
   "dependencies": {
+    "@react-pdf/renderer": "4.9.0",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"

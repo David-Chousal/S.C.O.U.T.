@@ -30,6 +30,8 @@ import {
   type Team,
   type TokenList,
 } from "./types";
+import type { ReportDocument } from "@/lib/report/document";
+import type { SavedLayout } from "@/lib/report/saved";
 import type { BayConfig, SavedView } from "../dashboard/layout";
 
 let csrfToken = "";
@@ -62,6 +64,25 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
   }
   return payload as T;
 }
+
+/** A report image as its raw bytes (worker/report-images.js): PNG or JPEG, at most 1 MB. */
+async function uploadImage(file: Blob): Promise<{ id: string }> {
+  let response: Response;
+  try {
+    response = await fetch("/api/report-images", {
+      method: "POST", body: file, credentials: "same-origin",
+      headers: { Accept: "application/json", "Content-Type": file.type || "application/octet-stream", "X-CSRF-Token": csrfToken },
+    });
+  } catch {
+    throw new ApiError(0, "Can't reach the console. Check your connection and try again.");
+  }
+  const payload = (await response.json().catch(() => ({}))) as { id?: string; error?: string };
+  if (!response.ok || !payload.id) throw new ApiError(response.status, payload.error ?? `The console answered ${response.status}.`);
+  return { id: payload.id };
+}
+
+/** Where the console serves a report image. */
+export const reportImageUrl = (id: string) => `/api/report-images/${encodeURIComponent(id)}`;
 
 /** Each `event:`/`data:` block of a text/event-stream body, as it arrives. */
 async function readEvents(body: ReadableStream<Uint8Array>, onEvent: (event: FredEvent) => void): Promise<void> {
@@ -153,6 +174,15 @@ export const api = {
   saveDashboard: (id: string, bays: BayConfig[]) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}`, { bays }),
   deleteDashboard: (id: string) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}/delete`),
   reports: () => call<ReportList>("GET", "/api/reports"),
+  uploadReportImage: uploadImage,
+  reportLayouts: () => call<{ layouts: SavedLayout[] }>("GET", "/api/report-layouts"),
+  createReportLayout: (body: { kind: SavedLayout["kind"]; name: string; shared: boolean; doc: ReportDocument }) =>
+    call<{ id: string }>("POST", "/api/report-layouts", body),
+  saveReportLayout: (id: string, body: { name?: string; shared?: boolean; doc?: ReportDocument }) =>
+    call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}`, body),
+  deleteReportLayout: (id: string) => call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}/delete`),
+  setDefaultTemplate: (id: string, isDefault: boolean) =>
+    call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}/default`, { is_default: isDefault }),
   createReport: (request: ReportRequest) => call<{ id: string; link: string; rows: number }>("POST", "/api/reports", request),
   reportLink: (id: string) => call<{ link: string }>("POST", `/api/reports/${encodeURIComponent(id)}/link`),
   readingsBetween: (buoyId: number, from: string, to: string) =>
