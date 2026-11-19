@@ -30,8 +30,10 @@ function dayEdge(day: string, end: boolean, zone: ZoneChoice): number {
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 /** A custom range whose two days are real calendar days. */
-export const isValidCustom = (range: ReportRange) =>
-  DAY.test(range.from) && DAY.test(range.to) && Number.isFinite(Date.parse(`${range.from}T00:00:00Z`)) && Number.isFinite(Date.parse(`${range.to}T00:00:00Z`));
+/** A real calendar day: 2026-02-31 parses (as March 3) but does not come back the same. */
+const isDay = (day: string) => DAY.test(day) && Number.isFinite(Date.parse(`${day}T00:00:00Z`)) && new Date(`${day}T00:00:00Z`).toISOString().slice(0, 10) === day;
+/** A custom range whose two days are real calendar days, the first not after the last. */
+export const isValidCustom = (range: ReportRange) => isDay(range.from) && isDay(range.to) && range.from <= range.to;
 
 /** The range as API timestamps. Presets count back from `now`; a custom range covers whole days.
  * A custom range with a missing or invalid day falls back to the last 7 days rather than throwing. */

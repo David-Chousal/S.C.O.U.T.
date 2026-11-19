@@ -48,7 +48,8 @@ export function paginate(blocks: MeasuredBlock[], pageHeight: number, gaps: Gaps
       splitTable(block.id, index, unit.split, { room, newPage, place: (f, h) => place(f, h, gap), pageHeight });
     });
   }
-  return pages;
+  // A page break at the very end opens nothing after it.
+  return pages.length > 1 && pages[pages.length - 1].length === 0 ? pages.slice(0, -1) : pages;
 }
 
 interface Flow { room: () => number; newPage: () => void; place: (fragment: Fragment, height: number) => void; pageHeight: number }

@@ -17,6 +17,8 @@ export interface TableView {
   headers: string[];
   /** Per column: right-aligned numbers. */
   numeric: boolean[];
+  /** Per column: relative width. Screen and PDF both lay columns out by these, so rows wrap alike. */
+  widths: number[];
   rows: string[][];
 }
 

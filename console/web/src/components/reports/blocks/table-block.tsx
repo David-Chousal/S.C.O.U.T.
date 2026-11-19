@@ -6,8 +6,10 @@ type RowSlice = [number, number] | undefined;
 /** A view-model table on paper; `rows` draws only that slice, under the same header. */
 export function ReportTable({ table, rows }: { table: TableView; rows?: RowSlice }) {
   const shown = rows ? table.rows.slice(rows[0], rows[1]) : table.rows;
+  const total = table.widths.reduce((a, b) => a + b, 0) || 1;
   return (
     <table className="sc-rb-table">
+      <colgroup>{table.widths.map((w, i) => <col key={i} style={{ width: `${(100 * w) / total}%` }} />)}</colgroup>
       <thead><tr>{table.headers.map((h, i) => <th key={i} scope="col" className={table.numeric[i] ? "n" : undefined}>{h}</th>)}</tr></thead>
       <tbody>
         {shown.map((row, r) => (
