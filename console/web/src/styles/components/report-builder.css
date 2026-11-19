@@ -14,16 +14,34 @@
 .sc-report-side { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
 .sc-report-side--left { grid-area: left; }
 .sc-report-side--right { grid-area: right; }
-.sc-report-stage { grid-area: stage; display: grid; justify-items: center; gap: var(--space-6); min-width: 0; padding: var(--space-6) var(--space-4); background: var(--surface-sunken); border-radius: var(--radius-sm); }
-.sc-report-paper { --bg: #ffffff; --surface: #ffffff; --surface-sunken: #f1f1f0; --ink: #2b2520; --ink-muted: #6f6760; --line: #ddd6d0; --line-strong: #867f78; --rail: #2b2520;
-  color-scheme: light; box-sizing: border-box; display: grid; gap: var(--space-6); align-content: start; padding: 48px; background: #ffffff; color: var(--ink); box-shadow: var(--shadow-pop); overflow-x: auto; }
-.sc-report-paper .sc-table thead th { position: static; }
+.sc-report-stage { grid-area: stage; display: grid; gap: var(--space-2); min-width: 0; }
+.sc-report-preview { display: grid; gap: var(--space-2); min-width: 0; }
+.sc-report-preview__bar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.sc-report-preview__scroll { min-width: 0; overflow-x: auto; padding: var(--space-6) 0; background: var(--surface-sunken); border-radius: var(--radius-sm); }
+.sc-report-pages { display: grid; justify-content: center; gap: var(--space-6); }
+/* Paper: light ink on white in either theme, at the page's exact size in CSS pixels. */
+.sc-report-page, .sc-report-measure { --bg: #ffffff; --surface: #ffffff; --surface-sunken: #f1f1f0; --ink: #2b2520; --ink-muted: #6f6760; --line: #ddd6d0; --line-strong: #867f78; --rail: #2b2520;
+  color-scheme: light; box-sizing: border-box; background: #ffffff; color: var(--ink); }
+.sc-report-page { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) 24px; padding: 48px; box-shadow: var(--shadow-pop); overflow: hidden; }
+.sc-report-page__body { display: flex; flex-direction: column; gap: 24px; min-height: 0; }
+.sc-report-page__foot { align-self: end; text-align: right; color: var(--ink-muted); font: 400 9px/12px var(--font-mono); }
+.sc-report-block { display: block; }
+.sc-report-block > .sc-rb-block, .sc-report-block { display: flex; flex-direction: column; gap: 16px; }
+.sc-report-unit { display: flow-root; }
+.sc-report-measure { position: absolute; left: -10000px; top: 0; visibility: hidden; pointer-events: none; }
+.sc-report-measure [data-m-unit] { display: flow-root; }
+.sc-report-print-root { display: none; }
+.sc-report-page .sc-print__head, .sc-report-measure .sc-print__head { padding-bottom: 12px; }
+.sc-report-page .sc-print__head h1, .sc-report-measure .sc-print__head h1 { font: 700 22px/28px var(--font-sans); }
+.sc-report-page .sc-print__head p, .sc-report-measure .sc-print__head p { font: 400 11px/16px var(--font-sans); }
+@media print {
+  html.is-printing-report body > :not(.sc-report-print-root) { display: none !important; }
+  html.is-printing-report .sc-report-print-root { display: block; }
+  .sc-report-print-root .sc-report-page { box-shadow: none; break-after: page; }
+  .sc-report-print-root .sc-report-page:last-child { break-after: auto; }
+}
 @container page (max-width: 1100px) {
   .sc-report-builder { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "stage" "right" "left"; }
-}
-@container page (max-width: 600px) {
-  .sc-report-stage { padding: var(--space-2); }
-  .sc-report-paper { padding: 16px; }
 }
 /* Report blocks on paper. One type scale, mirrored in points by the PDF renderer (1 px = 0.75 pt). */
 .sc-report-bar__name { width: 100%; max-width: 360px; padding: 2px 4px; border: 1px solid transparent; border-radius: var(--radius-sm); background: none; color: var(--ink); font: 700 18px/24px var(--font-sans); }
