@@ -30,6 +30,8 @@ import {
   type Team,
   type TokenList,
 } from "./types";
+import type { ReportDocument } from "@/lib/report/document";
+import type { SavedLayout } from "@/lib/report/saved";
 import type { BayConfig, SavedView } from "../dashboard/layout";
 
 let csrfToken = "";
@@ -153,6 +155,14 @@ export const api = {
   saveDashboard: (id: string, bays: BayConfig[]) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}`, { bays }),
   deleteDashboard: (id: string) => call<{ ok: true }>("POST", `/api/dashboards/${encodeURIComponent(id)}/delete`),
   reports: () => call<ReportList>("GET", "/api/reports"),
+  reportLayouts: () => call<{ layouts: SavedLayout[] }>("GET", "/api/report-layouts"),
+  createReportLayout: (body: { kind: SavedLayout["kind"]; name: string; shared: boolean; doc: ReportDocument }) =>
+    call<{ id: string }>("POST", "/api/report-layouts", body),
+  saveReportLayout: (id: string, body: { name?: string; shared?: boolean; doc?: ReportDocument }) =>
+    call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}`, body),
+  deleteReportLayout: (id: string) => call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}/delete`),
+  setDefaultTemplate: (id: string, isDefault: boolean) =>
+    call<{ ok: true }>("POST", `/api/report-layouts/${encodeURIComponent(id)}/default`, { is_default: isDefault }),
   createReport: (request: ReportRequest) => call<{ id: string; link: string; rows: number }>("POST", "/api/reports", request),
   reportLink: (id: string) => call<{ link: string }>("POST", `/api/reports/${encodeURIComponent(id)}/link`),
   readingsBetween: (buoyId: number, from: string, to: string) =>

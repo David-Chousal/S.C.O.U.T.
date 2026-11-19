@@ -19,6 +19,7 @@ import {
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
+import { createReportLayout, deleteReportLayout, listReportLayouts, saveReportLayout, setDefaultTemplate } from "./report-layouts.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { heatStressView } from "./heat-stress-view.js";
 import { setMmm } from "./mmm.js";
@@ -39,10 +40,41 @@ import {
 
 const MAX_JSON_BYTES = 16_384;
 
-async function readJson(request) {
+/** Saved report documents (worker/report-layouts.js) may be up to 64 KB; everything else 16 KB. */
+const REPORT_JSON_BYTES = 64 * 1024 + 1024;
+const jsonLimit = (path) => (path.startsWith("/api/report-layouts") ? REPORT_JSON_BYTES : MAX_JSON_BYTES);
+
+/** The body as text, read a chunk at a time and abandoned once it passes `limit` bytes, so an
+ * oversized request is never buffered whole. Null when it is too large. */
+async function readCapped(request, limit) {
+  if (Number(request.headers.get("Content-Length") || 0) > limit) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks = [];
+  let size = 0;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(size);
+  let at = 0;
+  for (const chunk of chunks) {
+    all.set(chunk, at);
+    at += chunk.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
+async function readJson(request, limit = MAX_JSON_BYTES) {
   if (!(request.headers.get("Content-Type") || "").startsWith("application/json")) return null;
-  const text = await request.text();
-  if (text.length > MAX_JSON_BYTES) return null;
+  const text = await readCapped(request, limit);
+  if (text === null) return null;
   try {
     const body = JSON.parse(text || "{}");
     return body && typeof body === "object" && !Array.isArray(body) ? body : null;
@@ -137,6 +169,8 @@ async function reads(env, path, session, url) {
       return json(await alertsView(env, session.user));
     case "/api/dashboards":
       return json({ dashboards: await listDashboards(env.DB, session.user.id) });
+    case "/api/report-layouts":
+      return json({ layouts: await listReportLayouts(env.DB, session.user.id) });
     case "/api/reports":
       return json({ reports: await listReports(env.DB, session.user.id), columns: REPORT_COLUMNS });
     case "/api/tokens":
@@ -189,6 +223,10 @@ const WRITES = [
   [/^\/api\/dashboards$/, "dashboards.write", (db, b, m, a) => createDashboard(db, a, b)],
   [/^\/api\/dashboards\/([\w-]{1,64})\/delete$/, "dashboards.write", (db, b, m, a) => deleteDashboard(db, a, m[1])],
   [/^\/api\/dashboards\/([\w-]{1,64})$/, "dashboards.write", (db, b, m, a) => saveDashboard(db, a, m[1], b.bays)],
+  [/^\/api\/report-layouts$/, "reports.write", (db, b, m, a) => createReportLayout(db, a, b)],
+  [/^\/api\/report-layouts\/([\w-]{1,64})\/delete$/, "reports.write", (db, b, m, a) => deleteReportLayout(db, a, m[1])],
+  [/^\/api\/report-layouts\/([\w-]{1,64})\/default$/, "reports.default", (db, b, m, a) => setDefaultTemplate(db, a, m[1], b.is_default === true)],
+  [/^\/api\/report-layouts\/([\w-]{1,64})$/, "reports.write", (db, b, m, a) => saveReportLayout(db, a, m[1], b)],
   [/^\/api\/reports$/, "reports.write", (db, b, m, a, env) => createReport(env, a, b)],
   [/^\/api\/reports\/([\w-]{1,64})\/link$/, "reports.write", (db, b, m, a, env) => newLink(env, a, m[1])],
   [/^\/api\/tokens$/, "tokens.write", (db, b, m, a) => createToken(db, a, b)],
@@ -244,8 +282,8 @@ export async function handleApi(request, env, path) {
   let body = {};
   if (request.method === "POST") {
     if (!sameOrigin(request, env.APP_URL)) return apiError("Requests must come from the console itself.", 403);
-    body = await readJson(request);
-    if (body === null) return apiError("Send a JSON object of at most 16 KB.", 415);
+    body = await readJson(request, jsonLimit(path));
+    if (body === null) return apiError(`Send a JSON object of at most ${Math.round(jsonLimit(path) / 1024)} KB.`, 415);
   } else if (request.method !== "GET") {
     return apiError("method not allowed", 405);
   }

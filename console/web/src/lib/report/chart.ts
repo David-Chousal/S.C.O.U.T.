@@ -44,10 +44,14 @@ const near = (other: ChartPoint | undefined, point: ChartPoint) => other !== und
 
 /** Null when there is nothing to draw: no series has a point. */
 export function chartGeometry({ width, height, from, to, series, references = [], digits, floor }: ChartInput): ChartGeometry | null {
-  const values = series.flatMap((s) => s.points.map((p) => p.v));
-  if (values.length === 0) return null;
-  const all = [...values, ...references.map((r) => r.value), ...(floor === undefined ? [] : [floor])];
-  const [lo, hi] = padded([Math.min(...all), Math.max(...all)]);
+  if (!series.some((s) => s.points.length > 0)) return null;
+  // A loop, not Math.min(...values): a combined chart can hold 80,000 points, past the argument limit.
+  let [min, max] = [Infinity, -Infinity];
+  const see = (v: number) => { if (v < min) min = v; if (v > max) max = v; };
+  series.forEach((s) => s.points.forEach((p) => see(p.v)));
+  references.forEach((r) => see(r.value));
+  if (floor !== undefined) see(floor);
+  const [lo, hi] = padded([min, max]);
   const y0 = floor === undefined ? lo : Math.max(floor, lo);
   const [left, right, top, bottom] = [PAD.left, width - PAD.right, PAD.top, height - PAD.bottom];
   const x = (t: number) => left + ((t - from) / (to - from || 1)) * (right - left);

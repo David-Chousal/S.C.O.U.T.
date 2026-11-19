@@ -44,6 +44,7 @@ function PdfSection<B>({ section, children }: { section: BuoySection<B>; childre
 }
 
 export function PdfKeyFigures({ view, unit }: { view: KeyFiguresView; unit: number }) {
+  if (!view.sections[unit]) return null;
   return (
     <PdfSection section={view.sections[unit]}>
       {(tiles) => (

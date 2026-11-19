@@ -49,7 +49,7 @@ describe("Outline", () => {
 
 test("arrow keys move between the library's tabs", async () => {
   renderBuilder();
-  screen.getByRole("tab", { name: "Blocks" }).focus();
+  await userEvent.click(screen.getByRole("tab", { name: "Blocks" }));
   await userEvent.keyboard("{ArrowRight}");
   expect(document.activeElement?.textContent).toBe("Outline");
   expect(screen.getByRole("list", { name: "Outline" })).toBeDefined();

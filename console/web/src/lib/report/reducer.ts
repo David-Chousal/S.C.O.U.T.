@@ -18,7 +18,9 @@ export type ReportAction =
   | { type: "moveBy"; id: string; delta: number }
   | { type: "replace"; document: ReportDocument };
 
-export type HistoryAction = ReportAction | { type: "undo" } | { type: "redo" };
+/** `reset` starts a fresh history: opening a saved report is not undoable, so undo can never put
+ * one report's document under another report's Save. */
+export type HistoryAction = ReportAction | { type: "undo" } | { type: "redo" } | { type: "reset"; document: ReportDocument };
 
 export interface History {
   past: ReportDocument[];
@@ -88,6 +90,7 @@ function coalesceKey(action: ReportAction): string | null {
 export const initialHistory = (present: ReportDocument): History => ({ past: [], present, future: [], lastKey: null });
 
 export function historyReducer(history: History, action: HistoryAction): History {
+  if (action.type === "reset") return initialHistory(action.document);
   if (action.type === "undo") {
     const previous = history.past.at(-1);
     return previous ? { past: history.past.slice(0, -1), present: previous, future: [history.present, ...history.future], lastKey: null } : history;

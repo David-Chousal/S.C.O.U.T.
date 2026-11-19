@@ -14,6 +14,7 @@ const NEEDS = {
   "settings.write": "member",
   "tokens.write": "member",
   "reports.write": "member",
+  "reports.default": "admin",
   "dashboards.write": "member",
   "alerts.write": "member",
   "buoys.add": "admin",

@@ -1,10 +1,12 @@
-// Documents the screen-versus-PDF text test renders both ways. Step 8 adds the built-in
-// templates, so every template is checked too.
+// Documents the screen-versus-PDF text test renders both ways: every built-in template, plus
+// documents that between them hold every block kind and option.
 import { createBlock, createDocument, type ReportDocument } from "@/lib/report/document";
+import { BUILT_IN_TEMPLATES, builtInDocument } from "@/lib/report/templates";
 
 const VARIABLES = { buoys: [1, 2, 3, 4], range: { preset: "7d" as const, from: "", to: "" }, zone: "utc" as const };
 
 export const SAMPLE_DOCUMENTS: ReportDocument[] = [
+  ...BUILT_IN_TEMPLATES.map((t) => builtInDocument(t, VARIABLES)),
   createDocument(VARIABLES, [createBlock("title", "t"), createBlock("summaryTable", "s"), createBlock("readingsTable", "r")], "Default report"),
   createDocument(VARIABLES, [
     { ...createBlock("readingsTable", "h"), options: { variables: ["temp_c", "ndsi_e4"], sampling: "hourly", rowCap: 20 } },
