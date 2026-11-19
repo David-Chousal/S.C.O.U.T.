@@ -13,6 +13,11 @@ describe("reportReducer", () => {
     expect(ids(reportReducer(start, { type: "add", block: createBlock("divider", "c"), after: "a" }))).toEqual(["a", "c", "b"]);
   });
 
+  test("add at an index puts the block there", () => {
+    const start = doc(createBlock("divider", "a"), createBlock("divider", "b"));
+    expect(ids(reportReducer(start, { type: "add", block: createBlock("text", "c"), at: 1 }))).toEqual(["a", "c", "b"]);
+  });
+
   test("move and moveBy reorder without losing a block, and stop at the ends", () => {
     const start = doc(createBlock("divider", "a"), createBlock("divider", "b"), createBlock("divider", "c"));
     expect(ids(reportReducer(start, { type: "move", id: "a", to: 2 }))).toEqual(["b", "c", "a"]);

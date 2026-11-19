@@ -6,13 +6,15 @@ import { paginate, type Gaps, type MeasuredBlock, type MeasuredUnit, type Page }
 /** The gaps the page CSS puts between blocks and between a block's units (report-builder.css). */
 export const PAGE_GAPS: Gaps = { block: 24, unit: 16 };
 
-export interface FlowItem { id: string; pageBreak: boolean; hidden: boolean }
+/** `rows`: the block's renderer can draw a slice of its table rows (TableUnit), so it may split. */
+export interface FlowItem { id: string; pageBreak: boolean; hidden: boolean; rows: boolean }
 
 const height = (el: Element) => el.getBoundingClientRect().height;
 
 /** A unit's height, and for a table its header and row heights so it can split by rows. */
-function measureUnit(el: HTMLElement): MeasuredUnit {
+function measureUnit(el: HTMLElement, splittable: boolean): MeasuredUnit {
   const total = height(el);
+  if (!splittable) return { height: total };
   const rows = [...el.querySelectorAll("tbody tr")].map(height);
   if (rows.length < 2) return { height: total };
   return { height: total, split: { head: total - rows.reduce((a, b) => a + b, 0), rows } };
@@ -23,7 +25,7 @@ function measure(column: HTMLElement, items: FlowItem[]): MeasuredBlock[] {
   return items.map((item) => ({
     id: item.id,
     pageBreak: item.pageBreak,
-    units: [...(blocks.get(item.id)?.children ?? [])].filter((el): el is HTMLElement => el instanceof HTMLElement && "mUnit" in el.dataset).map(measureUnit),
+    units: [...(blocks.get(item.id)?.children ?? [])].filter((el): el is HTMLElement => el instanceof HTMLElement && "mUnit" in el.dataset).map((el) => measureUnit(el, item.rows)),
   }));
 }
 

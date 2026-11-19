@@ -122,3 +122,22 @@
 .sc-rb-lib-item { width: 100%; text-align: left; background: none; border-left: 0; border-right: 0; border-top: 0; color: var(--ink); cursor: pointer; }
 .sc-rb-lib-item:hover:not(:disabled) { background: var(--surface-sunken); }
 .sc-rb-lib-item:disabled { opacity: .5; cursor: not-allowed; }
+/* Drag (step 7): the dashboard's ghost (layout-editing.css), a grip on each block, and a drop line. */
+.sc-rb-grip { position: absolute; top: 0; left: -30px; display: none; place-items: center; width: 22px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-muted); cursor: grab; touch-action: none; }
+.sc-rb-block:hover > .sc-rb-grip, .sc-rb-block.is-selected > .sc-rb-grip, .sc-rb-grip:focus-visible { display: grid; }
+.sc-rb-block.is-lifted { opacity: .35; }
+.sc-rb-block.is-drop-before::before, .sc-rb-block.is-drop-after::after { content: ""; position: absolute; left: -8px; right: -8px; height: 3px; border-radius: 2px; background: var(--accent); }
+.sc-rb-block.is-drop-before::before { top: -14px; }
+.sc-rb-block.is-drop-after::after { bottom: -14px; }
+.sc-report-pages.is-dragging-over { cursor: grabbing; }
+.sc-lib__item--drag { cursor: grab; touch-action: none; }
+.sc-rb-outline { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.sc-rb-outline li { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-1); }
+.sc-rb-outline li.is-lifted { opacity: .4; }
+.sc-rb-outline li.is-drop-before::before { content: ""; position: absolute; top: -2px; left: 0; right: 0; height: 3px; border-radius: 2px; background: var(--accent); }
+.sc-rb-outline__grip { display: grid; place-items: center; width: 20px; color: var(--ink-muted); cursor: grab; touch-action: none; }
+.sc-rb-outline__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--space-2); min-width: 0; padding: var(--space-2); border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink); text-align: left; font: 400 13px/18px var(--font-sans); cursor: pointer; }
+.sc-rb-outline__row:hover { background: var(--surface-sunken); }
+.sc-rb-outline__row[aria-current="true"] { background: var(--accent-soft); }
+.sc-rb-outline__row strong { font-weight: 500; }
+.sc-rb-outline__row span:not(.sc-rb-tag) { color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
