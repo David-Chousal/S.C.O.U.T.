@@ -14,12 +14,11 @@ export function PdfTitle({ view }: { view: TitleView }) {
   );
 }
 
-export function PdfTextBlock({ view }: { view: TextView }) {
-  const paragraphs = view.paragraphs.length ? view.paragraphs : [""];
+export function PdfTextBlock({ view, unit }: { view: TextView; unit: number }) {
   const style = view.style === "heading" ? T.h2 : view.style === "subheading" ? T.h3x : T.p;
   return (
     <View style={view.style === "callout" ? [T.text, T.callout] : T.text}>
-      {paragraphs.map((p, i) => <Text key={i} style={style}>{p}</Text>)}
+      <Text style={style}>{view.paragraphs[unit] ?? ""}</Text>
     </View>
   );
 }

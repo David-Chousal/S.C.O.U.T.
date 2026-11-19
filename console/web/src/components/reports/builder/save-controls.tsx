@@ -8,6 +8,8 @@ import type { SavedLayout } from "@/lib/report/saved";
 interface SaveControlsProps {
   saved: SavedLayout | null;
   dirty: boolean;
+  /** A Save is on its way: a second press waits, so saves cannot land out of order. */
+  saving: boolean;
   title: string;
   onSave: () => Promise<void>;
   onSaveAs: (kind: SavedLayout["kind"], name: string, shared: boolean) => Promise<boolean>;
@@ -15,7 +17,7 @@ interface SaveControlsProps {
 
 /** Save state, Save (to the open saved report) and Save as (a new report or template).
  * Saved reports are shared with the team unless unticked (decided 2026-11-18). */
-export function SaveControls({ saved, dirty, title, onSave, onSaveAs }: SaveControlsProps) {
+export function SaveControls({ saved, dirty, saving, title, onSave, onSaveAs }: SaveControlsProps) {
   const [asking, setAsking] = useState(false);
   const [kind, setKind] = useState<SavedLayout["kind"]>("report");
   const [name, setName] = useState(title);
@@ -30,7 +32,7 @@ export function SaveControls({ saved, dirty, title, onSave, onSaveAs }: SaveCont
   return (
     <>
       <span className={`sc-tag sc-rb-save-state${dirty ? " is-dirty" : ""}`} role="status">{state}</span>
-      {saved && <Key size="sm" disabled={!dirty} onClick={onSave}>Save</Key>}
+      {saved && <Key size="sm" disabled={!dirty || saving} onClick={onSave}>{saving ? "Saving…" : "Save"}</Key>}
       <Key size="sm" onClick={() => { setName(saved ? `${saved.name} copy` : title); setAsking(true); }}>Save as…</Key>
       <Dialog open={asking} title="Save as" onClose={() => setAsking(false)}
         footer={<><Key onClick={() => setAsking(false)}>Cancel</Key><Key variant="primary" disabled={busy || !name.trim()} onClick={submit}>{busy ? "Saving…" : "Save"}</Key></>}>

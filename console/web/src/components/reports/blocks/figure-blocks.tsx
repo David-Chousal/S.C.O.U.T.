@@ -25,6 +25,8 @@ export function ChartSvg({ chart }: { chart: ChartGeometry }) {
 }
 
 export function KeyFiguresUnit({ view, unit }: { view: KeyFiguresView; unit: number }) {
+  // Pagination can be one render behind a view that lost a buoy: render nothing for that slot.
+  if (!view.sections[unit]) return null;
   return (
     <Section section={view.sections[unit]}>
       {(tiles) => (

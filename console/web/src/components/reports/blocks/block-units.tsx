@@ -6,6 +6,8 @@ import { ImageUnit, MarkerUnit, TextUnit, TitleUnit } from "./text-blocks";
 /** How many pieces a block flows as: page breaks may fall between them. */
 export function unitCount(view: BlockView): number {
   if ("sections" in view) return view.sections.length + ("footnote" in view && view.footnote ? 1 : 0);
+  // A long Text block flows paragraph by paragraph, so a page break can fall between paragraphs.
+  if (view.kind === "text") return Math.max(1, view.paragraphs.length);
   return 1;
 }
 
@@ -20,7 +22,7 @@ export function BlockUnit({ view, unit, rows }: BlockUnitProps) {
     case "alerts":
       return <TableUnit view={view} unit={unit} rows={rows} />;
     case "title": return <TitleUnit view={view} />;
-    case "text": return <TextUnit view={view} />;
+    case "text": return <TextUnit view={view} unit={unit} />;
     case "keyFigures": return <KeyFiguresUnit view={view} unit={unit} />;
     case "timeSeries": return <ChartsUnit view={view} unit={unit} />;
     case "heatStress": return <HeatUnit view={view} unit={unit} />;

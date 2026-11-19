@@ -14,7 +14,7 @@ export function PdfBlockUnit({ view, unit, rows }: PdfBlockUnitProps) {
     case "alerts":
       return <PdfTableUnit view={view} unit={unit} rows={rows} />;
     case "title": return <PdfTitle view={view} />;
-    case "text": return <PdfTextBlock view={view} />;
+    case "text": return <PdfTextBlock view={view} unit={unit} />;
     case "keyFigures": return <PdfKeyFigures view={view} unit={unit} />;
     case "timeSeries": return <PdfCharts view={view} unit={unit} />;
     case "heatStress": return <PdfHeat view={view} unit={unit} />;

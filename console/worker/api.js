@@ -45,10 +45,37 @@ const MAX_JSON_BYTES = 16_384;
 const REPORT_JSON_BYTES = 64 * 1024 + 1024;
 const jsonLimit = (path) => (path.startsWith("/api/report-layouts") ? REPORT_JSON_BYTES : MAX_JSON_BYTES);
 
+/** The body as text, read a chunk at a time and abandoned once it passes `limit` bytes, so an
+ * oversized request is never buffered whole. Null when it is too large. */
+async function readCapped(request, limit) {
+  if (Number(request.headers.get("Content-Length") || 0) > limit) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks = [];
+  let size = 0;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(size);
+  let at = 0;
+  for (const chunk of chunks) {
+    all.set(chunk, at);
+    at += chunk.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 async function readJson(request, limit = MAX_JSON_BYTES) {
   if (!(request.headers.get("Content-Type") || "").startsWith("application/json")) return null;
-  const text = await request.text();
-  if (text.length > limit) return null;
+  const text = await readCapped(request, limit);
+  if (text === null) return null;
   try {
     const body = JSON.parse(text || "{}");
     return body && typeof body === "object" && !Array.isArray(body) ? body : null;
