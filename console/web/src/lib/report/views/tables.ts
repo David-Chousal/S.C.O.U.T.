@@ -67,6 +67,8 @@ export function readingsTableView(block: ReadingsBlock, ctx: ViewContext): Table
       },
     };
   });
-  const footnote = hidden > 0 ? `${count(hidden)} more readings are not shown here (limit ${count(rowCap)} a buoy); the CSV holds them all.` : "";
+  // The CSV covers the report's buoys and range, so it only holds a block's hidden rows when the block does not override them.
+  const csv = block.override.buoys || block.override.range ? "" : "; the CSV holds them all";
+  const footnote = hidden > 0 ? `${count(hidden)} more readings are not shown here (limit ${count(rowCap)} a buoy)${csv}.` : "";
   return { kind: "readingsTable", sections, footnote };
 }

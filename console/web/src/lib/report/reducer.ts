@@ -30,6 +30,10 @@ export interface History {
 
 const MAX_HISTORY = 100;
 
+/** An override without the keys set back to the report's, so saved JSON stays minimal. */
+const clean = (override: BlockOverride): BlockOverride =>
+  Object.fromEntries(Object.entries(override).filter(([, value]) => value !== undefined));
+
 function withBlock(doc: ReportDocument, id: string, change: (block: Block) => Block): ReportDocument {
   return { ...doc, blocks: doc.blocks.map((b) => (b.id === id ? change(b) : b)) };
 }
@@ -54,7 +58,7 @@ export function reportReducer(doc: ReportDocument, action: ReportAction): Report
     case "setPage": return { ...doc, page: action.page };
     case "add": return { ...doc, blocks: inserted(doc.blocks, action.block, action.after) };
     case "update": return withBlock(doc, action.id, (b) => ({ ...b, options: { ...b.options, ...action.options } }) as Block);
-    case "setOverride": return withBlock(doc, action.id, (b) => ({ ...b, override: action.override }));
+    case "setOverride": return withBlock(doc, action.id, (b) => ({ ...b, override: clean(action.override) }));
     case "toggleHidden": return withBlock(doc, action.id, (b) => ({ ...b, hidden: !b.hidden }));
     case "remove": return { ...doc, blocks: doc.blocks.filter((b) => b.id !== action.id) };
     case "duplicate": {

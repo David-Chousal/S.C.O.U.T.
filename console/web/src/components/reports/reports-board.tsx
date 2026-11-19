@@ -60,7 +60,7 @@ export function ReportsBoard() {
   if (fleet.error || list.error) return <Banner tone="failed">{fleet.error || list.error}</Banner>;
   if (!fleet.data || !list.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
   return (
-    <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} now={now}
+    <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} canEdit={canDownload} now={now}
       onCreated={(link) => { list.reload(); window.location.assign(link); }}
       recent={<RecentReports reports={list.data.reports} canDownload={canDownload} now={now} />} />
   );
