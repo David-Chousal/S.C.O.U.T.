@@ -10,6 +10,7 @@ import { useWhen } from "@/lib/preferences-context";
 import { can, needs, useSession } from "@/lib/session";
 import { useApi } from "@/lib/use-api";
 import { useViewOnlyNote } from "@/lib/view-only-note";
+import { chooseStart, readDraft, type SavedLayout } from "@/lib/report/saved";
 import { ReportBuilder } from "./builder/report-builder";
 
 function RecentReports({ reports, canDownload, now }: { reports: ReportItem[]; canDownload: boolean; now: number }) {
@@ -53,14 +54,22 @@ export function ReportsBoard() {
   const { user } = useSession();
   const fleet = useApi<Fleet>(api.fleet);
   const list = useApi<ReportList>(api.reports);
+  const layouts = useApi<{ layouts: SavedLayout[] }>(api.reportLayouts);
   const [now] = useState(() => Date.now());
   const canDownload = can(user.role, "reports.write");
-  useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. The printable report works for everyone.`);
+  useViewOnlyNote(canDownload ? null : `View only: CSV downloads need the ${needs("reports.write")} role. Previewing, printing and Download PDF work for everyone.`);
 
-  if (fleet.error || list.error) return <Banner tone="failed">{fleet.error || list.error}</Banner>;
-  if (!fleet.data || !list.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
+  const [start, setStart] = useState<ReturnType<typeof chooseStart> | null>(null);
+  const error = fleet.error || list.error || layouts.error;
+  if (error) return <Banner tone="failed">{error}</Banner>;
+  if (!fleet.data || !list.data || !layouts.data) return <span className="sc-tag" aria-busy="true">Loading…</span>;
+  // Decided once, when everything has loaded: later reloads of the lists must not reopen the page.
+  const opened = start ?? chooseStart({ search: window.location.search, draft: readDraft(), layouts: layouts.data.layouts,
+    buoys: fleet.data.buoys.map((b) => b.buoy_id), now });
+  if (!start) setStart(opened);
   return (
     <ReportBuilder buoys={fleet.data.buoys} columns={list.data.columns} canDownload={canDownload} canEdit={canDownload} now={now}
+      start={opened} layouts={layouts.data.layouts} onLayoutsChanged={layouts.reload} isAdmin={can(user.role, "reports.default")}
       onCreated={(link) => { list.reload(); window.location.assign(link); }}
       recent={<RecentReports reports={list.data.reports} canDownload={canDownload} now={now} />} />
   );

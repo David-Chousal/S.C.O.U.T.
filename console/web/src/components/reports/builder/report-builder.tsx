@@ -3,8 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { Banner } from "@/components/feedback/banner";
 import { Key } from "@/components/ui/key";
-import { createBlock, createDocument, type ReportDocument } from "@/lib/report/document";
-import type { ReportVariables } from "@/lib/report/variables";
+import { plainStart, type SavedLayout, type Start } from "@/lib/report/saved";
 import { Inspector } from "./inspector";
 import { BlocksTab, LibraryPanel } from "./library-panel";
 import { OutlineTab } from "./outline-tab";
@@ -15,8 +14,9 @@ import { ReportPreview } from "./report-preview";
 import { ReportToolbar } from "./report-toolbar";
 import { useReportContent, type ReportBuoy } from "./use-report-content";
 import { useReportEditor } from "./use-report-editor";
-
-const DAY_MS = 24 * 3600 * 1000;
+import { SaveControls } from "./save-controls";
+import { TemplatesTab } from "./templates-tab";
+import { useSavedReport } from "./use-saved-report";
 
 interface ReportBuilderProps {
   buoys: ReportBuoy[];
@@ -30,24 +30,30 @@ interface ReportBuilderProps {
   onCreated: (link: string) => void;
   /** The recent CSVs list, shown in the left panel. */
   recent: ReactNode;
+  /** What to open (saved/saved.ts chooseStart); the plain report when absent. */
+  start?: Start;
+  /** Saved reports and templates this person can open. */
+  layouts?: SavedLayout[];
+  onLayoutsChanged?: () => void;
+  /** Admins choose the team's default template. */
+  isAdmin?: boolean;
 }
 
-function startingDocument(buoys: ReportBuilderProps["buoys"], now: number): ReportDocument {
-  const day = (ms: number) => new Date(ms).toISOString().slice(0, 10);
-  const variables: ReportVariables = { buoys: buoys.map((b) => b.buoy_id), range: { preset: "7d", from: day(now - 7 * DAY_MS), to: day(now) }, zone: "utc" };
-  return createDocument(variables, [createBlock("title", "title"), createBlock("summaryTable", "summary"), createBlock("readingsTable", "readings")]);
-}
+const NO_LAYOUTS: SavedLayout[] = [];
 
 /** The Reports page as a builder: report-wide variables in the toolbar, the live paper preview in
  * the centre, and panels either side (docs/engineering/console-report-builder-plan.md). */
-export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCreated, recent }: ReportBuilderProps) {
-  const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => startingDocument(buoys, now));
+export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCreated, recent, start, layouts = NO_LAYOUTS,
+  onLayoutsChanged = () => undefined, isAdmin = false }: ReportBuilderProps) {
+  const { doc, dispatch, undo, redo, canUndo, canRedo } = useReportEditor(() => start?.doc ?? plainStart(buoys.map((b) => b.buoy_id), now));
+  const saving = useSavedReport({ doc, dispatch, startId: start?.reportId ?? null, layouts, onLayoutsChanged });
   const { content, readings, loading, column, editPages, printPages } = useReportContent(doc, now, buoys);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = doc.blocks.find((b) => b.id === selectedId) ?? null;
   const { area: dropArea, pointer: drag } = useBlockDrag(dispatch, setSelectedId);
   const actions = (
     <>
+      {canEdit && <SaveControls saved={saving.saved} dirty={saving.dirty} title={doc.title} onSave={saving.save} onSaveAs={saving.saveAs} />}
       <Key size="sm" iconOnly icon="undo" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={undo} />
       <Key size="sm" iconOnly icon="redo" aria-label="Redo" title="Redo (⇧⌘Z)" disabled={!canRedo} onClick={redo} />
       <ReportActions content={content} printPages={printPages} columns={columns} canDownload={canDownload} loading={loading} onCreated={onCreated} />
@@ -64,6 +70,8 @@ export function ReportBuilder({ buoys, columns, canDownload, canEdit, now, onCre
         page={doc.page} onPage={(page) => dispatch({ type: "setPage", page })} actions={actions} />
       <aside className="sc-report-side sc-report-side--left" aria-label="Report library">
         <LibraryPanel footer={recent} tabs={[
+          { id: "templates", label: "Templates", content: <TemplatesTab layouts={layouts} variables={doc.variables} canEdit={canEdit} isAdmin={isAdmin}
+            dirty={saving.dirty && doc.blocks.length > 0} onOpen={(next, id) => { saving.open(next, id); setSelectedId(null); }} onLayoutsChanged={onLayoutsChanged} /> },
           { id: "blocks", label: "Blocks", content: <BlocksTab canEdit={canEdit} drag={drag} onAdd={(block) => {
             dispatch({ type: "add", block, after: selected?.id ?? null });
             setSelectedId(block.id);

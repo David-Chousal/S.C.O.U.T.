@@ -19,6 +19,7 @@ import {
 import { apiError, clearCookie, clientIp, json, sameOrigin, SESSION_COOKIE, setCookie } from "./http.js";
 import { lastBackup } from "./backup.js";
 import { createDashboard, deleteDashboard, listDashboards, saveDashboard } from "./dashboards.js";
+import { createReportLayout, deleteReportLayout, listReportLayouts, saveReportLayout, setDefaultTemplate } from "./report-layouts.js";
 import { guestSignIn, maskReply } from "./guests.js";
 import { heatStressView } from "./heat-stress-view.js";
 import { setMmm } from "./mmm.js";
@@ -137,6 +138,8 @@ async function reads(env, path, session, url) {
       return json(await alertsView(env, session.user));
     case "/api/dashboards":
       return json({ dashboards: await listDashboards(env.DB, session.user.id) });
+    case "/api/report-layouts":
+      return json({ layouts: await listReportLayouts(env.DB, session.user.id) });
     case "/api/reports":
       return json({ reports: await listReports(env.DB, session.user.id), columns: REPORT_COLUMNS });
     case "/api/tokens":
@@ -189,6 +192,10 @@ const WRITES = [
   [/^\/api\/dashboards$/, "dashboards.write", (db, b, m, a) => createDashboard(db, a, b)],
   [/^\/api\/dashboards\/([\w-]{1,64})\/delete$/, "dashboards.write", (db, b, m, a) => deleteDashboard(db, a, m[1])],
   [/^\/api\/dashboards\/([\w-]{1,64})$/, "dashboards.write", (db, b, m, a) => saveDashboard(db, a, m[1], b.bays)],
+  [/^\/api\/report-layouts$/, "reports.write", (db, b, m, a) => createReportLayout(db, a, b)],
+  [/^\/api\/report-layouts\/([\w-]{1,64})\/delete$/, "reports.write", (db, b, m, a) => deleteReportLayout(db, a, m[1])],
+  [/^\/api\/report-layouts\/([\w-]{1,64})\/default$/, "reports.default", (db, b, m, a) => setDefaultTemplate(db, a, m[1], b.is_default === true)],
+  [/^\/api\/report-layouts\/([\w-]{1,64})$/, "reports.write", (db, b, m, a) => saveReportLayout(db, a, m[1], b)],
   [/^\/api\/reports$/, "reports.write", (db, b, m, a, env) => createReport(env, a, b)],
   [/^\/api\/reports\/([\w-]{1,64})\/link$/, "reports.write", (db, b, m, a, env) => newLink(env, a, m[1])],
   [/^\/api\/tokens$/, "tokens.write", (db, b, m, a) => createToken(db, a, b)],

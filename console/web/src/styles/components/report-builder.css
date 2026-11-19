@@ -140,3 +140,10 @@
 .sc-rb-outline__row[aria-current="true"] { background: var(--accent-soft); }
 .sc-rb-outline__row strong { font-weight: 500; }
 .sc-rb-outline__row span:not(.sc-rb-tag) { color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+/* Templates and saving (step 8). */
+.sc-rb-templates { display: grid; gap: var(--space-2); }
+.sc-rb-templates > .sc-label { margin: var(--space-3) 0 0; }
+.sc-rb-row-keys { flex-wrap: nowrap; gap: var(--space-1); }
+.sc-rb-save-state { white-space: nowrap; }
+.sc-rb-save-state.is-dirty { color: var(--caution); }
+.sc-rb-saveas { display: grid; gap: var(--space-4); }
