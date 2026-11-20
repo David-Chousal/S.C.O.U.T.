@@ -1798,7 +1798,7 @@ Controlled by
 | **Parameter**    | **Value** |
 |------------------|-----------|
 | Frequency        | 915 MHz   |
-| Transmit Power   | +14 dBm   |
+| Transmit Power   | +14 dBm *(production-target leftover; the build radio is set to +11 dBm, 2026-11-20)* |
 | Bandwidth        | 125 kHz   |
 | Spreading Factor | SF7       |
 | Coding Rate      | 4/5       |
@@ -2984,7 +2984,7 @@ in [`docs/engineering/buoy-structural/`](buoy-structural/).
 |---------------------|----------------|
 | Radio               | SX1262         |
 | Frequency           | 915 MHz        |
-| TX Power            | +14 dBm        |
+| TX Power            | +14 dBm *(production target; the build is +11 dBm, grant limit 11.6 dBm)* |
 | Bandwidth           | 125 kHz        |
 | Spreading Factor    | SF7            |
 | Coding Rate         | 4/5            |
