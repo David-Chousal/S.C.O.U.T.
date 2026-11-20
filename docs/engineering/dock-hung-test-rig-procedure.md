@@ -59,8 +59,11 @@ For a fixed pier:
    `L_min = sqrt(H_max² + d²)`, plus the bridle height and 6 in for knots.
 4. At high water the same line is slack by about `R`. That slack must not tangle the float or let it
    slam the piling. Absorb it with an **elastic segment** (a length of shock cord in series with the
-   nylon, stretching by about `R` over its working range) or a **sliding ring on a vertical guide
-   line** along the piling. Pick whichever the host allows.
+   nylon). Set it **relaxed at high water and stretched by about `R` at low water**, so the line is
+   never slack at high water and never over-tensioned at low water. Its relaxed length comes from the
+   measured `H_min`, `d` and the cord's rated stretch, and is not set until the dock is measured. If
+   the cord cannot meet this, use a **sliding ring on a vertical guide line** along the piling. Pick
+   whichever the host allows.
 5. If `R` is larger than the deck height, the deck is too low for a fixed line to work at the
    highest water. Pick another dock or move the cleat.
 
@@ -171,10 +174,10 @@ waterline in open water; self-rights; no leaks").
 
 | # | What is measured | Pass mark | How |
 |---|---|---|---|
-| 1 | Float stays upright and afloat | Upright at every daily check for 7 days | Photo at each check |
+| 1 | Float stays upright, afloat and self-rights | Upright at every daily check for 7 days, **and** a controlled capsize recovery on day 0 passes: with the unit sealed and the tether on, the handler tips the float by hand to 90 degrees from the dock edge and it returns upright unaided (a failed recovery is a fail, and the float is not left in the water) | Photo at each check; recovery recorded on video |
 | 2 | Freeboard against the model | Within ±0.5 in of the modelled value at deployment and on day 7 (the stage-7 rule) | Tape at four points; model value recorded first |
-| 3 | No water in the housing or pod | Leak and humidity channel never alarms; dry mass after retrieval within 10 g of dry mass before (proposed; scale resolution not recorded) | Logger plus same-scale weighing |
-| 4 | Tether and rig | No chafe through the outer strands; float never lifted out of the water; never touched the piling | Daily photos |
+| 3 | No water in the housing or pod | Leak and humidity channel never alarms; dry mass after retrieval within 10 g of dry mass before (proposed; scale resolution not recorded), **and** the internal inspection in §10 step 10 shows no water, salt or condensation inside | Logger, same-scale weighing and the recorded inspection |
+| 4 | Tether and rig | At every daily check: no chafe through the outer strands, no fresh scuffs on the float or the piling, float in the water and clear of the piling. Contact or lift **between** checks cannot be seen from photos, so it is not claimed; add a camera or motion logger on the float if the team wants it claimed | Daily photos and scuff inspection |
 | 5 | Radio link from the dock | At least 90% of scheduled packets received over the week (stage-10 target is 95% or more for the soak; this is a first dock run) | Shore station log against the firmware interval |
 | 6 | Fouling and corrosion | Photographed and weighed before and after; no pass mark, the data is the result | Photos and scale |
 | 7 | Retrieval | Float out of the water in under 30 minutes from the call | Stopwatch on a practice retrieval on day 0 and the real one |

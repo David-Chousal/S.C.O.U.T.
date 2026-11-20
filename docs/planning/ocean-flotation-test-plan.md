@@ -61,8 +61,10 @@ anchor of our own, no seabed contact.
 | 3 | **Tethered to an attended boat** (Monterey boat contacts, [SCO-306](https://linear.app/scout1/issue/SCO-306)) | A different access route if no dock says yes; tests the free-float behaviour | Boat, skipper and insurance unknown; more weather and safety exposure |
 | 4 | **Pool test** (the SCU pool, [SCO-143](https://linear.app/scout1/issue/SCO-143)) as a fallback, not a substitute | Fresh water, no permit, tests submersion, communication and the rig | Not seawater, so it cannot meet stage 12; pool access not yet requested |
 
-**Decision rule:** take the first option whose host has answered in writing with dates, a named
-cleat or rail and a contact. Do not wait for the first choice if option 2 or 3 answers first.
+**Decision rule:** the required test is the dock-hung test, so take the first **dock** option (1 or 2)
+whose host has answered in writing with dates, a named cleat or rail and a contact. Do not wait for
+the first choice if option 2 answers first. An attended boat (option 3) is an optional second run and
+never replaces the dock test unless the team rewrites the test scope first.
 
 ### 3.2 Pier or boat
 
@@ -102,6 +104,10 @@ and update the hosts research, or reopen the ticket.
   the [procedure](../engineering/dock-hung-test-rig-procedure.md#3-sizing-the-line-for-the-tide).
 - **Retrieval:** a stated way to remove it in under 30 minutes on request, practised on day 0
   ([procedure §10](../engineering/dock-hung-test-rig-procedure.md#10-retrieval-planned-or-on-request)).
+  Day 0 times the work from the dock only. **Response coverage:** the host's call can come between
+  daily checks, so name one team member who is within 30 minutes of the dock and reachable by phone
+  for the whole week, give the host that number, and time the trip from a phone call to hands on the
+  tether before day 0. If no one can be that close, tell the host the real response time in writing.
 - **Boat and prop risk:** the line is twisted nylon so a crossing propeller fouls rather than cuts
   it ([decision log 2026-09-08](../hub/decision-log.md)). Choose a dock with no boats moving close to
   the float, and keep the float away from the fairway and transient berths.
