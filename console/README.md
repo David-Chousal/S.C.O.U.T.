@@ -359,34 +359,20 @@ console caps itself. Layer by layer:
 | Guardrail | Where | What it stops |
 |---|---|---|
 | Storage class **Standard**, never Infrequent Access | bucket default | IA has no free tier, retrieval fees and a 30-day minimum charge |
-| Lifecycle rules: `backups/` deleted after 35 days, `reports/` after 2, `report-images/` after 365 (**to add**, replacing the 60-day catch-all; see below), unfinished uploads after 1 | bucket (`wrangler r2 bucket lifecycle list scout-console-files`) | Files piling up, even if the Worker stops running |
+| Lifecycle rules: `backups/` deleted after 35 days, `reports/` after 2, `report-images/` after 365, unfinished uploads after 1; no catch-all (see below) | bucket (`wrangler r2 bucket lifecycle list scout-console-files`) | Files piling up, even if the Worker stops running |
 | Every R2 call goes through `worker/storage.js` and is counted in D1 first | Worker | A bug or a loop calling R2 without limit |
 | Monthly ceilings: **100,000 writes** (10% of free), **1,000,000 reads** (10%) | `BUDGET` in `worker/storage.js` | Operation charges; past the ceiling the call is refused and R2 is never reached |
 | **2 GB stored** (20% of free), summed from the console's own ledger, not a billable list call | same | Storage charges |
 | **25 MB** per object (report images **1 MB**, PNG or JPEG by their own bytes, 50 per person); writes only under `backups/`, `reports/` or `report-images/` | same, and `worker/report-images.js` | One huge file; files no lifecycle rule would delete |
 | Admin-only **Storage** tab (Developer) | front end | Use you can't see |
 
-**Report images (one-time, needs the Cloudflare account):** the Image block keeps uploads under
-`report-images/`. When two lifecycle rules match an object, R2 applies the earlier expiry, so the
-60-day catch-all rule would still delete images however long their own rule is. Every write already
-goes under `backups/`, `reports/` or `report-images/`, so the catch-all has nothing else to do:
-remove it, then add the image rule. First list the rules to find the catch-all's name (it has no
-prefix):
-
-```bash
-npx wrangler r2 bucket lifecycle list scout-console-files
-```
-
-```bash
-npx wrangler r2 bucket lifecycle remove scout-console-files --name <the catch-all rule's name>
-```
-
-```bash
-npx wrangler r2 bucket lifecycle add scout-console-files report-images-365 report-images/ --expire-days 365
-```
-
-Keep the unfinished-upload rule (1 day). If the catch-all also carries it, add it back on its own
-with `--abort-multipart-days 1`.
+**Report images:** the Image block keeps uploads under `report-images/`. When two lifecycle rules
+match an object, R2 applies the earlier expiry, so the bucket no longer has a prefix-less catch-all
+(`anything-60d` was removed on 2026-11-18): every write goes under `backups/`, `reports/` or
+`report-images/`, each with its own rule. The rules today (`wrangler r2 bucket lifecycle list
+scout-console-files`): `backups-35d`, `reports-2d`, `report-images-365`, `abort-uploads-1d` and
+Cloudflare's default 7-day multipart abort. A new prefix needs its own rule before the Worker
+writes to it.
 
 At one backup a night the console uses about 30 writes a month. One thing only a person can add:
 a Cloudflare **billing notification** (dashboard → Notifications → Add → *Usage Based Billing*),
