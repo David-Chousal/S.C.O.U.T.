@@ -11,6 +11,11 @@
 
 ---
 
+> **Senior Design grant (2026-11-12):** $1,500, fund string ENGUG / IN / ACT10346. John orders
+> through Quartzy; the request list and rules are in
+> [Senior Design Funding and Ordering](senior-design-funding-and-ordering.md). Orders 1 and 2 below
+> were paid out of pocket before the grant.
+
 ## Spending summary
 
 | | Amount |

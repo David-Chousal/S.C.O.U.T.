@@ -30,6 +30,7 @@
 | Program | Santa Clara University · Senior Design Capstone | [README](../../README.md) |
 | Academic year | **2026–2027** | [ADR-0001 reconciliation](../decisions/0001-mcu-and-radio-selection.md) |
 | Project window | **2026-08-14 – 2027-05-28** | [CLAUDE.md → Projects](../../CLAUDE.md), [Team Timeline](../planning/team-timeline.md) |
+| Senior Design funding | **$1,500** grant, fund string ENGUG / IN / ACT10346, team 6; John orders through Quartzy; expenses by May 15, subscriptions cancelled by June 10 | [Senior Design Funding and Ordering](../planning/senior-design-funding-and-ordering.md) |
 
 ## Mission targets
 
