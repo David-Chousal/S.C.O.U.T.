@@ -286,6 +286,9 @@ than silently reconciled, since resolving each required a team decision.
 | ~~**Audio capture parameters**~~ ✅ Resolved | `config.h`, the power budget, the EDD and the build plan disagreed on schedule, sample rate and ADC. Settled 2026-10-25 by [ADR-0011](docs/decisions/0011-audio-capture-parameters.md): 3 × 60 s/day, 22.05 kHz, Feather 12-bit ADC on A2 |
 | ~~**Hydrophone part**~~ ✅ Resolved | **Resolved 2026-10-12: Aquarian H2dM** (3.5 mm plug-in power, 6 m cable; [SCO-8](https://linear.app/scout1/issue/SCO-8) Done 2026-10-16). Not bought yet: waits on funding ([SCO-158](https://linear.app/scout1/issue/SCO-158)) |
 | **Dissolved oxygen status** ⏳ ECE | Wanted (meeting notes, interviews), V1.5 in sensor-selection, absent from EDD/BOM. **Owner: Isabella (ECE)** — [SCO-11](https://linear.app/scout1/issue/SCO-11), `Needs Decision` |
+| ~~**Housing seal**~~ ✅ Resolved 2026-11-20 | Facts said O-ring (2026-10-16); the advisor meeting (2026-11-11) said epoxy-sealed, one-time-use. Newer wins: **epoxy**, confirmed by John. See the [decision log](docs/hub/decision-log.md) |
+| ~~**Transmit power**~~ ✅ Resolved 2026-11-20 | EDD tables said +14 dBm; the build is **+11 dBm** against the 11.6 dBm FCC grant limit. EDD rows annotated |
+| ~~**Sound band**~~ ✅ Resolved 2026-11-20 | A 10 to 20 kHz target conflicted with 22.05 kHz capture ([ADR-0011](docs/decisions/0011-audio-capture-parameters.md)); usable band is below about 11 kHz |
 | ~~**Academic year**~~ ✅ Resolved | **2026–2027**. No stray 2025–2027 remains in the docs |
 | ~~**Project name**~~ ✅ Resolved | **"Oceanic Utilities Transmitter"** (plural) — used consistently across all docs; no "Utility" (singular) instances remain |
 
