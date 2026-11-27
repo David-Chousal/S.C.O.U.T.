@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "docs" / "planning" / "wbs-tasks.csv"
 PDF_PATH = ROOT / "docs" / "planning" / "gantt-fall-2026.pdf"
 
-DETAIL_START = date(2026, 11, 16)
+DETAIL_START = date(2026, 11, 23)
 DETAIL_END = date(2026, 12, 11)
 DETAIL_LABEL = f"{DETAIL_START.strftime('%b')} {DETAIL_START.day} &ndash; {DETAIL_END.strftime('%b')} {DETAIL_END.day}, {DETAIL_END.year}"
 OVERVIEW_START = date(2026, 10, 5)  # a Monday
@@ -336,7 +336,7 @@ def build_html(rows: list[dict]) -> str:
     p.append("<h2>How to read this</h2><ul>")
     p.append("<li><b>WBS:</b> 1 Project management &middot; 2 Electrical &middot; 3 Firmware &amp; software &middot; "
              "4 Mechanical &middot; 5 Deployment. Each task has a WBS number and, where one exists, its Linear issue.</li>")
-    p.append("<li><b>Pages 2&ndash;5:</b> the day-by-day detail ("+DETAIL_LABEL+"), one block per work area, with dependency arrows. "
+    p.append("<li><b>@@DETAIL_PAGES@@:</b> the day-by-day detail ("+DETAIL_LABEL+"), one block per work area, with dependency arrows. "
              "<b>Then:</b> the fall overview to Jan 15, and the full table with owner, dates, duration, dependencies, "
              "outside constraints and milestones for every task.</li>")
     p.append("<li><b>Dates:</b> solid bars end on the issue's Linear due date (a start is Linear's when the issue has started, otherwise proposed). Dashed bars are estimates; the table marks the source of every date. "
@@ -369,6 +369,9 @@ def build_html(rows: list[dict]) -> str:
                 rows_g.extend(sr)
         for part, grp in enumerate(chunks(rows_g, 27)):
             pages.append(grp)
+    n_detail = len(pages)
+    label = "Page 2" if n_detail == 1 else f"Pages 2&ndash;{1 + n_detail}"
+    p = [x.replace("@@DETAIL_PAGES@@", label) for x in p]
     for grp in pages:
         names = " / ".join(r["task"].split("  ")[0] for r in grp if r["kind"] == "header")
         p.append("<div class='page'>")
